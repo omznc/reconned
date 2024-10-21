@@ -6,3 +6,179 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         String    @id @default(uuid())
+  // TODO: Setup better-auth and generate user model
+}
+
+model Club {
+  id         String       @id @default(uuid())
+  name       String
+  createdBy  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  createdByUser User      @relation("CreatedClubs", fields: [createdBy], references: [id])
+  members    ClubMember[]
+  events     Event[]
+
+  @@index([createdBy])
+}
+
+model ClubMember {
+  id        String   @id @default(uuid())
+  clubId    String
+  userId    String
+  joinedAt  DateTime @default(now())
+
+  club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId]) // Ensures a user can only be in one club
+  @@unique([clubId, userId])
+
+  @@index([clubId])
+  @@index([userId])
+}
+
+model Team {
+  id         String       @id @default(uuid())
+  name       String
+  createdBy  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  createdByUser User      @relation("CreatedTeams", fields: [createdBy], references: [id])
+  members    TeamMember[]
+
+  @@index([createdBy])
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  teamId    String
+  userId    String
+  role      TeamRole @default(MEMBER)
+  joinedAt  DateTime @default(now())
+
+  team      Team     @relation(fields: [teamId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+}
+
+enum TeamRole {
+  LEADER
+  MEMBER
+}
+
+model Event {
+  id            String    @id @default(uuid())
+  title         String
+  description   String?
+  createdBy     String
+  clubId        String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  startDate     DateTime
+  endDate       DateTime?
+  durationInHours Float?
+  freeFood      Boolean   @default(false)
+  offroadAccess Boolean   @default(false)
+  locationLat   Float
+  locationLng   Float
+  createdByUser User      @relation("CreatedEvents", fields: [createdBy], references: [id])
+  club          Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  images        EventImage[]
+  managers      Manager[]
+  rules         EventRule[]
+  applications  EventApplication[]
+
+  @@index([startDate])
+  @@index([createdBy])
+  @@index([clubId])
+}
+
+model EventImage {
+  id        String @id @default(uuid())
+  eventId   String
+  imageUrl  String
+
+  event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model EventRule {
+  id        String  @id @default(uuid())
+  eventId   String
+  ruleText  String
+  createdAt DateTime @default(now())
+
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model EventApplication {
+id             String          @id @default(uuid())
+eventId        String
+applicantType  ApplicantType    @default(USER)
+userId         String?
+teamId         String?
+managerId      String?
+status         ApplicationStatus @default(PENDING)
+appliedAt      DateTime        @default(now())
+
+event          Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+user           User?           @relation("UserApplications", fields: [userId], references: [id])
+team           Team?           @relation(fields: [teamId], references: [id])
+manager        User?           @relation(fields: [managerId], references: [id])
+participants   EventApplicationParticipant[]
+
+@@check((applicantType = "USER" AND userId IS NOT NULL AND teamId IS NULL) OR
+(applicantType = "TEAM" AND teamId IS NOT NULL AND userId IS NULL))
+
+@@index([eventId])
+@@index([userId])
+@@index([teamId])
+}
+
+model EventApplicationParticipant {
+  id                   String  @id @default(uuid())
+  eventApplicationId    String
+  participantName       String
+  participantEmail      String?
+
+  eventApplication      EventApplication @relation(fields: [eventApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([eventApplicationId])
+}
+
+model Manager {
+  id                 String          @id @default(uuid())
+  managedEntityId    String
+  managedEntityType  ManagedEntityType
+  userId             String
+  assignedAt         DateTime         @default(now())
+
+  user               User             @relation(fields: [userId], references: [id])
+
+  @@unique([managedEntityId, managedEntityType, userId])
+
+  @@index([managedEntityId, managedEntityType])
+  @@index([userId])
+}
+
+enum ApplicantType {
+  USER
+  TEAM
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ManagedEntityType {
+  CLUB
+  EVENT
+}
