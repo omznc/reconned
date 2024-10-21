@@ -18,7 +18,8 @@
 			}
 		],
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@components/*": ["./src/components/*"]
 		},
 		"target": "ES2017"
 	},
