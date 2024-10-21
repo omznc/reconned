@@ -6,9 +6,11 @@
 		"dev": "next dev --turbo",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"format": "bunx @biomejs/biome format --write ."
 	},
 	"dependencies": {
+		"@biomejs/biome": "^1.9.4",
 		"@prisma/client": "^5.21.1",
 		"babel-plugin-react-compiler": "^19.0.0-beta-8a03594-20241020",
 		"better-auth": "^0.5.3-beta.5",
