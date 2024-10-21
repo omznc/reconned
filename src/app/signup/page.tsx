@@ -1,7 +1,8 @@
 import React from 'react';
+import SignUp from "@/components/feature/SignUp";
 
 export default function SignUpPage() {
     return (
-        <SignUpPage />
+        <SignUp />
     );
 }

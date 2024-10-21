@@ -3,7 +3,7 @@
 import { authClient } from "@/lib/auth-client"; //import the auth client
 import React, { useState } from 'react';
 import Link from "next/link";
-import {useRouter} from "next/router";
+import {useRouter} from "next/navigation";
 
 export default function SignUp() {
     const [email, setEmail] = useState('');
