@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {session ? <button onClick={() => {}}>Logout</button> : <Link href="/login">Sign In</Link>}
-      {isPending ? "Loading..." : error ? error.message : session ? `Hello ${session.user.name}` : "Please sign in"}
+      {session ? `Hello ${session.user.name}` : "Please sign in"}
       {session && `Cao ${session.user.name}`}
     </div>
   );

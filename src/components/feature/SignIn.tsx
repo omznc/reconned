@@ -2,7 +2,7 @@
 import { authClient } from "@/lib/auth-client"; //import the auth client
 import { useState } from 'react';
 import Link from "next/link";
-import {useRouter} from "next/router";
+import {useRouter} from "next/navigation";
 
 export default function SignIn() {
     const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ export default function SignIn() {
     const handleSignIn = async () => {
         await authClient.signIn.email({
             email: email,
-            password: password,
+            password: password
         }, {
             onRequest: () => {
                 //show loading
