@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client"; //import the auth client
+import { authClient } from "@/lib/auth-client";
 import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -17,7 +17,7 @@ export default function LoginPage() {
 		<>
 			<CardHeader>
 				<CardTitle className="text-2xl">Prijava</CardTitle>
-				<CardDescription>Upišite svoj email i lozinku kako bi ste se pridružili svijetu airsofta.</CardDescription>
+				<CardDescription>Upisite svoj email i lozinku kako bi ste se pridružili svijetu airsofta.</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
