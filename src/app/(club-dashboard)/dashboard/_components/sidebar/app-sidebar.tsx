@@ -1,10 +1,7 @@
 "use client";
 
-import * as React from "react";
-import { BookOpen, BookUser, Bot, Building2, GalleryVerticalEnd, House, Settings2, SquareTerminal } from "lucide-react";
+import { BookUser, Building2, GalleryVerticalEnd, House, Settings2 } from "lucide-react";
 
-import { NavMain } from "@/components/dashboard/sidebar/nav-main";
-import { NavUser } from "@/components/dashboard/sidebar/nav-user";
 import {
 	Sidebar,
 	SidebarContent,
@@ -13,8 +10,9 @@ import {
 	SidebarMenuButton,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
-import { NavApp } from "@/components/dashboard/sidebar/nav-app";
+import { NavMain } from "@/app/(club-dashboard)/dashboard/_components/sidebar/nav-main";
+import { NavApp } from "@/app/(club-dashboard)/dashboard/_components/sidebar/nav-app";
+import { NavUser } from "@/app/(club-dashboard)/dashboard/_components/sidebar/nav-user";
 
 // This is sample data.
 const data = {
