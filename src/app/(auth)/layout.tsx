@@ -21,7 +21,7 @@ export default function RootLayout({
 	const path = usePathname();
 
 	return (
-		<Card className="w-full border-0 md:border min-h-[550px] shadow-none md:max-w-sm overflow-hidden h-fit">
+		<Card className="w-full border-0 mx-auto md:border min-h-[550px] shadow-none md:max-w-sm overflow-hidden h-fit">
 			<div className="w-full p-6">
 				<Button variant={"outline"} className="w-full" asChild={true}>
 					<Link href="/" className="flex items-center gap-2">

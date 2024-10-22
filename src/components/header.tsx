@@ -17,7 +17,7 @@ export function Header() {
 	const user = session?.user;
 
 	return (
-		<header className="flex items-center justify-between p-4">
+		<header className="flex select-none w-full items-center justify-between p-4">
 			<h1 className="text-lg font-semibold">Airsoft BIH</h1>
 			<div className="flex gap-2">
 				{user ? (
@@ -44,7 +44,9 @@ export function Header() {
 						</DropdownMenu>
 					</>
 				) : (
-					<Link href="/login">Login</Link>
+					<Button asChild={true}>
+						<Link href="/login">Prijava</Link>
+					</Button>
 				)}
 			</div>
 		</header>
