@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -20,15 +20,11 @@ export default function Page() {
 					<Breadcrumb>
 						<BreadcrumbList>
 							<BreadcrumbItem className="hidden md:block">
-								<BreadcrumbLink href="/dashboard">Početna</BreadcrumbLink>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
-							<BreadcrumbItem className="hidden md:block">
 								<BreadcrumbLink href="/dashboard/club">Klub</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
-								<BreadcrumbLink href="/dashboard/club/stats">Informacije</BreadcrumbLink>
+								<BreadcrumbLink href="/dashboard/club/stats">Statistike</BreadcrumbLink>
 							</BreadcrumbItem>
 						</BreadcrumbList>
 					</Breadcrumb>

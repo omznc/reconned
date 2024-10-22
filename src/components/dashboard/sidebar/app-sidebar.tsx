@@ -3,8 +3,8 @@
 import * as React from "react";
 import { BookOpen, BookUser, Bot, Building2, GalleryVerticalEnd, House, Settings2, SquareTerminal } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/dashboard/sidebar/nav-main";
+import { NavUser } from "@/components/dashboard/sidebar/nav-user";
 import {
 	Sidebar,
 	SidebarContent,
@@ -14,7 +14,7 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { NavApp } from "@/components/nav-app";
+import { NavApp } from "@/components/dashboard/sidebar/nav-app";
 
 // This is sample data.
 const data = {
@@ -26,13 +26,14 @@ const data = {
 	navMain: [
 		{
 			title: "Početna",
-			url: "/dashboard",
+			url: "/",
 			icon: House,
 		},
 		{
 			title: "Klub",
 			url: "#",
 			icon: Building2,
+			isActive: true,
 			items: [
 				{
 					title: "Pregled",
