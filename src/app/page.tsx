@@ -1,10 +1,11 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
+import { useIsAuthenticated } from "@auth/client";
+
 import Link from "next/link";
 
 export default function Home() {
-	const { data: session } = authClient.useSession();
+	const { data: session } = useIsAuthenticated();
 
 	return (
 		<div className="flex flex-col max-w-lg">

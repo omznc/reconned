@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 const variants = {
-	hidden: { x: -500, y: 0 },
-	enter: { x: 0, y: 0 },
-	exit: { x: 500, y: 0 },
+	hidden: { x: -700, y: 0, filter: "blur(5px)" },
+	enter: { x: 0, y: 0, filter: "blur(0px)" },
+	exit: { x: 700, y: 0, filter: "blur(5px)" },
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
 	const path = usePathname();
 
 	return (
-		<Card className="w-full border-0 md:border shadow-none md:max-w-sm overflow-hidden h-fit">
+		<Card className="w-full border-0 md:border min-h-[500px] shadow-none md:max-w-sm overflow-hidden h-fit">
 			<AnimatePresence initial={false} mode="wait">
 				<motion.div
 					key={path}
@@ -26,7 +26,7 @@ export default function RootLayout({
 					initial="hidden"
 					animate="enter"
 					exit="exit"
-					transition={{ type: "linear" }}
+					transition={{ type: "tween", duration: 0.2 }}
 				>
 					{children}
 				</motion.div>

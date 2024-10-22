@@ -27,7 +27,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased h-dvh w-full flex items-center justify-center`}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex items-center justify-center`}
 			>
 				<AlertDialogProvider>{children}</AlertDialogProvider>
 			</body>
