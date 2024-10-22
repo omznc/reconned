@@ -2,10 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useIsAuthenticated } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, House } from "lucide-react";
+import { House, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 const variants = {
 	hidden: { x: -700, y: 0, filter: "blur(5px)" },
@@ -19,6 +20,19 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	const path = usePathname();
+	const { user, loading } = useIsAuthenticated();
+
+	if (!loading && user) {
+		redirect("/");
+	}
+
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center h-screen w-full">
+				<Loader2 className="w-12 h-12 animate-spin" />
+			</div>
+		);
+	}
 
 	return (
 		<Card className="w-full border-0 mx-auto md:border min-h-[550px] shadow-none md:max-w-sm overflow-hidden h-fit">

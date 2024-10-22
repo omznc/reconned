@@ -1,9 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { isAuthenticated } from "@/lib/auth";
-import { format } from "date-fns";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { EventsCarousel } from "@/app/(public)/_components/carousel";
 
 const events = [
 	{
@@ -128,9 +125,7 @@ const events = [
 	},
 ];
 
-export default async function Home() {
-	const user = await isAuthenticated();
-
+export default function Home() {
 	return (
 		<div className="flex flex-col size-full gap-8">
 			<div className="flex flex-col gap-3">
@@ -138,39 +133,13 @@ export default async function Home() {
 					Nadolazeći događaji
 					<ArrowRight className="opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all translate-x-10" />
 				</Link>
-				<Carousel>
-					<CarouselContent className="-ml-4">
-						{events.map((event) => (
-							<CarouselItem
-								key={event.id}
-								className="pl-4 bg-white group select-none flex h-[300px] overflow-hidden relative md:basis-1/2 lg:basis-1/3 flex-col "
-							>
-								<img
-									src={"https://picsum.photos/200/300"}
-									alt={event.title}
-									className="size-full border border-b-0 object-cover transition-all"
-								/>
-								<div className="flex flex-col gap-1 pb-16 md:pb-2 md:group-hover:pb-16 transition-all p-2 border border-t-none ">
-									<h3 className="text-xl font-semibold">{event.title}</h3>
-									<p className="text-sm">
-										{format(event.date, "do MMMM, yyyy")}, {event.location}
-									</p>
-									<p className="text-sm">{event.club}</p>
-									<Button
-										asChild
-										className="absolute cursor-pointer md:translate-y-16 md:group-hover:translate-y-0 transition-all bottom-2 left-6 right-2"
-									>
-										{user ? (
-											<Link href={`/events/${event.id}?register=true`}>Prijavi se na susret</Link>
-										) : (
-											<Link href="/login">Uloguj se</Link>
-										)}
-									</Button>
-								</div>
-							</CarouselItem>
-						))}
-					</CarouselContent>
-				</Carousel>
+				{events.length > 0 ? (
+					<EventsCarousel events={events} />
+				) : (
+					<span>
+						Ne postoji nijedan susret u budućnosti. Da li ste klub? Ovo je savršeno vrijeme da organizirate susret!
+					</span>
+				)}
 			</div>
 		</div>
 	);
