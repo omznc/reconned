@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/app/(public)/logo";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,7 @@ export function Header() {
 
 	return (
 		<header className="flex select-none w-full items-center justify-between p-4">
-			<h1 className="text-lg font-semibold">Airsoft BIH</h1>
+			<Logo />
 			<div className="flex gap-2">
 				{user ? (
 					<>
