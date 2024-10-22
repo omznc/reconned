@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -19,10 +19,6 @@ export default function Page() {
 					<Separator orientation="vertical" className="mr-2 h-4" />
 					<Breadcrumb>
 						<BreadcrumbList>
-							<BreadcrumbItem className="hidden md:block">
-								<BreadcrumbLink href="/dashboard">Početna</BreadcrumbLink>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
 							<BreadcrumbItem className="hidden md:block">
 								<BreadcrumbLink href="/dashboard/club">Klub</BreadcrumbLink>
 							</BreadcrumbItem>

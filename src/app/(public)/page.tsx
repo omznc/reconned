@@ -1,23 +1,10 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { isAuthenticated } from "@/lib/auth";
 import { useIsAuthenticated } from "@auth/client";
-import {
-	addDays,
-	format,
-	startOfMonth,
-	endOfMonth,
-	eachDayOfInterval,
-	isSameMonth,
-	isSameDay,
-	addMonths,
-	subMonths,
-} from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { format } from "date-fns";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 const events = [
 	{
@@ -142,24 +129,27 @@ const events = [
 	},
 ];
 
-export default function Home() {
-	const { data: session } = useIsAuthenticated();
+export default async function Home() {
+	const { data: session } = await isAuthenticated();
 
 	return (
 		<div className="flex flex-col size-full gap-8">
-			<div className="flex flex-col gap-2">
-				<h2 className="text-2xl font-semibold">Nadolazeći događaji</h2>
+			<div className="flex flex-col gap-3">
+				<Link href={"/events"} className="text-2xl group flex gap-1 items-center font-semibold">
+					Nadolazeći događaji{" "}
+					<ArrowRight className="opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all translate-x-10" />
+				</Link>
 				<Carousel>
 					<CarouselContent className="-ml-4">
 						{events.map((event) => (
 							<CarouselItem
 								key={event.id}
-								className="pl-4 group select-none flex h-[300px] overflow-hidden relative md:basis-1/2 lg:basis-1/3 flex-col "
+								className="pl-4 bg-white group select-none flex h-[300px] overflow-hidden relative md:basis-1/2 lg:basis-1/3 flex-col "
 							>
 								<img
 									src={"https://picsum.photos/200/300"}
 									alt={event.title}
-									className="size-full object-cover transition-all"
+									className="size-full border border-b-0 object-cover transition-all"
 								/>
 								<div className="flex flex-col gap-1 pb-16 md:pb-2 md:group-hover:pb-16 transition-all p-2 border border-t-none ">
 									<h3 className="text-xl font-semibold">{event.title}</h3>
@@ -171,7 +161,11 @@ export default function Home() {
 										asChild
 										className="absolute cursor-pointer md:translate-y-16 md:group-hover:translate-y-0 transition-all bottom-2 left-6 right-2"
 									>
-										<Link href={`/events/${event.id}?register=true`}>Prijavi se</Link>
+										{session?.user ? (
+											<Link href={`/events/${event.id}?register=true`}>Prijavi se na susret</Link>
+										) : (
+											<Link href="/login">Uloguj se</Link>
+										)}
 									</Button>
 								</div>
 							</CarouselItem>

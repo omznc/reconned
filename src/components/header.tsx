@@ -1,6 +1,6 @@
 "use client";
 
-import { Logo } from "@/app/(public)/logo";
+import { Logo } from "@/components/logos/logo";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,25 +18,29 @@ export function Header() {
 	const user = session?.user;
 
 	return (
-		<header className="flex select-none w-full items-center justify-between p-4">
-			<Logo />
-			<div className="flex gap-2">
+		<header className="flex flex-col md:flex-row gap-4 select-none w-full items-center justify-between p-2 md:p-4">
+			<Link href="/">
+				<Logo />
+			</Link>
+			<div className="flex gap-2 md:w-fit w-full">
 				{user ? (
 					<>
 						{/* TODO: Manager-only? */}
-						<Button asChild={true}>
-							<Link href="/dashboard">Moj Klub</Link>
+						<Button asChild={true} className="w-full">
+							<Link href="/dashboard/club" className="w-full">
+								Moj Klub
+							</Link>
 						</Button>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Avatar className="size-10 rounded-lg select-none">
+								<Avatar className="size-10 cursor-pointer border rounded-none select-none">
 									<AvatarImage src={user?.image} alt={user?.name} />
-									<AvatarFallback className="rounded-lg">{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
+									<AvatarFallback className="rounded-none">{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="mr-4" sideOffset={12}>
-								<DropdownMenuItem>
-									<Link href="/logout" className="flex items-center gap-2">
+								<DropdownMenuItem asChild={true} className="cursor-pointer">
+									<Link href="/logout" className="flex items-centergap-2">
 										<LogOut className="w-4 h-4" />
 										Odjava
 									</Link>
