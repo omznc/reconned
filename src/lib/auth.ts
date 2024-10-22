@@ -14,8 +14,9 @@ export const auth = betterAuth({
 	},
 });
 
-export const isAuthenticated = cache(async () =>
-	auth.api.getSession({
+export const isAuthenticated = cache(async () => {
+	const session = await auth.api.getSession({
 		headers: await headers(),
-	}),
-);
+	});
+	return session?.user;
+});

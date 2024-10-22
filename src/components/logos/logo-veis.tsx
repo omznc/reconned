@@ -1,5 +1,8 @@
-export const LogoVeis = (props) => (
+import type { SVGProps } from "react";
+
+export const LogoVeis = (props: SVGProps<SVGSVGElement>) => (
 	<svg xmlns="http://www.w3.org/2000/svg" width={3870} viewBox="0 0 3870 2092" height={2092} fill="none" {...props}>
+		<title>Logo</title>
 		<path
 			fill="#000"
 			d="m470.692 38.98 134.912 1082.31h11.992L1112.27 38.98h470.7L821.463 1574H251.835L0 38.98h470.692ZM978.438 1573.99l68.442-309.38L1645.92 38.98h676.81l-56.97 335.785h-689.55l-41.97 263.832h632.59l-56.96 335.785h-632.59l-41.97 263.828h686.55L2064.9 1574l-1086.462-.01ZM2797.67 38.98 2542.84 1574h-416.73L2380.95 38.98h416.72Z"
