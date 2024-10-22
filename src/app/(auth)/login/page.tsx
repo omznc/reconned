@@ -54,7 +54,7 @@ export default function LoginPage() {
 				>
 					<div className="grid gap-2">
 						<Label htmlFor="email">Email</Label>
-						<Input id="email" type="email" placeholder="m@example.com" required={true} />
+						<Input id="email" type="email" name="email" placeholder="m@example.com" required={true} />
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
@@ -63,7 +63,7 @@ export default function LoginPage() {
 								Zaboravili ste lozinku?
 							</Link>
 						</div>
-						<Input id="password" type="password" required={true} />
+						<Input id="password" type="password" name="password" required={true} />
 					</div>
 					{isError && <p className="text-red-500 -mb-2">Podaci nisu ispravni</p>}
 					<Button disabled={isLoading} type="submit" className="w-full">
