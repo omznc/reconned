@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
+import { Button } from "@components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
@@ -8,8 +9,26 @@ export default function Home() {
 
 	return (
 		<div className="flex flex-col max-w-lg">
-			{session ? <button type="button">Logout</button> : <Link href="/login">Sign In</Link>}
-			{session ? `Hello ${session.user.name}` : "Please sign in"}
+			{session ? (
+				<>
+					<Button
+						type="button"
+						onClick={() => {
+							authClient.signOut();
+						}}
+					>
+						Logout
+					</Button>
+					Hello {session.user.name}
+				</>
+			) : (
+				<>
+					<Button type="button">
+						<Link href="/login">Sign In</Link>
+					</Button>
+					Please sign in
+				</>
+			)}
 		</div>
 	);
 }
