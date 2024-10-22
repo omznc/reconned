@@ -1,7 +1,10 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, House } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const variants = {
@@ -18,7 +21,15 @@ export default function RootLayout({
 	const path = usePathname();
 
 	return (
-		<Card className="w-full border-0 md:border min-h-[500px] shadow-none md:max-w-sm overflow-hidden h-fit">
+		<Card className="w-full border-0 md:border min-h-[550px] shadow-none md:max-w-sm overflow-hidden h-fit">
+			<div className="w-full p-6">
+				<Button variant={"outline"} className="w-full" asChild={true}>
+					<Link href="/" className="flex items-center gap-2">
+						<House className="w-4 h-4" />
+						Početna
+					</Link>
+				</Button>
+			</div>
 			<AnimatePresence initial={false} mode="wait">
 				<motion.div
 					key={path}
