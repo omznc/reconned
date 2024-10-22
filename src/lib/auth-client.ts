@@ -5,5 +5,9 @@ export const authClient = createAuthClient({
 });
 
 export function useIsAuthenticated() {
-	return authClient.useSession();
+	const session = authClient.useSession();
+	return {
+		user: session?.data?.user,
+		loading: session.isPending,
+	};
 }

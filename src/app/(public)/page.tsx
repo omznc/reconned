@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { isAuthenticated } from "@/lib/auth";
-import { useIsAuthenticated } from "@auth/client";
 import { format } from "date-fns";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -130,13 +129,13 @@ const events = [
 ];
 
 export default async function Home() {
-	const { data: session } = await isAuthenticated();
+	const user = await isAuthenticated();
 
 	return (
 		<div className="flex flex-col size-full gap-8">
 			<div className="flex flex-col gap-3">
 				<Link href={"/events"} className="text-2xl group flex gap-1 items-center font-semibold">
-					Nadolazeći događaji{" "}
+					Nadolazeći događaji
 					<ArrowRight className="opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all translate-x-10" />
 				</Link>
 				<Carousel>
@@ -161,7 +160,7 @@ export default async function Home() {
 										asChild
 										className="absolute cursor-pointer md:translate-y-16 md:group-hover:translate-y-0 transition-all bottom-2 left-6 right-2"
 									>
-										{session?.user ? (
+										{user ? (
 											<Link href={`/events/${event.id}?register=true`}>Prijavi se na susret</Link>
 										) : (
 											<Link href="/login">Uloguj se</Link>

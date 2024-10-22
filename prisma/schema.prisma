@@ -14,9 +14,20 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   emailVerified Boolean
+  publicProfile Boolean   @default(false)
   image         String?
   Session       Session[]
   Account       Account[]
+
+  // Other, optional user information
+  bio           String?
+  location      String?
+  website       String?
+  phone         String?
+
+  // Airsoft
+  callsign      String?
+  gear          Json[] // { name: string, energy: string, fps: string }
 
   @@map("user")
 }
