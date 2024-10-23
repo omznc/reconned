@@ -1,0 +1,212 @@
+"use client";
+
+import {
+	BookUser,
+	Building2,
+	ChevronsUpDown,
+	GalleryVerticalEnd,
+	House,
+	Plus,
+	Settings2,
+	Square,
+} from "lucide-react";
+
+import Image from "next/image";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarRail,
+} from "@/components/ui/sidebar";
+import { NavMain } from "@/app/(dashboard)/dashboard/_components/sidebar/nav-main";
+import { NavApp } from "@/app/(dashboard)/dashboard/_components/sidebar/nav-app";
+import { NavUser } from "@/app/(dashboard)/dashboard/_components/sidebar/nav-user";
+import type { Club, ClubMembership } from "@prisma/client";
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuLabel,
+	DropdownMenuItem,
+	DropdownMenuShortcut,
+	DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { useQueryState } from "nuqs";
+import { useMemo } from "react";
+import { ROLE_TRANSLATIONS } from "@/lib/utils";
+
+// This is sample data.
+const data = {
+	team: {
+		name: "Tvrđava",
+		logo: GalleryVerticalEnd,
+		city: "Zenica",
+	},
+	navMain: [
+		{
+			title: "Početna",
+			url: "/",
+			icon: House,
+		},
+		{
+			title: "Klub",
+			url: "#",
+			icon: Building2,
+			isActive: true,
+			items: [
+				{
+					title: "Pregled",
+					url: "/dashboard/club",
+				},
+				{
+					title: "Informacije",
+					url: "/dashboard/club/information",
+				},
+				{
+					title: "Statistike",
+					url: "/dashboard/club/stats",
+				},
+			],
+		},
+		{
+			title: "Članovi",
+			url: "#",
+			icon: BookUser,
+			items: [
+				{
+					title: "Pregled",
+					url: "/dashboard/members",
+				},
+				{
+					title: "Pozivnice",
+					url: "/dashboard/members/invitations",
+				},
+				{
+					title: "Statistike",
+					url: "/dashboard/members/stats",
+				},
+			],
+		},
+	],
+	navApp: [
+		{
+			title: "Postavke",
+			url: "#",
+			icon: Settings2,
+			items: [
+				{
+					title: "Općenito",
+					url: "/dashboard/settings",
+				},
+				{
+					title: "Personalizacija",
+					url: "/dashboard/settings/personalization",
+				},
+			],
+		},
+	],
+};
+
+interface AppSidebarProps {
+	clubs: (Club & {
+		members: ClubMembership[];
+	})[];
+}
+
+export function AppSidebar(props: AppSidebarProps) {
+	const [activeClubId, setActiveClubId] = useQueryState("club", {
+		defaultValue: props.clubs[0].id,
+		clearOnDefault: false,
+		shallow: false,
+	});
+
+	const activeClub = useMemo(
+		() => props.clubs.find((club) => club.id === activeClubId),
+		[props.clubs, activeClubId],
+	);
+
+	return (
+		<Sidebar collapsible="icon">
+			<SidebarHeader>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<SidebarMenuButton
+									size="lg"
+									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+								>
+									<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+										{activeClub?.logo ? (
+											<Image src={activeClub.logo} alt={activeClub.name} />
+										) : (
+											<Square className="size-4" />
+										)}
+									</div>
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate font-semibold">
+											{activeClub?.name}
+										</span>
+										<span className="truncate text-xs">
+											{activeClub?.members[0]?.role &&
+												ROLE_TRANSLATIONS[activeClub?.members[0]?.role]}
+										</span>
+									</div>
+									<ChevronsUpDown className="ml-auto" />
+								</SidebarMenuButton>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+								align="start"
+								side="bottom"
+								sideOffset={4}
+							>
+								<DropdownMenuLabel className="text-xs text-muted-foreground">
+									Teams
+								</DropdownMenuLabel>
+								{props.clubs.map((club, index) => (
+									<DropdownMenuItem
+										key={club.name}
+										onClick={() => setActiveClubId(club.id)}
+										data-active={club.id === activeClubId}
+										className="gap-2 p-2 data-[active=true]:bg-accent"
+									>
+										<div className="flex size-6 items-center justify-center rounded-sm border">
+											{club.logo ? (
+												<Image src={club.logo} alt={club.name} />
+											) : (
+												<Square className="size-4" />
+											)}
+										</div>
+										{club.name}
+									</DropdownMenuItem>
+								))}
+								<DropdownMenuSeparator />
+								<DropdownMenuItem className="gap-2 p-2">
+									<div className="flex size-6 items-center justify-center rounded-md border bg-background">
+										<Plus className="size-4" />
+									</div>
+									<div className="font-medium text-muted-foreground">
+										Add team
+									</div>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarHeader>
+			<SidebarContent>
+				<NavMain items={data.navMain} />
+				<NavApp items={data.navApp} />
+			</SidebarContent>
+			<SidebarFooter>
+				<NavUser />
+			</SidebarFooter>
+			<SidebarRail />
+		</Sidebar>
+	);
+}

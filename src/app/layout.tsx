@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -29,7 +31,11 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex flex-col items-center justify-center`}
 			>
-				<AlertDialogProvider>{children}</AlertDialogProvider>
+				<NuqsAdapter>
+					<TooltipProvider>
+						<AlertDialogProvider>{children}</AlertDialogProvider>
+					</TooltipProvider>
+				</NuqsAdapter>
 			</body>
 		</html>
 	);

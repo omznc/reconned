@@ -1,6 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
@@ -17,7 +22,10 @@ export default function LoginPage() {
 		<>
 			<CardHeader>
 				<CardTitle className="text-2xl">Prijava</CardTitle>
-				<CardDescription>Upisite svoj email i lozinku kako bi ste se pridružili svijetu airsofta.</CardDescription>
+				<CardDescription>
+					Upisite svoj email i lozinku kako bi ste se pridružili svijetu
+					airsofta.
+				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -54,7 +62,13 @@ export default function LoginPage() {
 				>
 					<div className="grid gap-2">
 						<Label htmlFor="email">Email</Label>
-						<Input id="email" type="email" name="email" placeholder="m@example.com" required={true} />
+						<Input
+							id="email"
+							type="email"
+							name="email"
+							placeholder="m@example.com"
+							required={true}
+						/>
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
@@ -63,11 +77,22 @@ export default function LoginPage() {
 								Zaboravili ste lozinku?
 							</Link>
 						</div>
-						<Input id="password" type="password" name="password" required={true} />
+						<Input
+							id="password"
+							type="password"
+							name="password"
+							required={true}
+						/>
 					</div>
-					{isError && <p className="text-red-500 -mb-2">Podaci nisu ispravni</p>}
+					{isError && (
+						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
+					)}
 					<Button disabled={isLoading} type="submit" className="w-full">
-						{isLoading ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : "Prijavi se"}
+						{isLoading ? (
+							<Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+						) : (
+							"Prijavi se"
+						)}
 					</Button>
 				</form>
 				<div className="mt-4 text-center text-sm">
