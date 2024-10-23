@@ -1,11 +1,10 @@
-"use server"; // don't forget to add this!
+"use server";
 
 import { z } from "zod";
 import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-// This schema is used to validate input from client.
 export const schema = z.object({
 	asClub: z.boolean(),
 });
