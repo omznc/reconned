@@ -115,7 +115,7 @@ export function AlertDialogProvider({
         actionButtonVariant: "default",
     });
 
-    const resolveRef = useRef<(tf: any) => void>();
+    const resolveRef = useRef<(tf: any) => void>(null);
 
     function close() {
         dispatch({ type: "close" });

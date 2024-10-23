@@ -9,7 +9,7 @@ export default async function Page(props: PageProps) {
 	const user = await prisma.user.findUnique({
 		where: {
 			id: (await props.params).id,
-			publicProfile: true,
+			isPublic: true,
 		},
 	});
 	if (!user) {
