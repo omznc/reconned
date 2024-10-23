@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import type * as z from "zod";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -188,7 +188,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								</FormDescription>
 							</div>
 							<FormControl>
-								<Switch checked={true} onCheckedChange={field.onChange} />
+								<Switch
+									checked={field.value}
+									onCheckedChange={field.onChange}
+								/>
 							</FormControl>
 						</FormItem>
 					)}

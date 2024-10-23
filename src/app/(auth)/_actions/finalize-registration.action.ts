@@ -5,7 +5,7 @@ import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-export const schema = z.object({
+const schema = z.object({
 	asClub: z.boolean(),
 });
 
