@@ -1,7 +1,14 @@
 import type { SVGProps } from "react";
 
 export const LogoTvrdjava = (props: SVGProps<SVGSVGElement>) => (
-	<svg xmlns="http://www.w3.org/2000/svg" width={960} height={960} fill="none" viewBox="0 0 960 960" {...props}>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width={960}
+		height={960}
+		fill="none"
+		viewBox="0 0 960 960"
+		{...props}
+	>
 		<title>Logo</title>
 
 		<path
@@ -22,7 +29,12 @@ export const LogoTvrdjava = (props: SVGProps<SVGSVGElement>) => (
 			d="M600 112a158.643 158.643 0 0 1-36-3.5c-67.875-3.787-135.542-2.62-203 3.5l5-2a392.503 392.503 0 0 0 34-3.5 2439.198 2439.198 0 0 0 73.5-3.5c27.518.746 55.018 1.912 82.5 3.5l44 5.5Z"
 			clipRule="evenodd"
 		/>
-		<path fill="#41423B" fillRule="evenodd" d="m366 110-5 2h-9c4.464-1.144 9.13-1.81 14-2Z" clipRule="evenodd" />
+		<path
+			fill="#41423B"
+			fillRule="evenodd"
+			d="m366 110-5 2h-9c4.464-1.144 9.13-1.81 14-2Z"
+			clipRule="evenodd"
+		/>
 		<path
 			fill="#5F6847"
 			fillRule="evenodd"
@@ -485,7 +497,12 @@ export const LogoTvrdjava = (props: SVGProps<SVGSVGElement>) => (
 			d="M276 338c.838.342 1.172 1.008 1 2-1.581 1.642-2.247 3.642-2 6 .663 55.677-.004 111.01-2 166-.167-57.001 0-114.001.5-171 .377-1.442 1.21-2.442 2.5-3Z"
 			clipRule="evenodd"
 		/>
-		<path fill="#45463B" fillRule="evenodd" d="M488 416h-16c5.333-2.667 10.667-2.667 16 0Z" clipRule="evenodd" />
+		<path
+			fill="#45463B"
+			fillRule="evenodd"
+			d="M488 416h-16c5.333-2.667 10.667-2.667 16 0Z"
+			clipRule="evenodd"
+		/>
 		<path
 			fill="#5F6B3B"
 			fillRule="evenodd"

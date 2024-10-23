@@ -1,7 +1,14 @@
 import type { SVGProps } from "react";
 
 export const LogoVeis = (props: SVGProps<SVGSVGElement>) => (
-	<svg xmlns="http://www.w3.org/2000/svg" width={3870} viewBox="0 0 3870 2092" height={2092} fill="none" {...props}>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width={3870}
+		viewBox="0 0 3870 2092"
+		height={2092}
+		fill="none"
+		{...props}
+	>
 		<title>Logo</title>
 		<path
 			fill="#000"

@@ -129,7 +129,10 @@ export default function Home() {
 	return (
 		<div className="flex flex-col size-full gap-8">
 			<div className="flex flex-col gap-3">
-				<Link href={"/events"} className="text-2xl group flex gap-1 items-center font-semibold">
+				<Link
+					href={"/events"}
+					className="text-2xl group flex gap-1 items-center font-semibold"
+				>
 					Nadolazeći događaji
 					<ArrowRight className="opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all translate-x-10" />
 				</Link>
@@ -137,7 +140,8 @@ export default function Home() {
 					<EventsCarousel events={events} />
 				) : (
 					<span>
-						Ne postoji nijedan susret u budućnosti. Da li ste klub? Ovo je savršeno vrijeme da organizirate susret!
+						Ne postoji nijedan susret u budućnosti. Da li ste klub? Ovo je
+						savršeno vrijeme da organizirate susret!
 					</span>
 				)}
 			</div>

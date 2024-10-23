@@ -7,30 +7,119 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  MANAGER
+  CLUB_OWNER
+  ADMIN
+}
+
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  emailVerified Boolean
-  publicProfile Boolean   @default(false)
-  image         String?
-  Session       Session[]
-  Account       Account[]
+  id             String              @id @default(cuid())
+  email          String              @unique
+  name           String
+  emailVerified  Boolean
+  isPublic       Boolean             @default(false)
+  eventsSignedUp EventRegistration[]
+  invitesSent    Invite[]
+  ClubMembership ClubMembership[]
+
+  image   String?
+  Session Session[]
+  Account Account[]
 
   // Other, optional user information
-  bio           String?
-  location      String?
-  website       String?
-  phone         String?
+  bio      String?
+  location String?
+  website  String?
+  phone    String?
+  callsign String?
+  gear     Json[] // { name: string, energy: string, fps: string }
 
-  // Airsoft
-  callsign      String?
-  gear          Json[] // { name: string, energy: string, fps: string }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("user")
 }
+
+model Club {
+  id String @id @default(cuid())
+
+  name        String
+  location    String?
+  description String?
+  dateFounded DateTime?
+
+  isAllied  Boolean @default(false)
+  isPrivate Boolean @default(false)
+
+  logo         String?
+  contactPhone String?
+  contactEmail String?
+
+  events  Event[]
+  members ClubMembership[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ClubMembership {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  club   Club   @relation(fields: [clubId], references: [id])
+  clubId String
+  role   Role   @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id            String              @id @default(cuid())
+  name          String
+  description   String
+  club          Club                @relation(fields: [clubId], references: [id])
+  clubId        String
+  isPrivate     Boolean             @default(false) // Private or public event
+  date          DateTime
+  registrations EventRegistration[]
+  Invite        Invite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EventRegistration {
+  id       String  @id @default(cuid())
+  event    Event   @relation(fields: [eventId], references: [id])
+  eventId  String
+  user     User?   @relation(fields: [userId], references: [id])
+  userId   String? // Can be null for non-account users
+  invite   Invite? @relation(fields: [inviteId], references: [id])
+  inviteId String? // Event can be registered by invite link
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Invite Model (Manual Event Registration)
+model Invite {
+  id                String              @id @default(cuid())
+  event             Event               @relation(fields: [eventId], references: [id])
+  eventId           String
+  email             String // Email of the person receiving the invite
+  secureLink        String              @unique // Generated unique link for registration
+  inviter           User                @relation(fields: [inviterId], references: [id])
+  inviterId         String
+  EventRegistration EventRegistration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Auth stuff below
 
 model Session {
   id        String   @id

@@ -15,7 +15,9 @@ export default function RootLayout({
 		<>
 			<div className="w-full min-h-screen flex flex-col items-center">
 				<Header />
-				<div className="flex-grow p-2 size-full flex flex-col items-center max-w-[1200px]">{children}</div>
+				<div className="flex-grow p-2 size-full flex flex-col items-center max-w-[1200px]">
+					{children}
+				</div>
 			</div>
 			<DotPattern className="-z-10 opacity-30" />
 			<Footer />

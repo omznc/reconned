@@ -7,7 +7,10 @@ const prismaClientSingleton = () => {
 	return new PrismaClient().$extends({
 		model: {
 			$allModels: {
-				async exists<T>(this: T, where: Prisma.Args<T, "findFirst">["where"]): Promise<boolean> {
+				async exists<T>(
+					this: T,
+					where: Prisma.Args<T, "findFirst">["where"],
+				): Promise<boolean> {
 					const context = Prisma.getExtensionContext(this);
 
 					// biome-ignore lint/suspicious/noExplicitAny: Prisma stuff
@@ -18,7 +21,11 @@ const prismaClientSingleton = () => {
 					this: Model,
 					args: Prisma.Exact<Args, Prisma.Args<Model, "findMany">>,
 				): Promise<
-					[Prisma.Result<Model, Args, "findMany">, number, Args extends { take: number } ? number : undefined]
+					[
+						Prisma.Result<Model, Args, "findMany">,
+						number,
+						Args extends { take: number } ? number : undefined,
+					]
 				> {
 					return prisma.$transaction([
 						// biome-ignore lint/suspicious/noExplicitAny: <explanation>

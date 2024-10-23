@@ -9,10 +9,16 @@ export function Footer() {
 			<div className="flex flex-col items-center gap-4">
 				<div className="flex flex-col items-start gap-2">
 					Sva prava zadržana
-					<Link href="https://omarzunic.com?utm_source=airsoftbih" className="flex items-center gap-1 font-semibold">
+					<Link
+						href="https://omarzunic.com?utm_source=airsoftbih"
+						className="flex items-center gap-1 font-semibold"
+					>
 						Omar Žunić <ArrowUpRight size={16} />
 					</Link>
-					<Link href="https://safetpojskic.com?utm_source=airsoftbih" className="flex items-center gap-1 font-semibold">
+					<Link
+						href="https://safetpojskic.com?utm_source=airsoftbih"
+						className="flex items-center gap-1 font-semibold"
+					>
 						Safet Pojskić <ArrowUpRight size={16} />
 					</Link>
 				</div>
