@@ -22,9 +22,9 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavMain } from "@/app/(dashboard)/dashboard/_components/sidebar/nav-main";
-import { NavApp } from "@/app/(dashboard)/dashboard/_components/sidebar/nav-app";
-import { NavUser } from "@/app/(dashboard)/dashboard/_components/sidebar/nav-user";
+import { NavMain } from "@/app//dashboard/_components/sidebar/nav-main";
+import { NavApp } from "@/app//dashboard/_components/sidebar/nav-app";
+import { NavUser } from "@/app//dashboard/_components/sidebar/nav-user";
 import type { Club, ClubMembership } from "@prisma/client";
 import {
 	DropdownMenu,

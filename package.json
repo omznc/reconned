@@ -41,6 +41,7 @@
 		"lucide-react": "^0.453.0",
 		"next": "15.0.1",
 		"next-safe-action": "^7.9.7",
+		"next-themes": "^0.3.0",
 		"nuqs": "^2.0.3",
 		"prisma": "^5.21.1",
 		"react": "19.0.0-rc-69d4b800-20241021",

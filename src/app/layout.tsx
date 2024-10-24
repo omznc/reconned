@@ -4,6 +4,7 @@ import "./globals.css";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -31,6 +32,7 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex flex-col items-center justify-center`}
 			>
+				<Toaster />
 				<NuqsAdapter>
 					<TooltipProvider>
 						<AlertDialogProvider>{children}</AlertDialogProvider>

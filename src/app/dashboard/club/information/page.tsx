@@ -1,4 +1,4 @@
-import { ClubInfoForm } from "@/app/(dashboard)/dashboard/club/information/_components/forms/club-info-form";
+import { ClubInfoForm } from "@/app//dashboard/club/information/_components/forms/club-info-form";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
@@ -19,13 +20,25 @@ interface PageProps {
 
 export default async function Page(props: PageProps) {
 	const searchParams = await props.searchParams;
+	const user = await isAuthenticated();
+	if (!user) {
+		return notFound();
+	}
 
 	const clubs = await prisma.club.findMany({
-		...(searchParams.club && {
-			where: {
-				id: searchParams.club,
+		where: {
+			members: {
+				some: {
+					userId: user.id,
+					role: {
+						in: ["CLUB_OWNER", "MANAGER"],
+					},
+				},
 			},
-		}),
+			...(searchParams.club && {
+				id: searchParams.club,
+			}),
+		},
 	});
 
 	if (clubs.length === 0) {

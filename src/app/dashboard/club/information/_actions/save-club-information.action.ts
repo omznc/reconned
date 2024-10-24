@@ -1,6 +1,6 @@
 "use server";
 
-import { saveClubInformationSchema } from "@/app/(dashboard)/dashboard/club/information/_actions/save-club-information.schema";
+import { saveClubInformationSchema } from "@/app//dashboard/club/information/_actions/save-club-information.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";

@@ -1,4 +1,5 @@
 "use client";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Button } from "@/components/ui/button";
 import {
 	CardContent,
@@ -87,13 +88,9 @@ export default function LoginPage() {
 					{isError && (
 						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
 					)}
-					<Button disabled={isLoading} type="submit" className="w-full">
-						{isLoading ? (
-							<Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-						) : (
-							"Prijavi se"
-						)}
-					</Button>
+					<LoaderSubmitButton isLoading={isLoading} className="w-full">
+						Prijavi se
+					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Nemate račun? "}
