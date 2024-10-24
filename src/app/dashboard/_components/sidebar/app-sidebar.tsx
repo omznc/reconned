@@ -3,10 +3,16 @@
 import {
 	BookUser,
 	Building2,
+	CalendarDays,
+	CalendarFold,
+	ChartBar,
 	ChevronsUpDown,
 	GalleryVerticalEnd,
 	House,
+	MailPlus,
+	Pencil,
 	Plus,
+	Search,
 	Settings2,
 	Square,
 } from "lucide-react";
@@ -61,14 +67,17 @@ const data = {
 				{
 					title: "Pregled",
 					url: "/dashboard/club",
+					icon: Search,
 				},
 				{
 					title: "Informacije",
 					url: "/dashboard/club/information",
+					icon: Pencil,
 				},
 				{
 					title: "Statistike",
 					url: "/dashboard/club/stats",
+					icon: ChartBar,
 				},
 			],
 		},
@@ -80,14 +89,39 @@ const data = {
 				{
 					title: "Pregled",
 					url: "/dashboard/members",
+					icon: Search,
 				},
 				{
 					title: "Pozivnice",
 					url: "/dashboard/members/invitations",
+					icon: MailPlus,
 				},
 				{
 					title: "Statistike",
 					url: "/dashboard/members/stats",
+					icon: ChartBar,
+				},
+			],
+		},
+		{
+			title: "Događaji",
+			url: "#",
+			icon: CalendarFold,
+			items: [
+				{
+					title: "Novi događaj",
+					url: "/dashboard/events/create",
+					icon: Plus,
+				},
+				{
+					title: "Kalendar",
+					url: "/dashboard/events/calendar",
+					icon: CalendarDays,
+				},
+				{
+					title: "Statistike",
+					url: "/dashboard/events/stats",
+					icon: ChartBar,
 				},
 			],
 		},
