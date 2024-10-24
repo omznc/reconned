@@ -75,7 +75,7 @@ export default async function Page(props: PageProps) {
 			<div className="space-y-4 max-w-3xl">
 				<div className="flex gap-4">
 					<Image
-						src={club.logo}
+						src={`${club.logo}?v=${Date.now()}`} // This will revalidate the browser cache
 						alt={club.name}
 						width={150}
 						height={150}
@@ -85,44 +85,44 @@ export default async function Page(props: PageProps) {
 					<div className="flex select-none flex-col gap-1">
 						<h1 className="text-2xl font-semibold">{club.name}</h1>
 						<p className="text-accent-foreground/80">{club.description}</p>
-						<div className="flex flex-wrap gap-1 max-w-full md:max-w-[400px]">
-							<Badge variant="outline" className="flex items-center gap-1">
-								<User className="w-4 h-4" />
-								{club._count?.members}
-							</Badge>
-							<Badge variant="outline" className="flex items-center gap-1">
-								{club.isPrivate ? (
-									<>
-										<EyeOff className="w-4 h-4" />
-										Privatni klub
-									</>
-								) : (
-									<>
-										<Eye className="w-4 h-4" />
-										Javni klub
-									</>
-								)}
-							</Badge>
-							{club.location && (
-								<Badge variant="outline" className="flex items-center gap-1">
-									<Pin className="w-4 h-4" />
-									{club.location}
-								</Badge>
-							)}
-							{club.contactEmail && (
-								<Badge variant="outline" className="flex items-center gap-1">
-									<AtSign className="w-4 h-4" />
-									{club.contactEmail}
-								</Badge>
-							)}
-							{club.contactPhone && (
-								<Badge variant="outline" className="flex items-center gap-1">
-									<Phone className="w-4 h-4" />
-									{club.contactPhone}
-								</Badge>
-							)}
-						</div>
 					</div>
+				</div>
+				<div className="flex flex-wrap gap-1">
+					<Badge variant="outline" className="flex items-center gap-1">
+						<User className="w-4 h-4" />
+						{club._count?.members}
+					</Badge>
+					<Badge variant="outline" className="flex items-center gap-1">
+						{club.isPrivate ? (
+							<>
+								<EyeOff className="w-4 h-4" />
+								Privatni klub
+							</>
+						) : (
+							<>
+								<Eye className="w-4 h-4" />
+								Javni klub
+							</>
+						)}
+					</Badge>
+					{club.location && (
+						<Badge variant="outline" className="flex items-center gap-1">
+							<Pin className="w-4 h-4" />
+							{club.location}
+						</Badge>
+					)}
+					{club.contactEmail && (
+						<Badge variant="outline" className="flex items-center gap-1">
+							<AtSign className="w-4 h-4" />
+							{club.contactEmail}
+						</Badge>
+					)}
+					{club.contactPhone && (
+						<Badge variant="outline" className="flex items-center gap-1">
+							<Phone className="w-4 h-4" />
+							{club.contactPhone}
+						</Badge>
+					)}
 				</div>
 			</div>
 		</>
