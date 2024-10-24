@@ -1,10 +1,14 @@
 "use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type * as z from "zod";
-import { cn } from "@/lib/utils";
+import { saveClubInformation } from "@/app/(dashboard)/dashboard/club/information/_actions/save-club-information.action";
+import { saveClubInformationSchema } from "@/app/(dashboard)/dashboard/club/information/_actions/save-club-information.schema";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+	FileInput,
+	FileUploader,
+	FileUploaderContent,
+	FileUploaderItem,
+} from "@/components/ui/file-upload";
 import {
 	Form,
 	FormControl,
@@ -15,27 +19,23 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { format } from "date-fns";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, Loader2Icon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { CloudUpload, Paperclip } from "lucide-react";
-import {
-	FileInput,
-	FileUploader,
-	FileUploaderContent,
-	FileUploaderItem,
-} from "@/components/ui/file-upload";
-import { PhoneInput } from "@/components/ui/phone-input";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
-import { saveClubInformation } from "@/app/(dashboard)/dashboard/club/information/_actions/save-club-information.action";
-import { saveClubInformationSchema } from "@/app/(dashboard)/dashboard/club/information/_actions/save-club-information.schema";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon, Loader2Icon } from "lucide-react";
+import { CloudUpload, Paperclip } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import type * as z from "zod";
 
 interface ClubInfoFormProps {
 	club: Club;
@@ -66,7 +66,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		setIsLoading(true);
 		try {
 			await saveClubInformation(values);
-		} catch (error) {
+		} catch (_error) {
 			setIsError(true);
 		}
 		setIsLoading(false);
@@ -251,7 +251,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										{files &&
 											files.length > 0 &&
 											files.map((file, i) => (
-												<FileUploaderItem key={i} index={i}>
+												<FileUploaderItem key={file.name} index={i}>
 													<Paperclip className="h-4 w-4 stroke-current" />
 													<span>{file.name}</span>
 												</FileUploaderItem>
