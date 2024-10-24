@@ -53,7 +53,7 @@ model Club {
   isAllied  Boolean @default(false)
   isPrivate Boolean @default(false)
 
-  logo         String?
+  logo         String  @default("https://f003.backblazeb2.com/file/airsoftba/club/default-club-image.png")
   contactPhone String?
   contactEmail String?
 

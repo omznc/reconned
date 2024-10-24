@@ -1,5 +1,9 @@
 "use client";
-import { saveClubInformation } from "@/app/dashboard/club/information/_components/club-info.action";
+import {
+	deleteClubImage,
+	getClubImageUploadUrl,
+	saveClubInformation,
+} from "@/app/dashboard/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/dashboard/club/information/_components/club-info.schema";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -39,6 +43,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 
 interface ClubInfoFormProps {
 	club: Club;
@@ -49,13 +55,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
 
 	const dropZoneConfig = {
-		maxFiles: 5,
+		maxFiles: 1,
 		maxSize: 1024 * 1024 * 4,
-		multiple: true,
 	};
 	const form = useForm<z.infer<typeof clubInfoSchema>>({
 		resolver: zodResolver(clubInfoSchema),
 		defaultValues: {
+			id: props.club.id,
 			name: props.club.name || "",
 			location: props.club.location || "",
 			description: props.club.description || "",
@@ -72,7 +78,33 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
+			if (files && files.length > 0) {
+				const resp = await getClubImageUploadUrl({
+					file: files[0],
+					id: props.club.id,
+				});
+
+				if (!resp?.data?.url) {
+					toast.error("Došlo je do greške prilikom uploada slike");
+					return;
+				}
+
+				await fetch(resp.data?.url, {
+					method: "PUT",
+					body: files[0],
+					headers: {
+						"Content-Type": files[0].type,
+						"Content-Length": files[0].size.toString(),
+					},
+				});
+
+				values.logo = resp.data.url.split("?")[0];
+			}
+
 			await saveClubInformation(values);
+
+			setFiles([]);
+
 			toast.success("Podataci o klubu su sačuvani");
 		} catch (error) {
 			toast.error("Došlo je do greške prilikom spašavanja podataka");
@@ -95,7 +127,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Ime kluba ({form.watch("name")?.length}/
+								Ime kluba* ({form.watch("name")?.length}/
 								{clubInfoSchema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -112,7 +144,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="location"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Lokacija</FormLabel>
+							<FormLabel>Lokacija*</FormLabel>
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
@@ -128,7 +160,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Opis kluba ({form.watch("description")?.length}/
+								Opis kluba* ({form.watch("description")?.length}/
 								{clubInfoSchema.shape.description.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -151,7 +183,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="dateFounded"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>Datum osnivanja</FormLabel>
+							<FormLabel>Datum osnivanja*</FormLabel>
 							<Popover>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -172,11 +204,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									</FormControl>
 								</PopoverTrigger>
 								<PopoverContent className="w-auto p-0" align="start">
-									<Calendar
-										mode="single"
-										selected={field.value}
-										onSelect={field.onChange}
-										initialFocus
+									<DateTimePicker
+										value={field.value}
+										onChange={field.onChange}
+										granularity="day"
 									/>
 								</PopoverContent>
 							</Popover>
@@ -192,7 +223,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>U savezu ASK FBIH</FormLabel>
+								<FormLabel>U savezu ASK FBIH*</FormLabel>
 								<FormDescription>
 									Ako ste dio saveza airsoft klubova u FBIH, odaberite ovu
 									opciju. Provjeriti ćemo vaš status.
@@ -214,7 +245,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Javni prikaz</FormLabel>
+								<FormLabel>Javni prikaz*</FormLabel>
 								<FormDescription>
 									Dozvolite javno prikazivanje vašeg kluba na ovom sajtu.
 									Preporučujemo da ovo ostavite uključeno.
@@ -243,28 +274,38 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									dropzoneOptions={dropZoneConfig}
 									className="relative bg-background p-0.5"
 								>
-									<FileInput
-										id="fileInput"
-										className="outline-dashed outline-1 outline-slate-500"
-									>
-										<div className="flex items-center justify-center flex-col p-8 w-full ">
-											<CloudUpload className="text-gray-500 w-10 h-10" />
-											<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-												<span className="font-semibold">Click to upload</span>
-												&nbsp; or drag and drop
-											</p>
-											<p className="text-xs text-gray-500 dark:text-gray-400">
-												SVG, PNG, JPG or GIF
-											</p>
-										</div>
-									</FileInput>
+									{(!files || files.length === 0) && (
+										<FileInput
+											key={`file-input-${files?.length}-${files?.[0]?.name}`}
+											id="fileInput"
+											className="outline-dashed outline-1 outline-slate-500"
+										>
+											<div className="flex items-center justify-center flex-col p-8 w-full ">
+												<CloudUpload className="text-gray-500 w-10 h-10" />
+												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+													<span className="font-semibold">Click to upload</span>
+													&nbsp; or drag and drop
+												</p>
+												<p className="text-xs text-gray-500 dark:text-gray-400">
+													SVG, PNG, JPG or GIF
+												</p>
+											</div>
+										</FileInput>
+									)}
 									<FileUploaderContent>
 										{files &&
 											files.length > 0 &&
 											files.map((file, i) => (
-												<FileUploaderItem key={file.name} index={i}>
-													<Paperclip className="h-4 w-4 stroke-current" />
-													<span>{file.name}</span>
+												<FileUploaderItem
+													className="p-2 size-fit -ml-1"
+													key={file.name}
+													index={i}
+												>
+													<img
+														src={URL.createObjectURL(file)}
+														alt={file.name}
+														className="h-[100px] mr-4 w-auto object-fit"
+													/>
 												</FileUploaderItem>
 											))}
 									</FileUploaderContent>
@@ -277,6 +318,20 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
+
+				{/* This is a bit broken, doesn't update in prisma (???) TODO: Fix */}
+				{/* {!props.club.logo.includes("default-club-image") && (
+					<Button
+						variant={"destructive"}
+						onClick={async () => {
+							await deleteClubImage({
+								id: props.club.id,
+							});
+						}}
+					>
+						Obriši trenutni logo
+					</Button>
+				)} */}
 
 				<div>
 					<h3 className="text-lg font-semibold">Kontakt</h3>
