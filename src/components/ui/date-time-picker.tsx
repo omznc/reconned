@@ -711,14 +711,18 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
                     locale={bs}
                     {...props}
                 />
-                <div className="border-t border-border p-3">
-                    <TimePicker
-                        onChange={onChange}
-                        date={value}
-                        hourCycle={hourCycle}
-                        granularity={granularity}
-                    />
-                </div>
+                {
+                    granularity !== 'day' && (
+                        <div className="border-t border-border p-3">
+                            <TimePicker
+                                onChange={onChange}
+                                date={value}
+                                hourCycle={hourCycle}
+                                granularity={granularity}
+                            />
+                        </div>
+                    )
+                }
             </>
         );
     },

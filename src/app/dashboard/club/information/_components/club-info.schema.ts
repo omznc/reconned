@@ -26,4 +26,25 @@ export const clubInfoSchema = z.object({
 	logo: z.string().optional(),
 	contactPhone: z.string().optional(),
 	contactEmail: z.string().optional(),
+	id: z.string(),
+});
+
+export const clubLogoFileSchema = z.object({
+	file: z.instanceof(File).refine((file) => {
+		if (!file.type.startsWith("image/")) {
+			throw new Error("Morate odabrati sliku");
+		}
+
+		// Only allow images up to 4MB
+		if (file.size > 1024 * 1024 * 4) {
+			throw new Error("Slika mora biti manja od 4MB");
+		}
+
+		return true;
+	}),
+	id: z.string(),
+});
+
+export const deleteClubImageSchema = z.object({
+	id: z.string(),
 });

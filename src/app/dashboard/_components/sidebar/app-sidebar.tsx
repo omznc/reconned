@@ -44,6 +44,7 @@ import {
 import { useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { ROLE_TRANSLATIONS } from "@/lib/utils";
+import { getTime } from "date-fns";
 
 // This is sample data.
 const data = {
@@ -174,9 +175,15 @@ export function AppSidebar(props: AppSidebarProps) {
 									size="lg"
 									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 								>
-									<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+									<div className="flex aspect-square size-8 items-center justify-center rounded-lg  text-sidebar-primary-foreground">
 										{activeClub?.logo ? (
-											<Image src={activeClub.logo} alt={activeClub.name} />
+											<Image
+												suppressHydrationWarning
+												width={32}
+												height={32}
+												src={`${activeClub.logo}?v=${Date.now()}`} // This will revalidate the browser cache
+												alt={activeClub.name}
+											/>
 										) : (
 											<Square className="size-4" />
 										)}
@@ -202,7 +209,7 @@ export function AppSidebar(props: AppSidebarProps) {
 								<DropdownMenuLabel className="text-xs text-muted-foreground">
 									Teams
 								</DropdownMenuLabel>
-								{props.clubs.map((club, index) => (
+								{props.clubs.map((club) => (
 									<DropdownMenuItem
 										key={club.name}
 										onClick={() => setActiveClubId(club.id)}
@@ -211,7 +218,13 @@ export function AppSidebar(props: AppSidebarProps) {
 									>
 										<div className="flex size-6 items-center justify-center rounded-sm border">
 											{club.logo ? (
-												<Image src={club.logo} alt={club.name} />
+												<Image
+													suppressHydrationWarning
+													width={32}
+													height={32}
+													src={`${club.logo}?v=${Date.now()}`} // This will revalidate the browser cache
+													alt={club.name}
+												/>
 											) : (
 												<Square className="size-4" />
 											)}
