@@ -1,6 +1,6 @@
 "use client";
-import { saveClubInformation } from "@/app/(dashboard)/dashboard/club/information/_actions/save-club-information.action";
-import { saveClubInformationSchema } from "@/app/(dashboard)/dashboard/club/information/_actions/save-club-information.schema";
+import { saveClubInformation } from "@/app//dashboard/club/information/_actions/save-club-information.action";
+import { saveClubInformationSchema } from "@/app//dashboard/club/information/_actions/save-club-information.schema";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,11 +31,14 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Loader2Icon } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { CloudUpload, Paperclip } from "lucide-react";
+
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import type * as z from "zod";
+import type { z } from "zod";
+import { toast } from "sonner";
 
 interface ClubInfoFormProps {
 	club: Club;
@@ -43,7 +46,6 @@ interface ClubInfoFormProps {
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
-	const [isError, setIsError] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
 
 	const dropZoneConfig = {
@@ -53,12 +55,17 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	};
 	const form = useForm<z.infer<typeof saveClubInformationSchema>>({
 		resolver: zodResolver(saveClubInformationSchema),
-		defaultValues: Object.fromEntries(
-			Object.entries(props.club).map(([key, value]) => [
-				key,
-				!value ? undefined : value,
-			]),
-		),
+		defaultValues: {
+			name: props.club.name || "",
+			location: props.club.location || "",
+			description: props.club.description || "",
+			dateFounded: props.club.dateFounded || new Date(),
+			isAllied: props.club.isAllied,
+			isPrivate: props.club.isPrivate,
+			logo: props.club.logo || undefined,
+			contactPhone: props.club.contactPhone || undefined,
+			contactEmail: props.club.contactEmail || undefined,
+		},
 		mode: "onBlur",
 	});
 
@@ -66,8 +73,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		setIsLoading(true);
 		try {
 			await saveClubInformation(values);
-		} catch (_error) {
-			setIsError(true);
+			toast.success("Podataci o klubu su sačuvani");
+		} catch (error) {
+			toast.error("Došlo je do greške prilikom spašavanja podataka");
 		}
 		setIsLoading(false);
 	}
@@ -230,7 +238,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									value={files}
 									onValueChange={setFiles}
 									dropzoneOptions={dropZoneConfig}
-									className="relative bg-background rounded-lg p-2"
+									className="relative bg-background p-0.5"
 								>
 									<FileInput
 										id="fileInput"
@@ -308,14 +316,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-				{isError && <p className="text-red-500 -mb-2">Podaci nisu ispravni</p>}
-				<Button type="submit">
-					{isLoading ? (
-						<Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-					) : (
-						"Spasi"
-					)}
-				</Button>
+				<LoaderSubmitButton isLoading={isLoading}>Spasi</LoaderSubmitButton>
 			</form>
 		</Form>
 	);

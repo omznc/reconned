@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/app/(dashboard)/dashboard/_components/sidebar/app-sidebar";
+import { AppSidebar } from "@/app//dashboard/_components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";

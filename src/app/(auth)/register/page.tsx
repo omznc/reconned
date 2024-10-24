@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import { p } from "framer-motion/client";
 import { finalizeRegistration } from "@/app/(auth)/_actions/finalize-registration.action";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -138,13 +139,9 @@ export default function RegisterPage() {
 							Podaci nisu ispravni ili korisnik već postoji
 						</p>
 					)}
-					<Button disabled={isLoading} type="submit" className="w-full">
-						{isLoading ? (
-							<Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-						) : (
-							"Registruj se"
-						)}
-					</Button>
+					<LoaderSubmitButton isLoading={isLoading} className="w-full">
+						Registruj se
+					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Imate račun? "}

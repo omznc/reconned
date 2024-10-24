@@ -360,8 +360,3 @@ export const FileInput = forwardRef<
 });
 
 FileInput.displayName = "FileInput";
-import { error } from "console";
-import { filter, code, div, button, span } from "framer-motion/client";
-import type { Trash2 } from "lucide-react";
-import type { type } from "os";
-import type { HTMLAttributes } from "react";
