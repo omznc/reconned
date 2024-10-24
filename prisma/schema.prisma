@@ -77,13 +77,42 @@ model ClubMembership {
 }
 
 model Event {
-  id            String              @id @default(cuid())
-  name          String
-  description   String
-  club          Club                @relation(fields: [clubId], references: [id])
-  clubId        String
-  isPrivate     Boolean             @default(false) // Private or public event
-  date          DateTime
+  id          String @id @default(cuid())
+  name        String
+  description String
+  club        Club   @relation(fields: [clubId], references: [id])
+  clubId      String
+
+  coverImage String?
+
+  dateStart DateTime
+  dateEnd   DateTime?
+
+  dateRegistrationsClose DateTime?
+  dateRegistrationsOpen  DateTime?
+
+  isPrivate        Boolean @default(false) // Private events are club-only events
+  allowFreelancers Boolean @default(false) // Allow people not in a club to register
+
+  location       String
+  googleMapsLink String?
+
+  costPerPerson Float @default(0)
+
+  // Event-specific features
+  hasBreakfast Boolean @default(false)
+  hasLunch     Boolean @default(false)
+  hasDinner    Boolean @default(false)
+  hasSnacks    Boolean @default(false)
+  hasDrinks    Boolean @default(false)
+  hasPrizes    Boolean @default(false)
+
+  // Event-specific rules
+  rules Json[] // { name: string, description: string }
+
+  // Event-specific gear requirements
+  gearRequirements Json[] // { name: string, description: string }
+
   registrations EventRegistration[]
   Invite        Invite[]
 

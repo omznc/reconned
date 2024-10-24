@@ -1,12 +1,12 @@
 "use server";
 
-import { saveClubInformationSchema } from "@/app//dashboard/club/information/_actions/save-club-information.schema";
+import { clubInfoSchema } from "@/app/dashboard/club/information/_components/club-info.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 
 export const saveClubInformation = safeActionClient
-	.schema(saveClubInformationSchema)
+	.schema(clubInfoSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const isManager = await prisma.clubMembership.findFirst({
 			where: {

@@ -1,4 +1,4 @@
-import { ClubInfoForm } from "@/app//dashboard/club/information/_components/forms/club-info-form";
+import { ClubInfoForm } from "@/app/dashboard/club/information/_components/club-info-form";
 import {
 	Breadcrumb,
 	BreadcrumbItem,

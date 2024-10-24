@@ -1,6 +1,6 @@
 "use client";
-import { saveClubInformation } from "@/app//dashboard/club/information/_actions/save-club-information.action";
-import { saveClubInformationSchema } from "@/app//dashboard/club/information/_actions/save-club-information.schema";
+import { saveClubInformation } from "@/app/dashboard/club/information/_components/club-info.action";
+import { clubInfoSchema } from "@/app/dashboard/club/information/_components/club-info.schema";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -53,8 +53,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		maxSize: 1024 * 1024 * 4,
 		multiple: true,
 	};
-	const form = useForm<z.infer<typeof saveClubInformationSchema>>({
-		resolver: zodResolver(saveClubInformationSchema),
+	const form = useForm<z.infer<typeof clubInfoSchema>>({
+		resolver: zodResolver(clubInfoSchema),
 		defaultValues: {
 			name: props.club.name || "",
 			location: props.club.location || "",
@@ -69,7 +69,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		mode: "onBlur",
 	});
 
-	async function onSubmit(values: z.infer<typeof saveClubInformationSchema>) {
+	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
 			await saveClubInformation(values);
@@ -86,6 +86,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				onSubmit={form.handleSubmit(onSubmit)}
 				className="space-y-4 max-w-3xl"
 			>
+				<div>
+					<h3 className="text-lg font-semibold">Općento</h3>
+				</div>
 				<FormField
 					control={form.control}
 					name="name"
@@ -93,7 +96,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem>
 							<FormLabel>
 								Ime kluba ({form.watch("name")?.length}/
-								{saveClubInformationSchema.shape.name.maxLength})
+								{clubInfoSchema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="ASK Veis" type="text" {...field} />
@@ -126,7 +129,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem>
 							<FormLabel>
 								Opis kluba ({form.watch("description")?.length}/
-								{saveClubInformationSchema.shape.description.maxLength})
+								{clubInfoSchema.shape.description.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Textarea
@@ -155,7 +158,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										<Button
 											variant={"outline"}
 											className={cn(
-												"w-[240px] pl-3 text-left font-normal",
+												"w-full pl-3 text-left font-normal",
 												!field.value && "text-muted-foreground",
 											)}
 										>
@@ -275,12 +278,16 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 				/>
 
+				<div>
+					<h3 className="text-lg font-semibold">Kontakt</h3>
+				</div>
+
 				<FormField
 					control={form.control}
 					name="contactPhone"
 					render={({ field }) => (
 						<FormItem className="flex flex-col items-start">
-							<FormLabel>Kontakt kluba</FormLabel>
+							<FormLabel>Telefon</FormLabel>
 							<FormControl className="w-full">
 								<PhoneInput
 									placeholder="063 000 000"

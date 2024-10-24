@@ -1,15 +1,4 @@
 {
-	"name": "airsoft-bih",
-	"version": "0.1.0",
-	"private": true,
-	"scripts": {
-		"dev": "next dev --turbo",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint",
-		"format": "bunx @biomejs/biome format --write .",
-		"postinstall": "prisma generate"
-	},
 	"dependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"@hookform/resolvers": "^3.9.0",
@@ -23,6 +12,7 @@
 		"@radix-ui/react-label": "^2.1.0",
 		"@radix-ui/react-popover": "^1.1.2",
 		"@radix-ui/react-scroll-area": "^1.2.0",
+		"@radix-ui/react-select": "^2.1.2",
 		"@radix-ui/react-separator": "^1.1.0",
 		"@radix-ui/react-slot": "^1.1.0",
 		"@radix-ui/react-switch": "^1.1.1",
@@ -42,10 +32,10 @@
 		"next": "15.0.1",
 		"next-safe-action": "^7.9.7",
 		"next-themes": "^0.3.0",
-		"nuqs": "^2.0.3",
+		"nuqs": "^2.0.4",
 		"prisma": "^5.21.1",
 		"react": "19.0.0-rc-69d4b800-20241021",
-		"react-day-picker": "8.10.1",
+		"react-day-picker": "9.2.0",
 		"react-dom": "19.0.0-rc-69d4b800-20241021",
 		"react-dropzone": "^14.2.10",
 		"react-hook-form": "^7.53.1",
@@ -60,11 +50,22 @@
 		"@types/react": "npm:types-react@19.0.0-rc.1",
 		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
 		"postcss": "^8",
-		"tailwindcss": "^3.4.1",
+		"tailwindcss": "3.4.14",
 		"typescript": "^5"
 	},
+	"name": "airsoft-bih",
 	"overrides": {
 		"@types/react": "npm:types-react@19.0.0-rc.1",
 		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
-	}
+	},
+	"private": true,
+	"scripts": {
+		"build": "next build",
+		"dev": "next dev --turbo",
+		"format": "bunx @biomejs/biome format --write .",
+		"lint": "next lint",
+		"postinstall": "prisma generate",
+		"start": "next start"
+	},
+	"version": "0.1.0"
 }
