@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const saveClubInformationSchema = z.object({
+export const clubInfoSchema = z.object({
 	name: z
 		.string()
 		.min(1, {
