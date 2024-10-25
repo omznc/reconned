@@ -21,7 +21,11 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 			<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
 			<Image
 				suppressHydrationWarning={true}
-				src={`${event.coverImage}?v=${event.updatedAt}`} // This will revalidate the browser cache
+				src={
+					event.coverImage
+						? `${event.coverImage}?v=${event.updatedAt}`
+						: "/default-club-image.png"
+				} // This will revalidate the browser cache
 				alt={event.name}
 				width={680}
 				height={380}

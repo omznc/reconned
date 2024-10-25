@@ -1,7 +1,7 @@
 "use server";
 
-import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
 import { clubLogoFileSchema } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
+import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
@@ -45,17 +45,15 @@ export const createEvent = safeActionClient
 			hasDrinks: parsedInput.hasDrinks,
 			hasPrizes: parsedInput.hasPrizes,
 			clubId: parsedInput.clubId,
-			mapData: parsedInput.mapData,
+			mapData: parsedInput.mapData ?? { areas: [], pois: [] },
 		};
 
 		// create or update event
-		const event = await prisma.event.upsert({
+		return prisma.event.upsert({
 			where: { id: parsedInput.id },
 			update: data,
 			create: data,
 		});
-
-		return event;
 	});
 
 export const getEventImageUploadUrl = safeActionClient
