@@ -30,17 +30,21 @@ export const clubInfoSchema = z.object({
 });
 
 export const clubLogoFileSchema = z.object({
-	file: z.instanceof(File).refine((file) => {
-		if (!file.type.startsWith("image/")) {
-			throw new Error("Morate odabrati sliku");
-		}
+	// file: z.instanceof(File).refine((file) => {
+	// 	if (!file.type.startsWith("image/")) {
+	// 		throw new Error("Morate odabrati sliku");
+	// 	}
 
-		// Only allow images up to 4MB
-		if (file.size > 1024 * 1024 * 4) {
-			throw new Error("Slika mora biti manja od 4MB");
-		}
+	// 	// Only allow images up to 4MB
+	// 	if (file.size > 1024 * 1024 * 4) {
+	// 		throw new Error("Slika mora biti manja od 4MB");
+	// 	}
 
-		return true;
+	// 	return true;
+	// }),
+	file: z.object({
+		type: z.string().regex(/^image\//),
+		size: z.number().max(1024 * 1024 * 4),
 	}),
 	id: z.string(),
 });

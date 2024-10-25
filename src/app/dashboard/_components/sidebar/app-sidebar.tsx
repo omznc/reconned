@@ -9,6 +9,7 @@ import {
 	ChevronsUpDown,
 	GalleryVerticalEnd,
 	House,
+	Info,
 	MailPlus,
 	Pencil,
 	Plus,
@@ -63,6 +64,11 @@ const getData = (clubId: string) => ({
 			title: "Početna",
 			url: "/",
 			icon: House,
+		},
+		{
+			title: "Pomoć",
+			url: `/dashboard/${clubId}/help`,
+			icon: Info,
 		},
 		{
 			title: "Klub",
