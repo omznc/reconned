@@ -22,10 +22,11 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 			<Image
 				src={`${event.coverImage}?v=${Date.now()}`} // This will revalidate the browser cache
 				alt={event.name}
-				width={600}
-				height={600}
+				width={680}
+				height={380}
 				className="object-cover transition-all w-full h-auto"
 				draggable={false}
+				priority={true}
 			/>
 			<div className="absolute peer-hover:opacity-25 peer-hover:top-[80%] border border-b-0 transition-all h-4/5 min-h-fit p-4 top-1/4 bg-background w-3/4 flex flex-col gap-1">
 				<div className="relative flex select-none flex-col gap-3">
