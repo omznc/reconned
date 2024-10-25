@@ -51,7 +51,7 @@ export function Breadcrumbs(props: BreadcrumbsProps) {
 const TRANSLATIONS = {
 	dashboard: "Aplikacija",
 	club: "Klub",
-	events: "Događaji",
+	events: "Susreti",
 	information: "Informacije",
 	create: "Kreiraj",
 	stats: "Statistike",
