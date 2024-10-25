@@ -23,7 +23,12 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { Calendar as CalendarIcon, CloudUpload, Eye } from "lucide-react";
+import {
+	ArrowUpRight,
+	Calendar as CalendarIcon,
+	CloudUpload,
+	Eye,
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { createEventFormSchema } from "@/app/dashboard/[clubId]/events/create/_components/create-event-form.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -105,7 +110,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 			if (files && files.length > 0) {
 				const resp = await getEventImageUploadUrl({
-					file: files[0],
+					file: {
+						type: files[0].type,
+						size: files[0].size,
+					},
 					id: event.data.id,
 				});
 
@@ -126,11 +134,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				values.coverImage = resp.data.url.split("?")[0];
 				await createEvent(values).then((resp) => {
 					if (resp?.data) {
-						router.push(`/dashboard/events/${resp.data?.id}`);
+						router.push(`/dashboard/${clubId}/events/${resp.data?.id}`);
 					}
 				});
 			} else {
-				router.push(`/dashboard/events/${event.data.id}`);
+				router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 			}
 
 			setFiles([]);
@@ -150,7 +158,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				{props.event?.id && (
 					<Alert className="flex justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>Mjenjate susret</AlertTitle>
+							<AlertTitle>Mijenjate susret</AlertTitle>
 							<AlertDescription>
 								Ovaj susret je već kreiran, trenutno ga uređujete.
 							</AlertDescription>
@@ -307,10 +315,17 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								<FormItem>
 									<FormLabel>Google Maps</FormLabel>
 									<FormControl>
-										<Input placeholder="" type="text" {...field} />
+										<Textarea placeholder="" type="text" {...field} />
 									</FormControl>
 									<FormDescription>
-										Možete dodati Google Maps link za upute.
+										Možete dodati Google Maps embed link.{" "}
+										<Link
+											target="_blank"
+											className="font-semibold flex gap-0.5 items-center"
+											href={`/dashboard/${clubId}/help#google-maps`}
+										>
+											Gdje to naći? <ArrowUpRight className="size-3" />
+										</Link>
 									</FormDescription>
 									<FormMessage />
 								</FormItem>

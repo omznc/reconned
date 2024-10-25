@@ -18,7 +18,19 @@ export const createEventFormSchema = z.object({
 	location: z.string({
 		message: "Susret mora imati lokaciju",
 	}),
-	googleMapsLink: z.string().optional(),
+	googleMapsLink: z
+		.string()
+		.transform((input) => {
+			// Check for iframe tag and extract src if present
+			const iframeMatch = input.match(/<iframe.*?src="([^"]+)"/);
+			if (iframeMatch) {
+				return iframeMatch[1];
+			}
+
+			// If direct link is provided, return as-is
+			return input;
+		})
+		.optional(),
 	dateStart: z.coerce.date({
 		message: "Susret mora imati datum početka",
 	}),

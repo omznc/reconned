@@ -10,15 +10,11 @@ import { format } from "date-fns";
 import Link from "next/link";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsAuthenticated } from "@/lib/auth-client";
+import type { Event } from "@prisma/client";
+import Image from "next/image";
 
 interface CarouselProps {
-	events: {
-		id: string;
-		title: string;
-		date: Date;
-		location: string;
-		club: string;
-	}[];
+	events: (Event & { club: { name: true } })[];
 }
 
 export function EventsCarousel(props: CarouselProps) {
@@ -43,29 +39,38 @@ export function EventsCarousel(props: CarouselProps) {
 						key={event.id}
 						className="pl-4 bg-white group select-none flex h-[300px] overflow-hidden relative md:basis-1/2 lg:basis-1/3 flex-col "
 					>
-						<img
-							src={"https://picsum.photos/200/300"}
-							alt={event.title}
+						<Image
+							suppressHydrationWarning={true}
+							src={`${event.coverImage}?v=${Date.now()}`}
+							alt={event.name}
+							width={300}
+							height={350}
 							className="size-full border border-b-0 object-cover transition-all"
 						/>
-						<div className="flex flex-col gap-1 pb-16 md:pb-2 md:group-hover:pb-16 transition-all p-2 border border-t-none ">
-							<h3 className="text-xl font-semibold">{event.title}</h3>
+						<div className="flex flex-col gap-1  md:pb-2 md:group-hover:pb-16 transition-all p-2 border border-t-none">
+							<h3 className="text-xl font-semibold">{event.name}</h3>
 							<p className="text-sm">
-								{format(event.date, "do MMMM, yyyy")}, {event.location}
+								{format(event.dateStart, "do MMMM, yyyy")}, {event.location}
 							</p>
-							<p className="text-sm">{event.club}</p>
-							<Button
-								asChild={true}
-								className="absolute cursor-pointer md:translate-y-16 md:group-hover:translate-y-0 transition-all bottom-2 left-6 right-2"
-							>
-								{user ? (
-									<Link href={`/events/${event.id}?register=true`}>
-										Prijavi se na susret
-									</Link>
-								) : (
-									<Link href="/login">Uloguj se</Link>
-								)}
-							</Button>
+							<p className="text-sm">{event.club.name}</p>
+							<div className="flex gap-2 md:translate-y-16 w-full md:group-hover:translate-y-14">
+								<Button
+									asChild={true}
+									variant={"outline"}
+									className="cursor-pointer w-1/2 transition-all"
+								>
+									{user ? (
+										<Link href={`/events/${event.id}?register=true`}>
+											Prijavi se na susret
+										</Link>
+									) : (
+										<Link href="/login">Uloguj se</Link>
+									)}
+								</Button>
+								<Button asChild={true} className="w-1/2 cursor-pointer">
+									<Link href={`/events/${event.id}`}>Detalji</Link>
+								</Button>
+							</div>
 						</div>
 					</CarouselItem>
 				))}
