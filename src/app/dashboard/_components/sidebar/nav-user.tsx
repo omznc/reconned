@@ -1,7 +1,5 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -18,8 +16,9 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 import { useIsAuthenticated } from "@/lib/auth-client";
+import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
@@ -35,7 +34,10 @@ export function NavUser() {
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
 							<Avatar className="h-8 w-8 rounded-lg">
-								<AvatarImage src={user?.image} alt={user?.name} />
+								<AvatarImage
+									src={`${user?.image}?v=${Date.now()}`}
+									alt={user?.name}
+								/>
 								<AvatarFallback className="rounded-lg">
 									{user?.name?.charAt(0).toUpperCase()}
 								</AvatarFallback>

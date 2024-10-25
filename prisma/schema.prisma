@@ -19,12 +19,12 @@ model User {
   email          String              @unique
   name           String
   emailVerified  Boolean
-  isPublic       Boolean             @default(false)
+  isPrivate      Boolean             @default(false)
   eventsSignedUp EventRegistration[]
   invitesSent    Invite[]
   ClubMembership ClubMembership[]
 
-  image   String?
+  image   String?   @default("https://f003.backblazeb2.com/file/airsoftba/user/default-user-image.png")
   Session Session[]
   Account Account[]
 

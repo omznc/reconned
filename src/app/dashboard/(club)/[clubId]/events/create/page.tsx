@@ -1,4 +1,4 @@
-import CreateEventForm from "@/app/dashboard/[clubId]/events/create/_components/create-event-form";
+import CreateEventForm from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form";
 import { prisma } from "@/lib/prisma";
 
 interface PageProps {

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { UserOverview } from "@/components/user-overview";
+import { ClubOverview } from "@/components/club-overview";
 
 interface PageProps {
 	params: Promise<{
@@ -11,20 +11,27 @@ interface PageProps {
 export default async function Page(props: PageProps) {
 	const params = await props.params;
 
-	const user = await prisma.user.findFirst({
+	const club = await prisma.club.findFirst({
 		where: {
 			id: params.id,
 			isPrivate: false,
 		},
+		include: {
+			_count: {
+				select: {
+					members: true,
+				},
+			},
+		},
 	});
 
-	if (!user) {
+	if (!club) {
 		return notFound();
 	}
 
 	return (
 		<div className="flex flex-col size-full gap-8">
-			<UserOverview user={user} />
+			<ClubOverview club={club} />
 		</div>
 	);
 }

@@ -20,6 +20,7 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 		<div className="relative flex flex-col items-center justify-center gap-4 ">
 			<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
 			<Image
+				suppressHydrationWarning={true}
 				src={`${event.coverImage}?v=${Date.now()}`} // This will revalidate the browser cache
 				alt={event.name}
 				width={680}

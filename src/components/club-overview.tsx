@@ -1,54 +1,24 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { AtSign, Eye, EyeOff, Phone, Pin, User } from "lucide-react";
+"use client";
 
-interface PageProps {
-	params: Promise<{
-		clubId: string;
-	}>;
+import { Badge } from "@/components/ui/badge";
+import type { Club } from "@prisma/client";
+import { AtSign, Eye, EyeOff, Phone, Pin, User } from "lucide-react";
+import Image from "next/image";
+
+interface ClubOverviewProps {
+	club: Club & {
+		_count: {
+			members: number;
+		};
+	};
 }
 
-export default async function Page(props: PageProps) {
-	const params = await props.params;
-	const user = await isAuthenticated();
-	if (!user) {
-		return notFound();
-	}
-
-	const club = await prisma.club.findUnique({
-		where: {
-			members: {
-				some: {
-					userId: user.id,
-					role: {
-						in: ["CLUB_OWNER", "MANAGER"],
-					},
-				},
-			},
-			id: params.clubId,
-		},
-		include: {
-			_count: {
-				select: {
-					members: true,
-				},
-			},
-		},
-	});
-
-	if (!club) {
-		return notFound();
-	}
+export function ClubOverview({ club }: ClubOverviewProps) {
 	return (
-		<div className="space-y-4 max-w-3xl">
-			<div>
-				<h3 className="text-lg font-semibold">Klub</h3>
-			</div>
+		<>
 			<div className="flex gap-4">
 				<Image
+					suppressHydrationWarning={true}
 					src={`${club.logo}?v=${Date.now()}`} // This will revalidate the browser cache
 					alt={club.name}
 					width={150}
@@ -98,6 +68,6 @@ export default async function Page(props: PageProps) {
 					</Badge>
 				)}
 			</div>
-		</div>
+		</>
 	);
 }

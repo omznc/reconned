@@ -3,7 +3,7 @@ import {
 	clubInfoSchema,
 	clubLogoFileSchema,
 	deleteClubImageSchema,
-} from "@/app/dashboard/[clubId]/club/information/_components/club-info.schema";
+} from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
