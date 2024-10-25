@@ -1,4 +1,4 @@
-import { UserInfoForm } from "@/app/dashboard/(user)/user/settings/_components/user-info-form";
+import { UserInfoForm } from "@/app/dashboard/(user)/user/settings/_components/user-info.form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";

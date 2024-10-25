@@ -201,7 +201,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							<FormControl>
 								<Textarea
 									placeholder="Ponesite pribor za jelo..."
-									className="resize-none"
+									className="min-h-32"
 									{...field}
 								/>
 							</FormControl>

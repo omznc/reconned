@@ -80,6 +80,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			website: props.user.website || "",
 			phone: props.user.phone || "",
 			callsign: props.user.callsign || "",
+			email: props.user.email || "",
 		},
 	});
 
@@ -88,7 +89,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 		try {
 			if (files && files.length > 0) {
 				const resp = await getUserImageUploadUrl({
-					file: files[0],
+					file: {
+						type: files[0].type,
+						size: files[0].size,
+					},
 				});
 
 				if (!resp?.data?.url) {
@@ -186,13 +190,29 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 				<FormField
 					control={form.control}
+					name="email"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Email*</FormLabel>
+							<FormControl>
+								<Input placeholder="me@gmail.com" type="email" {...field} />
+							</FormControl>
+							<FormDescription>Vaš email</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
 					name="isPrivate"
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Javni prikaz*</FormLabel>
+								<FormLabel>Privatni profil*</FormLabel>
 								<FormDescription>
-									Dozvolite javno prikazivanje vašeg profila.
+									Sakrijte profil od javnog pristupa. Preporučujemo da ostavite
+									profil javnim.
 								</FormDescription>
 							</div>
 							<FormControl>

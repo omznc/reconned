@@ -19,7 +19,7 @@ export function ClubOverview({ club }: ClubOverviewProps) {
 			<div className="flex gap-4">
 				<Image
 					suppressHydrationWarning={true}
-					src={`${club.logo}?v=${Date.now()}`} // This will revalidate the browser cache
+					src={`${club.logo}?v=${club.updatedAt}`} // This will revalidate the browser cache
 					alt={club.name}
 					width={150}
 					height={150}
