@@ -42,13 +42,17 @@ const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
 			// Clear existing layers if necessary
 			drawnItems.clearLayers();
 
-			areas.forEach((area) => {
-				const polygon = L.polygon(area[0]).addTo(drawnItems); // Ensure area is a nested array
-			});
+			for (const area of areas) {
+				const swappedCoordinates = area.map((ring: any) =>
+					ring.map((coord: any) => [coord[1], coord[0]]),
+				);
 
-			pois.forEach((poi) => {
+				L.polygon(swappedCoordinates).addTo(drawnItems);
+			}
+
+			for (const poi of pois) {
 				L.marker([poi.lat, poi.lng]).addTo(drawnItems);
-			});
+			}
 		}
 
 		// Set up leaflet-draw controls
@@ -59,18 +63,18 @@ const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
 		mapRef.current.addControl(drawControl);
 
 		// Handle creation of new areas/markers
-		const handleDrawCreated = (event: L.Draw.Event) => {
+		const handleDrawCreated = (event: L.DrawEvents.Created) => {
 			const layer = event.layer;
 			drawnItems.addLayer(layer);
 
 			const newMapData = { ...mapData };
 
-			if (event.layerType === "marker") {
-				const latlng = layer.getLatLng();
+			if ((event as L.DrawEvents.Created).layerType === "marker") {
+				const latlng = (layer as L.Marker).getLatLng();
 				newMapData.pois.push({ lat: latlng.lat, lng: latlng.lng });
 			} else if (
-				event.layerType === "polygon" ||
-				event.layerType === "rectangle"
+				(event as L.DrawEvents.Created).layerType === "polygon" ||
+				(event as L.DrawEvents.Created).layerType === "rectangle"
 			) {
 				newMapData.areas.push(layer.toGeoJSON().geometry.coordinates);
 			}
@@ -80,17 +84,47 @@ const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
 			onSaveMapData(newMapData);
 		};
 
-		mapRef.current.on(L.Draw.Event.CREATED, handleDrawCreated);
+		mapRef.current.on(
+			L.Draw.Event.CREATED,
+			handleDrawCreated as L.LeafletEventHandlerFn,
+		);
 
 		// Cleanup the event listener on unmount
 		return () => {
-			mapRef.current?.off(L.Draw.Event.CREATED, handleDrawCreated);
+			mapRef.current?.off(
+				L.Draw.Event.CREATED,
+				handleDrawCreated as L.LeafletEventHandlerFn,
+			);
 		};
 	}, [defaultMapData, mapData, onSaveMapData]);
 
+	const calculateCenter = () => {
+		if (defaultMapData && defaultMapData?.areas?.length > 0) {
+			let latSum = 0;
+			let lngSum = 0;
+			let coordCount = 0;
+
+			for (const area of defaultMapData.areas) {
+				for (const ring of area) {
+					for (const [lng, lat] of ring) {
+						latSum += lat;
+						lngSum += lng;
+						coordCount++;
+					}
+				}
+			}
+
+			return { lat: latSum / coordCount, lng: lngSum / coordCount };
+		}
+		// Default to a specific location if no areas provided
+		return { lat: 43.8486, lng: 18.3564 };
+	};
+
+	const mapCenter = calculateCenter();
+
 	return (
 		<MapContainer
-			center={[43.8486, 18.3564]}
+			center={mapCenter}
 			zoom={13}
 			ref={mapRef}
 			style={{ height: "500px", width: "100%" }}
