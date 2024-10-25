@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
+import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet-draw/dist/leaflet.draw.css";
-import L from "leaflet";
-import "leaflet-draw";
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
 interface Poi {
 	lat: number;
@@ -55,27 +55,29 @@ const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
 			}
 		}
 
-		// Set up leaflet-draw controls
-		const drawControl = new L.Control.Draw({
-			edit: { featureGroup: drawnItems },
-			draw: { circle: false, circlemarker: false },
+		// Set up leaflet-geoman controls
+		mapRef.current.pm.addControls({
+			position: 'topleft',
+			drawCircle: false,
+			drawMarker: true,
+			drawPolygon: true,
+			drawPolyline: false,
+			drawRectangle: true,
+			editMode: true,
+			deleteLayer: true,
 		});
-		mapRef.current.addControl(drawControl);
 
 		// Handle creation of new areas/markers
-		const handleDrawCreated = (event: L.DrawEvents.Created) => {
+		const handleDrawCreated = (event: any) => {
 			const layer = event.layer;
 			drawnItems.addLayer(layer);
 
 			const newMapData = { ...mapData };
 
-			if ((event as L.DrawEvents.Created).layerType === "marker") {
-				const latlng = (layer as L.Marker).getLatLng();
+			if (layer instanceof L.Marker) {
+				const latlng = layer.getLatLng();
 				newMapData.pois.push({ lat: latlng.lat, lng: latlng.lng });
-			} else if (
-				(event as L.DrawEvents.Created).layerType === "polygon" ||
-				(event as L.DrawEvents.Created).layerType === "rectangle"
-			) {
+			} else if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
 				newMapData.areas.push(layer.toGeoJSON().geometry.coordinates);
 			}
 
@@ -84,17 +86,11 @@ const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
 			onSaveMapData(newMapData);
 		};
 
-		mapRef.current.on(
-			L.Draw.Event.CREATED,
-			handleDrawCreated as L.LeafletEventHandlerFn,
-		);
+		mapRef.current.on("pm:create", handleDrawCreated);
 
 		// Cleanup the event listener on unmount
 		return () => {
-			mapRef.current?.off(
-				L.Draw.Event.CREATED,
-				handleDrawCreated as L.LeafletEventHandlerFn,
-			);
+			mapRef.current?.off("pm:create", handleDrawCreated);
 		};
 	}, [defaultMapData, mapData, onSaveMapData]);
 
