@@ -7,7 +7,6 @@ import {
 	CalendarFold,
 	ChartBar,
 	ChevronsUpDown,
-	GalleryVerticalEnd,
 	House,
 	Info,
 	MailPlus,
@@ -53,13 +52,7 @@ import {
 	useSearchParams,
 } from "next/navigation";
 
-// This is sample data.
 const getData = (clubId: string) => ({
-	team: {
-		name: "Tvrđava",
-		logo: GalleryVerticalEnd,
-		city: "Zenica",
-	},
 	navMain: [
 		{
 			title: "Početna",

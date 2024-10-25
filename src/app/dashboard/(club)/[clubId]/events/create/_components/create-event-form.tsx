@@ -52,6 +52,15 @@ import type { Event } from "@prisma/client";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+// import MapComponent from "@/components/map-component";
+
+const MapComponent = dynamic(
+	() => import("@/components/map-component").then((mod) => mod.default),
+	{
+		ssr: false,
+	},
+);
 
 interface CreateEventFormProps {
 	event: Event | null;
@@ -86,6 +95,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			hasSnacks: props.event?.hasSnacks,
 			hasDrinks: props.event?.hasDrinks,
 			hasPrizes: props.event?.hasPrizes,
+			mapData: (props.event?.mapData as any) || { areas: [], pois: [] },
 		},
 	});
 
@@ -713,6 +723,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						/>
 					</div>
 				</div>
+				<MapComponent
+					defaultMapData={form.watch("mapData")}
+					onSaveMapData={(data) => {
+						form.setValue("mapData", data);
+					}}
+				/>
 				<LoaderSubmitButton isLoading={isLoading}>
 					{props.event ? "Ažuriraj susret" : "Kreiraj susret"}
 				</LoaderSubmitButton>

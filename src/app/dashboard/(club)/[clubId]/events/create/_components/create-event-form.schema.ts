@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+// Schema for a single point of interest (POI)
+const poiSchema = z.object({
+	lat: z.number(), // Latitude
+	lng: z.number(), // Longitude
+});
+
+// Schema for coordinates (latitude and longitude pair)
+const coordinatesSchema = z.array(z.number()); // Array of numbers
+
+// Schema for areas, which are arrays of arrays of coordinates
+const areaSchema = z.array(z.array(z.array(coordinatesSchema))); // Adjusted to reflect the nested arrays
+
 export const createEventFormSchema = z.object({
 	id: z.string().optional(),
 	clubId: z.string({
@@ -50,6 +62,15 @@ export const createEventFormSchema = z.object({
 	hasSnacks: z.boolean().optional(),
 	hasDrinks: z.boolean().optional(),
 	hasPrizes: z.boolean().optional(),
+	mapData: z.object({
+		areas: z.array(z.array(z.array(z.array(z.number())))),
+		pois: z.array(
+			z.object({
+				lat: z.number(),
+				lng: z.number(),
+			}),
+		),
+	}),
 });
 
 export const eventImageFileSchema = z.object({

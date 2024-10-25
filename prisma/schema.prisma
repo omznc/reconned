@@ -113,6 +113,7 @@ model Event {
 
   // Event-specific gear requirements
   gearRequirements Json[] // { name: string, description: string }
+  mapData          Json?
 
   registrations EventRegistration[]
   invites       Invite[]
