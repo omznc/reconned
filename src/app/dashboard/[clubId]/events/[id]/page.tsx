@@ -99,7 +99,7 @@ export default async function Page(props: PageProps) {
 						href={`/dashboard/${params.clubId}/events/create?id=${event.id}`}
 					>
 						<Pencil className="size-4" />
-						Izmjeni događaj
+						Izmjeni susret
 					</Link>
 				</Button>
 			</div>

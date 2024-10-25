@@ -133,7 +133,7 @@ export default function Home() {
 					href={"/events"}
 					className="text-2xl group flex gap-1 items-center font-semibold"
 				>
-					Nadolazeći događaji
+					Nadolazeći susreti
 					<ArrowRight className="opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all translate-x-10" />
 				</Link>
 				{events.length > 0 ? (

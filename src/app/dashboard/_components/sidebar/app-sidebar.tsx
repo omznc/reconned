@@ -110,7 +110,7 @@ const getData = (clubId: string) => ({
 			],
 		},
 		{
-			title: "Događaji",
+			title: "Susreti",
 			url: "#",
 			icon: CalendarFold,
 			items: [
@@ -120,7 +120,7 @@ const getData = (clubId: string) => ({
 					icon: Search,
 				},
 				{
-					title: "Novi događaj",
+					title: "Novi susret",
 					url: `/dashboard/${clubId}/events/create`,
 					icon: Plus,
 				},
