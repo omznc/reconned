@@ -315,7 +315,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								<FormItem>
 									<FormLabel>Google Maps</FormLabel>
 									<FormControl>
-										<Textarea placeholder="" type="text" {...field} />
+										<Textarea
+											placeholder={`<iframe src="https://www.google.com/maps/embed?pb=...`}
+											{...field}
+										/>
 									</FormControl>
 									<FormDescription>
 										Možete dodati Google Maps embed link.{" "}

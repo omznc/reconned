@@ -27,6 +27,7 @@ function Question({
 	return (
 		<div className="space-y-2" id={id}>
 			<div
+				suppressHydrationWarning={true}
 				data-active={hash === id}
 				className="text-lg data-[active=true]:underline decoration-foreground/50 group inline-flex items-center gap-1 font-semibold"
 			>

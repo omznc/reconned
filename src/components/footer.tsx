@@ -1,4 +1,3 @@
-import { LogoTvrdjava } from "@/components/logos/logo-tvrdjava";
 import { LogoVeis } from "@/components/logos/logo-veis";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
@@ -25,11 +24,11 @@ export function Footer() {
 			</div>
 			<div className="flex flex-col items-center gap-4">
 				Projekt realizovan uz podršku
-				<div className="flex flex-col md:flex-row items-center pt-4 gap-2 md:gap-8">
-					<Link href="#">
+				<div className="flex flex-col md:flex-row items-center  gap-2 md:gap-8">
+					{/* <Link href="#">
 						<LogoTvrdjava className="h-[120px] -mt-4 w-auto" />
-					</Link>
-					<Link href="#">
+					</Link> */}
+					<Link href="https://www.instagram.com/veis.livno/">
 						<LogoVeis className="h-[80px] w-auto fill-black" />
 					</Link>
 				</div>
