@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useIsAuthenticated } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
-import { House, Loader2 } from "lucide-react";
+import { House } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

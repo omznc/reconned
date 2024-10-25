@@ -1,6 +1,5 @@
 "use client";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { Button } from "@/components/ui/button";
 import {
 	CardContent,
 	CardDescription,
@@ -10,7 +9,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
-import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

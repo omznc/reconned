@@ -65,7 +65,7 @@
 		"build": "next build",
 		"dev": "next dev --turbo",
 		"format": "bunx @biomejs/biome format --write .",
-		"lint": "next lint",
+		"lint": "bunx biome lint --write ./src",
 		"postinstall": "prisma generate",
 		"start": "next start"
 	},

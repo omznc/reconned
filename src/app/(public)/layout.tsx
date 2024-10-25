@@ -1,9 +1,6 @@
-import { LogoTvrdjava } from "@/components/logos/logo-tvrdjava";
-import { LogoVeis } from "@/components/logos/logo-veis";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import DotPattern from "@/components/ui/dot-pattern";
-import Link from "next/link";
 import type { ReactNode } from "react";
 
 export default function RootLayout({

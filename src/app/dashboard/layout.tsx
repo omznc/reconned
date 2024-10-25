@@ -1,21 +1,33 @@
-import { AppSidebar } from "@/app//dashboard/_components/sidebar/app-sidebar";
+import { Breadcrumbs } from "@/app/dashboard/_components/breadcrumbs";
+import { AppSidebar } from "@/app/dashboard/_components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-export default async function DashboardLayout(props: { children: ReactNode }) {
+interface DashboardLayoutProps {
+	children: ReactNode;
+	params: Promise<{
+		clubId: string;
+	}>;
+}
+
+export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const user = await isAuthenticated();
 	if (!user) {
 		return notFound();
 	}
+	const params = await props.params;
 
 	const clubs = await prisma.club.findMany({
 		where: {
 			members: {
 				some: {
 					userId: user.id,
+					role: {
+						in: ["CLUB_OWNER", "MANAGER"],
+					},
 				},
 			},
 		},
@@ -28,10 +40,15 @@ export default async function DashboardLayout(props: { children: ReactNode }) {
 		},
 	});
 
+	if (clubs.length === 0) {
+		return notFound();
+	}
+
 	return (
 		<SidebarProvider>
 			<AppSidebar clubs={clubs} />
 			<SidebarInset className="max-h-dvh overflow-auto flex items-start p-4 justify-start">
+				<Breadcrumbs />
 				{props.children}
 			</SidebarInset>
 		</SidebarProvider>

@@ -1,0 +1,90 @@
+"use server";
+
+import { createEventFormSchema } from "@/app/dashboard/[clubId]/events/create/_components/create-event-form.schema";
+import { clubLogoFileSchema } from "@/app/dashboard/[clubId]/club/information/_components/club-info.schema";
+import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
+import { getS3FileUploadUrl } from "@/lib/storage";
+
+export const createEvent = safeActionClient
+	.schema(createEventFormSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const isManager = await prisma.clubMembership.findFirst({
+			where: {
+				userId: ctx.user.id,
+				role: {
+					in: ["CLUB_OWNER", "MANAGER"],
+				},
+				club: {
+					id: parsedInput.clubId,
+				},
+			},
+		});
+
+		if (!isManager) {
+			throw new Error("You are not authorized to perform this action.");
+		}
+
+		const data = {
+			name: parsedInput.name,
+			description: parsedInput.description,
+			costPerPerson: parsedInput.costPerPerson,
+			location: parsedInput.location,
+			googleMapsLink: parsedInput.googleMapsLink,
+			dateStart: parsedInput.dateStart,
+			dateEnd: parsedInput.dateEnd,
+			dateRegistrationsOpen: parsedInput.dateRegistrationsOpen,
+			dateRegistrationsClose: parsedInput.dateRegistrationsClose,
+			coverImage: parsedInput.coverImage,
+			isPrivate: parsedInput.isPrivate,
+			allowFreelancers: parsedInput.allowFreelancers,
+			hasBreakfast: parsedInput.hasBreakfast,
+			hasLunch: parsedInput.hasLunch,
+			hasDinner: parsedInput.hasDinner,
+			hasSnacks: parsedInput.hasSnacks,
+			hasDrinks: parsedInput.hasDrinks,
+			hasPrizes: parsedInput.hasPrizes,
+			clubId: parsedInput.clubId,
+		};
+
+		// create or update event
+		const event = await prisma.event.upsert({
+			where: { id: parsedInput.id },
+			update: data,
+			create: data,
+		});
+
+		return event;
+	});
+
+export const getEventImageUploadUrl = safeActionClient
+	.schema(clubLogoFileSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const isManager = await prisma.clubMembership.findFirst({
+			where: {
+				userId: ctx.user.id,
+				role: {
+					in: ["CLUB_OWNER", "MANAGER"],
+				},
+				club: {
+					events: {
+						some: {
+							id: parsedInput.id,
+						},
+					},
+				},
+			},
+		});
+
+		if (!isManager) {
+			throw new Error("You are not authorized to perform this action.");
+		}
+
+		const url = await getS3FileUploadUrl({
+			type: parsedInput.file.type,
+			size: parsedInput.file.size,
+			key: `event/${parsedInput.id}/cover`,
+		});
+
+		return { url };
+	});

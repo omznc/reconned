@@ -43,12 +43,12 @@ export function NavApp({
 				{items.map((item) => (
 					<Collapsible
 						key={item.title}
-						asChild
+						asChild={true}
 						defaultOpen={item.isActive}
 						className="group/collapsible"
 					>
 						<SidebarMenuItem>
-							<CollapsibleTrigger asChild>
+							<CollapsibleTrigger asChild={true}>
 								<SidebarMenuButton
 									isActive={
 										item.url === path ||
@@ -67,7 +67,7 @@ export function NavApp({
 										<SidebarMenuSubItem key={subItem.title}>
 											<SidebarMenuSubButton
 												isActive={subItem.url === path}
-												asChild
+												asChild={true}
 											>
 												<Link href={subItem.url}>
 													<span>{subItem.title}</span>
