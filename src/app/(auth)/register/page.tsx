@@ -65,7 +65,7 @@ export default function RegisterPage() {
 						);
 
 						if (isClub !== "on") {
-							router.push("/dashboard/club/information");
+							router.push("/");
 						}
 
 						if (!success.error) {
