@@ -45,6 +45,7 @@ export const createEvent = safeActionClient
 			hasDrinks: parsedInput.hasDrinks,
 			hasPrizes: parsedInput.hasPrizes,
 			clubId: parsedInput.clubId,
+			mapData: parsedInput.mapData,
 		};
 
 		// create or update event

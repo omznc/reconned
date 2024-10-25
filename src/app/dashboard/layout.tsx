@@ -40,10 +40,6 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		},
 	});
 
-	if (clubs.length === 0) {
-		return notFound();
-	}
-
 	return (
 		<SidebarProvider>
 			<AppSidebar clubs={clubs} />

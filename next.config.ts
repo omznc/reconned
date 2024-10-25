@@ -1,3 +1,5 @@
+import type { source } from "framer-motion/client";
+
 const nextConfig = {
 	reactStrictMode: true,
 	experimental: {
