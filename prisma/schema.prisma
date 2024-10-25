@@ -115,7 +115,7 @@ model Event {
   gearRequirements Json[] // { name: string, description: string }
 
   registrations EventRegistration[]
-  Invite        Invite[]
+  invites       Invite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

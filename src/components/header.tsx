@@ -26,12 +26,12 @@ export function Header() {
 					<>
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
-							<Link href="/dashboard/club" className="w-full">
+							<Link href="/dashboard?autoSelectFirst=true" className="w-full">
 								Moj Klub
 							</Link>
 						</Button>
 						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
+							<DropdownMenuTrigger asChild={true}>
 								<Avatar className="size-10 cursor-pointer border rounded-none select-none">
 									<AvatarImage src={user?.image} alt={user?.name} />
 									<AvatarFallback className="rounded-none">

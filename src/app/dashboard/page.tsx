@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+type PageProps = {};
 
-export default function Page() {
-	redirect("/dashboard/club");
+export default function Page(props: PageProps) {
+	return <h1>Hello</h1>;
 }

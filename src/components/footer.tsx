@@ -1,6 +1,6 @@
 import { LogoTvrdjava } from "@/components/logos/logo-tvrdjava";
 import { LogoVeis } from "@/components/logos/logo-veis";
-import { ArrowUpRight, LinkIcon } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export function Footer() {

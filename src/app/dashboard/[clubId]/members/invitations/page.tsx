@@ -11,7 +11,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 export default function Page() {
 	return (
 		<>
-			<header className="flex h-8 mb-4 transition-all sticky overflow-hidden top-0 bg-background/20 backdrop-blur-sm border px-2 shrink-0 items-center gap-2 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-8">
+			<header className="flex h-8 mb-4 transition-all sticky overflow-hidden top-0 bg-background/80 backdrop-blur-sm border px-2 shrink-0 items-center gap-2 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-8">
 				<div className="flex items-center gap-2">
 					<SidebarTrigger className="-ml-1" />
 					<Separator orientation="vertical" className="mr-2 h-4" />
@@ -24,8 +24,8 @@ export default function Page() {
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
-								<BreadcrumbLink href="/dashboard/members/stats">
-									Statistike
+								<BreadcrumbLink href="/dashboard/members/invitations">
+									Pozivnice
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 						</BreadcrumbList>

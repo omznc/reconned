@@ -45,12 +45,12 @@ export function NavMain({
 						return (
 							<Collapsible
 								key={item.title}
-								asChild
+								asChild={true}
 								defaultOpen={item.isActive}
 								className="group/collapsible"
 							>
 								<SidebarMenuItem>
-									<CollapsibleTrigger asChild>
+									<CollapsibleTrigger asChild={true}>
 										<SidebarMenuButton
 											isActive={
 												item.url === path ||
@@ -69,7 +69,7 @@ export function NavMain({
 												<SidebarMenuSubItem key={subItem.title}>
 													<SidebarMenuSubButton
 														isActive={subItem.url === path}
-														asChild
+														asChild={true}
 													>
 														<Link href={subItem.url}>
 															{subItem.icon && <subItem.icon />}
@@ -90,7 +90,7 @@ export function NavMain({
 							<SidebarMenuButton
 								isActive={item.url === path}
 								tooltip={item.title}
-								asChild
+								asChild={true}
 							>
 								<Link href={item.url}>
 									{item.icon && <item.icon />}

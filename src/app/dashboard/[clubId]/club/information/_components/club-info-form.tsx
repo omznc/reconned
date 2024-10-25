@@ -1,12 +1,10 @@
 "use client";
 import {
-	deleteClubImage,
 	getClubImageUploadUrl,
 	saveClubInformation,
-} from "@/app/dashboard/club/information/_components/club-info.action";
-import { clubInfoSchema } from "@/app/dashboard/club/information/_components/club-info.schema";
+} from "@/app/dashboard/[clubId]/club/information/_components/club-info.action";
+import { clubInfoSchema } from "@/app/dashboard/[clubId]/club/information/_components/club-info.schema";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
 	FileInput,
 	FileUploader,
@@ -36,14 +34,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { CloudUpload, Paperclip } from "lucide-react";
+import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 
 interface ClubInfoFormProps {
@@ -185,7 +182,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem className="flex flex-col">
 							<FormLabel>Datum osnivanja*</FormLabel>
 							<Popover>
-								<PopoverTrigger asChild>
+								<PopoverTrigger asChild={true}>
 									<FormControl>
 										<Button
 											variant={"outline"}

@@ -27,10 +27,11 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarRail,
+	useSidebar,
 } from "@/components/ui/sidebar";
-import { NavMain } from "@/app//dashboard/_components/sidebar/nav-main";
-import { NavApp } from "@/app//dashboard/_components/sidebar/nav-app";
-import { NavUser } from "@/app//dashboard/_components/sidebar/nav-user";
+import { NavMain } from "@/app/dashboard/_components/sidebar/nav-main";
+import { NavApp } from "@/app/dashboard/_components/sidebar/nav-app";
+import { NavUser } from "@/app/dashboard/_components/sidebar/nav-user";
 import type { Club, ClubMembership } from "@prisma/client";
 import {
 	DropdownMenu,
@@ -38,16 +39,20 @@ import {
 	DropdownMenuContent,
 	DropdownMenuLabel,
 	DropdownMenuItem,
-	DropdownMenuShortcut,
 	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useQueryState } from "nuqs";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ROLE_TRANSLATIONS } from "@/lib/utils";
-import { getTime } from "date-fns";
+import {
+	redirect,
+	useParams,
+	usePathname,
+	useRouter,
+	useSearchParams,
+} from "next/navigation";
 
 // This is sample data.
-const data = {
+const getData = (clubId: string) => ({
 	team: {
 		name: "Tvrđava",
 		logo: GalleryVerticalEnd,
@@ -67,17 +72,17 @@ const data = {
 			items: [
 				{
 					title: "Pregled",
-					url: "/dashboard/club",
+					url: `/dashboard/${clubId}/club`,
 					icon: Search,
 				},
 				{
 					title: "Informacije",
-					url: "/dashboard/club/information",
+					url: `/dashboard/${clubId}/club/information`,
 					icon: Pencil,
 				},
 				{
 					title: "Statistike",
-					url: "/dashboard/club/stats",
+					url: `/dashboard/${clubId}/club/stats`,
 					icon: ChartBar,
 				},
 			],
@@ -89,17 +94,17 @@ const data = {
 			items: [
 				{
 					title: "Pregled",
-					url: "/dashboard/members",
+					url: `/dashboard/${clubId}/members`,
 					icon: Search,
 				},
 				{
 					title: "Pozivnice",
-					url: "/dashboard/members/invitations",
+					url: `/dashboard/${clubId}/members/invitations`,
 					icon: MailPlus,
 				},
 				{
 					title: "Statistike",
-					url: "/dashboard/members/stats",
+					url: `/dashboard/${clubId}/members/stats`,
 					icon: ChartBar,
 				},
 			],
@@ -110,18 +115,23 @@ const data = {
 			icon: CalendarFold,
 			items: [
 				{
+					title: "Pregled",
+					url: `/dashboard/${clubId}/events`,
+					icon: Search,
+				},
+				{
 					title: "Novi događaj",
-					url: "/dashboard/events/create",
+					url: `/dashboard/${clubId}/events/create`,
 					icon: Plus,
 				},
 				{
 					title: "Kalendar",
-					url: "/dashboard/events/calendar",
+					url: `/dashboard/${clubId}/events/calendar`,
 					icon: CalendarDays,
 				},
 				{
 					title: "Statistike",
-					url: "/dashboard/events/stats",
+					url: `/dashboard/${clubId}/events/stats`,
 					icon: ChartBar,
 				},
 			],
@@ -144,7 +154,7 @@ const data = {
 			],
 		},
 	],
-};
+});
 
 interface AppSidebarProps {
 	clubs: (Club & {
@@ -153,16 +163,32 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar(props: AppSidebarProps) {
-	const [activeClubId, setActiveClubId] = useQueryState("club", {
-		defaultValue: props.clubs[0].id,
-		clearOnDefault: false,
-		shallow: false,
-	});
-
+	const sidebar = useSidebar();
+	const router = useRouter();
+	const params = useParams<{ clubId: string }>();
+	const path = usePathname();
+	const searchParams = useSearchParams();
 	const activeClub = useMemo(
-		() => props.clubs.find((club) => club.id === activeClubId),
-		[props.clubs, activeClubId],
+		() => props.clubs.find((club) => club.id === params.clubId),
+		[props.clubs, params.clubId],
 	);
+	const data = getData(params.clubId);
+
+	useEffect(() => {
+		if (searchParams.get("autoSelectFirst") && !params.clubId) {
+			const firstClub = props.clubs[0];
+			if (firstClub) {
+				redirect(`/dashboard/${firstClub.id}`);
+			}
+		}
+	}, [params.clubId, props.clubs, searchParams]);
+
+	useEffect(() => {
+		console.log("Path changed", path);
+		if (sidebar.isMobile) {
+			sidebar.setOpenMobile(false);
+		}
+	}, [path, sidebar.isMobile]);
 
 	return (
 		<Sidebar collapsible="icon">
@@ -170,33 +196,47 @@ export function AppSidebar(props: AppSidebarProps) {
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
+							<DropdownMenuTrigger asChild={true}>
 								<SidebarMenuButton
 									size="lg"
 									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 								>
-									<div className="flex aspect-square size-8 items-center justify-center rounded-lg  text-sidebar-primary-foreground">
-										{activeClub?.logo ? (
-											<Image
-												suppressHydrationWarning
-												width={32}
-												height={32}
-												src={`${activeClub.logo}?v=${Date.now()}`} // This will revalidate the browser cache
-												alt={activeClub.name}
-											/>
-										) : (
-											<Square className="size-4" />
-										)}
-									</div>
-									<div className="grid flex-1 text-left text-sm leading-tight">
-										<span className="truncate font-semibold">
-											{activeClub?.name}
-										</span>
-										<span className="truncate text-xs">
-											{activeClub?.members[0]?.role &&
-												ROLE_TRANSLATIONS[activeClub?.members[0]?.role]}
-										</span>
-									</div>
+									{params.clubId ? (
+										<>
+											<div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+												{activeClub?.logo ? (
+													<Image
+														suppressHydrationWarning={true}
+														width={32}
+														height={32}
+														src={`${activeClub.logo}?v=${Date.now()}`} // This will revalidate the browser cache
+														alt={activeClub.name}
+													/>
+												) : (
+													<Square className="size-4" />
+												)}
+											</div>
+											<div className="grid flex-1 text-left text-sm leading-tight">
+												<span className="truncate font-semibold">
+													{activeClub?.name}
+												</span>
+												<span className="truncate text-xs">
+													{activeClub?.members[0]?.role &&
+														ROLE_TRANSLATIONS[activeClub?.members[0]?.role]}
+												</span>
+											</div>
+										</>
+									) : (
+										<>
+											<div className="flex text-background aspect-square size-8 items-center justify-center rounded-lg bg-foreground">
+												?
+											</div>
+											<div className="grid flex-1 text-left text-sm leading-tight">
+												<span className="truncate font-semibold">Klubovi</span>
+												<span className="truncate text-xs">Odaberite klub</span>
+											</div>
+										</>
+									)}
 									<ChevronsUpDown className="ml-auto" />
 								</SidebarMenuButton>
 							</DropdownMenuTrigger>
@@ -212,14 +252,30 @@ export function AppSidebar(props: AppSidebarProps) {
 								{props.clubs.map((club) => (
 									<DropdownMenuItem
 										key={club.name}
-										onClick={() => setActiveClubId(club.id)}
-										data-active={club.id === activeClubId}
+										onClick={() => {
+											const currentFullUrl = window.location.href;
+
+											if (
+												!(
+													params.clubId &&
+													currentFullUrl.includes(params.clubId)
+												)
+											) {
+												return router.push(`/dashboard/${club.id}`);
+											}
+											const newUrl = currentFullUrl.replace(
+												params.clubId,
+												club.id,
+											);
+											router.push(newUrl);
+										}}
+										data-active={club.id === params.clubId}
 										className="gap-2 p-2 data-[active=true]:bg-accent"
 									>
 										<div className="flex size-6 items-center justify-center rounded-sm border">
 											{club.logo ? (
 												<Image
-													suppressHydrationWarning
+													suppressHydrationWarning={true}
 													width={32}
 													height={32}
 													src={`${club.logo}?v=${Date.now()}`} // This will revalidate the browser cache
@@ -247,7 +303,7 @@ export function AppSidebar(props: AppSidebarProps) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
+				{params.clubId && <NavMain items={data.navMain} />}
 				<NavApp items={data.navApp} />
 			</SidebarContent>
 			<SidebarFooter>

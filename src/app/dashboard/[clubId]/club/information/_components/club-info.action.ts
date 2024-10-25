@@ -1,17 +1,12 @@
 "use server";
-
-import { NullableStringFieldUpdateOperationsInput } from "./../../../../../../node_modules/.prisma/client/index.d";
 import {
 	clubInfoSchema,
 	clubLogoFileSchema,
 	deleteClubImageSchema,
-} from "@/app/dashboard/club/information/_components/club-info.schema";
+} from "@/app/dashboard/[clubId]/club/information/_components/club-info.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
-import { Prisma } from "@prisma/client";
-import { id } from "date-fns/locale";
-import type { data } from "framer-motion/client";
 import { revalidatePath } from "next/cache";
 
 export const saveClubInformation = safeActionClient
