@@ -2,8 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-import * as L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import {
+	type Map as LeafletMap,
+	type PM,
+	FeatureGroup,
+	LayerGroup,
+	Marker,
+	marker,
+	Polygon,
+	polygon,
+	Rectangle,
+} from "leaflet";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
@@ -13,6 +22,7 @@ interface Poi {
 }
 
 interface MapData {
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	areas: any[];
 	pois: Poi[];
 }
@@ -22,80 +32,134 @@ interface MapComponentProps {
 	onSaveMapData: (data: MapData) => void;
 }
 
-const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
-	const mapRef = useRef<L.Map | null>(null);
+export const MapComponent = ({
+	defaultMapData,
+	onSaveMapData,
+}: MapComponentProps) => {
+	const mapRef = useRef<LeafletMap | null>(null);
+	const drawnItemsRef = useRef<FeatureGroup | null>(null);
 	const [mapData, setMapData] = useState<MapData>(
 		defaultMapData || { areas: [], pois: [] },
 	);
+	const renderCount = useRef(0);
 
-	// Load default map data on mount
 	useEffect(() => {
-		if (!mapRef.current) return;
+		renderCount.current += 1;
 
-		const drawnItems = new L.FeatureGroup();
-		mapRef.current.addLayer(drawnItems);
-
-		// Load existing data into map
-		if (defaultMapData) {
-			const { areas, pois } = defaultMapData;
-
-			// Clear existing layers if necessary
-			drawnItems.clearLayers();
-
-			for (const area of areas) {
-				const swappedCoordinates = area.map((ring: any) =>
-					ring.map((coord: any) => [coord[1], coord[0]]),
-				);
-
-				L.polygon(swappedCoordinates).addTo(drawnItems);
-			}
-
-			for (const poi of pois) {
-				L.marker([poi.lat, poi.lng]).addTo(drawnItems);
-			}
+		if (!mapRef.current) {
+			return;
 		}
 
-		// Set up leaflet-geoman controls
+		drawnItemsRef.current = new FeatureGroup();
+		// clear all layers
+		mapRef.current.eachLayer((layer) => {
+			if (layer instanceof LayerGroup) {
+				layer.clearLayers();
+			}
+		});
+		mapRef.current.addLayer(drawnItemsRef.current);
+
 		mapRef.current.pm.addControls({
-			position: 'topleft',
-			drawCircle: false,
+			position: "topleft",
 			drawMarker: true,
 			drawPolygon: true,
 			drawPolyline: false,
+			drawCircle: false,
+			drawCircleMarker: false,
 			drawRectangle: true,
-			editMode: true,
+			editMode: false,
+			cutPolygon: false,
+			dragMode: false,
+			cutCircle: false,
 			deleteLayer: true,
+			drawText: false, // TODO: Enable this at some point
+		});
+	}, []);
+
+	useEffect(() => {
+		if (!(mapRef.current && drawnItemsRef.current && defaultMapData)) {
+			return;
+		}
+
+		const { areas, pois } = defaultMapData;
+
+		drawnItemsRef.current.clearLayers();
+		mapRef.current.eachLayer((layer) => {
+			if (layer instanceof LayerGroup) {
+				layer.clearLayers();
+			}
 		});
 
-		// Handle creation of new areas/markers
+		// Load areas
+		for (const area of areas) {
+			const swappedCoordinates = area.map((ring: number[][]) =>
+				ring.map((coord: number[]) => [coord[1], coord[0]]),
+			);
+			polygon(swappedCoordinates).addTo(drawnItemsRef.current);
+		}
+
+		// Load points of interest (POIs)
+		for (const poi of pois) {
+			marker([poi.lat, poi.lng]).addTo(drawnItemsRef.current);
+		}
+	}, [defaultMapData]);
+
+	useEffect(() => {
+		if (!mapRef.current) {
+			return;
+		}
+
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const handleDrawCreated = (event: any) => {
 			const layer = event.layer;
-			drawnItems.addLayer(layer);
+			drawnItemsRef.current?.addLayer(layer);
 
 			const newMapData = { ...mapData };
 
-			if (layer instanceof L.Marker) {
+			if (layer instanceof Marker) {
 				const latlng = layer.getLatLng();
 				newMapData.pois.push({ lat: latlng.lat, lng: latlng.lng });
-			} else if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
+			} else if (layer instanceof Polygon || layer instanceof Rectangle) {
 				newMapData.areas.push(layer.toGeoJSON().geometry.coordinates);
 			}
 
-			// Update the component's map data and invoke the callback
+			setMapData(newMapData);
+			onSaveMapData(newMapData);
+		};
+
+		const handleDrawDeleted: PM.CreateEventHandler = (event) => {
+			const layers = event.layer;
+
+			const newMapData = { ...mapData };
+
+			if (layers instanceof Marker) {
+				const latlng = layers.getLatLng();
+				newMapData.pois = newMapData.pois.filter(
+					(poi) => poi.lat !== latlng.lat || poi.lng !== latlng.lng,
+				);
+			} else if (layers instanceof Polygon || layers instanceof Rectangle) {
+				const coordinates = layers.toGeoJSON().geometry.coordinates;
+				newMapData.areas = newMapData.areas.filter(
+					(area) => JSON.stringify(area) !== JSON.stringify(coordinates),
+				);
+			}
+
 			setMapData(newMapData);
 			onSaveMapData(newMapData);
 		};
 
 		mapRef.current.on("pm:create", handleDrawCreated);
+		mapRef.current.on("pm:remove", handleDrawDeleted);
 
-		// Cleanup the event listener on unmount
+		// Cleanup on unmount or when mapRef changes
 		return () => {
 			mapRef.current?.off("pm:create", handleDrawCreated);
+			mapRef.current?.off("pm:remove", handleDrawDeleted);
 		};
-	}, [defaultMapData, mapData, onSaveMapData]);
+	}, [mapRef, mapData, onSaveMapData]); // Added mapRef to dependencies
 
 	const calculateCenter = () => {
-		if (defaultMapData && defaultMapData?.areas?.length > 0) {
+		if (defaultMapData && defaultMapData.areas.length > 0) {
 			let latSum = 0;
 			let lngSum = 0;
 			let coordCount = 0;
@@ -112,7 +176,6 @@ const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
 
 			return { lat: latSum / coordCount, lng: lngSum / coordCount };
 		}
-		// Default to a specific location if no areas provided
 		return { lat: 43.8486, lng: 18.3564 };
 	};
 
@@ -129,5 +192,3 @@ const MapComponent = ({ defaultMapData, onSaveMapData }: MapComponentProps) => {
 		</MapContainer>
 	);
 };
-
-export default MapComponent;

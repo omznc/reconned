@@ -56,7 +56,7 @@ import dynamic from "next/dynamic";
 // import MapComponent from "@/components/map-component";
 
 const MapComponent = dynamic(
-	() => import("@/components/map-component").then((mod) => mod.default),
+	() => import("@/components/map-component").then((mod) => mod.MapComponent),
 	{
 		ssr: false,
 	},
@@ -95,6 +95,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			hasSnacks: props.event?.hasSnacks,
 			hasDrinks: props.event?.hasDrinks,
 			hasPrizes: props.event?.hasPrizes,
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			mapData: (props.event?.mapData as any) || { areas: [], pois: [] },
 		},
 	});
