@@ -11,7 +11,7 @@ export function UserOverview({ user }: UserOverviewProps) {
 			<div className="flex gap-4">
 				<Image
 					suppressHydrationWarning={true}
-					src={`${user.image}?v=${Date.now()}`} // This will revalidate the browser cache
+					src={`${user.image}?v=${user.updatedAt}`} // This will revalidate the browser cache
 					alt={user.name}
 					width={150}
 					height={150}

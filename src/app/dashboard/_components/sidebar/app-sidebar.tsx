@@ -231,7 +231,7 @@ export function AppSidebar(props: AppSidebarProps) {
 														suppressHydrationWarning={true}
 														width={32}
 														height={32}
-														src={`${activeClub.logo}?v=${Date.now()}`} // This will revalidate the browser cache
+														src={`${activeClub.logo}?v=${activeClub.updatedAt}`} // This will revalidate the browser cache
 														alt={activeClub.name}
 													/>
 												) : (
@@ -300,7 +300,7 @@ export function AppSidebar(props: AppSidebarProps) {
 													suppressHydrationWarning={true}
 													width={32}
 													height={32}
-													src={`${club.logo}?v=${Date.now()}`} // This will revalidate the browser cache
+													src={`${club.logo}?v=${club.updatedAt}`} // This will revalidate the browser cache
 													alt={club.name}
 												/>
 											) : (

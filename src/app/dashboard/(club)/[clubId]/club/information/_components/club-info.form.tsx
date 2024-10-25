@@ -242,10 +242,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Javni prikaz*</FormLabel>
+								<FormLabel>Privatni klub*</FormLabel>
 								<FormDescription>
-									Dozvolite javno prikazivanje vašeg kluba na ovom sajtu.
-									Preporučujemo da ovo ostavite uključeno.
+									Sakrijte prikaz kliba javnosti. Preporučujemo da ovo ostavite
+									isključeno.
 								</FormDescription>
 							</div>
 							<FormControl>

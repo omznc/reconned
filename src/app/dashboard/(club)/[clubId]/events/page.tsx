@@ -62,7 +62,7 @@ export default async function Page(props: PageProps) {
 						{event.coverImage ? (
 							<Image
 								suppressHydrationWarning={true}
-								src={`${event.coverImage}?v=${Date.now()}`}
+								src={`${event.coverImage}?v=${event.updatedAt}`}
 								alt={event.name}
 								width={100}
 								height={100}

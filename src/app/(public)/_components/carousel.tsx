@@ -41,7 +41,7 @@ export function EventsCarousel(props: CarouselProps) {
 					>
 						<Image
 							suppressHydrationWarning={true}
-							src={`${event.coverImage}?v=${Date.now()}`}
+							src={`${event.coverImage}?v=${event.updatedAt}`}
 							alt={event.name}
 							width={300}
 							height={350}
