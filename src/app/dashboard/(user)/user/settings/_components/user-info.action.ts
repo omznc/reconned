@@ -1,0 +1,61 @@
+"use server";
+import {
+	userImageFileSchema,
+	userInfoShema,
+} from "@/app/dashboard/(user)/user/settings/_components/user-info.schema";
+import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
+import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
+import { revalidatePath } from "next/cache";
+
+export const saveUserInformation = safeActionClient
+	.schema(userInfoShema)
+	.action(async ({ parsedInput, ctx }) => {
+		const user = await prisma.user.update({
+			where: {
+				id: ctx.user.id,
+			},
+			data: {
+				name: parsedInput.name,
+				email: parsedInput.email,
+				isPrivate: parsedInput.isPrivate,
+				image: parsedInput.image,
+				bio: parsedInput.bio,
+				location: parsedInput.location,
+				website: parsedInput.website,
+				phone: parsedInput.phone,
+				callsign: parsedInput.callsign,
+			},
+		});
+
+		revalidatePath("/dashboard/user/");
+		revalidatePath(`/users/${user.id}`);
+	});
+
+export const getUserImageUploadUrl = safeActionClient
+	.schema(userImageFileSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const url = await getS3FileUploadUrl({
+			type: parsedInput.file.type,
+			size: parsedInput.file.size,
+			key: `user/${ctx.user.id}/image`,
+		});
+
+		return { url };
+	});
+
+export const deleteUserImage = safeActionClient.action(async ({ ctx }) => {
+	await prisma.user.update({
+		where: {
+			id: ctx.user.id,
+		},
+		data: {
+			image:
+				"https://f003.backblazeb2.com/file/airsoftba/user/default-user-image.png",
+		},
+	});
+
+	await deleteS3File(`user/${ctx.user.id}/image`);
+
+	revalidatePath("/dashboard/user/");
+});

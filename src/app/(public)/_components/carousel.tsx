@@ -14,7 +14,7 @@ import type { Event } from "@prisma/client";
 import Image from "next/image";
 
 interface CarouselProps {
-	events: (Event & { club: { name: true } })[];
+	events: (Event & { club: { name: string } })[];
 }
 
 export function EventsCarousel(props: CarouselProps) {

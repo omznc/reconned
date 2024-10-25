@@ -1,11 +1,5 @@
 "use client";
 import {
-	getClubImageUploadUrl,
-	saveClubInformation,
-} from "@/app/dashboard/[clubId]/club/information/_components/club-info.action";
-import { clubInfoSchema } from "@/app/dashboard/[clubId]/club/information/_components/club-info.schema";
-import { Button } from "@/components/ui/button";
-import {
 	FileInput,
 	FileUploader,
 	FileUploaderContent,
@@ -22,18 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Club } from "@prisma/client";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import type { User } from "@prisma/client";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -41,13 +27,41 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { toast } from "sonner";
-import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { userInfoShema } from "@/app/dashboard/(user)/user/settings/_components/user-info.schema";
+import {
+	deleteUserImage,
+	getUserImageUploadUrl,
+	saveUserInformation,
+} from "@/app/dashboard/(user)/user/settings/_components/user-info.action";
+import { Button } from "@/components/ui/button";
 
-interface ClubInfoFormProps {
-	club: Club;
+interface UserInfoFormProps {
+	user: User;
 }
 
-export function ClubInfoForm(props: ClubInfoFormProps) {
+// export const userInfoShema = z.object({
+// 	name: z.string().min(1).max(50),
+// 	email: z.string().email(),
+// 	isPrivate: z.boolean(),
+// 	image: z.string().optional(),
+// 	bio: z.string().optional(),
+// 	location: z.string().optional(),
+// 	website: z.string().optional(),
+// 	phone: z.string().optional(),
+// 	callsign: z.string().optional(),
+// 	gear: z
+// 		.array(
+// 			z.object({
+// 				name: z.string(),
+// 				energy: z.string(),
+// 				fps: z.string(),
+// 			}),
+// 		)
+// 		.optional(),
+// 	id: z.string(),
+// });
+
+export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
 
@@ -55,30 +69,26 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		maxFiles: 1,
 		maxSize: 1024 * 1024 * 4,
 	};
-	const form = useForm<z.infer<typeof clubInfoSchema>>({
-		resolver: zodResolver(clubInfoSchema),
+	const form = useForm<z.infer<typeof userInfoShema>>({
+		resolver: zodResolver(userInfoShema),
 		defaultValues: {
-			id: props.club.id,
-			name: props.club.name || "",
-			location: props.club.location || "",
-			description: props.club.description || "",
-			dateFounded: props.club.dateFounded || new Date(),
-			isAllied: props.club.isAllied,
-			isPrivate: props.club.isPrivate,
-			logo: props.club.logo || undefined,
-			contactPhone: props.club.contactPhone || undefined,
-			contactEmail: props.club.contactEmail || undefined,
+			name: props.user.name,
+			isPrivate: props.user.isPrivate,
+			image: props.user.image || "",
+			bio: props.user.bio || "",
+			location: props.user.location || "",
+			website: props.user.website || "",
+			phone: props.user.phone || "",
+			callsign: props.user.callsign || "",
 		},
-		mode: "onBlur",
 	});
 
-	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
+	async function onSubmit(values: z.infer<typeof userInfoShema>) {
 		setIsLoading(true);
 		try {
 			if (files && files.length > 0) {
-				const resp = await getClubImageUploadUrl({
+				const resp = await getUserImageUploadUrl({
 					file: files[0],
-					id: props.club.id,
 				});
 
 				if (!resp?.data?.url) {
@@ -95,14 +105,14 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					},
 				});
 
-				values.logo = resp.data.url.split("?")[0];
+				values.image = resp.data.url.split("?")[0];
 			}
 
-			await saveClubInformation(values);
+			await saveUserInformation(values);
 
 			setFiles([]);
 
-			toast.success("Podataci o klubu su sačuvani");
+			toast.success("Podataci o korisniku su spašeni");
 		} catch (error) {
 			toast.error("Došlo je do greške prilikom spašavanja podataka");
 		}
@@ -124,13 +134,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Ime kluba* ({form.watch("name")?.length}/
-								{clubInfoSchema.shape.name.maxLength})
+								Ime korisnika* ({form.watch("name")?.length}/
+								{userInfoShema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="ASK Veis" type="text" {...field} />
 							</FormControl>
-							<FormDescription>Javno vidljivo ime vašeg kluba</FormDescription>
+							<FormDescription>Vaše ime</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -145,7 +155,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
-							<FormDescription>Gdje se klub nalazi?</FormDescription>
+							<FormDescription>Gdje se nalazite?</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -153,85 +163,23 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormField
 					control={form.control}
-					name="description"
+					name="bio"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Opis kluba* ({form.watch("description")?.length}/
-								{clubInfoSchema.shape.description.maxLength})
+								Opis* ({form.watch("bio")?.length}/
+								{userInfoShema.shape.bio.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder="Besplatni ćevapi vikendom..."
-									className="resize-none"
+									placeholder="Igram airsoft već 5 godina..."
 									{...field}
 								/>
 							</FormControl>
 							<FormDescription>
-								Ovo je vaša prilika da se istaknete. Šta vaš klub čini posebnim.{" "}
+								Ovo je vaša prilika da se istaknete.
 							</FormDescription>
 							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name="dateFounded"
-					render={({ field }) => (
-						<FormItem className="flex flex-col">
-							<FormLabel>Datum osnivanja*</FormLabel>
-							<Popover>
-								<PopoverTrigger asChild={true}>
-									<FormControl>
-										<Button
-											variant={"outline"}
-											className={cn(
-												"w-full pl-3 text-left font-normal",
-												!field.value && "text-muted-foreground",
-											)}
-										>
-											{field.value ? (
-												format(field.value, "PPP")
-											) : (
-												<span>Pick a date</span>
-											)}
-											<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-										</Button>
-									</FormControl>
-								</PopoverTrigger>
-								<PopoverContent className="w-auto p-0" align="start">
-									<DateTimePicker
-										value={field.value}
-										onChange={field.onChange}
-										granularity="day"
-									/>
-								</PopoverContent>
-							</Popover>
-							<FormDescription>Od kada je klub aktivan?</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name="isAllied"
-					render={({ field }) => (
-						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-							<div className="space-y-0.5">
-								<FormLabel>U savezu ASK FBIH*</FormLabel>
-								<FormDescription>
-									Ako ste dio saveza airsoft klubova u FBIH, odaberite ovu
-									opciju. Provjeriti ćemo vaš status.
-								</FormDescription>
-							</div>
-							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
-							</FormControl>
 						</FormItem>
 					)}
 				/>
@@ -244,8 +192,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<div className="space-y-0.5">
 								<FormLabel>Javni prikaz*</FormLabel>
 								<FormDescription>
-									Dozvolite javno prikazivanje vašeg kluba na ovom sajtu.
-									Preporučujemo da ovo ostavite uključeno.
+									Dozvolite javno prikazivanje vašeg profila.
 								</FormDescription>
 							</div>
 							<FormControl>
@@ -260,10 +207,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormField
 					control={form.control}
-					name="logo"
+					name="image"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Logo kluba</FormLabel>
+							<FormLabel>Profilna slika</FormLabel>
 							<FormControl>
 								<FileUploader
 									value={files}
@@ -309,26 +256,23 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								</FileUploader>
 							</FormControl>
 							<FormDescription>
-								Preporučujemo da dodate vaš logo.
+								Preporučujemo da postavite profilnu sliku.
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 
-				{/* This is a bit broken, doesn't update in prisma (???) TODO: Fix */}
-				{/* {!props.club.logo.includes("default-club-image") && (
+				{!props.user.image?.includes("default-user-image") && (
 					<Button
 						variant={"destructive"}
 						onClick={async () => {
-							await deleteClubImage({
-								id: props.club.id,
-							});
+							await deleteUserImage();
 						}}
 					>
-						Obriši trenutni logo
+						Obriši trenutnu sliku
 					</Button>
-				)} */}
+				)}
 
 				<div>
 					<h3 className="text-lg font-semibold">Kontakt</h3>
@@ -336,20 +280,18 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormField
 					control={form.control}
-					name="contactPhone"
+					name="phone"
 					render={({ field }) => (
-						<FormItem className="flex flex-col items-start">
+						<FormItem>
 							<FormLabel>Telefon</FormLabel>
-							<FormControl className="w-full">
+							<FormControl>
 								<PhoneInput
-									placeholder="063 000 000"
-									{...field}
 									defaultCountry="BA"
+									placeholder="061 123 456"
+									{...field}
 								/>
 							</FormControl>
-							<FormDescription>
-								Ovaj broj telefona će biti javno prikazan za kontakt.
-							</FormDescription>
+							<FormDescription>Broj telefona</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -357,24 +299,34 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormField
 					control={form.control}
-					name="contactEmail"
+					name="website"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>E-mail</FormLabel>
+							<FormLabel>Web stranica</FormLabel>
 							<FormControl>
-								<Input
-									placeholder="airsoft@mojklub.com"
-									type="email"
-									{...field}
-								/>
+								<Input placeholder="https://google.com" {...field} />
 							</FormControl>
-							<FormDescription>
-								Ovaj e-mail će biti javno prikazan za kontakt.
-							</FormDescription>
+							<FormDescription>Web stranica</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
+
+				<FormField
+					control={form.control}
+					name="callsign"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Pozivni znak</FormLabel>
+							<FormControl>
+								<Input placeholder="Veis" {...field} />
+							</FormControl>
+							<FormDescription>Pozivni znak</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
 				<LoaderSubmitButton isLoading={isLoading}>Spasi</LoaderSubmitButton>
 			</form>
 		</Form>

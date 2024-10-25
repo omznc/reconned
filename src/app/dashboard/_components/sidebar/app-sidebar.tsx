@@ -16,6 +16,7 @@ import {
 	Search,
 	Settings2,
 	Square,
+	User,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -156,6 +157,21 @@ const getData = (clubId: string) => ({
 				{
 					title: "Personalizacija",
 					url: "/dashboard/settings/personalization",
+				},
+			],
+		},
+		{
+			title: "Korisnik",
+			url: "#",
+			icon: User,
+			items: [
+				{
+					title: "Pregled",
+					url: "/dashboard/user",
+				},
+				{
+					title: "Postavke",
+					url: "/dashboard/user/settings",
 				},
 			],
 		},

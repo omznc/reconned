@@ -1,4 +1,4 @@
-import { ClubInfoForm } from "@/app/dashboard/[clubId]/club/information/_components/club-info-form";
+import { ClubInfoForm } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info-form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";

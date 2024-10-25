@@ -30,7 +30,7 @@ import {
 	Eye,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { createEventFormSchema } from "@/app/dashboard/[clubId]/events/create/_components/create-event-form.schema";
+import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import {
 	DateTimePicker,
@@ -47,7 +47,7 @@ import {
 import {
 	createEvent,
 	getEventImageUploadUrl,
-} from "@/app/dashboard/[clubId]/events/create/_components/create-event-form.action";
+} from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.action";
 import type { Event } from "@prisma/client";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useParams, useRouter } from "next/navigation";

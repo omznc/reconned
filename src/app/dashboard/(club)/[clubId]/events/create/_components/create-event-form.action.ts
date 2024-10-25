@@ -1,7 +1,7 @@
 "use server";
 
-import { createEventFormSchema } from "@/app/dashboard/[clubId]/events/create/_components/create-event-form.schema";
-import { clubLogoFileSchema } from "@/app/dashboard/[clubId]/club/information/_components/club-info.schema";
+import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
+import { clubLogoFileSchema } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
