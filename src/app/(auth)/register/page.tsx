@@ -18,10 +18,12 @@ import {
 } from "@/components/ui/tooltip";
 import { finalizeRegistration } from "@/app/(auth)/_actions/finalize-registration.action";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
+	const router = useRouter();
 
 	return (
 		<>
@@ -63,7 +65,7 @@ export default function RegisterPage() {
 						);
 
 						if (isClub !== "on") {
-							return;
+							router.push("/dashboard/club/information");
 						}
 
 						if (!success.error) {
