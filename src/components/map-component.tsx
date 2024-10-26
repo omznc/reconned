@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
 import {
-	type Map as LeafletMap,
-	type PM,
 	FeatureGroup,
 	LayerGroup,
+	type Map as LeafletMap,
 	Marker,
-	marker,
+	type PM,
 	Polygon,
-	polygon,
 	Rectangle,
+	marker,
+	polygon,
 } from "leaflet";
+import { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
@@ -41,11 +42,8 @@ export const MapComponent = ({
 	const [mapData, setMapData] = useState<MapData>(
 		defaultMapData || { areas: [], pois: [] },
 	);
-	const renderCount = useRef(0);
 
 	useEffect(() => {
-		renderCount.current += 1;
-
 		if (!mapRef.current) {
 			return;
 		}
