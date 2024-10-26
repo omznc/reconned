@@ -9,15 +9,18 @@ export function UserOverview({ user }: UserOverviewProps) {
 	return (
 		<>
 			<div className="flex gap-4">
-				<Image
-					suppressHydrationWarning={true}
-					src={`${user.image}?v=${user.updatedAt}`} // This will revalidate the browser cache
-					alt={user.name}
-					width={150}
-					height={150}
-					className="h-[150px] w-auto"
-					draggable={false}
-				/>
+				{/* TODO: Handle if unset */}
+				{user.image && (
+					<Image
+						suppressHydrationWarning={true}
+						src={`${user.image}?v=${user.updatedAt}`} // This will revalidate the browser cache
+						alt={user.name}
+						width={150}
+						height={150}
+						className="h-[150px] w-auto"
+						draggable={false}
+					/>
+				)}
 				<div className="flex select-none flex-col gap-1">
 					<h1 className="text-2xl font-semibold">
 						{user.name} {user.callsign && `(${user.callsign})`}

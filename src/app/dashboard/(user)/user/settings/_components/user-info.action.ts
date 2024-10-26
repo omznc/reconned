@@ -35,13 +35,13 @@ export const saveUserInformation = safeActionClient
 export const getUserImageUploadUrl = safeActionClient
 	.schema(userImageFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const url = await getS3FileUploadUrl({
+		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
 			size: parsedInput.file.size,
 			key: `user/${ctx.user.id}/image`,
 		});
 
-		return { url };
+		return resp;
 	});
 
 export const deleteUserImage = safeActionClient.action(async ({ ctx }) => {
@@ -50,8 +50,7 @@ export const deleteUserImage = safeActionClient.action(async ({ ctx }) => {
 			id: ctx.user.id,
 		},
 		data: {
-			image:
-				"https://f003.backblazeb2.com/file/airsoftba/user/default-user-image.png",
+			image: "",
 		},
 	});
 

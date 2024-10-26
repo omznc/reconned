@@ -17,15 +17,18 @@ export function ClubOverview({ club }: ClubOverviewProps) {
 	return (
 		<>
 			<div className="flex gap-4">
-				<Image
-					suppressHydrationWarning={true}
-					src={`${club.logo}?v=${club.updatedAt}`} // This will revalidate the browser cache
-					alt={club.name}
-					width={150}
-					height={150}
-					className="h-[150px] w-auto"
-					draggable={false}
-				/>
+				{/* TODO: Handle if unset */}
+				{club.logo && (
+					<Image
+						suppressHydrationWarning={true}
+						src={`${club.logo}?v=${club.updatedAt}`} // This will revalidate the browser cache
+						alt={club.name}
+						width={150}
+						height={150}
+						className="h-[150px] w-auto"
+						draggable={false}
+					/>
+				)}
 				<div className="flex select-none flex-col gap-1">
 					<h1 className="text-2xl font-semibold">{club.name}</h1>
 					<p className="text-accent-foreground/80">{club.description}</p>

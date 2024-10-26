@@ -1,7 +1,10 @@
 "use server";
 
 import { clubLogoFileSchema } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
-import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
+import {
+	createEventFormSchema,
+	deleteEventImageSchema,
+} from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
@@ -79,11 +82,44 @@ export const getEventImageUploadUrl = safeActionClient
 			throw new Error("You are not authorized to perform this action.");
 		}
 
-		const url = await getS3FileUploadUrl({
+		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
 			size: parsedInput.file.size,
 			key: `event/${parsedInput.id}/cover`,
 		});
 
-		return { url };
+		return resp;
+	});
+
+export const deleteEventImage = safeActionClient
+	.schema(deleteEventImageSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const isManager = await prisma.clubMembership.findFirst({
+			where: {
+				userId: ctx.user.id,
+				role: {
+					in: ["CLUB_OWNER", "MANAGER"],
+				},
+				club: {
+					events: {
+						some: {
+							id: parsedInput.id,
+						},
+					},
+				},
+			},
+		});
+
+		if (!isManager) {
+			throw new Error("You are not authorized to perform this action.");
+		}
+
+		await prisma.event.update({
+			where: {
+				id: parsedInput.id,
+			},
+			data: {
+				coverImage: "",
+			},
+		});
 	});

@@ -24,7 +24,7 @@ model User {
   invitesSent    Invite[]
   ClubMembership ClubMembership[]
 
-  image   String?   @default("https://f003.backblazeb2.com/file/airsoftba/user/default-user-image.png")
+  image   String?
   Session Session[]
   Account Account[]
 
@@ -53,7 +53,7 @@ model Club {
   isAllied  Boolean @default(false)
   isPrivate Boolean @default(false)
 
-  logo String @default("https://f003.backblazeb2.com/file/airsoftba/club/default-club-image.png")
+  logo String
 
   contactPhone String?
   contactEmail String?

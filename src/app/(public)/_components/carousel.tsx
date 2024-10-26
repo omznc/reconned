@@ -31,22 +31,25 @@ export function EventsCarousel(props: CarouselProps) {
 					stopOnMouseEnter: true,
 				}),
 			]}
-			className="border-x border-border/50"
 		>
 			<CarouselContent className="-ml-4 ">
 				{props.events.map((event) => (
+					// TODO: Make this less crap
 					<CarouselItem
 						key={event.id}
 						className="pl-4 bg-white group select-none flex h-[300px] overflow-hidden relative md:basis-1/2 lg:basis-1/3 flex-col "
 					>
-						<Image
-							suppressHydrationWarning={true}
-							src={`${event.coverImage}?v=${event.updatedAt}`}
-							alt={event.name}
-							width={300}
-							height={350}
-							className="size-full border border-b-0 object-cover transition-all"
-						/>
+						{/* TODO: Handle if unset */}
+						{event.coverImage && (
+							<Image
+								suppressHydrationWarning={true}
+								src={`${event.coverImage}?v=${event.updatedAt}`}
+								alt={event.name}
+								width={300}
+								height={350}
+								className="size-full border border-b-0 object-cover transition-all"
+							/>
+						)}
 						<div className="flex flex-col gap-1  md:pb-2 md:group-hover:pb-16 transition-all p-2 border border-t-none">
 							<h3 className="text-xl font-semibold">{event.name}</h3>
 							<p className="text-sm">

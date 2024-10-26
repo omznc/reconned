@@ -88,3 +88,7 @@ export const eventImageFileSchema = z.object({
 	}),
 	id: z.string(),
 });
+
+export const deleteEventImageSchema = z.object({
+	id: z.string(),
+});

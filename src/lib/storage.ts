@@ -50,7 +50,10 @@ export const getS3FileUploadUrl = async (props: {
 		expiresIn: 60 * 5, // 5 minutes
 	});
 
-	return url;
+	return {
+		url,
+		cdnUrl: `${process.env.NEXT_PUBLIC_CDN_URL}/${key}`,
+	};
 };
 
 export const deleteS3File = async (key: string) => {
