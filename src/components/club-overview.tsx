@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import type { Club } from "@prisma/client";
-import { AtSign, Eye, EyeOff, Phone, Pin, User } from "lucide-react";
+import { AtSign, Eye, EyeOff, MapPin, Phone, User } from "lucide-react";
 import Image from "next/image";
 
 interface ClubOverviewProps {
@@ -54,7 +54,7 @@ export function ClubOverview({ club }: ClubOverviewProps) {
 				</Badge>
 				{club.location && (
 					<Badge variant="outline" className="flex items-center gap-1">
-						<Pin className="w-4 h-4" />
+						<MapPin className="w-4 h-4" />
 						{club.location}
 					</Badge>
 				)}

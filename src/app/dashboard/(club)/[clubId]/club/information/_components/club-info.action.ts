@@ -96,7 +96,7 @@ export const deleteClubImage = safeActionClient
 				id: parsedInput.id,
 			},
 			data: {
-				logo: "",
+				logo: null,
 			},
 		});
 

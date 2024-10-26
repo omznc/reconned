@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@prisma/client";
-import { CloudUpload } from "lucide-react";
+import { CloudUpload, Loader2 } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { useState } from "react";
@@ -34,35 +34,20 @@ import {
 	saveUserInformation,
 } from "@/app/dashboard/(user)/user/settings/_components/user-info.action";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import {
+	HoverCard,
+	HoverCardTrigger,
+	HoverCardContent,
+} from "@/components/ui/hover-card";
 
 interface UserInfoFormProps {
 	user: User;
 }
 
-// export const userInfoShema = z.object({
-// 	name: z.string().min(1).max(50),
-// 	email: z.string().email(),
-// 	isPrivate: z.boolean(),
-// 	image: z.string().optional(),
-// 	bio: z.string().optional(),
-// 	location: z.string().optional(),
-// 	website: z.string().optional(),
-// 	phone: z.string().optional(),
-// 	callsign: z.string().optional(),
-// 	gear: z
-// 		.array(
-// 			z.object({
-// 				name: z.string(),
-// 				energy: z.string(),
-// 				fps: z.string(),
-// 			}),
-// 		)
-// 		.optional(),
-// 	id: z.string(),
-// });
-
 export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
+	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
 
 	const dropZoneConfig = {
@@ -284,14 +269,34 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				/>
 
 				{props.user.image && (
-					<Button
-						variant={"destructive"}
-						onClick={async () => {
-							await deleteUserImage();
-						}}
-					>
-						Obriši trenutnu sliku
-					</Button>
+					<HoverCard openDelay={100}>
+						<HoverCardTrigger>
+							<Button
+								type="button"
+								disabled={isDeletingImage}
+								variant={"destructive"}
+								onClick={async () => {
+									setIsDeletingImage(true);
+									await deleteUserImage();
+									setIsDeletingImage(false);
+								}}
+							>
+								{isDeletingImage ? (
+									<Loader2 className="size-5 animate-spin" />
+								) : (
+									"Obriši profilnu sliku"
+								)}
+							</Button>
+						</HoverCardTrigger>
+						<HoverCardContent className="size-full mb-8">
+							<Image
+								src={`${props.user.image}?v=${props.user.updatedAt}`}
+								alt="Club logo"
+								width={200}
+								height={200}
+							/>
+						</HoverCardContent>
+					</HoverCard>
 				)}
 
 				<div>

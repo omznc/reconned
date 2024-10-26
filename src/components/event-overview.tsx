@@ -2,9 +2,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Event } from "@prisma/client";
-import { Eye, EyeOff, Pencil, Pin, User } from "lucide-react";
+import { Eye, EyeOff, MapPin, Pencil, User } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+
+export const MapComponent = dynamic(() =>
+	import("@/components/map-component").then((mod) => mod.MapComponent),
+);
 
 interface EventOverviewProps {
 	event: Event & {
@@ -19,7 +24,6 @@ interface EventOverviewProps {
 export function EventOverview({ event, clubId }: EventOverviewProps) {
 	return (
 		<div className="relative flex flex-col items-center justify-center gap-4 ">
-			{/* TODO: handle if unset */}
 			{event.coverImage && (
 				<>
 					<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
@@ -30,7 +34,7 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 						alt={event.name}
 						width={680}
 						height={380}
-						className="object-cover transition-all w-full h-auto"
+						className="absolute top-0 object-cover transition-all w-full h-auto"
 						draggable={false}
 						priority={true}
 					/>
@@ -38,7 +42,7 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 			)}
 			<div
 				className={cn({
-					"absolute peer-hover:opacity-25 peer-hover:top-[80%] border border-b-0 transition-all h-4/5 min-h-fit p-4 top-1/4 bg-background w-3/4 flex flex-col gap-1":
+					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-3/4 flex flex-col gap-1":
 						event.coverImage,
 				})}
 			>
@@ -83,21 +87,35 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 								variant="outline"
 								className="flex h-fit items-center gap-1"
 							>
-								<Pin className="size-4" />
+								<MapPin className="size-4" />
 								{event.location}
 							</Badge>
 						)}
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.googleMapsLink && (
-						<iframe
-							src={event.googleMapsLink}
-							loading="lazy"
-							referrerPolicy="no-referrer-when-downgrade"
-							className="w-full h-96 border"
-							title="Google Maps"
-						/>
+						<div className="size-full flex flex-col gap-2">
+							<h2 className="text-xl font-semibold">Lokacija</h2>
+							<iframe
+								src={event.googleMapsLink}
+								loading="lazy"
+								referrerPolicy="no-referrer-when-downgrade"
+								className="w-full h-96 border"
+								title="Google Maps"
+							/>
+						</div>
 					)}
+					{event.mapData &&
+						JSON.stringify(event.mapData) !== `{"pois":[],"areas":[]}` && (
+							<div className="size-full flex flex-col gap-2">
+								<h2 className="text-xl font-semibold">Mapa</h2>
+								<MapComponent
+									// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+									defaultMapData={event.mapData as any}
+									readOnly={true}
+								/>
+							</div>
+						)}
 				</div>
 			</div>
 		</div>
