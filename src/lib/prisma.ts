@@ -1,43 +1,9 @@
 import "server-only";
 
 import { PrismaClient } from "@prisma/client";
-import { Prisma } from "@prisma/client/extension";
 
 const prismaClientSingleton = () => {
-	return new PrismaClient().$extends({
-		model: {
-			$allModels: {
-				async exists<T>(
-					this: T,
-					where: Prisma.Args<T, "findFirst">["where"],
-				): Promise<boolean> {
-					const context = Prisma.getExtensionContext(this);
-
-					// biome-ignore lint/suspicious/noExplicitAny: Prisma stuff
-					const result = await (context as any).findFirst({ where });
-					return result !== null;
-				},
-				findManyAndCount<Model, Args>(
-					this: Model,
-					args: Prisma.Exact<Args, Prisma.Args<Model, "findMany">>,
-				): Promise<
-					[
-						Prisma.Result<Model, Args, "findMany">,
-						number,
-						Args extends { take: number } ? number : undefined,
-					]
-				> {
-					return prisma.$transaction([
-						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-						(this as any).findMany(args),
-						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-						(this as any).count({ where: (args as any).where }),
-						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-					]) as any;
-				},
-			},
-		},
-	});
+	return new PrismaClient();
 };
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;

@@ -119,7 +119,7 @@ export const deleteEventImage = safeActionClient
 				id: parsedInput.id,
 			},
 			data: {
-				coverImage: "",
+				coverImage: null,
 			},
 		});
 	});

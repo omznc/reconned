@@ -2,7 +2,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { MailPlus, Pin, Square, User } from "lucide-react";
+import { MailPlus, MapPin, Square, User } from "lucide-react";
 import Link from "next/link";
 
 interface PageProps {
@@ -83,7 +83,7 @@ export default async function Page(props: PageProps) {
 							{event.description}
 						</p>
 						<div className="flex items-center gap-2">
-							<Pin size={16} />
+							<MapPin size={16} />
 							<p>{event.location}</p>
 						</div>
 						<div className="flex items-center gap-2">

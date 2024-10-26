@@ -28,13 +28,19 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
+
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -43,6 +49,7 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { toast } from "sonner";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
+import Image from "next/image";
 
 interface ClubInfoFormProps {
 	club: Club;
@@ -51,6 +58,7 @@ interface ClubInfoFormProps {
 export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
+	const [isDeletingImage, setIsDeletingImage] = useState(false);
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -318,16 +326,36 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				/>
 
 				{props.club.id && props.club.logo && (
-					<Button
-						variant={"destructive"}
-						onClick={async () => {
-							await deleteClubImage({
-								id: props.club.id,
-							});
-						}}
-					>
-						Obriši trenutni logo
-					</Button>
+					<HoverCard openDelay={100}>
+						<HoverCardTrigger>
+							<Button
+								type="button"
+								disabled={isLoading}
+								variant={"destructive"}
+								onClick={async () => {
+									setIsDeletingImage(true);
+									await deleteClubImage({
+										id: props.club.id,
+									});
+									setIsDeletingImage(false);
+								}}
+							>
+								{isDeletingImage ? (
+									<Loader2 className="size-5 animate-spin" />
+								) : (
+									"Obriši trenutni logo"
+								)}
+							</Button>
+						</HoverCardTrigger>
+						<HoverCardContent className="size-full mb-8">
+							<Image
+								src={`${props.club.logo}?v=${props.club.updatedAt}`}
+								alt="Club logo"
+								width={200}
+								height={200}
+							/>
+						</HoverCardContent>
+					</HoverCard>
 				)}
 
 				<div>

@@ -45,14 +45,15 @@ export const getUserImageUploadUrl = safeActionClient
 	});
 
 export const deleteUserImage = safeActionClient.action(async ({ ctx }) => {
-	await prisma.user.update({
+	const user = await prisma.user.update({
 		where: {
 			id: ctx.user.id,
 		},
 		data: {
-			image: "",
+			image: null,
 		},
 	});
+	console.log("Deleted user image", user.image);
 
 	await deleteS3File(`user/${ctx.user.id}/image`);
 

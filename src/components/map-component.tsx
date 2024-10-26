@@ -30,12 +30,14 @@ interface MapData {
 
 interface MapComponentProps {
 	defaultMapData?: MapData;
-	onSaveMapData: (data: MapData) => void;
+	onSaveMapData?: (data: MapData) => void;
+	readOnly?: boolean;
 }
 
 export const MapComponent = ({
 	defaultMapData,
 	onSaveMapData,
+	readOnly = false,
 }: MapComponentProps) => {
 	const mapRef = useRef<LeafletMap | null>(null);
 	const drawnItemsRef = useRef<FeatureGroup | null>(null);
@@ -44,12 +46,10 @@ export const MapComponent = ({
 	);
 
 	useEffect(() => {
-		if (!mapRef.current) {
-			return;
-		}
+		if (!mapRef.current) return;
 
 		drawnItemsRef.current = new FeatureGroup();
-		// clear all layers
+		// Clear all layers
 		mapRef.current.eachLayer((layer) => {
 			if (layer instanceof LayerGroup) {
 				layer.clearLayers();
@@ -57,27 +57,27 @@ export const MapComponent = ({
 		});
 		mapRef.current.addLayer(drawnItemsRef.current);
 
-		mapRef.current.pm.addControls({
-			position: "topleft",
-			drawMarker: true,
-			drawPolygon: true,
-			drawPolyline: false,
-			drawCircle: false,
-			drawCircleMarker: false,
-			drawRectangle: true,
-			editMode: false,
-			cutPolygon: false,
-			dragMode: false,
-			cutCircle: false,
-			deleteLayer: true,
-			drawText: false, // TODO: Enable this at some point
-		});
-	}, []);
+		if (!readOnly) {
+			mapRef.current.pm.addControls({
+				position: "topleft",
+				drawMarker: true,
+				drawPolygon: true,
+				drawPolyline: false,
+				drawCircle: false,
+				drawCircleMarker: false,
+				drawRectangle: true,
+				editMode: false,
+				cutPolygon: false,
+				dragMode: false,
+				cutCircle: false,
+				deleteLayer: true,
+				drawText: false,
+			});
+		}
+	}, [readOnly]);
 
 	useEffect(() => {
-		if (!(mapRef.current && drawnItemsRef.current && defaultMapData)) {
-			return;
-		}
+		if (!(mapRef.current && drawnItemsRef.current && defaultMapData)) return;
 
 		const { areas, pois } = defaultMapData;
 
@@ -103,9 +103,7 @@ export const MapComponent = ({
 	}, [defaultMapData]);
 
 	useEffect(() => {
-		if (!mapRef.current) {
-			return;
-		}
+		if (!mapRef.current || readOnly) return;
 
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const handleDrawCreated = (event: any) => {
@@ -122,7 +120,7 @@ export const MapComponent = ({
 			}
 
 			setMapData(newMapData);
-			onSaveMapData(newMapData);
+			onSaveMapData?.(newMapData);
 		};
 
 		const handleDrawDeleted: PM.CreateEventHandler = (event) => {
@@ -143,7 +141,7 @@ export const MapComponent = ({
 			}
 
 			setMapData(newMapData);
-			onSaveMapData(newMapData);
+			onSaveMapData?.(newMapData);
 		};
 
 		mapRef.current.on("pm:create", handleDrawCreated);
@@ -154,7 +152,7 @@ export const MapComponent = ({
 			mapRef.current?.off("pm:create", handleDrawCreated);
 			mapRef.current?.off("pm:remove", handleDrawDeleted);
 		};
-	}, [mapRef, mapData, onSaveMapData]); // Added mapRef to dependencies
+	}, [mapRef, mapData, onSaveMapData, readOnly]); // Added readOnly as dependency
 
 	const calculateCenter = () => {
 		if (defaultMapData && defaultMapData.areas.length > 0) {

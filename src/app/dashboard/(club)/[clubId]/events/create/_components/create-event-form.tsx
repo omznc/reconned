@@ -49,13 +49,21 @@ import {
 	Calendar as CalendarIcon,
 	CloudUpload,
 	Eye,
+	Loader2,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+	HoverCard,
+	HoverCardTrigger,
+	HoverCardContent,
+} from "@/components/ui/hover-card";
+import Image from "next/image";
+import { Label } from "@/components/ui/label";
 
-const MapComponent = dynamic(
+export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),
 	{
 		ssr: false,
@@ -69,6 +77,8 @@ interface CreateEventFormProps {
 export default function CreateEventForm(props: CreateEventFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isDeletingImage, setIsDeletingImage] = useState(false);
+
 	const router = useRouter();
 	const clubId = useParams<{ clubId: string }>().clubId;
 
@@ -283,16 +293,36 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					)}
 				/>
 				{props.event?.id && props.event?.coverImage && (
-					<Button
-						variant={"destructive"}
-						onClick={async () => {
-							await deleteEventImage({
-								id: props.event?.id as string,
-							});
-						}}
-					>
-						Obriši trenutnu sliku
-					</Button>
+					<HoverCard openDelay={100}>
+						<HoverCardTrigger>
+							<Button
+								type="button"
+								disabled={isLoading}
+								variant={"destructive"}
+								onClick={async () => {
+									setIsDeletingImage(true);
+									await deleteEventImage({
+										id: props.event?.id as string,
+									});
+									setIsDeletingImage(false);
+								}}
+							>
+								{isDeletingImage ? (
+									<Loader2 className="size-5 animate-spin" />
+								) : (
+									"Obriši trenutnu sliku"
+								)}
+							</Button>
+						</HoverCardTrigger>
+						<HoverCardContent className="size-full mb-8">
+							<Image
+								src={`${props.event.coverImage}?v=${props.event.updatedAt}`}
+								alt="Club logo"
+								width={200}
+								height={200}
+							/>
+						</HoverCardContent>
+					</HoverCard>
 				)}
 
 				<FormField
@@ -311,54 +341,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						</FormItem>
 					)}
 				/>
-
-				<div className="grid grid-cols-6 md:grid-cols-12 gap-4">
-					<div className="col-span-6">
-						<FormField
-							control={form.control}
-							name="location"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Lokacija*</FormLabel>
-									<FormControl>
-										<Input placeholder="Livno" type="text" {...field} />
-									</FormControl>
-									<FormDescription>Gdje se ordžava susret?</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-
-					<div className="col-span-6">
-						<FormField
-							control={form.control}
-							name="googleMapsLink"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Google Maps</FormLabel>
-									<FormControl>
-										<Textarea
-											placeholder={`<iframe src="https://www.google.com/maps/embed?pb=...`}
-											{...field}
-										/>
-									</FormControl>
-									<FormDescription>
-										Možete dodati Google Maps embed link.{" "}
-										<Link
-											target="_blank"
-											className="font-semibold flex gap-0.5 items-center"
-											href={`/dashboard/${clubId}/help#google-maps`}
-										>
-											Gdje to naći? <ArrowUpRight className="size-3" />
-										</Link>
-									</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-				</div>
 
 				<div>
 					<h3 className="text-lg font-semibold">Vrijeme</h3>
@@ -551,7 +533,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Privatni susret*</FormLabel>
+								<FormLabel>Privatni susret</FormLabel>
 								<FormDescription>
 									Susret će biti vidljiv samo vašem klubu. Korisno ako planirate
 									trening.
@@ -573,7 +555,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Freelancer prijave*</FormLabel>
+								<FormLabel>Freelancer prijave</FormLabel>
 								<FormDescription>
 									Na susret se mogu prijaviti ljudi koji nisu aktivno u nekom
 									klubu.
@@ -736,12 +718,68 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						/>
 					</div>
 				</div>
-				<MapComponent
-					defaultMapData={form.watch("mapData")}
-					onSaveMapData={(data) => {
-						form.setValue("mapData", data);
-					}}
-				/>
+
+				<div>
+					<h3 className="text-lg font-semibold">Lokacija</h3>
+				</div>
+
+				<div className="grid grid-cols-6 md:grid-cols-12 gap-4">
+					<div className="col-span-6">
+						<FormField
+							control={form.control}
+							name="location"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Lokacija*</FormLabel>
+									<FormControl>
+										<Input placeholder="Livno" type="text" {...field} />
+									</FormControl>
+									<FormDescription>Gdje se ordžava susret?</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
+
+					<div className="col-span-6">
+						<FormField
+							control={form.control}
+							name="googleMapsLink"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Google Maps</FormLabel>
+									<FormControl>
+										<Textarea
+											placeholder={`<iframe src="https://www.google.com/maps/embed?pb=...`}
+											{...field}
+										/>
+									</FormControl>
+									<FormDescription>
+										Možete dodati Google Maps embed link. Ta će se mapa moći
+										prikazati na stranici vašeg susreta.{" "}
+										<Link
+											target="_blank"
+											className="font-semibold flex gap-0.5 items-center"
+											href={`/dashboard/${clubId}/help#google-maps`}
+										>
+											Gdje to naći? <ArrowUpRight className="size-3" />
+										</Link>
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
+				</div>
+				<div className="flex flex-col gap-3">
+					<Label>Mapa</Label>
+					<MapComponent
+						defaultMapData={form.watch("mapData")}
+						onSaveMapData={(data) => {
+							form.setValue("mapData", data);
+						}}
+					/>
+				</div>
 				<LoaderSubmitButton isLoading={isLoading}>
 					{props.event ? "Ažuriraj susret" : "Kreiraj susret"}
 				</LoaderSubmitButton>
