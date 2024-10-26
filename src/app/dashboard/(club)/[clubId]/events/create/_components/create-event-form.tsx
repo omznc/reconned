@@ -1,9 +1,4 @@
 "use client";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type * as z from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -15,45 +10,49 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { format } from "date-fns";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type * as z from "zod";
 
 import {
-	ArrowUpRight,
-	Calendar as CalendarIcon,
-	CloudUpload,
-	Eye,
-} from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+	createEvent,
+	getEventImageUploadUrl,
+} from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.action";
 import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
 	DateTimePicker,
 	initHourFormat,
 } from "@/components/ui/date-time-picker";
-import { bs } from "date-fns/locale";
-import { useEffect, useState } from "react";
 import {
 	FileInput,
 	FileUploader,
 	FileUploaderContent,
 	FileUploaderItem,
 } from "@/components/ui/file-upload";
-import {
-	createEvent,
-	getEventImageUploadUrl,
-} from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.action";
+import { Switch } from "@/components/ui/switch";
 import type { Event } from "@prisma/client";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { bs } from "date-fns/locale";
+import {
+	ArrowUpRight,
+	Calendar as CalendarIcon,
+	CloudUpload,
+	Eye,
+} from "lucide-react";
 import dynamic from "next/dynamic";
-// import MapComponent from "@/components/map-component";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),
