@@ -63,13 +63,15 @@ export const getClubImageUploadUrl = safeActionClient
 			throw new Error("You are not authorized to perform this action.");
 		}
 
-		const url = await getS3FileUploadUrl({
+		const key = `club/${isManager.clubId}/logo`;
+
+		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
 			size: parsedInput.file.size,
-			key: `club/${isManager.clubId}/logo`,
+			key,
 		});
 
-		return { url };
+		return resp;
 	});
 
 export const deleteClubImage = safeActionClient
@@ -94,7 +96,7 @@ export const deleteClubImage = safeActionClient
 				id: parsedInput.id,
 			},
 			data: {
-				logo: "https://f003.backblazeb2.com/file/airsoftba/club/default-club-image.png",
+				logo: "",
 			},
 		});
 

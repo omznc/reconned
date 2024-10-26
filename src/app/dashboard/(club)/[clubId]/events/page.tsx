@@ -2,7 +2,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { MailPlus, Pin, User } from "lucide-react";
+import { MailPlus, Pin, Square, User } from "lucide-react";
 import Link from "next/link";
 
 interface PageProps {
@@ -70,7 +70,9 @@ export default async function Page(props: PageProps) {
 								draggable={false}
 							/>
 						) : (
-							<div className="bg-gray-200 rounded-lg w-24 h-24" />
+							<div className="bg-gray-200 flex items-center justify-center rounded-lg size-full">
+								<Square className="text-foreground size-12" />
+							</div>
 						)}
 					</div>
 					<div className="flex flex-col gap-1">

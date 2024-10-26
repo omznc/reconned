@@ -109,7 +109,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					},
 				});
 
-				values.image = resp.data.url.split("?")[0];
+				values.image = resp.data.cdnUrl;
 			}
 
 			await saveUserInformation(values);
@@ -283,7 +283,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					)}
 				/>
 
-				{!props.user.image?.includes("default-user-image") && (
+				{props.user.image && (
 					<Button
 						variant={"destructive"}
 						onClick={async () => {

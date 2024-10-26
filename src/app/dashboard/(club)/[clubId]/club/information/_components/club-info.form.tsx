@@ -1,5 +1,6 @@
 "use client";
 import {
+	deleteClubImage,
 	getClubImageUploadUrl,
 	saveClubInformation,
 } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
@@ -95,7 +96,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					},
 				});
 
-				values.logo = resp.data.url.split("?")[0];
+				values.logo = resp.data.cdnUrl;
 			}
 
 			await saveClubInformation(values);
@@ -316,8 +317,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 				/>
 
-				{/* This is a bit broken, doesn't update in prisma (???) TODO: Fix */}
-				{/* {!props.club.logo.includes("default-club-image") && (
+				{props.club.id && props.club.logo && (
 					<Button
 						variant={"destructive"}
 						onClick={async () => {
@@ -328,7 +328,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					>
 						Obriši trenutni logo
 					</Button>
-				)} */}
+				)}
 
 				<div>
 					<h3 className="text-lg font-semibold">Kontakt</h3>

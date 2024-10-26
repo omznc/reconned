@@ -9,11 +9,7 @@ const nextConfig = {
 		remotePatterns: [
 			{
 				protocol: "https",
-				hostname: "airsoftba.s3.eu-central-003.backblazeb2.com",
-			},
-			{
-				protocol: "https",
-				hostname: "f003.backblazeb2.com",
+				hostname: process.env.NEXT_PUBLIC_CDN_URL?.split("://")[1],
 			},
 		],
 	},

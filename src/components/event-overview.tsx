@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { Event } from "@prisma/client";
 import { Eye, EyeOff, Pencil, Pin, User } from "lucide-react";
 import Image from "next/image";
@@ -18,22 +19,29 @@ interface EventOverviewProps {
 export function EventOverview({ event, clubId }: EventOverviewProps) {
 	return (
 		<div className="relative flex flex-col items-center justify-center gap-4 ">
-			<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
-			<Image
-				suppressHydrationWarning={true}
-				src={
-					event.coverImage
-						? `${event.coverImage}?v=${event.updatedAt}`
-						: "/default-club-image.png"
-				} // This will revalidate the browser cache
-				alt={event.name}
-				width={680}
-				height={380}
-				className="object-cover transition-all w-full h-auto"
-				draggable={false}
-				priority={true}
-			/>
-			<div className="absolute peer-hover:opacity-25 peer-hover:top-[80%] border border-b-0 transition-all h-4/5 min-h-fit p-4 top-1/4 bg-background w-3/4 flex flex-col gap-1">
+			{/* TODO: handle if unset */}
+			{event.coverImage && (
+				<>
+					<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
+
+					<Image
+						suppressHydrationWarning={true}
+						src={`${event.coverImage}?v=${event.updatedAt}`} // This will revalidate the browser cache
+						alt={event.name}
+						width={680}
+						height={380}
+						className="object-cover transition-all w-full h-auto"
+						draggable={false}
+						priority={true}
+					/>
+				</>
+			)}
+			<div
+				className={cn({
+					"absolute peer-hover:opacity-25 peer-hover:top-[80%] border border-b-0 transition-all h-4/5 min-h-fit p-4 top-1/4 bg-background w-3/4 flex flex-col gap-1":
+						event.coverImage,
+				})}
+			>
 				<div className="relative flex select-none flex-col gap-3">
 					{clubId && (
 						<Button asChild={true}>

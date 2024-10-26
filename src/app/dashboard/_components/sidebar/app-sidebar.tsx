@@ -218,7 +218,7 @@ export function AppSidebar(props: AppSidebarProps) {
 								>
 									{params.clubId ? (
 										<>
-											<div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+											<div className="flex aspect-square size-8 items-center justify-center rounded-lg ">
 												{activeClub?.logo ? (
 													<Image
 														suppressHydrationWarning={true}
@@ -262,7 +262,7 @@ export function AppSidebar(props: AppSidebarProps) {
 								sideOffset={4}
 							>
 								<DropdownMenuLabel className="text-xs text-muted-foreground">
-									Teams
+									Klubovi
 								</DropdownMenuLabel>
 								{props.clubs.map((club) => (
 									<DropdownMenuItem
@@ -287,7 +287,7 @@ export function AppSidebar(props: AppSidebarProps) {
 										data-active={club.id === params.clubId}
 										className="gap-2 p-2 data-[active=true]:bg-accent"
 									>
-										<div className="flex size-6 items-center justify-center rounded-sm border">
+										<div className="flex size-6 items-center justify-center rounded-sm">
 											{club.logo ? (
 												<Image
 													suppressHydrationWarning={true}
@@ -297,7 +297,7 @@ export function AppSidebar(props: AppSidebarProps) {
 													alt={club.name}
 												/>
 											) : (
-												<Square className="size-4" />
+												<Square className="size-4 text-black" />
 											)}
 										</div>
 										{club.name}

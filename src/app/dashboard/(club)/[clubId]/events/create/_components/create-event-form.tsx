@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/file-upload";
 import {
 	createEvent,
+	deleteEventImage,
 	getEventImageUploadUrl,
 } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.action";
 import type { Event } from "@prisma/client";
@@ -142,7 +143,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					},
 				});
 
-				values.coverImage = resp.data.url.split("?")[0];
+				values.coverImage = resp.data.cdnUrl;
 				await createEvent(values).then((resp) => {
 					if (resp?.data) {
 						router.push(`/dashboard/${clubId}/events/${resp.data?.id}`);
@@ -282,6 +283,18 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						</FormItem>
 					)}
 				/>
+				{props.event?.id && props.event?.coverImage && (
+					<Button
+						variant={"destructive"}
+						onClick={async () => {
+							await deleteEventImage({
+								id: props.event?.id as string,
+							});
+						}}
+					>
+						Obriši trenutnu sliku
+					</Button>
+				)}
 
 				<FormField
 					control={form.control}
