@@ -1,15 +1,24 @@
-import Link from "next/link";
-import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { EventCalendar } from "@/components/event-calendar";
 
 export default async function Home() {
-	const user = await isAuthenticated();
+	const events = await prisma.event.findMany({
+		where: {
+			isPrivate: false,
+		},
+		include: {
+			club: {
+				select: {
+					name: true,
+				},
+			},
+		},
+		take: 100,
+	});
 
 	return (
 		<div className="flex flex-col size-full gap-8">
-			I don't know what to have here
-			<Link href="/events" className="underline">
-				heres all the events
-			</Link>
+			<EventCalendar events={events} />
 		</div>
 	);
 }
