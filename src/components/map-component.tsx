@@ -8,6 +8,7 @@ import {
 	type PM,
 	Polygon,
 	Rectangle,
+	divIcon,
 	marker,
 	polygon,
 } from "leaflet";
@@ -16,6 +17,8 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import { Pin } from "lucide-react";
+import ReactDOMServer from "react-dom/server";
 
 interface Poi {
 	lat: number;
@@ -33,6 +36,20 @@ interface MapComponentProps {
 	onSaveMapData?: (data: MapData) => void;
 	readOnly?: boolean;
 }
+
+const generatePinIcon = () => {
+	const iconHTML = ReactDOMServer.renderToString(
+		<div style={{ color: "red" }}>
+			<Pin size={24} />
+		</div>,
+	);
+
+	return divIcon({
+		html: iconHTML,
+		iconSize: [24, 24],
+		iconAnchor: [12, 24],
+	});
+};
 
 export const MapComponent = ({
 	defaultMapData,
@@ -98,7 +115,9 @@ export const MapComponent = ({
 
 		// Load points of interest (POIs)
 		for (const poi of pois) {
-			marker([poi.lat, poi.lng]).addTo(drawnItemsRef.current);
+			marker([poi.lat, poi.lng], { icon: generatePinIcon() }).addTo(
+				drawnItemsRef.current,
+			);
 		}
 	}, [defaultMapData]);
 
