@@ -1,24 +1,26 @@
 "use client";
+import { finalizeRegistration } from "@/app/(auth)/_actions/finalize-registration.action";
+import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import {
+	CardContent,
+	CardDescription,
 	CardHeader,
 	CardTitle,
-	CardDescription,
-	CardContent,
 } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client"; //import the auth client
-import Link from "next/link";
-import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { finalizeRegistration } from "@/app/(auth)/_actions/finalize-registration.action";
-import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { authClient } from "@/lib/auth-client"; //import the auth client
+import { Button } from "@components/ui/button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +32,7 @@ export default function RegisterPage() {
 			<CardHeader>
 				<CardTitle className="text-2xl">Registracija</CardTitle>
 				<CardDescription>
-					Upišite svoj email i lozinku kako bi ste se pridružili svijetu
+					Upisite svoj email i lozinku kako bi ste se pridružili svijetu
 					airsofta.
 				</CardDescription>
 			</CardHeader>
@@ -142,6 +144,7 @@ export default function RegisterPage() {
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
 						Registruj se
 					</LoaderSubmitButton>
+					<GoogleLoginButton isLoading={isLoading} />
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Imate račun? "}

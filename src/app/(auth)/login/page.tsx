@@ -1,4 +1,5 @@
 "use client";
+import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import {
 	CardContent,
@@ -94,6 +95,7 @@ export default function LoginPage() {
 						variant="outline"
 						className="w-full"
 						disabled={isLoading}
+						type="button"
 						onClick={async () => {
 							await authClient.signIn.passkey(
 								{},
@@ -116,6 +118,7 @@ export default function LoginPage() {
 					>
 						Prijavi se pomoću passkeya
 					</Button>
+					<GoogleLoginButton isLoading={isLoading} />
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Nemate račun? "}
