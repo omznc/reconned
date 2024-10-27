@@ -9,21 +9,11 @@ export default async function Page() {
 		return notFound();
 	}
 
-	const userFromDb = await prisma.user.findUnique({
-		where: {
-			id: user.id,
-		},
-	});
-
-	const usersPasskeys = await prisma.passkey.findMany({
+	const passkeys = await prisma.passkey.findMany({
 		where: {
 			userId: user.id,
 		},
 	});
 
-	if (!userFromDb) {
-		return notFound();
-	}
-
-	return <SecuritySettings passkeys={usersPasskeys} />;
+	return <SecuritySettings passkeys={passkeys} />;
 }
