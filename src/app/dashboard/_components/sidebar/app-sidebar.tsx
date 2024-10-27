@@ -51,6 +51,7 @@ import {
 	useRouter,
 	useSearchParams,
 } from "next/navigation";
+import { useCurrentClub } from "@/components/current-club-provider";
 
 const getData = (clubId: string) => ({
 	navMain: [
@@ -181,13 +182,17 @@ export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
 	const router = useRouter();
 	const params = useParams<{ clubId: string }>();
+	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
 	const activeClub = useMemo(
-		() => props.clubs.find((club) => club.id === params.clubId),
-		[props.clubs, params.clubId],
+		() =>
+			props.clubs.find(
+				(club) => club.id === params.clubId || club.id === clubId,
+			),
+		[props.clubs, params.clubId, clubId],
 	);
-	const data = getData(params.clubId);
+	const data = getData(params.clubId ?? clubId);
 
 	useEffect(() => {
 		if (searchParams.get("autoSelectFirst") && !params.clubId) {
@@ -199,11 +204,16 @@ export function AppSidebar(props: AppSidebarProps) {
 	}, [params.clubId, props.clubs, searchParams]);
 
 	useEffect(() => {
-		console.log("Path changed", path);
 		if (sidebar.isMobile) {
 			sidebar.setOpenMobile(false);
 		}
 	}, [path, sidebar.isMobile]);
+
+	useEffect(() => {
+		if (activeClub) {
+			setClubId?.(activeClub.id);
+		}
+	}, [activeClub, setClubId]);
 
 	return (
 		<Sidebar collapsible="icon">
@@ -216,7 +226,7 @@ export function AppSidebar(props: AppSidebarProps) {
 									size="lg"
 									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 								>
-									{params.clubId ? (
+									{clubId ? (
 										<>
 											<div className="flex aspect-square size-8 items-center justify-center rounded-lg ">
 												{activeClub?.logo ? (
@@ -270,21 +280,13 @@ export function AppSidebar(props: AppSidebarProps) {
 										onClick={() => {
 											const currentFullUrl = window.location.href;
 
-											if (
-												!(
-													params.clubId &&
-													currentFullUrl.includes(params.clubId)
-												)
-											) {
+											if (!(clubId && currentFullUrl.includes(clubId))) {
 												return router.push(`/dashboard/${club.id}`);
 											}
-											const newUrl = currentFullUrl.replace(
-												params.clubId,
-												club.id,
-											);
+											const newUrl = currentFullUrl.replace(clubId, club.id);
 											router.push(newUrl);
 										}}
-										data-active={club.id === params.clubId}
+										data-active={club.id === clubId}
 										className="gap-2 p-2 data-[active=true]:bg-accent"
 									>
 										<div className="flex size-6 items-center justify-center rounded-sm">
@@ -318,7 +320,7 @@ export function AppSidebar(props: AppSidebarProps) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				{params.clubId && <NavMain items={data.navMain} />}
+				{clubId && <NavMain items={data.navMain} />}
 				<NavApp items={data.navApp} />
 			</SidebarContent>
 			<SidebarFooter>
