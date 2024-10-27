@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { Button } from "@components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -89,6 +90,32 @@ export default function LoginPage() {
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
 						Prijavi se
 					</LoaderSubmitButton>
+					<Button
+						variant="outline"
+						className="w-full"
+						disabled={isLoading}
+						onClick={async () => {
+							await authClient.signIn.passkey(
+								{},
+								{
+									onRequest: () => {
+										setIsLoading(true);
+									},
+									onResponse: () => {
+										setIsLoading(false);
+									},
+									onSuccess: () => {
+										router.push("/");
+									},
+									onError: () => {
+										setIsError(true);
+									},
+								},
+							);
+						}}
+					>
+						Prijavi se pomoću passkeya
+					</Button>
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Nemate račun? "}

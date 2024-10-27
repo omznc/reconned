@@ -64,6 +64,10 @@ export default function RegisterPage() {
 							},
 						);
 
+						if (success.error) {
+							return;
+						}
+
 						if (isClub !== "on") {
 							router.push("/");
 						}
