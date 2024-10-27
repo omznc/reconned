@@ -18,7 +18,18 @@ import {
 	User,
 } from "lucide-react";
 
-import Image from "next/image";
+import { NavApp } from "@/app/dashboard/_components/sidebar/nav-app";
+import { NavMain } from "@/app/dashboard/_components/sidebar/nav-main";
+import { NavUser } from "@/app/dashboard/_components/sidebar/nav-user";
+import { useCurrentClub } from "@/components/current-club-provider";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
 	Sidebar,
 	SidebarContent,
@@ -30,20 +41,9 @@ import {
 	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { NavMain } from "@/app/dashboard/_components/sidebar/nav-main";
-import { NavApp } from "@/app/dashboard/_components/sidebar/nav-app";
-import { NavUser } from "@/app/dashboard/_components/sidebar/nav-user";
-import type { Club, ClubMembership } from "@prisma/client";
-import {
-	DropdownMenu,
-	DropdownMenuTrigger,
-	DropdownMenuContent,
-	DropdownMenuLabel,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { useEffect, useMemo } from "react";
 import { ROLE_TRANSLATIONS } from "@/lib/utils";
+import type { Club, ClubMembership } from "@prisma/client";
+import Image from "next/image";
 import {
 	redirect,
 	useParams,
@@ -51,7 +51,7 @@ import {
 	useRouter,
 	useSearchParams,
 } from "next/navigation";
-import { useCurrentClub } from "@/components/current-club-provider";
+import { useEffect, useMemo } from "react";
 
 const getData = (clubId: string) => ({
 	navMain: [
@@ -166,6 +166,10 @@ const getData = (clubId: string) => ({
 				{
 					title: "Postavke",
 					url: "/dashboard/user/settings",
+				},
+				{
+					title: "Sigurnost",
+					url: "/dashboard/user/security",
 				},
 			],
 		},
