@@ -18,7 +18,7 @@ import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import { Pin } from "lucide-react";
-import ReactDOMServer from "react-dom/server";
+import reactDomServer from "react-dom/server";
 
 interface Poi {
 	lat: number;
@@ -38,14 +38,14 @@ interface MapComponentProps {
 }
 
 const generatePinIcon = () => {
-	const iconHTML = ReactDOMServer.renderToString(
+	const iconHtml = reactDomServer.renderToString(
 		<div style={{ color: "red" }}>
 			<Pin size={24} />
 		</div>,
 	);
 
 	return divIcon({
-		html: iconHTML,
+		html: iconHtml,
 		iconSize: [24, 24],
 		iconAnchor: [12, 24],
 	});

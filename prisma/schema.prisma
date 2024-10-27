@@ -38,7 +38,7 @@ model User {
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Passkey   Passkey[]
+  passkeys  Passkey[]
 
   @@map("user")
 }
