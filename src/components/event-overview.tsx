@@ -1,3 +1,4 @@
+import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -44,10 +45,12 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 				className={cn({
 					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-3/4 flex flex-col gap-1":
 						event.coverImage,
+					"border p-4 bg-background w-full flex flex-col gap-1":
+						!event.coverImage,
 				})}
 			>
 				<div className="relative flex select-none flex-col gap-3">
-					{clubId && (
+					{clubId ? (
 						<Button asChild={true}>
 							<Link
 								className="absolute top-0 right-0 flex items-center gap-1 h-fit w-fit"
@@ -57,13 +60,15 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 								Izmjeni susret
 							</Link>
 						</Button>
+					) : (
+						<div className="absolute top-0 right-0 flex items-center gap-1 h-fit w-fit">
+							<AddEventToCalendarButton event={event} />
+						</div>
 					)}
-					<h1
-						data-editable={Boolean(clubId)}
-						className="text-4xl font-semibold w-full data-[editable=true]:w-[calc(100%-150px)]"
-					>
+					<h1 className="text-4xl font-semibold w-full w-[calc(100%-150px)]">
 						{event.name}
 					</h1>
+
 					<div className="flex flex-wrap gap-1 -mt-2">
 						<Badge variant="outline" className="flex h-fit items-center gap-1">
 							<User className="size-4" />

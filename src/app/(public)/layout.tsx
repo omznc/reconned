@@ -1,6 +1,5 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import DotPattern from "@/components/ui/dot-pattern";
 import type { ReactNode } from "react";
 
 export default function RootLayout({
@@ -16,7 +15,7 @@ export default function RootLayout({
 					{children}
 				</div>
 			</div>
-			<DotPattern className="-z-10 opacity-30" />
+			{/* <DotPattern className="-z-10 opacity-30" /> */}
 			<Footer />
 		</>
 	);
