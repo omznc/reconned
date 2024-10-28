@@ -21,6 +21,7 @@ import { Button } from "@components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -70,15 +71,17 @@ export default function RegisterPage() {
 							return;
 						}
 
-						if (isClub !== "on") {
-							router.push("/");
-						}
-
 						if (!success.error) {
 							await finalizeRegistration({
 								asClub: isClub === "on",
 							});
 						}
+
+						toast.success(
+							"Uspješno ste se registrovali! Provjerite svoj email kako bi ste potvrdili registraciju.",
+						);
+
+						router.push("/login");
 					}}
 					className="grid gap-4"
 				>

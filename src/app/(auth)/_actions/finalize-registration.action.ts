@@ -1,9 +1,9 @@
 "use server";
 
-import { z } from "zod";
-import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 const schema = z.object({
 	asClub: z.boolean(),
@@ -29,6 +29,4 @@ export const finalizeRegistration = safeActionClient
 				},
 			},
 		});
-
-		redirect("/dashboard/club/information");
 	});
