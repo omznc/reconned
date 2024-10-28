@@ -14,6 +14,7 @@ import { Button } from "@components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -53,8 +54,14 @@ export default function LoginPage() {
 								onSuccess: () => {
 									router.push("/");
 								},
-								onError: () => {
-									setIsError(true);
+								onError: (ctx) => {
+									if (ctx.error.status === 403) {
+										toast.error(
+											"Vaš račun nije verificiran. Molimo provjerite svoj email.",
+										);
+									} else {
+										setIsError(true);
+									}
 								},
 							},
 						);

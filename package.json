@@ -47,6 +47,7 @@
 		"react-hook-form": "^7.53.1",
 		"react-leaflet": "5.0.0-rc.1",
 		"react-phone-number-input": "^3.4.9",
+		"resend": "^4.0.0",
 		"sharp": "^0.33.5",
 		"sonner": "^1.5.0",
 		"tailwind-merge": "^2.5.4",

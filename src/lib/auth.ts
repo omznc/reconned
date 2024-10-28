@@ -1,3 +1,4 @@
+import { sendInviteAction } from "@/app/(auth)/_actions/send-invite-action";
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -12,6 +13,18 @@ export const auth = betterAuth({
 	}),
 	emailAndPassword: {
 		enabled: true,
+		requireEmailVerification: true,
+	},
+	emailVerification: {
+		sendVerificationEmail: async (user, url) => {
+			await sendInviteAction({
+				to: user.email,
+				subject: "Verify your email address",
+				name: user.name,
+				inviteLink: url,
+			});
+		},
+		sendOnSignUp: true,
 	},
 	socialProviders: {
 		google: {
