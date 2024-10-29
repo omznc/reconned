@@ -59,7 +59,11 @@ export function Header() {
 							</Avatar>
 						) : (
 							<Button asChild={true} suppressHydrationWarning={true}>
-								<Link suppressHydrationWarning={true} href="/login">
+								<Link
+									className="w-full md:w-fit"
+									suppressHydrationWarning={true}
+									href="/login"
+								>
 									Prijava
 								</Link>
 							</Button>
