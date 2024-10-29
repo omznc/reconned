@@ -10,6 +10,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 
 type BreadcrumbsProps = {};
 
@@ -23,24 +24,27 @@ export function Breadcrumbs(props: BreadcrumbsProps) {
 				<Separator orientation="vertical" className="hidden md:flex mr-2 h-4" />
 				<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
 					<BreadcrumbList>
-						{sections.map((section, index) => (
-							<>
-								<BreadcrumbItem key={`breadcrumb-${section}-${index}`}>
-									<BreadcrumbLink
-										className="truncate"
-										href={`/${sections.slice(0, index + 1).join("/")}`}
-									>
-										{TRANSLATIONS[section as keyof typeof TRANSLATIONS] ||
-											section}
-									</BreadcrumbLink>
-								</BreadcrumbItem>
-								{index < sections.length - 1 && (
-									<BreadcrumbSeparator
-										key={`breadcrumb-separator-${section}-${index}`}
-									/>
-								)}
-							</>
-						))}
+						{sections.map((section, index) => {
+							const sectionKey = `${section}-${index}-${sections.slice(0, index + 1).join("/")}`;
+							return (
+								<Fragment key={sectionKey}>
+									<BreadcrumbItem key={`breadcrumb-${sectionKey}`}>
+										<BreadcrumbLink
+											className="truncate"
+											href={`/${sections.slice(0, index + 1).join("/")}`}
+										>
+											{TRANSLATIONS[section as keyof typeof TRANSLATIONS] ||
+												section}
+										</BreadcrumbLink>
+									</BreadcrumbItem>
+									{index < sections.length - 1 && (
+										<BreadcrumbSeparator
+											key={`breadcrumb-separator-${sectionKey}`}
+										/>
+									)}
+								</Fragment>
+							);
+						})}
 					</BreadcrumbList>
 				</Breadcrumb>
 			</div>

@@ -17,11 +17,6 @@ const geistMono = localFont({
 	weight: "100 900",
 });
 
-export const metadata: Metadata = {
-	title: "Airsoft BIH",
-	description: "Description pending",
-};
-
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -47,3 +42,11 @@ export default function RootLayout({
 		</html>
 	);
 }
+
+export const metadata: Metadata = {
+	title: "AirsoftBIH",
+	description: "Upravljanje vašim klubovima i događajima",
+	metadataBase: process.env.BETTER_AUTH_URL
+		? new URL(process.env.BETTER_AUTH_URL)
+		: undefined,
+};

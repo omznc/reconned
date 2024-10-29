@@ -35,3 +35,33 @@ export default async function Page(props: PageProps) {
 		</div>
 	);
 }
+
+export async function generateMetadata(props: PageProps) {
+	const params = await props.params;
+
+	const club = await prisma.club.findFirst({
+		where: {
+			id: params.id,
+			isPrivate: false,
+		},
+	});
+
+	if (!club) {
+		return notFound();
+	}
+
+	return {
+		title: `${club.name} - AirsoftBIH`,
+		description: club.description?.slice(0, 160) ?? "Airsoft klub",
+		openGraph: {
+			images: [
+				{
+					url: club.logo,
+					width: 1200,
+					height: 630,
+					alt: club.name,
+				},
+			],
+		},
+	};
+}

@@ -36,3 +36,38 @@ export default async function Page(props: PageProps) {
 		</div>
 	);
 }
+export async function generateMetadata(props: PageProps) {
+	const params = await props.params;
+
+	const event = await prisma.event.findFirst({
+		where: {
+			id: params.id,
+			isPrivate: false,
+		},
+		include: {
+			_count: {
+				select: {
+					invites: true,
+					registrations: true,
+				},
+			},
+		},
+	});
+
+	if (!event) {
+		return notFound();
+	}
+
+	return {
+		title: `${event.name} - AirsoftBIH`,
+		description: event.description.slice(0, 160),
+		openGraph: {
+			images: [
+				{
+					url: event.coverImage,
+					alt: event.name,
+				},
+			],
+		},
+	};
+}
