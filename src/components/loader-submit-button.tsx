@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Loader2Icon } from "lucide-react";
+import { LoaderIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface LoaderSubmitButtonProps {
@@ -25,7 +25,7 @@ export function LoaderSubmitButton(props: LoaderSubmitButtonProps) {
 			className={cn("flex items-center justify-center gap-2", props.className)}
 		>
 			{props.isLoading ? (
-				<Loader2Icon className="h-4 w-4 animate-spin" />
+				<LoaderIcon className="h-4 w-4 animate-spin" />
 			) : (
 				props.children
 			)}

@@ -50,7 +50,7 @@ import {
 	Calendar as CalendarIcon,
 	CloudUpload,
 	Eye,
-	Loader2,
+	Loader,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -210,7 +210,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								}}
 							>
 								{isLoading ? (
-									<Loader2 className="animate-spin size-4" />
+									<Loader className="animate-spin size-4" />
 								) : (
 									"Obriši susret"
 								)}
@@ -340,7 +340,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								}}
 							>
 								{isDeletingImage ? (
-									<Loader2 className="size-5 animate-spin" />
+									<Loader className="size-5 animate-spin" />
 								) : (
 									"Obriši trenutnu sliku"
 								)}

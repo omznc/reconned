@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@prisma/client";
-import { CloudUpload, Loader2 } from "lucide-react";
+import { CloudUpload, Loader } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { useState } from "react";
@@ -282,7 +282,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								}}
 							>
 								{isDeletingImage ? (
-									<Loader2 className="size-5 animate-spin" />
+									<Loader className="size-5 animate-spin" />
 								) : (
 									"Obriši profilnu sliku"
 								)}

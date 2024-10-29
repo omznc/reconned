@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
+import { Calendar as CalendarIcon, Loader } from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -212,7 +212,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								}}
 							>
 								{isLoading ? (
-									<Loader2 className="animate-spin size-4" />
+									<Loader className="animate-spin size-4" />
 								) : (
 									"Obriši klub"
 								)}
@@ -439,7 +439,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								}}
 							>
 								{isDeletingImage ? (
-									<Loader2 className="size-5 animate-spin" />
+									<Loader className="size-5 animate-spin" />
 								) : (
 									"Obriši trenutni logo"
 								)}
