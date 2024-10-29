@@ -17,7 +17,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, Cog, LogOut, Sparkles } from "lucide-react";
+import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export function NavUser() {
@@ -77,15 +77,6 @@ export function NavUser() {
 								<Link href="/support-us" className="cursor-pointer">
 									<Sparkles />
 									Podrži razvoj
-								</Link>
-							</DropdownMenuItem>
-							<DropdownMenuItem asChild={true}>
-								<Link
-									href="/dashboard/user/settings"
-									className="cursor-pointer"
-								>
-									<Cog />
-									Postavke korisnika
 								</Link>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
