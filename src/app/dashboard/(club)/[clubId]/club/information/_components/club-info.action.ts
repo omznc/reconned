@@ -3,34 +3,38 @@ import {
 	clubInfoSchema,
 	clubLogoFileSchema,
 	deleteClubImageSchema,
+	deleteClubSchema,
 } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export const saveClubInformation = safeActionClient
 	.schema(clubInfoSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
+		if (parsedInput.id) {
+			const isManager = await prisma.clubMembership.findFirst({
+				where: {
+					userId: ctx.user.id,
+					role: {
+						in: ["CLUB_OWNER", "MANAGER"],
+					},
+					clubId: parsedInput.id,
 				},
-				clubId: parsedInput.id,
-			},
-		});
+			});
 
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
+			if (!isManager) {
+				throw new Error("You are not authorized to perform this action.");
+			}
 		}
 
-		const club = await prisma.club.update({
+		const club = await prisma.club.upsert({
 			where: {
-				id: isManager.clubId,
+				id: parsedInput.id || "",
 			},
-			data: {
+			update: {
 				name: parsedInput.name,
 				location: parsedInput.location,
 				description: parsedInput.description,
@@ -41,9 +45,27 @@ export const saveClubInformation = safeActionClient
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
 			},
+			create: {
+				name: parsedInput.name,
+				location: parsedInput.location,
+				description: parsedInput.description,
+				dateFounded: parsedInput.dateFounded,
+				isAllied: parsedInput.isAllied,
+				isPrivate: parsedInput.isPrivate,
+				logo: parsedInput.logo,
+				contactPhone: parsedInput.contactPhone,
+				contactEmail: parsedInput.contactEmail,
+				members: {
+					create: {
+						userId: ctx.user.id,
+						role: "CLUB_OWNER",
+					},
+				},
+			},
 		});
 
 		revalidatePath(`/dashboard/club/information?club=${club.id}`);
+		return { id: club.id };
 	});
 
 export const getClubImageUploadUrl = safeActionClient
@@ -104,4 +126,53 @@ export const deleteClubImage = safeActionClient
 		revalidatePath(`/dashboard/club/information?club=${parsedInput.id}`);
 
 		return { success: true };
+	});
+
+export const deleteClub = safeActionClient
+	.schema(deleteClubSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const isManager = await prisma.clubMembership.findFirst({
+			where: {
+				userId: ctx.user.id,
+				role: {
+					in: ["CLUB_OWNER", "MANAGER"],
+				},
+				clubId: parsedInput.id,
+			},
+		});
+
+		if (!isManager) {
+			const wait = await prisma.clubMembership.findFirst({
+				where: {
+					userId: ctx.user.id,
+					clubId: parsedInput.id,
+				},
+			});
+			throw new Error(`You are not authorized to perform this action. ${wait}`);
+		}
+
+		await Promise.all([
+			prisma.club.delete({
+				where: {
+					id: parsedInput.id,
+				},
+			}),
+			await deleteClubImage({
+				id: parsedInput.id,
+			}),
+		]);
+
+		const remaining = await prisma.club.count({
+			where: {
+				members: {
+					some: {
+						userId: ctx.user.id,
+					},
+				},
+			},
+		});
+
+		revalidatePath(`/clubs/${parsedInput.id}`);
+		revalidatePath(`/dashboard/${parsedInput.id}`);
+		redirect(remaining > 0 ? "/dashboard?autoSelectFirst=true" : "/");
 	});

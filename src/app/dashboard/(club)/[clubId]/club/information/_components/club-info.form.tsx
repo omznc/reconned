@@ -1,5 +1,6 @@
 "use client";
 import {
+	deleteClub,
 	deleteClubImage,
 	getClubImageUploadUrl,
 	saveClubInformation,
@@ -50,15 +51,19 @@ import type { z } from "zod";
 import { toast } from "sonner";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
 
 interface ClubInfoFormProps {
-	club: Club;
+	club?: Club;
 }
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
+	const router = useRouter();
+	const confirm = useConfirm();
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -67,16 +72,16 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const form = useForm<z.infer<typeof clubInfoSchema>>({
 		resolver: zodResolver(clubInfoSchema),
 		defaultValues: {
-			id: props.club.id,
-			name: props.club.name || "",
-			location: props.club.location || "",
-			description: props.club.description || "",
-			dateFounded: props.club.dateFounded || new Date(),
-			isAllied: props.club.isAllied,
-			isPrivate: props.club.isPrivate,
-			logo: props.club.logo || undefined,
-			contactPhone: props.club.contactPhone || undefined,
-			contactEmail: props.club.contactEmail || undefined,
+			id: props.club?.id || "",
+			name: props.club?.name || "",
+			location: props.club?.location || "",
+			description: props.club?.description || "",
+			dateFounded: props.club?.dateFounded || new Date(),
+			isAllied: props.club?.isAllied,
+			isPrivate: props.club?.isPrivate,
+			logo: props.club?.logo || undefined,
+			contactPhone: props.club?.contactPhone || undefined,
+			contactEmail: props.club?.contactEmail || undefined,
 		},
 		mode: "onBlur",
 	});
@@ -84,9 +89,15 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
-			if (files && files.length > 0) {
+			/**
+			 * If editing a club, and the logo changes, upload it.
+			 */
+			if (files && files.length > 0 && props.club?.id) {
 				const resp = await getClubImageUploadUrl({
-					file: files[0],
+					file: {
+						type: files[0].type,
+						size: files[0].size,
+					},
 					id: props.club.id,
 				});
 
@@ -107,13 +118,57 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				values.logo = resp.data.cdnUrl;
 			}
 
-			await saveClubInformation(values);
+			const resp = await saveClubInformation(values);
+			const newClubId = resp?.data?.id;
+
+			/**
+			 * If creating a new club with a logo, upload it after the save, and re-save the club with the new logo URL.
+			 */
+			if (files && files.length > 0 && !props.club?.id) {
+				if (!newClubId) {
+					toast.error("Došlo je do greške prilikom kreiranja kluba");
+					return;
+				}
+				const resp = await getClubImageUploadUrl({
+					file: {
+						type: files[0].type,
+						size: files[0].size,
+					},
+					id: newClubId,
+				});
+
+				if (!resp?.data?.url) {
+					toast.error("Došlo je do greške prilikom uploada slike");
+					return;
+				}
+
+				await fetch(resp.data?.url, {
+					method: "PUT",
+					body: files[0],
+					headers: {
+						"Content-Type": files[0].type,
+						"Content-Length": files[0].size.toString(),
+					},
+				});
+
+				await saveClubInformation({
+					...values,
+					logo: resp.data.cdnUrl,
+					id: newClubId,
+				});
+			}
+
+			if (!props.club?.id) {
+				router.push(`/dashboard/${newClubId}/club`);
+			}
 
 			setFiles([]);
 
-			toast.success("Podataci o klubu su sačuvani");
+			toast.success(
+				props.club?.id ? "Klub je dodan" : "Podataci o klubu su sačuvani",
+			);
 		} catch (error) {
-			toast.error("Došlo je do greške prilikom spašavanja podataka");
+			toast.error("Došlo je do greške.");
 		}
 		setIsLoading(false);
 	}
@@ -229,7 +284,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>U savezu ASK FBIH*</FormLabel>
+								<FormLabel>U savezu ASK FBIH</FormLabel>
 								<FormDescription>
 									Ako ste dio saveza airsoft klubova u FBIH, odaberite ovu
 									opciju. Provjeriti ćemo vaš status.
@@ -251,7 +306,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Privatni klub*</FormLabel>
+								<FormLabel>Privatni klub</FormLabel>
 								<FormDescription>
 									Sakrijte prikaz kliba javnosti. Preporučujemo da ovo ostavite
 									isključeno.
@@ -325,7 +380,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 				/>
 
-				{props.club.id && props.club.logo && (
+				{props.club?.id && props.club?.logo && (
 					<HoverCard openDelay={100}>
 						<HoverCardTrigger>
 							<Button
@@ -333,6 +388,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								disabled={isLoading}
 								variant={"destructive"}
 								onClick={async () => {
+									if (!props.club?.id) return;
+
 									setIsDeletingImage(true);
 									await deleteClubImage({
 										id: props.club.id,
@@ -404,6 +461,49 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 				/>
 				<LoaderSubmitButton isLoading={isLoading}>Spasi</LoaderSubmitButton>
+
+				{props.club && (
+					<>
+						<div>
+							<h3 className="text-lg font-semibold">Opasno područije</h3>
+						</div>
+						<FormItem className="flex flex-col items-start">
+							<FormLabel>Brisanje kluba</FormLabel>
+							<FormControl className="w-full">
+								<Button
+									variant={"destructive"}
+									type="button"
+									disabled={isLoading}
+									className="w-fit"
+									onClick={async () => {
+										const resp = await confirm({
+											title: "Jeste li sigurni?",
+											body: "Ako obrišete klub, nećete ga moći vratiti nazad.",
+											actionButtonVariant: "destructive",
+											actionButton: `Obriši ${props.club?.name}`,
+											cancelButton: "Ne, vrati se",
+										});
+										if (resp) {
+											setIsLoading(true);
+											await deleteClub({
+												id: props.club?.id ?? "",
+											});
+											setIsLoading(false);
+										}
+									}}
+								>
+									{isLoading ? (
+										<Loader2 className="animate-spin size-4" />
+									) : (
+										"Obriši klub"
+									)}
+								</Button>
+							</FormControl>
+							<FormDescription>Ova akcija je nepovratna.</FormDescription>
+							<FormMessage />
+						</FormItem>
+					</>
+				)}
 			</form>
 		</Form>
 	);

@@ -68,9 +68,9 @@ model Club {
 
 model ClubMembership {
   id     String @id @default(cuid())
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
-  club   Club   @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId String
   role   Role   @default(USER)
 
@@ -82,7 +82,7 @@ model Event {
   id          String @id @default(cuid())
   name        String
   description String
-  club        Club   @relation(fields: [clubId], references: [id])
+  club        Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId      String
 
   coverImage String?

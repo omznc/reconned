@@ -14,7 +14,8 @@ import {
 import { Input } from "@components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Passkey } from "@prisma/client";
-import { LockIcon, Trash2 } from "lucide-react";
+import { formatDate } from "date-fns";
+import { KeyRound, LockIcon, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -114,8 +115,10 @@ export function SecuritySettings({ passkeys }: { passkeys: Passkey[] }) {
 							key={passkey.id}
 							className="flex items-center space-x-2 p-2 px-4 bg-sidebar border"
 						>
-							<span className="text-sm font-semibold">
-								{passkey.name ?? "Passkey"} - {passkey.createdAt?.toISOString()}
+							<span className="text-sm ">
+								{passkey.name ?? "Passkey"} -{" "}
+								{passkey.createdAt &&
+									formatDate(passkey.createdAt, "dd.MM.yyyy")}
 							</span>
 							<Button
 								type="button"
@@ -148,6 +151,7 @@ export function SecuritySettings({ passkeys }: { passkeys: Passkey[] }) {
 				<p className="text-sm text-muted-foreground">
 					<Button
 						type="button"
+						className="w-full"
 						disabled={isLoading}
 						onClick={async () => {
 							await authClient.passkey.addPasskey(
@@ -167,6 +171,7 @@ export function SecuritySettings({ passkeys }: { passkeys: Passkey[] }) {
 							);
 						}}
 					>
+						<KeyRound className="w-4 h-4 mr-2" />
 						Dodaj novi passkey
 					</Button>
 				</p>
