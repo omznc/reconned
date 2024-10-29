@@ -53,6 +53,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface ClubInfoFormProps {
 	club?: Club;
@@ -179,6 +180,46 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				onSubmit={form.handleSubmit(onSubmit)}
 				className="space-y-4 max-w-3xl"
 			>
+				{props.club && (
+					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
+						<div className="flex flex-col">
+							<AlertTitle>Mijenjate podatke o klubu</AlertTitle>
+							<AlertDescription>
+								Promjene će biti vidljive odmah nakon što ih sačuvate.
+							</AlertDescription>
+						</div>
+						<div className="flex gap-1">
+							<Button
+								variant={"destructive"}
+								type="button"
+								disabled={isLoading}
+								className="w-fit"
+								onClick={async () => {
+									const resp = await confirm({
+										title: "Jeste li sigurni?",
+										body: "Ako obrišete klub, nećete ga moći vratiti nazad.",
+										actionButtonVariant: "destructive",
+										actionButton: `Obriši ${props.club?.name}`,
+										cancelButton: "Ne, vrati se",
+									});
+									if (resp) {
+										setIsLoading(true);
+										await deleteClub({
+											id: props.club?.id ?? "",
+										});
+										setIsLoading(false);
+									}
+								}}
+							>
+								{isLoading ? (
+									<Loader2 className="animate-spin size-4" />
+								) : (
+									"Obriši klub"
+								)}
+							</Button>
+						</div>
+					</Alert>
+				)}
 				<div>
 					<h3 className="text-lg font-semibold">Općento</h3>
 				</div>
@@ -461,49 +502,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 				/>
 				<LoaderSubmitButton isLoading={isLoading}>Spasi</LoaderSubmitButton>
-
-				{props.club && (
-					<>
-						<div>
-							<h3 className="text-lg font-semibold">Opasno područije</h3>
-						</div>
-						<FormItem className="flex flex-col items-start">
-							<FormLabel>Brisanje kluba</FormLabel>
-							<FormControl className="w-full">
-								<Button
-									variant={"destructive"}
-									type="button"
-									disabled={isLoading}
-									className="w-fit"
-									onClick={async () => {
-										const resp = await confirm({
-											title: "Jeste li sigurni?",
-											body: "Ako obrišete klub, nećete ga moći vratiti nazad.",
-											actionButtonVariant: "destructive",
-											actionButton: `Obriši ${props.club?.name}`,
-											cancelButton: "Ne, vrati se",
-										});
-										if (resp) {
-											setIsLoading(true);
-											await deleteClub({
-												id: props.club?.id ?? "",
-											});
-											setIsLoading(false);
-										}
-									}}
-								>
-									{isLoading ? (
-										<Loader2 className="animate-spin size-4" />
-									) : (
-										"Obriši klub"
-									)}
-								</Button>
-							</FormControl>
-							<FormDescription>Ova akcija je nepovratna.</FormDescription>
-							<FormMessage />
-						</FormItem>
-					</>
-				)}
 			</form>
 		</Form>
 	);

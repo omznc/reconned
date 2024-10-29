@@ -92,3 +92,7 @@ export const eventImageFileSchema = z.object({
 export const deleteEventImageSchema = z.object({
 	id: z.string(),
 });
+
+export const deleteEventSchema = deleteEventImageSchema.extend({
+	clubId: z.string(),
+});

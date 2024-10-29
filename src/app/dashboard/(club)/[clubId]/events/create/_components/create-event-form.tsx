@@ -25,6 +25,7 @@ import type * as z from "zod";
 
 import {
 	createEvent,
+	deleteEvent,
 	deleteEventImage,
 	getEventImageUploadUrl,
 } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.action";
@@ -62,6 +63,7 @@ import {
 } from "@/components/ui/hover-card";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
 
 export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),
@@ -78,6 +80,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
+	const confirm = useConfirm();
 
 	const router = useRouter();
 	const clubId = useParams<{ clubId: string }>().clubId;
@@ -153,14 +156,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				});
 
 				values.coverImage = resp.data.cdnUrl;
-				await createEvent(values).then((resp) => {
-					if (resp?.data) {
-						router.push(`/dashboard/${clubId}/events/${resp.data?.id}`);
-					}
+				await createEvent({
+					...values,
+					id: event.data.id,
 				});
-			} else {
-				router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 			}
+			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 
 			setFiles([]);
 			toast.success("Podataci o susretu su sačuvani");
@@ -177,22 +178,53 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				className="space-y-4 max-w-3xl"
 			>
 				{props.event?.id && (
-					<Alert className="flex justify-between -z-0">
+					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
 							<AlertTitle>Mijenjate susret</AlertTitle>
 							<AlertDescription>
 								Ovaj susret je već kreiran, trenutno ga uređujete.
 							</AlertDescription>
 						</div>
-						<Button variant="outline" asChild={true}>
-							<Link
-								className="flex items-center gap-1"
-								href={`/dashboard/${clubId}/events/${props.event.id}`}
+						<div className="flex gap-1">
+							<Button
+								variant={"destructive"}
+								type="button"
+								disabled={isLoading}
+								className="w-fit"
+								onClick={async () => {
+									const resp = await confirm({
+										title: "Jeste li sigurni?",
+										body: "Ako obrišete susret, nećete ga moći vratiti nazad.",
+										actionButtonVariant: "destructive",
+										actionButton: `Obriši ${props.event?.name}`,
+										cancelButton: "Ne, vrati se",
+									});
+									if (resp) {
+										setIsLoading(true);
+										await deleteEvent({
+											id: props.event?.id ?? "",
+											clubId: clubId,
+										});
+										setIsLoading(false);
+									}
+								}}
 							>
-								<Eye className="size-4" />
-								Pregled
-							</Link>
-						</Button>
+								{isLoading ? (
+									<Loader2 className="animate-spin size-4" />
+								) : (
+									"Obriši susret"
+								)}
+							</Button>
+							<Button variant="outline" asChild={true}>
+								<Link
+									className="flex items-center gap-1"
+									href={`/dashboard/${clubId}/events/${props.event.id}`}
+								>
+									<Eye className="size-4" />
+									Pregled
+								</Link>
+							</Button>
+						</div>
 					</Alert>
 				)}
 				<div>

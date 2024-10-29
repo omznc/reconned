@@ -1,16 +1,12 @@
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
+import { MapComponent } from "@/components/map-component";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Event } from "@prisma/client";
 import { Eye, EyeOff, MapPin, Pencil, User } from "lucide-react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-
-export const MapComponent = dynamic(() =>
-	import("@/components/map-component").then((mod) => mod.MapComponent),
-);
 
 interface EventOverviewProps {
 	event: Event & {
@@ -35,7 +31,7 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 						alt={event.name}
 						width={680}
 						height={380}
-						className="absolute top-0 object-cover transition-all w-full h-auto"
+						className="absolute aspect-video top-0 object-cover transition-all w-full h-auto"
 						draggable={false}
 						priority={true}
 					/>

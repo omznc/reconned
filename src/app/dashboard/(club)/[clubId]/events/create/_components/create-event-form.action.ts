@@ -1,13 +1,15 @@
 "use server";
-
 import { clubLogoFileSchema } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import {
 	createEventFormSchema,
 	deleteEventImageSchema,
+	deleteEventSchema,
 } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export const createEvent = safeActionClient
 	.schema(createEventFormSchema)
@@ -122,4 +124,37 @@ export const deleteEventImage = safeActionClient
 				coverImage: null,
 			},
 		});
+	});
+
+export const deleteEvent = safeActionClient
+	.schema(deleteEventSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const isManager = await prisma.clubMembership.findFirst({
+			where: {
+				userId: ctx.user.id,
+				role: {
+					in: ["CLUB_OWNER", "MANAGER"],
+				},
+				clubId: parsedInput.clubId,
+			},
+		});
+
+		if (!isManager) {
+			throw new Error("You are not authorized to perform this action.");
+		}
+
+		await Promise.all([
+			prisma.event.delete({
+				where: {
+					id: parsedInput.id,
+				},
+			}),
+			await deleteEventImage({
+				id: parsedInput.id,
+			}),
+		]);
+
+		revalidatePath(`/events/${parsedInput.id}`);
+		revalidatePath(`/dashboard/${parsedInput.clubId}/events/${parsedInput.id}`);
+		redirect(`/dashboard/${parsedInput.clubId}`);
 	});

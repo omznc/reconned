@@ -142,13 +142,7 @@ export const deleteClub = safeActionClient
 		});
 
 		if (!isManager) {
-			const wait = await prisma.clubMembership.findFirst({
-				where: {
-					userId: ctx.user.id,
-					clubId: parsedInput.id,
-				},
-			});
-			throw new Error(`You are not authorized to perform this action. ${wait}`);
+			throw new Error("You are not authorized to perform this action.");
 		}
 
 		await Promise.all([
