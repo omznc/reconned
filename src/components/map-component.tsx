@@ -201,7 +201,7 @@ export const MapComponent = ({
 			center={mapCenter}
 			zoom={13}
 			ref={mapRef}
-			style={{ height: "500px", width: "100%" }}
+			style={{ height: "500px", width: "100%", zIndex: "0" }}
 		>
 			<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 		</MapContainer>

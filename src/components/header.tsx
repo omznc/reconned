@@ -58,8 +58,10 @@ export function Header() {
 								</AvatarFallback>
 							</Avatar>
 						) : (
-							<Button asChild={true}>
-								<Link href="/login">Prijava</Link>
+							<Button asChild={true} suppressHydrationWarning={true}>
+								<Link suppressHydrationWarning={true} href="/login">
+									Prijava
+								</Link>
 							</Button>
 						)}
 					</>

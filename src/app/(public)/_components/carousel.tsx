@@ -60,6 +60,7 @@ export function EventsCarousel(props: CarouselProps) {
 								<Button
 									asChild={true}
 									variant={"outline"}
+									suppressHydrationWarning={true}
 									className="cursor-pointer w-1/2 transition-all"
 								>
 									{user ? (
