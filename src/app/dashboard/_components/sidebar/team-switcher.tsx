@@ -18,6 +18,7 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function TeamSwitcher({
 	teams,
@@ -75,12 +76,16 @@ export function TeamSwitcher({
 							</DropdownMenuItem>
 						))}
 						<DropdownMenuSeparator />
-						<DropdownMenuItem className="gap-2 p-2">
-							<div className="flex size-6 items-center justify-center rounded-md border bg-background">
-								<Plus className="size-4" />
-							</div>
-							<div className="font-medium text-muted-foreground">Add team</div>
-						</DropdownMenuItem>
+						<Link href="/dashboard/add-club">
+							<DropdownMenuItem className="gap-2 p-2">
+								<div className="flex size-6 items-center justify-center rounded-md border bg-background">
+									<Plus className="size-4" />
+								</div>
+								<div className="font-medium text-muted-foreground">
+									Dodaj klub
+								</div>
+							</DropdownMenuItem>
+						</Link>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>

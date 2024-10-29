@@ -21,27 +21,15 @@ export const clubInfoSchema = z.object({
 		message: "Opis kluba mora biti kraći od 5000 znakova",
 	}),
 	dateFounded: z.coerce.date(),
-	isAllied: z.boolean(),
-	isPrivate: z.boolean(),
+	isAllied: z.boolean().optional(),
+	isPrivate: z.boolean().optional(),
 	logo: z.string().optional(),
 	contactPhone: z.string().optional(),
 	contactEmail: z.string().optional(),
-	id: z.string(),
+	id: z.string().optional(),
 });
 
 export const clubLogoFileSchema = z.object({
-	// file: z.instanceof(File).refine((file) => {
-	// 	if (!file.type.startsWith("image/")) {
-	// 		throw new Error("Morate odabrati sliku");
-	// 	}
-
-	// 	// Only allow images up to 4MB
-	// 	if (file.size > 1024 * 1024 * 4) {
-	// 		throw new Error("Slika mora biti manja od 4MB");
-	// 	}
-
-	// 	return true;
-	// }),
 	file: z.object({
 		type: z.string().regex(/^image\//),
 		size: z.number().max(1024 * 1024 * 4),
@@ -52,3 +40,5 @@ export const clubLogoFileSchema = z.object({
 export const deleteClubImageSchema = z.object({
 	id: z.string(),
 });
+
+export const deleteClubSchema = deleteClubImageSchema;

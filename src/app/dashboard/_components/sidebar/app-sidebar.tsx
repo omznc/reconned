@@ -52,6 +52,7 @@ import {
 	useSearchParams,
 } from "next/navigation";
 import { useEffect, useMemo } from "react";
+import Link from "next/link";
 
 const getData = (clubId: string) => ({
 	navMain: [
@@ -310,14 +311,16 @@ export function AppSidebar(props: AppSidebarProps) {
 									</DropdownMenuItem>
 								))}
 								<DropdownMenuSeparator />
-								<DropdownMenuItem className="gap-2 p-2">
-									<div className="flex size-6 items-center justify-center rounded-md border bg-background">
-										<Plus className="size-4" />
-									</div>
-									<div className="font-medium text-muted-foreground">
-										Add team
-									</div>
-								</DropdownMenuItem>
+								<Link href="/dashboard/add-club">
+									<DropdownMenuItem className="gap-2 p-2">
+										<div className="flex size-6 items-center justify-center rounded-md border bg-background">
+											<Plus className="size-4" />
+										</div>
+										<div className="font-medium text-muted-foreground">
+											Dodaj klub
+										</div>
+									</DropdownMenuItem>
+								</Link>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</SidebarMenuItem>
