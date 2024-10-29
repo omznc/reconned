@@ -10,7 +10,7 @@ import {
 	DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { Loader2Icon, LogOut } from "lucide-react";
+import { LoaderIcon, LogOut } from "lucide-react";
 import Link from "next/link";
 
 export function Header() {
@@ -54,7 +54,7 @@ export function Header() {
 						{loading ? (
 							<Avatar className="size-10 cursor-pointer border rounded-none select-none">
 								<AvatarFallback className="rounded-none">
-									<Loader2Icon className="w-6 h-6 animate-spin" />
+									<LoaderIcon className="w-6 h-6 animate-spin" />
 								</AvatarFallback>
 							</Avatar>
 						) : (
