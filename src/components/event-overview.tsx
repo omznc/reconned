@@ -1,4 +1,5 @@
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
+import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { MapComponent } from "@/components/map-component";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,7 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 			)}
 			<div
 				className={cn({
-					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-3/4 flex flex-col gap-1":
+					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
 						event.coverImage,
 					"border p-4 bg-background w-full flex flex-col gap-1":
 						!event.coverImage,
@@ -49,7 +50,7 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 					{clubId ? (
 						<Button asChild={true}>
 							<Link
-								className="absolute top-0 right-0 flex items-center gap-1 h-fit w-fit"
+								className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit"
 								href={`/dashboard/${clubId}/events/create?id=${event.id}`}
 							>
 								<Pencil className="size-4" />
@@ -57,11 +58,11 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 							</Link>
 						</Button>
 					) : (
-						<div className="absolute top-0 right-0 flex items-center gap-1 h-fit w-fit">
+						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit">
 							<AddEventToCalendarButton event={event} />
 						</div>
 					)}
-					<h1 className="text-4xl font-semibold w-full w-[calc(100%-150px)]">
+					<h1 className="text-4xl font-semibold w-[calc(100%-150px)] mt-12 md:mt-0 transition-all">
 						{event.name}
 					</h1>
 
@@ -97,24 +98,28 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 					{event.googleMapsLink && (
 						<div className="size-full flex flex-col gap-2">
 							<h2 className="text-xl font-semibold">Lokacija</h2>
-							<iframe
-								src={event.googleMapsLink}
-								loading="lazy"
-								referrerPolicy="no-referrer-when-downgrade"
-								className="w-full h-96 border"
-								title="Google Maps"
-							/>
+							<LoadChildOnClick title="Prikaži lokaciju">
+								<iframe
+									src={event.googleMapsLink}
+									loading="lazy"
+									referrerPolicy="no-referrer-when-downgrade"
+									className="w-full h-96 border"
+									title="Google Maps"
+								/>
+							</LoadChildOnClick>
 						</div>
 					)}
 					{event.mapData &&
 						JSON.stringify(event.mapData) !== `{"pois":[],"areas":[]}` && (
 							<div className="size-full flex flex-col gap-2">
 								<h2 className="text-xl font-semibold">Mapa</h2>
-								<MapComponent
-									// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-									defaultMapData={event.mapData as any}
-									readOnly={true}
-								/>
+								<LoadChildOnClick title="Prikaži mapu susreta">
+									<MapComponent
+										// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+										defaultMapData={event.mapData as any}
+										readOnly={true}
+									/>
+								</LoadChildOnClick>
 							</div>
 						)}
 				</div>

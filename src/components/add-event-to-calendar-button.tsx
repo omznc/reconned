@@ -79,7 +79,7 @@ export default function AddEventToCalendarButton({ event }: { event: Event }) {
 			trigger="click"
 			hideIconButton={true}
 			listStyle="overlay"
-			styleLight="--btn-background: black; --list-border-radius: 0; --list-shadow: none; --list-hover-background: white; --btn-text: white; --btn-border-radius: 0; --btn-shadow: none; --btn-hover-shadow: none; --btn-active-shadow: none;"
+			styleLight="--btn-background: black;--list-border-radius: 0; --list-shadow: none; --list-hover-background: white; --btn-text: white; --btn-border-radius: 0; --btn-shadow: none; --btn-hover-shadow: none; --btn-active-shadow: none;"
 		/>
 	);
 }
