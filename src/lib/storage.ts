@@ -15,9 +15,13 @@ const s3 = new S3Client({
 	},
 });
 
-const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
+const allowedFileTypes: string[] = process.env.ALLOWED_FILE_TYPES
+	? process.env.ALLOWED_FILE_TYPES.split(",")
+	: ["image/jpeg", "image/png", "application/pdf", "image/webp"];
 
-const maxFileSize = 5 * 1024 * 1024; // 5 MB
+const maxFileSize: number = process.env.MAX_FILE_SIZE
+	? Number.parseInt(process.env.MAX_FILE_SIZE, 10)
+	: 5 * 1024 * 1024; // Default to 5 MB
 
 /**
  * DOES NOT CHECK FOR AUTHENTICATION
@@ -29,14 +33,16 @@ export const getS3FileUploadUrl = async (props: {
 }) => {
 	const { type, size, key } = props;
 	if (!(type && size)) {
-		throw new Error("Missing file information");
+		throw new Error("File type and size are required");
 	}
 	if (!allowedFileTypes.includes(type)) {
-		throw new Error("Invalid file type");
+		throw new Error(`Unsupported file type: ${type}`);
 	}
 
 	if (size > maxFileSize) {
-		throw new Error("File size exceeds the maximum allowed size");
+		throw new Error(
+			`File size exceeds the maximum allowed size of ${maxFileSize} bytes`,
+		);
 	}
 
 	const command = new PutObjectCommand({
