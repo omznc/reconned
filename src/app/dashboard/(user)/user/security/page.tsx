@@ -9,11 +9,24 @@ export default async function Page() {
 		return notFound();
 	}
 
+	const hasPassword =
+		(await prisma.account.findFirst({
+			where: {
+				userId: user.id,
+				password: {
+					not: null,
+				},
+			},
+			select: {
+				password: true,
+			},
+		})) !== null;
+
 	const passkeys = await prisma.passkey.findMany({
 		where: {
 			userId: user.id,
 		},
 	});
 
-	return <SecuritySettings passkeys={passkeys} />;
+	return <SecuritySettings passkeys={passkeys} hasPassword={hasPassword} />;
 }

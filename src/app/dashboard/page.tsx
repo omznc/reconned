@@ -1,5 +1,3 @@
-type PageProps = {};
-
-export default function Page(props: PageProps) {
+export default function Page() {
 	return <h1>Hello</h1>;
 }
