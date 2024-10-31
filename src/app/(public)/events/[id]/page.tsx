@@ -1,6 +1,6 @@
+import { EventOverview } from "@/components/event-overview";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { EventOverview } from "@/components/event-overview";
 
 interface PageProps {
 	params: Promise<{
@@ -64,7 +64,7 @@ export async function generateMetadata(props: PageProps) {
 		openGraph: {
 			images: [
 				{
-					url: event.coverImage,
+					url: event.coverImage as string,
 					alt: event.name,
 				},
 			],

@@ -16,6 +16,11 @@ export async function sendInviteAction({
 }) {
 	const redirectUrl = `${process.env.BETTER_AUTH_URL}/login`;
 	const url = new URL(inviteLink);
+
+	if (!url.pathname.startsWith("/api/auth/")) {
+		url.pathname = `/api/auth${url.pathname}`;
+	}
+
 	if (url.searchParams.has("callbackURL")) {
 		url.searchParams.set("callbackURL", redirectUrl);
 	} else {
