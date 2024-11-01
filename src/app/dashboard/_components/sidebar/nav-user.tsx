@@ -72,14 +72,12 @@ export function NavUser() {
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem asChild={true}>
-								<Link href="/support-us" className="cursor-pointer">
-									<Sparkles />
-									Podrži razvoj
-								</Link>
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
+						<DropdownMenuItem asChild={true}>
+							<Link href="/support-us" className="cursor-pointer">
+								<Sparkles />
+								Podrži razvoj
+							</Link>
+						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>
 							<Link href="/logout" className="cursor-pointer">
