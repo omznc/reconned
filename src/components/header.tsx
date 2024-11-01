@@ -1,13 +1,13 @@
 "use client";
 
 import { Logo } from "@/components/logos/logo";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
-	DropdownMenuTrigger,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useIsAuthenticated } from "@/lib/auth-client";
 import { LoaderIcon, LogOut } from "lucide-react";
@@ -41,7 +41,11 @@ export function Header() {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="mr-4" sideOffset={12}>
 								<DropdownMenuItem asChild={true} className="cursor-pointer">
-									<Link href="/logout" className="flex items-centergap-2">
+									<Link
+										href="/logout"
+										prefetch={false}
+										className="flex items-centergap-2"
+									>
 										<LogOut className="w-4 h-4" />
 										Odjava
 									</Link>
