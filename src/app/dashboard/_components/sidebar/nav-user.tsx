@@ -79,7 +79,7 @@ export function NavUser() {
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>
-							<Link href="/logout" className="cursor-pointer">
+							<Link href="/logout" prefetch={false} className="cursor-pointer">
 								<LogOut />
 								Log out
 							</Link>
