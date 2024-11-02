@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronRight, House, Info, Settings2, User } from "lucide-react";
 
 import {
 	Collapsible,
@@ -20,67 +20,119 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function NavApp({
-	items,
-}: {
-	items: {
-		title: string;
-		url: string;
-		icon?: LucideIcon;
-		isActive?: boolean;
-		items?: {
-			title: string;
-			url: string;
-		}[];
-	}[];
-}) {
+export function NavApp() {
 	const path = usePathname();
 
 	return (
 		<SidebarGroup>
 			<SidebarGroupLabel>Aplikacija</SidebarGroupLabel>
 			<SidebarMenu>
-				{items.map((item) => (
-					<Collapsible
-						key={item.title}
-						asChild={true}
-						defaultOpen={item.isActive}
-						className="group/collapsible"
-					>
-						<SidebarMenuItem>
-							<CollapsibleTrigger asChild={true}>
+				{items.map((item) => {
+					if (!item.items?.length) {
+						return (
+							<SidebarMenuItem key={item.title}>
 								<SidebarMenuButton
-									isActive={
-										item.url === path ||
-										item.items?.some((subItem) => subItem.url === path)
-									}
+									isActive={item.url === path}
 									tooltip={item.title}
+									asChild={true}
 								>
-									{item.icon && <item.icon />}
-									<span>{item.title}</span>
-									<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+									<Link href={item.url}>
+										{item.icon && <item.icon />}
+										<span>{item.title}</span>
+									</Link>
 								</SidebarMenuButton>
-							</CollapsibleTrigger>
-							<CollapsibleContent>
-								<SidebarMenuSub>
-									{item.items?.map((subItem) => (
-										<SidebarMenuSubItem key={subItem.title}>
-											<SidebarMenuSubButton
-												isActive={subItem.url === path}
-												asChild={true}
-											>
-												<Link href={subItem.url}>
-													<span>{subItem.title}</span>
-												</Link>
-											</SidebarMenuSubButton>
-										</SidebarMenuSubItem>
-									))}
-								</SidebarMenuSub>
-							</CollapsibleContent>
-						</SidebarMenuItem>
-					</Collapsible>
-				))}
+							</SidebarMenuItem>
+						);
+					}
+
+					return (
+						<Collapsible
+							key={item.title}
+							asChild={true}
+							className="group/collapsible"
+						>
+							<SidebarMenuItem>
+								<CollapsibleTrigger asChild={true}>
+									<SidebarMenuButton
+										isActive={
+											item.url === path ||
+											item.items?.some((subItem) => subItem.url === path)
+										}
+										tooltip={item.title}
+									>
+										{item.icon && <item.icon />}
+										<span>{item.title}</span>
+										<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+									</SidebarMenuButton>
+								</CollapsibleTrigger>
+								<CollapsibleContent>
+									<SidebarMenuSub>
+										{item.items?.map((subItem) => (
+											<SidebarMenuSubItem key={subItem.title}>
+												<SidebarMenuSubButton
+													isActive={subItem.url === path}
+													asChild={true}
+												>
+													<Link href={subItem.url}>
+														<span>{subItem.title}</span>
+													</Link>
+												</SidebarMenuSubButton>
+											</SidebarMenuSubItem>
+										))}
+									</SidebarMenuSub>
+								</CollapsibleContent>
+							</SidebarMenuItem>
+						</Collapsible>
+					);
+				})}
 			</SidebarMenu>
 		</SidebarGroup>
 	);
 }
+
+const items = [
+	{
+		title: "Početna",
+		url: "/",
+		icon: House,
+	},
+	{
+		title: "Pomoć",
+		url: "/dashboard/help",
+		icon: Info,
+	},
+	{
+		title: "Postavke",
+		url: "#",
+		icon: Settings2,
+		items: [
+			{
+				title: "Općenito",
+				url: "/dashboard/settings",
+			},
+			{
+				title: "Personalizacija",
+				url: "/dashboard/settings/personalization",
+			},
+		],
+	},
+	{
+		title: "Korisnik",
+		url: "#",
+		icon: User,
+		items: [
+			{
+				title: "Pregled",
+				url: "/dashboard/user",
+			},
+			{
+				title: "Postavke",
+				url: "/dashboard/user/settings",
+			},
+			{
+				title: "Sigurnost",
+				url: "/dashboard/user/security",
+			},
+		],
+	},
+];

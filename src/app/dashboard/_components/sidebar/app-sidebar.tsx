@@ -1,26 +1,10 @@
 "use client";
 
-import {
-	BookUser,
-	Building2,
-	CalendarDays,
-	CalendarFold,
-	ChartBar,
-	ChevronsUpDown,
-	House,
-	Info,
-	MailPlus,
-	Pencil,
-	Plus,
-	Search,
-	Settings2,
-	Square,
-	User,
-} from "lucide-react";
+import { ChevronsUpDown, Plus, Square } from "lucide-react";
 
 import { NavApp } from "@/app/dashboard/_components/sidebar/nav-app";
-import { NavMain } from "@/app/dashboard/_components/sidebar/nav-main";
-import { NavUser } from "@/app/dashboard/_components/sidebar/nav-user";
+import { NavClub } from "@/app/dashboard/_components/sidebar/nav-club";
+import { UserSwitcher } from "@/app/dashboard/_components/sidebar/user-switcher";
 import { useCurrentClub } from "@/components/current-club-provider";
 import {
 	DropdownMenu,
@@ -55,126 +39,7 @@ import { useEffect, useMemo } from "react";
 import Link from "next/link";
 
 const getData = (clubId: string) => ({
-	navMain: [
-		{
-			title: "Početna",
-			url: "/",
-			icon: House,
-		},
-		{
-			title: "Pomoć",
-			url: `/dashboard/${clubId}/help`,
-			icon: Info,
-		},
-		{
-			title: "Klub",
-			url: "#",
-			icon: Building2,
-			isActive: true,
-			items: [
-				{
-					title: "Pregled",
-					url: `/dashboard/${clubId}/club`,
-					icon: Search,
-				},
-				{
-					title: "Informacije",
-					url: `/dashboard/${clubId}/club/information`,
-					icon: Pencil,
-				},
-				{
-					title: "Statistike",
-					url: `/dashboard/${clubId}/club/stats`,
-					icon: ChartBar,
-				},
-			],
-		},
-		{
-			title: "Članovi",
-			url: "#",
-			icon: BookUser,
-			items: [
-				{
-					title: "Pregled",
-					url: `/dashboard/${clubId}/members`,
-					icon: Search,
-				},
-				{
-					title: "Pozivnice",
-					url: `/dashboard/${clubId}/members/invitations`,
-					icon: MailPlus,
-				},
-				{
-					title: "Statistike",
-					url: `/dashboard/${clubId}/members/stats`,
-					icon: ChartBar,
-				},
-			],
-		},
-		{
-			title: "Susreti",
-			url: "#",
-			icon: CalendarFold,
-			items: [
-				{
-					title: "Pregled",
-					url: `/dashboard/${clubId}/events`,
-					icon: Search,
-				},
-				{
-					title: "Novi susret",
-					url: `/dashboard/${clubId}/events/create`,
-					icon: Plus,
-				},
-				{
-					title: "Kalendar",
-					url: `/dashboard/${clubId}/events/calendar`,
-					icon: CalendarDays,
-				},
-				{
-					title: "Statistike",
-					url: `/dashboard/${clubId}/events/stats`,
-					icon: ChartBar,
-				},
-			],
-		},
-	],
-	navApp: [
-		{
-			title: "Postavke",
-			url: "#",
-			icon: Settings2,
-			items: [
-				{
-					title: "Općenito",
-					url: "/dashboard/settings",
-				},
-				{
-					title: "Personalizacija",
-					url: "/dashboard/settings/personalization",
-				},
-			],
-		},
-		{
-			title: "Korisnik",
-			url: "#",
-			icon: User,
-			items: [
-				{
-					title: "Pregled",
-					url: "/dashboard/user",
-				},
-				{
-					title: "Postavke",
-					url: "/dashboard/user/settings",
-				},
-				{
-					title: "Sigurnost",
-					url: "/dashboard/user/security",
-				},
-			],
-		},
-	],
+	navMain: [],
 });
 
 interface AppSidebarProps {
@@ -197,8 +62,6 @@ export function AppSidebar(props: AppSidebarProps) {
 			),
 		[props.clubs, params.clubId, clubId],
 	);
-	const data = getData(params.clubId ?? clubId);
-
 	useEffect(() => {
 		if (searchParams.get("autoSelectFirst") && !params.clubId) {
 			const firstClub = props.clubs[0];
@@ -327,11 +190,11 @@ export function AppSidebar(props: AppSidebarProps) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				{clubId && <NavMain items={data.navMain} />}
-				<NavApp items={data.navApp} />
+				<NavApp />
+				<NavClub />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser />
+				<UserSwitcher />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>

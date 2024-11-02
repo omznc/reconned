@@ -19,7 +19,7 @@ import { useIsAuthenticated } from "@/lib/auth-client";
 import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-export function NavUser() {
+export function UserSwitcher() {
 	const { isMobile } = useSidebar();
 	const { user } = useIsAuthenticated();
 

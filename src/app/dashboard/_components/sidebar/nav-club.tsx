@@ -1,44 +1,49 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
-
 import {
 	Collapsible,
-	CollapsibleContent,
 	CollapsibleTrigger,
+	CollapsibleContent,
 } from "@/components/ui/collapsible";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarMenu,
-	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarMenuButton,
 	SidebarMenuSub,
-	SidebarMenuSubButton,
 	SidebarMenuSubItem,
+	SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-export function NavMain({
-	items,
-}: {
-	items: {
-		title: string;
-		url: string;
-		icon?: LucideIcon;
-		isActive?: boolean;
-		items?: {
-			title: string;
-			url: string;
-			icon?: LucideIcon;
-		}[];
-	}[];
-}) {
+import {
+	ChevronRight,
+	Building2,
+	Search,
+	Pencil,
+	ChartBar,
+	BookUser,
+	MailPlus,
+	CalendarFold,
+	Plus,
+	CalendarDays,
+} from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useCurrentClub } from "@/components/current-club-provider";
+
+export function NavClub() {
 	const path = usePathname();
+	const { clubId } = useCurrentClub();
+
+	if (!clubId) {
+		return null;
+	}
+
+	const items = getItems(clubId);
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>Općenito</SidebarGroupLabel>
+			<SidebarGroupLabel>Moj klub</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => {
 					if (item?.items && item?.items.length > 0) {
@@ -104,3 +109,80 @@ export function NavMain({
 		</SidebarGroup>
 	);
 }
+
+const getItems = (clubId: string) => {
+	return [
+		{
+			title: "Klub",
+			url: "#",
+			icon: Building2,
+			isActive: true,
+			items: [
+				{
+					title: "Pregled",
+					url: `/dashboard/${clubId}/club`,
+					icon: Search,
+				},
+				{
+					title: "Informacije",
+					url: `/dashboard/${clubId}/club/information`,
+					icon: Pencil,
+				},
+				{
+					title: "Statistike",
+					url: `/dashboard/${clubId}/club/stats`,
+					icon: ChartBar,
+				},
+			],
+		},
+		{
+			title: "Članovi",
+			url: "#",
+			icon: BookUser,
+			items: [
+				{
+					title: "Pregled",
+					url: `/dashboard/${clubId}/members`,
+					icon: Search,
+				},
+				{
+					title: "Pozivnice",
+					url: `/dashboard/${clubId}/members/invitations`,
+					icon: MailPlus,
+				},
+				{
+					title: "Statistike",
+					url: `/dashboard/${clubId}/members/stats`,
+					icon: ChartBar,
+				},
+			],
+		},
+		{
+			title: "Susreti",
+			url: "#",
+			icon: CalendarFold,
+			items: [
+				{
+					title: "Pregled",
+					url: `/dashboard/${clubId}/events`,
+					icon: Search,
+				},
+				{
+					title: "Novi susret",
+					url: `/dashboard/${clubId}/events/create`,
+					icon: Plus,
+				},
+				{
+					title: "Kalendar",
+					url: `/dashboard/${clubId}/events/calendar`,
+					icon: CalendarDays,
+				},
+				{
+					title: "Statistike",
+					url: `/dashboard/${clubId}/events/stats`,
+					icon: ChartBar,
+				},
+			],
+		},
+	];
+};

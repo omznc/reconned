@@ -4,7 +4,6 @@ import { setupPasswordSchema } from "@/app/dashboard/(user)/user/security/_compo
 import { auth } from "@/lib/auth";
 import { safeActionClient } from "@/lib/safe-action";
 import { headers } from "next/headers";
-import { z } from "zod";
 
 export const setupPasswordAction = safeActionClient
 	.schema(setupPasswordSchema)

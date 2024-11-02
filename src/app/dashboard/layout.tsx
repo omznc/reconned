@@ -37,13 +37,18 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		},
 	});
 
+	const simplifiedClubs = clubs.map((club) => ({
+		id: club.id,
+		name: club.name,
+		logo: club.logo,
+	}));
+
 	return (
 		<SidebarProvider>
 			<CurrentClubProvider>
 				<AppSidebar clubs={clubs} />
 				<SidebarInset className="max-h-dvh overflow-auto flex items-start p-4 justify-start">
-					<Breadcrumbs />
-					{/* <DotPattern className="fixed z-0 opacity-20 size-full" /> */}
+					<Breadcrumbs clubs={simplifiedClubs} />
 					{props.children}
 				</SidebarInset>
 			</CurrentClubProvider>

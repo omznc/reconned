@@ -21,7 +21,10 @@ export function Header() {
 			<Link href="/">
 				<Logo />
 			</Link>
-			<div className="flex gap-2 md:w-fit w-full">
+			<div
+				className="flex gap-2 md:w-fit w-full"
+				suppressHydrationWarning={true}
+			>
 				{user ? (
 					<>
 						{/* TODO: Manager-only? */}
@@ -58,7 +61,7 @@ export function Header() {
 						{loading ? (
 							<Avatar className="size-10 cursor-pointer border rounded-none select-none">
 								<AvatarFallback className="rounded-none">
-									<LoaderIcon className="w-6 h-6 animate-spin" />
+									<LoaderIcon className="size-4 animate-spin" />
 								</AvatarFallback>
 							</Avatar>
 						) : (
