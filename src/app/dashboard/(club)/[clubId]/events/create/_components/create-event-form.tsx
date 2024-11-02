@@ -792,7 +792,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										<Link
 											target="_blank"
 											className="font-semibold flex gap-0.5 items-center"
-											href={`/dashboard/${clubId}/help#google-maps`}
+											href={"/dashboard/help#google-maps"}
 										>
 											Gdje to naći? <ArrowUpRight className="size-3" />
 										</Link>
