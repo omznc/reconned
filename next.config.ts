@@ -1,4 +1,4 @@
-import type { source } from "framer-motion/client";
+import { env } from "@/lib/env";
 
 const nextConfig = {
 	reactStrictMode: true,
@@ -9,7 +9,7 @@ const nextConfig = {
 		remotePatterns: [
 			{
 				protocol: "https",
-				hostname: process.env.NEXT_PUBLIC_CDN_URL?.split("://")[1],
+				hostname: env.NEXT_PUBLIC_CDN_URL?.split("://")[1],
 			},
 		],
 	},

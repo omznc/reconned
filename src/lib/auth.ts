@@ -1,4 +1,5 @@
 import { sendInviteAction } from "@/app/(auth)/_actions/send-invite-action";
+import { env } from "@/lib/env";
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -28,8 +29,8 @@ export const auth = betterAuth({
 	},
 	socialProviders: {
 		google: {
-			clientId: process.env.GOOGLE_CLIENT_ID as string,
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+			clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
+			clientSecret: env.GOOGLE_CLIENT_SECRET as string,
 		},
 	},
 	account: {
