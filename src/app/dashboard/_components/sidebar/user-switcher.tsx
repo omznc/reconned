@@ -81,7 +81,7 @@ export function UserSwitcher() {
 						<DropdownMenuItem asChild={true}>
 							<Link href="/logout" prefetch={false} className="cursor-pointer">
 								<LogOut />
-								Log out
+								Odjava
 							</Link>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
