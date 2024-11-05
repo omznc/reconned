@@ -23,13 +23,7 @@ export default function LoginPage() {
 	const router = useRouter();
 
 	useEffect(() => {
-		authClient.oneTap({
-			fetchOptions: {
-				onSuccess: () => {
-					router.push("/");
-				},
-			},
-		});
+		authClient.oneTap();
 	}, []);
 
 	return (
