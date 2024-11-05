@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import { resend } from "@/lib/resend";
 import { InviteEmailTemplate } from "@components/invite-email-template";
 
@@ -14,7 +15,7 @@ export async function sendInviteAction({
 	name: string;
 	inviteLink: string;
 }) {
-	const redirectUrl = `${process.env.BETTER_AUTH_URL}/login`;
+	const redirectUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/login`;
 	const url = new URL(inviteLink);
 
 	if (!url.pathname.startsWith("/api/auth/")) {
