@@ -5,6 +5,7 @@ import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
+import { env } from "@/lib/env";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -46,7 +47,7 @@ export default function RootLayout({
 export const metadata: Metadata = {
 	title: "AirsoftBIH",
 	description: "Upravljanje vašim klubovima i događajima",
-	metadataBase: process.env.BETTER_AUTH_URL
-		? new URL(process.env.BETTER_AUTH_URL)
+	metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
+		? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
 		: undefined,
 };

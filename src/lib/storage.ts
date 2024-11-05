@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import {
 	DeleteObjectCommand,
 	DeleteObjectsCommand,
@@ -7,20 +8,20 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
-	endpoint: process.env.S3_ENDPOINT as string,
-	region: process.env.S3_REGION as string,
+	endpoint: env.S3_ENDPOINT as string,
+	region: env.S3_REGION as string,
 	credentials: {
-		accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
-		secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
+		accessKeyId: env.S3_ACCESS_KEY_ID as string,
+		secretAccessKey: env.S3_SECRET_ACCESS_KEY as string,
 	},
 });
 
-const allowedFileTypes: string[] = process.env.ALLOWED_FILE_TYPES
-	? process.env.ALLOWED_FILE_TYPES.split(",")
+const allowedFileTypes: string[] = env.ALLOWED_FILE_TYPES
+	? env.ALLOWED_FILE_TYPES.split(",")
 	: ["image/jpeg", "image/png", "application/pdf", "image/webp"];
 
-const maxFileSize: number = process.env.MAX_FILE_SIZE
-	? Number.parseInt(process.env.MAX_FILE_SIZE, 10)
+const maxFileSize: number = env.MAX_FILE_SIZE
+	? Number.parseInt(env.MAX_FILE_SIZE, 10)
 	: 5 * 1024 * 1024; // Default to 5 MB
 
 /**
@@ -46,7 +47,7 @@ export const getS3FileUploadUrl = async (props: {
 	}
 
 	const command = new PutObjectCommand({
-		Bucket: process.env.S3_BUCKET_NAME as string,
+		Bucket: env.S3_BUCKET_NAME as string,
 		Key: key,
 		ContentType: type,
 		ContentLength: size,
@@ -58,13 +59,13 @@ export const getS3FileUploadUrl = async (props: {
 
 	return {
 		url,
-		cdnUrl: `${process.env.NEXT_PUBLIC_CDN_URL}/${key}`,
+		cdnUrl: `${env.NEXT_PUBLIC_CDN_URL}/${key}`,
 	};
 };
 
 export const deleteS3File = async (key: string) => {
 	const command = new DeleteObjectCommand({
-		Bucket: process.env.S3_BUCKET_NAME as string,
+		Bucket: env.S3_BUCKET_NAME as string,
 		Key: key,
 	});
 
@@ -73,7 +74,7 @@ export const deleteS3File = async (key: string) => {
 
 export const deleteS3Files = async (keys: string[]) => {
 	const command = new DeleteObjectsCommand({
-		Bucket: process.env.S3_BUCKET_NAME as string,
+		Bucket: env.S3_BUCKET_NAME as string,
 		Delete: {
 			Objects: keys.map((key) => ({ Key: key })),
 		},
