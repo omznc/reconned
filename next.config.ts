@@ -11,6 +11,10 @@ const nextConfig = {
 				protocol: "https",
 				hostname: env.NEXT_PUBLIC_CDN_URL?.split("://")[1],
 			},
+			{
+				protocol: "https",
+				hostname: "lh3.googleusercontent.com",
+			},
 		],
 	},
 };
