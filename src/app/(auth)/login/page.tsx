@@ -1,4 +1,5 @@
 "use client";
+
 import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import {
@@ -13,13 +14,18 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
+
+	useEffect(() => {
+		authClient.oneTap();
+	}, []);
+
 	return (
 		<>
 			<CardHeader>

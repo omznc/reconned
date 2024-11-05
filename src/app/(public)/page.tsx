@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
 import { EventCalendar } from "@/components/event-calendar";
+import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
 	const events = await prisma.event.findMany({
@@ -18,7 +18,9 @@ export default async function Home() {
 
 	return (
 		<div className="flex flex-col size-full gap-8">
-			<EventCalendar events={events} />
+			<div className="relative h-[calc(100dvh-72px-2rem)] w-full">
+				<EventCalendar events={events} />
+			</div>
 		</div>
 	);
 }
