@@ -8,6 +8,7 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => (
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 		{...props}
+		className="dark:invert"
 	>
 		<title>Logo</title>
 		<path

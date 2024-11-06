@@ -1,6 +1,7 @@
 "use client";
 
 import { Logo } from "@/components/logos/logo";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +34,7 @@ export function Header() {
 								Moj Klub
 							</Link>
 						</Button>
+						<ThemeSwitcher />
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild={true}>
 								<Avatar className="size-10 cursor-pointer border rounded-none select-none">
