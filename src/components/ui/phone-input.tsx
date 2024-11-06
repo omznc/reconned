@@ -158,7 +158,7 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
     const Flag = flags[country];
 
     return (
-        <span className="bg-neutral-200 h-fit px-0.5 w-fit scale-125 flex overflow-hidden rounded-sm">
+        <span className="dark:bg-black bg-neutral-200 flag-input h-fit px-0.5 w-fit scale-125 flex overflow-hidden rounded-sm">
             {Flag && <Flag title={countryName} />}
         </span>
     );
