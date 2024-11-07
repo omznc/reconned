@@ -4,14 +4,10 @@ import { DEFAULT_FROM, resend } from "@/lib/resend";
 
 export async function sendEmailVerificationAction({
 	to,
-	from = DEFAULT_FROM,
-	subject,
 	name,
 	inviteLink,
 }: {
 	to: string;
-	from?: string;
-	subject: string;
 	name: string;
 	inviteLink: string;
 }) {
@@ -30,9 +26,9 @@ export async function sendEmailVerificationAction({
 
 	try {
 		const { data, error } = await resend.emails.send({
-			from,
+			from: DEFAULT_FROM,
 			to,
-			subject,
+			subject: "Verificirajte svoj email",
 			react: EmailVerification({
 				userName: name,
 				verificationUrl: url.toString(),
