@@ -318,7 +318,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								</FileUploader>
 							</FormControl>
 							<FormDescription>
-								Preporučujemo da dodate vaš logo.
+								Imate neku sliku koja bi bila savršena za ovaj susret? Dodajte
+								je.
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
