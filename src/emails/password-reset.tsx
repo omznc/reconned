@@ -29,7 +29,7 @@ export const PasswordReset = ({ resetUrl, userName }: PasswordResetProps) => {
 						<Img
 							src={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/logo.png`}
 							alt="Logo"
-							width="100"
+							width="150"
 							style={logo}
 						/>
 					</Section>
