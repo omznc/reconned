@@ -16,7 +16,8 @@
 				"useKeyWithClickEvents": "off"
 			},
 			"style": {
-				"noDefaultExport": "off"
+				"noDefaultExport": "off",
+				"noImplicitBoolean": "off"
 			},
 			"suspicious": {
 				"noReactSpecificProps": "off"
