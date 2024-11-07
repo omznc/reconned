@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,12 +17,14 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
+import { ChevronsUpDown, LogOut, Moon, Sparkles, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
 	const { user } = useIsAuthenticated();
+	const { theme, setTheme } = useTheme();
 
 	return (
 		<SidebarMenu>
@@ -72,10 +75,16 @@ export function UserSwitcher() {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>
-							<Link href="/support-us" className="cursor-pointer">
-								<Sparkles />
-								Podrži razvoj
-							</Link>
+							<Button
+								variant="ghost"
+								onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+								suppressHydrationWarning
+								className="w-full items-center justify-start cursor-pointer"
+							>
+								<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+								<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+								Promijeni temu
+							</Button>
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>

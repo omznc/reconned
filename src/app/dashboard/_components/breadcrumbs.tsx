@@ -41,7 +41,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		if (club) {
 			return (
 				<span className="flex items-center gap-2">
-					{club.logo && (
+					{/* {club.logo && (
 						<Image
 							src={club.logo}
 							alt={club.name}
@@ -49,7 +49,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 							height={16}
 							className="rounded-sm object-contain"
 						/>
-					)}
+					)} */}
 					<span>{club.name}</span>
 				</span>
 			);
