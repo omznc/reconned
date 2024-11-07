@@ -23,7 +23,7 @@ export default async function Page(props: PageProps) {
 	});
 
 	return (
-		<div className="space-y-4 max-w-3xl">
+		<div className="space-y-4 max-w-3xl w-full md:min-w-3xl">
 			<EventCalendar events={events} />
 		</div>
 	);
