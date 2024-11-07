@@ -53,7 +53,7 @@ export const EmailVerification = ({
 					</Section>
 					<Hr style={hr} />
 					<Text style={footer}>
-						Ako niste očekivali ovaj email, molimo vas da zanemarite ga.
+						Ako niste očekivali ovaj email, molimo vas da ga zanemarite.
 					</Text>
 				</Container>
 			</Body>
@@ -80,7 +80,6 @@ const h1 = {
 	fontWeight: "bold",
 	textAlign: "center" as const,
 	margin: "30px 0",
-	textTransform: "uppercase" as const,
 };
 
 const text = {

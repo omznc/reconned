@@ -33,6 +33,8 @@ export default async function Page() {
 				},
 			},
 		},
+		// TODO: Add proper pagination
+		take: 100,
 	});
 	return (
 		<div className="flex flex-col gap-4">

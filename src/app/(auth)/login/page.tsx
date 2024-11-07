@@ -81,15 +81,47 @@ export default function LoginPage() {
 							type="email"
 							name="email"
 							placeholder="m@example.com"
+							pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
 							required={true}
 						/>
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
 							<Label htmlFor="password">Lozinka</Label>
-							<Link href="#" className="ml-auto inline-block text-sm underline">
-								Zaboravili ste lozinku?
-							</Link>
+							<Button
+								type="button"
+								onClick={async () => {
+									setIsLoading(true);
+									const emailInput = document.getElementById(
+										"email",
+									) as HTMLInputElement;
+									if (!emailInput?.value) {
+										toast.error(
+											"Unesite email kako bi ste resetirali lozinku.",
+										);
+										return;
+									}
+									// if invalid email
+									if (!emailInput?.checkValidity()) {
+										toast.error("Unesite ispravan email.");
+										return;
+									}
+
+									await authClient.forgetPassword({
+										email: emailInput.value,
+										redirectTo: "/reset-password",
+									});
+									toast.success(
+										"Ako imate račun, poslat ćemo vam email za resetiranje lozinke.",
+									);
+									setIsLoading(false);
+								}}
+								variant="ghost"
+								className="ml-auto inline-block text-sm underline"
+								disabled={isLoading}
+							>
+								{isLoading ? "Samo trenutak..." : "Zaboravili ste lozinku?"}
+							</Button>
 						</div>
 						<Input
 							id="password"

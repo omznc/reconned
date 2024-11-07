@@ -1,9 +1,9 @@
 "use client";
 
+import { useQueryState } from "nuqs";
 import type { Event } from "@prisma/client";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
 import {
 	startOfMonth,
 	endOfMonth,
@@ -27,6 +27,7 @@ import { Button } from "@components/ui/button";
 import { bs } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { parse as parseDateFns, format as formatDateFns } from "date-fns";
 
 interface EventCalendarProps {
 	events: (Event & { club: { name: string }; image?: string | null })[];
@@ -34,7 +35,17 @@ interface EventCalendarProps {
 
 export function EventCalendar(props: EventCalendarProps) {
 	const params = useParams<{ clubId: string }>();
-	const [currentDate, setCurrentDate] = useState(new Date());
+	const [currentDate, setCurrentDate] = useQueryState("month", {
+		defaultValue: parseDateFns(
+			formatDateFns(new Date(), "yyyy-MM"),
+			"yyyy-MM",
+			new Date(),
+		),
+		shallow: false,
+		clearOnDefault: true,
+		parse: (value: string) => parseDateFns(value, "yyyy-MM", new Date()),
+		serialize: (date: Date) => formatDateFns(date, "yyyy-MM"),
+	});
 
 	const monthStart = startOfMonth(currentDate);
 	const monthEnd = endOfMonth(currentDate);
@@ -64,7 +75,7 @@ export function EventCalendar(props: EventCalendarProps) {
 
 	const getEventUrl = (event: Event) => {
 		return params.clubId
-			? `/dashboard/club/${event.clubId}/events/${event.id}`
+			? `/dashboard/${event.clubId}/events/${event.id}`
 			: `/events/${event.id}`;
 	};
 

@@ -105,7 +105,6 @@ const h1 = {
 	fontWeight: "bold",
 	textAlign: "center" as const,
 	margin: "30px 0",
-	textTransform: "uppercase" as const,
 };
 
 const text = {
