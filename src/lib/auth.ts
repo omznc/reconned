@@ -1,5 +1,7 @@
 import { sendEmailVerificationAction } from "@/app/(auth)/_actions/send-email-verification.action";
+import PasswordReset from "@/emails/password-reset";
 import { env } from "@/lib/env";
+import { DEFAULT_FROM, resend } from "@/lib/resend";
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -15,6 +17,17 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
+		sendResetPassword: async (user, url) => {
+			await resend.emails.send({
+				from: DEFAULT_FROM,
+				to: user.email,
+				subject: "Resetujte svoju lozinku",
+				react: PasswordReset({
+					userName: user.name,
+					resetUrl: url,
+				}),
+			});
+		},
 	},
 	emailVerification: {
 		sendVerificationEmail: async (user, url) => {

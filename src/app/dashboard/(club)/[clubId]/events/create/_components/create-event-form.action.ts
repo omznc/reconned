@@ -10,6 +10,7 @@ import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { unstable_after as after } from "next/server";
 
 export const createEvent = safeActionClient
 	.schema(createEventFormSchema)
@@ -52,6 +53,13 @@ export const createEvent = safeActionClient
 			clubId: parsedInput.clubId,
 			mapData: parsedInput.mapData ?? { areas: [], pois: [] },
 		};
+
+		// revalidate paths
+		revalidatePath(`/dashboard/${parsedInput.clubId}/events/`);
+		if (!parsedInput.isPrivate) {
+			revalidatePath("/");
+			revalidatePath(`/events/${parsedInput.id}`);
+		}
 
 		// create or update event
 		return prisma.event.upsert({
@@ -143,7 +151,7 @@ export const deleteEvent = safeActionClient
 			throw new Error("You are not authorized to perform this action.");
 		}
 
-		await Promise.all([
+		const [event, _] = await Promise.all([
 			prisma.event.delete({
 				where: {
 					id: parsedInput.id,
@@ -154,7 +162,12 @@ export const deleteEvent = safeActionClient
 			}),
 		]);
 
-		revalidatePath(`/events/${parsedInput.id}`);
 		revalidatePath(`/dashboard/${parsedInput.clubId}/events/${parsedInput.id}`);
+
+		if (!event.isPrivate) {
+			revalidatePath(`/events/${parsedInput.id}`, "layout");
+			revalidatePath("/");
+		}
+
 		redirect(`/dashboard/${parsedInput.clubId}`);
 	});

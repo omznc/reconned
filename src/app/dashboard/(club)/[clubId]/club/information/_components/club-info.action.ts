@@ -64,7 +64,11 @@ export const saveClubInformation = safeActionClient
 			},
 		});
 
-		revalidatePath(`/dashboard/club/information?club=${club.id}`);
+		revalidatePath(`/dashboard/${club.id}`, "layout");
+		if (!club.isPrivate) {
+			revalidatePath(`/clubs/${club.id}`, "layout");
+		}
+
 		return { id: club.id };
 	});
 
@@ -145,7 +149,7 @@ export const deleteClub = safeActionClient
 			throw new Error("You are not authorized to perform this action.");
 		}
 
-		await Promise.all([
+		const [club, _] = await Promise.all([
 			prisma.club.delete({
 				where: {
 					id: parsedInput.id,
@@ -166,7 +170,9 @@ export const deleteClub = safeActionClient
 			},
 		});
 
-		revalidatePath(`/clubs/${parsedInput.id}`);
-		revalidatePath(`/dashboard/${parsedInput.id}`);
+		revalidatePath(`/dashboard/${parsedInput.id}`, "layout");
+		if (!club.isPrivate) {
+			revalidatePath(`/clubs/${parsedInput.id}`, "layout");
+		}
 		redirect(remaining > 0 ? "/dashboard?autoSelectFirst=true" : "/");
 	});
