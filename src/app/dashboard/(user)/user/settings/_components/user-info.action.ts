@@ -29,7 +29,9 @@ export const saveUserInformation = safeActionClient
 		});
 
 		revalidatePath("/dashboard/user/");
-		revalidatePath(`/users/${user.id}`);
+		if (!user.isPrivate) {
+			revalidatePath(`/user/${user.id}`);
+		}
 	});
 
 export const getUserImageUploadUrl = safeActionClient
@@ -53,9 +55,11 @@ export const deleteUserImage = safeActionClient.action(async ({ ctx }) => {
 			image: null,
 		},
 	});
-	console.log("Deleted user image", user.image);
 
 	await deleteS3File(`user/${ctx.user.id}/image`);
 
 	revalidatePath("/dashboard/user/");
+	if (!user.isPrivate) {
+		revalidatePath(`/user/${user.id}`);
+	}
 });

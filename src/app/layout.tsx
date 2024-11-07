@@ -4,9 +4,9 @@ import "./globals.css";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/lib/env";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
