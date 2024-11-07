@@ -18,9 +18,7 @@ export default async function Home() {
 
 	return (
 		<div className="flex flex-col size-full gap-8">
-			<div className="relative h-[calc(100dvh-72px-2rem)] w-full">
-				<EventCalendar events={events} />
-			</div>
+			<EventCalendar events={events} />
 		</div>
 	);
 }

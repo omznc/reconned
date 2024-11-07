@@ -84,81 +84,11 @@ body {
 	}
 }
 
-.flag-input > svg {
-	width: 100%;
-	scale: 1.3;
-}
-
 @layer base {
 	* {
 		@apply border-border;
 	}
 	body {
 		@apply bg-background text-foreground;
-	}
-}
-
-/* FullCalendar button styles */
-.fc-button-primary {
-	background-color: black !important;
-	color: var(--primary-foreground);
-	border: none !important;
-	border-radius: 0 !important;
-}
-
-.fc-event-main,
-.fc-h-event,
-.fc-daygrid-event,
-.fc-timegrid-event,
-.fc-event {
-	background-color: black !important;
-	color: white !important;
-	border: none !important;
-	border-radius: 0 !important;
-	padding: 0.5rem !important;
-}
-
-.fc-daygrid-event.fc-event-end {
-	margin-right: 0 !important;
-}
-
-.fc-daygrid-event.fc-event-start {
-	margin-left: 0 !important;
-}
-
-.dark {
-	.fc-button-primary {
-		background-color: white !important;
-		background-opacity: 0.1 !important;
-		color: white;
-		border: none !important;
-		border-radius: 0 !important;
-	}
-
-	.fc-button {
-		background-color: #373737 !important;
-		color: white;
-		border: none !important;
-		border-radius: 0 !important;
-	}
-
-	.fc-event-main,
-	.fc-h-event,
-	.fc-daygrid-event,
-	.fc-timegrid-event,
-	.fc-event {
-		background-color: #373737 !important;
-		color: white;
-		border: none !important;
-		border-radius: 0 !important;
-		padding: 0.5rem !important;
-	}
-
-	.fc-daygrid-event.fc-event-end {
-		margin-right: 0 !important;
-	}
-
-	.fc-daygrid-event.fc-event-start {
-		margin-left: 0 !important;
 	}
 }

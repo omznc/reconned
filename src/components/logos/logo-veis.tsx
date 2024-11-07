@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import type { SVGProps } from "react";
 
 export const LogoVeis = (props: SVGProps<SVGSVGElement>) => (
@@ -8,6 +9,7 @@ export const LogoVeis = (props: SVGProps<SVGSVGElement>) => (
 		height={2092}
 		fill="none"
 		{...props}
+		className={cn("dark:invert", props.className)}
 	>
 		<title>Logo</title>
 		<path
