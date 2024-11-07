@@ -1,4 +1,4 @@
-import { sendInviteAction } from "@/app/(auth)/_actions/send-invite-action";
+import { sendEmailVerificationAction } from "@/app/(auth)/_actions/send-email-verification.action";
 import { env } from "@/lib/env";
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
@@ -18,7 +18,7 @@ export const auth = betterAuth({
 	},
 	emailVerification: {
 		sendVerificationEmail: async (user, url) => {
-			await sendInviteAction({
+			await sendEmailVerificationAction({
 				to: user.email,
 				subject: "Verify your email address",
 				name: user.name,

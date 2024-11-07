@@ -1,10 +1,10 @@
+import EmailVerification from "@/emails/email-verification";
 import { env } from "@/lib/env";
-import { resend } from "@/lib/resend";
-import { InviteEmailTemplate } from "@components/invite-email-template";
+import { DEFAULT_FROM, resend } from "@/lib/resend";
 
-export async function sendInviteAction({
+export async function sendEmailVerificationAction({
 	to,
-	from = "Airsoft BiH <airsoft@safetpojskic.com>",
+	from = DEFAULT_FROM,
 	subject,
 	name,
 	inviteLink,
@@ -33,10 +33,9 @@ export async function sendInviteAction({
 			from,
 			to,
 			subject,
-			react: InviteEmailTemplate({
-				name,
-				email: to,
-				inviteLink: url.toString(),
+			react: EmailVerification({
+				userName: name,
+				verificationUrl: url.toString(),
 			}),
 		});
 
