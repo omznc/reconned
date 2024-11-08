@@ -3,6 +3,7 @@ import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { MapComponent } from "@/components/map-component";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import type { Event } from "@prisma/client";
 import { Eye, EyeOff, MapPin, Pencil, User } from "lucide-react";
@@ -19,7 +20,10 @@ interface EventOverviewProps {
 	clubId?: string;
 }
 
-export function EventOverview({ event, clubId }: EventOverviewProps) {
+export async function EventOverview({ event, clubId }: EventOverviewProps) {
+	const user = await isAuthenticated();
+	const canEdit = user?.managedClubs.some((club) => club === clubId);
+
 	return (
 		<div className="relative flex flex-col items-center justify-center gap-4 ">
 			{event.coverImage && (
@@ -48,15 +52,19 @@ export function EventOverview({ event, clubId }: EventOverviewProps) {
 			>
 				<div className="relative flex select-none flex-col gap-3">
 					{clubId ? (
-						<Button asChild={true}>
-							<Link
-								className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit"
-								href={`/dashboard/${clubId}/events/create?id=${event.id}`}
-							>
-								<Pencil className="size-4" />
-								Izmjeni susret
-							</Link>
-						</Button>
+						<>
+							{canEdit && (
+								<Button asChild={true}>
+									<Link
+										className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit"
+										href={`/dashboard/${clubId}/events/create?id=${event.id}`}
+									>
+										<Pencil className="size-4" />
+										Izmjeni susret
+									</Link>
+								</Button>
+							)}
+						</>
 					) : (
 						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit">
 							<AddEventToCalendarButton event={event} />

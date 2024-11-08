@@ -16,21 +16,10 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 	if (!user) {
 		return notFound();
 	}
-
 	const clubs = await prisma.club.findMany({
 		where: {
 			members: {
 				some: {
-					userId: user.id,
-					role: {
-						in: ["CLUB_OWNER", "MANAGER"],
-					},
-				},
-			},
-		},
-		include: {
-			members: {
-				where: {
 					userId: user.id,
 				},
 			},

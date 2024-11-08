@@ -1,6 +1,7 @@
 import { ClubInfoForm } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -22,7 +23,7 @@ export default async function Page(props: PageProps) {
 				some: {
 					userId: user.id,
 					role: {
-						in: ["CLUB_OWNER", "MANAGER"],
+						in: [Role.CLUB_OWNER, Role.MANAGER],
 					},
 				},
 			},
