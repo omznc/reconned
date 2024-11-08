@@ -104,6 +104,11 @@ export const isAuthenticated = cache(async () => {
 			.then((res) => res)
 			.catch(() => []),
 	]);
+
+	if (!session?.user.id) {
+		return null;
+	}
+
 	return {
 		...session?.user,
 		managedClubs,
