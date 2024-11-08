@@ -1,7 +1,6 @@
 import { sendEmailVerificationAction } from "@/app/(auth)/_actions/send-email-verification.action";
-import { fetchManagedClubs } from "@/app/api/club/managed/route";
+import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
 import PasswordReset from "@/emails/password-reset";
-import { clubs } from "@/lib/auth-plugins/clubs";
 import { env } from "@/lib/env";
 import { DEFAULT_FROM, resend } from "@/lib/resend";
 import { PrismaClient } from "@prisma/client";
