@@ -1,6 +1,5 @@
-import { auth } from "@/lib/auth";
+import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 
@@ -43,12 +42,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 		);
 	}
 
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
+	const user = await isAuthenticated();
 
 	// If no user is logged in, check if account exists
-	if (!session?.user) {
+	if (!user) {
 		const existingUser = await prisma.user.findUnique({
 			where: {
 				email: invite.email,
@@ -66,7 +63,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 	}
 
 	// User is logged in - verify email matches
-	if (invite.email.toLowerCase() !== session.user.email?.toLowerCase()) {
+	if (invite.email.toLowerCase() !== user.email?.toLowerCase()) {
 		// Wrong account logged in
 		const currentUrl = req.url;
 		redirect(
@@ -76,7 +73,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 	const existingMembership = await prisma.clubMembership.findFirst({
 		where: {
-			userId: session.user.id,
+			userId: user.id,
 			clubId: invite.clubId,
 		},
 	});
@@ -92,13 +89,13 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 			where: { id: invite.id },
 			data: {
 				status: "ACCEPTED",
-				userId: session.user.id,
+				userId: user.id,
 			},
 		});
 
 		const membership = await tx.clubMembership.create({
 			data: {
-				userId: session.user.id,
+				userId: user.id,
 				clubId: invite.clubId,
 				role: "USER",
 			},
