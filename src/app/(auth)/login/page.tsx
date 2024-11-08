@@ -16,15 +16,35 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useQueryState } from "nuqs";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
 
+	const [redirectTo] = useQueryState("redirectTo");
+	const [message, setMessage] = useQueryState("message");
+
 	useEffect(() => {
+		if (message) {
+			toast.info(decodeURIComponent(message));
+			setMessage(null, { shallow: true });
+		}
 		authClient.oneTap();
-	}, []);
+	}, [message, setMessage]);
+
+	const handleSuccessfulLogin = () => {
+		if (redirectTo) {
+			if (redirectTo.startsWith("/api/")) {
+				window.location.href = redirectTo;
+			} else {
+				router.push(redirectTo);
+			}
+		} else {
+			router.push("/");
+		}
+	};
 
 	return (
 		<>
@@ -57,9 +77,7 @@ export default function LoginPage() {
 								onResponse: () => {
 									setIsLoading(false);
 								},
-								onSuccess: () => {
-									router.push("/");
-								},
+								onSuccess: handleSuccessfulLogin,
 								onError: (ctx) => {
 									if (ctx.error.status === 403) {
 										toast.error(
@@ -101,7 +119,6 @@ export default function LoginPage() {
 										);
 										return;
 									}
-									// if invalid email
 									if (!emailInput?.checkValidity()) {
 										toast.error("Unesite ispravan email.");
 										return;
@@ -151,9 +168,7 @@ export default function LoginPage() {
 									onResponse: () => {
 										setIsLoading(false);
 									},
-									onSuccess: () => {
-										router.push("/");
-									},
+									onSuccess: handleSuccessfulLogin,
 									onError: () => {
 										setIsError(true);
 									},
@@ -163,11 +178,18 @@ export default function LoginPage() {
 					>
 						Prijavi se pomoću passkeya
 					</Button>
-					<GoogleLoginButton isLoading={isLoading} />
+					<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Nemate račun? "}
-					<Link href="/register" className="underline">
+					<Link
+						href={
+							redirectTo
+								? `/register?redirectTo=${encodeURIComponent(redirectTo)}`
+								: "/register"
+						}
+						className="underline"
+					>
 						Registrirajte se
 					</Link>
 				</div>
