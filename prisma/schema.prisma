@@ -14,6 +14,13 @@ enum Role {
   ADMIN
 }
 
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
 model User {
   id             String              @id @default(cuid())
   email          String              @unique
@@ -21,8 +28,9 @@ model User {
   emailVerified  Boolean
   isPrivate      Boolean             @default(false)
   eventsSignedUp EventRegistration[]
-  invitesSent    Invite[]
-  ClubMembership ClubMembership[]
+  invitesSent    EventInvite[]
+  clubMembership ClubMembership[]
+  clubInvitesReceived ClubInvite[]
 
   image   String?
   Session Session[]
@@ -39,8 +47,6 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   passkeys  Passkey[]
-
-  @@map("user")
 }
 
 model Club {
@@ -59,12 +65,14 @@ model Club {
   contactPhone String?
   contactEmail String?
 
-  events  Event[]
-  members ClubMembership[]
+  events         Event[]
+  members        ClubMembership[]
+  invitesSent    ClubInvite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 model ClubMembership {
   id     String @id @default(cuid())
@@ -76,8 +84,30 @@ model ClubMembership {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([userId, clubId])
 }
 
+model ClubInvite {
+  id          String       @id @default(cuid())
+  email       String       // Email of the invited user
+  club        Club         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId      String
+  user        User?        @relation(fields: [userId], references: [id]) // Optional: If the email matches an existing user
+  userId      String?
+  status      InviteStatus @default(PENDING)
+  inviteCode  String       @unique
+  expiresAt   DateTime
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([inviteCode])
+}
+
+// Rest of your existing models remain the same...
 model Event {
   id          String @id @default(cuid())
   name        String
@@ -117,7 +147,7 @@ model Event {
   mapData          Json?
 
   registrations EventRegistration[]
-  invites       Invite[]
+  invites       EventInvite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -129,7 +159,7 @@ model EventRegistration {
   eventId  String
   user     User?   @relation(fields: [userId], references: [id])
   userId   String? // Can be null for non-account users
-  invite   Invite? @relation(fields: [inviteId], references: [id])
+  invite   EventInvite? @relation(fields: [inviteId], references: [id])
   inviteId String? // Event can be registered by invite link
 
   createdAt DateTime @default(now())
@@ -137,15 +167,15 @@ model EventRegistration {
 }
 
 // Invite Model (Manual Event Registration)
-model Invite {
+model EventInvite {
   id                String              @id @default(cuid())
   event             Event               @relation(fields: [eventId], references: [id])
   eventId           String
-  email             String // Email of the person receiving the invite
+  email             String              // Email of the person receiving the invite
   secureLink        String              @unique // Generated unique link for registration
   inviter           User                @relation(fields: [inviterId], references: [id])
   inviterId         String
-  EventRegistration EventRegistration[]
+  eventRegistration EventRegistration[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -160,8 +190,6 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("session")
 }
 
 model Account {
@@ -175,8 +203,6 @@ model Account {
   idToken      String?
   expiresAt    DateTime?
   password     String?
-
-  @@map("account")
 }
 
 model Verification {
@@ -184,8 +210,6 @@ model Verification {
   identifier String
   value      String
   expiresAt  DateTime
-
-  @@map("verification")
 }
 
 model Passkey {
@@ -200,179 +224,4 @@ model Passkey {
   backedUp       Boolean
   transports     String?
   createdAt      DateTime?
-
-  @@map("passkey")
 }
-
-// model Club {
-//   id         String       @id @default(uuid())
-//   name       String
-//   createdBy  String
-//   createdAt  DateTime     @default(now())
-//   updatedAt  DateTime     @updatedAt
-//   createdByUser User      @relation("CreatedClubs", fields: [createdBy], references: [id])
-//   members    ClubMember[]
-//   events     Event[]
-//
-//   @@index([createdBy])
-// }
-//
-// model ClubMember {
-//   id        String   @id @default(uuid())
-//   clubId    String
-//   userId    String
-//   joinedAt  DateTime @default(now())
-//
-//   club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
-//   user      User     @relation(fields: [userId], references: [id])
-//
-//   @@unique([userId]) // Ensures a user can only be in one club
-//   @@unique([clubId, userId])
-//
-//   @@index([clubId])
-//   @@index([userId])
-// }
-//
-// model Team {
-//   id         String       @id @default(uuid())
-//   name       String
-//   createdBy  String
-//   createdAt  DateTime     @default(now())
-//   updatedAt  DateTime     @updatedAt
-//   createdByUser User      @relation("CreatedTeams", fields: [createdBy], references: [id])
-//   members    TeamMember[]
-//
-//   @@index([createdBy])
-// }
-//
-// model TeamMember {
-//   id        String   @id @default(uuid())
-//   teamId    String
-//   userId    String
-//   role      TeamRole @default(MEMBER)
-//   joinedAt  DateTime @default(now())
-//
-//   team      Team     @relation(fields: [teamId], references: [id])
-//   user      User     @relation(fields: [userId], references: [id])
-//
-//   @@unique([teamId, userId])
-//   @@index([teamId])
-//   @@index([userId])
-// }
-//
-// enum TeamRole {
-//   LEADER
-//   MEMBER
-// }
-//
-// model Event {
-//   id            String    @id @default(uuid())
-//   title         String
-//   description   String?
-//   createdBy     String
-//   clubId        String
-//   createdAt     DateTime  @default(now())
-//   updatedAt     DateTime  @updatedAt
-//   startDate     DateTime
-//   endDate       DateTime?
-//   durationInHours Float?
-//   freeFood      Boolean   @default(false)
-//   offroadAccess Boolean   @default(false)
-//   locationLat   Float
-//   locationLng   Float
-//   createdByUser User      @relation("CreatedEvents", fields: [createdBy], references: [id])
-//   club          Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
-//   images        EventImage[]
-//   managers      Manager[]
-//   rules         EventRule[]
-//   applications  EventApplication[]
-//
-//   @@index([startDate])
-//   @@index([createdBy])
-//   @@index([clubId])
-// }
-//
-// model EventImage {
-//   id        String @id @default(uuid())
-//   eventId   String
-//   imageUrl  String
-//
-//   event     Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-// }
-//
-// model EventRule {
-//   id        String  @id @default(uuid())
-//   eventId   String
-//   ruleText  String
-//   createdAt DateTime @default(now())
-//
-//   event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
-// }
-//
-// model EventApplication {
-// id             String          @id @default(uuid())
-// eventId        String
-// applicantType  ApplicantType    @default(USER)
-// userId         String?
-// teamId         String?
-// managerId      String?
-// status         ApplicationStatus @default(PENDING)
-// appliedAt      DateTime        @default(now())
-//
-// event          Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
-// user           User?           @relation("UserApplications", fields: [userId], references: [id])
-// team           Team?           @relation(fields: [teamId], references: [id])
-// manager        User?           @relation(fields: [managerId], references: [id])
-// participants   EventApplicationParticipant[]
-//
-// @@check(
-//   (applicantType = "USER" AND userId IS NOT NULL AND teamId IS NULL) OR
-//   (applicantType = "TEAM" AND teamId IS NOT NULL AND userId IS NULL)
-// )
-//
-// @@index([eventId])
-// @@index([userId])
-// @@index([teamId])
-// }
-//
-// model EventApplicationParticipant {
-//   id                   String  @id @default(uuid())
-//   eventApplicationId    String
-//   participantName       String
-//   participantEmail      String?
-//
-//   eventApplication      EventApplication @relation(fields: [eventApplicationId], references: [id], onDelete: Cascade)
-//
-//   @@index([eventApplicationId])
-// }
-//
-// model Manager {
-//   id                 String          @id @default(uuid())
-//   managedEntityId    String
-//   managedEntityType  ManagedEntityType
-//   userId             String
-//   assignedAt         DateTime         @default(now())
-//
-//   user               User             @relation(fields: [userId], references: [id])
-//
-//   @@unique([managedEntityId, managedEntityType, userId])
-//
-//   @@index([managedEntityId, managedEntityType])
-//   @@index([userId])
-// }
-//
-// enum ApplicantType {
-//   USER
-//   TEAM
-// }
-//
-// enum ApplicationStatus {
-//   PENDING
-//   APPROVED
-//   REJECTED
-// }
-//
-// enum ManagedEntityType {
-//   CLUB
-//   EVENT
-// }

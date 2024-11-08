@@ -57,6 +57,36 @@ export const auth = betterAuth({
 		}),
 		oneTap(),
 	],
+	databaseHooks: {
+		user: {
+			update: {
+				after: async (user) => {
+					if (user.emailVerified) {
+						const pendingInvite = await prisma.clubInvite.findFirst({
+							where: {
+								email: user.email,
+								status: "PENDING",
+								userId: null,
+								expiresAt: {
+									gt: new Date(),
+								},
+							},
+						});
+
+						if (pendingInvite) {
+							// Link the invite to the verified user
+							await prisma.clubInvite.update({
+								where: { id: pendingInvite.id },
+								data: {
+									userId: user.id,
+								},
+							});
+						}
+					}
+				},
+			},
+		},
+	},
 });
 
 export const isAuthenticated = cache(async () => {
