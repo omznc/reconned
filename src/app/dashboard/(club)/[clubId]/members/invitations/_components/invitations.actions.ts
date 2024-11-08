@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { DEFAULT_FROM, resend } from "@/lib/resend";
 import { safeActionClient } from "@/lib/safe-action";
 import { Role } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export const sendInvitation = safeActionClient
 	.schema(sendInvitationSchema)
@@ -102,6 +103,8 @@ export const sendInvitation = safeActionClient
 					clubLocation: club?.location || "BiH",
 				}),
 			});
+
+			revalidatePath(`/dashboard/${club.id}/members/invitations`);
 
 			return {
 				success: true,

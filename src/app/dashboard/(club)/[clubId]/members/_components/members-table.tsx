@@ -33,6 +33,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
+import { useRouter } from "next/navigation";
 
 type MembershipWithUser = ClubMembership & {
 	user: Pick<
@@ -51,11 +52,13 @@ type MembershipWithUser = ClubMembership & {
 
 interface MembersTableProps {
 	data: MembershipWithUser[];
+	totalPages: number;
 	searchParams?: {
 		search?: string;
 		role?: string;
 		sortBy?: string;
 		sortOrder?: "asc" | "desc";
+		page?: string;
 	};
 }
 
@@ -121,7 +124,11 @@ function MobileCard({ row }: { row: Row<MembershipWithUser> }) {
 	);
 }
 
-export function MembersTable({ data, searchParams }: MembersTableProps) {
+export function MembersTable({
+	data,
+	totalPages,
+	searchParams,
+}: MembersTableProps) {
 	const [search, setSearch] = useQueryState("search", {
 		shallow: false,
 		clearOnDefault: true,
@@ -138,9 +145,15 @@ export function MembersTable({ data, searchParams }: MembersTableProps) {
 	const [sortOrder, setSortOrder] = useQueryState("sortOrder", {
 		shallow: false,
 		clearOnDefault: true,
+		defaultValue: searchParams?.sortOrder ?? "desc",
 	});
 	const [inputValue, setInputValue] = useState(searchParams?.search ?? "");
 	const [isLoading, setIsLoading] = useState(false);
+	const [page, setPage] = useQueryState("page", {
+		shallow: false,
+		clearOnDefault: true,
+		defaultValue: searchParams?.page ?? "1",
+	});
 
 	// Debounced search handler
 	const debouncedSearch = useDebouncedCallback(async (value: string) => {
@@ -280,11 +293,6 @@ export function MembersTable({ data, searchParams }: MembersTableProps) {
 		state: {
 			sorting: sortBy ? [{ id: sortBy, desc: sortOrder === "desc" }] : [],
 		},
-		initialState: {
-			pagination: {
-				pageSize: 10,
-			},
-		},
 	}) as TableType & { getRowModel(): { rows: Row<MembershipWithUser>[] } };
 
 	return (
@@ -348,28 +356,9 @@ export function MembersTable({ data, searchParams }: MembersTableProps) {
 							</Button>
 						)}
 					</div>
-
-					{/* Third row on mobile - pagination */}
-					<div className="flex items-center space-x-2 order-3 w-full md:w-auto">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => table.previousPage()}
-							disabled={!table.getCanPreviousPage()}
-							className="w-full md:w-auto"
-						>
-							Prethodna
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => table.nextPage()}
-							disabled={!table.getCanNextPage()}
-							className="w-full md:w-auto"
-						>
-							Sljedeća
-						</Button>
-					</div>
+				</div>
+				<div className="text-sm text-muted-foreground whitespace-nowrap">
+					Stranica {page} od {totalPages}
 				</div>
 			</div>
 			{/* Desktop Table / Mobile Cards */}
@@ -432,6 +421,26 @@ export function MembersTable({ data, searchParams }: MembersTableProps) {
 						</div>
 					)}
 				</div>
+			</div>
+			<div className="flex items-center justify-end space-x-2 order-3 w-full md:w-auto">
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => setPage((prev) => String(Number(prev) - 1))}
+					disabled={!table.getCanPreviousPage()}
+					className="w-full md:w-auto"
+				>
+					Prethodna
+				</Button>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => setPage((prev) => String(Number(prev) + 1))}
+					disabled={!table.getCanNextPage()}
+					className="w-full md:w-auto"
+				>
+					Sljedeća
+				</Button>
 			</div>
 		</div>
 	);

@@ -15,6 +15,7 @@ import {
 import {
 	Form,
 	FormControl,
+	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -29,7 +30,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@prisma/client";
 import debounce from "lodash/debounce";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -142,11 +143,13 @@ export function InvitationsForm() {
 										/>
 										<CommandList>
 											{isLoading ? (
-												<CommandEmpty>Učitavanje...</CommandEmpty>
+												<CommandEmpty className="flex items-center justify-center size-full p-4">
+													<Loader className="animate-spin h-4 w-4" />
+												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>Unesite najmanje 2 znaka...</CommandEmpty>
+												<CommandEmpty>Unesite najmanje 2 znaka</CommandEmpty>
 											) : users.length === 0 ? (
-												<CommandEmpty>Nema pronađenih korisnika.</CommandEmpty>
+												<CommandEmpty>Nema pronađenih korisnika</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{users.map((user) => (
@@ -187,6 +190,9 @@ export function InvitationsForm() {
 									</Command>
 								</PopoverContent>
 							</Popover>
+							<FormDescription>
+								Ako je korisnik već na platformi, možete ga pronaći ovdje.
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -198,8 +204,12 @@ export function InvitationsForm() {
 						<FormItem>
 							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input {...field} readOnly />
+								<Input {...field} />
 							</FormControl>
+							<FormDescription>
+								Ako ne možete pronaći korisnika, ili već znate njihov email,
+								unesite ga ovdje.
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -208,7 +218,7 @@ export function InvitationsForm() {
 					type="submit"
 					disabled={form.formState.isSubmitting || !form.formState.isDirty}
 				>
-					Submit
+					Pošalji pozivnicu
 				</Button>
 			</form>
 		</Form>
