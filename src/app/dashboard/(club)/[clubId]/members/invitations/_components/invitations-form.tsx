@@ -1,0 +1,216 @@
+"use client";
+
+import { sendInvitation } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.actions";
+import { sendInvitationSchema } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
+import { cn } from "@/lib/utils";
+import { Button } from "@components/ui/button";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@components/ui/command";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@components/ui/form";
+import { Input } from "@components/ui/input";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@components/ui/popover";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { User } from "@prisma/client";
+import debounce from "lodash/debounce";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { z } from "zod";
+
+async function searchUsers(query: string) {
+	const response = await fetch(`/api/users?query=${encodeURIComponent(query)}`);
+	if (!response.ok) {
+		throw new Error("Failed to fetch users");
+	}
+	return response.json();
+}
+
+export function InvitationsForm() {
+	const params = useParams<{ clubId: string }>();
+	const [users, setUsers] = useState<User[]>([]);
+	const [open, setOpen] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+
+	const form = useForm<z.infer<typeof sendInvitationSchema>>({
+		resolver: zodResolver(sendInvitationSchema),
+		defaultValues: {
+			clubId: params.clubId,
+			userName: "",
+			userEmail: "",
+		},
+	});
+
+	const debouncedSearch = useCallback(
+		debounce(async (value: string) => {
+			if (value.length >= 2) {
+				setIsLoading(true);
+				try {
+					const results = await searchUsers(value);
+					setUsers(results);
+				} catch (_error) {
+					toast.error("Neuspjela pretraga korisnika. Molimo pokušajte ponovo.");
+				} finally {
+					setIsLoading(false);
+				}
+			} else {
+				setUsers([]);
+			}
+		}, 400),
+		[],
+	);
+
+	const handleSearch = (value: string) => {
+		setSearchQuery(value);
+		debouncedSearch(value);
+	};
+
+	async function onSubmit(values: z.infer<typeof sendInvitationSchema>) {
+		try {
+			const response = await sendInvitation(values);
+
+			if (!response?.data?.success) {
+				toast.error(response?.data?.error || "Neuspjelo slanje pozivnice.");
+			}
+
+			toast.success("Poziivnica uspješno poslana.");
+		} catch (_error) {
+			toast.error("Neuspjelo slanje pozivnice.");
+		} finally {
+			form.reset({ userName: "", userEmail: "" });
+		}
+	}
+
+	return (
+		<Form {...form}>
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className="space-y-4 max-w-md"
+			>
+				<div>
+					<h3 className="text-lg font-semibold">Pozovi korisnika u klub</h3>
+				</div>
+				<FormField
+					control={form.control}
+					name="userName"
+					render={({ field }) => (
+						<FormItem className="flex flex-col">
+							<FormLabel>Korisnik</FormLabel>
+							<Popover open={open} onOpenChange={setOpen}>
+								<PopoverTrigger asChild>
+									<FormControl>
+										<Button
+											variant="outline"
+											aria-expanded={open}
+											className={cn(
+												"w-full justify-between",
+												!field.value && "text-muted-foreground",
+											)}
+										>
+											{field.value
+												? users.find((user) => user.id === field.value)?.name
+												: "Odaberite korisnika..."}
+											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+										</Button>
+									</FormControl>
+								</PopoverTrigger>
+								<PopoverContent className="sm:w-[448px] p-0">
+									<Command shouldFilter={false}>
+										<CommandInput
+											placeholder="Pretražite korisnike..."
+											value={searchQuery}
+											onValueChange={handleSearch}
+										/>
+										<CommandList>
+											{isLoading ? (
+												<CommandEmpty>Učitavanje...</CommandEmpty>
+											) : searchQuery.length < 2 ? (
+												<CommandEmpty>Unesite najmanje 2 znaka...</CommandEmpty>
+											) : users.length === 0 ? (
+												<CommandEmpty>Nema pronađenih korisnika.</CommandEmpty>
+											) : (
+												<CommandGroup>
+													{users.map((user) => (
+														<CommandItem
+															key={user.id}
+															value={user.id}
+															onSelect={(currentValue) => {
+																form.setValue("userName", currentValue, {
+																	shouldDirty: true,
+																});
+																form.setValue("userEmail", user.email, {
+																	shouldDirty: true,
+																});
+																setOpen(false);
+															}}
+														>
+															<div className="flex justify-between w-full items-center">
+																<div className="flex flex-col">
+																	<span>{user.name}</span>
+																	<span className="text-sm text-muted-foreground">
+																		{user.email}
+																	</span>
+																</div>
+																<Check
+																	className={cn(
+																		"ml-auto h-4 w-4",
+																		user.id === field.value
+																			? "opacity-100"
+																			: "opacity-0",
+																	)}
+																/>
+															</div>
+														</CommandItem>
+													))}
+												</CommandGroup>
+											)}
+										</CommandList>
+									</Command>
+								</PopoverContent>
+							</Popover>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="userEmail"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Email</FormLabel>
+							<FormControl>
+								<Input {...field} readOnly />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<Button
+					type="submit"
+					disabled={form.formState.isSubmitting || !form.formState.isDirty}
+				>
+					Submit
+				</Button>
+			</form>
+		</Form>
+	);
+}
