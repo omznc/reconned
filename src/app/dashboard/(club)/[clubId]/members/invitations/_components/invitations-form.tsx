@@ -30,7 +30,6 @@ import {
 } from "@components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@prisma/client";
-import { router } from "better-auth/api";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";

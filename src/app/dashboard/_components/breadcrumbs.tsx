@@ -11,7 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type BreadcrumbsProps = {
@@ -110,4 +109,5 @@ const TRANSLATIONS = {
 	security: "Sigurnost",
 	user: "Korisnik",
 	help: "Pomoć",
+	managers: "Menadžeri",
 };
