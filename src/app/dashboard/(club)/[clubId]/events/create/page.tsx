@@ -17,7 +17,7 @@ export default async function Page(props: PageProps) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 
-	if (!user.managedClubs.some((club) => club === params.clubId)) {
+	if (!user?.managedClubs.some((club) => club === params.clubId)) {
 		return notFound();
 	}
 
