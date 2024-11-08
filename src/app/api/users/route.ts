@@ -1,9 +1,16 @@
+import { isAuthenticated } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
+	const session = isAuthenticated();
+
+	if (!session) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
 	const { searchParams } = new URL(request.url);
 	const query = searchParams.get("query");
 
