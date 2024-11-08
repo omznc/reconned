@@ -1,5 +1,6 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 
@@ -52,14 +53,20 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 			},
 		});
 
-		if (existingUser) {
-			// Account exists - redirect to login with the current URL as return URL
-			const currentUrl = req.url; // This gets the full URL including the code
-			redirect(`/login?redirectTo=${encodeURIComponent(currentUrl)}`);
+		// Add the invite URL to cookie for post-login redirect
+		const cookieStore = await cookies();
+		const existingInviteUrl = cookieStore.get("inviteUrl");
+
+		if (!existingInviteUrl) {
+			cookieStore.set("inviteUrl", req.url, {
+				maxAge: 60 * 60 * 24, // 24 hours
+				httpOnly: false,
+				secure: true,
+				sameSite: "strict",
+			});
 		}
 
-		// No account exists - redirect to registration
-		redirect("/register");
+		redirect(existingUser ? "/login" : "/register");
 	}
 
 	// User is logged in - verify email matches
