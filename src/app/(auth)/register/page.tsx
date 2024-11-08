@@ -1,5 +1,4 @@
 "use client";
-import { finalizeRegistration } from "@/app/(auth)/_actions/finalize-registration.action";
 import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import {
@@ -8,14 +7,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
