@@ -101,9 +101,8 @@ export default function LoginPage() {
 							id="email"
 							type="email"
 							name="email"
-							placeholder="m@example.com"
+							placeholder="mail@example.com"
 							suppressHydrationWarning
-							pattern="[a-z0-9._%+\-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
 							required={true}
 						/>
 					</div>
