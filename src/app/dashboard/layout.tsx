@@ -35,7 +35,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 	return (
 		<SidebarProvider>
 			<CurrentClubProvider>
-				<AppSidebar clubs={clubs} />
+				<AppSidebar clubs={clubs} user={user} />
 				<SidebarInset className="max-h-dvh overflow-auto flex items-start p-4 justify-start">
 					<Breadcrumbs clubs={simplifiedClubs} />
 					{props.children}

@@ -8,7 +8,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 export const saveClubInformation = safeActionClient
@@ -64,6 +64,7 @@ export const saveClubInformation = safeActionClient
 			},
 		});
 
+		revalidateTag("managed-clubs");
 		revalidatePath(`/dashboard/${club.id}`, "layout");
 		if (!club.isPrivate) {
 			revalidatePath(`/clubs/${club.id}`, "layout");
@@ -170,6 +171,7 @@ export const deleteClub = safeActionClient
 			},
 		});
 
+		revalidateTag("managed-clubs");
 		revalidatePath(`/dashboard/${parsedInput.id}`, "layout");
 		if (!club.isPrivate) {
 			revalidatePath(`/clubs/${parsedInput.id}`, "layout");

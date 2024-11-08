@@ -32,10 +32,14 @@ import {
 import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { useIsAuthenticated } from "@/lib/auth-client";
+import type { User } from "better-auth";
 
-export function NavClub() {
+interface NavClubProps {
+	user: User & { managedClubs: string[] };
+}
+
+export function NavClub({ user }: NavClubProps) {
 	const path = usePathname();
-	const { user, loading } = useIsAuthenticated();
 	const { clubId } = useCurrentClub();
 
 	if (!clubId) {
@@ -47,106 +51,73 @@ export function NavClub() {
 		<SidebarGroup>
 			<SidebarGroupLabel>Moj klub</SidebarGroupLabel>
 			<SidebarMenu>
-				{!loading &&
-					items.map((item) => {
-						if (item?.items && item?.items.length > 0) {
-							return (
-								<Collapsible
-									key={item.title}
-									asChild={true}
-									defaultOpen={item.isActive}
-									className="group/collapsible"
-								>
-									<SidebarMenuItem>
-										<CollapsibleTrigger asChild={true}>
-											<SidebarMenuButton
-												isActive={
-													item.url === path ||
-													item.items?.some((subItem) => subItem.url === path)
-												}
-												tooltip={item.title}
-											>
-												{item.icon && <item.icon />}
-												<span>{item.title}</span>
-												<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-											</SidebarMenuButton>
-										</CollapsibleTrigger>
-										<CollapsibleContent>
-											<SidebarMenuSub>
-												{item.items
-													?.filter(
-														(subItem) =>
-															!subItem.protected ||
-															(subItem.protected &&
-																user?.managedClubs?.includes(clubId)),
-													)
-													.map((subItem) => (
-														<SidebarMenuSubItem key={subItem.title}>
-															<SidebarMenuSubButton
-																isActive={subItem.url === path}
-																asChild={true}
-															>
-																<Link href={subItem.url}>
-																	{subItem.icon && <subItem.icon />}
-																	<span>{subItem.title}</span>
-																</Link>
-															</SidebarMenuSubButton>
-														</SidebarMenuSubItem>
-													))}
-											</SidebarMenuSub>
-										</CollapsibleContent>
-									</SidebarMenuItem>
-								</Collapsible>
-							);
-						}
-
+				{items.map((item) => {
+					if (item?.items && item?.items.length > 0) {
 						return (
-							<SidebarMenuItem key={item.title}>
-								<SidebarMenuButton
-									isActive={item.url === path}
-									tooltip={item.title}
-									asChild={true}
-								>
-									<Link href={item.url}>
-										{item.icon && <item.icon />}
-										<span>{item.title}</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
+							<Collapsible
+								key={item.title}
+								asChild={true}
+								defaultOpen={item.isActive}
+								className="group/collapsible"
+							>
+								<SidebarMenuItem>
+									<CollapsibleTrigger asChild={true}>
+										<SidebarMenuButton
+											isActive={
+												item.url === path ||
+												item.items?.some((subItem) => subItem.url === path)
+											}
+											tooltip={item.title}
+										>
+											{item.icon && <item.icon />}
+											<span>{item.title}</span>
+											<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+										</SidebarMenuButton>
+									</CollapsibleTrigger>
+									<CollapsibleContent>
+										<SidebarMenuSub>
+											{item.items
+												?.filter(
+													(subItem) =>
+														!subItem.protected ||
+														(subItem.protected &&
+															user?.managedClubs?.includes(clubId)),
+												)
+												.map((subItem) => (
+													<SidebarMenuSubItem key={subItem.title}>
+														<SidebarMenuSubButton
+															isActive={subItem.url === path}
+															asChild={true}
+														>
+															<Link href={subItem.url}>
+																{subItem.icon && <subItem.icon />}
+																<span>{subItem.title}</span>
+															</Link>
+														</SidebarMenuSubButton>
+													</SidebarMenuSubItem>
+												))}
+										</SidebarMenuSub>
+									</CollapsibleContent>
+								</SidebarMenuItem>
+							</Collapsible>
 						);
-					})}
-				{loading &&
-					items.map((item) => {
-						if (item?.items && item?.items.length > 0) {
-							return (
-								<Collapsible
-									key={item.title}
-									asChild={true}
-									defaultOpen={false}
-									className="group/collapsible"
-								>
-									<SidebarMenuItem>
-										<CollapsibleTrigger asChild={true}>
-											<SidebarMenuButton disabled={true} tooltip={item.title}>
-												<div className="h-4 w-4 animate-pulse rounded bg-muted" />
-												<div className="h-4 w-24 animate-pulse rounded bg-muted" />
-												<ChevronRight className="ml-auto text-muted-foreground" />
-											</SidebarMenuButton>
-										</CollapsibleTrigger>
-									</SidebarMenuItem>
-								</Collapsible>
-							);
-						}
+					}
 
-						return (
-							<SidebarMenuItem key={item.title}>
-								<SidebarMenuButton disabled={true} tooltip={item.title}>
-									<div className="h-4 w-4 animate-pulse rounded bg-muted" />
-									<div className="h-4 w-24 animate-pulse rounded bg-muted" />
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						);
-					})}
+					return (
+						<SidebarMenuItem key={item.title}>
+							<SidebarMenuButton
+								isActive={item.url === path}
+								tooltip={item.title}
+								asChild={true}
+							>
+								<Link href={item.url}>
+									{item.icon && <item.icon />}
+									<span>{item.title}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					);
+				})}
 			</SidebarMenu>
 		</SidebarGroup>
 	);

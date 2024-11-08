@@ -25,8 +25,7 @@ import {
 	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { ROLE_TRANSLATIONS } from "@/lib/utils";
-import type { Club, ClubMembership } from "@prisma/client";
+import type { Club } from "@prisma/client";
 import Image from "next/image";
 import {
 	redirect,
@@ -37,25 +36,22 @@ import {
 } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
-import { useIsAuthenticated } from "@/lib/auth-client";
+import type { User } from "better-auth";
 
 interface AppSidebarProps {
 	clubs: Club[];
+	user: User & { managedClubs: string[] };
 }
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const { user, loading } = useIsAuthenticated();
 	const router = useRouter();
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
 	const activeClub = useMemo(
-		() =>
-			props.clubs.find(
-				(club) => club.id === params.clubId || club.id === clubId,
-			),
+		() => props.clubs.find((club) => club.id === params.clubId),
 		[props.clubs, params.clubId, clubId],
 	);
 	useEffect(() => {
@@ -87,6 +83,7 @@ export function AppSidebar(props: AppSidebarProps) {
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild={true}>
 								<SidebarMenuButton
+									key={activeClub?.id}
 									size="lg"
 									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 								>
@@ -98,22 +95,31 @@ export function AppSidebar(props: AppSidebarProps) {
 														suppressHydrationWarning={true}
 														width={32}
 														height={32}
-														src={`${activeClub.logo}?v=${activeClub.updatedAt}`} // This will revalidate the browser cache
+														src={`${activeClub.logo}?v=${activeClub.updatedAt.toISOString()}`} // This will revalidate the browser cache
 														alt={activeClub.name}
 													/>
 												) : (
 													<Square className="size-4" />
 												)}
 											</div>
-											{activeClub && (
+											{activeClub ? (
 												<div className="grid flex-1 text-left text-sm leading-tight">
 													<span className="truncate font-semibold">
 														{activeClub?.name}
 													</span>
 													<span className="truncate text-xs fade-in">
-														{user?.managedClubs?.includes(activeClub.id)
+														{props.user?.managedClubs?.includes(activeClub.id)
 															? "Menadžer"
 															: "Član"}
+													</span>
+												</div>
+											) : (
+												<div className="grid flex-1 text-left text-sm leading-tight">
+													<span className="truncate fade-in font-semibold">
+														Klubovi
+													</span>
+													<span className="truncate fade-in text-xs">
+														Odaberite klub
 													</span>
 												</div>
 											)}
@@ -121,28 +127,15 @@ export function AppSidebar(props: AppSidebarProps) {
 									) : (
 										<>
 											<div className="flex text-background aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-foreground">
-												{loading ? (
-													<Loader className="size-4 animate-spin" />
-												) : (
-													<Square className="size-4" />
-												)}
+												<Square className="size-4" />
 											</div>
 											<div className="grid flex-1 text-left text-sm leading-tight">
-												{loading ? (
-													<>
-														<span className="bg-sidebar-foreground w-24 h-3 rounded-sm animate-pulse" />
-														<span className="bg-sidebar-foreground mt-1 w-16 h-2 rounded-sm animate-pulse" />
-													</>
-												) : (
-													<>
-														<span className="truncate fade-in font-semibold">
-															Klubovi
-														</span>
-														<span className="truncate fade-in text-xs">
-															Odaberite klub
-														</span>
-													</>
-												)}
+												<span className="truncate fade-in font-semibold">
+													Klubovi
+												</span>
+												<span className="truncate fade-in text-xs">
+													Odaberite klub
+												</span>
 											</div>
 										</>
 									)}
@@ -207,7 +200,7 @@ export function AppSidebar(props: AppSidebarProps) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavApp />
-				<NavClub />
+				<NavClub user={props.user} />
 			</SidebarContent>
 			<SidebarFooter>
 				<UserSwitcher />

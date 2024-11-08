@@ -68,7 +68,9 @@ export function EventsCarousel(props: CarouselProps) {
 											Prijavi se na susret
 										</Link>
 									) : (
-										<Link href="/login">Uloguj se</Link>
+										<Link suppressHydrationWarning={true} href="/login">
+											Uloguj se
+										</Link>
 									)}
 								</Button>
 								<Button asChild={true} className="w-1/2 cursor-pointer">
