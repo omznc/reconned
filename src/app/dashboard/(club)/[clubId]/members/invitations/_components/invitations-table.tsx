@@ -100,22 +100,22 @@ const InviteStatusBadge = ({ status }: { status: InviteStatus }) => {
 	const statusConfig = {
 		// biome-ignore lint/style/useNamingConvention: <explanation>
 		PENDING: {
-			className: "bg-yellow-100 text-yellow-800",
+			className: "bg-yellow-100 text-yellow-800 whitespace-nowrap rounded-none",
 			label: "Na čekanju",
 		},
 		// biome-ignore lint/style/useNamingConvention: <explanation>
 		ACCEPTED: {
-			className: "bg-green-100 text-green-800",
+			className: "bg-green-100 text-green-800 whitespace-nowrap rounded-none",
 			label: "Prihvaćeno",
 		},
 		// biome-ignore lint/style/useNamingConvention: <explanation>
 		REJECTED: {
-			className: "bg-red-100 text-red-800",
+			className: "bg-red-100 text-red-800 whitespace-nowrap rounded-none",
 			label: "Odbijeno",
 		},
 		// biome-ignore lint/style/useNamingConvention: <explanation>
 		EXPIRED: {
-			className: "bg-gray-100 text-gray-800",
+			className: "bg-gray-100 text-gray-800 whitespace-nowrap rounded-none",
 			label: "Isteklo",
 		},
 	};
