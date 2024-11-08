@@ -64,6 +64,7 @@ import {
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { useIsAuthenticated } from "@/lib/auth-client";
 
 export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),

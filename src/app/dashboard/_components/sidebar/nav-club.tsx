@@ -31,9 +31,11 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
+import { useIsAuthenticated } from "@/lib/auth-client";
 
 export function NavClub() {
 	const path = usePathname();
+	const { user, loading } = useIsAuthenticated();
 	const { clubId } = useCurrentClub();
 
 	if (!clubId) {
@@ -45,66 +47,106 @@ export function NavClub() {
 		<SidebarGroup>
 			<SidebarGroupLabel>Moj klub</SidebarGroupLabel>
 			<SidebarMenu>
-				{items.map((item) => {
-					if (item?.items && item?.items.length > 0) {
-						return (
-							<Collapsible
-								key={item.title}
-								asChild={true}
-								defaultOpen={item.isActive}
-								className="group/collapsible"
-							>
-								<SidebarMenuItem>
-									<CollapsibleTrigger asChild={true}>
-										<SidebarMenuButton
-											isActive={
-												item.url === path ||
-												item.items?.some((subItem) => subItem.url === path)
-											}
-											tooltip={item.title}
-										>
-											{item.icon && <item.icon />}
-											<span>{item.title}</span>
-											<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-										</SidebarMenuButton>
-									</CollapsibleTrigger>
-									<CollapsibleContent>
-										<SidebarMenuSub>
-											{item.items?.map((subItem) => (
-												<SidebarMenuSubItem key={subItem.title}>
-													<SidebarMenuSubButton
-														isActive={subItem.url === path}
-														asChild={true}
-													>
-														<Link href={subItem.url}>
-															{subItem.icon && <subItem.icon />}
-															<span>{subItem.title}</span>
-														</Link>
-													</SidebarMenuSubButton>
-												</SidebarMenuSubItem>
-											))}
-										</SidebarMenuSub>
-									</CollapsibleContent>
-								</SidebarMenuItem>
-							</Collapsible>
-						);
-					}
+				{!loading &&
+					items.map((item) => {
+						if (item?.items && item?.items.length > 0) {
+							return (
+								<Collapsible
+									key={item.title}
+									asChild={true}
+									defaultOpen={item.isActive}
+									className="group/collapsible"
+								>
+									<SidebarMenuItem>
+										<CollapsibleTrigger asChild={true}>
+											<SidebarMenuButton
+												isActive={
+													item.url === path ||
+													item.items?.some((subItem) => subItem.url === path)
+												}
+												tooltip={item.title}
+											>
+												{item.icon && <item.icon />}
+												<span>{item.title}</span>
+												<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+											</SidebarMenuButton>
+										</CollapsibleTrigger>
+										<CollapsibleContent>
+											<SidebarMenuSub>
+												{item.items
+													?.filter(
+														(subItem) =>
+															!subItem.protected ||
+															(subItem.protected &&
+																user?.managedClubs?.includes(clubId)),
+													)
+													.map((subItem) => (
+														<SidebarMenuSubItem key={subItem.title}>
+															<SidebarMenuSubButton
+																isActive={subItem.url === path}
+																asChild={true}
+															>
+																<Link href={subItem.url}>
+																	{subItem.icon && <subItem.icon />}
+																	<span>{subItem.title}</span>
+																</Link>
+															</SidebarMenuSubButton>
+														</SidebarMenuSubItem>
+													))}
+											</SidebarMenuSub>
+										</CollapsibleContent>
+									</SidebarMenuItem>
+								</Collapsible>
+							);
+						}
 
-					return (
-						<SidebarMenuItem key={item.title}>
-							<SidebarMenuButton
-								isActive={item.url === path}
-								tooltip={item.title}
-								asChild={true}
-							>
-								<Link href={item.url}>
-									{item.icon && <item.icon />}
-									<span>{item.title}</span>
-								</Link>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-					);
-				})}
+						return (
+							<SidebarMenuItem key={item.title}>
+								<SidebarMenuButton
+									isActive={item.url === path}
+									tooltip={item.title}
+									asChild={true}
+								>
+									<Link href={item.url}>
+										{item.icon && <item.icon />}
+										<span>{item.title}</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						);
+					})}
+				{loading &&
+					items.map((item) => {
+						if (item?.items && item?.items.length > 0) {
+							return (
+								<Collapsible
+									key={item.title}
+									asChild={true}
+									defaultOpen={false}
+									className="group/collapsible"
+								>
+									<SidebarMenuItem>
+										<CollapsibleTrigger asChild={true}>
+											<SidebarMenuButton disabled={true} tooltip={item.title}>
+												<div className="h-4 w-4 animate-pulse rounded bg-muted" />
+												<div className="h-4 w-24 animate-pulse rounded bg-muted" />
+												<ChevronRight className="ml-auto text-muted-foreground" />
+											</SidebarMenuButton>
+										</CollapsibleTrigger>
+									</SidebarMenuItem>
+								</Collapsible>
+							);
+						}
+
+						return (
+							<SidebarMenuItem key={item.title}>
+								<SidebarMenuButton disabled={true} tooltip={item.title}>
+									<div className="h-4 w-4 animate-pulse rounded bg-muted" />
+									<div className="h-4 w-24 animate-pulse rounded bg-muted" />
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						);
+					})}
 			</SidebarMenu>
 		</SidebarGroup>
 	);
@@ -127,11 +169,13 @@ const getItems = (clubId: string) => {
 					title: "Informacije",
 					url: `/dashboard/${clubId}/club/information`,
 					icon: Pencil,
+					protected: true,
 				},
 				{
 					title: "Statistike",
 					url: `/dashboard/${clubId}/club/stats`,
 					icon: ChartBar,
+					protected: true,
 				},
 			],
 		},
@@ -149,6 +193,7 @@ const getItems = (clubId: string) => {
 					title: "Pozivnice",
 					url: `/dashboard/${clubId}/members/invitations`,
 					icon: MailPlus,
+					protected: true,
 				},
 				{
 					title: "Statistike",
@@ -171,6 +216,7 @@ const getItems = (clubId: string) => {
 					title: "Novi susret",
 					url: `/dashboard/${clubId}/events/create`,
 					icon: Plus,
+					protected: true,
 				},
 				{
 					title: "Kalendar",

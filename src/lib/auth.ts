@@ -1,15 +1,16 @@
 import { sendEmailVerificationAction } from "@/app/(auth)/_actions/send-email-verification.action";
 import PasswordReset from "@/emails/password-reset";
+import { clubs } from "@/lib/auth-plugins/clubs";
 import { env } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
 import { DEFAULT_FROM, resend } from "@/lib/resend";
-import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { oneTap, passkey } from "better-auth/plugins";
+
 import { headers } from "next/headers";
 import { cache } from "react";
 
-const prisma = new PrismaClient();
 export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
@@ -56,6 +57,7 @@ export const auth = betterAuth({
 			rpName: "Airsoft BiH",
 		}),
 		oneTap(),
+		clubs(),
 	],
 	databaseHooks: {
 		user: {
@@ -90,8 +92,20 @@ export const auth = betterAuth({
 });
 
 export const isAuthenticated = cache(async () => {
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
-	return session?.user;
+	const allHeaders = await headers();
+	const [session, managedClubs] = await Promise.all([
+		auth.api.getSession({
+			headers: allHeaders,
+		}),
+		auth.api
+			.getManagedClubs({
+				headers: allHeaders,
+			})
+			.then((res) => res)
+			.catch(() => []),
+	]);
+	return {
+		...session?.user,
+		managedClubs,
+	};
 });

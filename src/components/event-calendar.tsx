@@ -2,7 +2,7 @@
 
 import { useQueryState } from "nuqs";
 import type { Event } from "@prisma/client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
 	startOfMonth,
@@ -37,6 +37,7 @@ interface EventCalendarProps {
 
 export function EventCalendar(props: EventCalendarProps) {
 	const params = useParams<{ clubId: string }>();
+	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(
 			formatDateFns(new Date(), "yyyy-MM"),
@@ -283,39 +284,40 @@ export function EventCalendar(props: EventCalendarProps) {
 													}
 
 													return (
-														<HoverCard key={event.id} openDelay={0}>
+														<HoverCard key={event.id} openDelay={300}>
 															<HoverCardTrigger>
-																<Link href={getEventUrl(event)}>
-																	<Button
-																		variant="ghost"
-																		style={{
-																			position: "absolute",
-																			zIndex: 10,
-																			left: 0,
-																			width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
-																			top: `${
-																				(eventPositions.get(event.id) ?? 1) * 30
-																			}px`,
-																		}}
-																		className={cn(
-																			"text-left px-2 py-1 text-xs font-medium text-background h-6",
-																			"bg-primary hover:bg-primary/90 hover:text-background",
-																			{
-																				"rounded-l-none": !display.isStart,
-																				"rounded-r-none": !display.isEnd,
-																			},
-																		)}
-																	>
-																		{format(event.dateStart, "HH:mm", {
+																<Button
+																	onClick={() => {
+																		router.push(getEventUrl(event));
+																	}}
+																	variant="ghost"
+																	style={{
+																		position: "absolute",
+																		zIndex: 10,
+																		left: 0,
+																		width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
+																		top: `${
+																			(eventPositions.get(event.id) ?? 1) * 30
+																		}px`,
+																	}}
+																	className={cn(
+																		"text-left px-2 py-1 text-xs font-medium text-background h-6",
+																		"bg-primary hover:bg-primary/90 hover:text-background",
+																		{
+																			"rounded-l-none": !display.isStart,
+																			"rounded-r-none": !display.isEnd,
+																		},
+																	)}
+																>
+																	{format(event.dateStart, "HH:mm", {
+																		locale: bs,
+																	})}
+																	{event.dateEnd &&
+																		` - ${format(event.dateEnd, "HH:mm", {
 																			locale: bs,
-																		})}
-																		{event.dateEnd &&
-																			` - ${format(event.dateEnd, "HH:mm", {
-																				locale: bs,
-																			})}`}{" "}
-																		{event.name}
-																	</Button>
-																</Link>
+																		})}`}{" "}
+																	{event.name}
+																</Button>
 															</HoverCardTrigger>
 															<HoverCardContent
 																align="center"
@@ -396,17 +398,19 @@ export function EventCalendar(props: EventCalendarProps) {
 																			</p>
 																		</div>
 																	)}
-																	<Link
-																		href={`${getEventUrl(event)}?signup=true`}
+
+																	<Button
+																		variant="default"
+																		className="w-full mt-2"
+																		onClick={() => {
+																			router.push(
+																				`${getEventUrl(event)}?signup=true`,
+																			);
+																		}}
 																	>
-																		<Button
-																			variant="default"
-																			className="w-full mt-2"
-																		>
-																			<Plus className="h-4 w-4 mr-2" />
-																			Prijavi se
-																		</Button>
-																	</Link>
+																		<Plus className="h-4 w-4 mr-2" />
+																		Prijavi se
+																	</Button>
 																</div>
 															</HoverCardContent>
 														</HoverCard>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, Plus, Square } from "lucide-react";
+import { ChevronsUpDown, Loader, LoaderIcon, Plus, Square } from "lucide-react";
 
 import { NavApp } from "@/app/dashboard/_components/sidebar/nav-app";
 import { NavClub } from "@/app/dashboard/_components/sidebar/nav-club";
@@ -37,19 +37,15 @@ import {
 } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
-
-const getData = (clubId: string) => ({
-	navMain: [],
-});
+import { useIsAuthenticated } from "@/lib/auth-client";
 
 interface AppSidebarProps {
-	clubs: (Club & {
-		members: ClubMembership[];
-	})[];
+	clubs: Club[];
 }
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
+	const { user, loading } = useIsAuthenticated();
 	const router = useRouter();
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
@@ -109,24 +105,44 @@ export function AppSidebar(props: AppSidebarProps) {
 													<Square className="size-4" />
 												)}
 											</div>
-											<div className="grid flex-1 text-left text-sm leading-tight">
-												<span className="truncate font-semibold">
-													{activeClub?.name}
-												</span>
-												<span className="truncate text-xs">
-													{activeClub?.members[0]?.role &&
-														ROLE_TRANSLATIONS[activeClub?.members[0]?.role]}
-												</span>
-											</div>
+											{activeClub && (
+												<div className="grid flex-1 text-left text-sm leading-tight">
+													<span className="truncate font-semibold">
+														{activeClub?.name}
+													</span>
+													<span className="truncate text-xs fade-in">
+														{user?.managedClubs?.includes(activeClub.id)
+															? "Menadžer"
+															: "Član"}
+													</span>
+												</div>
+											)}
 										</>
 									) : (
 										<>
-											<div className="flex text-background aspect-square size-8 items-center justify-center rounded-lg bg-foreground">
-												?
+											<div className="flex text-background aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-foreground">
+												{loading ? (
+													<Loader className="size-4 animate-spin" />
+												) : (
+													<Square className="size-4" />
+												)}
 											</div>
 											<div className="grid flex-1 text-left text-sm leading-tight">
-												<span className="truncate font-semibold">Klubovi</span>
-												<span className="truncate text-xs">Odaberite klub</span>
+												{loading ? (
+													<>
+														<span className="bg-sidebar-foreground w-24 h-3 rounded-sm animate-pulse" />
+														<span className="bg-sidebar-foreground mt-1 w-16 h-2 rounded-sm animate-pulse" />
+													</>
+												) : (
+													<>
+														<span className="truncate fade-in font-semibold">
+															Klubovi
+														</span>
+														<span className="truncate fade-in text-xs">
+															Odaberite klub
+														</span>
+													</>
+												)}
 											</div>
 										</>
 									)}

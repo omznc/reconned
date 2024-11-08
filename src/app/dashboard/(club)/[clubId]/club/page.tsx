@@ -21,9 +21,6 @@ export default async function Page(props: PageProps) {
 			members: {
 				some: {
 					userId: user.id,
-					role: {
-						in: ["CLUB_OWNER", "MANAGER"],
-					},
 				},
 			},
 			id: params.clubId,

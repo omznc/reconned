@@ -10,7 +10,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useIsAuthenticated } from "@/lib/auth-client";
+import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { LoaderIcon, LogOut } from "lucide-react";
 import Link from "next/link";
 

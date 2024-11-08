@@ -25,7 +25,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex flex-col items-center justify-center`}
 				suppressHydrationWarning
@@ -40,7 +40,6 @@ export default function RootLayout({
 					<link
 						rel="stylesheet"
 						href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-						integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
 					/>
 					<Toaster />
 					<NuqsAdapter>
