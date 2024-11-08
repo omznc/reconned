@@ -31,7 +31,6 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
-import { useIsAuthenticated } from "@/lib/auth-client";
 import type { User } from "better-auth";
 
 interface NavClubProps {
@@ -164,6 +163,12 @@ const getItems = (clubId: string) => {
 					title: "Pozivnice",
 					url: `/dashboard/${clubId}/members/invitations`,
 					icon: MailPlus,
+					protected: true,
+				},
+				{
+					title: "Menadžeri",
+					url: `/dashboard/${clubId}/members/managers`,
+					icon: BookUser,
 					protected: true,
 				},
 				{
