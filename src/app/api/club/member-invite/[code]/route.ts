@@ -58,8 +58,12 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 		const existingInviteUrl = cookieStore.get("inviteUrl");
 
 		if (!existingInviteUrl) {
+			const maxAge = Math.max(
+				0,
+				(invite.expiresAt.getTime() - Date.now()) / 1000,
+			);
 			cookieStore.set("inviteUrl", req.url, {
-				maxAge: 60 * 60 * 24, // 24 hours
+				maxAge: maxAge, // Set maxAge to the remaining time until invite expires
 				httpOnly: false,
 				secure: true,
 				sameSite: "strict",
