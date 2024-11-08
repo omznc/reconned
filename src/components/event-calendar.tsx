@@ -3,7 +3,6 @@
 import { useQueryState } from "nuqs";
 import type { Event } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import {
 	startOfMonth,
 	endOfMonth,
@@ -28,7 +27,7 @@ import { bs } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parse as parseDateFns, format as formatDateFns } from "date-fns";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { toast } from "sonner";
 
 interface EventCalendarProps {
@@ -50,13 +49,19 @@ export function EventCalendar(props: EventCalendarProps) {
 		serialize: (date: Date) => formatDateFns(date, "yyyy-MM"),
 	});
 	const [message, setMessage] = useQueryState("message");
+	const session = useIsAuthenticated();
+
+	useEffect(() => {
+		if (!(session.loading || session?.user)) {
+			authClient.oneTap();
+		}
+	}, [session.loading]);
 
 	useEffect(() => {
 		if (message) {
 			toast.info(decodeURIComponent(message));
 			setMessage(null, { shallow: true });
 		}
-		authClient.oneTap();
 	}, [message, setMessage]);
 
 	const monthStart = startOfMonth(currentDate);
