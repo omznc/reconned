@@ -161,12 +161,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 			if (!props.club?.id) {
 				router.push(`/dashboard/${newClubId}/club`);
+				router.refresh();
 			}
 
 			setFiles([]);
 
 			toast.success(
-				props.club?.id ? "Klub je dodan" : "Podataci o klubu su sačuvani",
+				props.club?.id ? "Podataci o klubu su sačuvani" : "Klub je kreiran",
 			);
 		} catch (error) {
 			toast.error("Došlo je do greške.");

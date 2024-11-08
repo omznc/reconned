@@ -49,7 +49,6 @@ export default function RegisterPage() {
 						const email = formData.get("email") as string;
 						const password = formData.get("password") as string;
 						const name = formData.get("name") as string;
-						const isClub = formData.get("isClub") as string;
 
 						const success = await authClient.signUp.email(
 							{
@@ -72,12 +71,6 @@ export default function RegisterPage() {
 
 						if (success.error) {
 							return;
-						}
-
-						if (!success.error) {
-							await finalizeRegistration({
-								asClub: isClub === "on",
-							});
 						}
 
 						toast.success(
@@ -122,25 +115,6 @@ export default function RegisterPage() {
 							required={true}
 						/>
 					</div>
-					<div className="flex gap-2 items-center">
-						<Checkbox name="isClub" id="isClub" defaultChecked={false} />
-						<Tooltip delayDuration={100}>
-							<TooltipTrigger asChild={true}>
-								<Label
-									htmlFor="isClub"
-									className="transition-all hover:underline"
-								>
-									Registriraj se kao klub
-								</Label>
-							</TooltipTrigger>
-							<TooltipContent className="w-[150px]">
-								<p>
-									Odabirom ove opcije želite registrirati klub, te ćete postati
-									vlasnik kluba.
-								</p>
-							</TooltipContent>
-						</Tooltip>
-					</div>
 
 					{isError && (
 						<p className="text-red-500 -mb-2">
@@ -154,7 +128,11 @@ export default function RegisterPage() {
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Imate račun? "}
-					<Link href="/login" className="underline">
+					<Link
+						suppressHydrationWarning={true}
+						href="/login"
+						className="underline"
+					>
 						Prijavite se
 					</Link>
 				</div>
