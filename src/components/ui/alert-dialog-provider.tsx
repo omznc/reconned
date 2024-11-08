@@ -29,8 +29,8 @@ export const AlertDialogContext = createContext<
 
 type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 
-const defaultCancelButtonText = "Cancel";
-const defaultActionButtonText = "Okay";
+const defaultCancelButtonText = "Odustani";
+const defaultActionButtonText = "Ok";
 
 export type AlertAction =
     | {

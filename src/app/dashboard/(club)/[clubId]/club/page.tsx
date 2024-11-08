@@ -38,7 +38,7 @@ export default async function Page(props: PageProps) {
 		return notFound();
 	}
 	return (
-		<div className="space-y-4 max-w-3xl">
+		<div className="space-y-4  lg:w-[48rem] transition-all max-w-3xl">
 			<div>
 				<h3 className="text-lg font-semibold">Klub</h3>
 			</div>

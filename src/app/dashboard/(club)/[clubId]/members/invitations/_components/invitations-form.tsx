@@ -2,6 +2,7 @@
 
 import { sendInvitation } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.actions";
 import { sendInvitationSchema } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
+import { useAlert } from "@/components/ui/alert-dialog-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@components/ui/button";
 import {
@@ -29,9 +30,10 @@ import {
 } from "@components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@prisma/client";
+import { router } from "better-auth/api";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -51,6 +53,8 @@ export function InvitationsForm() {
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const router = useRouter();
+	const alert = useAlert();
 
 	const form = useForm<z.infer<typeof sendInvitationSchema>>({
 		resolver: zodResolver(sendInvitationSchema),
@@ -93,11 +97,12 @@ export function InvitationsForm() {
 				toast.error(response?.data?.error || "Neuspjelo slanje pozivnice.");
 			}
 
-			toast.success("Poziivnica uspješno poslana.");
+			alert("Pozivnica je uspješno poslana.");
 		} catch (_error) {
 			toast.error("Neuspjelo slanje pozivnice.");
 		} finally {
-			form.reset({ userName: "", userEmail: "" });
+			form.reset({ userName: "", userEmail: "", clubId: params.clubId });
+			router.refresh();
 		}
 	}
 
@@ -197,6 +202,11 @@ export function InvitationsForm() {
 						</FormItem>
 					)}
 				/>
+				<div className="flex gap-1 items-center -mb-2">
+					<hr className="flex-1 border-t-2 border-gray-300" />
+					<span className="text-gray-500">ili</span>
+					<hr className="flex-1 border-t-2 border-gray-300" />
+				</div>
 				<FormField
 					control={form.control}
 					name="userEmail"

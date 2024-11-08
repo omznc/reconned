@@ -18,7 +18,7 @@ export function SecuritySettings({
 	const router = useRouter();
 
 	return (
-		<div className="space-y-4 max-w-3xl">
+		<div className="space-y-4  lg:w-[48rem] transition-all min-w-3xl max-w-3xl">
 			{hasPassword ? (
 				<PasswordChangeForm isLoading={isLoading} setIsLoading={setIsLoading} />
 			) : (
