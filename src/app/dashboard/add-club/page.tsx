@@ -19,11 +19,11 @@ export default async function Page(props: PageProps) {
 		return <ClubInfoForm />;
 	}
 	return (
-		<div className="space-y-4 max-w-3xl">
+		<div className="space-y-4  lg:w-[48rem] transition-all max-w-3xl">
 			<div>
 				<h3 className="text-lg font-semibold">Dodajte klub</h3>
 			</div>
-			<div className="flex flex-col gap-4 w-full md:w-[300px]">
+			<div className="flex flex-col gap-4 w-full">
 				<div className="flex flex-col gap-2">
 					<Button asChild={true}>
 						<Link href="?type=new" className="flex items-center gap-2">

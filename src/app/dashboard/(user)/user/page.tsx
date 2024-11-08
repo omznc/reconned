@@ -19,7 +19,7 @@ export default async function Page() {
 		return notFound();
 	}
 	return (
-		<div className="space-y-4 max-w-3xl">
+		<div className="space-y-4  lg:w-[48rem] transition-all max-w-3xl">
 			<div>
 				<h3 className="text-lg font-semibold">Vaš račun</h3>
 			</div>
