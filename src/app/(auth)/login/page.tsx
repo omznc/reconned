@@ -35,15 +35,18 @@ export default function LoginPage() {
 	}, [message, setMessage]);
 
 	const handleSuccessfulLogin = () => {
-		if (redirectTo) {
-			if (redirectTo.startsWith("/api/")) {
-				window.location.href = redirectTo;
-			} else {
-				router.push(redirectTo);
-			}
-		} else {
-			router.push("/");
+		const inviteUrl = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith("inviteUrl="))
+			?.split("=")[1];
+
+		if (inviteUrl) {
+			document.cookie = "inviteUrl=; max-age=0; path=/";
+			window.location.href = decodeURIComponent(inviteUrl);
+			return;
 		}
+
+		router.push(redirectTo ? redirectTo : "/");
 	};
 
 	return (
