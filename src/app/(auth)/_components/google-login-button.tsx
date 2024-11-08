@@ -1,10 +1,14 @@
-"use client";
+import { GoogleLogo } from "@/components/logos/google-logo";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 
-import { authClient } from "@auth/client";
-import { GoogleLogo } from "@components/logos/google-logo";
-import { Button } from "@components/ui/button";
-
-export function GoogleLoginButton({ isLoading }: { isLoading: boolean }) {
+export function GoogleLoginButton({
+	isLoading,
+	redirectTo,
+}: {
+	isLoading: boolean;
+	redirectTo?: string | null;
+}) {
 	return (
 		<Button
 			variant="outline"
@@ -12,9 +16,14 @@ export function GoogleLoginButton({ isLoading }: { isLoading: boolean }) {
 			type="button"
 			disabled={isLoading}
 			onClick={async () => {
-				await authClient.signIn.social({
-					provider: "google",
-				});
+				await authClient.signIn.social(
+					{
+						provider: "google",
+						// biome-ignore lint/style/useNamingConvention: <explanation>
+						callbackURL: redirectTo || "/",
+					},
+					{},
+				);
 			}}
 		>
 			<GoogleLogo /> Koristi Google

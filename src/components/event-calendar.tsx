@@ -16,7 +16,7 @@ import {
 	isSameMonth,
 	isWithinInterval,
 } from "date-fns";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import {
 	HoverCard,
@@ -28,6 +28,8 @@ import { bs } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parse as parseDateFns, format as formatDateFns } from "date-fns";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 interface EventCalendarProps {
 	events: (Event & { club: { name: string }; image?: string | null })[];
@@ -46,6 +48,15 @@ export function EventCalendar(props: EventCalendarProps) {
 		parse: (value: string) => parseDateFns(value, "yyyy-MM", new Date()),
 		serialize: (date: Date) => formatDateFns(date, "yyyy-MM"),
 	});
+	const [message, setMessage] = useQueryState("message");
+
+	useEffect(() => {
+		if (message) {
+			toast.info(decodeURIComponent(message));
+			setMessage(null, { shallow: true });
+		}
+		authClient.oneTap();
+	}, [message, setMessage]);
 
 	const monthStart = startOfMonth(currentDate);
 	const monthEnd = endOfMonth(currentDate);
@@ -120,6 +131,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		};
 	};
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
 	const getEventPositions = (events: Event[], week: Date[]) => {
 		const positions = new Map<string, number>();
 		const maxLayer = new Array(7).fill(0);
