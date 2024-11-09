@@ -66,7 +66,7 @@ export const sendInvitation = safeActionClient
 			}
 
 			// Generate unique invite code
-			const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+			const code = Math.random().toString(36).substring(2, 16).toUpperCase();
 
 			const existingUser = await prisma.user.findUnique({
 				where: {
