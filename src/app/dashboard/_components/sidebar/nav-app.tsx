@@ -101,21 +101,22 @@ const items = [
 		url: "/dashboard/help",
 		icon: Info,
 	},
-	{
-		title: "Postavke",
-		url: "#",
-		icon: Settings2,
-		items: [
-			{
-				title: "Općenito",
-				url: "/dashboard/settings",
-			},
-			{
-				title: "Personalizacija",
-				url: "/dashboard/settings/personalization",
-			},
-		],
-	},
+	// Unsure what this will end up being, if anything
+	// {
+	// 	title: "Postavke",
+	// 	url: "#",
+	// 	icon: Settings2,
+	// 	items: [
+	// 		{
+	// 			title: "Općenito",
+	// 			url: "/dashboard/settings",
+	// 		},
+	// 		{
+	// 			title: "Personalizacija",
+	// 			url: "/dashboard/settings/personalization",
+	// 		},
+	// 	],
+	// },
 	{
 		title: "Korisnik",
 		url: "#",
