@@ -314,14 +314,14 @@ export function GenericDataTable<T>({
 					onClick={() => setPage((prev) => String(Number(prev) - 1))}
 					disabled={page === "1"}
 				>
-					Previous
+					Nazad
 				</Button>
 				<Button
 					variant="outline"
 					onClick={() => setPage((prev) => String(Number(prev) + 1))}
 					disabled={Number(page) >= totalPages}
 				>
-					Next
+					Naprijed
 				</Button>
 			</div>
 		</div>
