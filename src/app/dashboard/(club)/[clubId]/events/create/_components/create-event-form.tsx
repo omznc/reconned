@@ -64,7 +64,7 @@ import {
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { useIsAuthenticated } from "@/lib/auth-client";
+import { AnimatedNumber } from "@/components/animated-number";
 
 export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),
@@ -77,14 +77,101 @@ interface CreateEventFormProps {
 	event: Event | null;
 }
 
+function EventTimelineDescription({
+	dateRegistrationsOpen,
+	dateRegistrationsClose,
+	dateStart,
+	dateEnd,
+}: {
+	dateRegistrationsOpen: Date;
+	dateRegistrationsClose: Date;
+	dateStart: Date;
+	dateEnd: Date;
+}) {
+	// Add validation check
+	if (
+		!dateRegistrationsOpen ||
+		!dateRegistrationsClose ||
+		!dateStart ||
+		!dateEnd
+	) {
+		return null;
+	}
+
+	const now = new Date();
+
+	const regOpenDiff = dateRegistrationsOpen.getTime() - now.getTime();
+	const regCloseDiff = dateRegistrationsClose.getTime() - now.getTime();
+	const startDiff = dateStart.getTime() - now.getTime();
+	const eventDuration =
+		(dateEnd.getTime() - dateStart.getTime()) / (1000 * 60 * 60);
+
+	const parts = [];
+
+	if (regOpenDiff > 0) {
+		const days = Math.floor(regOpenDiff / (1000 * 60 * 60 * 24));
+		parts.push(
+			<span key="regOpen">
+				Registracije se otvaraju za <AnimatedNumber value={days} /> dan/a
+			</span>,
+		);
+	} else {
+		parts.push(<span key="regOpen">Registracije su otvorene</span>);
+	}
+
+	if (regCloseDiff > 0) {
+		const days = Math.floor(regCloseDiff / (1000 * 60 * 60 * 24));
+		parts.push(
+			<span key="regClose">
+				, zatvaraju se za <AnimatedNumber value={days} /> dan/a
+			</span>,
+		);
+	} else {
+		parts.push(<span key="regClose">, registracije su zatvorene</span>);
+	}
+
+	if (startDiff > 0) {
+		const days = Math.floor(startDiff / (1000 * 60 * 60 * 24));
+		parts.push(
+			<span key="start">
+				, susret počinje za <AnimatedNumber value={days} /> dan/a
+			</span>,
+		);
+	} else {
+		parts.push(<span key="start">, susret je počeo</span>);
+	}
+
+	parts.push(
+		<span key="duration">
+			, trajat će <AnimatedNumber value={Math.round(eventDuration)} /> sati/a
+		</span>,
+	);
+
+	return <p className="text-sm text-muted-foreground min-h-[50px]">{parts}</p>;
+}
+
 export default function CreateEventForm(props: CreateEventFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const confirm = useConfirm();
 
+	const dropZoneConfig = {
+		maxFiles: 1,
+		maxSize: 1024 * 1024 * 4,
+	};
+
 	const router = useRouter();
 	const clubId = useParams<{ clubId: string }>().clubId;
+
+	const startDate = new Date();
+	startDate.setDate(startDate.getDate() + 15);
+
+	const endDate = new Date(startDate);
+	endDate.setDate(endDate.getDate() + 1);
+
+	const registrationCloseDate = new Date(startDate);
+	registrationCloseDate.setHours(registrationCloseDate.getHours() - 2);
 
 	const form = useForm<z.infer<typeof createEventFormSchema>>({
 		resolver: zodResolver(createEventFormSchema),
@@ -96,10 +183,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			costPerPerson: props.event?.costPerPerson || 0,
 			location: props.event?.location || "",
 			googleMapsLink: props.event?.googleMapsLink || "",
-			dateStart: props.event?.dateStart || new Date(),
-			dateEnd: props.event?.dateEnd || undefined,
+			dateStart: props.event?.dateStart || startDate,
+			dateEnd: props.event?.dateEnd || endDate,
 			dateRegistrationsOpen: props.event?.dateRegistrationsOpen || new Date(),
-			dateRegistrationsClose: props.event?.dateRegistrationsClose || undefined,
+			dateRegistrationsClose:
+				props.event?.dateRegistrationsClose || registrationCloseDate,
 			coverImage: props.event?.coverImage || "",
 			isPrivate: props.event?.isPrivate,
 			allowFreelancers: props.event?.allowFreelancers,
@@ -109,19 +197,44 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			hasSnacks: props.event?.hasSnacks,
 			hasDrinks: props.event?.hasDrinks,
 			hasPrizes: props.event?.hasPrizes,
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			// biome-ignore lint/suspicious/noExplicitAny: I'll eventually handle this
 			mapData: (props.event?.mapData as any) || { areas: [], pois: [] },
 		},
+		mode: "onChange",
 	});
 
 	useEffect(() => {
 		form.reset();
 	}, []);
 
-	const dropZoneConfig = {
-		maxFiles: 1,
-		maxSize: 1024 * 1024 * 4,
-	};
+	// Add this effect after the form initialization
+	useEffect(() => {
+		const subscription = form.watch((value, { name }) => {
+			if (name === "dateStart") {
+				const startDate = value.dateStart as Date;
+				if (!startDate) {
+					return;
+				}
+
+				const newEndDate = new Date(startDate);
+				newEndDate.setDate(newEndDate.getDate() + 1);
+
+				const newRegistrationCloseDate = new Date(startDate);
+				newRegistrationCloseDate.setHours(
+					newRegistrationCloseDate.getHours() - 2,
+				);
+
+				form.setValue("dateEnd", newEndDate, { shouldValidate: true });
+				form.setValue("dateRegistrationsClose", newRegistrationCloseDate, {
+					shouldValidate: true,
+				});
+			}
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [form]);
 
 	async function onSubmit(values: z.infer<typeof createEventFormSchema>) {
 		setIsLoading(true);
@@ -322,7 +435,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								Imate neku sliku koja bi bila savršena za ovaj susret? Dodajte
 								je.
 							</FormDescription>
-							<FormMessage />
 						</FormItem>
 					)}
 				/>
@@ -378,6 +490,23 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 				<div>
 					<h3 className="text-lg font-semibold">Vrijeme</h3>
+					{!(
+						form.formState.errors.dateRegistrationsOpen ||
+						form.formState.errors.dateRegistrationsClose ||
+						form.formState.errors.dateStart ||
+						form.formState.errors.dateEnd
+					) &&
+						form.watch("dateRegistrationsOpen") &&
+						form.watch("dateRegistrationsClose") &&
+						form.watch("dateStart") &&
+						form.watch("dateEnd") && (
+							<EventTimelineDescription
+								dateRegistrationsOpen={form.watch("dateRegistrationsOpen")}
+								dateRegistrationsClose={form.watch("dateRegistrationsClose")}
+								dateStart={form.watch("dateStart")}
+								dateEnd={form.watch("dateEnd")}
+							/>
+						)}
 				</div>
 
 				<div className="grid grid-cols-6 md:grid-cols-12 gap-4">

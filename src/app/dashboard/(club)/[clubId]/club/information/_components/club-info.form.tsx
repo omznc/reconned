@@ -57,6 +57,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface ClubInfoFormProps {
 	club?: Club;
+	isClubOwner?: boolean;
 }
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
@@ -190,34 +191,36 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							</AlertDescription>
 						</div>
 						<div className="flex gap-1">
-							<Button
-								variant={"destructive"}
-								type="button"
-								disabled={isLoading}
-								className="w-fit"
-								onClick={async () => {
-									const resp = await confirm({
-										title: "Jeste li sigurni?",
-										body: "Ako obrišete klub, nećete ga moći vratiti nazad.",
-										actionButtonVariant: "destructive",
-										actionButton: `Obriši ${props.club?.name}`,
-										cancelButton: "Ne, vrati se",
-									});
-									if (resp) {
-										setIsLoading(true);
-										await deleteClub({
-											id: props.club?.id ?? "",
+							{props.isClubOwner && (
+								<Button
+									variant={"destructive"}
+									type="button"
+									disabled={isLoading}
+									className="w-fit"
+									onClick={async () => {
+										const resp = await confirm({
+											title: "Jeste li sigurni?",
+											body: "Ako obrišete klub, nećete ga moći vratiti nazad.",
+											actionButtonVariant: "destructive",
+											actionButton: `Obriši ${props.club?.name}`,
+											cancelButton: "Ne, vrati se",
 										});
-										setIsLoading(false);
-									}
-								}}
-							>
-								{isLoading ? (
-									<Loader className="animate-spin size-4" />
-								) : (
-									"Obriši klub"
-								)}
-							</Button>
+										if (resp) {
+											setIsLoading(true);
+											await deleteClub({
+												id: props.club?.id ?? "",
+											});
+											setIsLoading(false);
+										}
+									}}
+								>
+									{isLoading ? (
+										<Loader className="animate-spin size-4" />
+									) : (
+										"Obriši klub"
+									)}
+								</Button>
+							)}
 						</div>
 					</Alert>
 				)}

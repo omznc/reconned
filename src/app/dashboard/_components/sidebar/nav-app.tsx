@@ -49,6 +49,7 @@ export function NavApp() {
 						<Collapsible
 							key={item.title}
 							asChild={true}
+							defaultOpen={item.items?.some((subItem) => subItem.url === path)}
 							className="group/collapsible"
 						>
 							<SidebarMenuItem>

@@ -8,6 +8,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
+import { Role } from "@prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -140,7 +141,7 @@ export const deleteClub = safeActionClient
 			where: {
 				userId: ctx.user.id,
 				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
+					in: [Role.CLUB_OWNER],
 				},
 				clubId: parsedInput.id,
 			},

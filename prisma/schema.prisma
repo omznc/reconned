@@ -118,10 +118,10 @@ model Event {
   coverImage String?
 
   dateStart DateTime
-  dateEnd   DateTime?
+  dateEnd   DateTime
 
-  dateRegistrationsClose DateTime?
-  dateRegistrationsOpen  DateTime?
+  dateRegistrationsClose DateTime
+  dateRegistrationsOpen  DateTime
 
   isPrivate        Boolean @default(false) // Private events are club-only events
   allowFreelancers Boolean @default(false) // Allow people not in a club to register
