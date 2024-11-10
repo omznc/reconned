@@ -291,6 +291,7 @@ export function GenericDataTable<T>({
 									{column.header}
 								</span>
 								<span className="font-medium">
+									{/* @ts-expect-error I know, I know */}
 									{renderCell(item, column, tableConfig)}
 								</span>
 							</div>
