@@ -32,7 +32,7 @@ interface CellConfig {
 }
 
 interface Column<T> {
-	key: keyof T | string;
+	key: keyof T; // Remove string type to ensure type safety
 	header: string;
 	cellConfig?: CellConfig;
 	sortable?: boolean;
@@ -44,18 +44,12 @@ interface Filter {
 	options: { label: string; value: string }[];
 }
 
-interface MobileCardConfig<T> {
-	title: keyof T;
-	subtitle?: keyof T;
-}
-
 interface GenericTableProps<T> {
 	data: T[];
 	columns: Column<T>[];
 	filters?: Filter[];
 	searchPlaceholder?: string;
 	totalPages: number;
-	mobileCardConfig?: MobileCardConfig<T>;
 	tableConfig?: {
 		dateFormat?: string;
 		locale?: "bs" | "en";
@@ -68,10 +62,11 @@ const renderCell = <T extends Record<string, any>>(
 	column: Column<T>,
 	tableConfig?: GenericTableProps<T>["tableConfig"],
 ) => {
-	const value = item[column.key];
+	const key = column.key as keyof T;
+	const value = item[key];
 	const config = column.cellConfig;
 
-	if (!value) {
+	if (value === undefined || value === null || value === "") {
 		return "-";
 	}
 
@@ -88,7 +83,7 @@ const renderCell = <T extends Record<string, any>>(
 	if (config?.variant === "badge") {
 		const badgeClass = config.badgeVariants?.[value] || "bg-primary/10";
 		return (
-			<span className={`rounded-full px-2 py-1 text-xs ${badgeClass}`}>
+			<span className={`px-2 py-1 text-xs ${badgeClass}`}>
 				{config.valueMap?.[value] || value}
 			</span>
 		);
@@ -103,7 +98,6 @@ export function GenericDataTable<T>({
 	filters,
 	searchPlaceholder = "Search...",
 	totalPages,
-	mobileCardConfig,
 	tableConfig,
 }: GenericTableProps<T>) {
 	const [search, setSearch] = useQueryState("search", { shallow: false });
@@ -164,10 +158,25 @@ export function GenericDataTable<T>({
 		setIsLoading(true);
 		await setSearch(null);
 		await setSortBy(null);
-		await setSortOrder("desc");
+		await setSortOrder(null);
+		await setPage("1");
 		setFilterValues({});
 		setInputValue("");
+
+		// Clear all query parameters
+		const url = new URL(window.location.href);
+		url.search = "";
+		router.push(url.toString());
+
 		setIsLoading(false);
+	};
+
+	const hasActiveFilters = () => {
+		return (
+			Boolean(search) ||
+			Boolean(sortBy) ||
+			Object.values(filterValues).some((value) => value && value !== "all")
+		);
 	};
 
 	return (
@@ -215,8 +224,19 @@ export function GenericDataTable<T>({
 					</Select>
 				))}
 
+				{hasActiveFilters() && (
+					<Button
+						variant="default"
+						onClick={resetAll}
+						className="h-9 px-2 lg:px-3"
+					>
+						<X className="h-4 w-4" />
+						<span className="ml-2 hidden lg:inline">Ukloni filtere</span>
+					</Button>
+				)}
+
 				<div className="ml-auto text-sm text-muted-foreground">
-					Page {page} of {totalPages}
+					Stranica {page} od {totalPages}
 				</div>
 			</div>
 
@@ -247,7 +267,7 @@ export function GenericDataTable<T>({
 						{data.map((item, idx) => (
 							<TableRow key={`${idx}-${item}`}>
 								{columns.map((column) => (
-									<TableCell key={column.key.toString()}>
+									<TableCell key={String(column.key)}>
 										{/* @ts-expect-error */}
 										{renderCell(item, column, tableConfig)}
 									</TableCell>
@@ -261,17 +281,20 @@ export function GenericDataTable<T>({
 			{/* Mobile Cards */}
 			<div className="space-y-4 md:hidden">
 				{data.map((item, idx) => (
-					<div key={`${idx}-${item}`} className="rounded-lg border p-4">
-						<div className="font-semibold">
-							{mobileCardConfig
-								? String(item[mobileCardConfig.title as keyof T])
-								: null}
-						</div>
-						{mobileCardConfig?.subtitle && (
-							<div className="text-sm text-muted-foreground">
-								{String(item[mobileCardConfig.subtitle as keyof T])}
+					<div
+						key={`${idx}-${item}`}
+						className="rounded-lg border p-4 overflow-x-auto space-y-2"
+					>
+						{columns.map((column) => (
+							<div key={String(column.key)} className="flex flex-col">
+								<span className="text-sm text-muted-foreground">
+									{column.header}
+								</span>
+								<span className="font-medium">
+									{renderCell(item, column, tableConfig)}
+								</span>
 							</div>
-						)}
+						))}
 					</div>
 				))}
 			</div>
