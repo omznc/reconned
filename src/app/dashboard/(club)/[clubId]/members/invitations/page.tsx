@@ -3,7 +3,7 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import type { InviteStatus, PrismaClient } from "@prisma/client";
+import type { InviteStatus, Prisma } from "@prisma/client";
 
 interface PageProps {
 	params: Promise<{
