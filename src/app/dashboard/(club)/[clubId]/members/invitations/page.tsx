@@ -1,5 +1,5 @@
 import { InvitationsForm } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations-form";
-import { GenericDataTable } from "@/components/generic-data-table";
+import { InvitationsTable } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
@@ -12,6 +12,15 @@ interface PageProps {
 	searchParams: Promise<{
 		[key: string]: string;
 	}>;
+}
+
+interface FormattedInvite {
+	email: string;
+	userName: string;
+	status: InviteStatus;
+	createdAt: Date;
+	expiresAt: Date;
+	inviteCode: string;
 }
 
 export default async function Page(props: PageProps) {
@@ -71,23 +80,22 @@ export default async function Page(props: PageProps) {
 			}
 		: { createdAt: "desc" };
 
-	const invitesCount = await prisma.clubInvite.count({
-		where,
-	});
-
-	const invites = await prisma.clubInvite.findMany({
-		where,
-		orderBy,
-		include: {
-			user: {
-				select: {
-					name: true,
+	const [invitesCount, invites] = await Promise.all([
+		prisma.clubInvite.count({ where }),
+		prisma.clubInvite.findMany({
+			where,
+			orderBy,
+			include: {
+				user: {
+					select: {
+						name: true,
+					},
 				},
 			},
-		},
-		take: pageSize,
-		skip: (page - 1) * pageSize,
-	});
+			take: pageSize,
+			skip: (page - 1) * pageSize,
+		}),
+	]);
 
 	const formattedInvites = invites.map((invite) => ({
 		...invite,
@@ -97,72 +105,9 @@ export default async function Page(props: PageProps) {
 	return (
 		<div className="space-y-4 w-full">
 			<InvitationsForm />
-			<GenericDataTable
-				data={formattedInvites}
+			<InvitationsTable
+				invites={formattedInvites}
 				totalPages={Math.ceil(invitesCount / pageSize)}
-				searchPlaceholder="Pretraži pozivnice..."
-				tableConfig={{
-					dateFormat: "d. MMMM yyyy.",
-					locale: "bs",
-				}}
-				columns={[
-					{
-						key: "email",
-						header: "Email",
-						sortable: true,
-					},
-					{
-						key: "userName",
-						header: "Korisnik",
-					},
-					{
-						key: "status",
-						header: "Status",
-						sortable: true,
-						cellConfig: {
-							variant: "badge",
-							valueMap: {
-								PENDING: "Na čekanju",
-								ACCEPTED: "Prihvaćeno",
-								REJECTED: "Odbijeno",
-								EXPIRED: "Isteklo",
-							},
-							badgeVariants: {
-								PENDING: "bg-yellow-100 text-yellow-800",
-								ACCEPTED: "bg-green-100 text-green-800",
-								REJECTED: "bg-red-100 text-red-800",
-								EXPIRED: "bg-gray-100 text-gray-800",
-							},
-						},
-					},
-					{
-						key: "createdAt",
-						header: "Datum slanja",
-						sortable: true,
-					},
-					{
-						key: "expiresAt",
-						header: "Ističe",
-						sortable: true,
-					},
-					{
-						key: "inviteCode",
-						header: "Kod pozivnice",
-					},
-				]}
-				filters={[
-					{
-						key: "status",
-						label: "Filter po statusu",
-						options: [
-							{ label: "Svi statusi", value: "all" },
-							{ label: "Na čekanju", value: "PENDING" },
-							{ label: "Prihvaćeno", value: "ACCEPTED" },
-							{ label: "Odbijeno", value: "REJECTED" },
-							{ label: "Isteklo", value: "EXPIRED" },
-						],
-					},
-				]}
 			/>
 		</div>
 	);
