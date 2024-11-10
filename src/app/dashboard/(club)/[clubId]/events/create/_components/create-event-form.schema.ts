@@ -1,17 +1,5 @@
 import { z } from "zod";
 
-// Schema for a single point of interest (POI)
-const poiSchema = z.object({
-	lat: z.number(), // Latitude
-	lng: z.number(), // Longitude
-});
-
-// Schema for coordinates (latitude and longitude pair)
-const coordinatesSchema = z.array(z.number()); // Array of numbers
-
-// Schema for areas, which are arrays of arrays of coordinates
-const areaSchema = z.array(z.array(z.array(coordinatesSchema))); // Adjusted to reflect the nested arrays
-
 export const createEventFormSchema = z
 	.object({
 		id: z.string().optional(),
@@ -93,7 +81,7 @@ export const createEventFormSchema = z
 			const hourBeforeEvent = new Date(
 				data.dateStart.getTime() - 60 * 60 * 1000,
 			);
-			return data.dateRegistrationsClose <= hourBeforeEvent;
+			return data.dateRegistrationsClose < hourBeforeEvent;
 		},
 		{
 			message:
@@ -103,7 +91,9 @@ export const createEventFormSchema = z
 	)
 	.refine(
 		(data) => {
-			if (!data.dateRegistrationsOpen) return true;
+			if (!data.dateRegistrationsOpen) {
+				return true;
+			}
 			return data.dateRegistrationsOpen < data.dateRegistrationsClose;
 		},
 		{
@@ -114,7 +104,9 @@ export const createEventFormSchema = z
 	)
 	.refine(
 		(data) => {
-			if (!data.dateRegistrationsOpen) return true;
+			if (!data.dateRegistrationsOpen) {
+				return true;
+			}
 			return data.dateRegistrationsOpen <= data.dateStart;
 		},
 		{
@@ -124,12 +116,12 @@ export const createEventFormSchema = z
 	)
 	.refine(
 		(data) => {
-			const maxDurationInMs = 72 * 60 * 60 * 1000; // 72 hours
+			const maxDurationInMs = 7 * 24 * 60 * 60 * 1000; // 7 days
 			const duration = data.dateEnd.getTime() - data.dateStart.getTime();
 			return duration <= maxDurationInMs;
 		},
 		{
-			message: "Susret ne može trajati duže od 72 sata",
+			message: "Susret ne može trajati duže od 7 dana",
 			path: ["dateEnd"],
 		},
 	);

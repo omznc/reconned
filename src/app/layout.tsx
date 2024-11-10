@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,28 +6,25 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { env } from "@/lib/env";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import { FontProvider } from "@/components/font-switcher";
 
-const geistSans = localFont({
-	src: "./fonts/GeistVF.woff",
-	variable: "--font-geist-sans",
-	weight: "100 900",
-});
-const geistMono = localFont({
-	src: "./fonts/GeistMonoVF.woff",
-	variable: "--font-geist-mono",
-	weight: "100 900",
+import { Geist_Mono, Geist } from "next/font/google";
+import { FontBody } from "@/components/font-body";
+
+const geistSans = Geist({
+	fallback: ["sans-serif"],
 });
 
-export default function RootLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
+const geistMono = Geist_Mono({
+	fallback: ["monospace"],
+});
+
+function LayoutContent({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex flex-col items-center justify-center`}
-				suppressHydrationWarning
+			<FontBody
+				geistMonoVariable={geistMono.className}
+				geistSansVariable={geistSans.className}
 			>
 				<ThemeProvider
 					attribute="class"
@@ -48,8 +44,20 @@ export default function RootLayout({
 						</TooltipProvider>
 					</NuqsAdapter>
 				</ThemeProvider>
-			</body>
+			</FontBody>
 		</html>
+	);
+}
+
+export default function RootLayout({
+	children,
+}: Readonly<{
+	children: React.ReactNode;
+}>) {
+	return (
+		<FontProvider>
+			<LayoutContent>{children}</LayoutContent>
+		</FontProvider>
 	);
 }
 
