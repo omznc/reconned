@@ -1,9 +1,8 @@
 import { InvitationsForm } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations-form";
+import { GenericDataTable } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-// biome-ignore lint/correctness/useImportExtensions: <explanation>
-import ClubInvitesTable from "./_components/invitations-table";
 import type { InviteStatus, Prisma } from "@prisma/client";
 
 interface PageProps {
@@ -11,12 +10,7 @@ interface PageProps {
 		clubId: string;
 	}>;
 	searchParams: Promise<{
-		page?: string;
-		pageSize?: string;
-		search?: string;
-		status?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
+		[key: string]: string;
 	}>;
 }
 
@@ -47,17 +41,13 @@ export default async function Page(props: PageProps) {
 		return notFound();
 	}
 
-	const page = Math.max(1, Number(searchParams.page) || 1);
+	const page = Math.max(1, Number(searchParams.page ?? 1));
 	const pageSize = 10;
 
-	const whereClause: Prisma.ClubInviteWhereInput = {
+	const where: Prisma.ClubInviteWhereInput = {
 		clubId: params.clubId,
-		...(searchParams.status && searchParams.status !== "all"
-			? { status: searchParams.status as InviteStatus }
-			: {}),
 		...(searchParams.search
 			? {
-					// biome-ignore lint/style/useNamingConvention: <explanation>
 					OR: [
 						{ email: { contains: searchParams.search, mode: "insensitive" } },
 						{
@@ -68,44 +58,111 @@ export default async function Page(props: PageProps) {
 					],
 				}
 			: {}),
+		...(searchParams.status && searchParams.status !== "all"
+			? {
+					status: searchParams.status as InviteStatus,
+				}
+			: {}),
 	};
 
-	const totalInvites = await prisma.clubInvite.count({
-		where: whereClause,
+	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
+		? {
+				[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
+			}
+		: { createdAt: "desc" };
+
+	const invitesCount = await prisma.clubInvite.count({
+		where,
 	});
 
-	const orderBy: Prisma.ClubInviteOrderByWithRelationInput =
-		searchParams.sortBy === "userName"
-			? { user: { name: searchParams.sortOrder || "desc" } }
-			: searchParams.sortBy
-				? { [searchParams.sortBy]: searchParams.sortOrder || "desc" }
-				: { createdAt: "desc" };
-
 	const invites = await prisma.clubInvite.findMany({
-		where: whereClause,
+		where,
+		orderBy,
 		include: {
 			user: {
 				select: {
-					id: true,
 					name: true,
-					email: true,
 				},
 			},
 		},
-		skip: (page - 1) * pageSize,
 		take: pageSize,
-		orderBy,
+		skip: (page - 1) * pageSize,
 	});
 
+	const formattedInvites = invites.map((invite) => ({
+		...invite,
+		userName: invite.user?.name ?? "",
+	}));
+
 	return (
-		<div className="space-y-4 w-full md:w-fit max-w-full">
+		<div className="space-y-4 w-full">
 			<InvitationsForm />
-			<ClubInvitesTable
-				data={invites}
-				totalItems={totalInvites}
-				currentPage={page}
-				pageSize={pageSize}
-				searchParams={searchParams}
+			<GenericDataTable
+				data={formattedInvites}
+				totalPages={Math.ceil(invitesCount / pageSize)}
+				searchPlaceholder="Pretraži pozivnice..."
+				tableConfig={{
+					dateFormat: "d. MMMM yyyy.",
+					locale: "bs",
+				}}
+				columns={[
+					{
+						key: "email",
+						header: "Email",
+						sortable: true,
+					},
+					{
+						key: "userName",
+						header: "Korisnik",
+					},
+					{
+						key: "status",
+						header: "Status",
+						sortable: true,
+						cellConfig: {
+							variant: "badge",
+							valueMap: {
+								PENDING: "Na čekanju",
+								ACCEPTED: "Prihvaćeno",
+								REJECTED: "Odbijeno",
+								EXPIRED: "Isteklo",
+							},
+							badgeVariants: {
+								PENDING: "bg-yellow-100 text-yellow-800",
+								ACCEPTED: "bg-green-100 text-green-800",
+								REJECTED: "bg-red-100 text-red-800",
+								EXPIRED: "bg-gray-100 text-gray-800",
+							},
+						},
+					},
+					{
+						key: "createdAt",
+						header: "Datum slanja",
+						sortable: true,
+					},
+					{
+						key: "expiresAt",
+						header: "Ističe",
+						sortable: true,
+					},
+					{
+						key: "inviteCode",
+						header: "Kod pozivnice",
+					},
+				]}
+				filters={[
+					{
+						key: "status",
+						label: "Filter po statusu",
+						options: [
+							{ label: "Svi statusi", value: "all" },
+							{ label: "Na čekanju", value: "PENDING" },
+							{ label: "Prihvaćeno", value: "ACCEPTED" },
+							{ label: "Odbijeno", value: "REJECTED" },
+							{ label: "Isteklo", value: "EXPIRED" },
+						],
+					},
+				]}
 			/>
 		</div>
 	);
