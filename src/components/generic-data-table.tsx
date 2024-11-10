@@ -26,17 +26,17 @@ import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import type { ReactNode } from "react";
 
-interface CellConfig {
+interface CellConfig<T> {
 	variant?: "default" | "badge" | "custom";
 	badgeVariants?: Record<string, string>;
 	valueMap?: Record<string, string>;
-	component?: ReactNode;
+	component?: ReactNode | ((value: any, row: T) => ReactNode);
 }
 
 interface Column<T> {
 	key: keyof T | string; // Allow string to support custom components
 	header: string | ReactNode;
-	cellConfig?: CellConfig;
+	cellConfig?: CellConfig<T>;
 	sortable?: boolean;
 }
 
@@ -67,7 +67,11 @@ const renderCell = <T extends Record<string, any>>(
 	const config = column.cellConfig;
 
 	if (config?.variant === "custom" && config.component) {
-		return config.component;
+		const key = column.key as keyof T;
+		const value = item[key];
+		return typeof config.component === "function"
+			? config.component(value, item)
+			: config.component;
 	}
 
 	const key = column.key as keyof T;

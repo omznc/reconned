@@ -70,3 +70,20 @@ TODO, but
 
 - We'll probably want to use https://next-safe-action.dev.
 - Functions that take more than 1 parameter should have an object as their parameter.
+
+## Tables
+
+Use the `GenericDataTable` component for all tables in the application. It provides built-in sorting, filtering, searching, and pagination with URL state management.
+
+There are 2 ways of it being used, read-only (server component compatible),
+or with custom fields that use the cell value or row data.
+
+### Read-only
+Can be found in [members/page.tsx](src\app\dashboard\(club)\[clubId]\members\page.tsx)
+
+A read-only table can be completely rendered server-side, so no reason to create a new component for it, like we do below.
+
+### With actions
+Can be found in `members/invitations/page.tsx` and the accompanying `members/invitations/_components/invitations-table.tsx`.
+
+As you can see, if we're passing a `component` field in the config, it provides us with 2 elements, the cell value, and the row value. You can use those to do pretty much any logic you can think of. It needs to be a client component because we're using callbacks.
