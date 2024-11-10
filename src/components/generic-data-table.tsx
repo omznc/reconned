@@ -24,16 +24,18 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import type { ReactNode } from "react";
 
 interface CellConfig {
-	variant?: "default" | "badge";
+	variant?: "default" | "badge" | "custom";
 	badgeVariants?: Record<string, string>;
 	valueMap?: Record<string, string>;
+	component?: ReactNode;
 }
 
 interface Column<T> {
-	key: keyof T; // Remove string type to ensure type safety
-	header: string;
+	key: keyof T | string; // Allow string to support custom components
+	header: string | ReactNode;
 	cellConfig?: CellConfig;
 	sortable?: boolean;
 }
@@ -62,9 +64,14 @@ const renderCell = <T extends Record<string, any>>(
 	column: Column<T>,
 	tableConfig?: GenericTableProps<T>["tableConfig"],
 ) => {
+	const config = column.cellConfig;
+
+	if (config?.variant === "custom" && config.component) {
+		return config.component;
+	}
+
 	const key = column.key as keyof T;
 	const value = item[key];
-	const config = column.cellConfig;
 
 	if (value === undefined || value === null || value === "") {
 		return "-";

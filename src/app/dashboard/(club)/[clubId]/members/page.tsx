@@ -1,4 +1,5 @@
 import { GenericDataTable } from "@/components/generic-data-table";
+import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@prisma/client";
 
