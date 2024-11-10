@@ -23,5 +23,6 @@ export function AnimatedNumber({ value, className }: AnimatedNumberProps) {
 		spring.set(value);
 	}, [spring, value]);
 
+	// @ts-ignore This is an issue, not a problem that I made
 	return <motion.span className={className}>{display}</motion.span>;
 }

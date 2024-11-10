@@ -13,10 +13,12 @@ import { FontBody } from "@/components/font-body";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
+	subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
 	fallback: ["monospace"],
+	subsets: ["latin"],
 });
 
 function LayoutContent({ children }: { children: React.ReactNode }) {

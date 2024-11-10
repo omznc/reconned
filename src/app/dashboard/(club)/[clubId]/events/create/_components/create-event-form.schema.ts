@@ -38,7 +38,9 @@ export const createEventFormSchema = z
 		dateEnd: z.coerce.date({
 			message: "Susret mora imati datum završetka",
 		}),
-		dateRegistrationsOpen: z.coerce.date().optional(),
+		dateRegistrationsOpen: z.coerce.date({
+			message: "Susret mora imati datum otvaranja prijava",
+		}),
 		dateRegistrationsClose: z.coerce.date({
 			message: "Susret mora imati datum zatvaranja prijava",
 		}),
