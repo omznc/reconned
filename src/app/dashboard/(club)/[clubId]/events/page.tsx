@@ -1,34 +1,62 @@
+import { GenericDataTable } from "@/components/generic-data-table";
+import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { MailPlus, MapPin, Square, User } from "lucide-react";
+import { PlusCircle, UserCheck, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 
 interface PageProps {
-	params: Promise<{
-		clubId: string;
+	params: Promise<{ clubId: string }>;
+	searchParams: Promise<{
+		search?: string;
+		sortBy?: string;
+		sortOrder?: "asc" | "desc";
+		page?: string;
 	}>;
 }
 
 export default async function Page(props: PageProps) {
-	const params = await props.params;
+	const { clubId } = await props.params;
+	const { search, sortBy, sortOrder, page } = await props.searchParams;
+	const currentPage = Math.max(1, Number(page ?? 1));
+	const pageSize = 10;
+
 	const user = await isAuthenticated();
 	if (!user) {
 		return notFound();
 	}
 
-	const events = await prisma.event.findMany({
-		where: {
-			club: {
-				id: params.clubId,
-				members: {
-					some: {
-						userId: user.id,
-					},
+	const where = {
+		club: {
+			id: clubId,
+			members: {
+				some: {
+					userId: user.id,
 				},
 			},
 		},
+		...(search
+			? {
+					OR: [
+						{ name: { contains: search, mode: "insensitive" } },
+						{ description: { contains: search, mode: "insensitive" } },
+						{ location: { contains: search, mode: "insensitive" } },
+					],
+				}
+			: {}),
+	} satisfies Prisma.EventWhereInput;
+
+	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
+		? {
+				[sortBy]: sortOrder ?? "asc",
+			}
+		: { dateStart: "desc" };
+
+	const events = await prisma.event.findMany({
+		where,
+		orderBy,
 		include: {
 			_count: {
 				select: {
@@ -36,64 +64,72 @@ export default async function Page(props: PageProps) {
 					registrations: true,
 				},
 			},
-			club: {
-				select: {
-					name: true,
-				},
-			},
 		},
+		take: pageSize,
+		skip: (currentPage - 1) * pageSize,
 	});
 
+	const totalEvents = await prisma.event.count({ where });
+
 	return (
-		<div className="space-y-4 max-w-3xl w-full">
-			<div>
+		<div className="space-y-4 w-full max-w-3xl">
+			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">Svi susreti</h3>
+				<Button asChild>
+					<Link href={`/dashboard/${clubId}/events/create`}>
+						<PlusCircle className="size-4 mr-2" />
+						Novi susret
+					</Link>
+				</Button>
 			</div>
-			{events.map((event) => (
-				<Link
-					href={`/dashboard/${params.clubId}/events/${event.id}`}
-					key={event.id}
-					className="flex hover:bg-accent bg-background transition-all border p-2 gap-4"
-				>
-					<div className="h-[150px] w-[150px]">
-						{event.coverImage ? (
-							<Image
-								suppressHydrationWarning={true}
-								src={`${event.coverImage}?v=${event.updatedAt}`}
-								alt={event.name}
-								width={100}
-								height={100}
-								className="object-cover size-full"
-								draggable={false}
-							/>
-						) : (
-							<div className="bg-gray-200 flex items-center justify-center rounded-lg size-full">
-								<Square className="text-foreground size-12" />
-							</div>
-						)}
-					</div>
-					<div className="flex flex-col gap-1">
-						<div className="flex items-center gap-2">
-							<h2 className="text-xl font-semibold">{event.name}</h2>
-						</div>
-						<p className="overflow-hidden truncate max-w-[500px]">
-							{event.description}
-						</p>
-						<div className="flex items-center gap-2">
-							<MapPin size={16} />
-							<p>{event.location}</p>
-						</div>
-						<div className="flex items-center gap-2">
-							<User size={16} />
-							<p>{event._count.registrations} prijavljenih</p>
-						</div>
-						<div className="flex items-center gap-2">
-							<MailPlus size={16} />
-							<p>{event._count.invites} pozvanih</p>
-						</div>
-					</div>
-				</Link>
-			))}
+
+			<GenericDataTable
+				data={events}
+				totalPages={Math.ceil(totalEvents / pageSize)}
+				searchPlaceholder="Pretraži susrete..."
+				tableConfig={{
+					dateFormat: "d. MMMM yyyy.",
+					locale: "bs",
+				}}
+				columns={[
+					{
+						key: "name",
+						header: "Naziv",
+						sortable: true,
+					},
+					{
+						key: "location",
+						header: "Lokacija",
+						sortable: true,
+					},
+					{
+						key: "dateStart",
+						header: "Datum početka",
+						sortable: true,
+					},
+					{
+						key: "isPrivate",
+						header: "Tip",
+						sortable: true,
+						cellConfig: {
+							variant: "badge",
+							valueMap: {
+								true: "Privatno",
+								false: "Javno",
+							},
+							badgeVariants: {
+								true: "bg-red-100 text-red-800",
+								false: "bg-green-100 text-green-800",
+							},
+						},
+					},
+					{
+						key: "_count",
+						header: "Prijave",
+						sortable: true,
+					},
+				]}
+			/>
 		</div>
 	);
 }

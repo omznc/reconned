@@ -29,11 +29,24 @@ export default async function Page(props: PageProps) {
 			},
 			id: params.clubId,
 		},
+		include: {
+			members: {
+				select: {
+					userId: true,
+					role: true,
+				},
+				where: {
+					userId: user.id,
+				},
+			},
+		},
 	});
 
 	if (!club) {
 		return notFound();
 	}
 
-	return <ClubInfoForm club={club} />;
+	const isClubOwner = club.members[0].role === Role.CLUB_OWNER;
+
+	return <ClubInfoForm club={club} isClubOwner={isClubOwner} />;
 }

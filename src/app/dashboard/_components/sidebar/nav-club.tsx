@@ -56,7 +56,9 @@ export function NavClub({ user }: NavClubProps) {
 							<Collapsible
 								key={item.title}
 								asChild={true}
-								defaultOpen={item.isActive}
+								defaultOpen={item.items?.some(
+									(subItem) => subItem.url === path,
+								)}
 								className="group/collapsible"
 							>
 								<SidebarMenuItem>

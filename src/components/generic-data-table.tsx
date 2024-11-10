@@ -275,40 +275,57 @@ export function GenericDataTable<T>({
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{data.map((item, idx) => (
-							<TableRow key={`${idx}-${item}`}>
-								{columns.map((column) => (
-									<TableCell key={String(column.key)}>
-										{/* @ts-expect-error */}
-										{renderCell(item, column, tableConfig)}
-									</TableCell>
-								))}
+						{data.length === 0 ? (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className="text-center h-24"
+								>
+									Nema pronađenih podataka
+								</TableCell>
 							</TableRow>
-						))}
+						) : (
+							data.map((item, idx) => (
+								<TableRow key={`${idx}-${item}`}>
+									{columns.map((column) => (
+										<TableCell key={String(column.key)}>
+											{/* @ts-expect-error */}
+											{renderCell(item, column, tableConfig)}
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						)}
 					</TableBody>
 				</Table>
 			</div>
 
 			{/* Mobile Cards */}
 			<div className="space-y-4 md:hidden">
-				{data.map((item, idx) => (
-					<div
-						key={`${idx}-${item}`}
-						className="rounded-lg border p-4 overflow-x-auto space-y-2"
-					>
-						{columns.map((column) => (
-							<div key={String(column.key)} className="flex flex-col">
-								<span className="text-sm text-muted-foreground">
-									{column.header}
-								</span>
-								<span className="font-medium">
-									{/* @ts-expect-error I know, I know */}
-									{renderCell(item, column, tableConfig)}
-								</span>
-							</div>
-						))}
+				{data.length === 0 ? (
+					<div className="text-center py-8 text-muted-foreground">
+						Nema pronađenih podataka
 					</div>
-				))}
+				) : (
+					data.map((item, idx) => (
+						<div
+							key={`${idx}-${item}`}
+							className="rounded-lg border p-4 overflow-x-auto space-y-2"
+						>
+							{columns.map((column) => (
+								<div key={String(column.key)} className="flex flex-col">
+									<span className="text-sm text-muted-foreground">
+										{column.header}
+									</span>
+									<span className="font-medium">
+										{/* @ts-expect-error I know, I know */}
+										{renderCell(item, column, tableConfig)}
+									</span>
+								</div>
+							))}
+						</div>
+					))
+				)}
 			</div>
 
 			{/* Pagination */}
