@@ -16,12 +16,12 @@ const s3 = new S3Client({
 	},
 });
 
-const allowedFileTypes: string[] = env.ALLOWED_FILE_TYPES
-	? env.ALLOWED_FILE_TYPES.split(",")
+const allowedFileTypes: string[] = env.NEXT_PUBLIC_ALLOWED_FILE_TYPES
+	? env.NEXT_PUBLIC_ALLOWED_FILE_TYPES.split(",")
 	: ["image/jpeg", "image/png", "application/pdf", "image/webp"];
 
-const maxFileSize: number = env.MAX_FILE_SIZE
-	? Number.parseInt(env.MAX_FILE_SIZE, 10)
+const maxFileSize: number = env.NEXT_PUBLIC_MAX_FILE_SIZE
+	? Number.parseInt(env.NEXT_PUBLIC_MAX_FILE_SIZE, 10)
 	: 5 * 1024 * 1024; // Default to 5 MB
 
 /**

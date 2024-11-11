@@ -51,6 +51,7 @@ import {
 	CloudUpload,
 	Eye,
 	Loader,
+	Trash,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -112,19 +113,10 @@ function EventTimelineDescription({
 				Registracije se otvaraju za <AnimatedNumber value={days} /> dan/a
 			</span>,
 		);
-	} else {
+	} else if (regCloseDiff > 0) {
 		parts.push(<span key="regOpen">Registracije su otvorene</span>);
-	}
-
-	if (regCloseDiff > 0) {
-		const days = Math.floor(regCloseDiff / (1000 * 60 * 60 * 24));
-		parts.push(
-			<span key="regClose">
-				, zatvaraju se za <AnimatedNumber value={days} /> dan/a
-			</span>,
-		);
 	} else {
-		parts.push(<span key="regClose">, registracije su zatvorene</span>);
+		parts.push(<span key="regClose">Registracije su zatvorene</span>);
 	}
 
 	if (startDiff > 0) {
@@ -140,7 +132,7 @@ function EventTimelineDescription({
 
 	parts.push(
 		<span key="duration">
-			, trajat će <AnimatedNumber value={Math.round(eventDuration)} /> sati/a
+			, traje <AnimatedNumber value={Math.round(eventDuration)} /> sati/a.
 		</span>,
 	);
 
@@ -156,6 +148,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const dropZoneConfig = {
 		maxFiles: 1,
 		maxSize: 1024 * 1024 * 4,
+		accept: {
+			"image/jpeg": ["jpg", "jpeg"],
+			"image/png": ["png"],
+		},
 	};
 
 	const router = useRouter();
@@ -320,6 +316,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									}
 								}}
 							>
+								<Trash className="size-4" />
 								{isLoading ? (
 									<Loader className="animate-spin size-4" />
 								) : (
@@ -400,11 +397,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											<div className="flex items-center justify-center flex-col p-8 w-full ">
 												<CloudUpload className="text-gray-500 w-10 h-10" />
 												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													<span className="font-semibold">Click to upload</span>
-													&nbsp; or drag and drop
+													<span className="font-semibold">
+														Kliknite da dodate fajl
+													</span>
+													, ili ga samo prebacite ovde
 												</p>
 												<p className="text-xs text-gray-500 dark:text-gray-400">
-													SVG, PNG, JPG or GIF
+													Dozvoljeni formati: JPG, JPEG, PNG
 												</p>
 											</div>
 										</FileInput>
@@ -443,13 +442,28 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								disabled={isLoading}
 								variant={"destructive"}
 								onClick={async () => {
+									const resp = await confirm({
+										title: "Jeste li sigurni?",
+										body: "Ako obrišete sliku, nećete je moći vratiti nazad.",
+										actionButtonVariant: "destructive",
+										actionButton: "Obriši sliku",
+										cancelButton: "Ne, vrati se",
+									});
+
+									if (!resp) {
+										return;
+									}
+
 									setIsDeletingImage(true);
 									await deleteEventImage({
 										id: props.event?.id as string,
 									});
 									setIsDeletingImage(false);
 								}}
+								className="mt-1"
 							>
+								<Trash className="size-4" />
+
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (

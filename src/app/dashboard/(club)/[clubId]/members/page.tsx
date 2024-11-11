@@ -136,7 +136,7 @@ export default async function MembersPage(props: PageProps) {
 							{ label: "Sve uloge", value: "all" },
 							{ label: "Vlasnik", value: "CLUB_OWNER" },
 							{ label: "Menadžer", value: "MANAGER" },
-							{ label: "Član", value: "MEMBER" },
+							{ label: "Član", value: "USER" },
 						],
 					},
 				]}

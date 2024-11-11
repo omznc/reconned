@@ -79,8 +79,6 @@ There are 2 ways of it being used, read-only (server component compatible),
 or with custom fields that use the cell value or row data.
 
 ### Read-only
-Can be found in `members/page.tsx`
-
 A read-only table can be completely rendered server-side, so no reason to create a new component for it, like we do below.
 
 ### With actions

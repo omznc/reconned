@@ -10,13 +10,11 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useIsAuthenticated } from "@/lib/auth-client";
-import { LoaderIcon, LogOut } from "lucide-react";
+import type { User } from "better-auth";
+import { LogOut } from "lucide-react";
 import Link from "next/link";
 
-export function Header() {
-	const { user, loading } = useIsAuthenticated();
-
+export function Header({ user }: { user: User | null }) {
 	return (
 		<header className="flex flex-col md:flex-row gap-4 select-none w-full items-center justify-between p-2 md:p-4">
 			<Link href="/">
@@ -31,7 +29,7 @@ export function Header() {
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
 							<Link href="/dashboard?autoSelectFirst=true" className="w-full">
-								Moj Klub
+								Dashboard
 							</Link>
 						</Button>
 						<ThemeSwitcher />
@@ -59,28 +57,15 @@ export function Header() {
 						</DropdownMenu>
 					</>
 				) : (
-					<>
-						{loading ? (
-							<Avatar
-								suppressHydrationWarning={true}
-								className="size-10 cursor-pointer border rounded-none select-none"
-							>
-								<AvatarFallback className="rounded-none">
-									<LoaderIcon className="size-4 animate-spin" />
-								</AvatarFallback>
-							</Avatar>
-						) : (
-							<Button asChild={true} suppressHydrationWarning={true}>
-								<Link
-									className="w-full md:w-fit"
-									suppressHydrationWarning={true}
-									href="/login"
-								>
-									Prijava
-								</Link>
-							</Button>
-						)}
-					</>
+					<Button asChild={true} suppressHydrationWarning={true}>
+						<Link
+							className="w-full md:w-fit"
+							suppressHydrationWarning={true}
+							href="/login"
+						>
+							Prijava
+						</Link>
+					</Button>
 				)}
 			</div>
 		</header>
