@@ -6,6 +6,7 @@ import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Prisma } from "@prisma/client";
+import { EventsTable } from "@/app/dashboard/(club)/[clubId]/events/_components/events-table";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -72,7 +73,7 @@ export default async function Page(props: PageProps) {
 	const totalEvents = await prisma.event.count({ where });
 
 	return (
-		<div className="space-y-4 w-full max-w-3xl">
+		<div className="space-y-4 w-full md:max-w-fit">
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">Svi susreti</h3>
 				<Button asChild>
@@ -82,53 +83,11 @@ export default async function Page(props: PageProps) {
 					</Link>
 				</Button>
 			</div>
-
-			<GenericDataTable
-				data={events}
-				totalPages={Math.ceil(totalEvents / pageSize)}
-				searchPlaceholder="Pretraži susrete..."
-				tableConfig={{
-					dateFormat: "d. MMMM yyyy.",
-					locale: "bs",
-				}}
-				columns={[
-					{
-						key: "name",
-						header: "Naziv",
-						sortable: true,
-					},
-					{
-						key: "location",
-						header: "Lokacija",
-						sortable: true,
-					},
-					{
-						key: "dateStart",
-						header: "Datum početka",
-						sortable: true,
-					},
-					{
-						key: "isPrivate",
-						header: "Tip",
-						sortable: true,
-						cellConfig: {
-							variant: "badge",
-							valueMap: {
-								true: "Privatno",
-								false: "Javno",
-							},
-							badgeVariants: {
-								true: "bg-red-100 text-red-800",
-								false: "bg-green-100 text-green-800",
-							},
-						},
-					},
-					{
-						key: "_count",
-						header: "Prijave",
-						sortable: true,
-					},
-				]}
+			<EventsTable
+				events={events}
+				totalEvents={totalEvents}
+				clubId={clubId}
+				pageSize={pageSize}
 			/>
 		</div>
 	);

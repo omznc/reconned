@@ -24,12 +24,20 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 				},
 			},
 		},
+		include: {
+			events: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+		},
 	});
 
 	const simplifiedClubs = clubs.map((club) => ({
 		id: club.id,
 		name: club.name,
-		logo: club.logo,
+		events: club.events,
 	}));
 
 	return (

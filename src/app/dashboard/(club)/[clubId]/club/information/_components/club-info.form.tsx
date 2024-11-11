@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Loader } from "lucide-react";
+import { Calendar as CalendarIcon, Loader, Trash } from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -70,7 +70,12 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const dropZoneConfig = {
 		maxFiles: 1,
 		maxSize: 1024 * 1024 * 4,
+		accept: {
+			"image/jpeg": ["jpg", "jpeg"],
+			"image/png": ["png"],
+		},
 	};
+
 	const form = useForm<z.infer<typeof clubInfoSchema>>({
 		resolver: zodResolver(clubInfoSchema),
 		defaultValues: {
@@ -220,6 +225,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										}
 									}}
 								>
+									<Trash className="size-4" />
+
 									{isLoading ? (
 										<Loader className="animate-spin size-4" />
 									) : (
@@ -395,11 +402,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											<div className="flex items-center justify-center flex-col p-8 w-full ">
 												<CloudUpload className="text-gray-500 w-10 h-10" />
 												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													<span className="font-semibold">Click to upload</span>
-													&nbsp; or drag and drop
+													<span className="font-semibold">
+														Kliknite da dodate fajl
+													</span>
+													, ili ga samo prebacite ovde
 												</p>
 												<p className="text-xs text-gray-500 dark:text-gray-400">
-													SVG, PNG, JPG or GIF
+													Dozvoljeni formati: JPG, JPEG, PNG
 												</p>
 											</div>
 										</FileInput>
@@ -443,13 +452,28 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										return;
 									}
 
+									const resp = await confirm({
+										title: "Jeste li sigurni?",
+										body: "Ako obrišete logo, nećete ga moći vratiti nazad.",
+										actionButtonVariant: "destructive",
+										actionButton: "Obriši logo",
+										cancelButton: "Ne, vrati se",
+									});
+
+									if (!resp) {
+										return;
+									}
+
 									setIsDeletingImage(true);
 									await deleteClubImage({
 										clubId: props.club.id,
 									});
 									setIsDeletingImage(false);
 								}}
+								className="mt-1"
 							>
+								<Trash className="size-4" />
+
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (
