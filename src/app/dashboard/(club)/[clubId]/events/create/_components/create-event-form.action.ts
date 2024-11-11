@@ -1,9 +1,9 @@
 "use server";
-import { clubLogoFileSchema } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import {
 	createEventFormSchema,
 	deleteEventImageSchema,
 	deleteEventSchema,
+	eventImageFileSchema,
 } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
@@ -46,30 +46,41 @@ export const createEvent = safeActionClient
 
 		// create or update event
 		return await prisma.event.upsert({
-			where: { id: parsedInput.id },
+			where: { id: parsedInput.eventId, clubId: ctx.club.id },
 			update: data,
 			create: data,
 		});
 	});
 
 export const getEventImageUploadUrl = safeActionClient
-	.schema(clubLogoFileSchema)
+	.schema(eventImageFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
+		const belongsToClub = await prisma.event.findFirst({
+			where: {
+				id: parsedInput.eventId,
+				clubId: ctx.club.id,
+			},
+		});
+
+		if (!belongsToClub) {
+			throw new Error("Event does not belong to your club");
+		}
+
 		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
 			size: parsedInput.file.size,
-			key: `event/${ctx.club.id}/cover`,
+			key: `event/${parsedInput.eventId}/cover`,
 		});
-
 		return resp;
 	});
 
 export const deleteEventImage = safeActionClient
 	.schema(deleteEventImageSchema)
-	.action(async ({ parsedInput }) => {
+	.action(async ({ parsedInput, ctx }) => {
 		await prisma.event.update({
 			where: {
-				id: parsedInput.id,
+				id: parsedInput.eventId,
+				clubId: ctx.club.id,
 			},
 			data: {
 				coverImage: null,
@@ -83,18 +94,19 @@ export const deleteEvent = safeActionClient
 		const [event, _] = await Promise.all([
 			prisma.event.delete({
 				where: {
-					id: parsedInput.id,
+					id: parsedInput.eventId,
+					clubId: ctx.club.id,
 				},
 			}),
 			await deleteEventImage({
-				id: parsedInput.id,
+				eventId: parsedInput.eventId,
 			}),
 		]);
 
-		revalidatePath(`/dashboard/${ctx.club.id}/events/${parsedInput.id}`);
+		revalidatePath(`/dashboard/${ctx.club.id}/events/${parsedInput.eventId}`);
 
 		if (!event.isPrivate) {
-			revalidatePath(`/events/${parsedInput.id}`, "layout");
+			revalidatePath(`/events/${parsedInput.eventId}`, "layout");
 			revalidatePath("/");
 		}
 

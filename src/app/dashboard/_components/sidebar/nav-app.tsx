@@ -28,7 +28,7 @@ export function NavApp() {
 			<SidebarGroupLabel>Aplikacija</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => {
-					if (item.items?.length === 0) {
+					if (!item.items?.length) {
 						return (
 							<SidebarMenuItem key={item.title}>
 								<SidebarMenuButton
