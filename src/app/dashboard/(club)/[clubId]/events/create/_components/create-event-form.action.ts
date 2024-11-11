@@ -10,27 +10,10 @@ import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { unstable_after as after } from "next/server";
 
 export const createEvent = safeActionClient
 	.schema(createEventFormSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
-				},
-				club: {
-					id: parsedInput.clubId,
-				},
-			},
-		});
-
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
-		}
-
 		const data = {
 			name: parsedInput.name,
 			description: parsedInput.description,
@@ -50,19 +33,19 @@ export const createEvent = safeActionClient
 			hasSnacks: parsedInput.hasSnacks,
 			hasDrinks: parsedInput.hasDrinks,
 			hasPrizes: parsedInput.hasPrizes,
-			clubId: parsedInput.clubId,
+			clubId: ctx.club.id,
 			mapData: parsedInput.mapData ?? { areas: [], pois: [] },
 		};
 
 		// revalidate paths
-		revalidatePath(`/dashboard/${parsedInput.clubId}/events/`);
+		revalidatePath(`/dashboard/${ctx.club.id}/events/`);
 		if (!parsedInput.isPrivate) {
 			revalidatePath("/");
 			revalidatePath(`/events/${parsedInput.id}`);
 		}
 
 		// create or update event
-		return prisma.event.upsert({
+		return await prisma.event.upsert({
 			where: { id: parsedInput.id },
 			update: data,
 			create: data,
@@ -72,30 +55,10 @@ export const createEvent = safeActionClient
 export const getEventImageUploadUrl = safeActionClient
 	.schema(clubLogoFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
-				},
-				club: {
-					events: {
-						some: {
-							id: parsedInput.id,
-						},
-					},
-				},
-			},
-		});
-
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
-		}
-
 		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
 			size: parsedInput.file.size,
-			key: `event/${parsedInput.id}/cover`,
+			key: `event/${ctx.club.id}/cover`,
 		});
 
 		return resp;
@@ -103,27 +66,7 @@ export const getEventImageUploadUrl = safeActionClient
 
 export const deleteEventImage = safeActionClient
 	.schema(deleteEventImageSchema)
-	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
-				},
-				club: {
-					events: {
-						some: {
-							id: parsedInput.id,
-						},
-					},
-				},
-			},
-		});
-
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
-		}
-
+	.action(async ({ parsedInput }) => {
 		await prisma.event.update({
 			where: {
 				id: parsedInput.id,
@@ -137,20 +80,6 @@ export const deleteEventImage = safeActionClient
 export const deleteEvent = safeActionClient
 	.schema(deleteEventSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
-				},
-				clubId: parsedInput.clubId,
-			},
-		});
-
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
-		}
-
 		const [event, _] = await Promise.all([
 			prisma.event.delete({
 				where: {
@@ -162,12 +91,12 @@ export const deleteEvent = safeActionClient
 			}),
 		]);
 
-		revalidatePath(`/dashboard/${parsedInput.clubId}/events/${parsedInput.id}`);
+		revalidatePath(`/dashboard/${ctx.club.id}/events/${parsedInput.id}`);
 
 		if (!event.isPrivate) {
 			revalidatePath(`/events/${parsedInput.id}`, "layout");
 			revalidatePath("/");
 		}
 
-		redirect(`/dashboard/${parsedInput.clubId}`);
+		redirect(`/dashboard/${ctx.club.id}`);
 	});

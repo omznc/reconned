@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import type { ReactNode } from "react";
+import type { ChangeEvent, ReactNode } from "react";
 
 interface CellConfig<T> {
 	variant?: "default" | "badge" | "custom";
@@ -122,6 +122,7 @@ export function GenericDataTable<T>({
 	});
 	const [filterValues, setFilterValues] = useState<Record<string, string>>({});
 	const [inputValue, setInputValue] = useState(search ?? "");
+	// TODO: Add loader
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 
@@ -145,7 +146,7 @@ export function GenericDataTable<T>({
 		setIsLoading(false);
 	}, 500);
 
-	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setInputValue(value);
 		debouncedSearch(value);

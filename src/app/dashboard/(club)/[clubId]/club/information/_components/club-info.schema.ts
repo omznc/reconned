@@ -26,7 +26,7 @@ export const clubInfoSchema = z.object({
 	logo: z.string().optional(),
 	contactPhone: z.string().optional(),
 	contactEmail: z.string().optional(),
-	id: z.string().optional(),
+	clubId: z.string().optional(),
 });
 
 export const clubLogoFileSchema = z.object({
@@ -34,11 +34,11 @@ export const clubLogoFileSchema = z.object({
 		type: z.string().regex(/^image\//),
 		size: z.number().max(1024 * 1024 * 4),
 	}),
-	id: z.string(),
+	clubId: z.string(),
 });
 
 export const deleteClubImageSchema = z.object({
-	id: z.string(),
+	clubId: z.string(),
 });
 
 export const deleteClubSchema = deleteClubImageSchema;

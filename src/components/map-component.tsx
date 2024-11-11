@@ -94,7 +94,9 @@ export const MapComponent = ({
 	}, [readOnly]);
 
 	useEffect(() => {
-		if (!(mapRef.current && drawnItemsRef.current && defaultMapData)) return;
+		if (!(mapRef.current && drawnItemsRef.current && defaultMapData)) {
+			return;
+		}
 
 		const { areas, pois } = defaultMapData;
 

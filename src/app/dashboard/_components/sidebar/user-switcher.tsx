@@ -18,14 +18,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import {
-	ChevronsUpDown,
-	LogOut,
-	Moon,
-	Sparkles,
-	Sun,
-	Type,
-} from "lucide-react";
+import { ChevronsUpDown, LogOut, Moon, Sun, Type } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 

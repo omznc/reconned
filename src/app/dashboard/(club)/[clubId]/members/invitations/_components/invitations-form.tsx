@@ -2,7 +2,6 @@
 
 import { sendInvitation } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.actions";
 import { sendInvitationSchema } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
-import { useAlert } from "@/components/ui/alert-dialog-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@components/ui/button";
 import {
@@ -53,7 +52,6 @@ export function InvitationsForm() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
-	const alert = useAlert();
 
 	const form = useForm<z.infer<typeof sendInvitationSchema>>({
 		resolver: zodResolver(sendInvitationSchema),
@@ -94,9 +92,10 @@ export function InvitationsForm() {
 
 			if (!response?.data?.success) {
 				toast.error(response?.data?.error || "Neuspjelo slanje pozivnice.");
+				return;
 			}
 
-			alert("Pozivnica je uspješno poslana.");
+			toast.success("Pozivnica uspješno poslana.");
 		} catch (_error) {
 			toast.error("Neuspjelo slanje pozivnice.");
 		} finally {

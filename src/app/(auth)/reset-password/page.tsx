@@ -1,6 +1,4 @@
 "use client";
-
-import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import {
 	CardContent,
@@ -11,15 +9,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@components/ui/button";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
-	const [token, setToken] = useQueryState("token");
+	const [token, _] = useQueryState("token");
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();

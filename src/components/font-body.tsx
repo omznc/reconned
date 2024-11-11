@@ -1,10 +1,10 @@
 "use client";
 
 import { useFont } from "@/components/font-switcher";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 interface FontBodyProps {
-	children: React.ReactNode;
+	children: ReactNode;
 	geistMonoVariable: string;
 	geistSansVariable: string;
 }

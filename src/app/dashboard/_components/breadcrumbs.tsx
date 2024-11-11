@@ -24,7 +24,9 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 
 	useEffect(() => {
 		const main = document.querySelector("main");
-		if (!main) return;
+		if (!main) {
+			return;
+		}
 
 		const handleScroll = () => {
 			setIsScrolled(main.scrollTop > 0);

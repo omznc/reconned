@@ -15,7 +15,7 @@ import {
 	isSameMonth,
 	isWithinInterval,
 } from "date-fns";
-import React, { useEffect } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 import Image from "next/image";
 import {
 	HoverCard,
@@ -73,7 +73,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		end: calendarEnd,
 	});
 
-	const weeks = React.useMemo(() => {
+	const weeks = useMemo(() => {
 		const weeks = [] as Date[][];
 		let currentWeek = [] as Date[];
 
@@ -261,7 +261,7 @@ export function EventCalendar(props: EventCalendarProps) {
 						const weekHeight = Math.max(8, (maxLayer + 1) * 2); // 8rem minimum, 2rem per layer
 
 						return (
-							<React.Fragment key={week.map((day) => day.toISOString()).join()}>
+							<Fragment key={week.map((day) => day.toISOString()).join()}>
 								{week.map((day) => (
 									<div
 										key={day.toISOString()}
@@ -425,7 +425,7 @@ export function EventCalendar(props: EventCalendarProps) {
 										</div>
 									</div>
 								))}
-							</React.Fragment>
+							</Fragment>
 						);
 					})}
 				</div>

@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+const matcher = /<iframe.*?src="([^"]+)"/;
 export const createEventFormSchema = z
 	.object({
 		id: z.string().optional(),
@@ -23,7 +24,7 @@ export const createEventFormSchema = z
 			.string()
 			.transform((input) => {
 				// Check for iframe tag and extract src if present
-				const iframeMatch = input.match(/<iframe.*?src="([^"]+)"/);
+				const iframeMatch = input.match(matcher);
 				if (iframeMatch) {
 					return iframeMatch[1];
 				}

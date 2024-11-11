@@ -55,7 +55,7 @@ import {
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
 	HoverCard,
 	HoverCardTrigger,
@@ -90,10 +90,7 @@ function EventTimelineDescription({
 }) {
 	// Add validation check
 	if (
-		!dateRegistrationsOpen ||
-		!dateRegistrationsClose ||
-		!dateStart ||
-		!dateEnd
+		!(dateRegistrationsOpen && dateRegistrationsClose && dateStart && dateEnd)
 	) {
 		return null;
 	}
@@ -106,7 +103,7 @@ function EventTimelineDescription({
 	const eventDuration =
 		(dateEnd.getTime() - dateStart.getTime()) / (1000 * 60 * 60);
 
-	const parts = [];
+	const parts = [] as ReactNode[];
 
 	if (regOpenDiff > 0) {
 		const days = Math.floor(regOpenDiff / (1000 * 60 * 60 * 24));
@@ -241,7 +238,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		try {
 			const event = await createEvent(values);
 
-			if (!event?.data) {
+			if (!event?.data || event.serverError) {
 				toast.error("Došlo je do greške prilikom spašavanja podataka");
 				return;
 			}
@@ -252,7 +249,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						type: files[0].type,
 						size: files[0].size,
 					},
-					id: event.data.id,
+					clubId: event.data.id,
 				});
 
 				if (!resp?.data?.url) {
@@ -384,7 +381,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				<FormField
 					control={form.control}
 					name="coverImage"
-					render={({ field }) => (
+					render={() => (
 						<FormItem>
 							<FormLabel>Slika susreta</FormLabel>
 							<FormControl>

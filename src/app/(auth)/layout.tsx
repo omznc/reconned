@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { House } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 
 const variants = {
 	hidden: { x: -700, y: 0, filter: "blur(5px)" },
@@ -16,7 +17,7 @@ const variants = {
 export default function RootLayout({
 	children,
 }: Readonly<{
-	children: React.ReactNode;
+	children: ReactNode;
 }>) {
 	const path = usePathname();
 

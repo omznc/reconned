@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, Loader, LoaderIcon, Plus, Square } from "lucide-react";
+import { ChevronsUpDown, Plus, Square } from "lucide-react";
 
 import { NavApp } from "@/app/dashboard/_components/sidebar/nav-app";
 import { NavClub } from "@/app/dashboard/_components/sidebar/nav-club";

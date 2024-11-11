@@ -213,7 +213,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				<FormField
 					control={form.control}
 					name="image"
-					render={({ field }) => (
+					render={() => (
 						<FormItem>
 							<FormLabel>Profilna slika</FormLabel>
 							<FormControl>
