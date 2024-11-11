@@ -12,9 +12,23 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Building2Icon, CalendarFoldIcon } from "lucide-react";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type BreadcrumbsProps = {
-	clubs?: Array<{ id: string; name: string; logo: string | null }>;
+	clubs?: Array<{
+		id: string;
+		name: string;
+		events: Array<{
+			id: string;
+			name: string;
+		}>;
+	}>;
 };
 
 export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
@@ -41,58 +55,81 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		const club = clubs.find((c) => c.id === section);
 		if (club) {
 			return (
-				<span className="flex items-center gap-2">
-					{/* {club.logo && (
-						<Image
-							src={club.logo}
-							alt={club.name}
-							width={16}
-							height={16}
-							className="rounded-sm object-contain"
-						/>
-					)} */}
-					<span>{club.name}</span>
-				</span>
+				<Tooltip delayDuration={0}>
+					<TooltipTrigger asChild>
+						<span className="flex items-center gap-2">
+							<Building2Icon className="w-4 h-4" />
+							<span>{club.name}</span>
+						</span>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Trenutni klub</p>
+					</TooltipContent>
+				</Tooltip>
 			);
 		}
+
+		// Check if section is an event ID
+		const event = clubs.flatMap((c) => c.events).find((e) => e.id === section);
+		if (event) {
+			return (
+				<Tooltip delayDuration={0}>
+					<TooltipTrigger asChild>
+						<span className="flex items-center gap-2">
+							<CalendarFoldIcon className="w-4 h-4" />
+							<span>{event.name}</span>
+						</span>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Trenutni susret</p>
+					</TooltipContent>
+				</Tooltip>
+			);
+		}
+
 		return TRANSLATIONS[section as keyof typeof TRANSLATIONS] || section;
 	};
 
 	return (
 		<header
 			className={cn(
-				"z-10 h-10 border border-transparent flex items-center mb-4 transition-all sticky overflow-hidden top-0 bg-background/80 backdrop-blur-sm px-2 shrink-0 gap-2 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-8",
+				"z-10 h-10 border border-transparent flex items-center mb-4 transition-all sticky top-0 bg-background/80 backdrop-blur-sm px-2 shrink-0 gap-2 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-8",
 				isScrolled && "border-border",
 			)}
 		>
-			<div className="flex items-center gap-2">
-				<SidebarTrigger className="-ml-1" />
-				<Separator orientation="vertical" className="hidden md:flex mr-2 h-4" />
-				<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
-					<BreadcrumbList>
-						{sections.map((section, index) => {
-							const sectionKey = `${section}-${index}-${sections.slice(0, index + 1).join("/")}`;
-							return (
-								<Fragment key={sectionKey}>
-									<BreadcrumbItem key={`breadcrumb-${sectionKey}`}>
-										<BreadcrumbLink
-											className="truncate"
-											href={`/${sections.slice(0, index + 1).join("/")}`}
-										>
-											{getDisplayText(section)}
-										</BreadcrumbLink>
-									</BreadcrumbItem>
-									{index < sections.length - 1 && (
-										<BreadcrumbSeparator
-											key={`breadcrumb-separator-${sectionKey}`}
-										/>
-									)}
-								</Fragment>
-							);
-						})}
-					</BreadcrumbList>
-				</Breadcrumb>
-			</div>
+			<TooltipProvider>
+				<div className="flex items-center gap-2">
+					<SidebarTrigger className="-ml-1" />
+					<Separator
+						orientation="vertical"
+						className="hidden md:flex mr-2 h-4"
+					/>
+					<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
+						<BreadcrumbList>
+							{sections.map((section, index) => {
+								const sectionKey = `${section}-${index}-${sections.slice(0, index + 1).join("/")}`;
+								return (
+									<Fragment key={sectionKey}>
+										<BreadcrumbItem key={`breadcrumb-${sectionKey}`}>
+											<BreadcrumbLink
+												className="truncate"
+												href={`/${sections.slice(0, index + 1).join("/")}`}
+											>
+												{getDisplayText(section)}
+											</BreadcrumbLink>
+										</BreadcrumbItem>
+										{index < sections.length - 1 && (
+											<BreadcrumbSeparator
+												key={`breadcrumb-separator-${sectionKey}`}
+											/>
+										)}
+									</Fragment>
+								);
+							})}
+						</BreadcrumbList>
+					</Breadcrumb>
+				</div>
+			</TooltipProvider>
 		</header>
 	);
 }

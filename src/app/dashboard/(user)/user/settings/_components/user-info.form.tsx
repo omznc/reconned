@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@prisma/client";
-import { CloudUpload, Loader } from "lucide-react";
+import { CloudUpload, Loader, Trash } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { useState } from "react";
@@ -40,6 +40,7 @@ import {
 	HoverCardTrigger,
 	HoverCardContent,
 } from "@/components/ui/hover-card";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
 
 interface UserInfoFormProps {
 	user: User;
@@ -49,10 +50,15 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
+	const confirm = useConfirm();
 
 	const dropZoneConfig = {
 		maxFiles: 1,
 		maxSize: 1024 * 1024 * 4,
+		accept: {
+			"image/jpeg": ["jpg", "jpeg"],
+			"image/png": ["png"],
+		},
 	};
 	const form = useForm<z.infer<typeof userInfoShema>>({
 		resolver: zodResolver(userInfoShema),
@@ -232,11 +238,13 @@ export function UserInfoForm(props: UserInfoFormProps) {
 											<div className="flex items-center justify-center flex-col p-8 w-full ">
 												<CloudUpload className="text-gray-500 w-10 h-10" />
 												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													<span className="font-semibold">Click to upload</span>
-													&nbsp; or drag and drop
+													<span className="font-semibold">
+														Kliknite da dodate fajl
+													</span>
+													, ili ga samo prebacite ovde
 												</p>
 												<p className="text-xs text-gray-500 dark:text-gray-400">
-													SVG, PNG, JPG or GIF
+													Dozvoljeni formati: JPG, JPEG, PNG
 												</p>
 											</div>
 										</FileInput>
@@ -276,11 +284,25 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								disabled={isDeletingImage}
 								variant={"destructive"}
 								onClick={async () => {
+									const resp = await confirm({
+										title: "Jeste li sigurni?",
+										body: "Da li ste sigurni da želite obrisati profilnu sliku?",
+										actionButtonVariant: "destructive",
+										actionButton: "Obriši profilnu sliku",
+										cancelButton: "Ne, vrati se",
+									});
+
+									if (!resp) {
+										return;
+									}
+
 									setIsDeletingImage(true);
 									await deleteUserImage();
 									setIsDeletingImage(false);
 								}}
+								className="mt-1"
 							>
+								<Trash className="size-4" />
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (
