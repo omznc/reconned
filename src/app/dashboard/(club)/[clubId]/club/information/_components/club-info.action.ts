@@ -14,9 +14,9 @@ import { redirect } from "next/navigation";
 export const saveClubInformation = safeActionClient
 	.schema(clubInfoSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		await prisma.club.upsert({
+		const club = await prisma.club.upsert({
 			where: {
-				id: ctx.club.id,
+				id: ctx.club?.id ?? "",
 			},
 			update: {
 				name: parsedInput.name,
@@ -49,12 +49,12 @@ export const saveClubInformation = safeActionClient
 		});
 
 		revalidateTag("managed-clubs");
-		revalidatePath(`/dashboard/${ctx.club.id}`, "layout");
-		if (!ctx.club?.isPrivate) {
-			revalidatePath(`/clubs/${ctx.club.id}`, "layout");
+		revalidatePath(`/dashboard/${club.id}`, "layout");
+		if (!club?.isPrivate) {
+			revalidatePath(`/clubs/${club.id}`, "layout");
 		}
 
-		return { id: ctx.club.id };
+		return { id: club.id };
 	});
 
 export const getClubImageUploadUrl = safeActionClient
