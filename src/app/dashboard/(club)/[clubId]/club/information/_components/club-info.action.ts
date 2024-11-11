@@ -8,32 +8,15 @@ import {
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
-import { Role } from "@prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 export const saveClubInformation = safeActionClient
 	.schema(clubInfoSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		if (parsedInput.id) {
-			const isManager = await prisma.clubMembership.findFirst({
-				where: {
-					userId: ctx.user.id,
-					role: {
-						in: ["CLUB_OWNER", "MANAGER"],
-					},
-					clubId: parsedInput.id,
-				},
-			});
-
-			if (!isManager) {
-				throw new Error("You are not authorized to perform this action.");
-			}
-		}
-
-		const club = await prisma.club.upsert({
+		await prisma.club.upsert({
 			where: {
-				id: parsedInput.id || "",
+				id: ctx.club.id,
 			},
 			update: {
 				name: parsedInput.name,
@@ -66,32 +49,18 @@ export const saveClubInformation = safeActionClient
 		});
 
 		revalidateTag("managed-clubs");
-		revalidatePath(`/dashboard/${club.id}`, "layout");
-		if (!club.isPrivate) {
-			revalidatePath(`/clubs/${club.id}`, "layout");
+		revalidatePath(`/dashboard/${ctx.club.id}`, "layout");
+		if (!ctx.club?.isPrivate) {
+			revalidatePath(`/clubs/${ctx.club.id}`, "layout");
 		}
 
-		return { id: club.id };
+		return { id: ctx.club.id };
 	});
 
 export const getClubImageUploadUrl = safeActionClient
 	.schema(clubLogoFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
-				},
-				clubId: parsedInput.id,
-			},
-		});
-
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
-		}
-
-		const key = `club/${isManager.clubId}/logo`;
+		const key = `club/${ctx.club.id}/logo`;
 
 		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
@@ -104,61 +73,33 @@ export const getClubImageUploadUrl = safeActionClient
 
 export const deleteClubImage = safeActionClient
 	.schema(deleteClubImageSchema)
-	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: ["CLUB_OWNER", "MANAGER"],
-				},
-				clubId: parsedInput.id,
-			},
-		});
-
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
-		}
-
+	.action(async ({ ctx }) => {
 		await prisma.club.update({
 			where: {
-				id: parsedInput.id,
+				id: ctx.club.id,
 			},
 			data: {
 				logo: null,
 			},
 		});
 
-		await deleteS3File(`club/${parsedInput.id}/logo`);
-		revalidatePath(`/dashboard/club/information?club=${parsedInput.id}`);
+		await deleteS3File(`club/${ctx.club.id}/logo`);
+		revalidatePath(`/dashboard/club/information?club=${ctx.club.id}`);
 
 		return { success: true };
 	});
 
 export const deleteClub = safeActionClient
 	.schema(deleteClubSchema)
-	.action(async ({ parsedInput, ctx }) => {
-		const isManager = await prisma.clubMembership.findFirst({
-			where: {
-				userId: ctx.user.id,
-				role: {
-					in: [Role.CLUB_OWNER],
-				},
-				clubId: parsedInput.id,
-			},
-		});
-
-		if (!isManager) {
-			throw new Error("You are not authorized to perform this action.");
-		}
-
-		const [club, _] = await Promise.all([
+	.action(async ({ ctx }) => {
+		await Promise.all([
 			prisma.club.delete({
 				where: {
-					id: parsedInput.id,
+					id: ctx.club.id,
 				},
 			}),
 			await deleteClubImage({
-				id: parsedInput.id,
+				clubId: ctx.club.id,
 			}),
 		]);
 
@@ -173,9 +114,9 @@ export const deleteClub = safeActionClient
 		});
 
 		revalidateTag("managed-clubs");
-		revalidatePath(`/dashboard/${parsedInput.id}`, "layout");
-		if (!club.isPrivate) {
-			revalidatePath(`/clubs/${parsedInput.id}`, "layout");
+		revalidatePath(`/dashboard/${ctx.club.id}`, "layout");
+		if (!ctx.club.isPrivate) {
+			revalidatePath(`/clubs/${ctx.club.id}`, "layout");
 		}
 		redirect(remaining > 0 ? "/dashboard?autoSelectFirst=true" : "/");
 	});

@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 
-type PageProps = {};
-
-export default function Page(props: PageProps) {
+export default function Page() {
 	redirect("/"); // make events page TODO
 }

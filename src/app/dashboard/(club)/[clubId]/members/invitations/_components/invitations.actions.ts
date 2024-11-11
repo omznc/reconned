@@ -6,41 +6,16 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_FROM, resend } from "@/lib/resend";
 import { safeActionClient } from "@/lib/safe-action";
-import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export const sendInvitation = safeActionClient
 	.schema(sendInvitationSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		try {
-			const club = await prisma.club.findUnique({
-				where: {
-					id: parsedInput.clubId,
-					members: {
-						some: {
-							userId: ctx.user.id,
-							role: {
-								in: [Role.MANAGER, Role.CLUB_OWNER],
-							},
-						},
-					},
-				},
-				select: {
-					id: true,
-					logo: true,
-					name: true,
-					location: true,
-				},
-			});
-
-			if (!club) {
-				throw new Error("Club not found.");
-			}
-
 			const existingInvite = await prisma.clubInvite.findFirst({
 				where: {
 					email: parsedInput.userEmail,
-					clubId: club.id,
+					clubId: ctx.club.id,
 					status: "PENDING",
 					expiresAt: {
 						gt: new Date(),
@@ -56,7 +31,7 @@ export const sendInvitation = safeActionClient
 
 			const existingMembership = await prisma.clubMembership.findFirst({
 				where: {
-					club: { id: club.id },
+					club: { id: ctx.club.id },
 					user: { email: parsedInput.userEmail },
 				},
 			});
@@ -80,7 +55,7 @@ export const sendInvitation = safeActionClient
 			const invite = await prisma.clubInvite.create({
 				data: {
 					email: parsedInput.userEmail,
-					clubId: club.id,
+					clubId: ctx.club.id,
 					status: "PENDING",
 					inviteCode: code,
 					expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
@@ -93,18 +68,18 @@ export const sendInvitation = safeActionClient
 			const resp = await resend.emails.send({
 				from: DEFAULT_FROM,
 				to: parsedInput.userEmail,
-				subject: `Pozivnica za klub ${club.name}`,
+				subject: `Pozivnica za klub ${ctx.club.name}`,
 				react: ClubInvitationEmail({
 					name: parsedInput.userName,
 					url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/member-invite/${invite.inviteCode}`,
 					code: invite.inviteCode,
-					clubLogo: club?.logo || "",
-					clubName: club?.name || "Airsoft BiH",
-					clubLocation: club?.location || "BiH",
+					clubLogo: ctx.club?.logo || "",
+					clubName: ctx.club?.name || "Airsoft BiH",
+					clubLocation: ctx.club?.location || "BiH",
 				}),
 			});
 
-			revalidatePath(`/dashboard/${club.id}/members/invitations`);
+			revalidatePath(`/dashboard/${ctx.club.id}/members/invitations`);
 
 			return {
 				success: true,

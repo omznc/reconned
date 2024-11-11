@@ -10,6 +10,7 @@ import { FontProvider } from "@/components/font-switcher";
 
 import { Geist_Mono, Geist } from "next/font/google";
 import { FontBody } from "@/components/font-body";
+import type { ReactNode } from "react";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -21,7 +22,7 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-function LayoutContent({ children }: { children: React.ReactNode }) {
+function LayoutContent({ children }: { children: ReactNode }) {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<FontBody
@@ -54,7 +55,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 export default function RootLayout({
 	children,
 }: Readonly<{
-	children: React.ReactNode;
+	children: ReactNode;
 }>) {
 	return (
 		<FontProvider>

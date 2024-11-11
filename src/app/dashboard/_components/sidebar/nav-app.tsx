@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, House, Info, Settings2, User } from "lucide-react";
+import { ChevronRight, House, Info, User } from "lucide-react";
 
 import {
 	Collapsible,
@@ -28,7 +28,7 @@ export function NavApp() {
 			<SidebarGroupLabel>Aplikacija</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => {
-					if (!item.items?.length) {
+					if (item.items?.length === 0) {
 						return (
 							<SidebarMenuItem key={item.title}>
 								<SidebarMenuButton

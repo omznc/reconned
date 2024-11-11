@@ -60,6 +60,16 @@ export const auth = betterAuth({
 		}),
 		oneTap(),
 	],
+	user: {
+		additionalFields: {
+			isAdmin: {
+				type: "boolean",
+				default: false,
+				input: false,
+				required: false,
+			},
+		},
+	},
 	databaseHooks: {
 		user: {
 			update: {

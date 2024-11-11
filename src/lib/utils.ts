@@ -9,7 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 export const ROLE_TRANSLATIONS: Record<Role, string> = {
 	[Role.CLUB_OWNER]: "Vlasnik kluba",
 	[Role.USER]: "Korisnik",
-	[Role.ADMIN]: "Administrator",
 	[Role.MANAGER]: "Menadžer",
 };
 

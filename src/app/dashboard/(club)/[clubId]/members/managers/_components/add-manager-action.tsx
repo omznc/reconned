@@ -10,32 +10,10 @@ export const promoteToManager = safeActionClient
 	.schema(promoteToManagerSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		try {
-			const club = await prisma.club.findUnique({
-				where: {
-					id: parsedInput.clubId,
-					members: {
-						some: {
-							userId: ctx.user.id,
-							role: {
-								in: [Role.CLUB_OWNER],
-							},
-						},
-					},
-				},
-				select: {
-					id: true,
-					name: true,
-				},
-			});
-
-			if (!club) {
-				throw new Error("Nemate dozvolu za ovu akciju ili klub nije pronađen.");
-			}
-
 			const targetMembership = await prisma.clubMembership.findFirst({
 				where: {
 					id: parsedInput.memberId,
-					clubId: club.id,
+					clubId: ctx.club.id,
 					role: Role.USER,
 				},
 				include: {
@@ -55,7 +33,7 @@ export const promoteToManager = safeActionClient
 			const updatedMembership = await prisma.clubMembership.update({
 				where: {
 					id: parsedInput.memberId,
-					clubId: club.id,
+					clubId: ctx.club.id,
 				},
 				data: {
 					role: Role.MANAGER,
@@ -70,7 +48,7 @@ export const promoteToManager = safeActionClient
 				},
 			});
 
-			revalidatePath(`/dashboard/${club.id}/members`);
+			revalidatePath(`/dashboard/${ctx.club.id}/members`);
 
 			return {
 				success: true,
