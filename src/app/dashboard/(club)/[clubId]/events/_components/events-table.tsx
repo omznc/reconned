@@ -56,8 +56,8 @@ export function EventsTable({
 					cellConfig: {
 						variant: "badge",
 						valueMap: {
-							true: "Privatno",
-							false: "Javno",
+							true: "Privatni",
+							false: "Javni",
 						},
 						badgeVariants: {
 							true: "bg-red-100 text-red-800",

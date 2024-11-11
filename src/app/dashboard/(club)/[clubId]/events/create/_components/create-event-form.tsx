@@ -169,7 +169,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const form = useForm<z.infer<typeof createEventFormSchema>>({
 		resolver: zodResolver(createEventFormSchema),
 		defaultValues: {
-			id: props.event?.id || "",
+			eventId: props.event?.id || "",
 			clubId: props.event?.clubId || clubId || "",
 			name: props.event?.name || "",
 			description: props.event?.description || "",
@@ -245,7 +245,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						type: files[0].type,
 						size: files[0].size,
 					},
-					clubId: event.data.id,
+					eventId: event.data.id,
+					clubId: clubId,
 				});
 
 				if (!resp?.data?.url) {
@@ -265,7 +266,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				values.coverImage = resp.data.cdnUrl;
 				await createEvent({
 					...values,
-					id: event.data.id,
+					eventId: event.data.id,
 				});
 			}
 			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
@@ -309,7 +310,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									if (resp) {
 										setIsLoading(true);
 										await deleteEvent({
-											id: props.event?.id ?? "",
+											eventId: props.event?.id ?? "",
 											clubId: clubId,
 										});
 										setIsLoading(false);
@@ -456,7 +457,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 									setIsDeletingImage(true);
 									await deleteEventImage({
-										id: props.event?.id as string,
+										eventId: props.event?.id as string,
+										clubId: clubId,
 									});
 									setIsDeletingImage(false);
 								}}
