@@ -18,22 +18,27 @@ const clubIdSchema = z.object({
  */
 export const safeActionClient = unsafeActionClient.use(
 	async ({ clientInput, next }) => {
+		// 1. Check if the user is logged in
 		const user = await isAuthenticated();
-
 		if (!user) {
 			throw new Error("Session is not valid!");
 		}
 
+		// 2. Check if a clubId is provided. If not, allow the action to proceed
 		const clubIdInput = clientInput as { clubId?: string };
 		if (!clubIdInput.clubId) {
 			return next({ ctx: { user, club: undefined as unknown as Club } });
 		}
 
+		// From this point on, we're checking if the user can change club information
+
+		// 3. Validate the clubId
 		const resp = clubIdSchema.safeParse(clientInput);
 		if (!resp.success) {
 			throw new Error("Invalid clubId provided");
 		}
 
+		// 4. Check if the club exists
 		const club = await prisma.club.findUnique({
 			where: { id: resp.data.clubId },
 		});
@@ -41,10 +46,12 @@ export const safeActionClient = unsafeActionClient.use(
 			throw new Error("Club not found");
 		}
 
+		// 5. Check if the user is an admin or manages the club. If either are true, allow the action to proceed
 		if (user.isAdmin || user.managedClubs.includes(resp.data.clubId)) {
 			return next({ ctx: { user, club } });
 		}
 
+		// 6. If the user is not an admin and does not manage the club, throw an error
 		throw new Error("User does not manage this club");
 	},
 );
