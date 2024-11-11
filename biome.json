@@ -17,7 +17,8 @@
 			},
 			"style": {
 				"noDefaultExport": "off",
-				"noImplicitBoolean": "off"
+				"noImplicitBoolean": "off",
+				"useNamingConvention": "off"
 			},
 			"suspicious": {
 				"noReactSpecificProps": "off"

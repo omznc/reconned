@@ -26,7 +26,6 @@ export async function GET(
 				role: (role as Role) || "USER",
 				user: query
 					? {
-							// biome-ignore lint/style/useNamingConvention: <explanation>
 							OR: [
 								{ name: { contains: query, mode: "insensitive" } },
 								{ email: { contains: query, mode: "insensitive" } },

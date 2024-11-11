@@ -19,7 +19,6 @@ export function GoogleLoginButton({
 				await authClient.signIn.social(
 					{
 						provider: "google",
-						// biome-ignore lint/style/useNamingConvention: <explanation>
 						callbackURL: redirectTo || "/",
 					},
 					{},

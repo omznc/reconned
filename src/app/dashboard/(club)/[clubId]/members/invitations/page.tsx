@@ -14,15 +14,6 @@ interface PageProps {
 	}>;
 }
 
-interface FormattedInvite {
-	email: string;
-	userName: string;
-	status: InviteStatus;
-	createdAt: Date;
-	expiresAt: Date;
-	inviteCode: string;
-}
-
 export default async function Page(props: PageProps) {
 	const params = await props.params;
 	const searchParams = await props.searchParams;

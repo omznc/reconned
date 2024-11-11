@@ -74,7 +74,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const form = useForm<z.infer<typeof clubInfoSchema>>({
 		resolver: zodResolver(clubInfoSchema),
 		defaultValues: {
-			id: props.club?.id || "",
+			clubId: props.club?.id || "",
 			name: props.club?.name || "",
 			location: props.club?.location || "",
 			description: props.club?.description || "",
@@ -100,7 +100,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						type: files[0].type,
 						size: files[0].size,
 					},
-					id: props.club.id,
+					clubId: props.club.id,
 				});
 
 				if (!resp?.data?.url) {
@@ -136,7 +136,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						type: files[0].type,
 						size: files[0].size,
 					},
-					id: newClubId,
+					clubId: newClubId,
 				});
 
 				if (!resp?.data?.url) {
@@ -156,8 +156,14 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				await saveClubInformation({
 					...values,
 					logo: resp.data.cdnUrl,
-					id: newClubId,
+					clubId: newClubId,
 				});
+			}
+
+			if (resp?.serverError) {
+				toast.error(resp.serverError);
+				router.refresh();
+				return;
 			}
 
 			if (!props.club?.id) {
@@ -208,7 +214,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										if (resp) {
 											setIsLoading(true);
 											await deleteClub({
-												id: props.club?.id ?? "",
+												clubId: props.club?.id ?? "",
 											});
 											setIsLoading(false);
 										}
@@ -370,7 +376,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				<FormField
 					control={form.control}
 					name="logo"
-					render={({ field }) => (
+					render={() => (
 						<FormItem>
 							<FormLabel>Logo kluba</FormLabel>
 							<FormControl>
@@ -433,11 +439,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								disabled={isLoading}
 								variant={"destructive"}
 								onClick={async () => {
-									if (!props.club?.id) return;
+									if (!props.club?.id) {
+										return;
+									}
 
 									setIsDeletingImage(true);
 									await deleteClubImage({
-										id: props.club.id,
+										clubId: props.club.id,
 									});
 									setIsDeletingImage(false);
 								}}
