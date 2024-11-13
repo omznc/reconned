@@ -41,7 +41,7 @@ export const createEvent = safeActionClient
 		revalidatePath(`/dashboard/${ctx.club.id}/events/`);
 		if (!parsedInput.isPrivate) {
 			revalidatePath("/");
-			revalidatePath(`/events/${parsedInput.id}`);
+			revalidatePath(`/events/${parsedInput.eventId}`);
 		}
 
 		// create or update event
@@ -100,6 +100,7 @@ export const deleteEvent = safeActionClient
 			}),
 			await deleteEventImage({
 				eventId: parsedInput.eventId,
+				clubId: ctx.club.id,
 			}),
 		]);
 
