@@ -13,8 +13,7 @@ import Link from "next/link";
 interface EventOverviewProps {
 	event: Event & {
 		_count: {
-			invites: number;
-			registrations: number;
+			eventRegistration: number;
 		};
 	};
 	clubId?: string;
@@ -67,7 +66,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 						</>
 					) : (
 						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit">
-							{user && !event.isPrivate && (
+							{user && (
 								<Link href={`/events/${event.id}/apply`}>
 									<Button
 										variant="outline"
@@ -88,7 +87,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					<div className="flex flex-wrap gap-1 -mt-2">
 						<Badge variant="outline" className="flex h-fit items-center gap-1">
 							<User className="size-4" />
-							{event._count?.invites + event._count?.registrations}
+							{event._count?.eventRegistration} prijavljenih
 						</Badge>
 						<Badge variant="outline" className="flex h-fit items-center gap-1">
 							{event.isPrivate ? (

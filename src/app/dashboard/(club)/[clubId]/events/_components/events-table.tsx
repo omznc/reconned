@@ -9,8 +9,7 @@ import { Eye, Pen } from "lucide-react";
 interface EventsTableProps {
 	events: (Event & {
 		_count: {
-			invites: number;
-			registrations: number;
+			eventRegistration: number;
 		};
 	})[];
 	totalEvents: number;
@@ -66,12 +65,7 @@ export function EventsTable({
 					},
 				},
 				{
-					key: "_count.invites",
-					header: "Pozivnice",
-					sortable: true,
-				},
-				{
-					key: "_count.registrations",
+					key: "_count.eventRegistration",
 					header: "Prijave",
 					sortable: true,
 				},

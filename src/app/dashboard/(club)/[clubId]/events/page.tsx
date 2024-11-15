@@ -61,8 +61,7 @@ export default async function Page(props: PageProps) {
 		include: {
 			_count: {
 				select: {
-					invites: true,
-					registrations: true,
+					eventRegistration: true,
 				},
 			},
 		},

@@ -21,16 +21,15 @@ enum InviteStatus {
 }
 
 model User {
-  id             String              @id @default(cuid())
-  email          String              @unique
-  name           String
-  emailVerified  Boolean
-  isPrivate      Boolean             @default(false)
-  eventsSignedUp EventRegistration[]
-  invitesSent    EventInvite[]
-  clubMembership ClubMembership[]
+  id            String  @id @default(cuid())
+  email         String  @unique
+  name          String
+  emailVerified Boolean
+  isPrivate     Boolean @default(false)
+  isAdmin       Boolean @default(false)
+
+  clubMembership      ClubMembership[]
   clubInvitesReceived ClubInvite[]
-  isAdmin        Boolean             @default(false)
 
   image   String?
   session Session[]
@@ -47,6 +46,9 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   passkeys  Passkey[]
+
+  eventRegistration         EventRegistration[]
+  createdEventRegistrations EventRegistration[] @relation("EventRegistrationCreatedBy")
 }
 
 model Club {
@@ -65,14 +67,13 @@ model Club {
   contactPhone String?
   contactEmail String?
 
-  events         Event[]
-  members        ClubMembership[]
-  invitesSent    ClubInvite[]
+  events      Event[]
+  members     ClubMembership[]
+  invitesSent ClubInvite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 
 model ClubMembership {
   id     String @id @default(cuid())
@@ -83,31 +84,31 @@ model ClubMembership {
   role   Role   @default(USER)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 
   @@unique([userId, clubId])
 }
 
 model ClubInvite {
-  id          String       @id @default(cuid())
-  email       String       // Email of the invited user
-  club        Club         @relation(fields: [clubId], references: [id], onDelete: Cascade)
-  clubId      String
-  user        User?        @relation(fields: [userId], references: [id]) // Optional: If the email matches an existing user
-  userId      String?
-  status      InviteStatus @default(PENDING)
-  inviteCode  String       @unique
-  expiresAt   DateTime
   
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id         String       @id @default(cuid())
+  email      String // Email of the invited user
+  club       Club         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId     String
+  user       User?        @relation(fields: [userId], references: [id]) // Optional: If the email matches an existing user
+  userId     String?
+  status     InviteStatus @default(PENDING)
+  inviteCode String       @unique
+  expiresAt  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   @@index([email])
   @@index([status])
   @@index([inviteCode])
 }
 
-// Rest of your existing models remain the same...
 model Event {
   id          String @id @default(cuid())
   name        String
@@ -146,43 +147,47 @@ model Event {
   gearRequirements Json[] // { name: string, description: string }
   mapData          Json?
 
-  registrations EventRegistration[]
-  invites       EventInvite[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  eventRegistration EventRegistration[]
+  eventInvite       EventInvite[]
 }
 
 model EventRegistration {
-  id       String  @id @default(cuid())
-  event    Event   @relation(fields: [eventId], references: [id])
-  eventId  String
-  user     User?   @relation(fields: [userId], references: [id])
-  userId   String? // Can be null for non-account users
-  invite   EventInvite? @relation(fields: [inviteId], references: [id])
-  inviteId String? // Event can be registered by invite link
+  id      String @id @default(cuid())
+  event   Event  @relation(fields: [eventId], references: [id])
+  eventId String
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], name: "EventRegistrationCreatedBy")
+
+  invitedUsers         User[]
+  invitedUsersNotOnApp EventInvite[]
+
+  type          String @default("solo") // solo, team
+  paymentMethod String @default("cash") // cash, bank
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 }
 
-// Invite Model (Manual Event Registration)
 model EventInvite {
-  id                String              @id @default(cuid())
-  event             Event               @relation(fields: [eventId], references: [id])
-  eventId           String
-  email             String              // Email of the person receiving the invite
-  secureLink        String              @unique // Generated unique link for registration
-  inviter           User                @relation(fields: [inviterId], references: [id])
-  inviterId         String
-  eventRegistration EventRegistration[]
+  id        String   @id @default(cuid())
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  name      String
+  email     String
+  token     String   @unique
+  expiresAt DateTime
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
+
+  eventRegistration   EventRegistration? @relation(fields: [eventRegistrationId], references: [id])
+  eventRegistrationId String?
 }
 
 // Auth stuff below
-
 model Session {
   id        String   @id
   expiresAt DateTime
