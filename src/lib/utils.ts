@@ -24,6 +24,10 @@ export function formatDate(
 	}).format(new Date(date));
 }
 
+export const isValidEmail = (email: string) => {
+	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
 /**
  * Stole this from the @radix-ui/primitive
  * @see https://github.com/radix-ui/primitives/blob/main/packages/core/primitive/src/primitive.tsx

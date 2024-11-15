@@ -60,22 +60,57 @@ export default async function EventApplicationPage(
 		return notFound();
 	}
 
-	const currentUserClubs = await prisma.club.findMany({
-		where: {
-			members: {
-				some: {
-					userId: user.id,
+	const [currentUserClubs, existingApplication] = await Promise.all([
+		prisma.club.findMany({
+			where: {
+				members: {
+					some: {
+						userId: user.id,
+					},
 				},
 			},
-		},
-	});
+		}),
+		prisma.eventRegistration.findFirst({
+			where: {
+				eventId: event.id,
+				createdById: user.id,
+			},
+			include: {
+				invitedUsers: {
+					select: {
+						id: true,
+						email: true,
+						name: true,
+						callsign: true,
+						image: true,
+					},
+				},
+				invitedUsersNotOnApp: {
+					select: {
+						eventId: true,
+						id: true,
+						email: true,
+						name: true,
+						createdAt: true,
+						updatedAt: true,
+						expiresAt: true,
+						eventRegistrationId: true,
+					},
+				},
+			},
+		}),
+	]);
 
 	return (
 		<div className="container py-8 max-w-2xl mx-auto">
 			<h1 className="text-3xl font-bold mb-8">
-				Prijava na susret: {event.name}
+				{existingApplication
+					? "Promjena prijave na susret: "
+					: "Prijava na susret: "}
+				{event.name}
 			</h1>
 			<EventApplicationForm
+				existingApplication={existingApplication}
 				event={event}
 				user={user}
 				currentUserClubs={currentUserClubs}
