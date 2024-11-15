@@ -1,11 +1,9 @@
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
-import { EventApplication } from "@/components/event-application";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { MapComponent } from "@/components/map-component";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import type { Event } from "@prisma/client";
 import { Eye, EyeOff, MapPin, Pencil, User } from "lucide-react";
@@ -24,15 +22,6 @@ interface EventOverviewProps {
 
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	const user = await isAuthenticated();
-	const currentUserClubs = await prisma.club.findMany({
-		where: {
-			members: {
-				some: {
-					userId: user?.id,
-				},
-			},
-		},
-	});
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
 
 	return (
@@ -79,11 +68,15 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					) : (
 						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit">
 							{user && !event.isPrivate && (
-								<EventApplication
-									event={event}
-									user={user}
-									currentUserClubs={currentUserClubs}
-								/>
+								<Link href={`/events/${event.id}/apply`}>
+									<Button
+										variant="outline"
+										size="sm"
+										className="w-full md:w-auto"
+									>
+										Prijava
+									</Button>
+								</Link>
 							)}
 							<AddEventToCalendarButton event={event} />
 						</div>

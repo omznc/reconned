@@ -37,17 +37,30 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
+type SearchUser = {
+	id: string;
+	email: string;
+	name: string;
+	image: string | null;
+	callsign: string | null;
+	clubMembership: {
+		club: {
+			name: string;
+		};
+	}[];
+};
+
 async function searchUsers(query: string) {
 	const response = await fetch(`/api/users?query=${encodeURIComponent(query)}`);
 	if (!response.ok) {
 		throw new Error("Failed to fetch users");
 	}
-	return response.json();
+	return (await response.json()) as SearchUser[];
 }
 
 export function InvitationsForm() {
 	const params = useParams<{ clubId: string }>();
-	const [users, setUsers] = useState<User[]>([]);
+	const [users, setUsers] = useState<SearchUser[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);

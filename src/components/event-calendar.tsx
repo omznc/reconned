@@ -104,97 +104,100 @@ export function EventCalendar(props: EventCalendarProps) {
 		);
 	};
 
-	const isEventStarting = (event: Event) => (date: Date) => {
-		return isSameDay(event.dateStart, date);
-	};
+	const getEventDisplayProperties = (event: Event, day: Date, week: Date[]) => {
+		const eventStart = event.dateStart;
+		const eventEnd = event.dateEnd ?? event.dateStart;
 
-	const getEventDisplayProperties = (event: Event, week: Date[]) => {
-		const firstDayInWeek = week.find((day) =>
-			isWithinInterval(day, {
-				start: event.dateStart,
-				end: event.dateEnd ?? event.dateStart,
-			}),
-		);
+		// Get the first and last day of this event in the current week
+		const startInWeek = week[0] > eventStart ? week[0] : eventStart;
+		const endInWeek =
+			week[week.length - 1] < eventEnd ? week[week.length - 1] : eventEnd;
 
-		if (!firstDayInWeek) {
+		// Find indices in the week array
+		const startIndex = week.findIndex((d) => isSameDay(d, startInWeek));
+		const endIndex = week.findIndex((d) => isSameDay(d, endInWeek));
+
+		// Calculate if this day is the day we should render the event on
+		const shouldRender = isSameDay(day, startInWeek);
+
+		if (startIndex === -1 || endIndex === -1) {
 			return null;
 		}
 
-		const startDayIndex = week.findIndex((day) =>
-			isSameDay(day, firstDayInWeek),
-		);
-		const endDayIndex = week.findIndex(
-			(day) =>
-				isSameDay(day, event.dateEnd ?? event.dateStart) ||
-				isSameDay(day, week[week.length - 1]),
-		);
-
 		return {
-			startIndex: startDayIndex,
-			span: endDayIndex - startDayIndex + 1,
-			isStart: isSameDay(firstDayInWeek, event.dateStart),
-			isEnd: isSameDay(week[endDayIndex], event.dateEnd ?? event.dateStart),
+			startIndex,
+			span: endIndex - startIndex + 1,
+			isStart: isSameDay(eventStart, week[startIndex]),
+			isEnd: isSameDay(eventEnd, week[endIndex]),
+			shouldRender,
 		};
 	};
 
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
 	const getEventPositions = (events: Event[], week: Date[]) => {
 		const positions = new Map<string, number>();
-		const maxLayer = new Array(7).fill(0);
-		const layerEvents = new Map<number, number>();
-		const sortedEvents = [...events].sort(
-			(a, b) => a.dateStart.getTime() - b.dateStart.getTime(),
-		);
+		const layers = [] as Set<string>[];
+
+		const sortedEvents = [...events].sort((a, b) => {
+			const aDuration =
+				(a.dateEnd?.getTime() ?? a.dateStart.getTime()) - a.dateStart.getTime();
+			const bDuration =
+				(b.dateEnd?.getTime() ?? b.dateStart.getTime()) - b.dateStart.getTime();
+			return (
+				bDuration - aDuration || a.dateStart.getTime() - b.dateStart.getTime()
+			);
+		});
 
 		for (const event of sortedEvents) {
-			const display = getEventDisplayProperties(event, week);
-			if (!display) {
-				continue;
-			}
+			const eventStart = event.dateStart;
+			const eventEnd = event.dateEnd ?? event.dateStart;
 
-			// Try each layer starting from 0 until we find a free slot
-			let selectedLayer = 0;
-			let layerFound = false;
+			// Find the first layer where this event can fit
+			let layerIndex = 0;
+			while (true) {
+				if (!layers[layerIndex]) {
+					layers[layerIndex] = new Set();
+				}
 
-			while (!layerFound) {
-				layerFound = true;
-				// Check if this layer is free for the entire event span
-				for (
-					let i = display.startIndex;
-					i < display.startIndex + display.span;
-					i++
-				) {
-					if (maxLayer[i] > selectedLayer) {
-						layerFound = false;
-						selectedLayer++;
+				let canFit = true;
+				for (const existingEvent of layers[layerIndex]) {
+					const existing = events.find((e) => e.id === existingEvent);
+					if (!existing) continue;
+
+					const existingStart = existing.dateStart;
+					const existingEnd = existing.dateEnd ?? existing.dateStart;
+
+					if (
+						isWithinInterval(eventStart, {
+							start: existingStart,
+							end: existingEnd,
+						}) ||
+						isWithinInterval(eventEnd, {
+							start: existingStart,
+							end: existingEnd,
+						}) ||
+						isWithinInterval(existingStart, {
+							start: eventStart,
+							end: eventEnd,
+						})
+					) {
+						canFit = false;
 						break;
 					}
 				}
-			}
 
-			// Found a free layer, now occupy it
-			for (
-				let i = display.startIndex;
-				i < display.startIndex + display.span;
-				i++
-			) {
-				maxLayer[i] = selectedLayer + 1;
-			}
+				if (canFit) {
+					layers[layerIndex].add(event.id);
+					positions.set(event.id, layerIndex);
+					break;
+				}
 
-			// Track number of events in each layer
-			layerEvents.set(selectedLayer, (layerEvents.get(selectedLayer) || 0) + 1);
-
-			// If this layer has more than 1 event and this is the first event in the layer
-			if (layerEvents.get(selectedLayer) === 1 && positions.size > 0) {
-				positions.set(event.id, selectedLayer - 1);
-			} else {
-				positions.set(event.id, selectedLayer);
+				layerIndex++;
 			}
 		}
 
 		return {
 			positions,
-			maxLayer: Math.max(...maxLayer),
+			maxLayer: layers.length,
 		};
 	};
 
@@ -271,6 +274,7 @@ export function EventCalendar(props: EventCalendarProps) {
 											isSameMonth(day, currentDate)
 												? ""
 												: "text-muted-foreground",
+											getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
 										)}
 										style={{ minHeight: `${weekHeight}rem` }}
 									>
@@ -282,9 +286,10 @@ export function EventCalendar(props: EventCalendarProps) {
 												(event) => {
 													const display = getEventDisplayProperties(
 														event,
+														day,
 														week,
 													);
-													if (!(display && isEventStarting(event)(day))) {
+													if (!display || !display.shouldRender) {
 														return null;
 													}
 
@@ -298,15 +303,14 @@ export function EventCalendar(props: EventCalendarProps) {
 																	variant="ghost"
 																	style={{
 																		position: "absolute",
-																		zIndex: 10,
+																		zIndex: eventPositions.get(event.id) ?? 1,
 																		left: 0,
 																		width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
-																		top: `${
-																			(eventPositions.get(event.id) ?? 1) * 30
-																		}px`,
+																		top: `${(eventPositions.get(event.id) ?? 0) * 32}px`,
+																		height: "28px",
 																	}}
 																	className={cn(
-																		"text-left px-2 py-1 text-xs font-medium text-background h-6",
+																		"text-left px-2 py-1 text-xs font-medium text-background",
 																		"bg-primary hover:bg-primary/90 hover:text-background",
 																		{
 																			"rounded-l-none": !display.isStart,
@@ -408,9 +412,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																		variant="default"
 																		className="w-full mt-2"
 																		onClick={() => {
-																			router.push(
-																				`${getEventUrl(event)}?signup=true`,
-																			);
+																			router.push(`/events/${event.id}/apply`);
 																		}}
 																	>
 																		<Plus className="h-4 w-4 mr-2" />
