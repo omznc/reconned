@@ -68,6 +68,12 @@ export const auth = betterAuth({
 				input: false,
 				required: false,
 			},
+			callsign: {
+				type: "string",
+				default: "",
+				input: true,
+				required: false,
+			},
 		},
 	},
 	databaseHooks: {

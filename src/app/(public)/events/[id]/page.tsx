@@ -1,4 +1,5 @@
 import { EventOverview } from "@/components/event-overview";
+import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
@@ -9,12 +10,34 @@ interface PageProps {
 }
 
 export default async function Page(props: PageProps) {
+	const user = await isAuthenticated();
 	const params = await props.params;
+
+	const conditionalPrivateWhere = user
+		? {
+				OR: [
+					{
+						isPrivate: false,
+					},
+					{
+						club: {
+							members: {
+								some: {
+									userId: user?.id,
+								},
+							},
+						},
+					},
+				],
+			}
+		: {
+				isPrivate: false,
+			};
 
 	const event = await prisma.event.findFirst({
 		where: {
 			id: params.id,
-			isPrivate: false,
+			...conditionalPrivateWhere,
 		},
 		include: {
 			_count: {
@@ -38,11 +61,25 @@ export default async function Page(props: PageProps) {
 }
 export async function generateMetadata(props: PageProps) {
 	const params = await props.params;
+	const user = await isAuthenticated();
 
 	const event = await prisma.event.findFirst({
 		where: {
 			id: params.id,
-			isPrivate: false,
+			OR: [
+				{
+					isPrivate: false,
+				},
+				{
+					club: {
+						members: {
+							some: {
+								userId: user?.id,
+							},
+						},
+					},
+				},
+			],
 		},
 		include: {
 			_count: {

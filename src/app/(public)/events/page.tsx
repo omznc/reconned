@@ -14,14 +14,35 @@ import { CalendarDays, Clock, MapPin, DollarSign } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page() {
+	const user = await isAuthenticated();
 	const upcomingEvents = await prisma.event.findMany({
 		where: {
 			dateStart: {
 				gte: new Date(),
 			},
-			isPrivate: false,
+			...(user
+				? {
+						OR: [
+							{
+								isPrivate: false,
+							},
+							{
+								club: {
+									members: {
+										some: {
+											userId: user?.id,
+										},
+									},
+								},
+							},
+						],
+					}
+				: {
+						isPrivate: false,
+					}),
 		},
 		orderBy: {
 			dateStart: "asc",
@@ -91,7 +112,7 @@ export default async function Page() {
 									<Badge className="flex-growjustify-center ">Ručak</Badge>
 								)}
 								{event.hasDinner && (
-									<Badge className="flex-growjustify-center ">Večera</Badge>
+									<Badge className="flex-grow justify-center ">Večera</Badge>
 								)}
 								{event.hasSnacks && (
 									<Badge className="flex-grow justify-center">Grickalice</Badge>
@@ -100,7 +121,7 @@ export default async function Page() {
 									<Badge className="flex-grow justify-center">Pića</Badge>
 								)}
 								{event.hasPrizes && (
-									<Badge className="flex-growjustify-center ">Nagrade</Badge>
+									<Badge className="flex-grow justify-center ">Nagrade</Badge>
 								)}
 							</div>
 						</CardContent>

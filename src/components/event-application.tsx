@@ -9,14 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { EventApplicationForm } from "@/lib/schemas/event-application-schema";
-import { eventApplicationSchema } from "@/lib/schemas/event-application-schema";
+import type { EventApplicationSchemaType } from "@/app/(public)/events/[id]/apply/_components/event-application-schema";
+import { eventApplicationSchema } from "@/app/(public)/events/[id]/apply/_components/event-application-schema";
 import type { Club, Event } from "@prisma/client";
 import type { User } from "better-auth";
 import { useSearchParams } from "next/navigation";
@@ -51,7 +50,7 @@ export function EventApplication(props: EventApplicationProps) {
 		}
 	}, [searchParams]);
 
-	const form = useForm<EventApplicationForm>({
+	const form = useForm<EventApplicationSchemaType>({
 		resolver: zodResolver(eventApplicationSchema),
 		defaultValues: {
 			applicationType: "solo",
@@ -66,7 +65,7 @@ export function EventApplication(props: EventApplicationProps) {
 		name: "teamMembers",
 	});
 
-	const onSubmit = (data: EventApplicationForm) => {
+	const onSubmit = (data: EventApplicationSchemaType) => {
 		console.log(data);
 		setOpen(false);
 	};
@@ -131,18 +130,26 @@ export function EventApplication(props: EventApplicationProps) {
 						{step === 1 && (
 							<div className="space-y-4">
 								<div className="flex flex-col gap-4 w-full">
-									<div className="flex flex-col gap-2">
+									<div className="flex flex-col gap-2 relative">
 										<Button
 											type="button"
 											className="flex items-center gap-2"
 											onClick={() => {
 												form.setValue("applicationType", "solo");
-												setStep(2); // Skip step 2 for solo signups
+												setStep(2);
 											}}
+											disabled={!props.event.allowFreelancers}
 										>
 											<CirclePlus />
 											Prijavi se samostalno
 										</Button>
+										{!props.event.allowFreelancers && (
+											<div className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-md flex items-center justify-center">
+												<p className="text-sm text-muted-foreground px-4 text-center">
+													Ovaj susret ne dozvoljava samostalne prijave
+												</p>
+											</div>
+										)}
 										<span className="text-gray-500 text-sm">
 											Odaberite ovu opciju ako dolazite sami na susret.
 										</span>

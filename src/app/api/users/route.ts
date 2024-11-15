@@ -5,14 +5,15 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
-	const session = isAuthenticated();
-
-	if (!session) {
+	const user = await isAuthenticated();
+	if (!user) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
 	const { searchParams } = new URL(request.url);
 	const query = searchParams.get("query");
+	const onlyUsersClub = searchParams.get("onlyUsersClub") === "true";
+	const ignoreCurrentUser = searchParams.get("ignoreCurrentUser") === "true";
 
 	if (!query) {
 		return NextResponse.json(
@@ -22,14 +23,91 @@ export async function GET(request: Request) {
 	}
 
 	try {
+		const where: any = {
+			AND: [
+				{
+					OR: [
+						{
+							name: {
+								contains: query,
+								mode: "insensitive",
+							},
+						},
+						{
+							email: {
+								contains: query,
+								mode: "insensitive",
+							},
+						},
+						{
+							callsign: {
+								contains: query,
+								mode: "insensitive",
+							},
+						},
+					],
+				},
+			],
+		};
+
+		if (ignoreCurrentUser || onlyUsersClub) {
+			const currentUser = await prisma.user.findUnique({
+				where: { id: user.id },
+				include: {
+					clubMembership: {
+						select: {
+							clubId: true,
+						},
+					},
+				},
+			});
+
+			if (!currentUser) {
+				return NextResponse.json({ error: "User not found" }, { status: 404 });
+			}
+
+			if (onlyUsersClub) {
+				where.AND.push({
+					clubMembership: {
+						some: {
+							clubId: {
+								in: currentUser.clubMembership.map(
+									(membership) => membership.clubId,
+								),
+							},
+						},
+					},
+				});
+			}
+
+			if (ignoreCurrentUser) {
+				where.AND.push({
+					id: {
+						not: currentUser.id,
+					},
+				});
+			}
+		}
+
 		const users = await prisma.user.findMany({
-			where: {
-				name: {
-					contains: query,
-					mode: "insensitive",
+			where,
+			take: 5,
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+				callsign: true,
+				clubMembership: {
+					select: {
+						club: {
+							select: {
+								name: true,
+							},
+						},
+					},
 				},
 			},
-			take: 5,
 		});
 
 		return NextResponse.json(users);
