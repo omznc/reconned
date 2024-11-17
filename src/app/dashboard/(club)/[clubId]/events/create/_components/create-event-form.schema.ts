@@ -54,6 +54,7 @@ export const createEventFormSchema = z
 		hasSnacks: z.boolean().optional(),
 		hasDrinks: z.boolean().optional(),
 		hasPrizes: z.boolean().optional(),
+		ruleIds: z.array(z.string()).optional(),
 		mapData: z.object({
 			areas: z.array(z.array(z.array(z.array(z.number())))),
 			pois: z.array(

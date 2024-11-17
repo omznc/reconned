@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { EventApplicationSchemaType } from "@/app/(public)/events/[id]/apply/_components/event-application-form.schema";
 import { eventApplicationSchema } from "@/app/(public)/events/[id]/apply/_components/event-application-form.schema";
 import type {
 	Club,
+	ClubRule,
 	Event,
 	EventInvite,
 	EventRegistration,
@@ -52,6 +53,9 @@ import {
 import { isValidEmail } from "@/lib/utils"; // Add this utility function if not exists
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Editor } from "@/components/editor/editor";
+import type { JSONContent } from "novel";
 
 interface EventApplicationProps {
 	existingApplication:
@@ -66,7 +70,7 @@ interface EventApplicationProps {
 				invitedUsersNotOnApp: Omit<EventInvite, "token">[];
 		  })
 		| null;
-	event: Event;
+	event: Event & { rules: ClubRule[] };
 	user: User;
 	currentUserClubs: Club[];
 }
@@ -360,7 +364,7 @@ export function EventApplicationForm({
 						type="button"
 						onClick={() => handleTypeChange("solo")}
 						disabled={!event.allowFreelancers && currentUserClubs.length === 0}
-						className="!disabled:group disabled:cursor-not-allowed border relative flex flex-col items-center justify-center rounded-lg p-8 transition-all w-full"
+						className="group disabled:cursor-not-allowed border relative flex flex-col items-center justify-center rounded-lg p-8 transition-all w-full"
 					>
 						{!event.allowFreelancers && currentUserClubs.length === 0 && (
 							<div className="absolute backdrop-blur-[2px] p-4 inset-0 bg-black/30 dark:bg-black/80 rounded-lg flex items-center justify-center">
@@ -555,6 +559,7 @@ export function EventApplicationForm({
 					<PopoverTrigger asChild>
 						<Button
 							variant="outline"
+							// biome-ignore lint/a11y/useSemanticElements: <explanation>
 							role="combobox"
 							aria-expanded={open}
 							className="w-full justify-between"
@@ -804,15 +809,30 @@ export function EventApplicationForm({
 				)}
 
 				{step === 3 && (
-					<div className="fade-in-up space-y-4 border rounded-lg p-4">
+					<div className="fade-in-up space-y-4">
 						<h3 className="font-medium">Pravila susreta</h3>
-						<ul className="list-disc pl-4 space-y-2 text-sm">
-							<li>Obavezno nošenje zaštitne opreme za oči cijelo vrijeme</li>
-							<li>Minimalna energija 1.5J za replike dugih cijevi</li>
-							<li>Minimalna energija 1.0J za replike kratkih cijevi</li>
-							<li>Zabranjeno korištenje pirotehničkih sredstava</li>
-							<li>Dolazak najkasnije 30 minuta prije početka</li>
-						</ul>
+						<ScrollArea className="h-[400px] rounded-md border p-4">
+							<div className="space-y-8">
+								{event.rules?.map((rule, index) => (
+									<div key={rule.id} className="space-y-2">
+										<h4 className="font-medium">{rule.name}</h4>
+										{rule.description && (
+											<p className="text-sm text-muted-foreground">
+												{rule.description}
+											</p>
+										)}
+										<Editor
+											editable={false}
+											initialValue={rule.content as JSONContent}
+											onChange={() => {}}
+										/>
+										{index < event.rules.length - 1 && (
+											<hr className="border-t" />
+										)}
+									</div>
+								))}
+							</div>
+						</ScrollArea>
 
 						<div className="flex items-center space-x-2 mt-4">
 							<Checkbox
@@ -826,30 +846,21 @@ export function EventApplicationForm({
 								htmlFor="rules"
 								className="text-sm cursor-pointer select-none"
 							>
-								Prihvatam pravila susreta
+								Pročitao/la sam i prihvatam sva pravila susreta
 							</Label>
 						</div>
+
+						<p className="text-sm text-muted-foreground flex items-center gap-2">
+							<AlertCircle className="h-4 w-4" />
+							Molimo vas da detaljno pročitate pravila prije nego što ih
+							prihvatite
+						</p>
 
 						{form.formState.errors.rulesAccepted && (
 							<p className="text-sm text-destructive flex items-center gap-2">
 								<AlertCircle className="h-4 w-4" />
 								{form.formState.errors.rulesAccepted.message}
 							</p>
-						)}
-
-						{form.formState.errors.invitedUsers && (
-							<Alert variant="destructive" className="mt-4">
-								<AlertDescription>
-									{form.formState.errors.invitedUsers.message}
-								</AlertDescription>
-							</Alert>
-						)}
-						{form.formState.errors.invitedUsersNotOnApp && (
-							<Alert variant="destructive" className="mt-4">
-								<AlertDescription>
-									{form.formState.errors.invitedUsersNotOnApp.message}
-								</AlertDescription>
-							</Alert>
 						)}
 					</div>
 				)}

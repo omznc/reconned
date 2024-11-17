@@ -2,17 +2,14 @@
 
 import { AddToCalendarButton as CalendarButtonBase } from "add-to-calendar-button-react";
 import { format } from "date-fns";
-import type { Event } from "@prisma/client";
+import type { ClubRule, Event } from "@prisma/client";
 
-export default function AddEventToCalendarButton({ event }: { event: Event }) {
+export default function AddEventToCalendarButton({
+	event,
+}: { event: Event & { rules: ClubRule[] } }) {
 	const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
-	// const formatTime = (date: Date) => format(date, "HH:mm");
 
 	const startDate = formatDate(event.dateStart);
-	// const startTime = formatTime(event.dateStart);
-	// const endDate = event.dateEnd ? formatDate(event.dateEnd) : undefined;
-	// const endTime = event.dateEnd ? formatTime(event.dateEnd) : undefined;
-
 	let description = `${event.description}\n\n`;
 
 	if (event.googleMapsLink) {
@@ -39,9 +36,7 @@ export default function AddEventToCalendarButton({ event }: { event: Event }) {
 	if (Array.isArray(event.rules) && event.rules.length > 0) {
 		description += "Pravila:\n";
 		for (const rule of event.rules) {
-			// @ts-expect-error
 			if (rule?.name && rule?.description) {
-				// @ts-expect-error
 				description += `- ${rule?.name}: ${rule?.description}\n`;
 			}
 		}

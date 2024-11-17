@@ -35,3 +35,6 @@
 ## Other
 - Always use react-hook-forms and zod. Schemas should be in a different file so we
 can import them in actions as well.
+
+## Language
+- Use bosnian for all code strings

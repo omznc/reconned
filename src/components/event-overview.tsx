@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import type { Event } from "@prisma/client";
+import type { ClubRule, Event } from "@prisma/client";
 import { Eye, EyeOff, MapPin, Pencil, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +15,7 @@ interface EventOverviewProps {
 		_count: {
 			eventRegistration: number;
 		};
+		rules: ClubRule[];
 	};
 	clubId?: string;
 }

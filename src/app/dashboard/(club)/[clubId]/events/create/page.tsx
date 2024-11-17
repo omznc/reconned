@@ -29,5 +29,11 @@ export default async function Page(props: PageProps) {
 			})
 		: null;
 
-	return <CreateEventForm event={existingEvent} />;
+	const rules = await prisma.clubRule.findMany({
+		where: {
+			clubId: params.clubId,
+		},
+	});
+
+	return <CreateEventForm event={existingEvent} rules={rules} />;
 }

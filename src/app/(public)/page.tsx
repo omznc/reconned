@@ -222,8 +222,8 @@ export default async function Home({ searchParams }: PageProps) {
 										})}
 									</div>
 									{event.dateRegistrationsClose && (
-										<div className="text-sm text-muted-foreground">
-											Prijave otvorene još{" "}
+										<div className="text-sm mr-1 text-muted-foreground">
+											Prijave još{" "}
 											{formatDistanceToNow(event.dateRegistrationsClose, {
 												locale: bs,
 											})}
