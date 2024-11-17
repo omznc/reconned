@@ -34,6 +34,7 @@ export default async function Page(props: PageProps) {
 					eventRegistration: true,
 				},
 			},
+			rules: true,
 		},
 	});
 

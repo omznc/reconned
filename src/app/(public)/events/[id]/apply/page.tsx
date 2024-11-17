@@ -1,7 +1,9 @@
 import { EventApplicationForm } from "@/app/(public)/events/[id]/apply/_components/event-application-form";
+import { ErrorPage } from "@/components/error-page";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { isAfter, isBefore } from "date-fns";
 import { notFound, redirect } from "next/navigation";
 
 interface EventApplicationPageProps {
@@ -53,6 +55,7 @@ export default async function EventApplicationPage(
 					id: true,
 				},
 			},
+			rules: true,
 		},
 	});
 
@@ -100,6 +103,20 @@ export default async function EventApplicationPage(
 			},
 		}),
 	]);
+
+	const canApplyToEvent =
+		isAfter(new Date(), new Date(event.dateRegistrationsOpen)) &&
+		isBefore(new Date(), new Date(event.dateRegistrationsClose));
+
+	if (!canApplyToEvent) {
+		return (
+			<ErrorPage
+				title="Registracije za ovaj susret nisu otvorene"
+				link={`/events/${event.id}`}
+				linkText="Povratak na susret"
+			/>
+		);
+	}
 
 	return (
 		<div className="container py-8 max-w-2xl mx-auto">

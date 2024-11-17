@@ -149,4 +149,5 @@ const TRANSLATIONS = {
 	user: "Korisnik",
 	help: "Pomoć",
 	managers: "Menadžeri",
+	rules: "Pravila",
 };

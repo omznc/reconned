@@ -28,6 +28,7 @@ import {
 	CalendarFold,
 	Plus,
 	CalendarDays,
+	DiamondMinus,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
@@ -200,6 +201,12 @@ const getItems = (clubId: string) => {
 					title: "Kalendar",
 					url: `/dashboard/${clubId}/events/calendar`,
 					icon: CalendarDays,
+				},
+				{
+					title: "Pravila",
+					url: `/dashboard/${clubId}/events/rules`,
+					icon: DiamondMinus,
+					protected: true,
 				},
 				{
 					title: "Statistike",

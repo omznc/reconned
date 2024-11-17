@@ -34,6 +34,9 @@ export const createEvent = safeActionClient
 			hasDrinks: parsedInput.hasDrinks,
 			hasPrizes: parsedInput.hasPrizes,
 			clubId: ctx.club.id,
+			rules: {
+				connect: parsedInput.ruleIds?.map((id) => ({ id })) || [],
+			},
 			mapData: parsedInput.mapData ?? { areas: [], pois: [] },
 		};
 
