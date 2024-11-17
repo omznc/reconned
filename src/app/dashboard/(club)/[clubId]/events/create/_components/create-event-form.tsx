@@ -18,7 +18,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
@@ -43,7 +43,7 @@ import {
 	FileUploaderItem,
 } from "@/components/ui/file-upload";
 import { Switch } from "@/components/ui/switch";
-import type { Event } from "@prisma/client";
+import type { ClubRule, Event } from "@prisma/client";
 import { bs } from "date-fns/locale";
 import {
 	ArrowUpRight,
@@ -66,6 +66,25 @@ import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { AnimatedNumber } from "@/components/animated-number";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+} from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+} from "@/components/ui/sheet";
+import { Editor } from "@/components/editor/editor";
+import type { JSONContent } from "novel";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),
@@ -76,6 +95,7 @@ export const MapComponent = dynamic(
 
 interface CreateEventFormProps {
 	event: Event | null;
+	rules: ClubRule[];
 }
 
 function EventTimelineDescription({
@@ -947,6 +967,109 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						/>
 					</div>
 				</div>
+				<div>
+					<h3 className="text-lg font-semibold">Pravila</h3>
+				</div>
+
+				<FormField
+					control={form.control}
+					name="ruleIds"
+					render={({ field }) => {
+						const [selectedRule, setSelectedRule] = useState<ClubRule | null>(
+							null,
+						);
+
+						return (
+							<FormItem>
+								<FormLabel>Pravila susreta</FormLabel>
+								<FormDescription>
+									Odaberite pravila koja će važiti za ovaj susret.
+								</FormDescription>
+								<FormControl>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										{props.rules?.map((rule) => (
+											<div
+												key={rule.id}
+												className="flex items-center justify-between space-x-2 p-4 border rounded-lg"
+											>
+												<div className="flex items-center gap-4">
+													<Checkbox
+														checked={(field.value || []).includes(rule.id)}
+														onCheckedChange={(checked) => {
+															const currentValue = field.value || [];
+															const newValue = checked
+																? [...currentValue, rule.id]
+																: currentValue.filter((id) => id !== rule.id);
+															field.onChange(newValue);
+														}}
+													/>
+													<div className="grid gap-1.5">
+														<Label htmlFor={rule.id}>{rule.name}</Label>
+														{rule.description && (
+															<p className="text-sm line-clamp-1">
+																{rule.description}
+															</p>
+														)}
+														<p className="text-sm text-muted-foreground">
+															{differenceInDays(
+																new Date(rule.createdAt),
+																new Date(),
+															) === 0
+																? "Promijenjeno danas"
+																: `Promijenjeno prije ${differenceInDays(
+																		new Date(rule.createdAt),
+																		new Date(),
+																	)} dan/a`}
+														</p>
+													</div>
+												</div>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon"
+													onClick={() => setSelectedRule(rule)}
+												>
+													<Eye className="h-4 w-4" />
+												</Button>
+											</div>
+										))}
+									</div>
+								</FormControl>
+								<FormMessage />
+
+								<Sheet
+									open={!!selectedRule}
+									onOpenChange={() => setSelectedRule(null)}
+								>
+									<SheetContent
+										side="right"
+										className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col"
+									>
+										{selectedRule && (
+											<>
+												<SheetHeader>
+													<SheetTitle>{selectedRule.name}</SheetTitle>
+													{selectedRule.description && (
+														<p className="text-muted-foreground">
+															{selectedRule.description}
+														</p>
+													)}
+												</SheetHeader>
+												<div className="mt-6 flex-1 overflow-y-auto">
+													<Editor
+														editable={false}
+														initialValue={selectedRule.content as JSONContent}
+														onChange={() => {}}
+													/>
+												</div>
+											</>
+										)}
+									</SheetContent>
+								</Sheet>
+							</FormItem>
+						);
+					}}
+				/>
 				<div className="flex flex-col gap-3">
 					<Label>Mapa</Label>
 					<MapComponent
@@ -956,6 +1079,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						}}
 					/>
 				</div>
+
 				<LoaderSubmitButton isLoading={isLoading}>
 					{props.event ? "Ažuriraj susret" : "Kreiraj susret"}
 				</LoaderSubmitButton>

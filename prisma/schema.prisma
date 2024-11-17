@@ -68,11 +68,25 @@ model Club {
   contactEmail String?
 
   events      Event[]
+  rules       ClubRule[]
   members     ClubMembership[]
   invitesSent ClubInvite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ClubRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  content     Json // This will store the editor's JSON content
+  club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Event       Event?   @relation(fields: [eventId], references: [id])
+  eventId     String?
 }
 
 model ClubMembership {
@@ -90,7 +104,6 @@ model ClubMembership {
 }
 
 model ClubInvite {
-  
   id         String       @id @default(cuid())
   email      String // Email of the invited user
   club       Club         @relation(fields: [clubId], references: [id], onDelete: Cascade)
@@ -141,7 +154,7 @@ model Event {
   hasPrizes    Boolean @default(false)
 
   // Event-specific rules
-  rules Json[] // { name: string, description: string }
+  rules ClubRule[]
 
   // Event-specific gear requirements
   gearRequirements Json[] // { name: string, description: string }
