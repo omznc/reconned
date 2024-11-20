@@ -132,7 +132,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: "Eventi po mjesecu",
+			title: "Susreti po mjesecu",
 			data: eventData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
@@ -150,7 +150,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: "Registracije po eventu",
+			title: "Registracije po susretu",
 			data: registrationData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
