@@ -174,11 +174,6 @@ const getItems = (clubId: string) => {
 					icon: BookUser,
 					protected: true,
 				},
-				{
-					title: "Statistike",
-					url: `/dashboard/${clubId}/members/stats`,
-					icon: ChartBar,
-				},
 			],
 		},
 		{
@@ -207,11 +202,6 @@ const getItems = (clubId: string) => {
 					url: `/dashboard/${clubId}/events/rules`,
 					icon: DiamondMinus,
 					protected: true,
-				},
-				{
-					title: "Statistike",
-					url: `/dashboard/${clubId}/events/stats`,
-					icon: ChartBar,
 				},
 			],
 		},
