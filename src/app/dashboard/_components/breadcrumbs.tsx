@@ -150,4 +150,5 @@ const TRANSLATIONS = {
 	help: "Pomoć",
 	managers: "Menadžeri",
 	rules: "Pravila",
+	attendance: "Prisustvo",
 };

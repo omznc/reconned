@@ -200,7 +200,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Privatni profil*</FormLabel>
+								<FormLabel>Privatni profil</FormLabel>
 								<FormDescription>
 									Sakrijte profil od javnog pristupa. Preporučujemo da ostavite
 									profil javnim.
