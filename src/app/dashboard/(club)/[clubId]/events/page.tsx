@@ -87,6 +87,9 @@ export default async function Page(props: PageProps) {
 				totalEvents={totalEvents}
 				clubId={clubId}
 				pageSize={pageSize}
+				userIsManager={
+					user.managedClubs.includes(clubId) || Boolean(user.isAdmin)
+				}
 			/>
 		</div>
 	);
