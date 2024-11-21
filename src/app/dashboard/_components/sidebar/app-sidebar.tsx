@@ -75,6 +75,8 @@ export function AppSidebar(props: AppSidebarProps) {
 		}
 	}, [activeClub, setClubId]);
 
+	const selectedClub = props.clubs.find((club) => club.id === clubId);
+
 	return (
 		<Sidebar collapsible="icon">
 			<SidebarHeader>
@@ -90,25 +92,25 @@ export function AppSidebar(props: AppSidebarProps) {
 									{clubId ? (
 										<>
 											<div className="flex aspect-square size-8 items-center justify-center rounded-lg ">
-												{activeClub?.logo ? (
+												{selectedClub?.logo ? (
 													<Image
 														suppressHydrationWarning={true}
 														width={32}
 														height={32}
-														src={`${activeClub.logo}?v=${activeClub.updatedAt.toISOString()}`} // This will revalidate the browser cache
-														alt={activeClub.name}
+														src={`${selectedClub.logo}?v=${selectedClub.updatedAt.toISOString()}`} // This will revalidate the browser cache
+														alt={selectedClub.name}
 													/>
 												) : (
 													<Square className="size-4" />
 												)}
 											</div>
-											{activeClub ? (
+											{clubId ? (
 												<div className="grid flex-1 text-left text-sm leading-tight">
 													<span className="truncate font-semibold">
-														{activeClub?.name}
+														{selectedClub?.name}
 													</span>
 													<span className="truncate text-xs fade-in">
-														{props.user?.managedClubs?.includes(activeClub.id)
+														{props.user?.managedClubs?.includes(clubId)
 															? "Menadžer"
 															: "Član"}
 													</span>
