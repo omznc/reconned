@@ -1,6 +1,9 @@
 import { EventOverview } from "@/components/event-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Button } from "@/components/ui/button";
+import { Users } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -42,10 +45,29 @@ export default async function Page(props: PageProps) {
 		return notFound();
 	}
 
+	const disabledAttendence =
+		!(user.managedClubs.includes(params.clubId) || user.isAdmin) ||
+		new Date() < new Date(event.dateRegistrationsClose) ||
+		new Date() > new Date(event.dateEnd);
+
 	return (
 		<div className="space-y-4 max-w-3xl w-full">
-			<div>
+			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">Susret</h3>
+				<Button
+					disabled={disabledAttendence}
+					variant="default"
+					size="sm"
+					asChild={!disabledAttendence}
+				>
+					<Link
+						className="flex items-center gap-2"
+						href={`/dashboard/${params.clubId}/events/${params.id}/attendance`}
+					>
+						<Users className="h-4 w-4" />
+						Prisustvo
+					</Link>
+				</Button>
 			</div>
 			<EventOverview event={event} clubId={params.clubId} />
 		</div>

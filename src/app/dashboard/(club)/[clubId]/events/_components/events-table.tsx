@@ -4,7 +4,7 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Event } from "@prisma/client";
-import { Eye, Pen } from "lucide-react";
+import { Eye, Pen, User, Users } from "lucide-react";
 
 interface EventsTableProps {
 	events: (Event & {
@@ -15,6 +15,7 @@ interface EventsTableProps {
 	totalEvents: number;
 	clubId: string;
 	pageSize: number;
+	userIsManager: boolean;
 }
 
 export function EventsTable({
@@ -22,6 +23,7 @@ export function EventsTable({
 	totalEvents,
 	clubId,
 	pageSize,
+	userIsManager,
 }: EventsTableProps) {
 	return (
 		<GenericDataTable
@@ -46,6 +48,11 @@ export function EventsTable({
 				{
 					key: "dateStart",
 					header: "Datum početka",
+					sortable: true,
+				},
+				{
+					key: "dateRegistrationsClose",
+					header: "Registracije do",
 					sortable: true,
 				},
 				{
@@ -74,24 +81,43 @@ export function EventsTable({
 					header: "Akcije",
 					cellConfig: {
 						variant: "custom",
-						component: (_, item) => (
-							<div className="flex gap-2">
-								<Button asChild>
-									<Link href={`/dashboard/${clubId}/events/${item.id}`}>
-										<Eye className="size-4 mr-2" />
-										Posjeti
-									</Link>
-								</Button>
-								<Button asChild>
-									<Link
-										href={`/dashboard/${clubId}/events/create?id=${item.id}`}
+						component: (_, item) => {
+							const disabledAttendence =
+								!userIsManager ||
+								new Date() < new Date(item.dateRegistrationsClose) ||
+								new Date() > new Date(item.dateEnd);
+							return (
+								<div className="flex gap-2">
+									<Button
+										variant={"outline"}
+										disabled={disabledAttendence}
+										asChild={!disabledAttendence}
 									>
-										<Pen className="size-4 mr-2" />
-										Uredi
-									</Link>
-								</Button>
-							</div>
-						),
+										<Link
+											className="flex items-center gap-2"
+											href={`/dashboard/${clubId}/events/${item.id}/attendance`}
+										>
+											<Users className="size-4" />
+											Prisustvo
+										</Link>
+									</Button>
+									<Button variant={"outline"} asChild>
+										<Link
+											href={`/dashboard/${clubId}/events/create?id=${item.id}`}
+										>
+											<Pen className="size-4 mr-2" />
+											Uredi
+										</Link>
+									</Button>
+									<Button asChild>
+										<Link href={`/dashboard/${clubId}/events/${item.id}`}>
+											<Eye className="size-4 mr-2" />
+											Posjeti
+										</Link>
+									</Button>
+								</div>
+							);
+						},
 					},
 				},
 			]}
