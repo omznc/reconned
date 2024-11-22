@@ -41,6 +41,7 @@ import {
 	HoverCardContent,
 } from "@/components/ui/hover-card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { SlugInput } from "@/components/slug-input";
 
 interface UserInfoFormProps {
 	user: User;
@@ -72,6 +73,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			phone: props.user.phone || "",
 			callsign: props.user.callsign || "",
 			email: props.user.email || "",
+			slug: props.user.slug || "",
 		},
 	});
 
@@ -153,6 +155,20 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormDescription>Gdje se nalazite?</FormDescription>
 							<FormMessage />
 						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="slug"
+					render={({ field }) => (
+						<SlugInput
+							defaultSlug={field.value}
+							type="user"
+							onValid={(slug) => {
+								form.setValue("slug", slug);
+							}}
+						/>
 					)}
 				/>
 

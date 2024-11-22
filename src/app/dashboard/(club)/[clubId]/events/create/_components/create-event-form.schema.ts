@@ -45,6 +45,7 @@ export const createEventFormSchema = z
 		dateRegistrationsClose: z.coerce.date({
 			message: "Susret mora imati datum zatvaranja prijava",
 		}),
+		slug: z.string().optional(),
 		coverImage: z.string().optional().optional(),
 		isPrivate: z.boolean().optional(),
 		allowFreelancers: z.boolean().optional(),

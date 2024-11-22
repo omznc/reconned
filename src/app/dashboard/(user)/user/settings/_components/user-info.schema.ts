@@ -10,6 +10,7 @@ export const userInfoShema = z.object({
 	website: z.string().optional(),
 	phone: z.string().optional(),
 	callsign: z.string().optional(),
+	slug: z.string().optional(),
 });
 
 export const userImageFileSchema = z.object({

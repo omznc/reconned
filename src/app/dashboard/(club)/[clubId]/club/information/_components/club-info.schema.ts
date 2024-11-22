@@ -20,6 +20,7 @@ export const clubInfoSchema = z.object({
 	description: z.string().max(5000, {
 		message: "Opis kluba mora biti kraći od 5000 znakova",
 	}),
+	slug: z.string().optional(),
 	dateFounded: z.coerce.date(),
 	isAllied: z.boolean().optional(),
 	isPrivate: z.boolean().optional(),

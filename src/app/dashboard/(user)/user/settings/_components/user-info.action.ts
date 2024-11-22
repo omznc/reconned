@@ -24,6 +24,7 @@ export const saveUserInformation = safeActionClient
 				location: parsedInput.location,
 				website: parsedInput.website,
 				phone: parsedInput.phone,
+				slug: parsedInput.slug,
 				callsign: parsedInput.callsign,
 			},
 		});

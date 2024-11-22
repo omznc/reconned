@@ -85,6 +85,7 @@ import {
 import { Editor } from "@/components/editor/editor";
 import type { JSONContent } from "novel";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SlugInput } from "@/components/slug-input";
 
 export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),
@@ -208,6 +209,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			hasLunch: props.event?.hasLunch,
 			hasDinner: props.event?.hasDinner,
 			hasSnacks: props.event?.hasSnacks,
+			slug: props.event?.slug || "",
 			hasDrinks: props.event?.hasDrinks,
 			hasPrizes: props.event?.hasPrizes,
 			// biome-ignore lint/suspicious/noExplicitAny: I'll eventually handle this
@@ -393,6 +395,20 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="slug"
+					render={({ field }) => (
+						<SlugInput
+							defaultSlug={field.value}
+							type="event"
+							onValid={(slug) => {
+								form.setValue("slug", slug);
+							}}
+						/>
 					)}
 				/>
 

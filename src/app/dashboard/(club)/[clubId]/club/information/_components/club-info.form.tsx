@@ -54,6 +54,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { SlugInput } from "@/components/slug-input";
 
 interface ClubInfoFormProps {
 	club?: Club;
@@ -89,6 +90,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			logo: props.club?.logo || undefined,
 			contactPhone: props.club?.contactPhone || undefined,
 			contactEmail: props.club?.contactEmail || undefined,
+			slug: props.club?.slug || undefined,
 		},
 		mode: "onBlur",
 	});
@@ -270,6 +272,20 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<FormDescription>Gdje se klub nalazi?</FormDescription>
 							<FormMessage />
 						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="slug"
+					render={({ field }) => (
+						<SlugInput
+							defaultSlug={field.value}
+							type="club"
+							onValid={(slug) => {
+								form.setValue("slug", slug);
+							}}
+						/>
 					)}
 				/>
 
