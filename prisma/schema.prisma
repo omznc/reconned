@@ -35,6 +35,8 @@ model User {
   session Session[]
   account Account[]
 
+  slug String? @unique
+
   // Other, optional user information
   bio      String?
   location String?
@@ -58,6 +60,9 @@ model Club {
   location    String?
   description String?
   dateFounded DateTime?
+
+  slug String? @unique
+
 
   isAllied  Boolean @default(false)
   isPrivate Boolean @default(false)
@@ -133,6 +138,9 @@ model Event {
 
   dateStart DateTime
   dateEnd   DateTime
+
+  slug String? @unique
+
 
   dateRegistrationsClose DateTime
   dateRegistrationsOpen  DateTime

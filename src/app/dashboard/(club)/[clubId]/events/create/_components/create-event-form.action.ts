@@ -33,6 +33,7 @@ export const createEvent = safeActionClient
 			hasSnacks: parsedInput.hasSnacks,
 			hasDrinks: parsedInput.hasDrinks,
 			hasPrizes: parsedInput.hasPrizes,
+			slug: parsedInput.slug,
 			clubId: ctx.club.id,
 			rules: {
 				connect: parsedInput.ruleIds?.map((id) => ({ id })) || [],
