@@ -28,6 +28,7 @@ export const saveClubInformation = safeActionClient
 				logo: parsedInput.logo,
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
+				slug: parsedInput.slug,
 			},
 			create: {
 				name: parsedInput.name,
@@ -39,6 +40,7 @@ export const saveClubInformation = safeActionClient
 				logo: parsedInput.logo,
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
+				slug: parsedInput.slug,
 				members: {
 					create: {
 						userId: ctx.user.id,
