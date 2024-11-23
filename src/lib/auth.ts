@@ -20,7 +20,7 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
-		sendResetPassword: async (user, url) => {
+		sendResetPassword: async ({ user, url }) => {
 			await resend.emails.send({
 				from: DEFAULT_FROM,
 				to: user.email,
@@ -33,7 +33,7 @@ export const auth = betterAuth({
 		},
 	},
 	emailVerification: {
-		sendVerificationEmail: async (user, url) => {
+		sendVerificationEmail: async ({ user, url }) => {
 			await sendEmailVerificationAction({
 				to: user.email,
 				name: user.name,

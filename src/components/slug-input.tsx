@@ -59,7 +59,7 @@ export function SlugInput(props: SlugInputProps) {
 							setSlug(value);
 						}}
 						className="z-10"
-						placeholder="moj-susret"
+						placeholder="moj-link"
 						type="text"
 					/>
 				</div>
