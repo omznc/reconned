@@ -24,8 +24,10 @@ export function formatDate(
 	}).format(new Date(date));
 }
 
+const VALID_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const isValidEmail = (email: string) => {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	return VALID_EMAIL_REGEX.test(email);
 };
 
 /**

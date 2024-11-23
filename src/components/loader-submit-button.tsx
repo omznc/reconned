@@ -22,7 +22,10 @@ export function LoaderSubmitButton(props: LoaderSubmitButtonProps) {
 			variant={props.variant}
 			disabled={props.isLoading}
 			type="submit"
-			className={cn("flex items-center justify-center gap-2", props.className)}
+			className={cn(
+				"flex w-full items-center justify-center gap-2",
+				props.className,
+			)}
 		>
 			{props.isLoading ? (
 				<LoaderIcon className="h-4 w-4 animate-spin" />

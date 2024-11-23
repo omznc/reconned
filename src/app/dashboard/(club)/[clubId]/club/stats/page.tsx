@@ -1,11 +1,9 @@
-import { format, subMonths } from "date-fns";
+import { format } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { StatsCharts } from "@/app/dashboard/(club)/[clubId]/club/stats/_components/stats-charts";
 import { bs } from "date-fns/locale";
 
 async function getClubStats(clubId: string) {
-	const now = new Date();
-
 	// First get club creation date
 	const club = await prisma.club.findUnique({
 		where: { id: clubId },

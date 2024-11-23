@@ -84,7 +84,7 @@ export const Editor = ({ editable, initialValue, onChange }: EditorProp) => {
 				</EditorCommand>
 
 				<EditorBubble
-					shouldShow={({ editor, view, state, from, to }) => {
+					shouldShow={({ state }) => {
 						const { selection } = state;
 						const { empty } = selection;
 

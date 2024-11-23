@@ -23,6 +23,7 @@ export async function GET(request: Request) {
 	}
 
 	try {
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const where: any = {
 			AND: [
 				{

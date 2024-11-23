@@ -38,35 +38,30 @@ export function SlugInput(props: SlugInputProps) {
 
 	return (
 		<FormItem>
-			<FormLabel>Specijalni link</FormLabel>
+			<FormLabel>
+				Specijalni link
+				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${props.type[0]}/${debouncedSlug}`}</span>
+			</FormLabel>
 			<FormControl>
-				<div className="flex relative">
-					<Input
-						title="Specijalni link"
-						className="w-[320px]"
-						disabled={true}
-						value={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${props.type[0]}/`}
-					/>
-					<Input
-						defaultValue={props.defaultSlug}
-						onChange={(e) => {
-							const value = e.target.value
-								.replace(/\s/g, "-")
-								.toLowerCase()
-								.replace(/[^a-z0-9-]/g, "");
+				<Input
+					defaultValue={props.defaultSlug}
+					onChange={(e) => {
+						const value = e.target.value
+							.replace(/\s/g, "-")
+							.toLowerCase()
+							.replace(/[^a-z0-9-]/g, "");
 
-							e.target.value = value;
-							setSlug(value);
-						}}
-						className="z-10"
-						placeholder="moj-link"
-						type="text"
-					/>
-				</div>
+						e.target.value = value;
+						setSlug(value);
+					}}
+					className="z-10"
+					placeholder="moj-link"
+					type="text"
+				/>
 			</FormControl>
 			<FormDescription>
 				Kratki link koji ćete moći podjeliti.{" "}
-				{debouncedSlug && debouncedSlug !== props.defaultSlug && (
+				{debouncedSlug && (
 					<span className={valid ? "text-green-500" : "text-red-500"}>
 						{valid ? "Link je dostupan." : "Link je zauzet!"}
 					</span>

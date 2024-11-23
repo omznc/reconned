@@ -91,46 +91,48 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	};
 
 	return (
-		<header
-			className={cn(
-				"z-10 h-10 border border-transparent flex items-center mb-4 transition-all sticky top-0 bg-background/80 backdrop-blur-sm px-2 shrink-0 gap-2 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-8",
-				isScrolled && "border-border",
-			)}
-		>
-			<TooltipProvider>
-				<div className="flex items-center gap-2">
-					<SidebarTrigger className="-ml-1" />
-					<Separator
-						orientation="vertical"
-						className="hidden md:flex mr-2 h-4"
-					/>
-					<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
-						<BreadcrumbList>
-							{sections.map((section, index) => {
-								const sectionKey = `${section}-${index}-${sections.slice(0, index + 1).join("/")}`;
-								return (
-									<Fragment key={sectionKey}>
-										<BreadcrumbItem key={`breadcrumb-${sectionKey}`}>
-											<BreadcrumbLink
-												className="truncate"
-												href={`/${sections.slice(0, index + 1).join("/")}`}
-											>
-												{getDisplayText(section)}
-											</BreadcrumbLink>
-										</BreadcrumbItem>
-										{index < sections.length - 1 && (
-											<BreadcrumbSeparator
-												key={`breadcrumb-separator-${sectionKey}`}
-											/>
-										)}
-									</Fragment>
-								);
-							})}
-						</BreadcrumbList>
-					</Breadcrumb>
-				</div>
-			</TooltipProvider>
-		</header>
+		<div className="sticky top-0 w-full">
+			<header
+				className={cn(
+					"z-10 h-10 w-fit border border-transparent flex items-center mb-4 transition-all bg-background/80 backdrop-blur-sm px-2 shrink-0 gap-2 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-8",
+					isScrolled && "border-border",
+				)}
+			>
+				<TooltipProvider>
+					<div className="flex items-center gap-2">
+						<SidebarTrigger className="-ml-1" />
+						<Separator
+							orientation="vertical"
+							className="hidden md:flex mr-2 h-4"
+						/>
+						<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
+							<BreadcrumbList>
+								{sections.map((section, index) => {
+									const sectionKey = `${section}-${index}-${sections.slice(0, index + 1).join("/")}`;
+									return (
+										<Fragment key={sectionKey}>
+											<BreadcrumbItem key={`breadcrumb-${sectionKey}`}>
+												<BreadcrumbLink
+													className="truncate"
+													href={`/${sections.slice(0, index + 1).join("/")}`}
+												>
+													{getDisplayText(section)}
+												</BreadcrumbLink>
+											</BreadcrumbItem>
+											{index < sections.length - 1 && (
+												<BreadcrumbSeparator
+													key={`breadcrumb-separator-${sectionKey}`}
+												/>
+											)}
+										</Fragment>
+									);
+								})}
+							</BreadcrumbList>
+						</Breadcrumb>
+					</div>
+				</TooltipProvider>
+			</header>
+		</div>
 	);
 }
 

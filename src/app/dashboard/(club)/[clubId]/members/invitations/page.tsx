@@ -94,12 +94,13 @@ export default async function Page(props: PageProps) {
 	}));
 
 	return (
-		<div className="space-y-4 w-full">
+		<>
 			<InvitationsForm />
+			<hr />
 			<InvitationsTable
 				invites={formattedInvites}
 				totalPages={Math.ceil(invitesCount / pageSize)}
 			/>
-		</div>
+		</>
 	);
 }
