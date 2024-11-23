@@ -4,10 +4,8 @@ import {
 	Heading1,
 	Heading2,
 	Heading3,
-	ImageIcon,
 	List,
 	ListOrdered,
-	MessageSquarePlus,
 	Text,
 	TextQuote,
 } from "lucide-react";

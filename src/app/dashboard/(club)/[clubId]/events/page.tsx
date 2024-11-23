@@ -1,4 +1,3 @@
-import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -72,7 +71,7 @@ export default async function Page(props: PageProps) {
 	const totalEvents = await prisma.event.count({ where });
 
 	return (
-		<div className="space-y-4 w-full md:max-w-fit">
+		<>
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">Svi susreti</h3>
 				<Button asChild>
@@ -91,6 +90,6 @@ export default async function Page(props: PageProps) {
 					user.managedClubs.includes(clubId) || Boolean(user.isAdmin)
 				}
 			/>
-		</div>
+		</>
 	);
 }

@@ -67,16 +67,6 @@ import { Label } from "@/components/ui/label";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { AnimatedNumber } from "@/components/animated-number";
 import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-} from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import {
 	Sheet,
 	SheetContent,
 	SheetHeader,
@@ -303,10 +293,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4 max-w-3xl"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 				{props.event?.id && (
 					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">

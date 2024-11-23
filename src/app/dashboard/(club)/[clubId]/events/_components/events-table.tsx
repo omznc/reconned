@@ -4,7 +4,7 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Event } from "@prisma/client";
-import { Eye, Pen, User, Users } from "lucide-react";
+import { Eye, Pen, Users } from "lucide-react";
 
 interface EventsTableProps {
 	events: (Event & {
