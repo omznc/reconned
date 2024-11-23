@@ -177,6 +177,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 
 			<div className="space-y-4">
 				<h3 className="text-lg font-semibold">Postojeći pravilnici</h3>
+				{rules.length === 0 && (
+					<div className="text-muted-foreground">Trenutno nema pravilnika.</div>
+				)}
 				{rules.map((rule) => (
 					<Card
 						key={rule.id}

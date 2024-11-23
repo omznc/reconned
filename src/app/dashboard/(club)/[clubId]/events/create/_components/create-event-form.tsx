@@ -1003,6 +1003,16 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								</FormDescription>
 								<FormControl>
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										{/* TODO: Hot reload rules when they're added. */}
+										{props.rules?.length === 0 && (
+											<p className="text-muted-foreground">
+												Ovaj klub nema pravila. Možete ih dodati{" "}
+												<Link href={`/dashboard/${clubId}/events/rules`}>
+													ovdje.
+												</Link>
+												.
+											</p>
+										)}
 										{props.rules?.map((rule) => (
 											<div
 												key={rule.id}
