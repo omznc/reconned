@@ -1007,10 +1007,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										{props.rules?.length === 0 && (
 											<p className="text-muted-foreground">
 												Ovaj klub nema pravila. Možete ih dodati{" "}
-												<Link href={`/dashboard/${clubId}/events/rules`}>
+												<Link
+													className="text-primary-foreground"
+													href={`/dashboard/${clubId}/events/rules`}
+												>
 													ovdje.
 												</Link>
-												.
 											</p>
 										)}
 										{props.rules?.map((rule) => (
