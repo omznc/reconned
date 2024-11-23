@@ -2,7 +2,6 @@
 
 import { useFont } from "@/components/font-switcher";
 import { Logo } from "@/components/logos/logo";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {

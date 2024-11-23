@@ -81,7 +81,7 @@ export default async function MembersPage(props: PageProps) {
 	const totalMembers = await prisma.clubMembership.count({ where });
 
 	return (
-		<div className="space-y-4 w-full">
+		<>
 			<div>
 				<h3 className="text-lg font-semibold">Svi članovi</h3>
 			</div>
@@ -141,6 +141,6 @@ export default async function MembersPage(props: PageProps) {
 					},
 				]}
 			/>
-		</div>
+		</>
 	);
 }

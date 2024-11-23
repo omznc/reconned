@@ -1,8 +1,8 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { AttendanceTracker } from "./_components/attendance-tracker";
 import { ErrorPage } from "@/components/error-page";
+import { AttendanceTracker } from "@/app/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
 
 interface PageProps {
 	params: Promise<{

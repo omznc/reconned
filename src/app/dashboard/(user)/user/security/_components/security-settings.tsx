@@ -18,7 +18,7 @@ export function SecuritySettings({
 	const router = useRouter();
 
 	return (
-		<div className="space-y-4  lg:w-[48rem] transition-all min-w-3xl max-w-3xl">
+		<>
 			{hasPassword ? (
 				<PasswordChangeForm isLoading={isLoading} setIsLoading={setIsLoading} />
 			) : (
@@ -92,6 +92,6 @@ export function SecuritySettings({
 					Dodaj novi passkey
 				</Button>
 			</p>
-		</div>
+		</>
 	);
 }

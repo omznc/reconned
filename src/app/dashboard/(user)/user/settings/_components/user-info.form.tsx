@@ -110,7 +110,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			setFiles([]);
 
 			toast.success("Podataci o korisniku su spašeni");
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Došlo je do greške prilikom spašavanja podataka");
 		}
 		setIsLoading(false);

@@ -35,7 +35,7 @@ export default async function Page() {
 		return notFound();
 	}
 	return (
-		<div className="space-y-4  lg:w-[48rem] transition-all max-w-3xl">
+		<>
 			<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 				<div className="flex flex-col">
 					<AlertTitle>Vaš račun</AlertTitle>
@@ -66,6 +66,6 @@ export default async function Page() {
 				</div>
 			</Alert>
 			<UserOverview user={userFromDb} />
-		</div>
+		</>
 	);
 }

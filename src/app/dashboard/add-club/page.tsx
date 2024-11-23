@@ -19,7 +19,7 @@ export default async function Page(props: PageProps) {
 		return <ClubInfoForm />;
 	}
 	return (
-		<div className="space-y-4  lg:w-[48rem] transition-all max-w-3xl">
+		<>
 			<div>
 				<h3 className="text-lg font-semibold">Dodajte klub</h3>
 			</div>
@@ -54,6 +54,6 @@ export default async function Page(props: PageProps) {
 					</span>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 }

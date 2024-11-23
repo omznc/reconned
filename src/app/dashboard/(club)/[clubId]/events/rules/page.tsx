@@ -1,4 +1,3 @@
-import { parseAsString } from "nuqs/server";
 import { RulesForm } from "./_components/rules.form";
 import { prisma } from "@/lib/prisma";
 
@@ -22,13 +21,11 @@ export default async function Page(props: {
 	]);
 
 	return (
-		<div className="space-y-4 w-full max-w-3xl">
-			<RulesForm
-				key={JSON.stringify(searchParams)}
-				rules={rules}
-				clubId={params.clubId}
-				editingRule={editingRule}
-			/>
-		</div>
+		<RulesForm
+			key={JSON.stringify(searchParams)}
+			rules={rules}
+			clubId={params.clubId}
+			editingRule={editingRule}
+		/>
 	);
 }

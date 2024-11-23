@@ -28,7 +28,6 @@ import {
 	PopoverTrigger,
 } from "@components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@prisma/client";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -119,10 +118,7 @@ export function InvitationsForm() {
 
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4 max-w-md"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
 				<div>
 					<h3 className="text-lg font-semibold">Pozovi korisnika u klub</h3>
 				</div>

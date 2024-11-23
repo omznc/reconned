@@ -81,7 +81,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				attended: !registration.attended,
 				clubId: event.clubId,
 			});
-		} catch (error) {
+		} catch (_error) {
 			// Revert to original registration data on error
 			setOptimisticRegistrations((prev) => ({
 				...prev,
@@ -175,7 +175,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				onChange={(e) => setSearch(e.target.value)}
 			/>
 			<div className="grid md:grid-cols-2 gap-4">
-				<div className="space-y-4 w-full">
+				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">
 						Registrovani ({notAttending.length})
 					</h2>
@@ -186,7 +186,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 						/>
 					))}
 				</div>
-				<div className="space-y-4 w-full">
+				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">Prisutni ({attendees.length})</h2>
 					{attendees.map((registration) => (
 						<RegistrationCard

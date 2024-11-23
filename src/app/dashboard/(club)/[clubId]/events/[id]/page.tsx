@@ -51,7 +51,7 @@ export default async function Page(props: PageProps) {
 		new Date() > new Date(event.dateEnd);
 
 	return (
-		<div className="space-y-4 max-w-3xl w-full">
+		<>
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">Susret</h3>
 				<Button
@@ -70,6 +70,6 @@ export default async function Page(props: PageProps) {
 				</Button>
 			</div>
 			<EventOverview event={event} clubId={params.clubId} />
-		</div>
+		</>
 	);
 }

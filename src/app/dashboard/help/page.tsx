@@ -7,14 +7,14 @@ import { toast } from "sonner";
 
 export default function Page() {
 	return (
-		<div className="space-y-4 max-w-3xl w-full">
+		<>
 			<div>
 				<h3 className="text-lg font-semibold">Pomoć</h3>
 			</div>
 			<Question question="Kako dodati Google Maps na susret" id="google-maps">
 				TODO: Explain this
 			</Question>
-		</div>
+		</>
 	);
 }
 

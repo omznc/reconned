@@ -116,7 +116,7 @@ export function AddManagerForm() {
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4 max-w-md"
+				className="space-y-4 max-w-3xl w-full"
 			>
 				<div>
 					<h3 className="text-lg font-semibold">Dodaj novog menadžera</h3>

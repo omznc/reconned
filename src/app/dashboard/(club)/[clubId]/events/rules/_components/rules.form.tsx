@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Editor } from "@/components/editor/editor";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -18,15 +18,9 @@ import {
 	FormControl,
 	FormMessage,
 } from "@/components/ui/form";
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardContent,
-	CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { Trash, Calendar, MoreVertical, Pencil } from "lucide-react";
+import { Trash, Calendar, Pencil } from "lucide-react";
 import { ruleSchema } from "@/app/dashboard/(club)/[clubId]/events/rules/_components/rules.schema";
 import {
 	deleteRule,
@@ -159,11 +153,12 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 					/>
 
 					<div className="flex gap-2 justify-start">
-						<Button type="submit" disabled={isLoading}>
+						<Button type="submit" className="w-full" disabled={isLoading}>
 							{editingRule ? "Sačuvaj izmjene" : "Sačuvaj pravilnik"}
 						</Button>
 						{editingRule && (
 							<Button
+								className="w-full"
 								type="button"
 								variant="outline"
 								onClick={() => setRuleId(null)}
