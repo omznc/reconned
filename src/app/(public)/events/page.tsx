@@ -61,6 +61,11 @@ export default async function Page() {
 		<div className="flex flex-col gap-4">
 			<h1 className="text-xl font-bold">Nadolazeći događaji</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+				{upcomingEvents.length === 0 && (
+					<div className="text-muted-foreground">
+						Trenutno nema nadolazećih događaja.
+					</div>
+				)}
 				{upcomingEvents.map((event) => (
 					<Card key={event.id} className="flex flex-col">
 						<CardHeader className="p-0">
