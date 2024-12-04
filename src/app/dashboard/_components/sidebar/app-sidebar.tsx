@@ -40,7 +40,7 @@ import type { User } from "better-auth";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[] };
+	user: User & { managedClubs: string[]; role?: string | null | undefined };
 }
 
 export function AppSidebar(props: AppSidebarProps) {
@@ -201,7 +201,7 @@ export function AppSidebar(props: AppSidebarProps) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavApp />
+				<NavApp isAdmin={props.user.role === "admin"} />
 				<NavClub user={props.user} />
 			</SidebarContent>
 			<SidebarFooter>

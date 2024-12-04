@@ -87,7 +87,7 @@ export default async function Page(props: PageProps) {
 				clubId={clubId}
 				pageSize={pageSize}
 				userIsManager={
-					user.managedClubs.includes(clubId) || Boolean(user.isAdmin)
+					user.managedClubs.includes(clubId) || Boolean(user.role === "admin")
 				}
 			/>
 		</>
