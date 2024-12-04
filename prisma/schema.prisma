@@ -27,7 +27,6 @@ model User {
   name          String
   emailVerified Boolean
   isPrivate     Boolean @default(false)
-  isAdmin       Boolean @default(false)
 
   clubMembership      ClubMembership[]
   clubInvitesReceived ClubInvite[]
@@ -52,6 +51,10 @@ model User {
 
   eventRegistration         EventRegistration[]
   createdEventRegistrations EventRegistration[] @relation("EventRegistrationCreatedBy")
+  role                      String? // BetterAuth role
+  banned                    Boolean?
+  banReason                 String?
+  banExpires                DateTime?
 }
 
 model Club {
@@ -220,6 +223,8 @@ model Session {
   token     String
   createdAt DateTime
   updatedAt DateTime
+
+  impersonatedBy String?
 
   @@unique([token])
 }

@@ -20,7 +20,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function NavApp() {
+export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 	const path = usePathname();
 
 	return (
@@ -68,18 +68,23 @@ export function NavApp() {
 								</CollapsibleTrigger>
 								<CollapsibleContent>
 									<SidebarMenuSub>
-										{item.items?.map((subItem) => (
-											<SidebarMenuSubItem key={subItem.title}>
-												<SidebarMenuSubButton
-													isActive={subItem.url === path}
-													asChild={true}
-												>
-													<Link href={subItem.url}>
-														<span>{subItem.title}</span>
-													</Link>
-												</SidebarMenuSubButton>
-											</SidebarMenuSubItem>
-										))}
+										{item.items
+											?.filter(
+												(subItem) =>
+													!subItem.protected || (subItem.protected && isAdmin),
+											)
+											.map((subItem) => (
+												<SidebarMenuSubItem key={subItem.title}>
+													<SidebarMenuSubButton
+														isActive={subItem.url === path}
+														asChild={true}
+													>
+														<Link href={subItem.url}>
+															<span>{subItem.title}</span>
+														</Link>
+													</SidebarMenuSubButton>
+												</SidebarMenuSubItem>
+											))}
 									</SidebarMenuSub>
 								</CollapsibleContent>
 							</SidebarMenuItem>
@@ -102,22 +107,6 @@ const items = [
 		url: "/dashboard/help",
 		icon: Info,
 	},
-	// Unsure what this will end up being, if anything
-	// {
-	// 	title: "Postavke",
-	// 	url: "#",
-	// 	icon: Settings2,
-	// 	items: [
-	// 		{
-	// 			title: "Općenito",
-	// 			url: "/dashboard/settings",
-	// 		},
-	// 		{
-	// 			title: "Personalizacija",
-	// 			url: "/dashboard/settings/personalization",
-	// 		},
-	// 	],
-	// },
 	{
 		title: "Korisnik",
 		url: "#",
@@ -134,6 +123,11 @@ const items = [
 			{
 				title: "Sigurnost",
 				url: "/dashboard/user/security",
+			},
+			{
+				title: "Administracija",
+				url: "/dashboard/user/admin",
+				protected: true,
 			},
 		],
 	},
