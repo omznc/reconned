@@ -46,7 +46,7 @@ export default async function Page(props: PageProps) {
 	}
 
 	const disabledAttendence =
-		!(user.managedClubs.includes(params.clubId) || user.isAdmin) ||
+		!(user.managedClubs.includes(params.clubId) || user.role === "admin") ||
 		new Date() < new Date(event.dateRegistrationsClose) ||
 		new Date() > new Date(event.dateEnd);
 

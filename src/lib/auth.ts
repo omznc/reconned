@@ -6,7 +6,7 @@ import { DEFAULT_FROM, resend } from "@/lib/resend";
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { oneTap, passkey } from "better-auth/plugins";
+import { admin, oneTap, passkey } from "better-auth/plugins";
 
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -59,6 +59,9 @@ export const auth = betterAuth({
 			rpName: "Airsoft BiH",
 		}),
 		oneTap(),
+		admin({
+			defaultRole: "user",
+		}),
 	],
 	user: {
 		additionalFields: {
@@ -124,5 +127,6 @@ export const isAuthenticated = cache(async () => {
 	return {
 		...session?.user,
 		managedClubs,
+		session: session?.session,
 	};
 });

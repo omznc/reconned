@@ -11,6 +11,8 @@ import { FontProvider } from "@/components/font-switcher";
 import { Geist_Mono, Geist } from "next/font/google";
 import { FontBody } from "@/components/font-body";
 import type { ReactNode } from "react";
+import { isAuthenticated } from "@/lib/auth";
+import { ImpersonationAlert } from "@/components/impersonation-alert";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -22,7 +24,8 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-function LayoutContent({ children }: { children: ReactNode }) {
+async function LayoutContent({ children }: { children: ReactNode }) {
+	const user = await isAuthenticated();
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<FontBody
@@ -43,6 +46,7 @@ function LayoutContent({ children }: { children: ReactNode }) {
 					<Toaster />
 					<NuqsAdapter>
 						<TooltipProvider>
+							{user?.session?.impersonatedBy && <ImpersonationAlert />}
 							<AlertDialogProvider>{children}</AlertDialogProvider>
 						</TooltipProvider>
 					</NuqsAdapter>

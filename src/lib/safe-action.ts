@@ -47,7 +47,7 @@ export const safeActionClient = unsafeActionClient.use(
 		}
 
 		// 5. Check if the user is an admin or manages the club. If either are true, allow the action to proceed
-		if (user.isAdmin || user.managedClubs.includes(resp.data.clubId)) {
+		if (user.role === "admin" || user.managedClubs.includes(resp.data.clubId)) {
 			return next({ ctx: { user, club } });
 		}
 

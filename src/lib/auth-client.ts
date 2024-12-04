@@ -1,5 +1,9 @@
 import { env } from "@/lib/env";
-import { oneTapClient, passkeyClient } from "better-auth/client/plugins";
+import {
+	adminClient,
+	oneTapClient,
+	passkeyClient,
+} from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
@@ -9,6 +13,7 @@ export const authClient = createAuthClient({
 		oneTapClient({
 			clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
 		}),
+		adminClient(),
 	],
 });
 
