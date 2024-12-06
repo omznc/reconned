@@ -28,6 +28,9 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 	const user = await isAuthenticated();
 	return (
 		<html lang="en" suppressHydrationWarning>
+			<head>
+				<meta name="darkreader-lock" />
+			</head>
 			<FontBody
 				geistMonoVariable={geistMono.className}
 				geistSansVariable={geistSans.className}
@@ -43,7 +46,13 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 						rel="stylesheet"
 						href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
 					/>
-					<Toaster />
+					<Toaster
+						richColors
+						toastOptions={{
+							className:
+								"rounded-none bg-background text-foreground border-border text-md shadow-none",
+						}}
+					/>
 					<NuqsAdapter>
 						<TooltipProvider>
 							{user?.session?.impersonatedBy && <ImpersonationAlert />}

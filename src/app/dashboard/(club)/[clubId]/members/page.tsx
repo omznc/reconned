@@ -1,3 +1,4 @@
+import { MembersTable } from "@/app/dashboard/(club)/[clubId]/members/_components/members-table";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@prisma/client";
@@ -76,6 +77,7 @@ export default async function MembersPage(props: PageProps) {
 		...member,
 		userName: member.user.name,
 		userCallsign: member.user.callsign,
+		userAvatar: member.user.image,
 	}));
 
 	const totalMembers = await prisma.clubMembership.count({ where });
@@ -85,61 +87,10 @@ export default async function MembersPage(props: PageProps) {
 			<div>
 				<h3 className="text-lg font-semibold">Svi članovi</h3>
 			</div>
-			<GenericDataTable
-				data={formattedMembers}
-				totalPages={Math.ceil(totalMembers / pageSize)}
-				searchPlaceholder="Pretraži članove..."
-				tableConfig={{
-					dateFormat: "d. MMMM yyyy.",
-					locale: "bs",
-				}}
-				columns={[
-					{
-						key: "userName",
-						header: "Ime",
-						sortable: true,
-					},
-					{
-						key: "userCallsign",
-						header: "Callsign",
-						sortable: true,
-					},
-					{
-						key: "role",
-						header: "Uloga",
-						sortable: true,
-						cellConfig: {
-							variant: "badge",
-							valueMap: {
-								CLUB_OWNER: "Vlasnik",
-								MANAGER: "Menadžer",
-								USER: "Član",
-							},
-							badgeVariants: {
-								CLUB_OWNER: "bg-red-100 text-red-800",
-								MANAGER: "bg-blue-100 text-blue-800",
-								MEMBER: "bg-gray-100 text-gray-800",
-							},
-						},
-					},
-					{
-						key: "createdAt",
-						header: "Datum pridruživanja",
-						sortable: true,
-					},
-				]}
-				filters={[
-					{
-						key: "role",
-						label: "Filter po ulozi",
-						options: [
-							{ label: "Sve uloge", value: "all" },
-							{ label: "Vlasnik", value: "CLUB_OWNER" },
-							{ label: "Menadžer", value: "MANAGER" },
-							{ label: "Član", value: "USER" },
-						],
-					},
-				]}
+			<MembersTable
+				members={formattedMembers}
+				totalMembers={totalMembers}
+				pageSize={pageSize}
 			/>
 		</>
 	);

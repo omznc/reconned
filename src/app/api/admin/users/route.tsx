@@ -14,6 +14,9 @@ export async function GET(request: Request) {
 	try {
 		const users = await prisma.user.findMany({
 			where: {
+				id: {
+					not: user.id,
+				},
 				OR: [
 					{ name: { contains: query, mode: "insensitive" } },
 					{ email: { contains: query, mode: "insensitive" } },
@@ -28,8 +31,6 @@ export async function GET(request: Request) {
 			},
 			take: 5,
 		});
-
-		console.log(users);
 
 		return NextResponse.json(users);
 	} catch (_error) {

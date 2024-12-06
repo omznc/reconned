@@ -22,9 +22,15 @@ import { bs } from "date-fns/locale";
 import { ArrowUpDown, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import type { ChangeEvent, ReactNode } from "react";
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface CellConfig<T> {
 	variant?: "default" | "badge" | "custom";
@@ -78,7 +84,9 @@ const renderCell = <T extends Record<string, any>>(
 	const value = item[key];
 
 	if (value === undefined || value === null || value === "") {
-		return "-";
+		if (!config?.valueMap?.default) {
+			return "-";
+		}
 	}
 
 	if (
@@ -92,10 +100,13 @@ const renderCell = <T extends Record<string, any>>(
 	}
 
 	if (config?.variant === "badge") {
-		const badgeClass = config.badgeVariants?.[value] || "bg-primary/10";
+		const badgeClass =
+			config.badgeVariants?.[value] ??
+			config.badgeVariants?.default ??
+			"bg-primary/10";
 		return (
 			<span className={`px-2 py-1 text-xs ${badgeClass}`}>
-				{config.valueMap?.[value] || value}
+				{config.valueMap?.[value] ?? config.valueMap?.default ?? value}
 			</span>
 		);
 	}
@@ -125,6 +136,49 @@ export function GenericDataTable<T>({
 	// TODO: Add loader
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
+	const [hiddenColumns, setHiddenColumns] = useQueryState("hiddenColumns", {
+		shallow: false,
+		parse: (value) => new Set(value?.split(",") ?? []),
+		serialize: (value) => Array.from(value).join(","),
+	});
+
+	// Initialize visibleColumns from URL or defaults
+	const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+		const allColumns = new Set(columns.map((col) => col.key.toString()));
+		if (hiddenColumns) {
+			for (const col of hiddenColumns) {
+				allColumns.delete(col);
+			}
+		}
+		return allColumns;
+	});
+
+	// Sync visibleColumns with URL whenever it changes
+	const updateHiddenColumns = useCallback(
+		async (visible: Set<string>) => {
+			const allColumnKeys = columns.map((col) => col.key.toString());
+			const hidden = new Set(allColumnKeys.filter((col) => !visible.has(col)));
+			await setHiddenColumns(hidden.size > 0 ? hidden : null);
+		},
+		[columns, setHiddenColumns],
+	);
+
+	const toggleColumn = async (columnKey: string) => {
+		setVisibleColumns((prev) => {
+			const next = new Set(prev);
+			if (next.has(columnKey)) {
+				next.delete(columnKey);
+			} else {
+				next.add(columnKey);
+			}
+			return next;
+		});
+	};
+
+	// Sync visible columns to URL whenever they change
+	useEffect(() => {
+		updateHiddenColumns(visibleColumns);
+	}, [visibleColumns, updateHiddenColumns]);
 
 	const handleSort = async (columnKey: string) => {
 		if (sortBy === columnKey) {
@@ -172,8 +226,10 @@ export function GenericDataTable<T>({
 		await setSortBy(null);
 		await setSortOrder(null);
 		await setPage("1");
+		await setHiddenColumns(null);
 		setFilterValues({});
 		setInputValue("");
+		setVisibleColumns(new Set(columns.map((col) => col.key.toString())));
 
 		// Clear all query parameters
 		const url = new URL(window.location.href);
@@ -217,6 +273,29 @@ export function GenericDataTable<T>({
 					)}
 				</div>
 
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline">Prikaži kolone</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end" className="w-[200px]">
+						{columns.map((column) => (
+							<DropdownMenuCheckboxItem
+								key={column.key.toString()}
+								checked={visibleColumns.has(column.key.toString())}
+								onCheckedChange={(checked) => {
+									toggleColumn(column.key.toString());
+									// Prevent the dropdown from closing
+									event?.preventDefault();
+								}}
+							>
+								{typeof column.header === "string"
+									? column.header
+									: column.key.toString()}
+							</DropdownMenuCheckboxItem>
+						))}
+					</DropdownMenuContent>
+				</DropdownMenu>
+
 				{filters?.map((filter) => (
 					<Select
 						key={filter.key}
@@ -243,7 +322,7 @@ export function GenericDataTable<T>({
 						className="h-9 px-2 lg:px-3"
 					>
 						<X className="h-4 w-4" />
-						<span className="ml-2 hidden lg:inline">Ukloni filtere</span>
+						<span className="ml-2 md:hidden inline lg:inline">Ukloni</span>
 					</Button>
 				)}
 
@@ -257,22 +336,24 @@ export function GenericDataTable<T>({
 				<Table>
 					<TableHeader>
 						<TableRow>
-							{columns.map((column) => (
-								<TableHead key={column.key.toString()}>
-									{column.sortable ? (
-										<Button
-											variant="ghost"
-											onClick={() => handleSort(column.key.toString())}
-											className="-ml-4 h-8 hover:bg-transparent"
-										>
-											{column.header}
-											<ArrowUpDown className="ml-2 h-4 w-4" />
-										</Button>
-									) : (
-										column.header
-									)}
-								</TableHead>
-							))}
+							{columns
+								.filter((column) => visibleColumns.has(column.key.toString()))
+								.map((column) => (
+									<TableHead key={column.key.toString()}>
+										{column.sortable ? (
+											<Button
+												variant="ghost"
+												onClick={() => handleSort(column.key.toString())}
+												className="-ml-4 h-8 hover:bg-transparent"
+											>
+												{column.header}
+												<ArrowUpDown className="ml-2 h-4 w-4" />
+											</Button>
+										) : (
+											column.header
+										)}
+									</TableHead>
+								))}
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -288,12 +369,16 @@ export function GenericDataTable<T>({
 						) : (
 							data.map((item, idx) => (
 								<TableRow key={`${idx}-${item}`}>
-									{columns.map((column) => (
-										<TableCell key={String(column.key)}>
-											{/* @ts-expect-error */}
-											{renderCell(item, column, tableConfig)}
-										</TableCell>
-									))}
+									{columns
+										.filter((column) =>
+											visibleColumns.has(column.key.toString()),
+										)
+										.map((column) => (
+											<TableCell key={String(column.key)}>
+												{/* @ts-expect-error */}
+												{renderCell(item, column, tableConfig)}
+											</TableCell>
+										))}
 								</TableRow>
 							))
 						)}
@@ -313,17 +398,19 @@ export function GenericDataTable<T>({
 							key={`${idx}-${item}`}
 							className="rounded-lg border p-4 overflow-x-auto space-y-2"
 						>
-							{columns.map((column) => (
-								<div key={String(column.key)} className="flex flex-col">
-									<span className="text-sm text-muted-foreground">
-										{column.header}
-									</span>
-									<span className="font-medium">
-										{/* @ts-expect-error I know, I know */}
-										{renderCell(item, column, tableConfig)}
-									</span>
-								</div>
-							))}
+							{columns
+								.filter((column) => visibleColumns.has(column.key.toString()))
+								.map((column) => (
+									<div key={String(column.key)} className="flex flex-col">
+										<span className="text-sm text-muted-foreground">
+											{column.header}
+										</span>
+										<span className="font-medium">
+											{/* @ts-expect-error I know, I know */}
+											{renderCell(item, column, tableConfig)}
+										</span>
+									</div>
+								))}
 						</div>
 					))
 				)}

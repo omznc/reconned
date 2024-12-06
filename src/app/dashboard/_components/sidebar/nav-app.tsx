@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, House, Info, User } from "lucide-react";
+import { ChevronRight, House, Info, Shield, User } from "lucide-react";
 
 import {
 	Collapsible,
@@ -27,53 +27,52 @@ export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 		<SidebarGroup>
 			<SidebarGroupLabel>Aplikacija</SidebarGroupLabel>
 			<SidebarMenu>
-				{items.map((item) => {
-					if (!item.items?.length) {
-						return (
-							<SidebarMenuItem key={item.title}>
-								<SidebarMenuButton
-									isActive={item.url === path}
-									tooltip={item.title}
-									asChild={true}
-								>
-									<Link href={item.url}>
-										{item.icon && <item.icon />}
-										<span>{item.title}</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						);
-					}
-
-					return (
-						<Collapsible
-							key={item.title}
-							asChild={true}
-							defaultOpen={item.items?.some((subItem) => subItem.url === path)}
-							className="group/collapsible"
-						>
-							<SidebarMenuItem>
-								<CollapsibleTrigger asChild={true}>
+				{items
+					.filter((item) => !item.protected || (item.protected && isAdmin))
+					.map((item) => {
+						if (!item.items?.length) {
+							return (
+								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
-										isActive={
-											item.url === path ||
-											item.items?.some((subItem) => subItem.url === path)
-										}
+										isActive={item.url === path}
 										tooltip={item.title}
+										asChild={true}
 									>
-										{item.icon && <item.icon />}
-										<span>{item.title}</span>
-										<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+										<Link href={item.url}>
+											{item.icon && <item.icon />}
+											<span>{item.title}</span>
+										</Link>
 									</SidebarMenuButton>
-								</CollapsibleTrigger>
-								<CollapsibleContent>
-									<SidebarMenuSub>
-										{item.items
-											?.filter(
-												(subItem) =>
-													!subItem.protected || (subItem.protected && isAdmin),
-											)
-											.map((subItem) => (
+								</SidebarMenuItem>
+							);
+						}
+
+						return (
+							<Collapsible
+								key={item.title}
+								asChild={true}
+								defaultOpen={item.items?.some(
+									(subItem) => subItem.url === path,
+								)}
+								className="group/collapsible"
+							>
+								<SidebarMenuItem>
+									<CollapsibleTrigger asChild={true}>
+										<SidebarMenuButton
+											isActive={
+												item.url === path ||
+												item.items?.some((subItem) => subItem.url === path)
+											}
+											tooltip={item.title}
+										>
+											{item.icon && <item.icon />}
+											<span>{item.title}</span>
+											<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+										</SidebarMenuButton>
+									</CollapsibleTrigger>
+									<CollapsibleContent>
+										<SidebarMenuSub>
+											{item.items.map((subItem) => (
 												<SidebarMenuSubItem key={subItem.title}>
 													<SidebarMenuSubButton
 														isActive={subItem.url === path}
@@ -85,12 +84,12 @@ export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 													</SidebarMenuSubButton>
 												</SidebarMenuSubItem>
 											))}
-									</SidebarMenuSub>
-								</CollapsibleContent>
-							</SidebarMenuItem>
-						</Collapsible>
-					);
-				})}
+										</SidebarMenuSub>
+									</CollapsibleContent>
+								</SidebarMenuItem>
+							</Collapsible>
+						);
+					})}
 			</SidebarMenu>
 		</SidebarGroup>
 	);
@@ -124,10 +123,21 @@ const items = [
 				title: "Sigurnost",
 				url: "/dashboard/user/security",
 			},
+		],
+	},
+	{
+		title: "Administracija",
+		url: "#",
+		icon: Shield,
+		protected: true,
+		items: [
 			{
-				title: "Administracija",
-				url: "/dashboard/user/admin",
-				protected: true,
+				title: "Korisnici",
+				url: "/dashboard/admin/users",
+			},
+			{
+				title: "Klubovi",
+				url: "/dashboard/admin/clubs",
 			},
 		],
 	},
