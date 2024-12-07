@@ -32,18 +32,28 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// Dot notation path type
+type DotNotation<T extends object> = {
+	[K in keyof T & (string | number)]: T[K] extends object
+		? `${K}` | `${K}.${DotNotation<T[K]>}`
+		: `${K}`;
+}[keyof T & (string | number)];
+
+// Column key type that supports both dot notation and arbitrary strings
+type ColumnKey<T> = T extends object ? DotNotation<T> | (string & {}) : string;
+
+interface Column<T> {
+	key: ColumnKey<T>;
+	header: string | ReactNode;
+	cellConfig?: CellConfig<T>;
+	sortable?: boolean;
+}
+
 interface CellConfig<T> {
 	variant?: "default" | "badge" | "custom";
 	badgeVariants?: Record<string, string>;
 	valueMap?: Record<string, string>;
 	component?: ReactNode | ((value: any, row: T) => ReactNode);
-}
-
-interface Column<T> {
-	key: keyof T | string; // Allow string to support custom components
-	header: string | ReactNode;
-	cellConfig?: CellConfig<T>;
-	sortable?: boolean;
 }
 
 interface Filter {
@@ -64,6 +74,27 @@ interface GenericTableProps<T> {
 	};
 }
 
+// Helper function to get nested value
+const getNestedValue = <T extends Record<string, any>>(
+	obj: T,
+	path: string,
+): any => {
+	if (!path) {
+		return undefined;
+	}
+
+	try {
+		return path.split(".").reduce((acc, part) => {
+			if (acc === null || acc === undefined) {
+				return undefined;
+			}
+			return acc[part];
+		}, obj);
+	} catch {
+		return undefined;
+	}
+};
+
 // biome-ignore lint/suspicious/noExplicitAny: Don't care
 const renderCell = <T extends Record<string, any>>(
 	item: T,
@@ -73,15 +104,12 @@ const renderCell = <T extends Record<string, any>>(
 	const config = column.cellConfig;
 
 	if (config?.variant === "custom" && config.component) {
-		const key = column.key as keyof T;
-		const value = item[key];
 		return typeof config.component === "function"
-			? config.component(value, item)
+			? config.component(getNestedValue(item, column.key.toString()), item)
 			: config.component;
 	}
 
-	const key = column.key as keyof T;
-	const value = item[key];
+	const value = getNestedValue(item, column.key.toString());
 
 	if (value === undefined || value === null || value === "") {
 		if (!config?.valueMap?.default) {
@@ -90,7 +118,6 @@ const renderCell = <T extends Record<string, any>>(
 	}
 
 	if (
-		// @ts-expect-error No you don't
 		value instanceof Date ||
 		(typeof value === "string" && Date.parse(value))
 	) {
