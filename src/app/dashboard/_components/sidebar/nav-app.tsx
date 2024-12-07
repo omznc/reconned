@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronRight, House, Info, Shield, User } from "lucide-react";
+import {
+	CalendarFold,
+	ChevronRight,
+	House,
+	Info,
+	Shield,
+	User,
+} from "lucide-react";
 
 import {
 	Collapsible,
@@ -124,6 +131,11 @@ const items = [
 				url: "/dashboard/user/security",
 			},
 		],
+	},
+	{
+		title: "Moji Susreti",
+		url: "/dashboard/events",
+		icon: CalendarFold,
 	},
 	{
 		title: "Administracija",
