@@ -27,7 +27,7 @@ export function SecuritySettings({
 			<div>
 				<h3 className="text-lg font-semibold">Passkey</h3>
 			</div>
-			<div className="space-y-2">
+			<div className="space-y-2 max-w-3xl">
 				{passkeys.map((passkey) => (
 					<div
 						key={passkey.id}

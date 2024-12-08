@@ -60,7 +60,7 @@ export function SetupPasswordForm({
 		<Form {...setupPasswordForm}>
 			<form
 				onSubmit={setupPasswordForm.handleSubmit(onSetupPasswordSubmit)}
-				className="space-y-4 max-w-3xl"
+				className="space-y-4 w-full"
 			>
 				<div>
 					<h3 className="text-lg font-semibold">Postavi lozinku</h3>

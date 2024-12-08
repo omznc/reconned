@@ -68,7 +68,7 @@ export function PasswordChangeForm({
 		<Form {...changePasswordForm}>
 			<form
 				onSubmit={changePasswordForm.handleSubmit(onChangePasswordSubmit)}
-				className="space-y-4 max-w-3xl"
+				className="space-y-4 w-full"
 			>
 				<div>
 					<h3 className="text-lg font-semibold">Promijeni lozinku</h3>

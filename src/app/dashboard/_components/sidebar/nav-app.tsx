@@ -3,8 +3,11 @@
 import {
 	CalendarFold,
 	ChevronRight,
+	Cog,
 	House,
 	Info,
+	Key,
+	Search,
 	Shield,
 	User,
 } from "lucide-react";
@@ -77,7 +80,7 @@ export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 											<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
 										</SidebarMenuButton>
 									</CollapsibleTrigger>
-									<CollapsibleContent>
+									<CollapsibleContent className="pt-1">
 										<SidebarMenuSub>
 											{item.items.map((subItem) => (
 												<SidebarMenuSubItem key={subItem.title}>
@@ -86,6 +89,7 @@ export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 														asChild={true}
 													>
 														<Link href={subItem.url}>
+															{subItem.icon && <subItem.icon />}
 															<span>{subItem.title}</span>
 														</Link>
 													</SidebarMenuSubButton>
@@ -121,14 +125,17 @@ const items = [
 			{
 				title: "Pregled",
 				url: "/dashboard/user",
+				icon: Search,
 			},
 			{
 				title: "Postavke",
 				url: "/dashboard/user/settings",
+				icon: Cog,
 			},
 			{
 				title: "Sigurnost",
 				url: "/dashboard/user/security",
+				icon: Key,
 			},
 		],
 	},
@@ -146,10 +153,12 @@ const items = [
 			{
 				title: "Korisnici",
 				url: "/dashboard/admin/users",
+				icon: User,
 			},
 			{
 				title: "Klubovi",
 				url: "/dashboard/admin/clubs",
+				icon: CalendarFold,
 			},
 		],
 	},
