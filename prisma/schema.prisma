@@ -20,6 +20,12 @@ enum InviteStatus {
   EXPIRED
 }
 
+enum ReviewType {
+  USER
+  CLUB
+  EVENT
+}
+
 model User {
   id            String  @id @default(cuid())
   email         String  @unique
@@ -54,6 +60,9 @@ model User {
   banned                    Boolean?
   banReason                 String?
   banExpires                DateTime?
+
+  reviewsReceived Review[] @relation("UserReviews")
+  reviewsWritten  Review[] @relation("ReviewAuthor")
 }
 
 model Club {
@@ -85,6 +94,8 @@ model Club {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  reviews Review[]
 }
 
 model ClubRule {
@@ -177,6 +188,8 @@ model Event {
   updatedAt         DateTime            @updatedAt
   eventRegistration EventRegistration[]
   eventInvite       EventInvite[]
+
+  reviews Review[]
 }
 
 model EventRegistration {
@@ -271,4 +284,29 @@ model Passkey {
   backedUp       Boolean
   transports     String?
   createdAt      DateTime?
+}
+
+model Review {
+  id        String     @id @default(cuid())
+  type      ReviewType
+  rating    Int        @db.SmallInt // 1-5 stars
+  content   String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Who wrote the review
+  authorId String
+  author   User   @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  // What was reviewed (only one of these will be set)
+  userId    String?
+  user      User?   @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
+  clubId    String?
+  club      Club?   @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  eventId   String?
+  event     Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([authorId, userId])
+  @@unique([authorId, clubId])
+  @@unique([authorId, eventId])
 }

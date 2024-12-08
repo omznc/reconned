@@ -41,6 +41,21 @@ export const createEvent = safeActionClient
 			mapData: parsedInput.mapData ?? { areas: [], pois: [] },
 		};
 
+		// If the event has ended, you can't update it.
+		const eventFinished = await prisma.event.findFirst({
+			where: {
+				id: parsedInput.eventId,
+				clubId: ctx.club.id,
+				dateEnd: {
+					lte: new Date(),
+				},
+			},
+		});
+
+		if (eventFinished) {
+			throw new Error("Ne možete ažurirati susret koji je već završio.");
+		}
+
 		// revalidate paths
 		revalidatePath(`/dashboard/${ctx.club.id}/events/`);
 		if (!parsedInput.isPrivate) {
@@ -95,6 +110,21 @@ export const deleteEventImage = safeActionClient
 export const deleteEvent = safeActionClient
 	.schema(deleteEventSchema)
 	.action(async ({ parsedInput, ctx }) => {
+		// If the event is in the past, you can't delete it.
+		const eventFinished = await prisma.event.findFirst({
+			where: {
+				id: parsedInput.eventId,
+				clubId: ctx.club.id,
+				dateEnd: {
+					lte: new Date(),
+				},
+			},
+		});
+
+		if (eventFinished) {
+			throw new Error("Ne možete obrisati susret koji je već završio.");
+		}
+
 		const [event, _] = await Promise.all([
 			prisma.event.delete({
 				where: {
