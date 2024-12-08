@@ -153,6 +153,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 					<Button
 						variant={registration.attended ? "destructive" : "default"}
 						size="sm"
+						className="ml-4"
 						onClick={() => handleToggleAttendance(registration)}
 						disabled={isLoading === registration.id}
 					>

@@ -1,9 +1,15 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
-import type { Club } from "@prisma/client";
-import { AtSign, Eye, EyeOff, MapPin, Phone, User } from "lucide-react";
+import type { Club, Review, User } from "@prisma/client";
+import {
+	AtSign,
+	Eye,
+	EyeOff,
+	MapPin,
+	Phone,
+	User as UserIcon,
+} from "lucide-react";
 import Image from "next/image";
+import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 
 interface ClubOverviewProps {
 	club: Club & {
@@ -15,7 +21,7 @@ interface ClubOverviewProps {
 
 export function ClubOverview({ club }: ClubOverviewProps) {
 	return (
-		<>
+		<div className="space-y-6">
 			<div className="flex gap-4">
 				{/* TODO: Handle if unset */}
 				{club.logo && (
@@ -36,7 +42,7 @@ export function ClubOverview({ club }: ClubOverviewProps) {
 			</div>
 			<div className="flex flex-wrap gap-1">
 				<Badge variant="outline" className="flex items-center gap-1">
-					<User className="w-4 h-4" />
+					<UserIcon className="w-4 h-4" />
 					{club._count?.members}
 				</Badge>
 				<Badge variant="outline" className="flex items-center gap-1">
@@ -71,6 +77,7 @@ export function ClubOverview({ club }: ClubOverviewProps) {
 					</Badge>
 				)}
 			</div>
-		</>
+			<ReviewsOverview type="club" typeId={club.id} />
+		</div>
 	);
 }
