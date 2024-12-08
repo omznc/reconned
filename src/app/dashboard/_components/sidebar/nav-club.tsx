@@ -76,7 +76,7 @@ export function NavClub({ user }: NavClubProps) {
 											<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
 										</SidebarMenuButton>
 									</CollapsibleTrigger>
-									<CollapsibleContent>
+									<CollapsibleContent className="pt-1">
 										<SidebarMenuSub>
 											{item.items
 												?.filter(
