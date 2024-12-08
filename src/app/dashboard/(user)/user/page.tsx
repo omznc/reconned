@@ -1,7 +1,7 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { UserOverview } from "@/components/user-overview";
+import { UserOverview } from "@/components/overviews/user-overview";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Eye, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";

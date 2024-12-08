@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ClubOverview } from "@/components/club-overview";
+import { ClubOverview } from "@/components/overviews/club-overview";
 
 interface PageProps {
 	params: Promise<{

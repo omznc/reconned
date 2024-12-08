@@ -1,5 +1,6 @@
+import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { Club, User, Event } from "@prisma/client";
+import type { Club, User, Event, Review } from "@prisma/client";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
@@ -92,7 +93,7 @@ export function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>Predstojeći eventi</CardTitle>
+						<CardTitle>Predstojeći susreti</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{futureEvents.length === 0 ? (
@@ -119,7 +120,7 @@ export function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>Prethodni eventi</CardTitle>
+						<CardTitle>Prethodni susreti</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{pastEvents.length === 0 ? (
@@ -144,6 +145,7 @@ export function UserOverview({ user }: UserOverviewProps) {
 					</CardContent>
 				</Card>
 			</div>
+			<ReviewsOverview type="user" typeId={user.id} />
 		</div>
 	);
 }

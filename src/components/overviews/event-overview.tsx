@@ -5,10 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import type { ClubRule, Event } from "@prisma/client";
-import { Eye, EyeOff, MapPin, Pencil, User } from "lucide-react";
+import type { ClubRule, Event, Review, User } from "@prisma/client";
+import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -25,7 +26,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
 
 	return (
-		<div className="relative flex flex-col items-center justify-center gap-4 ">
+		<div className="relative flex flex-col items-center justify-center gap-4">
 			{event.coverImage && (
 				<>
 					<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
@@ -87,7 +88,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 
 					<div className="flex flex-wrap gap-1 -mt-2">
 						<Badge variant="outline" className="flex h-fit items-center gap-1">
-							<User className="size-4" />
+							<UserIcon className="size-4" />
 							{event._count?.eventRegistration} prijavljenih
 						</Badge>
 						<Badge variant="outline" className="flex h-fit items-center gap-1">
@@ -141,6 +142,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 								</LoadChildOnClick>
 							</div>
 						)}
+					<ReviewsOverview type="event" typeId={event.id} />
 				</div>
 			</div>
 		</div>

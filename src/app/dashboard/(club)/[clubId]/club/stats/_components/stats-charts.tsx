@@ -68,7 +68,7 @@ export function StatsCharts({
 			},
 		},
 		events: {
-			label: "Eventi po mjesecu",
+			label: "Susreti po mjesecu",
 			theme: {
 				light: "hsl(346.8 77.2% 49.8%)",
 				dark: "hsl(346.8 77.2% 49.8%)",

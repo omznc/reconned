@@ -1,4 +1,4 @@
-import { EventOverview } from "@/components/event-overview";
+import { EventOverview } from "@/components/overviews/event-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
