@@ -12,6 +12,7 @@ import {
 	Text,
 } from "@react-email/components";
 import { env } from "@/lib/env";
+import { emailStyles } from "@/emails/styles";
 
 interface PasswordResetProps {
 	resetUrl: string;
@@ -23,33 +24,33 @@ export const PasswordReset = ({ resetUrl, userName }: PasswordResetProps) => {
 		<Html>
 			<Head />
 			<Preview>Resetujte vašu lozinku</Preview>
-			<Body style={main}>
-				<Container style={container}>
-					<Section style={logoSection}>
+			<Body style={emailStyles.main}>
+				<Container style={emailStyles.container}>
+					<Section style={emailStyles.logoSection}>
 						<Img
 							src={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/logo.png`}
 							alt="Logo"
 							width="150"
-							style={logo}
+							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={h1}>Resetovanje Lozinke</Heading>
+					<Heading style={emailStyles.h1}>Resetovanje Lozinke</Heading>
 					{userName ? (
-						<Text style={text}>Pozdrav {userName},</Text>
+						<Text style={emailStyles.text}>Pozdrav {userName},</Text>
 					) : (
-						<Text style={text}>Pozdrav,</Text>
+						<Text style={emailStyles.text}>Pozdrav,</Text>
 					)}
-					<Text style={text}>
+					<Text style={emailStyles.text}>
 						Molimo vas da kliknete na dugme ispod kako biste resetovali vašu
 						lozinku.
 					</Text>
-					<Section style={buttonContainer}>
-						<Button style={button} href={resetUrl}>
+					<Section style={emailStyles.buttonContainer}>
+						<Button style={emailStyles.button} href={resetUrl}>
 							Resetuj Lozinku
 						</Button>
 					</Section>
-					<Hr style={hr} />
-					<Text style={footer}>
+					<Hr style={emailStyles.hr} />
+					<Text style={emailStyles.footer}>
 						Ako niste očekivali ovaj email, molimo vas da ga zanemarite.
 					</Text>
 				</Container>
@@ -59,66 +60,3 @@ export const PasswordReset = ({ resetUrl, userName }: PasswordResetProps) => {
 };
 
 export default PasswordReset;
-
-const main = {
-	backgroundColor: "#ffffff",
-	fontFamily:
-		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-	margin: "0 auto",
-	padding: "20px 0 48px",
-};
-
-const h1 = {
-	color: "#000000",
-	fontSize: "24px",
-	fontWeight: "bold",
-	textAlign: "center" as const,
-	margin: "30px 0",
-};
-
-const text = {
-	color: "#000000",
-	fontSize: "16px",
-	lineHeight: "24px",
-};
-
-const buttonContainer = {
-	textAlign: "center" as const,
-	margin: "30px 0",
-};
-
-const button = {
-	backgroundColor: "#000000",
-	color: "#ffffff",
-	fontSize: "16px",
-	textDecoration: "none",
-	textAlign: "center" as const,
-	display: "inline-block",
-	width: "200px",
-	padding: "14px 0",
-};
-
-const hr = {
-	borderColor: "#000000",
-	margin: "20px 0",
-};
-
-const footer = {
-	color: "#666666",
-	fontSize: "12px",
-	lineHeight: "16px",
-	textAlign: "center" as const,
-	marginTop: "30px",
-};
-
-const logoSection = {
-	textAlign: "center" as const,
-	marginBottom: "20px",
-};
-
-const logo = {
-	margin: "0 auto",
-};
