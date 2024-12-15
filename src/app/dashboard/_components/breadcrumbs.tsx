@@ -154,4 +154,5 @@ const TRANSLATIONS = {
 	rules: "Pravila",
 	attendance: "Prisustvo",
 	admin: "Administacija",
+	emails: "Emailovi",
 };

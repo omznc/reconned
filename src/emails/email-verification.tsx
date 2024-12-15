@@ -12,6 +12,7 @@ import {
 	Text,
 } from "@react-email/components";
 import { env } from "@/lib/env";
+import { emailStyles } from "@/emails/styles";
 
 interface EmailVerificationProps {
 	verificationUrl: string;
@@ -26,33 +27,33 @@ export const EmailVerification = ({
 		<Html>
 			<Head />
 			<Preview>Verifikujte vašu email adresu</Preview>
-			<Body style={main}>
-				<Container style={container}>
-					<Section style={logoSection}>
+			<Body style={emailStyles.main}>
+				<Container style={emailStyles.container}>
+					<Section style={emailStyles.logoSection}>
 						<Img
 							src={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/logo.png`}
 							alt="Logo"
 							width="150"
-							style={logo}
+							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={h1}>Verifikacija Email Adrese</Heading>
+					<Heading style={emailStyles.h1}>Verifikacija Email Adrese</Heading>
 					{userName ? (
-						<Text style={text}>Pozdrav {userName},</Text>
+						<Text style={emailStyles.text}>Pozdrav {userName},</Text>
 					) : (
-						<Text style={text}>Pozdrav,</Text>
+						<Text style={emailStyles.text}>Pozdrav,</Text>
 					)}
-					<Text style={text}>
+					<Text style={emailStyles.text}>
 						Molimo vas da kliknete na dugme ispod kako biste verifikovali vašu
 						email adresu.
 					</Text>
-					<Section style={buttonContainer}>
-						<Button style={button} href={verificationUrl}>
+					<Section style={emailStyles.buttonContainer}>
+						<Button style={emailStyles.button} href={verificationUrl}>
 							Verifikuj Email
 						</Button>
 					</Section>
-					<Hr style={hr} />
-					<Text style={footer}>
+					<Hr style={emailStyles.hr} />
+					<Text style={emailStyles.footer}>
 						Ako niste očekivali ovaj email, molimo vas da ga zanemarite.
 					</Text>
 				</Container>
@@ -62,66 +63,3 @@ export const EmailVerification = ({
 };
 
 export default EmailVerification;
-
-const main = {
-	backgroundColor: "#ffffff",
-	fontFamily:
-		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-	margin: "0 auto",
-	padding: "20px 0 48px",
-};
-
-const h1 = {
-	color: "#000000",
-	fontSize: "24px",
-	fontWeight: "bold",
-	textAlign: "center" as const,
-	margin: "30px 0",
-};
-
-const text = {
-	color: "#000000",
-	fontSize: "16px",
-	lineHeight: "24px",
-};
-
-const buttonContainer = {
-	textAlign: "center" as const,
-	margin: "30px 0",
-};
-
-const button = {
-	backgroundColor: "#000000",
-	color: "#ffffff",
-	fontSize: "16px",
-	textDecoration: "none",
-	textAlign: "center" as const,
-	display: "inline-block",
-	width: "200px",
-	padding: "14px 0",
-};
-
-const hr = {
-	borderColor: "#000000",
-	margin: "20px 0",
-};
-
-const footer = {
-	color: "#666666",
-	fontSize: "12px",
-	lineHeight: "16px",
-	textAlign: "center" as const,
-	marginTop: "30px",
-};
-
-const logoSection = {
-	textAlign: "center" as const,
-	marginBottom: "20px",
-};
-
-const logo = {
-	margin: "0 auto",
-};
