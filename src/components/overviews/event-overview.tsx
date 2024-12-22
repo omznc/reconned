@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import type { ClubRule, Event, Review, User } from "@prisma/client";
+import type { ClubRule, Event } from "@prisma/client";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { isAfter, isBefore } from "date-fns";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -24,6 +25,14 @@ interface EventOverviewProps {
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	const user = await isAuthenticated();
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
+
+	const canApplyToEvent = (event: Event) => {
+		const now = new Date();
+		return (
+			isAfter(now, new Date(event.dateRegistrationsOpen)) &&
+			isBefore(now, new Date(event.dateRegistrationsClose))
+		);
+	};
 
 	return (
 		<div className="relative flex flex-col items-center justify-center gap-4">
@@ -67,8 +76,8 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							)}
 						</>
 					) : (
-						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit">
-							{user && (
+						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-2 h-fit w-full md:w-fit">
+							{user && canApplyToEvent(event) ? (
 								<Link href={`/events/${event.id}/apply`}>
 									<Button
 										variant="outline"
@@ -78,7 +87,11 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 										Prijava
 									</Button>
 								</Link>
-							)}
+							) : user ? (
+								<p className="text-sm text-muted-foreground">
+									Prijave zatvorene
+								</p>
+							) : null}
 							<AddEventToCalendarButton event={event} />
 						</div>
 					)}

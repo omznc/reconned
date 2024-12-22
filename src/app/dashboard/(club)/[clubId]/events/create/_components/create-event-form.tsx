@@ -251,7 +251,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				return;
 			}
 
-			if (files && files.length > 0) {
+			if (files?.[0]) {
 				const resp = await getEventImageUploadUrl({
 					file: {
 						type: files[0].type,

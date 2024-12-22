@@ -5,3 +5,8 @@ export const sendInvitationSchema = z.object({
 	userEmail: z.string(),
 	userName: z.string().optional(),
 });
+
+export const revokeInvitationSchema = z.object({
+	inviteId: z.string(),
+	clubId: z.string(),
+});

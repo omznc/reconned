@@ -3,7 +3,7 @@ import { CreateAccountEmail } from "@/emails/create-account";
 import { EmailVerification } from "@/emails/email-verification";
 import { PasswordReset } from "@/emails/password-reset";
 import { RateEventEmail } from "@/emails/rate-event";
-import { EmailList } from "./_components/email-sheet";
+import { EmailSheet } from "./_components/email-sheet";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Mail } from "lucide-react";
 import Link from "next/link";
@@ -135,7 +135,7 @@ export default async function Page(props: Props) {
 					))}
 				</div>
 				{selectedEmail && (
-					<EmailList
+					<EmailSheet
 						renderedContent={
 							await render(
 								// @ts-expect-error This is not really important to type.

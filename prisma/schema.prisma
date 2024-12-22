@@ -18,6 +18,7 @@ enum InviteStatus {
   ACCEPTED
   REJECTED
   EXPIRED
+  REVOKED
 }
 
 enum ReviewType {
@@ -36,9 +37,7 @@ model User {
   clubMembership      ClubMembership[]
   clubInvitesReceived ClubInvite[]
 
-  image   String?
-  session Session[]
-  account Account[]
+  image String?
 
   slug String? @unique
 
@@ -61,8 +60,13 @@ model User {
   banReason                 String?
   banExpires                DateTime?
 
-  reviewsReceived Review[] @relation("UserReviews")
-  reviewsWritten  Review[] @relation("ReviewAuthor")
+  reviewsReceived  Review[]    @relation("UserReviews")
+  reviewsWritten   Review[]    @relation("ReviewAuthor")
+  twoFactorEnabled Boolean?
+  isAdmin          Boolean?
+  sessions         Session[]
+  accounts         Account[]
+  twofactors       TwoFactor[]
 }
 
 model Club {
@@ -106,18 +110,20 @@ model ClubRule {
   club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId      String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now())
   Event       Event?   @relation(fields: [eventId], references: [id])
   eventId     String?
 }
 
 model ClubMembership {
-  id     String @id @default(cuid())
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-  club   Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
-  clubId String
-  role   Role   @default(USER)
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  club      Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+  role      Role      @default(USER)
+  startDate DateTime? 
+  endDate   DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -284,6 +290,7 @@ model Passkey {
   backedUp       Boolean
   transports     String?
   createdAt      DateTime?
+  credentialID   String
 }
 
 model Review {
@@ -299,14 +306,22 @@ model Review {
   author   User   @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
 
   // What was reviewed (only one of these will be set)
-  userId    String?
-  user      User?   @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
-  clubId    String?
-  club      Club?   @relation(fields: [clubId], references: [id], onDelete: Cascade)
-  eventId   String?
-  event     Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  String?
+  user    User?   @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
+  clubId  String?
+  club    Club?   @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([authorId, userId])
   @@unique([authorId, clubId])
   @@unique([authorId, eventId])
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
