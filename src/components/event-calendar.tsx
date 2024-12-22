@@ -14,6 +14,8 @@ import {
 	format,
 	isSameMonth,
 	isWithinInterval,
+	isAfter,
+	isBefore,
 } from "date-fns";
 import { Fragment, useEffect, useMemo } from "react";
 import Image from "next/image";
@@ -109,26 +111,29 @@ export function EventCalendar(props: EventCalendarProps) {
 		const eventEnd = event.dateEnd ?? event.dateStart;
 
 		// Get the first and last day of this event in the current week
-		const startInWeek = week[0] > eventStart ? week[0] : eventStart;
+
+		// biome-ignore lint/style/noNonNullAssertion: A week will always have at least one day
+		const startInWeek = week[0]! > eventStart ? week[0] : eventStart;
 		const endInWeek =
-			week[week.length - 1] < eventEnd ? week[week.length - 1] : eventEnd;
+			// biome-ignore lint/style/noNonNullAssertion: Same as above
+			week[week.length - 1]! < eventEnd ? week[week.length - 1] : eventEnd;
 
 		// Find indices in the week array
-		const startIndex = week.findIndex((d) => isSameDay(d, startInWeek));
-		const endIndex = week.findIndex((d) => isSameDay(d, endInWeek));
+		const startIndex = week.findIndex((d) => isSameDay(d, startInWeek as Date));
+		const endIndex = week.findIndex((d) => isSameDay(d, endInWeek as Date));
+
+		if (startInWeek === undefined || endInWeek === undefined) {
+			return null;
+		}
 
 		// Calculate if this day is the day we should render the event on
 		const shouldRender = isSameDay(day, startInWeek);
 
-		if (startIndex === -1 || endIndex === -1) {
-			return null;
-		}
-
 		return {
 			startIndex,
 			span: endIndex - startIndex + 1,
-			isStart: isSameDay(eventStart, week[startIndex]),
-			isEnd: isSameDay(eventEnd, week[endIndex]),
+			isStart: isSameDay(eventStart, week[startIndex] as Date),
+			isEnd: isSameDay(eventEnd, week[endIndex] as Date),
 			shouldRender,
 		};
 	};
@@ -159,9 +164,11 @@ export function EventCalendar(props: EventCalendarProps) {
 				}
 
 				let canFit = true;
-				for (const existingEvent of layers[layerIndex]) {
+				for (const existingEvent of layers[layerIndex] ?? []) {
 					const existing = events.find((e) => e.id === existingEvent);
-					if (!existing) continue;
+					if (!existing) {
+						continue;
+					}
 
 					const existingStart = existing.dateStart;
 					const existingEnd = existing.dateEnd ?? existing.dateStart;
@@ -186,7 +193,7 @@ export function EventCalendar(props: EventCalendarProps) {
 				}
 
 				if (canFit) {
-					layers[layerIndex].add(event.id);
+					layers[layerIndex]?.add(event.id);
 					positions.set(event.id, layerIndex);
 					break;
 				}
@@ -204,6 +211,14 @@ export function EventCalendar(props: EventCalendarProps) {
 	const handlePreviousMonth = () => setCurrentDate(subMonths(currentDate, 1));
 	const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
 	const handleToday = () => setCurrentDate(new Date());
+
+	const canApplyToEvent = (event: Event) => {
+		const now = new Date();
+		return (
+			isAfter(now, new Date(event.dateRegistrationsOpen)) &&
+			isBefore(now, new Date(event.dateRegistrationsClose))
+		);
+	};
 
 	return (
 		<div className="flex flex-col h-full w-full bg-background text-foreground">
@@ -275,10 +290,18 @@ export function EventCalendar(props: EventCalendarProps) {
 												? ""
 												: "text-muted-foreground",
 											getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
+											isSameDay(day, new Date()) ? "bg-accent" : "", // Add this line to highlight today
 										)}
 										style={{ minHeight: `${weekHeight}rem` }}
 									>
-										<div className="font-medium mb-1">
+										<div
+											className={cn(
+												"font-medium mb-1",
+												isSameDay(day, new Date())
+													? "text-accent-foreground"
+													: "", // Add this line to style today's text
+											)}
+										>
 											{format(day, "d", { locale: bs })}
 										</div>
 										<div className="flex-1 relative">
@@ -408,16 +431,25 @@ export function EventCalendar(props: EventCalendarProps) {
 																		</div>
 																	)}
 
-																	<Button
-																		variant="default"
-																		className="w-full mt-2"
-																		onClick={() => {
-																			router.push(`/events/${event.id}/apply`);
-																		}}
-																	>
-																		<Plus className="h-4 w-4 mr-2" />
-																		Prijavi se
-																	</Button>
+																	{canApplyToEvent(event) ? (
+																		<Button
+																			variant="default"
+																			className="w-full mt-2"
+																			onClick={() => {
+																				router.push(
+																					`/events/${event.id}/apply`,
+																				);
+																			}}
+																		>
+																			<Plus className="h-4 w-4 mr-2" />
+																			Prijavi se
+																		</Button>
+																	) : (
+																		<p className="text-sm text-muted-foreground text-center mt-2">
+																			Prijave za ovaj susret trenutno nisu
+																			otvorene
+																		</p>
+																	)}
 																</div>
 															</HoverCardContent>
 														</HoverCard>

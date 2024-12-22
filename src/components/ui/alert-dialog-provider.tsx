@@ -22,6 +22,15 @@ import {
     type PropsWithoutRef,
     type ReactNode,
 } from "react";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+} from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const AlertDialogContext = createContext<
     (params: AlertAction) => Promise<AlertAction["type"] extends "alert" | "confirm" ? boolean : null | string>
@@ -36,14 +45,14 @@ export type AlertAction =
     | {
         type: "alert";
         title: string;
-        body?: string;
+        body?: ReactNode;
         cancelButton?: string;
         cancelButtonVariant?: ButtonVariant;
     }
     | {
         type: "confirm";
         title: string;
-        body?: string;
+        body?: ReactNode;
         cancelButton?: string;
         actionButton?: string;
         cancelButtonVariant?: ButtonVariant;
@@ -53,7 +62,7 @@ export type AlertAction =
         type: "prompt";
         title: string;
         inputType?: "input" | "textarea";
-        body?: string;
+        body?: ReactNode;
         cancelButton?: string;
         actionButton?: string;
         defaultValue?: string;
@@ -66,7 +75,7 @@ export type AlertAction =
 interface AlertDialogState {
     open: boolean;
     title: string;
-    body: string;
+    body: ReactNode;
     type: "alert" | "confirm" | "prompt";
     inputType?: "input" | "textarea";
     cancelButton: string;
@@ -115,6 +124,7 @@ export function AlertDialogProvider({
         actionButtonVariant: "default",
     });
 
+    const isMobile = useIsMobile();
     const resolveRef = useRef<(tf: any) => void>(null);
 
     function close() {
@@ -135,55 +145,118 @@ export function AlertDialogProvider({
         });
     }, []);
 
+    const DialogContent = ({ children }: { children: ReactNode; }) => {
+        if (!isMobile) {
+            return (
+                <AlertDialog
+                    open={state.open}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            close();
+                        }
+                    }}
+                >
+                    <AlertDialogContent asChild>
+                        {children}
+                    </AlertDialogContent>
+                </AlertDialog>
+            );
+        }
+
+        return (
+            <Drawer
+                open={state.open}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        close();
+                    }
+                }}
+            >
+                <DrawerContent className="px-4">
+                    {children}
+                </DrawerContent>
+            </Drawer>
+        );
+    };
+
+    const DialogHeader = ({ children }: { children: ReactNode; }) => {
+        if (!isMobile) {
+            return <AlertDialogHeader>{children}</AlertDialogHeader>;
+        }
+        return <DrawerHeader>{children}</DrawerHeader>;
+    };
+
+    const DialogTitle = ({ children }: { children: ReactNode; }) => {
+        if (!isMobile) {
+            return <AlertDialogTitle>{children}</AlertDialogTitle>;
+        }
+        return <DrawerTitle>{children}</DrawerTitle>;
+    };
+
+    const DialogDescription = ({ children }: { children: ReactNode; }) => {
+        if (!isMobile) {
+            return <AlertDialogDescription>{children}</AlertDialogDescription>;
+        }
+        return <DrawerDescription>{children}</DrawerDescription>;
+    };
+
+    const DialogFooter = ({ children }: { children: ReactNode; }) => {
+        if (!isMobile) {
+            return <AlertDialogFooter className="gap-2">{children}</AlertDialogFooter>;
+        }
+        return <DrawerFooter className="gap-2 pb-6">{children}</DrawerFooter>;
+    };
+
     return (
         <AlertDialogContext.Provider value={dialog}>
             {children}
-            <AlertDialog
-                open={state.open}
-                onOpenChange={(open) => {
-                    if (!open) close();
-                    return;
-                }}
-            >
-                <AlertDialogContent asChild>
-                    <form
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            confirm(event.currentTarget.prompt?.value);
-                        }}
-                    >
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>{state.title}</AlertDialogTitle>
-                            {state.body ? <AlertDialogDescription>{state.body}</AlertDialogDescription> : null}
-                        </AlertDialogHeader>
-                        {state.type === "prompt" && (
-                            <>
-                                {!state.inputType ||
-                                    (state.inputType === "input" && (
-                                        <Input name="prompt" defaultValue={state.defaultValue} {...state.inputProps} />
-                                    ))}
-
-                                {state.inputType === "textarea" && (
-                                    <>
-                                        {/* @ts-ignore */}
-                                        <Textarea name="prompt" defaultValue={state.defaultValue} {...state.inputProps} />
-                                    </>
-                                )}
-                            </>
+            <DialogContent>
+                <form
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        confirm(event.currentTarget.prompt?.value);
+                    }}
+                >
+                    <DialogHeader>
+                        <DialogTitle>{state.title}</DialogTitle>
+                        {typeof state.body === 'string' && (
+                            <DialogDescription>{state.body}</DialogDescription>
                         )}
-                        <AlertDialogFooter className="gap-2">
-                            <Button type="button" onClick={close} variant={state.cancelButtonVariant}>
-                                {state.cancelButton}
-                            </Button>
-                            {state.type === "alert" ? null : (
-                                <Button type="submit" variant={state.actionButtonVariant}>
-                                    {state.actionButton}
-                                </Button>
+                    </DialogHeader>
+                    {typeof state.body !== 'string' && state.body}
+                    {state.type === "prompt" && (
+                        <>
+                            {!state.inputType ||
+                                (state.inputType === "input" && (
+                                    <Input
+                                        name="prompt"
+                                        defaultValue={state.defaultValue}
+                                        {...state.inputProps}
+                                    />
+                                ))}
+
+                            {state.inputType === "textarea" && (
+                                // @ts-expect-error
+                                <Textarea
+                                    name="prompt"
+                                    defaultValue={state.defaultValue}
+                                    {...state.inputProps}
+                                />
                             )}
-                        </AlertDialogFooter>
-                    </form>
-                </AlertDialogContent>
-            </AlertDialog>
+                        </>
+                    )}
+                    <DialogFooter>
+                        <Button type="button" onClick={close} variant={state.cancelButtonVariant}>
+                            {state.cancelButton}
+                        </Button>
+                        {state.type === "alert" ? null : (
+                            <Button type="submit" variant={state.actionButtonVariant}>
+                                {state.actionButton}
+                            </Button>
+                        )}
+                    </DialogFooter>
+                </form>
+            </DialogContent>
         </AlertDialogContext.Provider>
     );
 }

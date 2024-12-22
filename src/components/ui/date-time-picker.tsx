@@ -8,7 +8,7 @@ import { type Locale, bs, enUS, hr } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Clock } from 'lucide-react';
 import * as React from 'react';
-import { useImperativeHandle, useRef } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import {
     Select,
@@ -428,14 +428,17 @@ const TimePickerInput = React.forwardRef<HTMLInputElement, TimePickerInputProps>
         },
         ref,
     ) => {
-        const [flag, setFlag] = React.useState<boolean>(false);
-        const [prevIntKey, setPrevIntKey] = React.useState<string>('0');
+        const [flag, setFlag] =
+            useState<boolean>(false);
+        const [prevIntKey, setPrevIntKey] =
+            useState<string>('0');
 
         /**
          * allow the user to enter the second digit within 2 seconds
          * otherwise start again with entering first digit
          */
-        React.useEffect(() => {
+
+        useEffect(() => {
             if (flag) {
                 const timer = setTimeout(() => {
                     setFlag(false);
@@ -443,6 +446,7 @@ const TimePickerInput = React.forwardRef<HTMLInputElement, TimePickerInputProps>
 
                 return () => clearTimeout(timer);
             }
+            return;
         }, [flag]);
 
         const calculatedValue = React.useMemo(() => {
@@ -531,11 +535,11 @@ interface TimePickerRef {
 
 const TimePicker = React.forwardRef<TimePickerRef, TimePickerProps>(
     ({ date, onChange, hourCycle = 24, granularity = 'second' }, ref) => {
-        const minuteRef = React.useRef<HTMLInputElement>(null);
-        const hourRef = React.useRef<HTMLInputElement>(null);
-        const secondRef = React.useRef<HTMLInputElement>(null);
-        const periodRef = React.useRef<HTMLButtonElement>(null);
-        const [period, setPeriod] = React.useState<Period>(date && date.getHours() >= 12 ? 'PM' : 'AM');
+        const minuteRef = useRef<HTMLInputElement>(null);
+        const hourRef = useRef<HTMLInputElement>(null);
+        const secondRef = useRef<HTMLInputElement>(null);
+        const periodRef = useRef<HTMLButtonElement>(null);
+        const [period, setPeriod] = useState<Period>(date && date.getHours() >= 12 ? 'PM' : 'AM');
 
         useImperativeHandle(
             ref,
@@ -670,7 +674,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
         },
         ref,
     ) => {
-        const [month, setMonth] = React.useState<Date>(value ?? new Date());
+        const [month, setMonth] = useState<Date>(value ?? new Date());
         const buttonRef = useRef<HTMLButtonElement>(null);
         /**
          * carry over the current time when a user clicks a new day

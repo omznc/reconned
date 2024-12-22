@@ -156,7 +156,7 @@ export default function LoginPage() {
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
 						Prijavi se
 					</LoaderSubmitButton>
-					<Button
+					{/* <Button
 						variant="outline"
 						className="w-full"
 						disabled={isLoading}
@@ -180,7 +180,7 @@ export default function LoginPage() {
 						}}
 					>
 						Prijavi se pomoću passkeya
-					</Button>
+					</Button> */}
 					<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
 				</form>
 				<div className="mt-4 text-center text-sm">

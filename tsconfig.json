@@ -1,29 +1,44 @@
 {
 	"compilerOptions": {
+		// Modern JS Features
+		"target": "ES2022",
 		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"noEmit": true,
-		"esModuleInterop": true,
+		"moduleDetection": "force",
+
+		// Modules
 		"module": "esnext",
 		"moduleResolution": "bundler",
+		"verbatimModuleSyntax": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
+
+		// Strict Type Checking
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+
+		// Type Declaration Settings
+		"declaration": false,
+		"inlineSources": true,
+		"sourceMap": true,
+
+		// Next.js Specific
 		"jsx": "preserve",
-		"incremental": true,
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
+		"plugins": [{ "name": "next" }],
 		"paths": {
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
 			"@auth/client": ["./src/lib/auth-client"],
 			"@auth/server": ["./src/lib/auth"]
 		},
-		"target": "ES2017"
+		"incremental": true,
+
+		// Interop Constraints
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"allowJs": true,
+		"noEmit": true
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]

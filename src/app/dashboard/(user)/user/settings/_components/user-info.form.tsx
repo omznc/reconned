@@ -80,7 +80,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	async function onSubmit(values: z.infer<typeof userInfoShema>) {
 		setIsLoading(true);
 		try {
-			if (files && files.length > 0) {
+			if (files?.[0]) {
 				const resp = await getUserImageUploadUrl({
 					file: {
 						type: files[0].type,

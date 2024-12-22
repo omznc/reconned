@@ -46,7 +46,8 @@ export default async function Page(props: PageProps) {
 		return notFound();
 	}
 
-	const isClubOwner = club.members[0].role === Role.CLUB_OWNER;
+	// The club will always have at least one member
+	const isClubOwner = club.members[0]?.role === Role.CLUB_OWNER;
 
 	return <ClubInfoForm club={club} isClubOwner={isClubOwner} />;
 }

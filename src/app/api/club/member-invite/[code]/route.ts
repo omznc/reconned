@@ -70,7 +70,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 			});
 		}
 
-		redirect(existingUser ? "/login" : "/register");
+		redirect(existingUser ? "/login" : `/register?email=${invite.email}`);
 	}
 
 	// User is logged in - verify email matches

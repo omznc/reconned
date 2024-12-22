@@ -21,13 +21,10 @@ export function getUrlFromString(str: string) {
 	if (isValidUrl(str)) {
 		return str;
 	}
-	try {
-		if (str.includes(".") && !str.includes(" ")) {
-			return new URL(`https://${str}`).toString();
-		}
-	} catch (e) {
-		return null;
+	if (str.includes(".") && !str.includes(" ")) {
+		return new URL(`https://${str}`).toString();
 	}
+	return null;
 }
 interface LinkSelectorProps {
 	open: boolean;

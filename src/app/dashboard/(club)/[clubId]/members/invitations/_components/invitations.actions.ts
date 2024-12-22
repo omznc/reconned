@@ -1,6 +1,9 @@
 "use server";
 
-import { sendInvitationSchema } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
+import {
+	revokeInvitationSchema,
+	sendInvitationSchema,
+} from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
 import ClubInvitationEmail from "@/emails/airsoft-invitation";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
@@ -24,9 +27,7 @@ export const sendInvitation = safeActionClient
 			});
 
 			if (existingInvite) {
-				throw new Error(
-					"There's already a pending invitation for this email address.",
-				);
+				throw new Error("Već ste poslali pozivnicu ovoj osobi.");
 			}
 
 			const existingMembership = await prisma.clubMembership.findFirst({
@@ -37,7 +38,7 @@ export const sendInvitation = safeActionClient
 			});
 
 			if (existingMembership) {
-				throw new Error("This user is already a member of the club.");
+				throw new Error("Osoba već ima članstvo u klubu.");
 			}
 
 			// Generate unique invite code
@@ -97,7 +98,51 @@ export const sendInvitation = safeActionClient
 			}
 			return {
 				success: false,
-				error: "An unexpected error occurred.",
+				error: "Došlo je do neočekivane greške.",
+			};
+		}
+	});
+
+export const revokeInvitation = safeActionClient
+	.schema(revokeInvitationSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		try {
+			const invite = await prisma.clubInvite.findFirst({
+				where: {
+					id: parsedInput.inviteId,
+					clubId: ctx.club.id,
+					status: "PENDING",
+				},
+			});
+
+			if (!invite) {
+				throw new Error("Pozivnica nije pronađena ili je već iskorištena.");
+			}
+
+			await prisma.clubInvite.update({
+				where: {
+					id: parsedInput.inviteId,
+				},
+				data: {
+					status: "REVOKED",
+				},
+			});
+
+			revalidatePath(`/dashboard/${ctx.club.id}/members/invitations`);
+
+			return {
+				success: true,
+			};
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					success: false,
+					error: error.message,
+				};
+			}
+			return {
+				success: false,
+				error: "Došlo je do neočekivane greške.",
 			};
 		}
 	});

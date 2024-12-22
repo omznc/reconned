@@ -88,27 +88,32 @@ export function EventsTable({
 								new Date() > new Date(item.dateEnd);
 							return (
 								<div className="flex gap-2">
-									<Button
-										variant={"outline"}
-										disabled={disabledAttendence}
-										asChild={!disabledAttendence}
-									>
-										<Link
-											className="flex items-center gap-2"
-											href={`/dashboard/${clubId}/events/${item.id}/attendance`}
-										>
-											<Users className="size-4" />
-											Prisustvo
-										</Link>
-									</Button>
-									<Button variant={"outline"} asChild>
-										<Link
-											href={`/dashboard/${clubId}/events/create?id=${item.id}`}
-										>
-											<Pen className="size-4 mr-2" />
-											Uredi
-										</Link>
-									</Button>
+									{userIsManager && (
+										<>
+											<Button
+												variant={"outline"}
+												disabled={disabledAttendence}
+												asChild={!disabledAttendence}
+											>
+												<Link
+													className="flex items-center gap-2"
+													href={`/dashboard/${clubId}/events/${item.id}/attendance`}
+												>
+													<Users className="size-4" />
+													Prisustvo
+												</Link>
+											</Button>
+											<Button variant={"outline"} asChild>
+												<Link
+													href={`/dashboard/${clubId}/events/create?id=${item.id}`}
+												>
+													<Pen className="size-4 mr-2" />
+													Uredi
+												</Link>
+											</Button>
+										</>
+									)}
+
 									<Button asChild>
 										<Link href={`/dashboard/${clubId}/events/${item.id}`}>
 											<Eye className="size-4 mr-2" />

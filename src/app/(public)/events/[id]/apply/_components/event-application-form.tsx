@@ -359,12 +359,12 @@ export function EventApplicationForm({
 
 			{/* Desktop View */}
 			<div className="hidden fade-in-up md:grid grid-cols-2 gap-8 h-[400px]">
-				<div className="space-y-2">
+				<div className="space-y-2 h-fit">
 					<button
 						type="button"
 						onClick={() => handleTypeChange("solo")}
 						disabled={!event.allowFreelancers && currentUserClubs.length === 0}
-						className="group disabled:cursor-not-allowed border relative flex flex-col items-center justify-center rounded-lg p-8 transition-all w-full"
+						className="group h-[350px] disabled:cursor-not-allowed border relative flex flex-col items-center justify-center rounded-lg p-8 transition-all w-full"
 					>
 						{!event.allowFreelancers && currentUserClubs.length === 0 && (
 							<div className="absolute backdrop-blur-[2px] p-4 inset-0 bg-black/30 dark:bg-black/80 rounded-lg flex items-center justify-center">
@@ -402,11 +402,11 @@ export function EventApplicationForm({
 					)}
 				</div>
 
-				<div className="space-y-2">
+				<div className="space-y-2 h-fit">
 					<button
 						type="button"
 						onClick={() => handleTypeChange("team")}
-						className="group border relative flex flex-col items-center justify-center rounded-lg p-8 transition-all w-full"
+						className="group h-[350px] border relative flex flex-col items-center justify-center rounded-lg p-8 transition-all w-full"
 					>
 						<div className="size-32 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
 							<Users className="size-16 text-muted-foreground group-hover:text-primary transition-colors" />

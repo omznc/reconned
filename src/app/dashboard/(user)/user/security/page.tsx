@@ -28,5 +28,11 @@ export default async function Page() {
 		},
 	});
 
-	return <SecuritySettings passkeys={passkeys} hasPassword={hasPassword} />;
+	return (
+		<SecuritySettings
+			passkeys={passkeys}
+			hasPassword={hasPassword}
+			hasTwoFactor={user.twoFactorEnabled}
+		/>
+	);
 }

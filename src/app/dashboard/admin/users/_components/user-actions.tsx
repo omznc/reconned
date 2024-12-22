@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 import { authClient } from "@/lib/auth-client";
@@ -42,7 +42,7 @@ export function UserActions({ user }: { user: User }) {
 		await authClient.admin.impersonateUser({
 			userId: user.id,
 		});
-		router.push("/dashboard");
+		window.location.reload();
 	};
 
 	const onAction = async (action: "ban" | "impersonate" | "delete") => {
@@ -58,9 +58,10 @@ export function UserActions({ user }: { user: User }) {
 		const confirmed = await confirm({
 			title: "Jeste li sigurni?",
 			body: `Da li ste sigurni da želite ${actionText[action]} korisnika ${user.name}?`,
-			actionButtonVariant: "destructive",
+			actionButtonVariant: "default",
 			actionButton: "Da, potvrdi",
 			cancelButton: "Ne, vrati se",
+			cancelButtonVariant: "outline",
 		});
 
 		if (!confirmed) {

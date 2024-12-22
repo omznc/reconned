@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import {
 	SheetContent,
 	SheetHeader,
@@ -10,11 +9,11 @@ import {
 } from "@/components/ui/sheet";
 import { useQueryState } from "nuqs";
 
-interface EmailListProps {
+interface EmailSheetProps {
 	renderedContent: string;
 }
 
-export function EmailList({ renderedContent }: EmailListProps) {
+export function EmailSheet({ renderedContent }: EmailSheetProps) {
 	const [email, setEmail] = useQueryState("email", {
 		defaultValue: "",
 		clearOnDefault: true,

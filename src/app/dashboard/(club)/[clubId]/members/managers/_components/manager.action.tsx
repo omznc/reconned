@@ -4,7 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { promoteToManagerSchema } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/add-manager-schema";
+import {
+	demoteFromManagerSchema,
+	promoteToManagerSchema,
+} from "@/app/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
 
 export const promoteToManager = safeActionClient
 	.schema(promoteToManagerSchema)
@@ -37,6 +40,70 @@ export const promoteToManager = safeActionClient
 				},
 				data: {
 					role: Role.MANAGER,
+				},
+				include: {
+					user: {
+						select: {
+							name: true,
+							email: true,
+						},
+					},
+				},
+			});
+
+			revalidatePath(`/dashboard/${ctx.club.id}/members`);
+
+			return {
+				success: true,
+				data: {
+					membership: updatedMembership,
+				},
+			};
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					success: false,
+					error: error.message,
+				};
+			}
+			return {
+				success: false,
+				error: "Došlo je do neočekivane greške.",
+			};
+		}
+	});
+
+export const demoteFromManager = safeActionClient
+	.schema(demoteFromManagerSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		try {
+			const targetMembership = await prisma.clubMembership.findFirst({
+				where: {
+					id: parsedInput.memberId,
+					clubId: ctx.club.id,
+					role: Role.MANAGER,
+				},
+				include: {
+					user: {
+						select: {
+							name: true,
+							email: true,
+						},
+					},
+				},
+			});
+
+			if (!targetMembership) {
+				throw new Error("Menadžer nije pronađen.");
+			}
+
+			const updatedMembership = await prisma.clubMembership.update({
+				where: {
+					id: parsedInput.memberId,
+					clubId: ctx.club.id,
+				},
+				data: {
+					role: Role.USER,
 				},
 				include: {
 					user: {
