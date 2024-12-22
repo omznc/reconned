@@ -32,8 +32,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { promoteToManager } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/add-manager-action";
-import { promoteToManagerSchema } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/add-manager-schema";
+import { promoteToManager } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/manager.action";
+import { promoteToManagerSchema } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
 
 type Member = {
 	id: string;

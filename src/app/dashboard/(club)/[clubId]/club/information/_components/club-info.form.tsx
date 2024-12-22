@@ -101,7 +101,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			/**
 			 * If editing a club, and the logo changes, upload it.
 			 */
-			if (files && files.length > 0 && props.club?.id) {
+			if (files?.[0] && props.club?.id) {
 				const resp = await getClubImageUploadUrl({
 					file: {
 						type: files[0].type,
@@ -133,7 +133,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			/**
 			 * If creating a new club with a logo, upload it after the save, and re-save the club with the new logo URL.
 			 */
-			if (files && files.length > 0 && !props.club?.id) {
+			if (files?.[0] && !props.club?.id) {
 				if (!newClubId) {
 					toast.error("Došlo je do greške prilikom kreiranja kluba");
 					return;

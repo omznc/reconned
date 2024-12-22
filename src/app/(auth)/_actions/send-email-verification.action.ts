@@ -42,5 +42,6 @@ export async function sendEmailVerificationAction({
 		return data;
 	} catch (error) {
 		console.error(error);
+		return null;
 	}
 }

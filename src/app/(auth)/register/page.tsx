@@ -1,6 +1,7 @@
 "use client";
 import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { Button } from "@/components/ui/button";
 import {
 	CardContent,
 	CardDescription,
@@ -12,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -19,6 +21,11 @@ export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
+	const [email, setEmail] = useQueryState("email", {
+		defaultValue: "",
+		clearOnDefault: true,
+		shallow: true,
+	});
 
 	useEffect(() => {
 		authClient.oneTap();
@@ -88,13 +95,29 @@ export default function RegisterPage() {
 					<div className="grid gap-2">
 						<Label htmlFor="email">Email</Label>
 						<Input
+							key={email}
 							type="email"
 							name="email"
 							id="email"
 							placeholder="Email"
+							disabled={!!email}
+							defaultValue={email ?? undefined}
 							autoComplete="email"
 							required={true}
 						/>
+						{!!email && (
+							<p className="text-sm text-gray-500">
+								Email je automatski popunjen.{" "}
+								<p
+									className="text-foreground cursor-pointer inline"
+									onClick={() => {
+										setEmail("");
+									}}
+								>
+									Ukloni.
+								</p>
+							</p>
+						)}
 					</div>
 
 					<div className="grid gap-2">

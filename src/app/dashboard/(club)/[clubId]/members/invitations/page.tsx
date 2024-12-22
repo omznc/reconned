@@ -1,4 +1,4 @@
-import { InvitationsForm } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations-form";
+import { InvitationsForm } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.form";
 import { InvitationsTable } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -80,6 +80,11 @@ export default async function Page(props: PageProps) {
 				user: {
 					select: {
 						name: true,
+					},
+				},
+				club: {
+					select: {
+						id: true,
 					},
 				},
 			},

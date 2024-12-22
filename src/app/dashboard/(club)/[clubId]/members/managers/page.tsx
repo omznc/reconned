@@ -1,24 +1,27 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { AddManagerForm } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/add-manager-form";
+import { AddManagerForm } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/manager.form";
+import { ManagersTable } from "@/app/dashboard/(club)/[clubId]/members/managers/_components/managers-table";
+import { Role } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 interface PageProps {
-	params: Promise<{
-		clubId: string;
-	}>;
+	params: Promise<{ clubId: string }>;
 	searchParams: Promise<{
-		page?: string;
-		pageSize?: string;
 		search?: string;
-		status?: string;
 		sortBy?: string;
 		sortOrder?: "asc" | "desc";
+		page?: string;
 	}>;
 }
 
 export default async function Page(props: PageProps) {
 	const params = await props.params;
+	const { search, sortBy, sortOrder, page } = await props.searchParams;
+	const currentPage = Math.max(1, Number(page ?? 1));
+	const pageSize = 10;
+
 	const user = await isAuthenticated();
 
 	if (!user) {
@@ -27,15 +30,15 @@ export default async function Page(props: PageProps) {
 
 	const club = await prisma.club.findUnique({
 		where: {
+			id: params.clubId,
 			members: {
 				some: {
 					userId: user.id,
 					role: {
-						in: ["CLUB_OWNER", "MANAGER"],
+						in: [Role.CLUB_OWNER, Role.MANAGER],
 					},
 				},
 			},
-			id: params.clubId,
 		},
 	});
 
@@ -43,5 +46,67 @@ export default async function Page(props: PageProps) {
 		return notFound();
 	}
 
-	return <AddManagerForm />;
+	const where = {
+		clubId: params.clubId,
+		role: {
+			in: [Role.MANAGER, Role.CLUB_OWNER],
+		},
+		...(search
+			? {
+					OR: [
+						{ user: { name: { contains: search, mode: "insensitive" } } },
+						{ user: { email: { contains: search, mode: "insensitive" } } },
+						{ user: { callsign: { contains: search, mode: "insensitive" } } },
+					],
+				}
+			: {}),
+	} satisfies Prisma.ClubMembershipWhereInput;
+
+	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
+		? {
+				...(sortBy === "user.name" && {
+					user: { name: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "user.email" && {
+					user: { email: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "createdAt" && {
+					createdAt: sortOrder ?? "asc",
+				}),
+			}
+		: { createdAt: "desc" };
+
+	const managers = await prisma.clubMembership.findMany({
+		where,
+		orderBy,
+		include: {
+			user: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					image: true,
+					callsign: true,
+				},
+			},
+		},
+		take: pageSize,
+		skip: (currentPage - 1) * pageSize,
+	});
+
+	const totalManagers = await prisma.clubMembership.count({ where });
+
+	return (
+		<div className="space-y-8">
+			<div>
+				<h2 className="text-2xl font-bold mb-4">Menadžeri</h2>
+				<ManagersTable
+					managers={managers}
+					totalManagers={totalManagers}
+					pageSize={pageSize}
+				/>
+			</div>
+			<AddManagerForm />
+		</div>
+	);
 }
