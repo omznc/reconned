@@ -73,7 +73,6 @@ import {
 	SheetTitle,
 } from "@/components/ui/sheet";
 import { Editor } from "@/components/editor/editor";
-import type { JSONContent } from "novel";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SlugInput } from "@/components/slug-input";
 
@@ -1064,17 +1063,21 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											<>
 												<SheetHeader>
 													<SheetTitle>{selectedRule.name}</SheetTitle>
-													{selectedRule.description && (
-														<p className="text-muted-foreground">
-															{selectedRule.description}
-														</p>
-													)}
+													<p className="text-muted-foreground">
+														{(selectedRule.description?.length ?? 0) > 0
+															? selectedRule.description
+															: "Bez opisa"}
+													</p>
 												</SheetHeader>
 												<div className="mt-6 flex-1 overflow-y-auto">
-													<Editor
-														editable={false}
-														initialValue={selectedRule.content as JSONContent}
-														onChange={() => {}}
+													<div
+														className={cn(
+															"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
+														)}
+														// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+														dangerouslySetInnerHTML={{
+															__html: selectedRule.content,
+														}}
 													/>
 												</div>
 											</>

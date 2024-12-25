@@ -26,7 +26,7 @@ import {
 	deleteRule,
 	saveRule,
 } from "@/app/dashboard/(club)/[clubId]/events/rules/_components/rules.action";
-import { useEditor, type JSONContent } from "novel";
+import "@/components/editor/editor.css";
 import {
 	Sheet,
 	SheetContent,
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/sheet";
 import { format } from "date-fns";
 import { useQueryState } from "nuqs";
+import { cn } from "@/lib/utils";
 
 interface RulesFormProps {
 	rules: ClubRule[];
@@ -46,19 +47,10 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	const [ruleId, setRuleId] = useQueryState("ruleId", { shallow: false });
 	const [random, setRandom] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
-	const { editor } = useEditor();
 	const confirm = useConfirm();
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
-	const [editorContent, setEditorContent] = useState<JSONContent>(
-		(editingRule?.content as JSONContent) ?? {
-			type: "doc",
-			content: [
-				{
-					type: "paragraph",
-					content: [{ type: "text", text: "Pišite ovde..." }],
-				},
-			],
-		},
+	const [editorContent, setEditorContent] = useState<string>(
+		editingRule?.content ?? "",
 	);
 
 	const form = useForm<z.infer<typeof ruleSchema>>({
@@ -72,7 +64,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 		},
 	});
 
-	function handleEditorChange(content: JSONContent) {
+	function handleEditorChange(content: string) {
 		setEditorContent(content);
 		form.setValue("content", content, { shouldValidate: true });
 	}
@@ -81,10 +73,8 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	async function onSubmit(values: z.infer<typeof ruleSchema>) {
 		setIsLoading(true);
 		try {
-			// @ts-expect-error TODO: Type better
 			await saveRule(values);
 			form.reset();
-			editor?.commands.clearContent(true);
 			setRuleId(null);
 			setRandom(Math.random());
 			toast.success(
@@ -136,16 +126,14 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 					<FormField
 						control={form.control}
 						name="content"
-						render={({ field }) => (
+						render={() => (
 							<FormItem>
 								<FormLabel>Sadržaj</FormLabel>
 								<FormControl>
-									<div className="h-full p-3 w-full border">
-										<Editor
-											onChange={handleEditorChange}
-											initialValue={editorContent}
-										/>
-									</div>
+									<Editor
+										onChange={handleEditorChange}
+										initialValue={editorContent}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -250,15 +238,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						</CardHeader>
 						<CardContent>
 							<div className="text-sm">
-								{/* Preview first paragraph of content */}
-								{(
-									(rule.content as JSONContent)?.content?.[0]?.content?.[0]
-										?.text || ""
-								).slice(0, 150)}
-								{(
-									(rule.content as JSONContent)?.content?.[0]?.content?.[0]
-										?.text || ""
-								).length > 150 && "..."}
+								{(rule.description?.length ?? 0) > 0
+									? rule.description
+									: "Bez opisa"}
 							</div>
 						</CardContent>
 					</Card>
@@ -274,17 +256,19 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						<>
 							<SheetHeader>
 								<SheetTitle>{selectedRule.name}</SheetTitle>
-								{selectedRule.description && (
-									<p className="text-muted-foreground">
-										{selectedRule.description}
-									</p>
-								)}
+								<p className="text-muted-foreground">
+									{(selectedRule.description?.length ?? 0) > 0
+										? selectedRule.description
+										: "Bez opisa"}
+								</p>
 							</SheetHeader>
 							<div className="mt-6 flex-1 overflow-y-auto">
-								<Editor
-									editable={false}
-									initialValue={selectedRule.content as JSONContent}
-									onChange={() => {}}
+								<div
+									className={cn(
+										"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
+									)}
+									// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+									dangerouslySetInnerHTML={{ __html: selectedRule.content }}
 								/>
 							</div>
 						</>

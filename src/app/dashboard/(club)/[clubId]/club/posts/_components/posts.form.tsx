@@ -17,12 +17,12 @@ import {
 	FormControl,
 	FormMessage,
 } from "@/components/ui/form";
-import { useEditor, type JSONContent } from "novel";
 import { postSchema } from "./posts.schema";
 import { savePost, deletePost } from "./posts.action";
 import { useQueryState } from "nuqs";
 import { Switch } from "@/components/ui/switch";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { useRouter } from "next/navigation";
 
 interface PostsFormProps {
 	clubId: string;
@@ -31,18 +31,10 @@ interface PostsFormProps {
 
 export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const [postId, setPostId] = useQueryState("postId");
+	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
-	const { editor } = useEditor();
-	const [editorContent, setEditorContent] = useState<JSONContent>(
-		(editingPost?.content as JSONContent) ?? {
-			type: "doc",
-			content: [
-				{
-					type: "paragraph",
-					content: [],
-				},
-			],
-		},
+	const [editorContent, setEditorContent] = useState<string>(
+		editingPost?.content ?? "",
 	);
 	const confirm = useConfirm();
 
@@ -58,7 +50,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		},
 	});
 
-	function handleEditorChange(content: JSONContent) {
+	function handleEditorChange(content: string) {
 		setEditorContent(content);
 		form.setValue("content", content, { shouldValidate: true });
 	}
@@ -66,10 +58,8 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	async function onSubmit(values: z.infer<typeof postSchema>) {
 		setIsLoading(true);
 		try {
-			// @ts-expect-error
 			await savePost(values);
 			form.reset();
-			editor?.commands.clearContent(true);
 			setPostId(null);
 			toast.success(
 				values.id
@@ -78,6 +68,10 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			);
 		} catch (error) {
 			toast.error("Greška pri čuvanju objave");
+		} finally {
+			if (values.id) {
+				router.back();
+			}
 		}
 		setIsLoading(false);
 	}
@@ -103,10 +97,11 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 				clubId,
 			});
 			setPostId(null);
-			window.location.reload();
 			toast.success("Objava je uspješno izbrisana");
 		} catch (error) {
 			toast.error("Greška pri brisanju objave");
+		} finally {
+			router.back();
 		}
 		setIsLoading(false);
 	};
