@@ -8,7 +8,7 @@ import { z } from "zod";
 export const createPurchase = safeActionClient
 	.schema(purchaseFormSchema)
 	.action(async ({ parsedInput }) => {
-		const purchase = await prisma.purchases.create({
+		const purchase = await prisma.clubPurchase.create({
 			data: {
 				...parsedInput,
 			},
@@ -19,7 +19,7 @@ export const createPurchase = safeActionClient
 export const updatePurchase = safeActionClient
 	.schema(purchaseFormSchema.extend({ id: z.string() }))
 	.action(async ({ parsedInput }) => {
-		const purchase = await prisma.purchases.update({
+		const purchase = await prisma.clubPurchase.update({
 			where: { id: parsedInput.id },
 			data: {
 				title: parsedInput.title,
@@ -33,7 +33,7 @@ export const updatePurchase = safeActionClient
 export const deletePurchase = safeActionClient
 	.schema(z.object({ id: z.string(), clubId: z.string() }))
 	.action(async ({ parsedInput }) => {
-		await prisma.purchases.delete({
+		await prisma.clubPurchase.delete({
 			where: { id: parsedInput.id },
 		});
 		return { success: true };

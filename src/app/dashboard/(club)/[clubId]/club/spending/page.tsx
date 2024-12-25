@@ -30,22 +30,22 @@ export default async function SpendingPage(props: PageProps) {
 					],
 				}
 			: {}),
-	} satisfies Prisma.PurchasesWhereInput;
+	} satisfies Prisma.ClubPurchaseWhereInput;
 
-	const orderBy: Prisma.PurchasesOrderByWithRelationInput = sortBy
+	const orderBy: Prisma.ClubPurchaseOrderByWithRelationInput = sortBy
 		? {
 				[sortBy]: sortOrder ?? "asc",
 			}
 		: { createdAt: "desc" };
 
-	const purchases = await prisma.purchases.findMany({
+	const purchases = await prisma.clubPurchase.findMany({
 		where,
 		orderBy,
 		take: pageSize,
 		skip: (currentPage - 1) * pageSize,
 	});
 
-	const totalPurchases = await prisma.purchases.count({ where });
+	const totalPurchases = await prisma.clubPurchase.count({ where });
 
 	return (
 		<div className="space-y-4">
