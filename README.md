@@ -1,3 +1,5 @@
+<img src="public/logo.png" alt="Airsoft Event Management System Logo" width="100%" height="auto" />
+
 # Airsoft Event Management System
 
 A Next.js 13+ application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
