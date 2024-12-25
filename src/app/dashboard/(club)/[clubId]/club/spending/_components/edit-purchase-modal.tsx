@@ -28,9 +28,9 @@ import { toast } from "sonner";
 import { updatePurchase } from "./spending.action";
 import type { EditPurchaseFormValues } from "./spending.schema";
 import { editPurchaseFormSchema } from "./spending.schema";
-import type { Purchases } from "@prisma/client";
+import type { ClubPurchase } from "@prisma/client";
 
-export function EditPurchaseModal({ purchase }: { purchase: Purchases }) {
+export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
 	const form = useForm<EditPurchaseFormValues>({

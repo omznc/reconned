@@ -1,0 +1,38 @@
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  emailVerified Boolean
+  isPrivate     Boolean  @default(false)
+  image         String?
+  slug          String?  @unique
+  bio           String?
+  location      String?
+  website       String?
+  phone         String?
+  callsign      String?
+  gear          Json[]
+
+  clubMembership      ClubMembership[]
+  clubInvitesReceived ClubInvite[]
+  eventRegistration   EventRegistration[]
+  createdEventRegistrations EventRegistration[] @relation("EventRegistrationCreatedBy")
+  
+  role             String?
+  banned           Boolean?
+  banReason        String?
+  banExpires       DateTime?
+  twoFactorEnabled Boolean?
+  isAdmin          Boolean?
+
+  reviewsReceived  Review[]    @relation("UserReviews")
+  reviewsWritten   Review[]    @relation("ReviewAuthor")
+  
+  sessions    Session[]
+  accounts    Account[]
+  passkeys    Passkey[]
+  twofactors  TwoFactor[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}

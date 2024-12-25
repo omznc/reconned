@@ -1,0 +1,67 @@
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId      String
+  coverImage  String?
+  slug        String?  @unique
+  
+  dateStart              DateTime
+  dateEnd               DateTime
+  dateRegistrationsClose DateTime
+  dateRegistrationsOpen  DateTime
+
+  isPrivate        Boolean @default(false)
+  allowFreelancers Boolean @default(false)
+  location         String
+  googleMapsLink   String?
+  costPerPerson    Float   @default(0)
+
+  hasBreakfast Boolean @default(false)
+  hasLunch     Boolean @default(false)
+  hasDinner    Boolean @default(false)
+  hasSnacks    Boolean @default(false)
+  hasDrinks    Boolean @default(false)
+  hasPrizes    Boolean @default(false)
+
+  rules            ClubRule[]
+  gearRequirements Json[]
+  mapData          Json?
+
+  eventRegistration EventRegistration[]
+  eventInvite       EventInvite[]
+  reviews           Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EventRegistration {
+  id          String    @id @default(cuid())
+  event       Event     @relation(fields: [eventId], references: [id])
+  eventId     String
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id], name: "EventRegistrationCreatedBy")
+  invitedUsers User[]
+  invitedUsersNotOnApp EventInvite[]
+  type        String    @default("solo")
+  paymentMethod String  @default("cash")
+  attended    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+}
+
+model EventInvite {
+  id                  String            @id @default(cuid())
+  event               Event             @relation(fields: [eventId], references: [id])
+  eventId             String
+  name                String
+  email               String
+  token               String            @unique
+  expiresAt           DateTime
+  eventRegistration   EventRegistration? @relation(fields: [eventRegistrationId], references: [id])
+  eventRegistrationId String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @default(now())
+}

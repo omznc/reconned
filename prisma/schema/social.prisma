@@ -1,0 +1,36 @@
+model Review {
+  id        String     @id @default(cuid())
+  type      ReviewType
+  rating    Int        @db.SmallInt
+  content   String
+  authorId  String
+  author    User       @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  userId    String?
+  user      User?      @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
+  clubId    String?
+  club      Club?      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  eventId   String?
+  event     Event?     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([authorId, userId])
+  @@unique([authorId, clubId])
+  @@unique([authorId, eventId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  images    String[]
+  isPublic  Boolean  @default(false)
+  club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clubId])
+}

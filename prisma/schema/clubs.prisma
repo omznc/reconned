@@ -1,0 +1,85 @@
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  location    String?
+  description String?
+  dateFounded DateTime?
+  slug        String?  @unique
+  isAllied    Boolean  @default(false)
+  isPrivate   Boolean  @default(false)
+  logo        String?
+  contactPhone String?
+  contactEmail String?
+
+  events      Event[]
+  rules       ClubRule[]
+  members     ClubMembership[]
+  invitesSent ClubInvite[]
+  reviews     Review[]
+  purchases   ClubPurchase[]
+  posts       Post[]
+
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ClubPurchase {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId      String
+  amount      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+model ClubRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  content     String
+  club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId      String
+  Event       Event?   @relation(fields: [eventId], references: [id])
+  eventId     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+model ClubMembership {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  club      Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+  role      Role      @default(USER)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  @@unique([userId, clubId])
+}
+
+model ClubInvite {
+  id         String       @id @default(cuid())
+  email      String
+  club       Club         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId     String
+  user       User?        @relation(fields: [userId], references: [id])
+  userId     String?
+  status     InviteStatus @default(PENDING)
+  inviteCode String       @unique
+  expiresAt  DateTime
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @default(now())
+
+  @@index([email])
+  @@index([status])
+  @@index([inviteCode])
+}

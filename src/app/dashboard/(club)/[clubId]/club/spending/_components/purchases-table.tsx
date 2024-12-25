@@ -1,7 +1,6 @@
 "use client";
 
 import { GenericDataTable } from "@/components/generic-data-table";
-import type { Purchases } from "@prisma/client";
 import { Trash2 } from "lucide-react";
 import { deletePurchase } from "./spending.action";
 import { toast } from "sonner";
@@ -9,9 +8,10 @@ import { useRouter } from "next/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { EditPurchaseModal } from "@/app/dashboard/(club)/[clubId]/club/spending/_components/edit-purchase-modal";
 import { Button } from "@/components/ui/button";
+import type { ClubPurchase } from "@prisma/client";
 
 interface PurchasesTableProps {
-	purchases: Purchases[];
+	purchases: ClubPurchase[];
 	totalPurchases: number;
 	pageSize: number;
 }
