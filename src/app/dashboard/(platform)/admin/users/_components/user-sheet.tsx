@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import type { Club, ClubMembership, User } from "@prisma/client";
 import { useQueryState } from "nuqs";
-import { UserActions } from "@/app/dashboard/admin/users/_components/user-actions";
+import { UserActions } from "@/app/dashboard/(platform)/admin/users/_components/user-actions";
 
 type Props = {
 	user?: User & {

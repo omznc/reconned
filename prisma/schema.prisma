@@ -100,6 +100,19 @@ model Club {
   updatedAt DateTime @updatedAt
 
   reviews Review[]
+
+  purchases Purchases[]
+}
+
+model Purchases {
+  id        String   @id @default(cuid())
+  title     String
+  description String?
+  club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model ClubRule {

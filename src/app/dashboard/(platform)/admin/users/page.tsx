@@ -1,5 +1,5 @@
-import { UserSheet } from "@/app/dashboard/admin/users/_components/user-sheet";
-import { UserTable } from "@/app/dashboard/admin/users/_components/user-table";
+import { UserSheet } from "@/app/dashboard/(platform)/admin/users/_components/user-sheet";
+import { UserTable } from "@/app/dashboard/(platform)/admin/users/_components/user-table";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
