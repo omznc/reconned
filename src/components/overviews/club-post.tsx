@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Editor } from "@/components/editor/editor";
 import type { Post } from "@prisma/client";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +8,8 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
 import { useState } from "react";
-import type { JSONContent } from "novel";
+import "@/components/editor/editor.css";
+import { cn } from "@/lib/utils";
 
 interface ClubPostProps {
 	post: Post & { createdAt: Date };
@@ -17,31 +17,23 @@ interface ClubPostProps {
 	isManager?: boolean;
 }
 
-function isLongContent(content: JSONContent): boolean {
+function isLongContent(content: string): boolean {
 	// Check if content has multiple paragraphs or lots of text
-	if (!content.content) {
+	if (!content) {
 		return false;
 	}
 
-	// Count total text length across all nodes
-	let totalLength = 0;
-	for (const node of content.content) {
-		if (node.type === "paragraph" && node.content) {
-			for (const textNode of node.content) {
-				if (textNode.type === "text" && textNode.text) {
-					totalLength += textNode.text.length;
-				}
-			}
-		}
+	const paragraphs = content.split("\n");
+	if (paragraphs.length > 7) {
+		return true;
 	}
 
-	// Consider content long if it has more than 300 characters
-	return totalLength > 300;
+	return false;
 }
 
 export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
-	const content = post.content as JSONContent;
+	const content = post.content;
 	const isOverflowing = isLongContent(content);
 
 	return (
@@ -50,13 +42,9 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 				<div className="space-y-1">
 					<h3 className="font-medium">{post.title}</h3>
 					<p className="text-sm text-muted-foreground">
-						{`Dodano/promjenjeno ${format(
-							post.updatedAt,
-							"dd.MM.yyyy 'u' HH:mm",
-							{
-								locale: bs,
-							},
-						)}`}
+						{format(post.updatedAt, "dd.MM.yyyy '-' HH:mm", {
+							locale: bs,
+						})}
 					</p>
 				</div>
 				{isManager && (
@@ -70,7 +58,13 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 			<div
 				className={isExpanded ? "" : "max-h-[300px] overflow-hidden relative"}
 			>
-				<Editor editable={false} initialValue={content} />
+				<div
+					className={cn(
+						"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 p-4",
+					)}
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+					dangerouslySetInnerHTML={{ __html: content }}
+				/>
 				{!isExpanded && isOverflowing && (
 					<div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-sidebar to-transparent" />
 				)}

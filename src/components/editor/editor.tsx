@@ -1,117 +1,148 @@
 "use client";
-import { useState } from "react";
-import {
-	EditorRoot,
-	EditorCommand,
-	EditorCommandItem,
-	EditorCommandEmpty,
-	EditorContent,
-	type JSONContent,
-	EditorCommandList,
-	EditorBubble,
-} from "novel";
-import { ImageResizer, handleCommandNavigation } from "novel/extensions";
-import { defaultExtensions } from "@/components/editor/extensions";
-import {
-	slashCommand,
-	suggestionItems,
-} from "@/components/editor/slash-command";
-import { LinkSelector } from "@/components/editor/selectors/link-selector";
-import { NodeSelector } from "@/components/editor/selectors/node-selector";
-import { TextButtons } from "@/components/editor/selectors/text-buttons";
-import { Separator } from "@/components/ui/separator";
+
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import { cn } from "@/lib/utils";
+import {
+	Bold,
+	Italic,
+	List,
+	ListOrdered,
+	Quote,
+	Heading2,
+	Heading3,
+	Minus,
+} from "lucide-react";
+import "./editor.css";
+import { Button } from "@/components/ui/button";
 
-const extensions = [...defaultExtensions, slashCommand];
-
-interface EditorProp {
-	initialValue?: JSONContent;
-	onChange?: (value: JSONContent) => void;
+interface EditorProps {
+	initialValue?: string;
+	onChange?: (value: string) => void;
 	editable?: boolean;
 }
-export const Editor = ({ editable, initialValue, onChange }: EditorProp) => {
-	const [openNode, setOpenNode] = useState(false);
-	const [openLink, setOpenLink] = useState(false);
+
+const ToolbarButton = ({
+	onClick,
+	active,
+	disabled,
+	children,
+}: {
+	onClick: () => void;
+	active?: boolean;
+	disabled?: boolean;
+	children: React.ReactNode;
+}) => {
+	return (
+		<Button
+			type="button"
+			variant={active ? "secondary" : "ghost"}
+			size="icon"
+			onClick={onClick}
+			disabled={disabled}
+			className="h-8 w-8"
+		>
+			{children}
+		</Button>
+	);
+};
+
+export const Editor = ({
+	editable = true,
+	initialValue = "",
+	onChange,
+}: EditorProps) => {
+	const editor = useEditor({
+		extensions: [StarterKit],
+		content: initialValue,
+		editable,
+		onUpdate: ({ editor }) => {
+			console.log(editor.getHTML());
+			onChange?.(editor.getHTML());
+		},
+	});
 
 	return (
-		<EditorRoot>
-			<EditorContent
-				editable={editable}
-				className={cn("h-full w-full min-w-full", {
-					"border p-2": editable,
-				})}
-				{...(initialValue && { initialContent: initialValue })}
-				extensions={extensions}
-				editorProps={{
-					handleDOMEvents: {
-						keydown: (_view, event) => handleCommandNavigation(event),
-					},
+		<div className="relative border rounded-lg">
+			{editable && editor && (
+				<div className="flex flex-wrap gap-1 p-1 border-b items-center">
+					<ToolbarButton
+						onClick={() => editor.chain().focus().toggleBold().run()}
+						active={editor.isActive("bold")}
+					>
+						<Bold className="h-4 w-4" />
+					</ToolbarButton>
 
-					attributes: {
-						class:
-							"prose dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full",
-					},
-				}}
-				onUpdate={({ editor }) => {
-					onChange?.(editor.getJSON());
-				}}
-				slotAfter={<ImageResizer />}
-			>
-				<EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
-					<EditorCommandEmpty className="px-2 text-muted-foreground">
-						No results
-					</EditorCommandEmpty>
-					<EditorCommandList>
-						{suggestionItems.map((item) => (
-							<EditorCommandItem
-								value={item.title}
-								onCommand={(val) => item.command?.(val)}
-								className={
-									"flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:bg-accent aria-selected:bg-accent "
-								}
-								key={item.title}
-							>
-								<div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted bg-background">
-									{item.icon}
-								</div>
-								<div>
-									<p className="font-medium">{item.title}</p>
-									<p className="text-xs text-muted-foreground">
-										{item.description}
-									</p>
-								</div>
-							</EditorCommandItem>
-						))}
-					</EditorCommandList>
-				</EditorCommand>
+					<ToolbarButton
+						onClick={() => editor.chain().focus().toggleItalic().run()}
+						active={editor.isActive("italic")}
+					>
+						<Italic className="h-4 w-4" />
+					</ToolbarButton>
 
-				<EditorBubble
-					shouldShow={({ state }) => {
-						const { selection } = state;
-						const { empty } = selection;
+					<div className="w-px h-6 bg-border mx-1" />
 
-						// Don't show if there's no selection or if it's collapsed
-						if (empty) {
-							return false;
+					<ToolbarButton
+						onClick={() =>
+							editor.chain().focus().toggleHeading({ level: 2 }).run()
 						}
+						active={editor.isActive("heading", { level: 2 })}
+					>
+						<Heading2 className="h-4 w-4" />
+					</ToolbarButton>
 
-						return true;
-					}}
-					tippyOptions={{
-						placement: "top",
-					}}
-					className="flex w-fit max-w-[90vw] overflow-hidden rounded-md border border-muted bg-background shadow-xl"
-				>
-					<Separator orientation="vertical" />
-					<NodeSelector open={openNode} onOpenChange={setOpenNode} />
-					<Separator orientation="vertical" />
+					<ToolbarButton
+						onClick={() =>
+							editor.chain().focus().toggleHeading({ level: 3 }).run()
+						}
+						active={editor.isActive("heading", { level: 3 })}
+					>
+						<Heading3 className="h-4 w-4" />
+					</ToolbarButton>
 
-					<LinkSelector open={openLink} onOpenChange={setOpenLink} />
-					<Separator orientation="vertical" />
-					<TextButtons />
-					<Separator orientation="vertical" />
-				</EditorBubble>
-			</EditorContent>
-		</EditorRoot>
+					<div className="w-px h-6 bg-border mx-1" />
+
+					<ToolbarButton
+						onClick={() => editor.chain().focus().toggleBulletList().run()}
+						active={editor.isActive("bulletList")}
+					>
+						<List className="h-4 w-4" />
+					</ToolbarButton>
+
+					<ToolbarButton
+						onClick={() => editor.chain().focus().toggleOrderedList().run()}
+						active={editor.isActive("orderedList")}
+					>
+						<ListOrdered className="h-4 w-4" />
+					</ToolbarButton>
+
+					<div className="w-px h-6 bg-border mx-1" />
+
+					<ToolbarButton
+						onClick={() => editor.chain().focus().toggleBlockquote().run()}
+						active={editor.isActive("blockquote")}
+					>
+						<Quote className="h-4 w-4" />
+					</ToolbarButton>
+
+					<ToolbarButton
+						onClick={() => editor.chain().focus().setHorizontalRule().run()}
+					>
+						<Minus className="h-4 w-4" />
+					</ToolbarButton>
+				</div>
+			)}
+
+			<EditorContent
+				editor={editor}
+				className={cn(
+					"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
+					"p-4",
+					{
+						"min-h-[150px]": editable,
+					},
+				)}
+			/>
+		</div>
 	);
 };

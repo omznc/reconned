@@ -1,0 +1,25 @@
+.ProseMirror {
+	outline: none;
+}
+
+.ProseMirror > * + * {
+	margin-top: 0.75em;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+	padding: 0 1rem;
+}
+
+.ProseMirror blockquote {
+	border-left: 2px solid #ddd;
+	margin-left: 0;
+	margin-right: 0;
+	padding-left: 1rem;
+}
+
+.ProseMirror hr {
+	border: none;
+	border-top: 2px solid #ddd;
+	margin: 2rem 0;
+}

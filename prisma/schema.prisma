@@ -121,7 +121,7 @@ model ClubRule {
   id          String   @id @default(cuid())
   name        String
   description String?
-  content     Json // This will store the editor's JSON content
+  content     String
   club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId      String
   createdAt   DateTime @default(now())
@@ -344,7 +344,7 @@ model TwoFactor {
 model Post {
   id        String   @id @default(cuid())
   title     String
-  content   Json
+  content   String
   images    String[] // Array of image URLs
   isPublic  Boolean  @default(false)
   

@@ -2,12 +2,15 @@ import { PostsForm } from "@/app/dashboard/(club)/[clubId]/club/posts/_component
 import { prisma } from "@/lib/prisma";
 
 export default async function Page({
-	params: { clubId },
-	searchParams: { postId },
+	params,
+	searchParams,
 }: {
-	params: { clubId: string };
-	searchParams: { postId?: string };
+	params: Promise<{ clubId: string }>;
+	searchParams: Promise<{ postId?: string }>;
 }) {
+	const { clubId } = await params;
+	const { postId } = await searchParams;
+
 	const editingPost = postId
 		? await prisma.post.findUnique({
 				where: { id: postId, clubId },

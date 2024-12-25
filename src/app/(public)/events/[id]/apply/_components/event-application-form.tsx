@@ -42,20 +42,20 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import "@/components/editor/editor.css";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import debounce from "lodash/debounce";
 import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import {
-	submitEventApplication,
-	deleteRegistration,
-} from "./event-application.actions";
-import { isValidEmail } from "@/lib/utils"; // Add this utility function if not exists
+import { cn, isValidEmail } from "@/lib/utils"; // Add this utility function if not exists
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Editor } from "@/components/editor/editor";
-import type { JSONContent } from "novel";
+import {
+	deleteRegistration,
+	submitEventApplication,
+} from "@/app/(public)/events/[id]/apply/_components/event-application.actions";
 
 interface EventApplicationProps {
 	existingApplication:
@@ -821,10 +821,12 @@ export function EventApplicationForm({
 												{rule.description}
 											</p>
 										)}
-										<Editor
-											editable={false}
-											initialValue={rule.content as JSONContent}
-											onChange={() => {}}
+										<div
+											className={cn(
+												"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
+											)}
+											// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+											dangerouslySetInnerHTML={{ __html: rule.content }}
 										/>
 										{index < event.rules.length - 1 && (
 											<hr className="border-t" />
