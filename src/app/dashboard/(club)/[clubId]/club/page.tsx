@@ -31,6 +31,7 @@ export default async function Page(props: PageProps) {
 					members: true,
 				},
 			},
+			posts: true,
 		},
 	});
 
@@ -42,7 +43,10 @@ export default async function Page(props: PageProps) {
 			<div>
 				<h3 className="text-lg font-semibold">Klub</h3>
 			</div>
-			<ClubOverview club={club} />
+			<ClubOverview
+				club={club}
+				isManager={user.managedClubs.includes(club.id)}
+			/>
 		</>
 	);
 }
