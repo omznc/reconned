@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ClubOverview } from "@/components/overviews/club-overview";
+import { isAuthenticated } from "@/lib/auth";
 
 interface PageProps {
 	params: Promise<{
@@ -10,6 +11,15 @@ interface PageProps {
 
 export default async function Page(props: PageProps) {
 	const params = await props.params;
+	const user = await isAuthenticated();
+	const isMemberOfClub = user
+		? await prisma.clubMembership.findFirst({
+				where: {
+					userId: user?.id,
+					clubId: params.id,
+				},
+			})
+		: false;
 
 	const club = await prisma.club.findFirst({
 		where: {
@@ -22,6 +32,12 @@ export default async function Page(props: PageProps) {
 					members: true,
 				},
 			},
+			posts: {
+				orderBy: {
+					createdAt: "desc",
+				},
+				...(isMemberOfClub ? {} : { where: { isPublic: true } }),
+			},
 		},
 	});
 
@@ -31,7 +47,10 @@ export default async function Page(props: PageProps) {
 
 	return (
 		<div className="flex flex-col size-full gap-8">
-			<ClubOverview club={club} />
+			<ClubOverview
+				club={club}
+				isManager={user?.managedClubs.includes(club.id)}
+			/>
 		</div>
 	);
 }

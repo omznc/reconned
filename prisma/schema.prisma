@@ -102,6 +102,8 @@ model Club {
   reviews Review[]
 
   purchases Purchases[]
+
+  posts      Post[]
 }
 
 model Purchases {
@@ -337,4 +339,20 @@ model TwoFactor {
   backupCodes String
   userId      String
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   Json
+  images    String[] // Array of image URLs
+  isPublic  Boolean  @default(false)
+  
+  club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clubId])
 }

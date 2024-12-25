@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { Club, Review, User } from "@prisma/client";
+import type { Club, Post } from "@prisma/client";
 import {
 	AtSign,
 	Eye,
@@ -10,16 +10,19 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { ClubPost } from "@/components/overviews/club-post";
 
 interface ClubOverviewProps {
 	club: Club & {
 		_count: {
 			members: number;
 		};
+		posts: (Post & { createdAt: Date })[];
 	};
+	isManager?: boolean;
 }
 
-export function ClubOverview({ club }: ClubOverviewProps) {
+export function ClubOverview({ club, isManager }: ClubOverviewProps) {
 	return (
 		<div className="space-y-6">
 			<div className="flex gap-4">
@@ -78,6 +81,25 @@ export function ClubOverview({ club }: ClubOverviewProps) {
 				)}
 			</div>
 			<ReviewsOverview type="club" typeId={club.id} />
+			<div className="space-y-4">
+				<h2 className="text-xl font-semibold flex items-center gap-2">
+					Objave
+				</h2>
+				{!club.posts || club.posts.length === 0 ? (
+					<p className="text-muted-foreground">Nema objava</p>
+				) : (
+					<div className="space-y-4">
+						{club.posts?.map((post) => (
+							<ClubPost
+								key={post.id}
+								post={post}
+								clubId={club.id}
+								isManager={isManager}
+							/>
+						))}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

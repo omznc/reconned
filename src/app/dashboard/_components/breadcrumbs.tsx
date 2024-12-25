@@ -155,4 +155,6 @@ const TRANSLATIONS = {
 	attendance: "Prisustvo",
 	admin: "Administacija",
 	emails: "Emailovi",
+	posts: "Nova objava",
+	spending: "Potrošnja",
 };

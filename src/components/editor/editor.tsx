@@ -37,7 +37,9 @@ export const Editor = ({ editable, initialValue, onChange }: EditorProp) => {
 		<EditorRoot>
 			<EditorContent
 				editable={editable}
-				className={cn("h-full w-full min-w-full min-h-[300px]")}
+				className={cn("h-full w-full min-w-full", {
+					"border p-2": editable,
+				})}
 				{...(initialValue && { initialContent: initialValue })}
 				extensions={extensions}
 				editorProps={{
