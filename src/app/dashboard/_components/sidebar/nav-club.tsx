@@ -29,6 +29,7 @@ import {
 	Plus,
 	CalendarDays,
 	DiamondMinus,
+	DollarSign,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
@@ -137,6 +138,11 @@ const getItems = (clubId: string) => {
 					title: "Pregled",
 					url: `/dashboard/${clubId}/club`,
 					icon: Search,
+				},
+				{
+					title: "Potrošnja",
+					url: `/dashboard/${clubId}/club/spending`,
+					icon: DollarSign,
 				},
 				{
 					title: "Informacije",
