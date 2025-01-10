@@ -4,7 +4,7 @@ export const postSchema = z.object({
 	id: z.string().optional(),
 	title: z.string().min(1, "Naslov je obavezan").max(200, "Naslov je predug"),
 	content: z.string(),
-	images: z.array(z.string().url("Nevažeći URL")).optional(),
+	// images: z.array(z.string().url("Nevažeći URL")).optional(),
 	isPublic: z.boolean().default(false),
 	clubId: z.string(),
 });

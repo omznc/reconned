@@ -163,6 +163,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="slug"
 					render={({ field }) => (
 						<SlugInput
+							currentSlug={props.user.slug}
 							defaultSlug={field.value}
 							type="user"
 							onValid={(slug) => {

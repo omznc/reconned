@@ -2,6 +2,8 @@ import { AddPurchaseModal } from "@/app/dashboard/(club)/[clubId]/club/spending/
 import { PurchasesTable } from "@/app/dashboard/(club)/[clubId]/club/spending/_components/purchases-table";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { ErrorPage } from "@/components/error-page";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -14,6 +16,9 @@ interface PageProps {
 }
 
 export default async function SpendingPage(props: PageProps) {
+	if (!FEATURE_FLAGS.CLUBS_SPENDING) {
+		return <ErrorPage title="Ova funkcionalnost nije dostupna" />;
+	}
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page } = await props.searchParams;
 

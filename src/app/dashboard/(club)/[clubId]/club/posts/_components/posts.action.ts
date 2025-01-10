@@ -17,7 +17,7 @@ export const savePost = safeActionClient
 					data: {
 						title: parsedInput.title,
 						content: parsedInput.content,
-						images: parsedInput.images,
+						// images: parsedInput.images,
 						isPublic: parsedInput.isPublic,
 					},
 				})
@@ -25,7 +25,7 @@ export const savePost = safeActionClient
 					data: {
 						title: parsedInput.title,
 						content: parsedInput.content,
-						images: parsedInput.images || [],
+						// images: parsedInput.images || [],
 						isPublic: parsedInput.isPublic,
 						clubId: ctx.club.id,
 					},

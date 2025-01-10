@@ -72,7 +72,6 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
-import { Editor } from "@/components/editor/editor";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SlugInput } from "@/components/slug-input";
 
@@ -389,6 +388,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					name="slug"
 					render={({ field }) => (
 						<SlugInput
+							currentSlug={props.event?.slug}
 							defaultSlug={field.value}
 							type="event"
 							onValid={(slug) => {

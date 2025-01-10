@@ -34,7 +34,7 @@ export function Header({ user }: { user: User | null }) {
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
 							<Link href="/dashboard?autoSelectFirst=true" className="w-full">
-								Dashboard
+								Aplikacija
 							</Link>
 						</Button>
 						<DropdownMenu>

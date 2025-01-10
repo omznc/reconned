@@ -5,12 +5,15 @@ import {
 	Eye,
 	EyeOff,
 	MapPin,
+	Pencil,
 	Phone,
 	User as UserIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { ClubPost } from "@/components/overviews/club-post";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ClubOverviewProps {
 	club: Club & {
@@ -82,9 +85,19 @@ export function ClubOverview({ club, isManager }: ClubOverviewProps) {
 			</div>
 			<ReviewsOverview type="club" typeId={club.id} />
 			<div className="space-y-4">
-				<h2 className="text-xl font-semibold flex items-center gap-2">
-					Objave
-				</h2>
+				<div className="flex items-center justify-between">
+					<h2 className="text-xl font-semibold flex items-center gap-2">
+						Objave
+					</h2>
+					{isManager && (
+						<Button asChild>
+							<Link href={`/dashboard/${club.id}/club/posts`}>
+								<Pencil className="h-4 w-4" />
+								Nova objava
+							</Link>
+						</Button>
+					)}
+				</div>
 				{!club.posts || club.posts.length === 0 ? (
 					<p className="text-muted-foreground">Nema objava</p>
 				) : (
