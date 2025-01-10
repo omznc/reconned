@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
 import { format } from "date-fns";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 
 interface ReviewsOverviewProps {
 	type: "club" | "event" | "user";
@@ -11,6 +12,9 @@ interface ReviewsOverviewProps {
 }
 
 export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
+	if (!FEATURE_FLAGS.REVIEWS) {
+		return;
+	}
 	// Fetch reviews based on type
 	let reviews;
 	switch (type) {

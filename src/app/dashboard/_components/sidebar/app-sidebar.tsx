@@ -78,7 +78,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const selectedClub = props.clubs.find((club) => club.id === clubId);
 
 	return (
-		<Sidebar collapsible="icon">
+		<Sidebar collapsible="offcanvas" variant="floating">
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
@@ -205,6 +205,24 @@ export function AppSidebar(props: AppSidebarProps) {
 				<NavClub user={props.user} />
 			</SidebarContent>
 			<SidebarFooter>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						{sidebar.open ? (
+							<div className="px-3 py-2 border bg-background/20">
+								<p className="text-xs text-muted-foreground">
+									Beta verzija aplikacije - Moguće su promjene i greške.
+								</p>
+							</div>
+						) : (
+							<div className="px-1 py-2 border bg-background/20 flex flex-col items-center">
+								<p className="text-xs text-muted-foreground">B</p>
+								<p className="text-xs text-muted-foreground">E</p>
+								<p className="text-xs text-muted-foreground">T</p>
+								<p className="text-xs text-muted-foreground">A</p>
+							</div>
+						)}
+					</SidebarMenuItem>
+				</SidebarMenu>
 				<UserSwitcher />
 			</SidebarFooter>
 			<SidebarRail />

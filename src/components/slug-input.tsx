@@ -14,6 +14,7 @@ import { useDebounce } from "use-debounce";
 
 interface SlugInputProps {
 	type: "club" | "event" | "user";
+	currentSlug?: string | null;
 	defaultSlug?: string;
 	onValid: (_: string) => void;
 }
@@ -61,7 +62,7 @@ export function SlugInput(props: SlugInputProps) {
 			</FormControl>
 			<FormDescription>
 				Kratki link koji ćete moći podjeliti.{" "}
-				{debouncedSlug && (
+				{debouncedSlug && debouncedSlug !== props.currentSlug && (
 					<span className={valid ? "text-green-500" : "text-red-500"}>
 						{valid ? "Link je dostupan." : "Link je zauzet!"}
 					</span>

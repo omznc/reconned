@@ -280,6 +280,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="slug"
 					render={({ field }) => (
 						<SlugInput
+							currentSlug={props.club?.slug}
 							defaultSlug={field.value}
 							type="club"
 							onValid={(slug) => {

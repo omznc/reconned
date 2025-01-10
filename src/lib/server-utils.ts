@@ -22,3 +22,22 @@ export function hasActiveClubMembership(props: {
 
 	return hasStarted && hasNotEnded;
 }
+
+export const FEATURE_FLAGS = {
+	/**
+	 * Club spending feature. Allows uploading receipts and tracking club spending.
+	 */
+	CLUBS_SPENDING: false,
+	/**
+	 * Club posts feature. Allows posting and commenting on club posts.
+	 */
+	CLUBS_POSTS: false,
+	/**
+	 * Event, User, and Club reviews feature. Allows leaving reviews on events, users, and clubs.
+	 */
+	REVIEWS: false,
+	/**
+	 * Covers event registrations and attendance tracking.
+	 */
+	EVENT_REGISTRATION: false,
+};

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ErrorPage } from "@/components/error-page";
 import { AttendanceTracker } from "@/app/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 
 interface PageProps {
 	params: Promise<{
@@ -12,6 +13,10 @@ interface PageProps {
 }
 
 export default async function Page(props: PageProps) {
+	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
+		return <ErrorPage title="Ova funkcionalnost nije dostupna" />;
+	}
+
 	const params = await props.params;
 	const user = await isAuthenticated();
 

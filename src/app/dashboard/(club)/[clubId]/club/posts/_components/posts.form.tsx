@@ -44,7 +44,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			id: editingPost?.id,
 			title: editingPost?.title ?? "",
 			content: editorContent,
-			images: editingPost?.images ?? [],
+			// images: editingPost?.images ?? [],
 			isPublic: editingPost?.isPublic ?? false,
 			clubId,
 		},
@@ -155,7 +155,8 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						)}
 					/>
 
-					<FormField
+					{/* TODO */}
+					{/* <FormField
 						control={form.control}
 						name="images"
 						render={({ field }) => (
@@ -167,7 +168,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 								<FormMessage />
 							</FormItem>
 						)}
-					/>
+					/> */}
 
 					<FormField
 						control={form.control}
@@ -181,6 +182,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 										onCheckedChange={field.onChange}
 									/>
 								</FormControl>
+								<FormMessage />
 							</FormItem>
 						)}
 					/>

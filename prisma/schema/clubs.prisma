@@ -33,6 +33,7 @@ model ClubPurchase {
   description String?
   club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId      String
+  receiptUrls String[]
   amount      Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
