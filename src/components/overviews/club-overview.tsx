@@ -26,6 +26,16 @@ interface ClubOverviewProps {
 }
 
 export function ClubOverview({ club, isManager }: ClubOverviewProps) {
+	const posts = club.posts.sort((a, b) => {
+		if (a.createdAt < b.createdAt) {
+			return 1;
+		}
+		if (a.createdAt > b.createdAt) {
+			return -1;
+		}
+		return 0;
+	});
+
 	return (
 		<div className="space-y-6">
 			<div className="flex gap-4">
@@ -98,11 +108,11 @@ export function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						</Button>
 					)}
 				</div>
-				{!club.posts || club.posts.length === 0 ? (
+				{!posts || posts.length === 0 ? (
 					<p className="text-muted-foreground">Nema objava</p>
 				) : (
 					<div className="space-y-4">
-						{club.posts?.map((post) => (
+						{posts?.map((post) => (
 							<ClubPost
 								key={post.id}
 								post={post}

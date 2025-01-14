@@ -58,7 +58,7 @@ export default async function Page() {
 		take: 100,
 	});
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-4 max-w-[1200px] py-8">
 			<h1 className="text-xl font-bold">Nadolazeći događaji</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{upcomingEvents.length === 0 && (

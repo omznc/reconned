@@ -78,7 +78,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const selectedClub = props.clubs.find((club) => club.id === clubId);
 
 	return (
-		<Sidebar collapsible="offcanvas" variant="floating">
+		<Sidebar collapsible="icon" variant="floating">
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>

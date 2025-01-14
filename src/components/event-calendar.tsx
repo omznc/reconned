@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { parse as parseDateFns, format as formatDateFns } from "date-fns";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { BadgeSoon } from "@/components/badge-soon";
 
 interface EventCalendarProps {
 	events: (Event & { club: { name: string }; image?: string | null })[];
@@ -442,7 +443,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																			}}
 																		>
 																			<Plus className="h-4 w-4 mr-2" />
-																			Prijavi se
+																			Prijavi se <BadgeSoon className="ml-2" />
 																		</Button>
 																	) : (
 																		<p className="text-sm text-muted-foreground text-center mt-2">

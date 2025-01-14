@@ -52,7 +52,7 @@ export default async function Page(props: PageProps) {
 	);
 
 	return (
-		<div className="flex flex-col size-full gap-8">
+		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8">
 			<UserOverview user={user} />
 		</div>
 	);
