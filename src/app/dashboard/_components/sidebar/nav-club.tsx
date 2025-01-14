@@ -35,6 +35,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { User } from "better-auth";
+import { BadgeSoon } from "@/components/badge-soon";
 
 interface NavClubProps {
 	user: User & { managedClubs: string[] };
@@ -96,6 +97,9 @@ export function NavClub({ user }: NavClubProps) {
 															<Link href={subItem.url}>
 																{subItem.icon && <subItem.icon />}
 																<span>{subItem.title}</span>
+																{subItem?.isSoon && (
+																	<BadgeSoon className="ml-2" />
+																)}
 															</Link>
 														</SidebarMenuSubButton>
 													</SidebarMenuSubItem>
@@ -150,6 +154,7 @@ const getItems = (clubId: string) => {
 					title: "Potrošnja",
 					url: `/dashboard/${clubId}/club/spending`,
 					icon: DollarSign,
+					isSoon: true,
 				},
 				{
 					title: "Informacije",
@@ -218,5 +223,16 @@ const getItems = (clubId: string) => {
 				},
 			],
 		},
-	];
+	] as {
+		title: string;
+		url: string;
+		icon?: React.FC;
+		items?: {
+			title: string;
+			url: string;
+			icon?: React.FC;
+			protected?: boolean;
+			isSoon?: boolean;
+		}[];
+	}[];
 };

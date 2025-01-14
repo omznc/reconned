@@ -13,7 +13,7 @@ export default async function RootLayout({
 		<>
 			<div className="w-full min-h-screen flex flex-col items-center">
 				<Header user={user} />
-				<div className="flex-grow p-2 size-full flex flex-col py-8 items-center max-w-[1200px]">
+				<div className="flex-grow size-full flex flex-col items-center">
 					{children}
 				</div>
 			</div>

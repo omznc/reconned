@@ -5,7 +5,7 @@ import type { Post } from "@prisma/client";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { format } from "date-fns";
+import { format, formatRelative } from "date-fns";
 import { bs } from "date-fns/locale";
 import { useState } from "react";
 import "@/components/editor/editor.css";
@@ -42,7 +42,8 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 				<div className="space-y-1">
 					<h3 className="font-medium">{post.title}</h3>
 					<p className="text-sm text-muted-foreground">
-						{format(post.updatedAt, "dd.MM.yyyy '-' HH:mm", {
+						Objavljeno{" "}
+						{formatRelative(post.createdAt, new Date(), {
 							locale: bs,
 						})}
 					</p>

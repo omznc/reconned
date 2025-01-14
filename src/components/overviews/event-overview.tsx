@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { isAfter, isBefore } from "date-fns";
+import { BadgeSoon } from "@/components/badge-soon";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -84,7 +85,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 										size="sm"
 										className="w-full md:w-auto"
 									>
-										Prijava
+										Prijava <BadgeSoon className="ml-2" />
 									</Button>
 								</Link>
 							) : user ? (

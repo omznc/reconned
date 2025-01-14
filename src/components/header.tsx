@@ -22,8 +22,8 @@ export function Header({ user }: { user: User | null }) {
 	const { font, setFont } = useFont();
 	return (
 		<header className="flex flex-col md:flex-row gap-4 select-none w-full items-center justify-between p-2 md:p-4">
-			<Link href="/">
-				<Logo />
+			<Link href="/" className="w-full h-auto md:w-fit md:h-full">
+				<Logo className="w-full h-auto md:w-fit md:h-full p-2 md:p-0" />
 			</Link>
 			<div
 				className="flex gap-2 md:w-fit w-full"
