@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-async function LayoutContent({ children }: { children: ReactNode }) {
+async function LayoutContent({ children }: { children: ReactNode; }) {
 	const user = await isAuthenticated();
 	return (
 		<html lang="en" suppressHydrationWarning>
@@ -37,7 +37,7 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 			>
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="light"
+					defaultTheme="dark"
 					enableSystem={false}
 					disableTransitionOnChange
 				>
@@ -78,8 +78,8 @@ export default function RootLayout({
 }
 
 export const metadata: Metadata = {
-	title: "AirsoftBIH",
-	description: "Upravljanje vašim klubovima i događajima",
+	title: "RECONNED - Airsoft klubovi, susreti, i igrači",
+	description: "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
 	metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
 		? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
 		: undefined,
