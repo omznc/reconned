@@ -1,4 +1,5 @@
 import { BadgeSoon } from "@/components/badge-soon";
+import { env } from "@/lib/env";
 import Link from "next/link";
 
 export function Footer() {
@@ -87,6 +88,11 @@ export function Footer() {
 						Pogledajte naše sponzore i partnere
 
 					</Link>
+					{
+						env.NEXT_PUBLIC_SOURCE_COMMIT && (
+							<p className="font-mono mt-4 opacity-30">Verzija {env.NEXT_PUBLIC_SOURCE_COMMIT}</p>
+						)
+					}
 				</div>
 			</div>
 		</footer>

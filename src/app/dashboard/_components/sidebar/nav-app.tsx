@@ -7,6 +7,7 @@ import {
 	House,
 	Info,
 	Key,
+	LayoutDashboard,
 	Mail,
 	Search,
 	Shield,
@@ -110,8 +111,13 @@ export function NavApp({ isAdmin }: { isAdmin: boolean; }) {
 const items = [
 	{
 		title: "Početna",
-		url: "/dashboard",
+		url: "/",
 		icon: House,
+	},
+	{
+		title: "Aplikacija",
+		url: "/dashboard",
+		icon: LayoutDashboard,
 	},
 	{
 		title: "Pomoć",
