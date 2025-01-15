@@ -38,3 +38,4 @@ can import them in actions as well.
 
 ## Language
 - Use bosnian for all code strings
+- Use English for comments, variables, declarations, paths, etc.
