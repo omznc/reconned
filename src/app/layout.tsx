@@ -13,6 +13,7 @@ import { FontBody } from "@/components/font-body";
 import type { ReactNode } from "react";
 import { isAuthenticated } from "@/lib/auth";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
+import Script from "next/script";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -30,6 +31,7 @@ async function LayoutContent({ children }: { children: ReactNode; }) {
 		<html lang="en" suppressHydrationWarning>
 			<head>
 				<meta name="darkreader-lock" />
+				<Script defer data-domain="reconned.com" src="https://scout.reconned.com/js/script.outbound-links.tagged-events.js" />
 			</head>
 			<FontBody
 				geistMonoVariable={geistMono.className}

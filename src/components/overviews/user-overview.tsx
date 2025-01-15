@@ -4,6 +4,8 @@ import type { Club, User, Event, Review } from "@prisma/client";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
+import { getPageViews } from "@/lib/analytics";
+import { Badge } from "@/components/ui/badge";
 
 interface ExtendedUser extends User {
 	clubMembership: {
@@ -19,7 +21,8 @@ interface UserOverviewProps {
 	user: ExtendedUser;
 }
 
-export function UserOverview({ user }: UserOverviewProps) {
+export async function UserOverview({ user }: UserOverviewProps) {
+	const analytics = await getPageViews(`/users/${user.id}`);
 	const futureEvents = user.eventRegistration.filter(
 		(reg) => reg.event.dateStart > new Date() && !reg.attended,
 	);
@@ -42,9 +45,14 @@ export function UserOverview({ user }: UserOverviewProps) {
 					/>
 				)}
 				<div className="flex select-none flex-col gap-1">
-					<h1 className="text-2xl font-semibold">
-						{user.name} {user.callsign && `(${user.callsign})`}
-					</h1>
+					<div className="flex items-center gap-2">
+						<h1 className="text-2xl font-semibold">
+							{user.name} {user.callsign && `(${user.callsign})`}
+						</h1>
+						<Badge variant="outline" className="h-fit">
+							{analytics.results.visitors.value} pregled/a
+						</Badge>
+					</div>
 					<p className="text-accent-foreground/80">{user.bio}</p>
 				</div>
 			</div>
