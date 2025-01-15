@@ -37,16 +37,17 @@ import {
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import type { User } from "better-auth";
+import { env } from "@/lib/env";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined };
+	user: User & { managedClubs: string[]; role?: string | null | undefined; };
 }
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
 	const router = useRouter();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
