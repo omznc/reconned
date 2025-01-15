@@ -21,9 +21,9 @@ export const auth = betterAuth({
 	trustedOrigins: [
 		"http://localhost:3000",
 		"https://localhost:3000",
-		"https://airsoft-bih.vercel.app/",
+		"https://airsoft-bih.vercel.app",
 		"https://airsoft-bih.vercel.app/api/auth",
-		"https://reconned.com/",
+		"https://reconned.com",
 		"https://reconned.com/api/auth",
 	],
 	emailAndPassword: {
