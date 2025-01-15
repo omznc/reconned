@@ -12,6 +12,7 @@ import Link from "next/link";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { isAfter, isBefore } from "date-fns";
 import { BadgeSoon } from "@/components/badge-soon";
+import { getPageViews } from "@/lib/analytics";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -26,6 +27,7 @@ interface EventOverviewProps {
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	const user = await isAuthenticated();
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
+	const analytics = await getPageViews(`/events/${event.id}`);
 
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();
@@ -96,10 +98,11 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							<AddEventToCalendarButton event={event} />
 						</div>
 					)}
-					<h1 className="text-4xl font-semibold w-[calc(100%-150px)] mt-12 md:mt-0 transition-all">
-						{event.name}
-					</h1>
-
+					<div className="flex items-center gap-2">
+						<h1 className="text-4xl font-semibold w-[calc(100%-150px)] mt-12 md:mt-0 transition-all">
+							{event.name}
+						</h1>
+					</div>
 					<div className="flex flex-wrap gap-1 -mt-2">
 						<Badge variant="outline" className="flex h-fit items-center gap-1">
 							<UserIcon className="size-4" />
@@ -127,6 +130,9 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 								{event.location}
 							</Badge>
 						)}
+						<Badge variant="outline" className="h-fit">
+							{analytics.results.visitors.value} pregled/a
+						</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.googleMapsLink && (

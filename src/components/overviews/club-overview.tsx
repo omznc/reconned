@@ -15,6 +15,7 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { ClubPost } from "@/components/overviews/club-post";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getPageViews } from "@/lib/analytics";
 
 interface ClubOverviewProps {
 	club: Club & {
@@ -26,7 +27,8 @@ interface ClubOverviewProps {
 	isManager?: boolean;
 }
 
-export function ClubOverview({ club, isManager }: ClubOverviewProps) {
+export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
+	const analytics = await getPageViews(`/clubs/${club.id}`);
 	const posts = club.posts.sort((a, b) => {
 		if (a.createdAt < b.createdAt) {
 			return 1;
@@ -54,7 +56,12 @@ export function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						/>
 					)}
 					<div className="flex select-none flex-col gap-1">
-						<h1 className="text-2xl font-semibold">{club.name}</h1>
+						<div className="flex items-center gap-2">
+							<h1 className="text-2xl font-semibold">{club.name}</h1>
+							<Badge variant="outline" className="h-fit">
+								{analytics.results.visitors.value} pregled/a
+							</Badge>
+						</div>
 						<p className="text-accent-foreground/80">{club.description}</p>
 					</div>
 				</div>
