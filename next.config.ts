@@ -9,7 +9,11 @@ const nextConfig = {
 		remotePatterns: [
 			{
 				protocol: "https",
-				hostname: env.NEXT_PUBLIC_CDN_URL?.split("://")[1],
+				hostname: "s3-airsoft.omarzunic.com",
+			},
+			{
+				protocol: "https",
+				hostname: "cdn.reconned.com",
 			},
 			{
 				protocol: "https",

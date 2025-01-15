@@ -14,10 +14,11 @@ export default async function RootLayout({
 			<div className="w-full min-h-screen flex flex-col items-center">
 				<Header user={user} />
 				<div className="flex-grow size-full flex flex-col items-center">
+					<div className="absolute -z-10 inset-0 bg-gradient-to-b from-red-600/30 to-transparent h-[70dvh]" />
+
 					{children}
 				</div>
 			</div>
-			{/* <DotPattern className="-z-10 opacity-30" /> */}
 			<Footer />
 		</>
 	);
