@@ -6,12 +6,7 @@ import { DEFAULT_FROM, resend } from "@/lib/resend";
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import {
-	admin,
-	createAuthMiddleware,
-	oneTap,
-	twoFactor,
-} from "better-auth/plugins";
+import { admin, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 
 import { headers } from "next/headers";
@@ -23,6 +18,14 @@ export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
 	}),
+	trustedOrigins: [
+		"http://localhost:3000",
+		"https://localhost:3000",
+		"https://airsoft-bih.vercel.app/",
+		"https://airsoft-bih.vercel.app/api/auth",
+		"https://reconned.com/",
+		"https://reconned.com/api/auth",
+	],
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
