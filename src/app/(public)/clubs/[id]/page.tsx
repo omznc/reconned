@@ -44,7 +44,7 @@ export default async function Page(props: PageProps) {
 	});
 
 	if (!club) {
-		return notFound();
+		notFound();
 	}
 
 	return (
@@ -68,10 +68,10 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 	});
 
 	if (!club) {
-		return notFound();
+		notFound();
 	}
 
-	const ogUrl = new URL("/api/og/club", env.NEXT_PUBLIC_BETTER_AUTH_URL);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/og/club`);
 	ogUrl.searchParams.set("name", club.name);
 	if (club.description) {
 		ogUrl.searchParams.set("description", club.description);

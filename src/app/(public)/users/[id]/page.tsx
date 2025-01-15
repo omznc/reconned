@@ -74,7 +74,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		return notFound();
 	}
 
-	const ogUrl = new URL("/api/og/user", env.NEXT_PUBLIC_BETTER_AUTH_URL);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/og/user`);
 	ogUrl.searchParams.set("name", user.name);
 	if (user.bio) {
 		ogUrl.searchParams.set("bio", user.bio);
