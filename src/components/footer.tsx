@@ -1,6 +1,4 @@
 import { BadgeSoon } from "@/components/badge-soon";
-import { LogoVeis } from "@/components/logos/logo-veis";
-import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export function Footer() {
@@ -82,15 +80,13 @@ export function Footer() {
 				</div>
 				<div className="mt-8 pt-8 border-t border-border/10 text-center text-sm ">
 					<p>© {new Date().getFullYear()} RECONNED. Sva prava zadržana.</p>
-					<p className="mt-2">
-						Podržano od{" "}
-						<Link
-							href="https://www.instagram.com/veis.livno/#"
-							className="text-red-500 hover:text-red-400"
-						>
-							VEIS AIRSOFT
-						</Link>
-					</p>
+					<Link
+						href="/sponsors"
+						className="text-red-500 mt-2 hover:text-red-400"
+					>
+						Pogledajte naše sponzore i partnere
+
+					</Link>
 				</div>
 			</div>
 		</footer>

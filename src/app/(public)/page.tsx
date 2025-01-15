@@ -27,6 +27,8 @@ import {
 	Calendar,
 	Wrench,
 	LayoutDashboard,
+	Medal,
+	Search,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -51,24 +53,24 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
+			OR: [
+				{
+					isPrivate: false,
+				},
+				{
+					club: {
+						members: {
+							some: {
+								userId: user?.id,
 							},
 						},
 					},
-				],
-			}
+				},
+			],
+		}
 		: {
-				isPrivate: false,
-			};
+			isPrivate: false,
+		};
 
 	const events = await prisma.event.findMany({
 		where: {
@@ -109,8 +111,7 @@ export default async function Home({ searchParams }: PageProps) {
 
 	return (
 		<>
-			<div className="relative overflow-hidden flex items-center justify-center w-full">
-				<div className="absolute inset-0 bg-gradient-to-b from-red-600/20 to-transparent" />
+			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
@@ -120,17 +121,29 @@ export default async function Home({ searchParams }: PageProps) {
 							Pridružite se najnaprednijoj airsoft zajednici. Pronađite
 							događaje, povežite se s igračima i unaprijedite svoju igru.
 						</p>
-						<div className="flex flex-wrap gap-4">
-							<Button size="lg" className="bg-red-600 hover:bg-red-700" asChild>
+						<div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+							<Button size="lg" className="bg-red-600 w-full hover:bg-red-700" asChild>
 								<Link href="/events">
 									<Calendar className="mr-2 h-4 w-4" />
-									Pregledaj događaje
+									Susreti
 								</Link>
 							</Button>
-							<Button size="lg" variant="outline" asChild>
+							<Button size="lg" variant="outline" asChild className="w-full">
 								<Link href="/dashboard">
 									<LayoutDashboard className="mr-2 h-4 w-4" />
-									Otvori aplikaciju
+									Aplikacija
+								</Link>
+							</Button>
+							<Button size="lg" variant="outline" asChild className="w-full">
+								<Link href="/sponsors">
+									<Medal className="mr-2 h-4 w-4" />
+									Sponzori
+								</Link>
+							</Button>
+							<Button size="lg" variant="outline" asChild className="w-full">
+								<Link href="/search">
+									<Search className="mr-2 h-4 w-4" />
+									Pretraži sve
 								</Link>
 							</Button>
 						</div>

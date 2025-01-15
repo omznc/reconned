@@ -1,118 +1,11 @@
-import { EventCalendar } from "@/components/event-calendar";
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardDescription,
-	CardContent,
-	CardFooter,
-} from "@/components/ui/card";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import {
-	startOfMonth,
-	endOfMonth,
-	subMonths,
-	addMonths,
-	parse as parseDateFns,
-	format,
-	formatDistanceToNow,
-} from "date-fns";
-import { bs } from "date-fns/locale";
-import {
-	CalendarDays,
-	Clock,
-	MapPin,
-	DollarSign,
-	Calendar,
-	Wrench,
-	LayoutDashboard,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { BadgeSoon } from "@/components/badge-soon";
 import { Logo } from "@/components/logos/logo";
 
-interface PageProps {
-	searchParams: Promise<{
-		month?: string;
-	}>;
-}
 
-export default async function Home({ searchParams }: PageProps) {
-	const user = await isAuthenticated();
-	const { month } = await searchParams;
-
-	const currentDate = month
-		? parseDateFns(month, "yyyy-MM", new Date())
-		: new Date();
-	const startDate = startOfMonth(subMonths(currentDate, 1));
-	const endDate = endOfMonth(addMonths(currentDate, 1));
-
-	const conditionalPrivateWhere = user
-		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
-							},
-						},
-					},
-				],
-			}
-		: {
-				isPrivate: false,
-			};
-
-	const events = await prisma.event.findMany({
-		where: {
-			dateStart: {
-				gte: startDate,
-				lte: endDate,
-			},
-			...conditionalPrivateWhere,
-		},
-		include: {
-			club: {
-				select: {
-					name: true,
-				},
-			},
-		},
-	});
-
-	const upcomingEvents = await prisma.event.findMany({
-		where: {
-			dateStart: {
-				gte: new Date(),
-			},
-			...conditionalPrivateWhere,
-		},
-		orderBy: {
-			dateStart: "asc",
-		},
-		include: {
-			club: {
-				select: {
-					name: true,
-				},
-			},
-		},
-		take: 3,
-	});
-
+export default function Home() {
 	return (
 		<>
-			<div className="relative overflow-hidden flex items-center justify-center w-full">
-				<div className="absolute inset-0 bg-gradient-to-b from-red-600/20 to-transparent" />
+			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
@@ -146,8 +39,8 @@ export default async function Home({ searchParams }: PageProps) {
 						kompletno lično finansiramo razvoj platforme, ali ćemo dati
 						klubovima i individuama šansu da pomognu u razvoju i održavanju, uz
 						neke pogodnosti.{" "}
-						<span className="font-bold text-red-600">
-							RECONNED će uvijek biti besplatan za korištenje.
+						<span className="font-bold">
+							Glavne funkcionalnosti će uvijek biti besplatne za korištenje.
 						</span>
 					</p>
 				</div>
@@ -158,13 +51,11 @@ export default async function Home({ searchParams }: PageProps) {
 						kontaktirajte. Pomoć u obliku marketinga, programiranja, te općenito
 						sponsorstva je uvijek dobrodošla.{" "}
 						<Link
-							className="text-red-600 underline hover:text-red-400 transition-colors"
-							// href="/sponsors"
-							href="#"
+							className="text-red-600"
+							href="/sponsors"
 						>
 							Pogledajte listu sponzora.
-						</Link>{" "}
-						<BadgeSoon />
+						</Link>
 					</p>
 				</div>
 			</div>

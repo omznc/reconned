@@ -17,7 +17,7 @@ import { LogOut, Moon, Sun, Type } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 
-export function Header({ user }: { user: User | null }) {
+export function Header({ user }: { user: User | null; }) {
 	const { theme, setTheme } = useTheme();
 	const { font, setFont } = useFont();
 	return (
