@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 
 export default async function authMiddleware(request: NextRequest) {
 	const response = await fetch(
-		`https://${request.nextUrl.host}/api/auth/get-session`,
+		process.env.NODE_ENV === "development"
+			? `${request.nextUrl.origin}/api/auth/get-session`
+			: `https://${request.nextUrl.host}/api/auth/get-session`,
 		{
 			headers: {
 				cookie: request.headers.get("cookie") || "",
