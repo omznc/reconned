@@ -164,7 +164,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	};
 
 	const router = useRouter();
-	const clubId = useParams<{ clubId: string }>().clubId;
+	const clubId = useParams<{ clubId: string; }>().clubId;
 
 	const startDate = new Date();
 	startDate.setDate(startDate.getDate() + 15);
@@ -366,7 +366,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					name="description"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Opis*</FormLabel>
+							<FormLabel>Opis</FormLabel>
 							<FormControl>
 								<Textarea
 									placeholder="Ponesite pribor za jelo..."
@@ -1031,9 +1031,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															) === 0
 																? "Promijenjeno danas"
 																: `Promijenjeno prije ${differenceInDays(
-																		new Date(rule.createdAt),
-																		new Date(),
-																	)} dan/a`}
+																	new Date(rule.createdAt),
+																	new Date(),
+																)} dan/a`}
 														</p>
 													</div>
 												</div>

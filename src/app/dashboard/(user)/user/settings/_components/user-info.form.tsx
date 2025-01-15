@@ -145,6 +145,21 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 				<FormField
 					control={form.control}
+					name="callsign"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Pozivni znak</FormLabel>
+							<FormControl>
+								<Input placeholder="Veis" {...field} />
+							</FormControl>
+							<FormDescription>Pozivni znak</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
 					name="location"
 					render={({ field }) => (
 						<FormItem>
@@ -179,7 +194,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Opis* ({form.watch("bio")?.length}/
+								Opis ({form.watch("bio")?.length}/
 								{userInfoShema.shape.bio.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -375,22 +390,6 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-
-				<FormField
-					control={form.control}
-					name="callsign"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Pozivni znak</FormLabel>
-							<FormControl>
-								<Input placeholder="Veis" {...field} />
-							</FormControl>
-							<FormDescription>Pozivni znak</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
 				<LoaderSubmitButton isLoading={isLoading}>Spasi</LoaderSubmitButton>
 			</form>
 		</Form>

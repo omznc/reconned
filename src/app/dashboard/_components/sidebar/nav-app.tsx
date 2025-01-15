@@ -31,7 +31,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function NavApp({ isAdmin }: { isAdmin: boolean }) {
+export function NavApp({ isAdmin }: { isAdmin: boolean; }) {
 	const path = usePathname();
 
 	return (
@@ -110,7 +110,7 @@ export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 const items = [
 	{
 		title: "Početna",
-		url: "/",
+		url: "/dashboard",
 		icon: House,
 	},
 	{

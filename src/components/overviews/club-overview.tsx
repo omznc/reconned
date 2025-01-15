@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Club, Post } from "@prisma/client";
 import {
 	AtSign,
+	Cog,
 	Eye,
 	EyeOff,
 	MapPin,
@@ -20,7 +21,7 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date })[];
+		posts: (Post & { createdAt: Date; })[];
 	};
 	isManager?: boolean;
 }
@@ -38,23 +39,35 @@ export function ClubOverview({ club, isManager }: ClubOverviewProps) {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex gap-4">
-				{/* TODO: Handle if unset */}
-				{club.logo && (
-					<Image
-						suppressHydrationWarning={true}
-						src={`${club.logo}?v=${club.updatedAt}`} // This will revalidate the browser cache
-						alt={club.name}
-						width={150}
-						height={150}
-						className="h-[150px] w-auto"
-						draggable={false}
-					/>
-				)}
-				<div className="flex select-none flex-col gap-1">
-					<h1 className="text-2xl font-semibold">{club.name}</h1>
-					<p className="text-accent-foreground/80">{club.description}</p>
+			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between">
+				<div className="flex gap-4">
+					{/* TODO: Handle if unset */}
+					{club.logo && (
+						<Image
+							suppressHydrationWarning={true}
+							src={`${club.logo}?v=${club.updatedAt}`} // This will revalidate the browser cache
+							alt={club.name}
+							width={150}
+							height={150}
+							className="h-[150px] w-auto"
+							draggable={false}
+						/>
+					)}
+					<div className="flex select-none flex-col gap-1">
+						<h1 className="text-2xl font-semibold">{club.name}</h1>
+						<p className="text-accent-foreground/80">{club.description}</p>
+					</div>
 				</div>
+				{
+					isManager && (
+						<Button asChild>
+							<Link href={`/dashboard/${club.id}/club/information`}>
+								<Cog className="h-4 w-4" />
+								Uredi klub
+							</Link>
+						</Button>
+					)
+				}
 			</div>
 			<div className="flex flex-wrap gap-1">
 				<Badge variant="outline" className="flex items-center gap-1">

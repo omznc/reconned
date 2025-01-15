@@ -29,10 +29,10 @@ type ChartData = {
 };
 
 type StatsChartsProps = {
-	memberData: Array<{ date: string; members: number }>;
-	roleData: Array<{ role: string; count: number }>;
-	eventData: Array<{ month: string; count: number }>;
-	registrationData: Array<{ name: string; registrations: number }>;
+	memberData: Array<{ date: string; members: number; }>;
+	roleData: Array<{ role: string; count: number; }>;
+	eventData: Array<{ month: string; count: number; }>;
+	registrationData: Array<{ name: string; registrations: number; }>;
 };
 
 export function StatsCharts({
@@ -141,7 +141,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Bar
 						dataKey="count"
-						name="Broj evenata"
+						name="Broj susreta"
 						fill="var(--color-events)"
 						radius={4}
 					/>

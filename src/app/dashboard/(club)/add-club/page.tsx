@@ -1,4 +1,5 @@
 import { ClubInfoForm } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
+import { BadgeSoon } from "@/components/badge-soon";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, MailPlus } from "lucide-react";
 import Link from "next/link";
@@ -43,9 +44,10 @@ export default async function Page(props: PageProps) {
 				</div>
 				<div className="flex flex-col gap-2">
 					<Button asChild={true}>
-						<Link href="?type=invite" className="flex items-center gap-2">
+						<Link href="?type=invite" className="flex pointer-events-none opacity-50 items-center gap-2">
 							<MailPlus />
 							Prijavi se za klub
+							<BadgeSoon />
 						</Link>
 					</Button>
 					<span className="text-gray-500">
