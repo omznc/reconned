@@ -8,6 +8,7 @@ import { demoteFromManager } from "./manager.action";
 import { Role } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { useParams } from "next/navigation";
 
 type Manager = {
 	id: string;
@@ -34,6 +35,7 @@ export function ManagersTable({
 	pageSize,
 }: ManagersTableProps) {
 	const confirm = useConfirm();
+	const params = useParams<{ clubId: string; }>();
 
 	const handleDemote = async (manager: Manager) => {
 		const confirmed = await confirm({
@@ -48,7 +50,7 @@ export function ManagersTable({
 
 		const response = await demoteFromManager({
 			memberId: manager.id,
-			clubId: "", // This will be set by the action
+			clubId: params.clubId
 		});
 
 		if (!response?.data?.success) {
