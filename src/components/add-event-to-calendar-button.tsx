@@ -6,7 +6,7 @@ import type { ClubRule, Event } from "@prisma/client";
 
 export default function AddEventToCalendarButton({
 	event,
-}: { event: Event & { rules: ClubRule[] } }) {
+}: { event: Event & { rules: ClubRule[]; }; }) {
 	const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
 	const startDate = formatDate(event.dateStart);
@@ -52,12 +52,12 @@ export default function AddEventToCalendarButton({
 	}
 
 	if (event.isPrivate) {
-		description += "\nOvo je privatni događaj samo za članove kluba.\n";
+		description += "\nOvo je privatni susret samo za članove kluba.\n";
 	}
 
 	if (event.allowFreelancers) {
 		description +=
-			"\nFreelanceri su dobrodošli da se registruju za ovaj događaj.\n";
+			"\nFreelanceri su dobrodošli da se registruju za ovaj susret.\n";
 	}
 	return (
 		<CalendarButtonBase

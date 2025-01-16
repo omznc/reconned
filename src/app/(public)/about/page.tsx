@@ -27,8 +27,8 @@ export default function Home() {
 						Krajnji cilj <Logo className="h-4 w-auto mb-0.5" /> platforme je
 						unifikacija airsoft zajednice u Bosni i Hercegovini, a možda i šire.
 						Naša platforma omogućava klubovima da se predstave, organizuju
-						događanja, i pronađu nove članove. Igračima omogućava da pronađu
-						klubove, događanja, i igrače, sve na jednom mjestu.
+						susrete, i pronađu nove članove. Igračima omogućava da pronađu
+						klubove, susrete, i igrače, sve na jednom mjestu.
 					</p>
 				</div>
 				<div className="flex flex-col gap-4">

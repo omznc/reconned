@@ -21,7 +21,7 @@ export const userSchema = z.object({
 });
 
 export const eventApplicationSchema = z.object({
-	eventId: z.string().min(1, { message: "ID događaja je obavezan" }),
+	eventId: z.string().min(1, { message: "ID susreta je obavezan" }),
 	type: z.enum(["solo", "team"], {
 		message: "Tip prijave je obavezan",
 	}),

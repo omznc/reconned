@@ -119,7 +119,7 @@ export default async function Home({ searchParams }: PageProps) {
 						</h1>
 						<p className="text-xl text-text/80 mb-8">
 							Pridružite se najnaprednijoj airsoft zajednici. Pronađite
-							događaje, povežite se s igračima i unaprijedite svoju igru.
+							susrete, povežite se s igračima i unaprijedite svoju igru.
 						</p>
 						<div className="grid gap-4 grid-cols-1 md:grid-cols-2">
 							<Button size="lg" className="bg-red-600 w-full hover:bg-red-700" asChild>
@@ -160,7 +160,7 @@ export default async function Home({ searchParams }: PageProps) {
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{upcomingEvents.length === 0 && (
 							<div className="text-muted-foreground">
-								Trenutno nema nadolazećih događaja.
+								Trenutno nema nadolazećih susreta.
 							</div>
 						)}
 
