@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { env } from "@/lib/env";
 import type { MetadataRoute } from "next";
 
+export const revalidate = 60 * 60 * 24;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 
@@ -9,7 +11,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const clubs = await prisma.club.findMany({
 		where: {
 			isPrivate: false,
-			banned: false,
+			OR: [
+				{
+					banned: false,
+				},
+				{
+					banned: null,
+				},
+			],
 		},
 		select: {
 			id: true,
@@ -22,7 +31,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const events = await prisma.event.findMany({
 		where: {
 			isPrivate: false,
-			dateEnd: { gt: new Date() },
 		},
 		select: {
 			id: true,
@@ -35,7 +43,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const users = await prisma.user.findMany({
 		where: {
 			isPrivate: false,
-			banned: false,
+			OR: [
+				{
+					banned: false,
+				},
+				{
+					banned: null,
+				},
+			],
 		},
 		select: {
 			id: true,
@@ -72,6 +87,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		},
 		{
 			url: `${baseUrl}/sponsors`,
+			lastModified: new Date(),
+			changeFrequency: "monthly",
+			priority: 0.6,
+		},
+		{
+			url: `${baseUrl}/login`,
+			lastModified: new Date(),
+			changeFrequency: "monthly",
+			priority: 0.6,
+		},
+		{
+			url: `${baseUrl}/register`,
 			lastModified: new Date(),
 			changeFrequency: "monthly",
 			priority: 0.6,
