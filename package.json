@@ -92,7 +92,7 @@
 		"dev": "next dev --turbo",
 		"format": "bunx @biomejs/biome format --write .",
 		"lint": "bunx biome lint --write ./src",
-		"postinstall": "prisma generate",
+		"postinstall": "prisma generate --no-hints",
 		"start": "next start",
 		"update": "bunx nrush -i --include dev"
 	},
