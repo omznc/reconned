@@ -22,7 +22,11 @@ interface UserOverviewProps {
 }
 
 export async function UserOverview({ user }: UserOverviewProps) {
-	const analytics = await getPageViews(`/users/${user.id}`);
+	const [analyticsId, analyticsSlug] = await Promise.all([
+		getPageViews(`/users/${user.id}`),
+		getPageViews(`/users/${user.slug}`),
+	]);
+	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const futureEvents = user.eventRegistration.filter(
 		(reg) => reg.event.dateStart > new Date() && !reg.attended,
 	);
@@ -50,7 +54,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							{user.name} {user.callsign && `(${user.callsign})`}
 						</h1>
 						<Badge variant="outline" className="h-fit">
-							{analytics.results.visitors.value} pregled/a
+							{visitors} pregled/a
 						</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{user.bio}</p>

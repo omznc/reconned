@@ -137,7 +137,7 @@ export default function RegisterPage() {
 							Podaci nisu ispravni ili korisnik već postoji
 						</p>
 					)}
-					<LoaderSubmitButton isLoading={isLoading} className="w-full">
+					<LoaderSubmitButton isLoading={isLoading} className="w-full plausible-event-name=register-button-click">
 						Registruj se
 					</LoaderSubmitButton>
 					<GoogleLoginButton isLoading={isLoading} />

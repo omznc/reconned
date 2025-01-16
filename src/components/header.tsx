@@ -80,7 +80,7 @@ export function Header({ user }: { user: User | null; }) {
 									<Link
 										href="/logout"
 										prefetch={false}
-										className="flex items-centergap-2"
+										className="flex items-centergap-2 plausible-event-name=logout-header-click"
 									>
 										<LogOut className="w-4 h-4" />
 										Odjava

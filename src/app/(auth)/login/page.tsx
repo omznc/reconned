@@ -138,7 +138,7 @@ export default function LoginPage() {
 									setIsLoading(false);
 								}}
 								variant="ghost"
-								className="ml-auto inline-block text-sm underline"
+								className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 								disabled={isLoading}
 							>
 								{isLoading ? "Samo trenutak..." : "Zaboravili ste lozinku?"}
@@ -154,7 +154,7 @@ export default function LoginPage() {
 					{isError && (
 						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
 					)}
-					<LoaderSubmitButton isLoading={isLoading} className="w-full">
+					<LoaderSubmitButton isLoading={isLoading} className="w-full plausible-event-name=login-button-click">
 						Prijavi se
 					</LoaderSubmitButton>
 					{/* <Button
