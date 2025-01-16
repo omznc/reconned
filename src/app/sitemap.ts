@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { env } from "@/lib/env";
 import type { MetadataRoute } from "next";
 
-export const revalidate = 60 * 60 * 24;
+export const revalidate = 86_400; // 24 hours
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
