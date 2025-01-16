@@ -28,7 +28,7 @@ model Club {
 
   @@index([id, slug])
 }
-```
+
 model ClubPurchase {
   id          String   @id @default(cuid())
   title       String
