@@ -27,7 +27,11 @@ interface EventOverviewProps {
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	const user = await isAuthenticated();
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
-	const analytics = await getPageViews(`/events/${event.id}`);
+	const [analyticsId, analyticsSlug] = await Promise.all([
+		getPageViews(`/events/${event.id}`),
+		getPageViews(`/events/${event.slug}`),
+	]);
+	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();
@@ -131,7 +135,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							</Badge>
 						)}
 						<Badge variant="outline" className="h-fit">
-							{analytics.results.visitors.value} pregled/a
+							{visitors} pregled/a
 						</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>

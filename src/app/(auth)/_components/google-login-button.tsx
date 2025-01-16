@@ -12,7 +12,7 @@ export function GoogleLoginButton({
 	return (
 		<Button
 			variant="outline"
-			className="w-full"
+			className="w-full plausible-event-name=google-button-click"
 			type="button"
 			disabled={isLoading}
 			onClick={async () => {

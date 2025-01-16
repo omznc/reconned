@@ -28,7 +28,11 @@ interface ClubOverviewProps {
 }
 
 export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
-	const analytics = await getPageViews(`/clubs/${club.id}`);
+	const [analyticsId, analyticsSlug] = await Promise.all([
+		getPageViews(`/clubs/${club.id}`),
+		getPageViews(`/clubs/${club.slug}`),
+	]);
+	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const posts = club.posts.sort((a, b) => {
 		if (a.createdAt < b.createdAt) {
 			return 1;
@@ -59,7 +63,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<div className="flex items-center gap-2">
 							<h1 className="text-2xl font-semibold">{club.name}</h1>
 							<Badge variant="outline" className="h-fit">
-								{analytics.results.visitors.value} pregled/a
+								{visitors} pregled/a
 							</Badge>
 						</div>
 						<p className="text-accent-foreground/80">{club.description}</p>
