@@ -34,7 +34,7 @@ export function Footer() {
 						<h3 className="font-bold mb-4">Brzi linkovi</h3>
 						<ul className="space-y-2 text-sm ">
 							<li>
-								<Link href="/events">Događaji</Link>
+								<Link href="/events">Susreti</Link>
 							</li>
 							<li>
 								<Link href="/dashboard">Aplikacija</Link>

@@ -128,7 +128,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 				</TabsTrigger>
 				<TabsTrigger value="events" className="flex gap-2">
 					<Calendar className="h-4 w-4" />
-					Događaji ({events.length})
+					Susreti ({events.length})
 				</TabsTrigger>
 			</TabsList>
 
@@ -172,7 +172,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 			<TabsContent value="events" className="grid gap-4">
 				{events.length === 0 ? (
 					<div className="text-center text-muted-foreground py-12">
-						Nema pronađenih događaja
+						Nema pronađenih susreta
 					</div>
 				) : (
 					events.map((event) => (
@@ -199,11 +199,11 @@ export default async function SearchPage(props: Props) {
 	const { q, tab } = await props.searchParams;
 
 	return (
-		<div className="container max-w-4xl py-8 space-y-8">
+		<div className="container max-w-4xl py-8 space-y-8 px-4">
 			<div>
 				<h1 className="text-4xl font-bold mb-2">Pretraga</h1>
 				<p className="text-muted-foreground">
-					Pronađi klubove, korisnike i događaje na jednom mjestu
+					Pronađi klubove, korisnike i susrete na jednom mjestu
 				</p>
 			</div>
 

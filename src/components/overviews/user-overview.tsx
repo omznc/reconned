@@ -53,13 +53,14 @@ export async function UserOverview({ user }: UserOverviewProps) {
 						<h1 className="text-2xl font-semibold">
 							{user.name} {user.callsign && `(${user.callsign})`}
 						</h1>
-						<Badge variant="outline" className="h-fit">
-							{visitors} pregled/a
-						</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{user.bio}</p>
 				</div>
+
 			</div>
+			<Badge variant="outline" className="h-fit">
+				{visitors} pregled/a
+			</Badge>
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>
