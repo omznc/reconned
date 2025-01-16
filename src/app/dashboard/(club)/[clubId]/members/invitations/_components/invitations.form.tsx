@@ -58,7 +58,7 @@ async function searchUsers(query: string) {
 }
 
 export function InvitationsForm() {
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const [users, setUsers] = useState<SearchUser[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -168,8 +168,8 @@ export function InvitationsForm() {
 														<CommandItem
 															key={user.id}
 															value={user.id}
-															onSelect={(currentValue) => {
-																form.setValue("userName", currentValue, {
+															onSelect={() => {
+																form.setValue("userName", user.name, {
 																	shouldDirty: true,
 																});
 																form.setValue("userEmail", user.email, {

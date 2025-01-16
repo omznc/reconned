@@ -33,7 +33,7 @@ export const ClubInvitationEmail = ({
 	return (
 		<Html>
 			<Head />
-			<Preview>Pozvani ste da se pridružite Taktičkom Airsoft Klubu!</Preview>
+			<Preview>Pozvani ste da se pridružite klubu {clubName}!</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
