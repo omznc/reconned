@@ -10,8 +10,8 @@ import Link from "next/link";
 
 const sponsors = [
 	{
-		name: "VEIS Airsoft",
-		logo: "/veis-logo.png",
+		name: "VEIS Livno",
+		logo: "/veis-logo.svg",
 		description: "Prvi livanjski airsoft klub",
 		website: "https://instagram.com/veis.livno",
 	},
@@ -19,7 +19,7 @@ const sponsors = [
 		name: "Savez Airsoft Klubova Federacije BiH",
 		logo: "/logo-savez.png",
 		description: "Jedini registrirani airsoft savez/udruga",
-		website: "https://instagram.com/veis.livno",
+		website: "https://www.facebook.com/airsoftsavez/",
 	},
 	{
 		name: "Vi",
