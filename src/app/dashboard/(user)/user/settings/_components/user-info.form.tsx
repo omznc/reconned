@@ -51,6 +51,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
+	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
 
 	const dropZoneConfig = {
@@ -183,7 +184,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							type="user"
 							onValid={(slug) => {
 								form.setValue("slug", slug);
+								setIsSlugValid(true);
 							}}
+							onValidityChange={setIsSlugValid}
 						/>
 					)}
 				/>
@@ -390,7 +393,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-				<LoaderSubmitButton isLoading={isLoading}>Spasi</LoaderSubmitButton>
+				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
+					Spasi
+				</LoaderSubmitButton>
 			</form>
 		</Form>
 	);

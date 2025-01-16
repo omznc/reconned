@@ -30,60 +30,61 @@ export async function GET(request: Request) {
 
 	switch (type) {
 		case "club": {
-			const club = await prisma.club.findUnique({
-				where: {
-					slug,
-				},
-				select: {
-					id: true,
-				},
-			});
-			if (club) {
+			const [clubBySlug, clubById] = await Promise.all([
+				prisma.club.findUnique({
+					where: { slug },
+					select: { id: true },
+				}),
+				prisma.club.findUnique({
+					where: { id: slug },
+					select: { id: true },
+				}),
+			]);
+
+			if (clubBySlug || clubById) {
 				return NextResponse.json(
-					{ error: "Slug already exists" },
+					{ error: "Slug already exists or conflicts with an ID" },
 					{ status: 400 },
 				);
 			}
 			return NextResponse.json({ message: "Slug is available" });
 		}
 		case "event": {
-			const event = await prisma.event.findUnique({
-				where: {
-					slug,
-				},
-				select: {
-					id: true,
-				},
-			});
-			if (event) {
+			const [eventBySlug, eventById] = await Promise.all([
+				prisma.event.findUnique({
+					where: { slug },
+					select: { id: true },
+				}),
+				prisma.event.findUnique({
+					where: { id: slug },
+					select: { id: true },
+				}),
+			]);
+
+			if (eventBySlug || eventById) {
 				return NextResponse.json(
-					{
-						error: "Slug already exists",
-					},
-					{
-						status: 400,
-					},
+					{ error: "Slug already exists or conflicts with an ID" },
+					{ status: 400 },
 				);
 			}
 			return NextResponse.json({ message: "Slug is available" });
 		}
 		case "user": {
-			const user = await prisma.user.findUnique({
-				where: {
-					slug,
-				},
-				select: {
-					id: true,
-				},
-			});
-			if (user) {
+			const [userBySlug, userById] = await Promise.all([
+				prisma.user.findUnique({
+					where: { slug },
+					select: { id: true },
+				}),
+				prisma.user.findUnique({
+					where: { id: slug },
+					select: { id: true },
+				}),
+			]);
+
+			if (userBySlug || userById) {
 				return NextResponse.json(
-					{
-						error: "Slug already exists",
-					},
-					{
-						status: 400,
-					},
+					{ error: "Slug already exists or conflicts with an ID" },
+					{ status: 400 },
 				);
 			}
 			return NextResponse.json({ message: "Slug is available" });

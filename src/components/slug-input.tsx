@@ -17,23 +17,28 @@ interface SlugInputProps {
 	currentSlug?: string | null;
 	defaultSlug?: string;
 	onValid: (_: string) => void;
+	// Add new prop
+	onValidityChange: (_: boolean) => void;
 }
 
 export function SlugInput(props: SlugInputProps) {
 	const [slug, setSlug] = useState(props.defaultSlug);
 	const [debouncedSlug] = useDebounce(slug, 300);
 	const [valid, setValid] = useState(false);
+
 	useEffect(() => {
-		if (!debouncedSlug) {
+		if (!debouncedSlug || debouncedSlug === props.currentSlug) {
 			return;
 		}
 		fetch(`/api/slug?type=${props.type}&slug=${debouncedSlug}`).then((res) => {
 			if (res.ok) {
 				setValid(true);
 				props.onValid(debouncedSlug);
+				props.onValidityChange(true);
 				return;
 			}
 			setValid(false);
+			props.onValidityChange(false);
 		});
 	}, [debouncedSlug]);
 

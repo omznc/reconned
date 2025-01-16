@@ -8,19 +8,20 @@ interface LoaderSubmitButtonProps {
 	className?: string;
 	children?: ReactNode;
 	variant?:
-		| "default"
-		| "destructive"
-		| "outline"
-		| "secondary"
-		| "ghost"
-		| "link";
+	| "default"
+	| "destructive"
+	| "outline"
+	| "secondary"
+	| "ghost"
+	| "link";
+	disabled?: boolean;
 }
 
 export function LoaderSubmitButton(props: LoaderSubmitButtonProps) {
 	return (
 		<Button
 			variant={props.variant}
-			disabled={props.isLoading}
+			disabled={props.isLoading || props.disabled}
 			type="submit"
 			className={cn(
 				"flex w-full items-center justify-center gap-2",

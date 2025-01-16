@@ -152,6 +152,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
+	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
 
 	const dropZoneConfig = {
@@ -393,7 +394,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							type="event"
 							onValid={(slug) => {
 								form.setValue("slug", slug);
+								setIsSlugValid(true);
 							}}
+							onValidityChange={setIsSlugValid}
 						/>
 					)}
 				/>
@@ -1098,7 +1101,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					/>
 				</div>
 
-				<LoaderSubmitButton isLoading={isLoading}>
+				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
 					{props.event ? "Ažuriraj susret" : "Kreiraj susret"}
 				</LoaderSubmitButton>
 			</form>
