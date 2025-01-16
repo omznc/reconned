@@ -65,6 +65,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
+	const [isSlugValid, setIsSlugValid] = useState(true);
 	const router = useRouter();
 	const confirm = useConfirm();
 
@@ -285,7 +286,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							type="club"
 							onValid={(slug) => {
 								form.setValue("slug", slug);
+								setIsSlugValid(true);
 							}}
+							onValidityChange={setIsSlugValid}
 						/>
 					)}
 				/>
@@ -554,7 +557,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-				<LoaderSubmitButton isLoading={isLoading}>Spasi</LoaderSubmitButton>
+				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
+					{props.club ? "Spasi" : "Kreiraj klub"}
+				</LoaderSubmitButton>
 			</form>
 		</Form>
 	);

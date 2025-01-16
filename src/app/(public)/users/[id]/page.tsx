@@ -15,7 +15,10 @@ export default async function Page(props: PageProps) {
 
 	const user = await prisma.user.findFirst({
 		where: {
-			id: params.id,
+			OR: [
+				{ id: params.id },
+				{ slug: params.id }
+			],
 			isPrivate: false,
 		},
 		include: {
@@ -65,7 +68,10 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 	const user = await prisma.user.findFirst({
 		where: {
-			id: params.id,
+			OR: [
+				{ id: params.id },
+				{ slug: params.id }
+			],
 			isPrivate: false,
 		},
 	});

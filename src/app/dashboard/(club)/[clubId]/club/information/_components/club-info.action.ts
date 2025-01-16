@@ -5,6 +5,7 @@ import {
 	deleteClubImageSchema,
 	deleteClubSchema,
 } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
+import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
@@ -14,6 +15,16 @@ import { redirect } from "next/navigation";
 export const saveClubInformation = safeActionClient
 	.schema(clubInfoSchema)
 	.action(async ({ parsedInput, ctx }) => {
+		// Validate slug
+		if (parsedInput.slug) {
+			const slugResponse = await fetch(
+				`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/slug?type=club&slug=${parsedInput.slug}`,
+			);
+			if (!slugResponse.ok) {
+				throw new Error("Izabrani link je već zauzet.");
+			}
+		}
+
 		const club = await prisma.club.upsert({
 			where: {
 				id: ctx.club?.id ?? "",

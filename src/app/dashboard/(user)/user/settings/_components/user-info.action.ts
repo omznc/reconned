@@ -3,6 +3,7 @@ import {
 	userImageFileSchema,
 	userInfoShema,
 } from "@/app/dashboard/(user)/user/settings/_components/user-info.schema";
+import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
@@ -11,6 +12,16 @@ import { revalidatePath } from "next/cache";
 export const saveUserInformation = safeActionClient
 	.schema(userInfoShema)
 	.action(async ({ parsedInput, ctx }) => {
+		// Validate slug
+		if (parsedInput.slug) {
+			const slugResponse = await fetch(
+				`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/slug?type=user&slug=${parsedInput.slug}`,
+			);
+			if (!slugResponse.ok) {
+				throw new Error("Izabrani link je već zauzet.");
+			}
+		}
+
 		const user = await prisma.user.update({
 			where: {
 				id: ctx.user.id,

@@ -5,6 +5,7 @@ import {
 	deleteEventSchema,
 	eventImageFileSchema,
 } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
+import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
@@ -14,6 +15,16 @@ import { redirect } from "next/navigation";
 export const createEvent = safeActionClient
 	.schema(createEventFormSchema)
 	.action(async ({ parsedInput, ctx }) => {
+		// Validate slug
+		if (parsedInput.slug) {
+			const slugResponse = await fetch(
+				`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/slug?type=event&slug=${parsedInput.slug}`,
+			);
+			if (!slugResponse.ok) {
+				throw new Error("Izabrani link je već zauzet.");
+			}
+		}
+
 		const data = {
 			name: parsedInput.name,
 			description: parsedInput.description,
