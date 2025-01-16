@@ -15,6 +15,9 @@ export default async function authMiddleware(request: NextRequest) {
 	);
 	const data = await response.json();
 
+	console.log(data);
+	console.log(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/auth/get-session`);
+
 	if (!data?.session) {
 		return NextResponse.redirect(new URL("/login", request.url));
 	}
