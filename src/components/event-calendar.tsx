@@ -34,11 +34,11 @@ import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 
 interface EventCalendarProps {
-	events: (Event & { club: { name: string }; image?: string | null })[];
+	events: (Event & { club: { name: string; }; image?: string | null; })[];
 }
 
 export function EventCalendar(props: EventCalendarProps) {
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(
@@ -222,7 +222,7 @@ export function EventCalendar(props: EventCalendarProps) {
 	};
 
 	return (
-		<div className="flex flex-col h-full w-full bg-background text-foreground">
+		<div className="flex flex-col h-full w-full text-foreground">
 			<header className="flex py-4 items-center justify-between border-b">
 				<h1 className="text-2xl font-bold">
 					{format(currentDate, "LLLL yyyy", { locale: bs })}
