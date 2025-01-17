@@ -25,7 +25,7 @@ export function GoogleLoginButton({
 				);
 			}}
 		>
-			<GoogleLogo /> Koristi Google
+			<GoogleLogo /> Google
 		</Button>
 	);
 }

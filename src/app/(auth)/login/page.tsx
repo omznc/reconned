@@ -17,14 +17,25 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQueryState } from "nuqs";
+import { Key } from "lucide-react";
+import type { SuccessContext } from "better-auth/react";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
+	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
+
+	useEffect(() => {
+		if (!(PublicKeyCredential.isConditionalMediationAvailable?.())) {
+			return;
+		}
+
+		void authClient.signIn.passkey({ autoFill: true });
+	}, []);
 
 	useEffect(() => {
 		if (message) {
@@ -34,7 +45,12 @@ export default function LoginPage() {
 		authClient.oneTap();
 	}, [message, setMessage]);
 
-	const handleSuccessfulLogin = () => {
+	// biome-ignore lint/suspicious/noExplicitAny: It's not typed.
+	function handleSuccessfulLogin(context: SuccessContext<any>): void | Promise<void> {
+		if (context.data.twoFactorRedirect) {
+			router.push('/two-factor');
+			return;
+		}
 		const inviteUrl = document.cookie
 			.split("; ")
 			.find((row) => row.startsWith("inviteUrl="))
@@ -48,7 +64,7 @@ export default function LoginPage() {
 
 		router.push(redirectTo ? redirectTo : "/");
 		router.refresh();
-	};
+	}
 
 	return (
 		<>
@@ -103,6 +119,7 @@ export default function LoginPage() {
 							type="email"
 							name="email"
 							placeholder="mail@example.com"
+							autoComplete="email webauthn"
 							suppressHydrationWarning
 							required={true}
 						/>
@@ -113,7 +130,8 @@ export default function LoginPage() {
 							<Button
 								type="button"
 								onClick={async () => {
-									setIsLoading(true);
+									if (isForgotPasswordLoading) { return; }
+									setIsForgotPasswordLoading(true);
 									const emailInput = document.getElementById(
 										"email",
 									) as HTMLInputElement;
@@ -121,10 +139,12 @@ export default function LoginPage() {
 										toast.error(
 											"Unesite email kako bi ste resetirali lozinku.",
 										);
+										setIsForgotPasswordLoading(false);
 										return;
 									}
 									if (!emailInput?.checkValidity()) {
 										toast.error("Unesite ispravan email.");
+										setIsForgotPasswordLoading(false);
 										return;
 									}
 
@@ -135,16 +155,17 @@ export default function LoginPage() {
 									toast.success(
 										"Ako imate račun, poslat ćemo vam email za resetiranje lozinke.",
 									);
-									setIsLoading(false);
+									setIsForgotPasswordLoading(false);
 								}}
 								variant="ghost"
 								className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
-								disabled={isLoading}
+								disabled={isLoading || isForgotPasswordLoading}
 							>
-								{isLoading ? "Samo trenutak..." : "Zaboravili ste lozinku?"}
+								{isForgotPasswordLoading ? "Samo trenutak..." : "Zaboravili ste lozinku?"}
 							</Button>
 						</div>
 						<Input
+							autoComplete="current-password webauthn"
 							id="password"
 							type="password"
 							name="password"
@@ -154,35 +175,37 @@ export default function LoginPage() {
 					{isError && (
 						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
 					)}
-					<LoaderSubmitButton isLoading={isLoading} className="w-full plausible-event-name=login-button-click">
+					<LoaderSubmitButton isLoading={isLoading} disabled={isForgotPasswordLoading} className="w-full plausible-event-name=login-button-click">
 						Prijavi se
 					</LoaderSubmitButton>
-					{/* <Button
-						variant="outline"
-						className="w-full"
-						disabled={isLoading}
-						type="button"
-						onClick={async () => {
-							await authClient.signIn.passkey(
-								{},
-								{
-									onRequest: () => {
-										setIsLoading(true);
+					<div className="flex items-center gap-2">
+						<Button
+							variant="outline"
+							className="w-full"
+							disabled={isLoading}
+							type="button"
+							onClick={async () => {
+								await authClient.signIn.passkey(
+									{},
+									{
+										onRequest: () => {
+											setIsLoading(true);
+										},
+										onResponse: () => {
+											setIsLoading(false);
+										},
+										onSuccess: handleSuccessfulLogin,
+										onError: () => {
+											setIsError(true);
+										},
 									},
-									onResponse: () => {
-										setIsLoading(false);
-									},
-									onSuccess: handleSuccessfulLogin,
-									onError: () => {
-										setIsError(true);
-									},
-								},
-							);
-						}}
-					>
-						Prijavi se pomoću passkeya
-					</Button> */}
-					<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
+								);
+							}}
+						>
+							<Key className="w-4 h-4 inline-block" /> Passkey
+						</Button>
+						<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
+					</div>
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Nemate račun? "}

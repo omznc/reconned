@@ -15,11 +15,7 @@ export const authClient = createAuthClient({
 			clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
 		}),
 		adminClient(),
-		twoFactorClient({
-			onTwoFactorRedirect() {
-				window.location.href = "/two-factor";
-			},
-		}),
+		twoFactorClient(),
 	],
 });
 
