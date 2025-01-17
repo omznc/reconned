@@ -33,6 +33,11 @@ export default async function Page() {
 		body: {
 			userId: user.id,
 		}
+	}).catch((e) => {
+		console.log(e);
+		return {
+			backupCodes: [],
+		};
 	});
 
 	return (
