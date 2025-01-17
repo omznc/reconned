@@ -11,10 +11,11 @@ export const env = createEnv({
 		S3_SECRET_ACCESS_KEY: z.string().min(1),
 		S3_BUCKET_NAME: z.string().min(1),
 		GOOGLE_CLIENT_SECRET: z.string().min(1),
-		RESEND_API_KEY: z.string().min(1),
 		PLAUSIBLE_API_KEY: z.string().min(1),
 		PLAUSIBLE_HOST: z.string().url(),
 		PLAUSIBLE_SITE_ID: z.string().min(1),
+		ONESIGNAL_APP_ID: z.string().min(1),
+		ONESIGNAL_API_KEY: z.string().min(1),
 		// POLAR_ACCESS_TOKEN: z.string().min(1), This is a surprise tool that will help us later
 	},
 	client: {

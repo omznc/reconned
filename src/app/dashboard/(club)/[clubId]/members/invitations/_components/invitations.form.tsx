@@ -1,6 +1,6 @@
 "use client";
 
-import { sendInvitation } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.actions";
+import { sendInvitation } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.actions.tsx";
 import { sendInvitationSchema } from "@/app/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
 import { cn } from "@/lib/utils";
 import { Button } from "@components/ui/button";

@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.726.1",
+		"@aws-sdk/client-ses": "^3.726.1",
 		"@aws-sdk/s3-request-presigner": "^3.726.1",
 		"@geoman-io/leaflet-geoman-free": "^2.18.1",
 		"@hookform/resolvers": "^3.10.0",
@@ -47,6 +48,7 @@
 		"next": "15.1.4",
 		"next-safe-action": "^7.10.2",
 		"next-themes": "^0.4.4",
+		"nodemailer": "^6.9.16",
 		"nuqs": "^2.3.1",
 		"prisma": "^6.2.1",
 		"qrcode.react": "^4.2.0",
