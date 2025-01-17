@@ -41,7 +41,7 @@ import {
 	HoverCardContent,
 } from "@/components/ui/hover-card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { SlugInput } from "@/components/slug-input";
+import { SlugInput } from "@/components/slug/slug-input";
 
 interface UserInfoFormProps {
 	user: User;

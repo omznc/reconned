@@ -58,9 +58,16 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</div>
 
 			</div>
-			<Badge variant="outline" className="h-fit">
+			<Badge className="h-fit">
 				{visitors} pregled/a
 			</Badge>
+			{
+				user.clubMembership.length === 0 && (
+					<Badge className="h-fit">
+						Freelancer
+					</Badge>
+				)
+			}
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>

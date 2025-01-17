@@ -13,7 +13,6 @@ export default async function authMiddleware(request: NextRequest) {
 		},
 	);
 	const data = await response.json();
-	console.log(data);
 
 	if (!data?.session) {
 		return NextResponse.redirect(new URL("/login", request.url));

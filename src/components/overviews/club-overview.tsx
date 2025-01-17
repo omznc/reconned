@@ -80,12 +80,12 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					)
 				}
 			</div>
-			<div className="flex flex-wrap gap-1">
-				<Badge variant="outline" className="flex items-center gap-1">
+			<div className="flex flex-wrap gap-0">
+				<Badge className="flex items-center gap-1">
 					<UserIcon className="w-4 h-4" />
 					{club._count?.members}
 				</Badge>
-				<Badge variant="outline" className="flex items-center gap-1">
+				<Badge className="flex items-center gap-1">
 					{club.isPrivate ? (
 						<>
 							<EyeOff className="w-4 h-4" />
@@ -99,19 +99,19 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					)}
 				</Badge>
 				{club.location && (
-					<Badge variant="outline" className="flex items-center gap-1">
+					<Badge className="flex items-center gap-1">
 						<MapPin className="w-4 h-4" />
 						{club.location}
 					</Badge>
 				)}
 				{club.contactEmail && (
-					<Badge variant="outline" className="flex items-center gap-1">
+					<Badge className="flex items-center gap-1">
 						<AtSign className="w-4 h-4" />
 						{club.contactEmail}
 					</Badge>
 				)}
 				{club.contactPhone && (
-					<Badge variant="outline" className="flex items-center gap-1">
+					<Badge className="flex items-center gap-1">
 						<Phone className="w-4 h-4" />
 						{club.contactPhone}
 					</Badge>
