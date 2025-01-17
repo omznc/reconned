@@ -1,7 +1,6 @@
 {
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.726.1",
-		"@aws-sdk/client-ses": "^3.726.1",
 		"@aws-sdk/s3-request-presigner": "^3.726.1",
 		"@geoman-io/leaflet-geoman-free": "^2.18.1",
 		"@hookform/resolvers": "^3.10.0",
@@ -60,7 +59,6 @@
 		"react-leaflet": "5.0.0-rc.1",
 		"react-phone-number-input": "^3.4.11",
 		"recharts": "^2.15.0",
-		"resend": "^4.1.1",
 		"server-only": "^0.0.1",
 		"sharp": "^0.33.5",
 		"sonner": "^1.7.1",
