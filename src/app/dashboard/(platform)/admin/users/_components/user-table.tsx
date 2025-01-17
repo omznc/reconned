@@ -88,9 +88,14 @@ export function UserTable(props: UserTableProps) {
 					cellConfig: {
 						variant: "custom",
 						component: (_, user) => (
-							<Button asChild>
-								<Link href={`?userId=${user.id}`}>Akcije</Link>
-							</Button>
+							<div className="flex gap-2">
+								<Button asChild variant='secondary'>
+									<Link href={`/users/${user.id}`} target="_blank">Profil</Link>
+								</Button>
+								<Button asChild>
+									<Link href={`?userId=${user.id}`}>Akcije</Link>
+								</Button>
+							</div>
 						),
 					},
 				},

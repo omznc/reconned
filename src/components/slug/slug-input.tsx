@@ -1,5 +1,6 @@
 "use client";
 
+import { validateSlug } from "@/components/slug/validate-slug";
 import {
 	FormItem,
 	FormLabel,
@@ -30,15 +31,16 @@ export function SlugInput(props: SlugInputProps) {
 		if (!debouncedSlug || debouncedSlug === props.currentSlug) {
 			return;
 		}
-		fetch(`/api/slug?type=${props.type}&slug=${debouncedSlug}`).then((res) => {
-			if (res.ok) {
-				setValid(true);
+		validateSlug({
+			type: props.type,
+			slug: debouncedSlug,
+		}).then((resp) => {
+			const valid = resp?.data ?? false;
+			setValid(valid);
+			props.onValidityChange(valid);
+			if (valid) {
 				props.onValid(debouncedSlug);
-				props.onValidityChange(true);
-				return;
 			}
-			setValid(false);
-			props.onValidityChange(false);
 		});
 	}, [debouncedSlug]);
 

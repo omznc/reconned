@@ -57,7 +57,6 @@ export const Editor = ({
 		content: initialValue,
 		editable,
 		onUpdate: ({ editor }) => {
-			console.log(editor.getHTML());
 			onChange?.(editor.getHTML());
 		},
 	});

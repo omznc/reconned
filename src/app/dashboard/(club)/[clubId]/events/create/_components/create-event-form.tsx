@@ -73,7 +73,7 @@ import {
 	SheetTitle,
 } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SlugInput } from "@/components/slug-input";
+import { SlugInput } from "@/components/slug/slug-input";
 
 export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),

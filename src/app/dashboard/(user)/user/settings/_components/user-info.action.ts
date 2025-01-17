@@ -3,6 +3,7 @@ import {
 	userImageFileSchema,
 	userInfoShema,
 } from "@/app/dashboard/(user)/user/settings/_components/user-info.schema";
+import { validateSlug } from "@/components/slug/validate-slug";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
@@ -14,10 +15,11 @@ export const saveUserInformation = safeActionClient
 	.action(async ({ parsedInput, ctx }) => {
 		// Validate slug
 		if (parsedInput.slug) {
-			const slugResponse = await fetch(
-				`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/slug?type=user&slug=${parsedInput.slug}`,
-			);
-			if (!slugResponse.ok) {
+			const valid = await validateSlug({
+				type: "user",
+				slug: parsedInput.slug,
+			});
+			if (!valid) {
 				throw new Error("Izabrani link je već zauzet.");
 			}
 		}

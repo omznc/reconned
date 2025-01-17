@@ -24,7 +24,6 @@ export function FilePreviewModal({
 	fileName,
 }: FilePreviewModalProps) {
 	const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
-	console.log(fileName);
 
 	return (
 		<Credenza open={isOpen} onOpenChange={onClose}>

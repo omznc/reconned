@@ -107,12 +107,12 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							{event.name}
 						</h1>
 					</div>
-					<div className="flex flex-wrap gap-1 -mt-2">
-						<Badge variant="outline" className="flex h-fit items-center gap-1">
+					<div className="flex flex-wrap -mt-2">
+						<Badge className="flex h-fit items-center gap-1">
 							<UserIcon className="size-4" />
 							{event._count?.eventRegistration} prijavljenih
 						</Badge>
-						<Badge variant="outline" className="flex h-fit items-center gap-1">
+						<Badge className="flex h-fit items-center gap-1">
 							{event.isPrivate ? (
 								<>
 									<EyeOff className="size-4" />
@@ -127,14 +127,13 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 						</Badge>
 						{event.location && (
 							<Badge
-								variant="outline"
 								className="flex h-fit items-center gap-1"
 							>
 								<MapPin className="size-4" />
 								{event.location}
 							</Badge>
 						)}
-						<Badge variant="outline" className="h-fit">
+						<Badge className="h-fit">
 							{visitors} pregled/a
 						</Badge>
 					</div>

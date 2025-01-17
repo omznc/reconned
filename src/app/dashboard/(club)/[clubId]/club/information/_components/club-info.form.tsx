@@ -54,7 +54,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { SlugInput } from "@/components/slug-input";
+import { SlugInput } from "@/components/slug/slug-input";
 
 interface ClubInfoFormProps {
 	club?: Club;
