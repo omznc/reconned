@@ -1,6 +1,7 @@
 import { SecuritySettings } from "@/app/dashboard/(user)/user/security/_components/security-settings";
-import { isAuthenticated } from "@/lib/auth";
+import { auth, isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 export default async function Page() {
@@ -28,11 +29,18 @@ export default async function Page() {
 		},
 	});
 
+	const backupCodes = await auth.api.viewBackupCodes({
+		body: {
+			userId: user.id,
+		}
+	});
+
 	return (
 		<SecuritySettings
 			passkeys={passkeys}
 			hasPassword={hasPassword}
 			hasTwoFactor={user.twoFactorEnabled}
+			backupCodes={backupCodes.backupCodes}
 		/>
 	);
 }
