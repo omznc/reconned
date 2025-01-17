@@ -85,4 +85,13 @@ export const metadata: Metadata = {
 	metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
 		? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
 		: undefined,
+	keywords: [
+		"airsoft Bosna", "airsoft BiH", "airsoft oružje", "airsoft replike",
+		"airsoft oprema", "airsoft klubovi BiH", "airsoft shop BiH", "airsoft trgovina",
+		"airsoft puške", "airsoft pištolji", "airsoft metci", "airsoft kuglice",
+		"airsoft maska", "airsoft odjeća", "airsoft uniforme", "airsoft BiH forum",
+		"airsoft događaji BiH", "airsoft pravila", "airsoft taktike", "airsoft igrači BiH",
+		"najbolji airsoft BiH", "kupovina airsoft BiH", "prodaja airsoft BiH",
+		"airsoft timovi BiH", "airsoft lokacije BiH", "airsoft teren BiH"
+	]
 };
