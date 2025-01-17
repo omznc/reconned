@@ -1,6 +1,7 @@
 import EmailVerification from "@/emails/email-verification";
 import { env } from "@/lib/env";
-import { DEFAULT_FROM, resend } from "@/lib/resend";
+import { sendEmail } from "@/lib/mail";
+import { render } from "@react-email/components";
 
 export async function sendEmailVerificationAction({
 	to,
@@ -25,21 +26,19 @@ export async function sendEmailVerificationAction({
 	}
 
 	try {
-		const { data, error } = await resend.emails.send({
-			from: DEFAULT_FROM,
+		const resp = await sendEmail({
 			to,
 			subject: "Verificirajte svoj email",
-			react: EmailVerification({
-				userName: name,
-				verificationUrl: url.toString(),
+			html: await render(<EmailVerification userName={name} verificationUrl={url.toString()} />, {
+				pretty: true
 			}),
 		});
 
-		if (error) {
-			throw new Error(error.message);
+		if (resp.$metadata.httpStatusCode !== 200) {
+			throw new Error("Failed to send email");
 		}
 
-		return data;
+		return resp.MessageId;
 	} catch (error) {
 		console.error(error);
 		return null;

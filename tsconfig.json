@@ -38,7 +38,10 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"allowJs": true,
-		"noEmit": true
+		"noEmit": true,
+
+		// ETC
+		"allowImportingTsExtensions": true
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]

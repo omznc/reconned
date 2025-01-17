@@ -2,8 +2,9 @@ import { sendEmailVerificationAction } from "@/app/(auth)/_actions/send-email-ve
 import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
 import PasswordReset from "@/emails/password-reset";
 import { env } from "@/lib/env";
-import { DEFAULT_FROM, resend } from "@/lib/resend";
+import { sendEmail } from "@/lib/mail";
 import { PrismaClient } from "@prisma/client";
+import { render } from "@react-email/components";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, oneTap, twoFactor } from "better-auth/plugins";
@@ -30,14 +31,12 @@ export const auth = betterAuth({
 		enabled: true,
 		requireEmailVerification: true,
 		sendResetPassword: async ({ user, url }) => {
-			await resend.emails.send({
-				from: DEFAULT_FROM,
+			await sendEmail({
 				to: user.email,
 				subject: "Resetujte svoju lozinku",
-				react: PasswordReset({
-					userName: user.name,
-					resetUrl: url,
-				}),
+				html: await render(<PasswordReset userName={user.name} resetUrl={url} />, {
+					pretty: true,
+				})
 			});
 		},
 	},
