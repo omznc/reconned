@@ -1,12 +1,12 @@
 "use client";
 
 import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-} from "@/components/ui/sheet";
+	Credenza,
+	CredenzaContent,
+	CredenzaDescription,
+	CredenzaHeader,
+	CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import type { Club, ClubMembership, User } from "@prisma/client";
@@ -30,14 +30,14 @@ export function UserSheet({ user }: Props) {
 		clearOnDefault: true,
 	});
 	return (
-		<Sheet open={Boolean(open)} onOpenChange={() => setOpen("")}>
-			<SheetContent>
-				<SheetHeader>
-					<SheetTitle>{user?.name ?? "Ne postoji"}</SheetTitle>
-					<SheetDescription>
+		<Credenza open={Boolean(open)} onOpenChange={() => setOpen("")}>
+			<CredenzaContent>
+				<CredenzaHeader>
+					<CredenzaTitle>{user?.name ?? "Ne postoji"}</CredenzaTitle>
+					<CredenzaDescription>
 						{user?.email ?? "Korisnik ne postoji"}
-					</SheetDescription>
-				</SheetHeader>
+					</CredenzaDescription>
+				</CredenzaHeader>
 				{!user && (
 					<div className="mt-4 space-y-4">
 						<p>Korisnik nije pronađen.</p>
@@ -85,7 +85,7 @@ export function UserSheet({ user }: Props) {
 						<UserActions user={user} />
 					</div>
 				)}
-			</SheetContent>
-		</Sheet>
+			</CredenzaContent>
+		</Credenza>
 	);
 }

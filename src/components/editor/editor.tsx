@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
 import { cn } from "@/lib/utils";
 import {
 	Bold,
@@ -12,9 +13,12 @@ import {
 	Heading2,
 	Heading3,
 	Minus,
+	Link as LinkIcon,
+	Link2Off,
 } from "lucide-react";
 import "./editor.css";
 import { Button } from "@/components/ui/button";
+import { usePrompt } from "@/components/ui/alert-dialog-provider";
 
 interface EditorProps {
 	initialValue?: string;
@@ -53,13 +57,68 @@ export const Editor = ({
 	onChange,
 }: EditorProps) => {
 	const editor = useEditor({
-		extensions: [StarterKit],
+		extensions: [
+			StarterKit,
+			Link.configure({
+				openOnClick: false,
+				autolink: true,
+				defaultProtocol: 'https',
+				protocols: ['http', 'https'],
+				HTMLAttributes: {
+					class: 'text-primary underline',
+				},
+			}),
+
+		],
 		content: initialValue,
 		editable,
 		onUpdate: ({ editor }) => {
 			onChange?.(editor.getHTML());
 		},
 	});
+	const prompt = usePrompt();
+
+	const setLink = async () => {
+		if (!editor) {
+			return;
+		}
+
+		const previousUrl = editor.getAttributes('link').href;
+		const url = await prompt({
+			title: "Unesi link",
+			body: "Ako ne unesete http:// ili https://, automatski će se dodati https://",
+			defaultValue: previousUrl,
+			actionButton: "Sačuvaj",
+			cancelButton: "Otkaži",
+			inputType: "input",
+			inputProps: {
+				type: "url",
+				placeholder: "https://example.com",
+			},
+		});
+
+		if (!url) {
+			return;
+		}
+
+		if (url === '') {
+			editor.chain().focus().unsetLink().run();
+			return;
+		}
+
+		if (!(url.startsWith('http://') || url.startsWith('https://'))) {
+			editor.chain().focus().unsetLink().run();
+			return;
+		}
+
+		editor.chain().focus().setLink({ href: url }).run();
+	};
+
+	const handleContainerClick = () => {
+		if (editable && editor) {
+			editor.chain().focus().run();
+		}
+	};
 
 	return (
 		<div className="relative border rounded-lg">
@@ -129,19 +188,40 @@ export const Editor = ({
 					>
 						<Minus className="h-4 w-4" />
 					</ToolbarButton>
+
+					<div className="w-px h-6 bg-border mx-1" />
+
+					<ToolbarButton
+						onClick={setLink}
+						active={editor.isActive('link')}
+					>
+						<LinkIcon className="h-4 w-4" />
+					</ToolbarButton>
+
+					<ToolbarButton
+						onClick={() => editor.chain().focus().unsetLink().run()}
+						disabled={!editor.isActive('link')}
+					>
+						<Link2Off className="h-4 w-4" />
+					</ToolbarButton>
 				</div>
 			)}
 
-			<EditorContent
-				editor={editor}
+			<div
+				onClick={handleContainerClick}
 				className={cn(
-					"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
-					"p-4",
-					{
-						"min-h-[150px]": editable,
-					},
+					"cursor-text",
+					editable ? "min-h-[150px]" : ""
 				)}
-			/>
+			>
+				<EditorContent
+					editor={editor}
+					className={cn(
+						"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
+						"p-4",
+					)}
+				/>
+			</div>
 		</div>
 	);
 };

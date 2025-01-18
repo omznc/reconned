@@ -83,7 +83,9 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 			<div className="flex flex-wrap gap-0">
 				<Badge className="flex items-center gap-1">
 					<UserIcon className="w-4 h-4" />
-					{club._count?.members}
+					{club._count?.members} {
+						club._count?.members === 1 ? "član" : "članova"
+					}
 				</Badge>
 				<Badge className="flex items-center gap-1">
 					{club.isPrivate ? (
