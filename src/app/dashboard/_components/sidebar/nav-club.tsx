@@ -1,48 +1,28 @@
 "use client";
 
 import {
-	Collapsible,
-	CollapsibleTrigger,
-	CollapsibleContent,
-} from "@/components/ui/collapsible";
+	Building2, Search, Pencil, ChartBar, BookUser, MailPlus,
+	CalendarFold, Plus, CalendarDays, DiamondMinus, DollarSign, NotebookPen,
+} from "lucide-react";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarMenu,
-	SidebarMenuItem,
-	SidebarMenuButton,
-	SidebarMenuSub,
-	SidebarMenuSubItem,
-	SidebarMenuSubButton,
+	useSidebar,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-
-import {
-	ChevronRight,
-	Building2,
-	Search,
-	Pencil,
-	ChartBar,
-	BookUser,
-	MailPlus,
-	CalendarFold,
-	Plus,
-	CalendarDays,
-	DiamondMinus,
-	DollarSign,
-	NotebookPen,
-} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { User } from "better-auth";
-import { BadgeSoon } from "@/components/badge-soon";
+import type { NavItem } from "@/app/dashboard/_components/sidebar/types";
+import { renderCollapsedItem, renderExpandedItem } from "@/app/dashboard/_components/sidebar/utils";
 
 interface NavClubProps {
-	user: User & { managedClubs: string[] };
+	user: User & { managedClubs: string[]; };
 }
 
 export function NavClub({ user }: NavClubProps) {
 	const path = usePathname();
+	const { open: sidebarOpen, isMobile } = useSidebar();
 	const { clubId } = useCurrentClub();
 
 	if (!clubId) {
@@ -54,185 +34,108 @@ export function NavClub({ user }: NavClubProps) {
 		<SidebarGroup>
 			<SidebarGroupLabel>Moj klub</SidebarGroupLabel>
 			<SidebarMenu>
-				{items.map((item) => {
-					if (item?.items && item?.items.length > 0) {
-						return (
-							<Collapsible
-								key={item.title}
-								asChild={true}
-								defaultOpen={item.items?.some(
-									(subItem) => subItem.url === path,
-								)}
-								className="group/collapsible"
-							>
-								<SidebarMenuItem>
-									<CollapsibleTrigger asChild={true}>
-										<SidebarMenuButton
-											isActive={
-												item.url === path ||
-												item.items?.some((subItem) => subItem.url === path)
-											}
-											tooltip={item.title}
-										>
-											{item.icon && <item.icon />}
-											<span>{item.title}</span>
-											<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-										</SidebarMenuButton>
-									</CollapsibleTrigger>
-									<CollapsibleContent className="pt-1">
-										<SidebarMenuSub>
-											{item.items
-												?.filter(
-													(subItem) =>
-														!subItem.protected ||
-														(subItem.protected &&
-															user?.managedClubs?.includes(clubId)),
-												)
-												.map((subItem) => (
-													<SidebarMenuSubItem key={subItem.title}>
-														<SidebarMenuSubButton
-															isActive={subItem.url === path}
-															asChild={true}
-														>
-															<Link href={subItem.url}>
-																{subItem.icon && <subItem.icon />}
-																<span>{subItem.title}</span>
-																{subItem?.isSoon && (
-																	<BadgeSoon className="ml-2" />
-																)}
-															</Link>
-														</SidebarMenuSubButton>
-													</SidebarMenuSubItem>
-												))}
-										</SidebarMenuSub>
-									</CollapsibleContent>
-								</SidebarMenuItem>
-							</Collapsible>
-						);
-					}
-
-					return (
-						<SidebarMenuItem key={item.title}>
-							<SidebarMenuButton
-								isActive={item.url === path}
-								tooltip={item.title}
-								asChild={true}
-							>
-								<Link href={item.url}>
-									{item.icon && <item.icon />}
-									<span>{item.title}</span>
-								</Link>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-					);
-				})}
+				{items.map((item) =>
+					(!(sidebarOpen || isMobile))
+						? renderCollapsedItem(item, path)
+						: renderExpandedItem(item, path, {
+							hasAccess: (subItem) =>
+								!subItem.protected ||
+								(subItem.protected && user?.managedClubs?.includes(clubId))
+						})
+				)}
 			</SidebarMenu>
 		</SidebarGroup>
 	);
 }
 
-const getItems = (clubId: string) => {
-	return [
-		{
-			title: "Klub",
-			url: "#",
-			icon: Building2,
-			isActive: true,
-			items: [
-				{
-					title: "Pregled",
-					url: `/dashboard/${clubId}/club`,
-					icon: Search,
-				},
-				{
-					title: "Nova objava",
-					url: `/dashboard/${clubId}/club/posts`,
-					icon: NotebookPen,
-					protected: true,
-				},
-				{
-					title: "Potrošnja",
-					url: `/dashboard/${clubId}/club/spending`,
-					icon: DollarSign,
-					isSoon: true,
-				},
-				{
-					title: "Informacije",
-					url: `/dashboard/${clubId}/club/information`,
-					icon: Pencil,
-					protected: true,
-				},
-				{
-					title: "Statistike",
-					url: `/dashboard/${clubId}/club/stats`,
-					icon: ChartBar,
-					protected: true,
-				},
-			],
-		},
-		{
-			title: "Članovi",
-			url: "#",
-			icon: BookUser,
-			items: [
-				{
-					title: "Pregled",
-					url: `/dashboard/${clubId}/members`,
-					icon: Search,
-				},
-				{
-					title: "Pozivnice",
-					url: `/dashboard/${clubId}/members/invitations`,
-					icon: MailPlus,
-					protected: true,
-				},
-				{
-					title: "Menadžeri",
-					url: `/dashboard/${clubId}/members/managers`,
-					icon: BookUser,
-					protected: true,
-				},
-			],
-		},
-		{
-			title: "Susreti",
-			url: "#",
-			icon: CalendarFold,
-			items: [
-				{
-					title: "Pregled",
-					url: `/dashboard/${clubId}/events`,
-					icon: Search,
-				},
-				{
-					title: "Novi susret",
-					url: `/dashboard/${clubId}/events/create`,
-					icon: Plus,
-					protected: true,
-				},
-				{
-					title: "Kalendar",
-					url: `/dashboard/${clubId}/events/calendar`,
-					icon: CalendarDays,
-				},
-				{
-					title: "Pravila",
-					url: `/dashboard/${clubId}/events/rules`,
-					icon: DiamondMinus,
-					protected: true,
-				},
-			],
-		},
-	] as {
-		title: string;
-		url: string;
-		icon?: React.FC;
-		items?: {
-			title: string;
-			url: string;
-			icon?: React.FC;
-			protected?: boolean;
-			isSoon?: boolean;
-		}[];
-	}[];
-};
+const getItems = (clubId: string): NavItem[] => [
+	{
+		title: "Klub",
+		url: "#",
+		icon: Building2,
+		items: [
+			{
+				title: "Pregled",
+				url: `/dashboard/${clubId}/club`,
+				icon: Search,
+			},
+			{
+				title: "Nova objava",
+				url: `/dashboard/${clubId}/club/posts`,
+				icon: NotebookPen,
+				protected: true,
+			},
+			{
+				title: "Potrošnja",
+				url: `/dashboard/${clubId}/club/spending`,
+				icon: DollarSign,
+				isSoon: true,
+			},
+			{
+				title: "Informacije",
+				url: `/dashboard/${clubId}/club/information`,
+				icon: Pencil,
+				protected: true,
+			},
+			{
+				title: "Statistike",
+				url: `/dashboard/${clubId}/club/stats`,
+				icon: ChartBar,
+				protected: true,
+			},
+		],
+	},
+	{
+		title: "Članovi",
+		url: "#",
+		icon: BookUser,
+		items: [
+			{
+				title: "Pregled",
+				url: `/dashboard/${clubId}/members`,
+				icon: Search,
+			},
+			{
+				title: "Pozivnice",
+				url: `/dashboard/${clubId}/members/invitations`,
+				icon: MailPlus,
+				protected: true,
+			},
+			{
+				title: "Menadžeri",
+				url: `/dashboard/${clubId}/members/managers`,
+				icon: BookUser,
+				protected: true,
+			},
+		],
+	},
+	{
+		title: "Susreti",
+		url: "#",
+		icon: CalendarFold,
+		items: [
+			{
+				title: "Pregled",
+				url: `/dashboard/${clubId}/events`,
+				icon: Search,
+			},
+			{
+				title: "Novi susret",
+				url: `/dashboard/${clubId}/events/create`,
+				icon: Plus,
+				protected: true,
+			},
+			{
+				title: "Kalendar",
+				url: `/dashboard/${clubId}/events/calendar`,
+				icon: CalendarDays,
+			},
+			{
+				title: "Pravila",
+				url: `/dashboard/${clubId}/events/rules`,
+				icon: DiamondMinus,
+				protected: true,
+			},
+		],
+	},
+];

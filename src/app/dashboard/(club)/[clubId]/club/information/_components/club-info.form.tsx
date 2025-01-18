@@ -55,6 +55,12 @@ import { useRouter } from "next/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { SlugInput } from "@/components/slug/slug-input";
+import {
+	Credenza,
+	CredenzaContent,
+	CredenzaHeader,
+	CredenzaTitle,
+} from "@/components/ui/credenza";
 
 interface ClubInfoFormProps {
 	club?: Club;

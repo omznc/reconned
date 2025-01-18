@@ -91,7 +91,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	};
 
 	return (
-		<div className="sticky top-0 w-full">
+		<div className="sticky top-0 w-full z-10">
 			<header
 				className={cn(
 					"z-10 h-10 w-fit border border-transparent flex items-center mb-4 transition-all bg-background/80 backdrop-blur-sm px-2 shrink-0 gap-2 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-8",
