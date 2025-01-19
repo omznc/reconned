@@ -69,7 +69,18 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 				],
 				AND: { isPrivate: false },
 			},
-			take: 25
+			take: 25,
+			include: {
+				clubMembership: {
+					include: {
+						club: {
+							select: {
+								name: true
+							}
+						}
+					}
+				}
+			}
 
 		}),
 		prisma.event.findMany({
@@ -158,10 +169,10 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 						<SearchResultCard
 							image={user.image}
 							key={user.id}
-							title={user.callsign || user.name}
+							title={`${user.name} ${user.callsign ? `(${user.callsign})` : ""}`}
 							description={user.bio}
 							href={`/users/${user.id}`}
-							badges={[]}
+							badges={user.clubMembership.map((membership) => membership.club.name)}
 							meta={user.location || undefined}
 							type="user"
 						/>

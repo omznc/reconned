@@ -1,6 +1,11 @@
 import { ClubsMapWrapper } from "@/app/(public)/map/_components/clubs-map-wrapper";
 import { prisma } from "@/lib/prisma";
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Mapa airsoft klubova - RECONNED",
+    description: "Mapa airsoft klubova na ovoj platformi",
+};
 
 export default async function MapPage() {
     const clubs = await prisma.club.findMany({

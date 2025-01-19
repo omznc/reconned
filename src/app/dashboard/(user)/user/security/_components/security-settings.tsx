@@ -5,31 +5,47 @@ import { SetupPasswordForm } from "@/app/dashboard/(user)/user/security/_compone
 import { BadgeSoon } from "@/components/badge-soon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePrompt } from "@/components/ui/alert-dialog-provider";
-import { Label } from "@/components/ui/label";
 import { authClient } from "@auth/client";
 import { Button } from "@components/ui/button";
-import type { Passkey } from "@prisma/client";
-import { formatDate } from "date-fns";
-import { Dice1, Dice5, Download, KeyRound, Trash2 } from "lucide-react";
+import { formatDate, formatDistanceToNow } from "date-fns";
+import { Dice5, Download, KeyRound, Trash2, Phone, MonitorSmartphone, Laptop, TabletSmartphone, Smartphone, Tablet, ShieldQuestion } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { bs } from "date-fns/locale";
+import type { Session } from "@prisma/client";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import type { Passkey } from "better-auth/plugins/passkey";
+
+interface SecuritySettingsProps {
+	passkeys: Passkey[];
+	hasPassword: boolean;
+	hasTwoFactor?: boolean | null;
+	backupCodes?: string[] | null;
+	sessions: (Omit<Session, "impersonatedBy"> & {
+		isCurrentSession: boolean;
+	})[];
+}
 
 export function SecuritySettings({
 	passkeys,
 	hasPassword,
 	hasTwoFactor,
 	backupCodes,
-}: {
-	passkeys: Passkey[];
-	hasPassword: boolean;
-	hasTwoFactor?: boolean | null;
-	backupCodes?: string[] | null;
-}) {
+	sessions,
+}: SecuritySettingsProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const prompt = usePrompt();
+
+	const getDeviceIcon = (userAgent?: string) => {
+		if (!userAgent) return ShieldQuestion;
+		if (userAgent.includes("Mobile")) return Smartphone;
+		if (userAgent.includes("Tablet")) return Tablet;
+		return Laptop;
+	};
 
 	return (
 		<>
@@ -385,8 +401,7 @@ export function SecuritySettings({
 												router.refresh();
 											},
 											onError: () => {
-												setIsLoading(false);
-												toast.error("Neispavan kod, pokušajte ponovo.");
+												setIsLoading(false); toast.error("Neispavan kod, pokušajte ponovo.");
 											},
 										},
 									);
@@ -398,6 +413,111 @@ export function SecuritySettings({
 					)}
 				</div>
 			)}
+			<div className="flex flex-col gap-1">
+				<h3 className="text-lg font-semibold">Aktivne sesije</h3>
+				<p className="text-sm text-muted-foreground">
+					Sesija je mjesto gdje ste prijavljeni na vaš nalog. Ovdje možete
+					vidjeti sve aktivne sesije i ukinuti ih.
+				</p>
+			</div>
+			{sessions.length > 1 && (
+				<Alert>
+					<AlertDescription className="flex justify-between items-center">
+						<span>Ukinite sve ostale aktivne sesije osim trenutne</span>
+						<Button
+							type="button"
+							variant="destructive"
+							disabled={isLoading}
+							onClick={async () => {
+								await authClient.revokeOtherSessions({}, {
+									onRequest: () => setIsLoading(true),
+									onSuccess: () => {
+										setIsLoading(false);
+										router.refresh();
+										toast.success("Sve ostale sesije su ukinute");
+									},
+									onError: () => {
+										setIsLoading(false);
+										toast.error("Došlo je do greške");
+									},
+								});
+							}}
+						>
+							Ukini sve ostale
+						</Button>
+					</AlertDescription>
+				</Alert>
+			)}
+			<ScrollArea className="max-h-[400px] border">
+				<div className="p-4 space-y-2">
+					{sessions.map((session) => {
+						const Icon = getDeviceIcon(session.userAgent ?? undefined);
+						return (
+							<Alert
+								key={session.id}
+								className={
+									cn("flex flex-col md:flex-row gap-1 justify-between -z-0", {
+										"bg-primary/10": session.isCurrentSession,
+									})
+								}
+							>
+								<div className="flex gap-4 items-center">
+									<Icon className="w-8 h-8" />
+									<div className="flex flex-col">
+										<AlertTitle className="flex items-center gap-2">
+											{session.userAgent?.split("/")[0] || "Nepoznat uređaj"}
+											{session.isCurrentSession && (
+												<span className="text-xs border bg-background text-primary px-2 py-1">
+													Trenutna sesija
+												</span>
+											)}
+										</AlertTitle>
+										<AlertDescription>
+											{session.ipAddress && (
+												<span className="block text-xs">IP: {session.ipAddress}</span>
+											)}
+											<span className="block text-xs">
+												Posljednji put korišteno:{" "}
+												{formatDistanceToNow(session.updatedAt, {
+													addSuffix: true,
+													locale: bs,
+												})}
+											</span>
+										</AlertDescription>
+									</div>
+								</div>
+								{!session.isCurrentSession && (
+									<Button
+										type="button"
+										variant="destructive"
+										className="w-full md:w-auto"
+										disabled={isLoading}
+										onClick={async () => {
+											await authClient.revokeSession(
+												{ token: session.token },
+												{
+													onRequest: () => setIsLoading(true),
+													onSuccess: () => {
+														setIsLoading(false);
+														router.refresh();
+														toast.success("Sesija je uspješno ukinuta");
+													},
+													onError: () => {
+														setIsLoading(false);
+														toast.error("Došlo je do greške");
+													},
+												}
+											);
+										}}
+									>
+										<Trash2 className="w-4 h-4" />
+									</Button>
+								)}
+							</Alert>
+						);
+					})}
+				</div>
+			</ScrollArea>
 		</>
 	);
 }
