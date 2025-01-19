@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Loader, Trash } from "lucide-react";
+import { ArrowUpRight, Calendar as CalendarIcon, Loader, Trash } from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -55,15 +55,17 @@ import { useRouter } from "next/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { SlugInput } from "@/components/slug/slug-input";
-import {
-	Credenza,
-	CredenzaContent,
-	CredenzaHeader,
-	CredenzaTitle,
-} from "@/components/ui/credenza";
+
+import dynamic from "next/dynamic";
+import Link from "next/link";
+
+// Dynamically import map to avoid SSR issues
+const MapSelector = dynamic(() => import("@/app/(public)/map/_components/clubs-map").then(m => m.ClubsMap), {
+	ssr: false,
+});
 
 interface ClubInfoFormProps {
-	club?: Club;
+	club?: Club | null;
 	isClubOwner?: boolean;
 }
 
@@ -98,9 +100,17 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			contactPhone: props.club?.contactPhone || undefined,
 			contactEmail: props.club?.contactEmail || undefined,
 			slug: props.club?.slug || undefined,
+			latitude: props.club?.latitude || undefined,
+			longitude: props.club?.longitude || undefined,
 		},
 		mode: "onBlur",
 	});
+
+	// Add this handler for map location selection
+	const handleLocationSelect = (lat: number, lng: number) => {
+		form.setValue("latitude", lat);
+		form.setValue("longitude", lng);
+	};
 
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
@@ -281,6 +291,32 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
+
+				<FormItem>
+					<FormLabel>Tačna lokacija na mapi</FormLabel>
+					<FormControl>
+						<div className="h-[400px] w-full -z-10 rounded-lg overflow-hidden border">
+							<MapSelector
+								clubs={props.club
+									? [
+										{
+											...props.club,
+											latitude: form.watch("latitude") || null,
+											longitude: form.watch("longitude") || null,
+										},
+									]
+									: []}
+								interactive={true}
+								onLocationSelect={handleLocationSelect}
+							/>
+						</div>
+					</FormControl>
+					<FormDescription>
+						Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <Link target="_blank" className="text-red-500" href="/map">mapi airsoft klubova
+							<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
+						</Link>
+					</FormDescription>
+				</FormItem>
 
 				<FormField
 					control={form.control}

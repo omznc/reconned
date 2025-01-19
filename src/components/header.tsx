@@ -13,18 +13,30 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { User } from "better-auth";
-import { LogOut, Moon, Sun, Type } from "lucide-react";
+import { ArrowLeft, LogOut, Moon, Sun, Type } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Header({ user }: { user: User | null; }) {
 	const { theme, setTheme } = useTheme();
+	const path = usePathname();
 	const { font, setFont } = useFont();
 	return (
 		<header className="flex flex-col md:flex-row gap-4 select-none w-full items-center justify-between p-2 md:p-4">
 			<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 				<Logo className="w-full h-auto md:w-fit md:h-full p-2 md:p-0" />
 			</Link>
+			{
+				path !== '/' && (
+					<Button asChild variant='default' className="w-full">
+						<Link href="/" className="w-full h-auto md:w-fit md:h-full">
+							<ArrowLeft className="w-6 h-6" />
+							Nazad na početnu
+						</Link>
+					</Button>
+				)
+			}
 			<div
 				className="flex gap-2 md:w-fit w-full"
 				suppressHydrationWarning={true}

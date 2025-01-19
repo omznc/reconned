@@ -2,6 +2,11 @@
 
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { toast } from "sonner";
+import { removeMember } from "./members.actions";
+import { cn } from "@/lib/utils";
 import type { ClubMembership } from "@prisma/client";
 
 interface MembersTableProps {
@@ -15,6 +20,38 @@ interface MembersTableProps {
 }
 
 export function MembersTable(props: MembersTableProps) {
+	const confirm = useConfirm();
+
+	const handleRemove = async (member: ClubMembership & { userName: string; }, clubId: string) => {
+		if (member.role === "CLUB_OWNER") {
+			return;
+		}
+
+		const confirmed = await confirm({
+			title: "Ukloni člana",
+			body: `Da li ste sigurni da želite ukloniti ${member.userName} iz kluba?`,
+			cancelButton: "Odustani",
+			actionButton: "Ukloni",
+			actionButtonVariant: "destructive",
+		});
+
+		if (!confirmed) {
+			return;
+		}
+
+		const response = await removeMember({
+			memberId: member.id,
+			clubId: clubId,
+		});
+
+		if (!response?.data?.success) {
+			toast.error(response?.data?.error || "Neuspjelo uklanjanje člana.");
+			return;
+		}
+
+		toast.success("Član je uspješno uklonjen iz kluba.");
+	};
+
 	return (
 		<GenericDataTable
 			data={props.members}
@@ -75,6 +112,27 @@ export function MembersTable(props: MembersTableProps) {
 					key: "createdAt",
 					header: "Datum pridruživanja",
 					sortable: true,
+				},
+				{
+					key: "actions",
+					header: "Akcije",
+					cellConfig: {
+						variant: "custom",
+						component: (_, row) => (
+							<div className={cn("flex justify-end", {
+								"cursor-not-allowed": row.role === "CLUB_OWNER"
+							})}>
+								<Button
+									variant="destructive"
+									size="sm"
+									disabled={row.role === "CLUB_OWNER"}
+									onClick={() => handleRemove(row, row.clubId)}
+								>
+									{row.role === "CLUB_OWNER" ? "Vlasnik" : "Ukloni"}
+								</Button>
+							</div>
+						),
+					},
 				},
 			]}
 			filters={[

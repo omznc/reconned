@@ -29,11 +29,16 @@ import {
 	LayoutDashboard,
 	Medal,
 	Search,
+	Map,
+	ShieldQuestion,
+	Building2,
+	Users,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { BadgeSoon } from "@/components/badge-soon";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -121,29 +126,55 @@ export default async function Home({ searchParams }: PageProps) {
 							Pridružite se najnaprednijoj airsoft zajednici. Pronađite
 							susrete, povežite se s igračima i unaprijedite svoju igru.
 						</p>
-						<div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-							<Button size="lg" className="bg-red-600 w-full hover:bg-red-700" asChild>
-								<Link href="/events">
-									<Calendar className="mr-2 h-4 w-4" />
-									Susreti
-								</Link>
-							</Button>
-							<Button size="lg" variant="outline" asChild className="w-full">
-								<Link href="/dashboard">
-									<LayoutDashboard className="mr-2 h-4 w-4" />
-									Aplikacija
-								</Link>
-							</Button>
-							<Button size="lg" variant="outline" asChild className="w-full">
-								<Link href="/sponsors">
-									<Medal className="mr-2 h-4 w-4" />
-									Sponzori
-								</Link>
-							</Button>
-							<Button size="lg" variant="outline" asChild className="w-full">
+						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
+							<Button size="sm" variant="default" className="aspect-square flex-col h-auto p-2" asChild>
 								<Link href="/search">
-									<Search className="mr-2 h-4 w-4" />
-									Pretraži sve
+									<Search className="scale-150 mb-2" />
+									<span className="text-sm">Pretraži sve</span>
+								</Link>
+							</Button>
+							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+								<Link href="/events">
+									<Calendar className="scale-150 mb-2" />
+									<span className="text-sm">Susreti</span>
+								</Link>
+							</Button>
+							<Button size="sm" variant="outline" className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2" asChild>
+								<Link href="#">
+									<Building2 className="scale-150 mb-2" />
+									<span className="text-sm">Klubovi</span>
+									<BadgeSoon />
+								</Link>
+							</Button>
+							<Button size="sm" variant="outline" className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2" asChild>
+								<Link href="#">
+									<Users className="scale-150 mb-2" />
+									<span className="text-sm">Korisnici</span>
+									<BadgeSoon />
+								</Link>
+							</Button>
+							<Button size="sm" variant="default" className="aspect-square flex-col h-auto p-2" asChild>
+								<Link href="/map">
+									<Map className="scale-150 mb-2" />
+									<span className="text-sm">Mapa klubova</span>
+								</Link>
+							</Button>
+							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+								<Link href="/about">
+									<ShieldQuestion className="scale-150 mb-2" />
+									<span className="text-sm">O nama</span>
+								</Link>
+							</Button>
+							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+								<Link href="/dashboard">
+									<LayoutDashboard className="scale-150 mb-2" />
+									<span className="text-sm">Aplikacija</span>
+								</Link>
+							</Button>
+							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+								<Link href="/sponsors">
+									<Medal className="scale-150 mb-2" />
+									<span className="text-sm">Sponzori</span>
 								</Link>
 							</Button>
 						</div>
