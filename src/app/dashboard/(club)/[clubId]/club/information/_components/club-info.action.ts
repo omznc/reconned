@@ -41,6 +41,8 @@ export const saveClubInformation = safeActionClient
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
 				slug: parsedInput.slug,
+				latitude: parsedInput.latitude,
+				longitude: parsedInput.longitude,
 			},
 			create: {
 				name: parsedInput.name,
@@ -52,6 +54,8 @@ export const saveClubInformation = safeActionClient
 				logo: parsedInput.logo,
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
+				latitude: parsedInput.latitude,
+				longitude: parsedInput.longitude,
 				slug: parsedInput.slug,
 				members: {
 					create: {

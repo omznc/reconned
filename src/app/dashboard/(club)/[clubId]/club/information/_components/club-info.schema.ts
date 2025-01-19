@@ -17,6 +17,8 @@ export const clubInfoSchema = z.object({
 		.max(50, {
 			message: "Lokacija kluba mora biti kraća od 50 znakova",
 		}),
+	latitude: z.number().optional(),
+	longitude: z.number().optional(),
 	description: z.string().max(5000, {
 		message: "Opis kluba mora biti kraći od 5000 znakova",
 	}),

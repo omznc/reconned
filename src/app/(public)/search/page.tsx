@@ -15,11 +15,7 @@ interface Props {
 
 async function SearchResults({ query, tab }: { query?: string; tab?: string; }) {
 	if (!query) {
-		return (
-			<div className="text-center text-muted-foreground py-12">
-				Unesite tekst za pretragu iznad
-			</div>
-		);
+		return null;
 	}
 
 	const [clubs, users, events] = await Promise.all([
@@ -140,11 +136,13 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 				) : (
 					clubs.map((club) => (
 						<SearchResultCard
+							image={club.logo}
 							key={club.id}
 							title={club.name}
 							description={club.description}
 							href={`/clubs/${club.id}`}
 							meta={`${club._count.members} članova`}
+							type="club"
 						/>
 					))
 				)}
@@ -158,12 +156,14 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 				) : (
 					users.map((user) => (
 						<SearchResultCard
+							image={user.image}
 							key={user.id}
 							title={user.callsign || user.name}
 							description={user.bio}
 							href={`/users/${user.id}`}
 							badges={[]}
 							meta={user.location || undefined}
+							type="user"
 						/>
 					))
 				)}
@@ -177,6 +177,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 				) : (
 					events.map((event) => (
 						<SearchResultCard
+							image={event.coverImage}
 							key={event.id}
 							title={event.name}
 							description={event.description}
@@ -187,6 +188,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 								format(event.dateStart, "dd.MM.yyyy")
 							]}
 							meta={event.location || undefined}
+							type="event"
 						/>
 					))
 				)}

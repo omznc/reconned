@@ -46,13 +46,13 @@ export default function RegisterPage() {
 						e.preventDefault();
 
 						const formData = new FormData(e.currentTarget);
-						const email = formData.get("email") as string;
+						const localEmail = formData.get("email") as string;
 						const password = formData.get("password") as string;
 						const name = formData.get("name") as string;
 
 						const success = await authClient.signUp.email(
 							{
-								email,
+								email: email ?? localEmail,
 								password,
 								name,
 							},
@@ -101,21 +101,21 @@ export default function RegisterPage() {
 							id="email"
 							placeholder="Email"
 							disabled={!!email}
-							defaultValue={email ?? undefined}
+							value={email ?? undefined}
 							autoComplete="email"
 							required={true}
 						/>
 						{!!email && (
 							<p className="text-sm text-gray-500">
 								Email je automatski popunjen.{" "}
-								<p
+								<span
 									className="text-foreground cursor-pointer inline"
 									onClick={() => {
 										setEmail("");
 									}}
 								>
 									Ukloni.
-								</p>
+								</span>
 							</p>
 						)}
 					</div>

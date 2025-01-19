@@ -34,10 +34,6 @@ export async function sendEmailVerificationAction({
 			}),
 		});
 
-		if (resp.$metadata.httpStatusCode !== 200) {
-			throw new Error("Failed to send email");
-		}
-
 		return resp.MessageId;
 	} catch (error) {
 		console.error(error);
