@@ -43,7 +43,7 @@ import {
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { SlugInput } from "@/components/slug/slug-input";
 import { ImageCropDialog } from "@/app/dashboard/(user)/user/settings/_components/image-crop-dialog";
-import { ErrorCode, type DropzoneOptions } from "react-dropzone";
+import type { DropzoneOptions } from "react-dropzone";
 
 interface UserInfoFormProps {
 	user: User;

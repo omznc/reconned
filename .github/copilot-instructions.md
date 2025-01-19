@@ -33,6 +33,7 @@
 - Uses [better-auth](package.json) for authentication management
 
 ## Other
+- Always use date-fns for date stuff
 - Always use react-hook-forms and zod. Schemas should be in a different file so we
 can import them in actions as well.
 - Namings are as follows, e.g. for password reset:
