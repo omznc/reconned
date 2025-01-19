@@ -28,7 +28,7 @@ const getStoredFont = (): FontType => {
 	return "sans";
 };
 
-export function FontProvider({ children }: { children: ReactNode }) {
+export function FontProvider({ children }: { children: ReactNode; }) {
 	const [font, setFont] = useState<FontType>(() => getStoredFont());
 
 	useEffect(() => {
@@ -48,20 +48,4 @@ export function useFont() {
 		throw new Error("useFont must be used within a FontProvider");
 	}
 	return context;
-}
-
-export function FontSwitcher() {
-	const { font, setFont } = useFont();
-
-	return (
-		<button
-			type="button"
-			onClick={() => {
-				setFont(font === "mono" ? "sans" : "mono");
-			}}
-			className="fixed bottom-4 right-4 p-2 bg-background border rounded-md"
-		>
-			{font === "mono" ? "Switch to Sans" : "Switch to Mono"}
-		</button>
-	);
 }

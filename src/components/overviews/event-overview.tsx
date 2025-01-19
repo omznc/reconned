@@ -49,7 +49,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 
 					<Image
 						suppressHydrationWarning={true}
-						src={event.image} // This will revalidate the browser cache
+						src={event.image}
 						alt={event.name}
 						width={680}
 						height={380}

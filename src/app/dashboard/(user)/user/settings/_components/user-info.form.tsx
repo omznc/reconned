@@ -213,6 +213,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormControl>
 								<Textarea
 									placeholder="Igram airsoft već 5 godina..."
+									className="h-[144px] min-h-[144px] max-h-[144px]"
 									{...field}
 								/>
 							</FormControl>

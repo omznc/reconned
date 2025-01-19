@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPageViews } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
+import { getTranslations } from "next-intl/server";
 
 interface ExtendedUser extends User {
 	clubMembership: {
@@ -22,6 +23,7 @@ interface UserOverviewProps {
 }
 
 export async function UserOverview({ user }: UserOverviewProps) {
+	const t = await getTranslations("components.userOverview");
 	const [analyticsId, analyticsSlug] = await Promise.all([
 		getPageViews(`/users/${user.id}`),
 		getPageViews(`/users/${user.slug}`),
@@ -35,16 +37,16 @@ export async function UserOverview({ user }: UserOverviewProps) {
 	);
 	return (
 		<div className="space-y-6">
-			<div className="flex gap-4">
+			<div className="flex flex-col md:flex-row gap-4">
 				{/* TODO: Handle if unset */}
 				{user.image && (
 					<Image
 						suppressHydrationWarning={true}
-						src={user.image} // This will revalidate the browser cache
+						src={user.image}
 						alt={user.name}
 						width={150}
 						height={150}
-						className="h-[150px] w-auto"
+						className="h-[200px] w-auto object-cover"
 						draggable={false}
 					/>
 				)}
@@ -54,28 +56,28 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							{user.name} {user.callsign && `(${user.callsign})`}
 						</h1>
 					</div>
-					<p className="text-accent-foreground/80">{user.bio}</p>
+					<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">{user.bio}</p>
 				</div>
 
 			</div>
 			<Badge className="h-fit">
-				{visitors} pregled/a
+				{t("views", { count: visitors })}
 			</Badge>
 			{
 				user.clubMembership.length === 0 && (
 					<Badge className="h-fit">
-						Freelancer
+						{t("freelancer")}
 					</Badge>
 				)
 			}
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>
-						<CardTitle>Klubovi</CardTitle>
+						<CardTitle>{t("clubs.title")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{user.clubMembership.length === 0 ? (
-							<p className="text-muted-foreground">Nije član nijednog kluba</p>
+							<p className="text-muted-foreground">{t("clubs.noClubs")}</p>
 						) : (
 							<ul className="space-y-4">
 								{user.clubMembership.map((membership) => (
@@ -113,11 +115,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>Predstojeći susreti</CardTitle>
+						<CardTitle>{t("upcomingEvents.title")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{futureEvents.length === 0 ? (
-							<p className="text-muted-foreground">Nema predstojećih susreta</p>
+							<p className="text-muted-foreground">{t("upcomingEvents.noEvents")}</p>
 						) : (
 							<ul className="space-y-2">
 								{futureEvents.map((reg) => (
@@ -140,11 +142,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>Prethodni susreti</CardTitle>
+						<CardTitle>{t("pastEvents.title")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{pastEvents.length === 0 ? (
-							<p className="text-muted-foreground">Nema prethodnih susreta</p>
+							<p className="text-muted-foreground">{t("pastEvents.noEvents")}</p>
 						) : (
 							<ul className="space-y-2">
 								{pastEvents.map((reg) => (

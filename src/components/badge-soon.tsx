@@ -1,10 +1,12 @@
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface BadgeSoonProps extends React.HTMLAttributes<HTMLDivElement> {
 	className?: string;
 }
 
 export function BadgeSoon({ className, ...props }: BadgeSoonProps) {
+	const t = useTranslations("components.badge");
 	return (
 		<span
 			className={cn(
@@ -13,7 +15,9 @@ export function BadgeSoon({ className, ...props }: BadgeSoonProps) {
 			)}
 			{...props}
 		>
-			Uskoro
+			{
+				t("soon")
+			}
 		</span>
 	);
 }

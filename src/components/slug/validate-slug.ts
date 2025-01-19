@@ -15,7 +15,7 @@ export const validateSlug = safeActionClient
 	.action(async ({ parsedInput, ctx }) => {
 		const user = await isAuthenticated();
 		if (!user) {
-			throw new Error("Niste prijavljeni");
+			throw new Error(t("components.slug.errors.notAuthenticated"));
 		}
 
 		const { type, slug } = parsedInput;
@@ -64,7 +64,7 @@ export const validateSlug = safeActionClient
 				return !(userBySlug || userById);
 			}
 			default: {
-				throw new Error("Nepoznat tip");
+				throw new Error(t("components.slug.errors.unknownType"));
 			}
 		}
 	});

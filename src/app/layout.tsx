@@ -14,6 +14,8 @@ import type { ReactNode } from "react";
 import { isAuthenticated } from "@/lib/auth";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -27,8 +29,10 @@ const geistMono = Geist_Mono({
 
 async function LayoutContent({ children }: { children: ReactNode; }) {
 	const user = await isAuthenticated();
+	const locale = await getLocale();
+
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang={locale} suppressHydrationWarning>
 			<head>
 				<meta name="darkreader-lock" />
 				<Script defer data-domain="reconned.com" src="https://scout.reconned.com/js/script.outbound-links.tagged-events.js" />
@@ -67,15 +71,19 @@ async function LayoutContent({ children }: { children: ReactNode; }) {
 	);
 }
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: ReactNode;
 }>) {
+	const messages = await getMessages();
+
 	return (
-		<FontProvider>
-			<LayoutContent>{children}</LayoutContent>
-		</FontProvider>
+		<NextIntlClientProvider messages={messages}>
+			<FontProvider>
+				<LayoutContent>{children}</LayoutContent>
+			</FontProvider>
+		</NextIntlClientProvider>
 	);
 }
 

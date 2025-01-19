@@ -3,10 +3,12 @@
 import { AddToCalendarButton as CalendarButtonBase } from "add-to-calendar-button-react";
 import { format } from "date-fns";
 import type { ClubRule, Event } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 export default function AddEventToCalendarButton({
 	event,
 }: { event: Event & { rules: ClubRule[]; }; }) {
+	const t = useTranslations("components.addToCalendar");
 	const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
 	const startDate = formatDate(event.dateStart);
@@ -21,20 +23,20 @@ export default function AddEventToCalendarButton({
 	}
 
 	const features = [
-		event.hasBreakfast && "Doručak",
-		event.hasLunch && "Ručak",
-		event.hasDinner && "Večera",
-		event.hasSnacks && "Užina",
-		event.hasDrinks && "Piće",
-		event.hasPrizes && "Nagrade",
+		event.hasBreakfast && t("features.breakfast"),
+		event.hasLunch && t("features.lunch"),
+		event.hasDinner && t("features.dinner"),
+		event.hasSnacks && t("features.snacks"),
+		event.hasDrinks && t("features.drinks"),
+		event.hasPrizes && t("features.prizes"),
 	].filter(Boolean);
 
 	if (features.length > 0) {
-		description += `Ostalo: ${features.join(", ")}\n\n`;
+		description += `${t("sections.other")}: ${features.join(", ")}\n\n`;
 	}
 
 	if (Array.isArray(event.rules) && event.rules.length > 0) {
-		description += "Pravila:\n";
+		description += `${t("sections.rules")}:\n`;
 		for (const rule of event.rules) {
 			if (rule?.name && rule?.description) {
 				description += `- ${rule?.name}: ${rule?.description}\n`;
@@ -44,7 +46,7 @@ export default function AddEventToCalendarButton({
 	}
 
 	if (event.gearRequirements.length > 0) {
-		description += "Oprema:\n";
+		description += `${t("sections.gear")}:\n`;
 		for (const gear of event.gearRequirements) {
 			// @ts-expect-error
 			description += `- ${gear.name}: ${gear.description}\n`;
@@ -52,12 +54,11 @@ export default function AddEventToCalendarButton({
 	}
 
 	if (event.isPrivate) {
-		description += "\nOvo je privatni susret samo za članove kluba.\n";
+		description += `\n${t("sections.private")}\n`;
 	}
 
 	if (event.allowFreelancers) {
-		description +=
-			"\nFreelanceri su dobrodošli da se registruju za ovaj susret.\n";
+		description += `\n${t("sections.freelancers")}\n`;
 	}
 	return (
 		<CalendarButtonBase
@@ -67,7 +68,7 @@ export default function AddEventToCalendarButton({
 			timeZone="Europe/Sarajevo"
 			location={event.location}
 			options={["Apple", "Google", "Outlook.com"]}
-			label="Dodaj u kalendar"
+			label={t("addToCalendar")}
 			hideBackground={true}
 			hideBranding={true}
 			size="2"

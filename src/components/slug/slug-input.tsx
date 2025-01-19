@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { env } from "@/lib/env";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
+import { useTranslations } from "next-intl";
 
 interface SlugInputProps {
 	type: "club" | "event" | "user";
@@ -23,6 +24,7 @@ interface SlugInputProps {
 }
 
 export function SlugInput(props: SlugInputProps) {
+	const t = useTranslations("components.slug");
 	const [slug, setSlug] = useState(props.defaultSlug);
 	const [debouncedSlug] = useDebounce(slug, 300);
 	const [valid, setValid] = useState(false);
@@ -47,7 +49,7 @@ export function SlugInput(props: SlugInputProps) {
 	return (
 		<FormItem>
 			<FormLabel>
-				Specijalni link
+				{t("label")}
 				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${props.type[0]}/${debouncedSlug}`}</span>
 			</FormLabel>
 			<FormControl>
@@ -63,15 +65,15 @@ export function SlugInput(props: SlugInputProps) {
 						setSlug(value);
 					}}
 					className="z-10"
-					placeholder="moj-link"
+					placeholder={t("placeholder")}
 					type="text"
 				/>
 			</FormControl>
 			<FormDescription>
-				Kratki link koji ćete moći podjeliti.{" "}
+				{t("description")}{" "}
 				{debouncedSlug && debouncedSlug !== props.currentSlug && (
 					<span className={valid ? "text-green-500" : "text-red-500"}>
-						{valid ? "Link je dostupan." : "Link je zauzet!"}
+						{valid ? t("available") : t("taken")}
 					</span>
 				)}
 			</FormDescription>

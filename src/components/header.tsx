@@ -17,8 +17,10 @@ import { ArrowLeft, LogOut, Moon, Sun, Type } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function Header({ user }: { user: User | null; }) {
+	const t = useTranslations("components.header");
 	const { theme, setTheme } = useTheme();
 	const path = usePathname();
 	const { font, setFont } = useFont();
@@ -32,7 +34,7 @@ export function Header({ user }: { user: User | null; }) {
 					<Button asChild variant='ghost' className="w-full hover:bg-transparent">
 						<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 							<ArrowLeft className="w-6 h-6" />
-							Nazad na početnu
+							{t("backToHome")}
 						</Link>
 					</Button>
 				)
@@ -46,7 +48,7 @@ export function Header({ user }: { user: User | null; }) {
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
 							<Link href="/dashboard?autoSelectFirst=true" className="w-full">
-								Aplikacija
+								{t("dashboard")}
 							</Link>
 						</Button>
 						<DropdownMenu>
@@ -59,7 +61,7 @@ export function Header({ user }: { user: User | null; }) {
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="mr-4" sideOffset={12}>
-								<DropdownMenuLabel>Personalizacija</DropdownMenuLabel>
+								<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>
 								<DropdownMenuItem asChild={true}>
 									<Button
 										variant="ghost"
@@ -71,7 +73,7 @@ export function Header({ user }: { user: User | null; }) {
 									>
 										<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
 										<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-										Promijeni temu
+										{t("theme.toggle")}
 									</Button>
 								</DropdownMenuItem>
 
@@ -83,7 +85,7 @@ export function Header({ user }: { user: User | null; }) {
 										className="w-full items-center justify-start cursor-pointer"
 									>
 										<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-										Promijeni font
+										{t("font.toggle")}
 									</Button>
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
@@ -95,7 +97,7 @@ export function Header({ user }: { user: User | null; }) {
 										className="flex items-centergap-2 plausible-event-name=logout-header-click"
 									>
 										<LogOut className="w-4 h-4" />
-										Odjava
+										{t("logout")}
 									</Link>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -108,7 +110,7 @@ export function Header({ user }: { user: User | null; }) {
 							suppressHydrationWarning={true}
 							href="/login"
 						>
-							Prijava
+							{t("login")}
 						</Link>
 					</Button>
 				)}

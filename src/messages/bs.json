@@ -1,0 +1,150 @@
+{
+	"public": {
+		"footer": {
+			"about": {
+				"title": "O nama",
+				"description": "RECONNED je nova platforma za airsoft entuzijaste. Otkrijte klubove, susrete, i igrače, širom Bosne i Hercegovine. Vodite svoj klub, organizujte susrete, i pronađite nove prilike. RECONNED je projekt napravljen od strane 2 airsoft igrača iz BIH -"
+			},
+			"quickLinks": {
+				"title": "Brzi linkovi",
+				"events": "Susreti",
+				"dashboard": "Aplikacija",
+				"map": "Mapa",
+				"search": "Pretraga",
+				"about": "O nama"
+			},
+			"community": {
+				"title": "Zajednica"
+			},
+			"support": {
+				"title": "Podrška",
+				"contact": "Kontakt",
+				"faq": "Česta pitanja",
+				"privacy": "Privatnost"
+			},
+			"copyright": "© {year} RECONNED. Sva prava zadržana.",
+			"sponsors": "Pogledajte naše sponzore i partnere",
+			"version": "Verzija {commit}"
+		}
+	},
+	"components": {
+		"table": {
+			"showColumns": "Prikaži kolone",
+			"noData": "Nema pronađenih podataka",
+			"navigation": {
+				"page": "Stranica {page} od {total}",
+				"previous": "Nazad",
+				"next": "Naprijed"
+			},
+			"filters": {
+				"clear": "Ukloni"
+			}
+		},
+		"header": {
+			"backToHome": "Nazad na početnu",
+			"dashboard": "Aplikacija",
+			"login": "Prijava",
+			"theme": {
+				"toggle": "Promijeni temu"
+			},
+			"font": {
+				"toggle": "Promijeni font"
+			},
+			"logout": "Odjava",
+			"personalization": "Personalizacija"
+		},
+		"themeSwitcher": {
+			"toggleTheme": "Promijeni temu"
+		},
+		"calendar": {
+			"today": "Danas",
+			"alreadyToday": "Već je danas",
+			"goToToday": "Idi na trenutni mjesec",
+			"days": {
+				"mon": "Pon",
+				"tue": "Uto",
+				"wed": "Sri",
+				"thu": "Čet",
+				"fri": "Pet",
+				"sat": "Sub",
+				"sun": "Ned"
+			},
+			"eventDetails": {
+				"start": "Početak",
+				"end": "Kraj",
+				"location": "Lokacija",
+				"cost": "Cijena",
+				"apply": "Prijavi se",
+				"registrationsClosed": "Prijave za ovaj susret trenutno nisu otvorene"
+			}
+		},
+		"error": {
+			"backToHome": "Povratak na početnu stranicu"
+		},
+		"addToCalendar": {
+			"addToCalendar": "Dodaj u kalendar",
+			"features": {
+				"breakfast": "Doručak",
+				"lunch": "Ručak",
+				"dinner": "Večera",
+				"snacks": "Užina",
+				"drinks": "Piće",
+				"prizes": "Nagrade"
+			},
+			"sections": {
+				"other": "Ostalo",
+				"rules": "Pravila",
+				"gear": "Oprema",
+				"private": "Ovo je privatni susret samo za članove kluba.",
+				"freelancers": "Freelanceri su dobrodošli da se registruju za ovaj susret."
+			}
+		},
+		"badge": {
+			"soon": "Uskoro"
+		},
+		"slug": {
+			"label": "Specijalni link",
+			"description": "Kratki link koji ćete moći podjeliti.",
+			"placeholder": "moj-link",
+			"available": "Link je dostupan.",
+			"taken": "Link je zauzet!",
+			"errors": {
+				"notAuthenticated": "Niste prijavljeni",
+				"unknownType": "Nepoznat tip"
+			}
+		},
+		"userOverview": {
+			"views": "{count} pregled/a",
+			"freelancer": "Freelancer",
+			"clubs": {
+				"title": "Klubovi",
+				"noClubs": "Nije član nijednog kluba"
+			},
+			"upcomingEvents": {
+				"title": "Predstojeći susreti",
+				"noEvents": "Nema predstojećih susreta"
+			},
+			"pastEvents": {
+				"title": "Prethodni susreti",
+				"noEvents": "Nema prethodnih susreta"
+			}
+		},
+		"reviews": {
+			"title": "Ocjene",
+			"latestReviews": "Najnovije ocjene",
+			"noReviews": "Nema ocjena",
+			"showAll": "Prikaži sve ocjene",
+			"allReviews": "Sve ocjene za {type}",
+			"types": {
+				"club": "klub",
+				"event": "susret",
+				"user": "korisnik"
+			}
+		},
+		"post": {
+			"published": "Objavljeno {date}",
+			"readMore": "Pročitaj više",
+			"showLess": "Prikaži manje"
+		}
+	}
+}
