@@ -46,7 +46,7 @@ export const createEventFormSchema = z
 			message: "Susret mora imati datum zatvaranja prijava",
 		}),
 		slug: z.string().optional(),
-		coverImage: z.string().optional().optional(),
+		image: z.string().optional().optional(),
 		isPrivate: z.boolean().optional(),
 		allowFreelancers: z.boolean().optional(),
 		hasBreakfast: z.boolean().optional(),

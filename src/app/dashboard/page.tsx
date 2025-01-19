@@ -126,7 +126,7 @@ export default async function DashboardPage() {
 													suppressHydrationWarning
 													width={48}
 													height={48}
-													src={`${membership.club.logo}?v=${membership.club.updatedAt}`}
+													src={membership.club.logo}
 													alt={membership.club.name}
 													className="h-full w-full object-contain"
 												/>

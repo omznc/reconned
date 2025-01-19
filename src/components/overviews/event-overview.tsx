@@ -43,13 +43,13 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 
 	return (
 		<div className="relative flex flex-col items-center justify-center gap-4">
-			{event.coverImage && (
+			{event.image && (
 				<>
 					<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
 
 					<Image
 						suppressHydrationWarning={true}
-						src={`${event.coverImage}?v=${event.updatedAt}`} // This will revalidate the browser cache
+						src={event.image} // This will revalidate the browser cache
 						alt={event.name}
 						width={680}
 						height={380}
@@ -62,9 +62,9 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 			<div
 				className={cn({
 					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
-						event.coverImage,
+						event.image,
 					"border p-4 bg-background w-full flex flex-col gap-1":
-						!event.coverImage,
+						!event.image,
 				})}
 			>
 				<div className="relative flex select-none flex-col gap-3">

@@ -36,7 +36,7 @@ export const createEvent = safeActionClient
 			dateEnd: parsedInput.dateEnd,
 			dateRegistrationsOpen: parsedInput.dateRegistrationsOpen,
 			dateRegistrationsClose: parsedInput.dateRegistrationsClose,
-			coverImage: parsedInput.coverImage,
+			image: `${parsedInput.image}?v=${Date.now()}`,
 			isPrivate: parsedInput.isPrivate,
 			allowFreelancers: parsedInput.allowFreelancers,
 			hasBreakfast: parsedInput.hasBreakfast,
@@ -114,7 +114,7 @@ export const deleteEventImage = safeActionClient
 				clubId: ctx.club.id,
 			},
 			data: {
-				coverImage: null,
+				image: null,
 			},
 		});
 	});

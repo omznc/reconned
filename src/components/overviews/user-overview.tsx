@@ -40,7 +40,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				{user.image && (
 					<Image
 						suppressHydrationWarning={true}
-						src={`${user.image}?v=${user.updatedAt}`} // This will revalidate the browser cache
+						src={user.image} // This will revalidate the browser cache
 						alt={user.name}
 						width={150}
 						height={150}

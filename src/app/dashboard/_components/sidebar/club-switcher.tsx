@@ -56,7 +56,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
                                                 suppressHydrationWarning={true}
                                                 width={32}
                                                 height={32}
-                                                src={`${selectedClub.logo}?v=${selectedClub.updatedAt.toISOString()}`}
+                                                src={selectedClub.logo}
                                                 alt={selectedClub.name}
                                             />
                                         ) : (
@@ -133,7 +133,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
                                             suppressHydrationWarning={true}
                                             width={32}
                                             height={32}
-                                            src={`${club.logo}?v=${club.updatedAt}`}
+                                            src={club.logo}
                                             alt={club.name}
                                         />
                                     ) : (

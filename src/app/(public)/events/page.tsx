@@ -69,9 +69,9 @@ export default async function Page() {
 				{upcomingEvents.map((event) => (
 					<Card key={event.id} className="flex flex-col">
 						<CardHeader className="p-0">
-							{event.coverImage && (
+							{event.image && (
 								<Image
-									src={event.coverImage}
+									src={event.image}
 									alt={event.name}
 									width={400}
 									height={200}

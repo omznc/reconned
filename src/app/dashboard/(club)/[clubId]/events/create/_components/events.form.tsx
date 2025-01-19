@@ -191,7 +191,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			dateRegistrationsOpen: props.event?.dateRegistrationsOpen || new Date(),
 			dateRegistrationsClose:
 				props.event?.dateRegistrationsClose || registrationCloseDate,
-			coverImage: props.event?.coverImage || "",
+			image: props.event?.image || "",
 			isPrivate: props.event?.isPrivate,
 			allowFreelancers: props.event?.allowFreelancers,
 			hasBreakfast: props.event?.hasBreakfast,
@@ -274,7 +274,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					},
 				});
 
-				values.coverImage = resp.data.cdnUrl;
+				values.image = resp.data.cdnUrl;
 				await createEvent({
 					...values,
 					eventId: event.data.id,
@@ -403,7 +403,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 				<FormField
 					control={form.control}
-					name="coverImage"
+					name="image"
 					render={() => (
 						<FormItem>
 							<FormLabel>Slika susreta</FormLabel>
@@ -461,7 +461,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						</FormItem>
 					)}
 				/>
-				{props.event?.id && props.event?.coverImage && (
+				{props.event?.id && props.event?.image && (
 					<HoverCard openDelay={100}>
 						<HoverCardTrigger>
 							<Button
@@ -501,7 +501,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						</HoverCardTrigger>
 						<HoverCardContent className="size-full mb-8">
 							<Image
-								src={`${props.event.coverImage}?v=${props.event.updatedAt}`}
+								src={props.event.image}
 								alt="Club logo"
 								width={200}
 								height={200}

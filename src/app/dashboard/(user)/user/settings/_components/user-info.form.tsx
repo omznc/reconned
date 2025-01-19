@@ -372,7 +372,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						</HoverCardTrigger>
 						<HoverCardContent className="size-full mb-8">
 							<Image
-								src={`${props.user.image}?v=${props.user.updatedAt}`}
+								src={props.user.image}
 								alt="Club logo"
 								width={200}
 								height={200}
