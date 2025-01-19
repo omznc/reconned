@@ -4,9 +4,9 @@ import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { env } from "@/lib/env";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import { Toaster } from "sonner";
-import { FontProvider } from "@/components/font-switcher";
+import { FontProvider } from "@/components/personalization/font/font-provider";
 
 import { Geist_Mono, Geist } from "next/font/google";
 import { FontBody } from "@/components/font-body";
@@ -16,7 +16,7 @@ import { ImpersonationAlert } from "@/components/impersonation-alert";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import { prisma } from "@/lib/prisma";
+import { LanguageProvider } from "@/components/personalization/language/language-provider";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -29,11 +29,13 @@ const geistMono = Geist_Mono({
 });
 
 async function LayoutContent({ children }: { children: ReactNode; }) {
-	const [user, locale] = await Promise.all([
+	const [messages, user, locale] = await Promise.all([
+		getMessages(),
 		isAuthenticated(),
 		getLocale()
 	]);
 
+	const font = user?.font ? user.font as "sans" | "mono" : "sans";
 	const theme = user?.theme ? user.theme as "dark" | "light" : "dark";
 
 	return (
@@ -42,57 +44,53 @@ async function LayoutContent({ children }: { children: ReactNode; }) {
 				<meta name="darkreader-lock" />
 				<Script defer data-domain="reconned.com" src="https://scout.reconned.com/js/script.outbound-links.tagged-events.js" />
 			</head>
-			<FontBody
-				geistMonoVariable={geistMono.className}
-				geistSansVariable={geistSans.className}
-			>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme={theme}
-					enableSystem={false}
-					disableTransitionOnChange
-				>
-					{/* TODO: Do we even need this? */}
-					<link
-						rel="stylesheet"
-						href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-					/>
-					<Toaster
-						richColors
-						toastOptions={{
-							className:
-								"rounded-none bg-background text-foreground border-border text-md shadow-none",
-						}}
-					/>
-					<NuqsAdapter>
-						<TooltipProvider>
-							{user?.session?.impersonatedBy && <ImpersonationAlert />}
-							<AlertDialogProvider>{children}</AlertDialogProvider>
-						</TooltipProvider>
-					</NuqsAdapter>
-				</ThemeProvider>
-			</FontBody>
-		</html>
+			<NextIntlClientProvider messages={messages}>
+				<FontProvider initial={font}>
+					<FontBody
+						geistMonoVariable={geistMono.className}
+						geistSansVariable={geistSans.className}
+					>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme={theme}
+							enableSystem={false}
+							disableTransitionOnChange
+						>
+							{/* TODO: Do we even need this? */}
+							<link
+								rel="stylesheet"
+								href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+							/>
+							<Toaster
+								richColors
+								toastOptions={{
+									className:
+										"rounded-none bg-background text-foreground border-border text-md shadow-none",
+								}}
+							/>
+							<NuqsAdapter>
+								<TooltipProvider>
+									<LanguageProvider initial={locale}>
+										{user?.session?.impersonatedBy && <ImpersonationAlert />}
+										<AlertDialogProvider>{children}</AlertDialogProvider>
+									</LanguageProvider>
+								</TooltipProvider>
+							</NuqsAdapter>
+						</ThemeProvider>
+					</FontBody>
+				</FontProvider>
+			</NextIntlClientProvider>
+		</html >
 	);
 }
 
-export default async function RootLayout({
+export default function RootLayout({
 	children,
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	const [messages, user] = await Promise.all([
-		getMessages(),
-		isAuthenticated()
-	]);
-	const font = user?.font ? user.font as "sans" | "mono" : "sans";
-
 	return (
-		<NextIntlClientProvider messages={messages}>
-			<FontProvider initial={font}>
-				<LayoutContent>{children}</LayoutContent>
-			</FontProvider>
-		</NextIntlClientProvider>
+		<LayoutContent>{children}</LayoutContent>
 	);
 }
 

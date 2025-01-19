@@ -8,9 +8,13 @@ export const getCountries = cache(async () => {
 			id: true,
 			name: true,
 			emoji: true,
+			iso2: true,
 		},
 		orderBy: { name: "asc" },
 	});
 
-	return countries;
+	return countries.map((country) => ({
+		...country,
+		emoji: country.emoji as string,
+	}));
 });

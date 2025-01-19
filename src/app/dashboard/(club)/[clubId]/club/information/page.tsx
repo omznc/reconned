@@ -1,7 +1,7 @@
 import { ClubInfoForm } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getCountries } from "@/lib/countries";
+import { getCountries } from "@/lib/cached-countries";
 import { Role } from "@prisma/client";
 import { notFound } from "next/navigation";
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { VALID_LOCALES } from "@/i18n/request";
+import { VALID_LOCALES } from "@/i18n/valid-locales";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { z } from "zod";

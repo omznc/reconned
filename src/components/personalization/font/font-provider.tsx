@@ -4,7 +4,6 @@ import {
 	createContext,
 	useContext,
 	useState,
-	useEffect,
 	type ReactNode,
 } from "react";
 
@@ -17,23 +16,8 @@ type FontContextType = {
 
 const FontContext = createContext<FontContextType | undefined>(undefined);
 
-const getStoredFont = (): FontType => {
-	if (typeof window === "undefined") {
-		return "sans";
-	}
-	const stored = localStorage.getItem("preferred-font");
-	if (stored === "mono" || stored === "sans") {
-		return stored;
-	}
-	return "sans";
-};
-
 export function FontProvider({ initial, children }: { initial: "mono" | "sans", children: ReactNode; }) {
 	const [font, setFont] = useState<FontType>(initial);
-
-	useEffect(() => {
-		localStorage.setItem("preferred-font", font);
-	}, [font]);
 
 	return (
 		<FontContext.Provider value={{ font, setFont }}>

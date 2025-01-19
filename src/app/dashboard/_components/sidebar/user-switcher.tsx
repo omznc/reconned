@@ -1,6 +1,9 @@
 "use client";
 
-import { useFont } from "@/components/font-switcher";
+import { useFont } from "@/components/personalization/font/font-provider";
+import { FontSwitcher } from "@/components/personalization/font/font-switcher";
+import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,14 +21,12 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, LogOut, Moon, Sun, Type } from "lucide-react";
-import { useTheme } from "next-themes";
+import { ChevronsUpDown, LogOut, Type } from "lucide-react";
 import Link from "next/link";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
 	const { user } = useIsAuthenticated();
-	const { theme, setTheme } = useTheme();
 	const { font, setFont } = useFont();
 	return (
 		<SidebarMenu>
@@ -77,28 +78,11 @@ export function UserSwitcher() {
 						<DropdownMenuSeparator />
 						<DropdownMenuLabel>Personalizacija</DropdownMenuLabel>
 						<DropdownMenuItem asChild={true}>
-							<Button
-								variant="ghost"
-								onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-								suppressHydrationWarning
-								className="w-full items-center justify-start cursor-pointer"
-							>
-								<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-								<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-								Promijeni temu
-							</Button>
+							<ThemeSwitcher />
 						</DropdownMenuItem>
 
 						<DropdownMenuItem asChild={true}>
-							<Button
-								variant="ghost"
-								onClick={() => setFont(font === "sans" ? "mono" : "sans")}
-								suppressHydrationWarning
-								className="w-full items-center justify-start cursor-pointer"
-							>
-								<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-								Promijeni font
-							</Button>
+							<FontSwitcher />
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>

@@ -1,14 +1,14 @@
+import "server-only";
+import { VALID_LOCALES } from "@/i18n/valid-locales";
 import { isAuthenticated } from "@/lib/auth";
 import { getRequestConfig } from "next-intl/server";
 import { headers } from "next/headers";
-
-export const VALID_LOCALES = ["bs"];
 
 export default getRequestConfig(async () => {
 	const [user, headersList] = await Promise.all([isAuthenticated(), headers()]);
 
 	// We get this from Cloudflare
-	const country = headersList.get("cf-ipcountry")?.toLowerCase() ?? "bs";
+	const country = headersList.get("cf-ipcountry")?.toLowerCase() ?? "ba";
 
 	// If the user is logged in, they have a locale
 	if (user?.language) {
@@ -38,7 +38,7 @@ export default getRequestConfig(async () => {
 
 	// Default to bs
 	return {
-		locale: "bs",
-		messages: (await import("../messages/bs.json")).default,
+		locale: "ba",
+		messages: (await import("../messages/ba.json")).default,
 	};
 });

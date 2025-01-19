@@ -44,17 +44,17 @@
 			"backToHome": "Nazad na početnu",
 			"dashboard": "Aplikacija",
 			"login": "Prijava",
-			"theme": {
-				"toggle": "Promijeni temu"
-			},
-			"font": {
-				"toggle": "Promijeni font"
-			},
 			"logout": "Odjava",
 			"personalization": "Personalizacija"
 		},
 		"themeSwitcher": {
-			"toggleTheme": "Promijeni temu"
+			"toggle": "Promijeni temu"
+		},
+		"fontSwitcher": {
+			"toggle": "Promijeni font"
+		},
+		"languageSwitcher": {
+			"select": "Odaberite jezik"
 		},
 		"calendar": {
 			"today": "Danas",
