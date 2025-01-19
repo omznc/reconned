@@ -29,7 +29,7 @@ export function Header({ user }: { user: User | null; }) {
 			</Link>
 			{
 				path !== '/' && (
-					<Button asChild variant='default' className="w-full">
+					<Button asChild variant='ghost' className="w-full hover:bg-transparent">
 						<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 							<ArrowLeft className="w-6 h-6" />
 							Nazad na početnu

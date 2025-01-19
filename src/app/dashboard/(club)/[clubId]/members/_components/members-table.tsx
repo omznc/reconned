@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { removeMember } from "./members.action";
 import { cn } from "@/lib/utils";
 import type { ClubMembership } from "@prisma/client";
+import Link from "next/link";
 
 interface MembersTableProps {
 	members: (ClubMembership & {
@@ -119,17 +120,24 @@ export function MembersTable(props: MembersTableProps) {
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
-							<div className={cn("flex justify-end", {
-								"cursor-not-allowed": row.role === "CLUB_OWNER"
-							})}>
-								<Button
-									variant="destructive"
-									size="sm"
-									disabled={row.role === "CLUB_OWNER"}
-									onClick={() => handleRemove(row, row.clubId)}
+							<div className="flex gap-2">
+								<Button asChild variant='secondary' size="sm"
 								>
-									{row.role === "CLUB_OWNER" ? "Vlasnik" : "Ukloni"}
+									<Link href={`/users/${row.userId}`} target="_blank">Profil</Link>
 								</Button>
+								{
+									row.role !== "CLUB_OWNER" && (
+										<div className="flex justify-end">
+											<Button
+												variant="destructive"
+												size="sm"
+												onClick={() => handleRemove(row, row.clubId)}
+											>
+												Ukloni
+											</Button>
+										</div>
+									)
+								}
 							</div>
 						),
 					},
