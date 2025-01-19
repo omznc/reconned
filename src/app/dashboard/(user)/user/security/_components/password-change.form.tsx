@@ -1,4 +1,4 @@
-import { passwordSchema } from "@/app/dashboard/(user)/user/security/_components/password-change-schema";
+import { passwordChangeSchema } from "@/app/dashboard/(user)/user/security/_components/password.schema";
 import { authClient } from "@auth/client";
 import { Button } from "@components/ui/button";
 import {
@@ -20,9 +20,9 @@ import type { z } from "zod";
 export function PasswordChangeForm({
 	isLoading,
 	setIsLoading,
-}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>> }) {
-	const changePasswordForm = useForm<z.infer<typeof passwordSchema>>({
-		resolver: zodResolver(passwordSchema),
+}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>>; }) {
+	const changePasswordForm = useForm<z.infer<typeof passwordChangeSchema>>({
+		resolver: zodResolver(passwordChangeSchema),
 		defaultValues: {
 			currentPassword: "",
 			newPassword: "",
@@ -31,7 +31,7 @@ export function PasswordChangeForm({
 	});
 
 	const onChangePasswordSubmit = async (
-		values: z.infer<typeof passwordSchema>,
+		values: z.infer<typeof passwordChangeSchema>,
 	) => {
 		setIsLoading(true);
 		try {

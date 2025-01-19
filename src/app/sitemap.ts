@@ -7,57 +7,46 @@ export const revalidate = 86_400; // 24 hours
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 
-	// Get public clubs
-	const clubs = await prisma.club.findMany({
-		where: {
-			isPrivate: false,
-			OR: [
-				{
-					banned: false,
-				},
-				{
-					banned: null,
-				},
-			],
-		},
-		select: {
-			id: true,
-			slug: true,
-			updatedAt: true,
-		},
-	});
+	// Get all data concurrently
+	const [clubs, events, users] = await Promise.all([
+		// Get public clubs
+		prisma.club.findMany({
+			where: {
+				isPrivate: false,
+				OR: [{ banned: false }, { banned: null }],
+			},
+			select: {
+				id: true,
+				slug: true,
+				updatedAt: true,
+			},
+		}),
 
-	// Get public events
-	const events = await prisma.event.findMany({
-		where: {
-			isPrivate: false,
-		},
-		select: {
-			id: true,
-			slug: true,
-			updatedAt: true,
-		},
-	});
+		// Get public events
+		prisma.event.findMany({
+			where: {
+				isPrivate: false,
+			},
+			select: {
+				id: true,
+				slug: true,
+				updatedAt: true,
+			},
+		}),
 
-	// Get public user profiles
-	const users = await prisma.user.findMany({
-		where: {
-			isPrivate: false,
-			OR: [
-				{
-					banned: false,
-				},
-				{
-					banned: null,
-				},
-			],
-		},
-		select: {
-			id: true,
-			slug: true,
-			updatedAt: true,
-		},
-	});
+		// Get public user profiles
+		prisma.user.findMany({
+			where: {
+				isPrivate: false,
+				OR: [{ banned: false }, { banned: null }],
+			},
+			select: {
+				id: true,
+				slug: true,
+				updatedAt: true,
+			},
+		}),
+	]);
 
 	// Static routes with their properties
 	const staticRoutes: MetadataRoute.Sitemap = [

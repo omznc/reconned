@@ -4,7 +4,7 @@ import {
 	deleteEventImageSchema,
 	deleteEventSchema,
 	eventImageFileSchema,
-} from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
+} from "@/app/dashboard/(club)/[clubId]/events/create/_components/events.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";

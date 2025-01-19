@@ -1,4 +1,4 @@
-import CreateEventForm from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form";
+import CreateEventForm from "@/app/dashboard/(club)/[clubId]/events/create/_components/events.form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
@@ -23,10 +23,10 @@ export default async function Page(props: PageProps) {
 
 	const existingEvent = searchParams?.id
 		? await prisma.event.findFirst({
-				where: {
-					id: searchParams.id,
-				},
-			})
+			where: {
+				id: searchParams.id,
+			},
+		})
 		: null;
 
 	const rules = await prisma.clubRule.findMany({

@@ -40,10 +40,10 @@ export function Footer() {
 								<Link href="/dashboard">Aplikacija</Link>
 							</li>
 							<li>
-								<Link href="/dashboard">Mapa</Link>
+								<Link href="/map">Mapa</Link>
 							</li>
 							<li>
-								<Link href="/dashboard">Pretraga</Link>
+								<Link href="/search">Pretraga</Link>
 							</li>
 							<li>
 								<Link href="/about">O nama</Link>

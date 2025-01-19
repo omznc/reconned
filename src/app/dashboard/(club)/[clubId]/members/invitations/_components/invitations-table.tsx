@@ -4,7 +4,7 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
-import { revokeInvitation } from "./invitations.actions.tsx";
+import { revokeInvitation } from "./invitations.action.tsx";
 import type { InviteStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
 

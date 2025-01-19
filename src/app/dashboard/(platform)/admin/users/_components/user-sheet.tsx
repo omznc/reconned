@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/credenza";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import type { Club, ClubMembership, User } from "@prisma/client";
+import type { ClubMembership, User } from "@prisma/client";
 import { useQueryState } from "nuqs";
-import { UserActions } from "@/app/dashboard/(platform)/admin/users/_components/user-actions";
+import { UserActions } from "@/app/dashboard/(platform)/admin/users/_components/user.action";
 
 type Props = {
 	user?: User & {
