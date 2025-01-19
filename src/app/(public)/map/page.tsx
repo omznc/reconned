@@ -21,12 +21,20 @@ export default async function MapPage() {
             latitude: true,
             longitude: true,
             slug: true,
+            location: true,
         },
     });
 
+    const transformedClubs = clubs.map(club => ({
+        ...club,
+        location: club.location ?? undefined,
+        slug: club.slug ?? undefined,
+        logo: club.logo ?? undefined
+    }));
+
     return (
         <div className="h-[calc(100dvh-72px)] w-full rounded-lg overflow-hidden border">
-            <ClubsMapWrapper clubs={clubs} />
+            <ClubsMapWrapper clubs={transformedClubs} />
         </div>
     );
 }

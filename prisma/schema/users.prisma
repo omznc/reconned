@@ -3,7 +3,6 @@ model User {
   email         String   @unique
   name          String
   emailVerified Boolean
-  isPrivate     Boolean  @default(false)
   image         String?
   slug          String?  @unique
   bio           String?
@@ -12,6 +11,12 @@ model User {
   phone         String?
   callsign      String?
   gear          Json[]
+
+  // Privacy
+  isPrivate     Boolean  @default(false)
+  isPrivateEmail Boolean  @default(true)
+  isPrivatePhone Boolean  @default(true)
+
 
   clubMembership      ClubMembership[]
   clubInvitesReceived ClubInvite[]

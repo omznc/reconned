@@ -78,6 +78,8 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			callsign: props.user.callsign || "",
 			email: props.user.email || "",
 			slug: props.user.slug || "",
+			isPrivateEmail: props.user.isPrivateEmail,
+			isPrivatePhone: props.user.isPrivatePhone,
 		},
 	});
 
@@ -227,7 +229,24 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Email*</FormLabel>
+							<div className="flex justify-between items-center">
+								<FormLabel>Email*</FormLabel>
+								<FormField
+									control={form.control}
+									name="isPrivateEmail"
+									render={({ field: privateField }) => (
+										<div className="flex items-center gap-2">
+											<FormLabel className="text-sm text-muted-foreground">
+												{privateField.value ? "Sakriveno" : "Javno prikazano"}
+											</FormLabel>
+											<Switch
+												checked={privateField.value}
+												onCheckedChange={privateField.onChange}
+											/>
+										</div>
+									)}
+								/>
+							</div>
 							<FormControl>
 								<Input placeholder="me@gmail.com" type="email" {...field} />
 							</FormControl>
@@ -243,7 +262,12 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Privatni profil</FormLabel>
+								<div className="flex items-center gap-2">
+									<FormLabel>Privatni profil</FormLabel>
+									<span className="text-sm text-muted-foreground">
+										({field.value ? "Profil je privatan" : "Profil je javan"})
+									</span>
+								</div>
 								<FormDescription>
 									Sakrijte profil od javnog pristupa. Preporučujemo da ostavite
 									profil javnim.
@@ -390,7 +414,24 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="phone"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Telefon</FormLabel>
+							<div className="flex justify-between items-center">
+								<FormLabel>Telefon</FormLabel>
+								<FormField
+									control={form.control}
+									name="isPrivatePhone"
+									render={({ field: privateField }) => (
+										<div className="flex items-center gap-2">
+											<FormLabel className="text-sm text-muted-foreground">
+												{privateField.value ? "Sakriveno" : "Javno prikazano"}
+											</FormLabel>
+											<Switch
+												checked={privateField.value}
+												onCheckedChange={privateField.onChange}
+											/>
+										</div>
+									)}
+								/>
+							</div>
 							<FormControl>
 								<PhoneInput
 									defaultCountry="BA"
