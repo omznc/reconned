@@ -66,10 +66,14 @@ We have a `biome.json` file in the root, always format with that configuration. 
 
 ## Server actions
 
-TODO, but
-
-- We'll probably want to use https://next-safe-action.dev.
-- Functions that take more than 1 parameter should have an object as their parameter.
+To have something modify something else, we're probably using a schema-form-action combo.
+Let's say we have to change a password. We'd have this folder setup.
+```
+    _components/
+        change-password.form.tsx // The form itself
+        change-password.action.ts // Action(s) it requires
+        change-password.schema.ts // Zod schema we can use on both client and server
+```
 
 ## Tables
 
