@@ -56,7 +56,7 @@ interface FileUploadProgress {
 	retries: number;
 }
 
-export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
+export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase; }) {
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
 	const confirm = useConfirm();
@@ -283,6 +283,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 													const available = 3 - (field.value?.length || 0);
 													setFiles(newFiles?.slice(0, available) || []);
 												}}
+												key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
 												dropzoneOptions={{
 													maxFiles: remainingFileSlots,
 													maxSize: 1024 * 1024 * 5,
@@ -302,7 +303,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 														className={cn(
 															"outline-dashed outline-1 outline-slate-500",
 															(field.value?.length || 0) >= 3 &&
-																"opacity-50 cursor-not-allowed pointer-events-none",
+															"opacity-50 cursor-not-allowed pointer-events-none",
 														)}
 													>
 														<div className="flex items-center justify-center flex-col p-8 w-full">
@@ -446,7 +447,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 										{Math.round(
 											(uploadProgress.reduce((acc, p) => acc + p.progress, 0) /
 												uploadProgress.length) *
-												100,
+											100,
 										)}
 										%)
 									</>

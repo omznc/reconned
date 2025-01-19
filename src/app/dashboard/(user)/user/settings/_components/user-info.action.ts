@@ -4,7 +4,6 @@ import {
 	userInfoShema,
 } from "@/app/dashboard/(user)/user/settings/_components/user-info.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
-import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";

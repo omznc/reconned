@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { useQueryState } from "nuqs";
 import { Key } from "lucide-react";
 import type { SuccessContext } from "better-auth/react";
+import { BadgeSoon } from "@/components/badge-soon";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -182,7 +183,7 @@ export default function LoginPage() {
 						<Button
 							variant="outline"
 							className="w-full"
-							disabled={isLoading}
+							disabled={isLoading || true}
 							type="button"
 							onClick={async () => {
 								await authClient.signIn.passkey(
@@ -203,6 +204,8 @@ export default function LoginPage() {
 							}}
 						>
 							<Key className="w-4 h-4 inline-block" /> Passkey
+							<BadgeSoon />
+
 						</Button>
 						<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
 					</div>

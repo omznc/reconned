@@ -109,7 +109,7 @@ export function SecuritySettings({
 					<Button
 						type="button"
 						className="w-full md:w-auto"
-						disabled={isLoading}
+						disabled={isLoading || true}
 						onClick={async () => {
 							await authClient.passkey.addPasskey(
 								{},
@@ -130,6 +130,7 @@ export function SecuritySettings({
 					>
 						<KeyRound className="w-4 h-4 mr-2" />
 						Dodaj
+						<BadgeSoon />
 					</Button>
 				</Alert>
 			</div>

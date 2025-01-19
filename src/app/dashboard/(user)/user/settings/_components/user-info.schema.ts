@@ -17,5 +17,18 @@ export const userImageFileSchema = z.object({
 	file: z.object({
 		type: z.string().regex(/^image\//),
 		size: z.number().max(1024 * 1024 * 4),
+		dimensions: z
+			.object({
+				width: z.number(),
+				height: z.number(),
+			})
+			.refine(
+				(data) => {
+					return Math.abs(data.width - data.height) <= 10;
+				},
+				{
+					message: "Slika mora biti kvadratnog oblika (1:1).",
+				},
+			),
 	}),
 });

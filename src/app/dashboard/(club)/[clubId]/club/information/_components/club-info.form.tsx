@@ -450,6 +450,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<FormLabel>Logo kluba</FormLabel>
 							<FormControl>
 								<FileUploader
+									key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
 									value={files}
 									onValueChange={setFiles}
 									dropzoneOptions={dropZoneConfig}
