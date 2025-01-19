@@ -121,6 +121,9 @@ export function InvitationsForm() {
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
 				<div>
 					<h3 className="text-lg font-semibold">Pozovi korisnika u klub</h3>
+					<span className="text-muted-foreground">
+						Pozivnice će isteći nakon 7 dana, a biti će obrisane nakon 3 mjeseca.
+					</span>
 				</div>
 				<FormField
 					control={form.control}
