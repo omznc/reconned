@@ -35,6 +35,10 @@
 ## Other
 - Always use react-hook-forms and zod. Schemas should be in a different file so we
 can import them in actions as well.
+- Namings are as follows, e.g. for password reset:
+  - password-reset.form.tsx
+  - password-reset.action.ts
+  - password-reset.schema.ts
 
 ## Language
 - Use bosnian for all code strings
