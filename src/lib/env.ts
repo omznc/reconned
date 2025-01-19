@@ -16,6 +16,7 @@ export const env = createEnv({
 		PLAUSIBLE_SITE_ID: z.string().min(1),
 		ONESIGNAL_APP_ID: z.string().min(1),
 		ONESIGNAL_API_KEY: z.string().min(1),
+		ADMIN_WEBHOOK_TOKEN: z.string().min(1),
 		// POLAR_ACCESS_TOKEN: z.string().min(1), This is a surprise tool that will help us later
 	},
 	client: {
