@@ -13,6 +13,7 @@ interface Club {
     latitude: number | null;
     longitude: number | null;
     slug?: string | null;
+    location?: string;
 }
 
 interface ClubsMapWrapperProps {

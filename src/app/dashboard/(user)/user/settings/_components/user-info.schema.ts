@@ -4,6 +4,8 @@ export const userInfoShema = z.object({
 	name: z.string().min(1).max(50),
 	email: z.string().email(),
 	isPrivate: z.boolean(),
+	isPrivateEmail: z.boolean(),
+	isPrivatePhone: z.boolean(),
 	image: z.string().optional(),
 	bio: z.string().max(500),
 	location: z.string().optional(),

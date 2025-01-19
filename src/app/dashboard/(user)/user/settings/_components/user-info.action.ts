@@ -38,6 +38,8 @@ export const saveUserInformation = safeActionClient
 				phone: parsedInput.phone,
 				slug: parsedInput.slug,
 				callsign: parsedInput.callsign,
+				isPrivateEmail: parsedInput.isPrivateEmail,
+				isPrivatePhone: parsedInput.isPrivatePhone,
 			},
 		});
 

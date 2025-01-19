@@ -112,6 +112,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		form.setValue("longitude", lng);
 	};
 
+	const handleLocationReset = () => {
+		if (props.club) {
+			form.setValue("latitude", props.club.latitude ?? undefined);
+			form.setValue("longitude", props.club.longitude ?? undefined);
+		}
+	};
+
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
@@ -293,18 +300,32 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				/>
 
 				<FormItem>
-					<FormLabel>Tačna lokacija na mapi</FormLabel>
+					<FormLabel className="flex items-center justify-between">
+						<span>Tačna lokacija</span>
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onClick={handleLocationReset}
+							data-hidden={
+								form.watch("latitude") === props.club?.latitude &&
+								form.watch("longitude") === props.club?.longitude
+							}
+							className="h-6 px-2 text-xs data-[hidden=true]:opacity-0"
+						>
+							Resetuj
+						</Button>
+					</FormLabel>
 					<FormControl>
 						<div className="h-[400px] w-full -z-10 rounded-lg overflow-hidden border">
 							<MapSelector
 								clubs={props.club
-									? [
-										{
-											...props.club,
-											latitude: form.watch("latitude") || null,
-											longitude: form.watch("longitude") || null,
-										},
-									]
+									? [{
+										...props.club,
+										latitude: form.watch("latitude") || null,
+										longitude: form.watch("longitude") || null,
+										location: props.club.location || undefined,
+									}]
 									: []}
 								interactive={true}
 								onLocationSelect={handleLocationSelect}

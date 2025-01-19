@@ -34,6 +34,7 @@ interface Club {
     latitude: number | null;
     longitude: number | null;
     slug?: string | null;
+    location?: string;
 }
 
 interface ClubsMapProps {
@@ -80,7 +81,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
         <MapContainer
             center={[43.8563, 18.4131]} // Sarajevo coordinates
             zoom={8}
-            className="h-full w-full"
+            className="h-full w-full z-0"
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -103,12 +104,13 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
                         position={[club.latitude, club.longitude]}
                         icon={createClubIcon(club.logo)}
                     >
-                        <Popup>
+                        <Popup className="rounded-none">
                             <div className="flex flex-col items-center gap-2 p-2">
-                                <h3 className="font-semibold">{club.name}</h3>
+                                <h3 className="font-semibold text-xl text-foreground">{club.name}</h3>
+                                <span className="text-foreground/80">{club.location}</span>
                                 <Link
                                     href={`/clubs/${club.slug || club.id}`}
-                                    className="text-sm text-blue-500 hover:underline"
+                                    className="text-sm text-red-500 hover:underline"
                                 >
                                     Pogledaj profil
                                 </Link>
