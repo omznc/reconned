@@ -1,6 +1,7 @@
 import { ClubInfoForm } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getCountries } from "@/lib/countries";
 import { Role } from "@prisma/client";
 import { notFound } from "next/navigation";
 
@@ -17,30 +18,33 @@ export default async function Page(props: PageProps) {
 		return notFound();
 	}
 
-	const club = await prisma.club.findUnique({
-		where: {
-			members: {
-				some: {
-					userId: user.id,
-					role: {
-						in: [Role.CLUB_OWNER, Role.MANAGER],
+	const [club, countries] = await Promise.all([
+		prisma.club.findUnique({
+			where: {
+				members: {
+					some: {
+						userId: user.id,
+						role: {
+							in: [Role.CLUB_OWNER, Role.MANAGER],
+						},
+					},
+				},
+				id: params.clubId,
+			},
+			include: {
+				members: {
+					select: {
+						userId: true,
+						role: true,
+					},
+					where: {
+						userId: user.id,
 					},
 				},
 			},
-			id: params.clubId,
-		},
-		include: {
-			members: {
-				select: {
-					userId: true,
-					role: true,
-				},
-				where: {
-					userId: user.id,
-				},
-			},
-		},
-	});
+		}),
+		getCountries(),
+	]);
 
 	if (!club) {
 		return notFound();
@@ -49,5 +53,9 @@ export default async function Page(props: PageProps) {
 	// The club will always have at least one member
 	const isClubOwner = club.members[0]?.role === Role.CLUB_OWNER;
 
-	return <ClubInfoForm club={club} isClubOwner={isClubOwner} />;
+	return (
+		<div className="p-6">
+			<ClubInfoForm club={club} countries={countries} isClubOwner={isClubOwner} />
+		</div>
+	);
 }

@@ -1,0 +1,29 @@
+model Country {
+  id             Int      @id @default(autoincrement())
+  name           String
+  iso3           String   @unique @db.Char(3)
+  iso2           String   @unique @db.Char(2)
+  numericCode    String?  @db.Char(3)
+  phoneCode      String?
+  capital        String?
+  currency       String?
+  currencyName   String?
+  currencySymbol String?
+  tld            String?
+  native         String?
+  region         String?
+  subregion      String?
+  latitude       Decimal? @db.Decimal(10, 8)
+  longitude      Decimal? @db.Decimal(11, 8)
+  emoji          String?
+  emojiU         String?
+  timezones      Json?
+  translations   Json?
+  wikiDataId     String?
+  enabled        Boolean  @default(true)
+
+  clubs Club[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

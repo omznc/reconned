@@ -21,7 +21,7 @@ L.Icon.Default.mergeOptions({
 function createClubIcon(logoUrl: string | null | undefined, size: number) {
     return L.divIcon({
         html: logoUrl
-            ? `<img src="${logoUrl}" style="width: ${size}px; height: ${size}px;" class="shadow-md object-contain" />`
+            ? `<img src="${logoUrl}" style="width: ${size}px; height: ${size}px;" class="object-contain" />`
             : `<div class="rounded-full bg-primary border-2 border-white shadow-md" style="width: ${size / 2}px; height: ${size / 2}px;"></div>`,
         className: 'club-marker',
         iconSize: [size, size],

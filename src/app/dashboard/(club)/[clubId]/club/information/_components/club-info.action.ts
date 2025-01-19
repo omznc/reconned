@@ -43,6 +43,7 @@ export const saveClubInformation = safeActionClient
 				slug: parsedInput.slug,
 				latitude: parsedInput.latitude,
 				longitude: parsedInput.longitude,
+				countryId: parsedInput.countryId,
 			},
 			create: {
 				name: parsedInput.name,
@@ -57,6 +58,7 @@ export const saveClubInformation = safeActionClient
 				latitude: parsedInput.latitude,
 				longitude: parsedInput.longitude,
 				slug: parsedInput.slug,
+				countryId: parsedInput.countryId,
 				members: {
 					create: {
 						userId: ctx.user.id,

@@ -15,12 +15,12 @@ const sponsors = [
 		description: "Prvi livanjski airsoft klub",
 		website: "https://instagram.com/veis.livno",
 	},
-	{
-		name: "Savez Airsoft Klubova Federacije BiH",
-		logo: "/logo-savez.png",
-		description: "Jedini registrirani airsoft savez/udruga",
-		website: "https://www.facebook.com/airsoftsavez/",
-	},
+	// {
+	// 	name: "Savez Airsoft Klubova Federacije BiH",
+	// 	logo: "/logo-savez.png",
+	// 	description: "Jedini registrirani airsoft savez/udruga",
+	// 	website: "https://www.facebook.com/airsoftsavez/",
+	// },
 	{
 		name: "Vi",
 		logo: "/reconned-logo-light.svg",

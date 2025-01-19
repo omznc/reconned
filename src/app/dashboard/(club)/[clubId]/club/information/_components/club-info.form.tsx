@@ -34,6 +34,14 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Check, ChevronsUpDown } from "lucide-react";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+} from "@/components/ui/command";
 
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -58,6 +66,7 @@ import { SlugInput } from "@/components/slug/slug-input";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import type { Country } from "@/lib/countries";
 
 // Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(() => import("@/app/(public)/map/_components/clubs-map").then(m => m.ClubsMap), {
@@ -67,6 +76,7 @@ const MapSelector = dynamic(() => import("@/app/(public)/map/_components/clubs-m
 interface ClubInfoFormProps {
 	club?: Club | null;
 	isClubOwner?: boolean;
+	countries: Country[];
 }
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
@@ -74,6 +84,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
+	const [open, setOpen] = useState(false);
 	const router = useRouter();
 	const confirm = useConfirm();
 
@@ -102,6 +113,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			slug: props.club?.slug || undefined,
 			latitude: props.club?.latitude || undefined,
 			longitude: props.club?.longitude || undefined,
+			countryId: props.club?.countryId || undefined,
 		},
 		mode: "onBlur",
 	});
@@ -286,14 +298,77 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormField
 					control={form.control}
+					name="countryId"
+					render={({ field }) => (
+						<FormItem className="flex flex-col">
+							<FormLabel>Država*</FormLabel>
+							<Popover open={open} onOpenChange={setOpen}>
+								<PopoverTrigger asChild>
+									<FormControl>
+										<Button
+											variant="outline"
+											role="combobox"
+											aria-expanded={open}
+											className={cn(
+												"w-full justify-between",
+												!field.value && "text-muted-foreground"
+											)}
+										>
+											{field.value
+												? props.countries.find((country) => country.id === field.value)?.name
+												: "Odaberite državu"}
+											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+										</Button>
+									</FormControl>
+								</PopoverTrigger>
+								<PopoverContent className="w-full p-0">
+									<Command>
+										<CommandInput placeholder="Pretraži države..." />
+										<CommandEmpty>Nema rezultata.</CommandEmpty>
+										<CommandGroup className="h-[300px] overflow-y-scroll">
+
+											{props.countries.map((country) => (
+												<CommandItem
+													key={country.id}
+													value={country.name}
+													onSelect={() => {
+														form.setValue("countryId", country.id);
+														setOpen(false);
+													}}
+												>
+													<Check
+														className={cn(
+															"mr-2 h-4 w-4",
+															country.id === field.value
+																? "opacity-100"
+																: "opacity-0"
+														)}
+													/>
+													{country.emoji} {country.name}
+												</CommandItem>
+											))}
+										</CommandGroup>
+									</Command>
+								</PopoverContent>
+							</Popover>
+							<FormDescription>
+								U kojoj državi se nalazi vaš klub?
+							</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
 					name="location"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Lokacija*</FormLabel>
+							<FormLabel>Grad*</FormLabel>
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
-							<FormDescription>Gdje se klub nalazi?</FormDescription>
+							<FormDescription>U kojem ste gradu?</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -624,7 +699,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
 					{props.club ? "Spasi" : "Kreiraj klub"}
 				</LoaderSubmitButton>
-			</form>
-		</Form>
+			</form >
+		</Form >
 	);
 }

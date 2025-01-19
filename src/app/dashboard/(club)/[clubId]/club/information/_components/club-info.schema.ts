@@ -9,6 +9,9 @@ export const clubInfoSchema = z.object({
 		.max(50, {
 			message: "Ime kluba mora biti kraće od 50 znakova",
 		}),
+	countryId: z.number({
+		required_error: "Država je obavezna",
+	}),
 	location: z
 		.string()
 		.min(1, {

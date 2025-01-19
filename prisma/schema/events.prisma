@@ -1,14 +1,14 @@
 model Event {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String
-  club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  club        Club    @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId      String
-  image  String?
-  slug        String?  @unique
-  
+  image       String?
+  slug        String? @unique
+
   dateStart              DateTime
-  dateEnd               DateTime
+  dateEnd                DateTime
   dateRegistrationsClose DateTime
   dateRegistrationsOpen  DateTime
 
@@ -40,30 +40,30 @@ model Event {
 }
 
 model EventRegistration {
-  id          String    @id @default(cuid())
-  event       Event     @relation(fields: [eventId], references: [id])
-  eventId     String
-  createdById String
-  createdBy   User      @relation(fields: [createdById], references: [id], name: "EventRegistrationCreatedBy")
-  invitedUsers User[]
+  id                   String        @id @default(cuid())
+  event                Event         @relation(fields: [eventId], references: [id])
+  eventId              String
+  createdById          String
+  createdBy            User          @relation(fields: [createdById], references: [id], name: "EventRegistrationCreatedBy")
+  invitedUsers         User[]
   invitedUsersNotOnApp EventInvite[]
-  type        String    @default("solo")
-  paymentMethod String  @default("cash")
-  attended    Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
+  type                 String        @default("solo")
+  paymentMethod        String        @default("cash")
+  attended             Boolean       @default(false)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @default(now())
 }
 
 model EventInvite {
-  id                  String            @id @default(cuid())
-  event               Event             @relation(fields: [eventId], references: [id])
+  id                  String             @id @default(cuid())
+  event               Event              @relation(fields: [eventId], references: [id])
   eventId             String
   name                String
   email               String
-  token               String            @unique
+  token               String             @unique
   expiresAt           DateTime
   eventRegistration   EventRegistration? @relation(fields: [eventRegistrationId], references: [id])
   eventRegistrationId String?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @default(now())
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @default(now())
 }

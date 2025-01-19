@@ -1,10 +1,10 @@
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
+  id            String  @id @default(cuid())
+  email         String  @unique
   name          String
   emailVerified Boolean
   image         String?
-  slug          String?  @unique
+  slug          String? @unique
   bio           String?
   location      String?
   website       String?
@@ -13,16 +13,15 @@ model User {
   gear          Json[]
 
   // Privacy
-  isPrivate     Boolean  @default(false)
-  isPrivateEmail Boolean  @default(true)
-  isPrivatePhone Boolean  @default(true)
+  isPrivate      Boolean @default(false)
+  isPrivateEmail Boolean @default(true)
+  isPrivatePhone Boolean @default(true)
 
-
-  clubMembership      ClubMembership[]
-  clubInvitesReceived ClubInvite[]
-  eventRegistration   EventRegistration[]
+  clubMembership            ClubMembership[]
+  clubInvitesReceived       ClubInvite[]
+  eventRegistration         EventRegistration[]
   createdEventRegistrations EventRegistration[] @relation("EventRegistrationCreatedBy")
-  
+
   role             String?
   banned           Boolean?
   banReason        String?
@@ -30,16 +29,16 @@ model User {
   twoFactorEnabled Boolean?
   isAdmin          Boolean?
 
-  reviewsReceived  Review[]    @relation("UserReviews")
-  reviewsWritten   Review[]    @relation("ReviewAuthor")
-  
-  sessions    Session[]
-  accounts    Account[]
-  passkeys    Passkey[]
-  twofactors  TwoFactor[]
+  reviewsReceived Review[] @relation("UserReviews")
+  reviewsWritten  Review[] @relation("ReviewAuthor")
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  sessions   Session[]
+  accounts   Account[]
+  passkeys   Passkey[]
+  twofactors TwoFactor[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([id, slug])
 }
