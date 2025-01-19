@@ -42,6 +42,8 @@ import {
 } from "@/components/ui/hover-card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { SlugInput } from "@/components/slug/slug-input";
+import { ImageCropDialog } from "@/app/dashboard/(user)/user/settings/_components/image-crop-dialog";
+import { ErrorCode, type DropzoneOptions } from "react-dropzone";
 
 interface UserInfoFormProps {
 	user: User;
@@ -52,6 +54,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isSlugValid, setIsSlugValid] = useState(true);
+	const [cropFile, setCropFile] = useState<File | null>(null);
 	const confirm = useConfirm();
 
 	const dropZoneConfig = {
@@ -61,7 +64,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			"image/jpeg": ["jpg", "jpeg"],
 			"image/png": ["png"],
 		},
-	};
+	} satisfies DropzoneOptions;
 	const form = useForm<z.infer<typeof userInfoShema>>({
 		resolver: zodResolver(userInfoShema),
 		defaultValues: {
@@ -82,10 +85,15 @@ export function UserInfoForm(props: UserInfoFormProps) {
 		setIsLoading(true);
 		try {
 			if (files?.[0]) {
+				const img = await createImageBitmap(files[0]);
 				const resp = await getUserImageUploadUrl({
 					file: {
 						type: files[0].type,
 						size: files[0].size,
+						dimensions: {
+							width: img.width,
+							height: img.height,
+						},
 					},
 				});
 
@@ -259,8 +267,16 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormLabel>Profilna slika</FormLabel>
 							<FormControl>
 								<FileUploader
+									key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
 									value={files}
-									onValueChange={setFiles}
+									onValueChange={(newFiles) => {
+										if (!newFiles || newFiles.length === 0) {
+											setFiles(null);
+											setCropFile(null);
+										} else if (newFiles[0]) {
+											setCropFile(newFiles[0]);
+										}
+									}}
 									dropzoneOptions={dropZoneConfig}
 									className="relative bg-background p-0.5"
 								>
@@ -309,6 +325,15 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormMessage />
 						</FormItem>
 					)}
+				/>
+
+				<ImageCropDialog
+					file={cropFile}
+					onClose={() => setCropFile(null)}
+					onCrop={(croppedFile) => {
+						setFiles([croppedFile]);
+						setCropFile(null);
+					}}
 				/>
 
 				{props.user.image && (

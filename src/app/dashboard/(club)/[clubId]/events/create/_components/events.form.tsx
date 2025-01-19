@@ -413,6 +413,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									onValueChange={setFiles}
 									dropzoneOptions={dropZoneConfig}
 									className="relative bg-background p-0.5"
+									key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
 								>
 									{(!files || files.length === 0) && (
 										<FileInput
