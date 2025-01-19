@@ -546,7 +546,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</HoverCardTrigger>
 						<HoverCardContent className="size-full mb-8">
 							<Image
-								src={`${props.club.logo}?v=${props.club.updatedAt}`}
+								src={props.club.logo}
 								alt="Club logo"
 								width={200}
 								height={200}

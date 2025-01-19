@@ -40,10 +40,10 @@ export function EventsCarousel(props: CarouselProps) {
 						className="pl-4 bg-white group select-none flex h-[300px] overflow-hidden relative md:basis-1/2 lg:basis-1/3 flex-col "
 					>
 						{/* TODO: Handle if unset */}
-						{event.coverImage && (
+						{event.image && (
 							<Image
 								suppressHydrationWarning={true}
-								src={`${event.coverImage}?v=${event.updatedAt}`}
+								src={event.image}
 								alt={event.name}
 								width={300}
 								height={350}

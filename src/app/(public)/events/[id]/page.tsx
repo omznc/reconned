@@ -108,8 +108,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		"date",
 		new Date(event.dateStart).toLocaleDateString("bs"),
 	);
-	if (event?.coverImage) {
-		ogUrl.searchParams.set("image", event.coverImage);
+	if (event?.image) {
+		ogUrl.searchParams.set("image", event.image);
 	}
 
 	return {

@@ -188,7 +188,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 				) : (
 					events.map((event) => (
 						<SearchResultCard
-							image={event.coverImage}
+							image={event.image}
 							key={event.id}
 							title={event.name}
 							description={event.description}

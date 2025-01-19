@@ -4,7 +4,7 @@ model Event {
   description String
   club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId      String
-  coverImage  String?
+  image  String?
   slug        String?  @unique
   
   dateStart              DateTime

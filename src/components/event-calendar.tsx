@@ -357,11 +357,11 @@ export function EventCalendar(props: EventCalendarProps) {
 																side="left"
 																className="w-80 bg-sidebar"
 															>
-																{event.coverImage && (
+																{event.image && (
 																	<Image
 																		width={200}
 																		height={200}
-																		src={event.coverImage}
+																		src={event.image}
 																		alt={event.name}
 																		className="object-cover w-full h-auto mb-2"
 																	/>

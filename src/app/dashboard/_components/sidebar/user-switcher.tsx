@@ -39,7 +39,7 @@ export function UserSwitcher() {
 							<Avatar className="h-8 w-8 rounded-lg">
 								{user?.image && (
 									<AvatarImage
-										src={`${user?.image}?v=${user?.updatedAt}`}
+										src={user?.image}
 										alt={user?.name}
 									/>
 								)}
