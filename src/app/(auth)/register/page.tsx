@@ -52,7 +52,7 @@ export default function RegisterPage() {
 
 						const success = await authClient.signUp.email(
 							{
-								email: email ?? localEmail,
+								email: email !== '' ? email : localEmail,
 								password,
 								name,
 							},
@@ -101,7 +101,7 @@ export default function RegisterPage() {
 							id="email"
 							placeholder="Email"
 							disabled={!!email}
-							value={email ?? undefined}
+							defaultValue={email ?? undefined}
 							autoComplete="email"
 							required={true}
 						/>
