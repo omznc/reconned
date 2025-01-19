@@ -2,7 +2,7 @@
 
 import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
-import { eventApplicationSchema } from "./event-application-form.schema";
+import { eventApplicationSchema } from "./event-application.schema";
 import { revalidatePath } from "next/cache";
 import { nanoid } from "nanoid";
 import { z } from "zod";

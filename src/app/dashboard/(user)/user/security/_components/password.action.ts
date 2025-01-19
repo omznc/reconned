@@ -1,9 +1,9 @@
 "use server";
 
-import { setupPasswordSchema } from "@/app/dashboard/(user)/user/security/_components/setup-password-schema";
 import { auth } from "@/lib/auth";
 import { safeActionClient } from "@/lib/safe-action";
 import { headers } from "next/headers";
+import { setupPasswordSchema } from "./password.schema";
 
 export const setupPasswordAction = safeActionClient
 	.schema(setupPasswordSchema)

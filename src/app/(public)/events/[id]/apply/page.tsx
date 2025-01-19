@@ -1,4 +1,4 @@
-import { EventApplicationForm } from "@/app/(public)/events/[id]/apply/_components/event-application-form";
+import { EventApplicationForm } from "@/app/(public)/events/[id]/apply/_components/event-application.form";
 import { ErrorPage } from "@/components/error-page";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";

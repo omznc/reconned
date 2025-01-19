@@ -1,5 +1,5 @@
-import { setupPasswordAction } from "@/app/dashboard/(user)/user/security/_components/setup-password-action";
-import { setupPasswordSchema } from "@/app/dashboard/(user)/user/security/_components/setup-password-schema";
+import { setupPasswordAction } from "@/app/dashboard/(user)/user/security/_components/password.action";
+import { setupPasswordSchema } from "@/app/dashboard/(user)/user/security/_components/password.schema";
 import { Button } from "@components/ui/button";
 import {
 	Form,
@@ -21,7 +21,7 @@ import type { z } from "zod";
 export function SetupPasswordForm({
 	isLoading,
 	setIsLoading,
-}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>> }) {
+}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>>; }) {
 	const router = useRouter();
 
 	const setupPasswordForm = useForm<z.infer<typeof setupPasswordSchema>>({

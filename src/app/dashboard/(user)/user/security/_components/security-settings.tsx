@@ -1,7 +1,7 @@
 "use client";
 
-import { PasswordChangeForm } from "@/app/dashboard/(user)/user/security/_components/password-change-form";
-import { SetupPasswordForm } from "@/app/dashboard/(user)/user/security/_components/setup-password-form";
+import { PasswordChangeForm } from "@/app/dashboard/(user)/user/security/_components/password-change.form";
+import { SetupPasswordForm } from "@/app/dashboard/(user)/user/security/_components/password-setup.form";
 import { BadgeSoon } from "@/components/badge-soon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePrompt } from "@/components/ui/alert-dialog-provider";

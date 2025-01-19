@@ -28,8 +28,8 @@ import {
 	deleteEvent,
 	deleteEventImage,
 	getEventImageUploadUrl,
-} from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.action";
-import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/create-event-form.schema";
+} from "@/app/dashboard/(club)/[clubId]/events/create/_components/events.action";
+import { createEventFormSchema } from "@/app/dashboard/(club)/[clubId]/events/create/_components/events.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {

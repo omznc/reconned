@@ -8,8 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useCallback, useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { EventApplicationSchemaType } from "@/app/(public)/events/[id]/apply/_components/event-application-form.schema";
-import { eventApplicationSchema } from "@/app/(public)/events/[id]/apply/_components/event-application-form.schema";
+import type { EventApplicationSchemaType } from "@/app/(public)/events/[id]/apply/_components/event-application.schema";
+import { eventApplicationSchema } from "@/app/(public)/events/[id]/apply/_components/event-application.schema";
 import type {
 	Club,
 	ClubRule,
@@ -55,22 +55,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	deleteRegistration,
 	submitEventApplication,
-} from "@/app/(public)/events/[id]/apply/_components/event-application.actions";
+} from "@/app/(public)/events/[id]/apply/_components/event-application.action";
 
 interface EventApplicationProps {
 	existingApplication:
-		| (EventRegistration & {
-				invitedUsers: {
-					email: string;
-					image: string | null;
-					callsign: string | null;
-					name: string;
-					id: string;
-				}[];
-				invitedUsersNotOnApp: Omit<EventInvite, "token">[];
-		  })
-		| null;
-	event: Event & { rules: ClubRule[] };
+	| (EventRegistration & {
+		invitedUsers: {
+			email: string;
+			image: string | null;
+			callsign: string | null;
+			name: string;
+			id: string;
+		}[];
+		invitedUsersNotOnApp: Omit<EventInvite, "token">[];
+	})
+	| null;
+	event: Event & { rules: ClubRule[]; };
 	user: User;
 	currentUserClubs: Club[];
 }
@@ -81,7 +81,7 @@ type SearchUser = {
 	email: string;
 	image: string | null;
 	callsign: string | null;
-	clubMembership: { club: { name: string } }[];
+	clubMembership: { club: { name: string; }; }[];
 };
 
 export function EventApplicationForm({
@@ -101,28 +101,28 @@ export function EventApplicationForm({
 			type: existingApplication?.type as EventApplicationSchemaType["type"],
 			invitedUsers: existingApplication
 				? [
-						// Current user is always first
-						{
-							id: user.id,
-							name: user.name,
-							email: user.email,
-							image: user.image,
-							// @ts-ignore Callsign exists on user, but heyyy.
-							callsign: user.callsign || null,
-						},
-						...existingApplication.invitedUsers.filter((u) => u.id !== user.id),
-					]
+					// Current user is always first
+					{
+						id: user.id,
+						name: user.name,
+						email: user.email,
+						image: user.image,
+						// @ts-ignore Callsign exists on user, but heyyy.
+						callsign: user.callsign || null,
+					},
+					...existingApplication.invitedUsers.filter((u) => u.id !== user.id),
+				]
 				: [
-						{
-							id: user.id,
-							name: user.name,
-							email: user.email,
-							image: user.image,
-							// @ts-ignore Callsign exists on user, but heyyy.
+					{
+						id: user.id,
+						name: user.name,
+						email: user.email,
+						image: user.image,
+						// @ts-ignore Callsign exists on user, but heyyy.
 
-							callsign: user.callsign || null,
-						},
-					],
+						callsign: user.callsign || null,
+					},
+				],
 			invitedUsersNotOnApp: existingApplication?.invitedUsersNotOnApp || [],
 			rulesAccepted: false,
 			paymentMethod:
@@ -628,9 +628,8 @@ export function EventApplicationForm({
 													}
 												}}
 												disabled={isAlreadyAdded}
-												className={`flex items-center gap-2 p-2 ${
-													isAlreadyAdded ? "opacity-50 cursor-not-allowed" : ""
-												}`}
+												className={`flex items-center gap-2 p-2 ${isAlreadyAdded ? "opacity-50 cursor-not-allowed" : ""
+													}`}
 											>
 												<Avatar className="h-8 w-8">
 													<AvatarImage src={user.image || ""} />
