@@ -63,9 +63,12 @@ export const auth = betterAuth({
 		},
 	},
 	plugins: [
-		passkey(),
+		passkey({
+			rpID: "reconned.com",
+			rpName: "Reconned",
+		}),
 		twoFactor({
-			issuer: "Airsoft BIH",
+			issuer: "Reconned",
 		}),
 		oneTap(),
 		admin({

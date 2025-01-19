@@ -23,16 +23,15 @@ export default async function Page() {
 			},
 		})) !== null;
 
-	const passkeys = await prisma.passkey.findMany({
-		where: {
-			userId: user.id,
-		},
+	const passkeys = await auth.api.listPasskeys({
+		headers: await headers(),
 	});
 
 	const backupCodes = await auth.api.viewBackupCodes({
 		body: {
 			userId: user.id,
-		}
+		},
+		headers: await headers(),
 	}).catch((e) => {
 		console.log(e);
 		return {
@@ -40,12 +39,23 @@ export default async function Page() {
 		};
 	});
 
+	const sessions = await auth.api.listSessions({
+		headers: await headers(),
+	});
+
+
 	return (
 		<SecuritySettings
 			passkeys={passkeys}
 			hasPassword={hasPassword}
 			hasTwoFactor={user.twoFactorEnabled}
 			backupCodes={backupCodes.backupCodes}
+			sessions={sessions.map((session) => ({
+				...session,
+				isCurrentSession: session.id === user.session.id,
+				ipAddress: session.ipAddress ?? null,
+				userAgent: session.userAgent ?? null
+			}))}
 		/>
 	);
 }
