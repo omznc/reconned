@@ -26,7 +26,6 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
         height: 90,
         x: 5, // center the crop (100 - 90) / 2 = 5
         y: 5,
-        aspect: 1,
     });
     const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
 
@@ -45,7 +44,6 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
             height: size,
             x,
             y,
-            aspect: 1,
         });
     }, []);
 
