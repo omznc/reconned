@@ -16,6 +16,7 @@ import { ClubPost } from "@/components/overviews/club-post";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPageViews } from "@/lib/analytics";
+import { Map } from "lucide-react"; // Add this import
 
 interface ClubOverviewProps {
 	club: Club & {
@@ -69,16 +70,24 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<p className="text-accent-foreground/80">{club.description}</p>
 					</div>
 				</div>
-				{
-					isManager && (
+				<div className="flex gap-2">
+					{club.latitude && club.longitude && (
+						<Button asChild variant="outline">
+							<Link href={`/map?clubId=${club.slug || club.id}`}>
+								<Map className="h-4 w-4 mr-2" />
+								Mapa
+							</Link>
+						</Button>
+					)}
+					{isManager && (
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/information`}>
-								<Cog className="h-4 w-4" />
+								<Cog className="h-4 w-4 mr-2" />
 								Uredi klub
 							</Link>
 						</Button>
-					)
-				}
+					)}
+				</div>
 			</div>
 			<div className="flex flex-wrap gap-0">
 				<Badge className="flex items-center gap-1">

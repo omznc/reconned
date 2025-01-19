@@ -21,11 +21,6 @@ const nextConfig = {
 			},
 		],
 	},
-	webpack: {
-		configure: {
-			ignoreWarnings: [{ module: /@opentelemetry\/instrumentation/ }],
-		},
-	},
 };
 
 module.exports = nextConfig;
