@@ -146,5 +146,20 @@
 			"readMore": "Pročitaj više",
 			"showLess": "Prikaži manje"
 		}
+	},
+	"dashboard": {
+		"root": {
+			"welcome": "Dobrodošli, {name}",
+			"myClubs": "Moji klubovi",
+			"recentEvents": "Nedavni susreti",
+			"statistics": {
+				"meetings": "Susreti",
+				"clubs": "Klubovi",
+				"writtenReviews": "Napisane recenzije",
+				"receivedReviews": "Primljene recenzije"
+			},
+			"error": "Došlo je do greške",
+			"loading": "Učitavanje..."
+		}
 	}
 }

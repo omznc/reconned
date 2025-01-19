@@ -18,12 +18,37 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { setThemeAction } from "@/lib/global-actions/theme";
+import { setFontAction } from "@/lib/global-actions/font";
 
 export function Header({ user }: { user: User | null; }) {
 	const t = useTranslations("components.header");
 	const { theme, setTheme } = useTheme();
 	const path = usePathname();
 	const { font, setFont } = useFont();
+
+
+	useEffect(() => {
+		if (theme !== 'light' && theme !== 'dark') {
+			return;
+		};
+
+		setThemeAction({
+			theme: theme,
+		});
+	}, [theme]);
+
+	useEffect(() => {
+		if (font !== 'sans' && font !== 'mono') {
+			return;
+		};
+
+		setFontAction({
+			font: font,
+		});
+	}, [font]);
+
 	return (
 		<header className="flex flex-col md:flex-row gap-4 select-none w-full items-center justify-between p-2 md:p-4">
 			<Link href="/" className="w-full h-auto md:w-fit md:h-full">
@@ -117,4 +142,4 @@ export function Header({ user }: { user: User | null; }) {
 			</div>
 		</header>
 	);
-}
+};

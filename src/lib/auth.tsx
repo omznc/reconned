@@ -89,6 +89,24 @@ export const auth = betterAuth({
 				input: true,
 				required: false,
 			},
+			language: {
+				type: "string",
+				default: "bs",
+				input: true,
+				required: false,
+			},
+			font: {
+				type: "string",
+				default: "sans",
+				input: true,
+				required: false,
+			},
+			theme: {
+				type: "string",
+				default: "dark",
+				input: true,
+				required: false,
+			},
 		},
 	},
 	databaseHooks: {

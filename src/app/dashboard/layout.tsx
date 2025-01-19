@@ -4,7 +4,7 @@ import { CurrentClubProvider } from "@/components/current-club-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
 interface DashboardLayoutProps {

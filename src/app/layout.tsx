@@ -16,6 +16,7 @@ import { ImpersonationAlert } from "@/components/impersonation-alert";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { prisma } from "@/lib/prisma";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -28,8 +29,12 @@ const geistMono = Geist_Mono({
 });
 
 async function LayoutContent({ children }: { children: ReactNode; }) {
-	const user = await isAuthenticated();
-	const locale = await getLocale();
+	const [user, locale] = await Promise.all([
+		isAuthenticated(),
+		getLocale()
+	]);
+
+	const theme = user?.theme ? user.theme as "dark" | "light" : "dark";
 
 	return (
 		<html lang={locale} suppressHydrationWarning>
@@ -43,7 +48,7 @@ async function LayoutContent({ children }: { children: ReactNode; }) {
 			>
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="dark"
+					defaultTheme={theme}
 					enableSystem={false}
 					disableTransitionOnChange
 				>
@@ -76,11 +81,15 @@ export default async function RootLayout({
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	const messages = await getMessages();
+	const [messages, user] = await Promise.all([
+		getMessages(),
+		isAuthenticated()
+	]);
+	const font = user?.font ? user.font as "sans" | "mono" : "sans";
 
 	return (
 		<NextIntlClientProvider messages={messages}>
-			<FontProvider>
+			<FontProvider initial={font}>
 				<LayoutContent>{children}</LayoutContent>
 			</FontProvider>
 		</NextIntlClientProvider>

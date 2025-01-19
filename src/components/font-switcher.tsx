@@ -28,8 +28,8 @@ const getStoredFont = (): FontType => {
 	return "sans";
 };
 
-export function FontProvider({ children }: { children: ReactNode; }) {
-	const [font, setFont] = useState<FontType>(() => getStoredFont());
+export function FontProvider({ initial, children }: { initial: "mono" | "sans", children: ReactNode; }) {
+	const [font, setFont] = useState<FontType>(initial);
 
 	useEffect(() => {
 		localStorage.setItem("preferred-font", font);

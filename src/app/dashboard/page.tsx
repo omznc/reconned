@@ -6,11 +6,14 @@ import Image from "next/image";
 import { ErrorPage } from "@/components/error-page";
 import { Role } from "@prisma/client";
 import { Square } from "lucide-react";
+// Import getTranslations for async component
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
+	const t = await getTranslations('dashboard.root');
 	const user = await isAuthenticated();
 
 	if (!user) {
@@ -73,35 +76,35 @@ export default async function DashboardPage() {
 	});
 
 	if (!stats) {
-		return <ErrorPage title="Došlo je do greške" />;
+		return <ErrorPage title={t("error")} />;
 	}
 
 	return (
 		<div className="container py-6 space-y-6">
-			<h1 className="text-2xl font-bold">Dobrodošli, {user.name}</h1>
+			<h1 className="text-2xl font-bold">{t("welcome", { name: user.name })}</h1>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">Susreti</div>
+					<div className="text-sm text-muted-foreground">{t("statistics.meetings")}</div>
 					<div className="text-2xl font-bold">{stats._count.eventRegistration}</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">Klubovi</div>
+					<div className="text-sm text-muted-foreground">{t("statistics.clubs")}</div>
 					<div className="text-2xl font-bold">{stats._count.clubMembership}</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">Napisane recenzije</div>
+					<div className="text-sm text-muted-foreground">{t("statistics.writtenReviews")}</div>
 					<div className="text-2xl font-bold">{stats._count.reviewsWritten}</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">Primljene recenzije</div>
+					<div className="text-sm text-muted-foreground">{t("statistics.receivedReviews")}</div>
 					<div className="text-2xl font-bold">{stats._count.reviewsReceived}</div>
 				</div>
 			</div>
 
 			{stats.clubMembership.length > 0 && (
 				<div className="space-y-4">
-					<h2 className="text-xl font-semibold">Moji klubovi</h2>
+					<h2 className="text-xl font-semibold">{t("myClubs")}</h2>
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 						{stats.clubMembership.map((membership) => (
 							<Link
@@ -164,7 +167,7 @@ export default async function DashboardPage() {
 									<div className="space-y-3">
 										{membership.club.events[0] && (
 											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">Sljedeći susret</p>
+												<p className="text-sm font-medium mb-1">{t("nextEvent")}</p>
 												<p className="text-sm text-muted-foreground line-clamp-1">
 													{membership.club.events[0].name} • {' '}
 													{membership.club.events[0].dateStart.toLocaleDateString('bs')}
@@ -174,7 +177,7 @@ export default async function DashboardPage() {
 
 										{membership.club.reviews[0] && (
 											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">Zadnja recenzija</p>
+												<p className="text-sm font-medium mb-1">{t("latestReview")}</p>
 												<p className="text-sm text-muted-foreground line-clamp-2">
 													{membership.club.reviews[0].content}
 												</p>
@@ -190,7 +193,7 @@ export default async function DashboardPage() {
 
 			{stats.eventRegistration.length > 0 && (
 				<div className="space-y-4">
-					<h2 className="text-xl font-semibold">Nedavni susreti</h2>
+					<h2 className="text-xl font-semibold">{t("recentEvents")}</h2>
 					<div className="space-y-2">
 						{stats.eventRegistration.map((registration) => (
 							<Link
