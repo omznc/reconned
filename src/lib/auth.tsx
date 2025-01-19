@@ -116,9 +116,33 @@ export const auth = betterAuth({
 					}
 				},
 			},
+			// On create send an event to plausible
+			create: {
+				after: async (user) => {
+					await fetch("https://scout.reconned.com/api/event", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							"User-Agent": "Reconned",
+							Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`
+						},
+						body: JSON.stringify({
+							name: "signup",
+							url: "https://reconned.com/register",
+							domain: "reconned.com",
+							properties: {
+								distinct_id: user.id,
+								email: user.email,
+								name: user.name,
+							}
+						}),
+					});
+				},
+			},
 		},
 	},
 });
+
 
 export const isAuthenticated = cache(async () => {
 	const allHeaders = await headers();
