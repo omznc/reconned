@@ -1,6 +1,7 @@
 import { ClubInfoForm } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { BadgeSoon } from "@/components/badge-soon";
 import { Button } from "@/components/ui/button";
+import { getCountries } from "@/lib/cached-countries";
 import { CirclePlus, MailPlus } from "lucide-react";
 import Link from "next/link";
 
@@ -12,12 +13,14 @@ interface PageProps {
 
 export default async function Page(props: PageProps) {
 	const searchParams = await props.searchParams;
+	const countries = await getCountries();
 	const type = searchParams.type;
 	if (type === "invite") {
 		return <div>Invite</div>;
 	}
 	if (type === "new") {
-		return <ClubInfoForm />;
+		// @ts-ignore
+		return <ClubInfoForm countries={countries} />;
 	}
 	return (
 		<>

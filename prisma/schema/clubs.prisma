@@ -1,15 +1,15 @@
 model Club {
-  id          String   @id @default(cuid())
-  name        String
-  location    String?
-  latitude    Float?
-  longitude   Float?
-  description String?
-  dateFounded DateTime?
-  slug        String?  @unique
-  isAllied    Boolean  @default(false)
-  isPrivate   Boolean  @default(false)
-  logo        String?
+  id           String    @id @default(cuid())
+  name         String
+  location     String?
+  latitude     Float?
+  longitude    Float?
+  description  String?
+  dateFounded  DateTime?
+  slug         String?   @unique
+  isAllied     Boolean   @default(false)
+  isPrivate    Boolean   @default(false)
+  logo         String?
   contactPhone String?
   contactEmail String?
 
@@ -20,6 +20,8 @@ model Club {
   reviews     Review[]
   purchases   ClubPurchase[]
   posts       Post[]
+  country     Country?         @relation(fields: [countryId], references: [id])
+  countryId   Int?
 
   banned     Boolean?
   banReason  String?
