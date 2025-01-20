@@ -4,19 +4,22 @@ import {
 	createContext,
 	useContext,
 	useState,
-	useEffect,
 	type ReactNode,
 } from "react";
-
 
 type LanguageContextType = {
 	language: string;
 	setLanguage: (language: string) => void;
 };
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+	undefined,
+);
 
-export function LanguageProvider({ initial, children }: { initial: string, children: ReactNode; }) {
+export function LanguageProvider({
+	initial,
+	children,
+}: { initial: string; children: ReactNode; }) {
 	const [language, setLanguage] = useState<string>(initial);
 
 	return (

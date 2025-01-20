@@ -67,12 +67,12 @@ body {
 		.leaflet-control-zoom-in,
 		.leaflet-control-zoom-out,
 		.leaflet-control-attribution,
-		.leaflet-attribution-flag
-		{
+		.leaflet-attribution-flag {
 			filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 		}
-		.leaflet-container, .leaflet-popup-content-wrapper {
-			background: #000
+		.leaflet-container,
+		.leaflet-popup-content-wrapper {
+			background: #000;
 		}
 		--background: 0 0% 0%;
 		--foreground: 0 0% 98%;
@@ -147,11 +147,10 @@ body {
 	animation: fade-in-up 0.3s ease-out;
 }
 
-
 .leaflet-popup-content-wrapper {
-  border-radius: 0px !important;
+	border-radius: 0px !important;
 }
 
 .leaflet-container a {
-	@apply: font-red-500 !important;
+	@apply : font-red-500 !important;
 }

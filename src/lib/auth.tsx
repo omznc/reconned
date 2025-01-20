@@ -34,9 +34,12 @@ export const auth = betterAuth({
 			await sendEmail({
 				to: user.email,
 				subject: "Resetujte svoju lozinku",
-				html: await render(<PasswordReset userName={user.name} resetUrl={url} />, {
-					pretty: true,
-				})
+				html: await render(
+					<PasswordReset userName={user.name} resetUrl={url} />,
+					{
+						pretty: true,
+					},
+				),
 			});
 		},
 	},
@@ -145,7 +148,7 @@ export const auth = betterAuth({
 						headers: {
 							"Content-Type": "application/json",
 							"User-Agent": "Reconned",
-							Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`
+							Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`,
 						},
 						body: JSON.stringify({
 							name: "signup",
@@ -155,7 +158,7 @@ export const auth = betterAuth({
 								distinct_id: user.id,
 								email: user.email,
 								name: user.name,
-							}
+							},
 						}),
 					});
 				},
@@ -163,7 +166,6 @@ export const auth = betterAuth({
 		},
 	},
 });
-
 
 export const isAuthenticated = cache(async () => {
 	const allHeaders = await headers();

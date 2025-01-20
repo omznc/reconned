@@ -8,7 +8,19 @@ import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { authClient } from "@auth/client";
 import { Button } from "@components/ui/button";
 import { formatDate, formatDistanceToNow } from "date-fns";
-import { Dice5, Download, KeyRound, Trash2, Phone, MonitorSmartphone, Laptop, TabletSmartphone, Smartphone, Tablet, ShieldQuestion } from "lucide-react";
+import {
+	Dice5,
+	Download,
+	KeyRound,
+	Trash2,
+	Phone,
+	MonitorSmartphone,
+	Laptop,
+	TabletSmartphone,
+	Smartphone,
+	Tablet,
+	ShieldQuestion,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
@@ -137,17 +149,15 @@ export function SecuritySettings({
 			<div className="flex flex-col gap-1">
 				<h3 className="text-lg font-semibold">2-faktorska autentikacija</h3>
 			</div>
-			{
-				!hasPassword && (
-					<Alert className="flex flex-col gap-1">
-						<AlertTitle>2-faktorska autentikacija nije dostupna</AlertTitle>
-						<AlertDescription>
-							Da biste koristili 2-faktorsku autentikaciju, morate prvo postaviti
-							lozinku.
-						</AlertDescription>
-					</Alert>
-				)
-			}
+			{!hasPassword && (
+				<Alert className="flex flex-col gap-1">
+					<AlertTitle>2-faktorska autentikacija nije dostupna</AlertTitle>
+					<AlertDescription>
+						Da biste koristili 2-faktorsku autentikaciju, morate prvo postaviti
+						lozinku.
+					</AlertDescription>
+				</Alert>
+			)}
 			{hasPassword && (
 				<div className="space-y-2">
 					{hasTwoFactor ? (
@@ -215,12 +225,12 @@ export function SecuritySettings({
 											variant="outline"
 											disabled={isLoading}
 											onClick={() => {
-												const text = backupCodes?.join('\n') ?? '';
-												const blob = new Blob([text], { type: 'text/plain' });
+												const text = backupCodes?.join("\n") ?? "";
+												const blob = new Blob([text], { type: "text/plain" });
 												const url = window.URL.createObjectURL(blob);
-												const a = document.createElement('a');
+												const a = document.createElement("a");
 												a.href = url;
-												a.download = 'rezervni-kodovi.txt';
+												a.download = "rezervni-kodovi.txt";
 												a.click();
 												window.URL.revokeObjectURL(url);
 											}}
@@ -264,9 +274,11 @@ export function SecuritySettings({
 														},
 														onError: () => {
 															setIsLoading(false);
-															toast.error("Neispravna lozinka ili druga greška.");
+															toast.error(
+																"Neispravna lozinka ili druga greška.",
+															);
 														},
-													}
+													},
 												);
 											}}
 										>
@@ -277,8 +289,9 @@ export function SecuritySettings({
 									</div>
 								</AlertTitle>
 								<AlertDescription>
-									Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom.
-									Sačuvajte ih na sigurno mjesto.
+									Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju.
+									Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na
+									sigurno mjesto.
 								</AlertDescription>
 								<div className="bg-background border p-4 mt-2 flex flex-wrap gap-2">
 									{backupCodes?.map((code) => (
@@ -288,7 +301,8 @@ export function SecuritySettings({
 												toast.success("Kopirano u clipboard.");
 											}}
 											key={code}
-											className="flex-grow cursor-pointer text-center bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono">
+											className="flex-grow cursor-pointer text-center bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono"
+										>
 											{code}
 										</code>
 									))}
@@ -355,15 +369,15 @@ export function SecuritySettings({
 										body: (
 											<div className="space-y-2">
 												<p>
-													Skenirajte QR kod sa vašom aplikacijom za
-													2-faktorsku autentikaciju.
+													Skenirajte QR kod sa vašom aplikacijom za 2-faktorsku
+													autentikaciju.
 												</p>
 												<div className="bg-white p-2 w-fit">
 													<QRCodeSVG value={resp.data.totpURI} />
 												</div>
 												<p>
-													Ukoliko ne možete skenirati QR kod, upišite ovaj kod
-													u vašu aplikaciju:
+													Ukoliko ne možete skenirati QR kod, upišite ovaj kod u
+													vašu aplikaciju:
 												</p>
 												<code className="font-semibold">
 													{
@@ -402,7 +416,8 @@ export function SecuritySettings({
 												router.refresh();
 											},
 											onError: () => {
-												setIsLoading(false); toast.error("Neispavan kod, pokušajte ponovo.");
+												setIsLoading(false);
+												toast.error("Neispavan kod, pokušajte ponovo.");
 											},
 										},
 									);
@@ -430,18 +445,21 @@ export function SecuritySettings({
 							variant="destructive"
 							disabled={isLoading}
 							onClick={async () => {
-								await authClient.revokeOtherSessions({}, {
-									onRequest: () => setIsLoading(true),
-									onSuccess: () => {
-										setIsLoading(false);
-										router.refresh();
-										toast.success("Sve ostale sesije su ukinute");
+								await authClient.revokeOtherSessions(
+									{},
+									{
+										onRequest: () => setIsLoading(true),
+										onSuccess: () => {
+											setIsLoading(false);
+											router.refresh();
+											toast.success("Sve ostale sesije su ukinute");
+										},
+										onError: () => {
+											setIsLoading(false);
+											toast.error("Došlo je do greške");
+										},
 									},
-									onError: () => {
-										setIsLoading(false);
-										toast.error("Došlo je do greške");
-									},
-								});
+								);
 							}}
 						>
 							Ukini sve ostale
@@ -456,11 +474,12 @@ export function SecuritySettings({
 						return (
 							<Alert
 								key={session.id}
-								className={
-									cn("flex flex-col md:flex-row gap-1 justify-between -z-0", {
+								className={cn(
+									"flex flex-col md:flex-row gap-1 justify-between -z-0",
+									{
 										"bg-primary/10": session.isCurrentSession,
-									})
-								}
+									},
+								)}
 							>
 								<div className="flex gap-4 items-center">
 									<Icon className="w-8 h-8" />
@@ -475,7 +494,9 @@ export function SecuritySettings({
 										</AlertTitle>
 										<AlertDescription>
 											{session.ipAddress && (
-												<span className="block text-xs">IP: {session.ipAddress}</span>
+												<span className="block text-xs">
+													IP: {session.ipAddress}
+												</span>
 											)}
 											<span className="block text-xs">
 												Posljednji put korišteno:{" "}
@@ -507,7 +528,7 @@ export function SecuritySettings({
 														setIsLoading(false);
 														toast.error("Došlo je do greške");
 													},
-												}
+												},
 											);
 										}}
 									>

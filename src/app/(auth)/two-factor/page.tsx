@@ -113,9 +113,7 @@ export default function LoginPage() {
 							autoComplete="off"
 						/>
 					</div>
-					{isError && (
-						<p className="text-red-500">Neispravan kod</p>
-					)}
+					{isError && <p className="text-red-500">Neispravan kod</p>}
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
 						Verificiraj
 					</LoaderSubmitButton>
@@ -137,4 +135,3 @@ export default function LoginPage() {
 		</>
 	);
 }
-

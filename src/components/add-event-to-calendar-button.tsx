@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 export default function AddEventToCalendarButton({
 	event,
-}: { event: Event & { rules: ClubRule[]; }; }) {
+}: { event: Event & { rules: ClubRule[] } }) {
 	const t = useTranslations("components.addToCalendar");
 	const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 

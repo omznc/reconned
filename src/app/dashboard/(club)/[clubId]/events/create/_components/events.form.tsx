@@ -165,7 +165,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	};
 
 	const router = useRouter();
-	const clubId = useParams<{ clubId: string; }>().clubId;
+	const clubId = useParams<{ clubId: string }>().clubId;
 
 	const startDate = new Date();
 	startDate.setDate(startDate.getDate() + 15);
@@ -1035,9 +1035,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															) === 0
 																? "Promijenjeno danas"
 																: `Promijenjeno prije ${differenceInDays(
-																	new Date(rule.createdAt),
-																	new Date(),
-																)} dan/a`}
+																		new Date(rule.createdAt),
+																		new Date(),
+																	)} dan/a`}
 														</p>
 													</div>
 												</div>
@@ -1102,7 +1102,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					/>
 				</div>
 
-				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
+				<LoaderSubmitButton
+					isLoading={isLoading}
+					disabled={!isSlugValid && !!form.watch("slug")}
+				>
 					{props.event ? "Ažuriraj susret" : "Kreiraj susret"}
 				</LoaderSubmitButton>
 			</form>

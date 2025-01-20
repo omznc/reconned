@@ -35,12 +35,12 @@ import { BadgeSoon } from "@/components/badge-soon";
 import { useTranslations } from "next-intl";
 
 interface EventCalendarProps {
-	events: (Event & { club: { name: string; }; image?: string | null; })[];
+	events: (Event & { club: { name: string }; image?: string | null })[];
 }
 
 export function EventCalendar(props: EventCalendarProps) {
 	const t = useTranslations("components.calendar");
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(
@@ -262,7 +262,15 @@ export function EventCalendar(props: EventCalendarProps) {
 			<div className="flex-1 overflow-auto">
 				<div className="grid grid-cols-7 border-l">
 					{/* Day headers */}
-					{[t("days.mon"), t("days.tue"), t("days.wed"), t("days.thu"), t("days.fri"), t("days.sat"), t("days.sun")].map((day) => (
+					{[
+						t("days.mon"),
+						t("days.tue"),
+						t("days.wed"),
+						t("days.thu"),
+						t("days.fri"),
+						t("days.sat"),
+						t("days.sun"),
+					].map((day) => (
 						<div
 							key={day}
 							className="h-12 border-b border-r px-2 py-1 font-medium"
@@ -445,9 +453,8 @@ export function EventCalendar(props: EventCalendarProps) {
 																			}}
 																		>
 																			<Plus className="h-4 w-4 mr-2" />
-																			{
-																				t("eventDetails.apply")
-																			} <BadgeSoon className="ml-2" />
+																			{t("eventDetails.apply")}{" "}
+																			<BadgeSoon className="ml-2" />
 																		</Button>
 																	) : (
 																		<p className="text-sm text-muted-foreground text-center mt-2">

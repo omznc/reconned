@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	createContext,
-	useContext,
-	useState,
-	type ReactNode,
-} from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 type FontType = "mono" | "sans";
 
@@ -16,7 +11,10 @@ type FontContextType = {
 
 const FontContext = createContext<FontContextType | undefined>(undefined);
 
-export function FontProvider({ initial, children }: { initial: "mono" | "sans", children: ReactNode; }) {
+export function FontProvider({
+	initial,
+	children,
+}: { initial: "mono" | "sans"; children: ReactNode }) {
 	const [font, setFont] = useState<FontType>(initial);
 
 	return (

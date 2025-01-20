@@ -31,7 +31,7 @@ export default function LoginPage() {
 	const [message, setMessage] = useQueryState("message");
 
 	useEffect(() => {
-		if (!(PublicKeyCredential.isConditionalMediationAvailable?.())) {
+		if (!PublicKeyCredential.isConditionalMediationAvailable?.()) {
 			return;
 		}
 
@@ -47,9 +47,11 @@ export default function LoginPage() {
 	}, [message, setMessage]);
 
 	// biome-ignore lint/suspicious/noExplicitAny: It's not typed.
-	function handleSuccessfulLogin(context: SuccessContext<any>): void | Promise<void> {
+	function handleSuccessfulLogin(
+		context: SuccessContext<any>,
+	): void | Promise<void> {
 		if (context.data.twoFactorRedirect) {
-			router.push('/two-factor');
+			router.push("/two-factor");
 			return;
 		}
 		const inviteUrl = document.cookie
@@ -131,7 +133,9 @@ export default function LoginPage() {
 							<Button
 								type="button"
 								onClick={async () => {
-									if (isForgotPasswordLoading) { return; }
+									if (isForgotPasswordLoading) {
+										return;
+									}
 									setIsForgotPasswordLoading(true);
 									const emailInput = document.getElementById(
 										"email",
@@ -162,7 +166,9 @@ export default function LoginPage() {
 								className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 								disabled={isLoading || isForgotPasswordLoading}
 							>
-								{isForgotPasswordLoading ? "Samo trenutak..." : "Zaboravili ste lozinku?"}
+								{isForgotPasswordLoading
+									? "Samo trenutak..."
+									: "Zaboravili ste lozinku?"}
 							</Button>
 						</div>
 						<Input
@@ -176,7 +182,11 @@ export default function LoginPage() {
 					{isError && (
 						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
 					)}
-					<LoaderSubmitButton isLoading={isLoading} disabled={isForgotPasswordLoading} className="w-full plausible-event-name=login-button-click">
+					<LoaderSubmitButton
+						isLoading={isLoading}
+						disabled={isForgotPasswordLoading}
+						className="w-full plausible-event-name=login-button-click"
+					>
 						Prijavi se
 					</LoaderSubmitButton>
 					<div className="flex items-center gap-2">
@@ -205,7 +215,6 @@ export default function LoginPage() {
 						>
 							<Key className="w-4 h-4 inline-block" /> Passkey
 							<BadgeSoon />
-
 						</Button>
 						<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
 					</div>

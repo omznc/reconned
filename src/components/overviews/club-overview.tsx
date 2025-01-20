@@ -24,7 +24,7 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date; })[];
+		posts: (Post & { createdAt: Date })[];
 	};
 	isManager?: boolean;
 }
@@ -34,7 +34,8 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
 	]);
-	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const visitors =
+		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const posts = club.posts.sort((a, b) => {
 		if (a.createdAt < b.createdAt) {
 			return 1;
@@ -93,9 +94,8 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 			<div className="flex flex-wrap gap-0">
 				<Badge className="flex items-center gap-1">
 					<UserIcon className="w-4 h-4" />
-					{club._count?.members} {
-						club._count?.members === 1 ? "član" : "članova"
-					}
+					{club._count?.members}{" "}
+					{club._count?.members === 1 ? "član" : "članova"}
 				</Badge>
 				<Badge className="flex items-center gap-1">
 					{club.isPrivate ? (

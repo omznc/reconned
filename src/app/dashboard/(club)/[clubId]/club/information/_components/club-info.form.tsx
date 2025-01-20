@@ -49,7 +49,12 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import { ArrowUpRight, Calendar as CalendarIcon, Loader, Trash } from "lucide-react";
+import {
+	ArrowUpRight,
+	Calendar as CalendarIcon,
+	Loader,
+	Trash,
+} from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -69,9 +74,13 @@ import Link from "next/link";
 import type { Country } from "@/lib/countries";
 
 // Dynamically import map to avoid SSR issues
-const MapSelector = dynamic(() => import("@/app/(public)/map/_components/clubs-map").then(m => m.ClubsMap), {
-	ssr: false,
-});
+const MapSelector = dynamic(
+	() =>
+		import("@/app/(public)/map/_components/clubs-map").then((m) => m.ClubsMap),
+	{
+		ssr: false,
+	},
+);
 
 interface ClubInfoFormProps {
 	club?: Club | null;
@@ -311,11 +320,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											aria-expanded={open}
 											className={cn(
 												"w-full justify-between",
-												!field.value && "text-muted-foreground"
+												!field.value && "text-muted-foreground",
 											)}
 										>
 											{field.value
-												? props.countries.find((country) => country.id === field.value)?.name
+												? props.countries.find(
+														(country) => country.id === field.value,
+													)?.name
 												: "Odaberite državu"}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -326,7 +337,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										<CommandInput placeholder="Pretraži države..." />
 										<CommandEmpty>Nema rezultata.</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
-
 											{props.countries.map((country) => (
 												<CommandItem
 													key={country.id}
@@ -341,7 +351,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 															"mr-2 h-4 w-4",
 															country.id === field.value
 																? "opacity-100"
-																: "opacity-0"
+																: "opacity-0",
 														)}
 													/>
 													{country.emoji} {country.name}
@@ -394,21 +404,28 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					<FormControl>
 						<div className="h-[400px] w-full -z-10 rounded-lg overflow-hidden border">
 							<MapSelector
-								clubs={props.club
-									? [{
-										...props.club,
-										latitude: form.watch("latitude") || null,
-										longitude: form.watch("longitude") || null,
-										location: props.club.location || undefined,
-									}]
-									: []}
+								clubs={
+									props.club
+										? [
+												{
+													...props.club,
+													latitude: form.watch("latitude") || null,
+													longitude: form.watch("longitude") || null,
+													location: props.club.location || undefined,
+												},
+											]
+										: []
+								}
 								interactive={true}
 								onLocationSelect={handleLocationSelect}
 							/>
 						</div>
 					</FormControl>
 					<FormDescription>
-						Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <Link target="_blank" className="text-red-500" href="/map">mapi airsoft klubova
+						Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je
+						klub javan, biti će prikazan na{" "}
+						<Link target="_blank" className="text-red-500" href="/map">
+							mapi airsoft klubova
 							<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
 						</Link>
 					</FormDescription>
@@ -696,10 +713,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
+				<LoaderSubmitButton
+					isLoading={isLoading}
+					disabled={!isSlugValid && !!form.watch("slug")}
+				>
 					{props.club ? "Spasi" : "Kreiraj klub"}
 				</LoaderSubmitButton>
-			</form >
-		</Form >
+			</form>
+		</Form>
 	);
 }

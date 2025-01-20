@@ -11,9 +11,9 @@ export function ThemeSwitcher() {
 	const t = useTranslations("components.themeSwitcher");
 
 	useEffect(() => {
-		if (theme !== 'light' && theme !== 'dark') {
+		if (theme !== "light" && theme !== "dark") {
 			return;
-		};
+		}
 
 		setThemeAction({
 			theme: theme,
@@ -23,9 +23,7 @@ export function ThemeSwitcher() {
 	return (
 		<Button
 			variant="ghost"
-			onClick={() =>
-				setTheme(theme === "dark" ? "light" : "dark")
-			}
+			onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
 			suppressHydrationWarning
 			className="w-full items-center justify-start cursor-pointer"
 		>

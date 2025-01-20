@@ -39,10 +39,7 @@ export function UserSwitcher() {
 						>
 							<Avatar className="h-8 w-8 rounded-lg">
 								{user?.image && (
-									<AvatarImage
-										src={user?.image}
-										alt={user?.name}
-									/>
+									<AvatarImage src={user?.image} alt={user?.name} />
 								)}
 								<AvatarFallback className="rounded-lg">
 									{user?.name?.charAt(0).toUpperCase()}
@@ -86,7 +83,11 @@ export function UserSwitcher() {
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>
-							<Link href="/logout" prefetch={false} className="cursor-pointer plausible-event-name=logout-sidebar-click">
+							<Link
+								href="/logout"
+								prefetch={false}
+								className="cursor-pointer plausible-event-name=logout-sidebar-click"
+							>
 								<LogOut />
 								Odjava
 							</Link>

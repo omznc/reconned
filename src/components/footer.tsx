@@ -95,7 +95,9 @@ export function Footer() {
 					</Link>
 					{env.NEXT_PUBLIC_SOURCE_COMMIT && (
 						<p className="font-mono mt-4 opacity-30">
-							{t("version", { commit: env.NEXT_PUBLIC_SOURCE_COMMIT.slice(0, 7) })}
+							{t("version", {
+								commit: env.NEXT_PUBLIC_SOURCE_COMMIT.slice(0, 7),
+							})}
 						</p>
 					)}
 				</div>

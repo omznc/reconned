@@ -8,12 +8,12 @@ interface LoaderSubmitButtonProps {
 	className?: string;
 	children?: ReactNode;
 	variant?:
-	| "default"
-	| "destructive"
-	| "outline"
-	| "secondary"
-	| "ghost"
-	| "link";
+		| "default"
+		| "destructive"
+		| "outline"
+		| "secondary"
+		| "ghost"
+		| "link";
 	disabled?: boolean;
 }
 

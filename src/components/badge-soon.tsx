@@ -15,9 +15,7 @@ export function BadgeSoon({ className, ...props }: BadgeSoonProps) {
 			)}
 			{...props}
 		>
-			{
-				t("soon")
-			}
+			{t("soon")}
 		</span>
 	);
 }

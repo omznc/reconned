@@ -55,7 +55,11 @@ export default async function Page(props: PageProps) {
 
 	return (
 		<div className="p-6">
-			<ClubInfoForm club={club} countries={countries} isClubOwner={isClubOwner} />
+			<ClubInfoForm
+				club={club}
+				countries={countries}
+				isClubOwner={isClubOwner}
+			/>
 		</div>
 	);
 }

@@ -20,22 +20,25 @@ export default function Page() {
 				<h3 className="text-lg font-semibold">Pomoć</h3>
 			</div>
 			<Accordion type="single" collapsible className="space-y-4">
-				<HelpItem
-					title="Kako dodati Google Maps na susret"
-					id="google-maps"
-				>
+				<HelpItem title="Kako dodati Google Maps na susret" id="google-maps">
 					<div className="space-y-4 text-muted-foreground">
 						<ol className="list-decimal pl-4 space-y-2">
 							<li>Otvorite Google Maps i pronađite željenu lokaciju</li>
 							<li>Kliknite na dugme &quot;Share&quot; (Podijeli)</li>
-							<li>U dijalogu za dijeljenje, odaberite tab &quot;Embed a map&quot; (Ugradi mapu)</li>
+							<li>
+								U dijalogu za dijeljenje, odaberite tab &quot;Embed a map&quot;
+								(Ugradi mapu)
+							</li>
 							<li>Kopirajte citav link</li>
 							<Image
 								src={GoogleMap1Image}
 								alt="Google Maps dijalog za dijeljenje"
 								className="w-full border md:w-1/2 dark:invert"
 							/>
-							<li>Zalijepite kopirani link u polje za Google Maps na formi za kreiranje susreta</li>
+							<li>
+								Zalijepite kopirani link u polje za Google Maps na formi za
+								kreiranje susreta
+							</li>
 						</ol>
 					</div>
 				</HelpItem>
@@ -67,7 +70,7 @@ function HelpItem({
 							e.stopPropagation();
 							const currentNoHash = window.location.href.replace(
 								window.location.hash,
-								""
+								"",
 							);
 							window.navigator.clipboard
 								.writeText(`${currentNoHash}#${id}`)
@@ -79,7 +82,6 @@ function HelpItem({
 								});
 						}}
 					>
-
 						<Hash className="w-4 h-4" />
 					</div>
 				</div>

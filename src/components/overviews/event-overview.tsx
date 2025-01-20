@@ -31,7 +31,8 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 		getPageViews(`/events/${event.id}`),
 		getPageViews(`/events/${event.slug}`),
 	]);
-	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const visitors =
+		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();
@@ -63,8 +64,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 				className={cn({
 					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
 						event.image,
-					"border p-4 bg-background w-full flex flex-col gap-1":
-						!event.image,
+					"border p-4 bg-background w-full flex flex-col gap-1": !event.image,
 				})}
 			>
 				<div className="relative flex select-none flex-col gap-3">
@@ -126,16 +126,12 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							)}
 						</Badge>
 						{event.location && (
-							<Badge
-								className="flex h-fit items-center gap-1"
-							>
+							<Badge className="flex h-fit items-center gap-1">
 								<MapPin className="size-4" />
 								{event.location}
 							</Badge>
 						)}
-						<Badge className="h-fit">
-							{visitors} pregled/a
-						</Badge>
+						<Badge className="h-fit">{visitors} pregled/a</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.googleMapsLink && (

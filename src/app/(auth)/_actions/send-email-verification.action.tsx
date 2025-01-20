@@ -29,9 +29,12 @@ export async function sendEmailVerificationAction({
 		const resp = await sendEmail({
 			to,
 			subject: "Verificirajte svoj email",
-			html: await render(<EmailVerification userName={name} verificationUrl={url.toString()} />, {
-				pretty: true
-			}),
+			html: await render(
+				<EmailVerification userName={name} verificationUrl={url.toString()} />,
+				{
+					pretty: true,
+				},
+			),
 		});
 
 		return resp.MessageId;

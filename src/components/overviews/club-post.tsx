@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 interface ClubPostProps {
-	post: Post & { createdAt: Date; };
+	post: Post & { createdAt: Date };
 	clubId: string;
 	isManager?: boolean;
 }
@@ -47,7 +47,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 						{t("published", {
 							date: formatRelative(post.createdAt, new Date(), {
 								locale: bs,
-							})
+							}),
 						})}
 					</p>
 				</div>

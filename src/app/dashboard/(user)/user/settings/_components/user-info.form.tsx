@@ -460,7 +460,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
+				<LoaderSubmitButton
+					isLoading={isLoading}
+					disabled={!isSlugValid && !!form.watch("slug")}
+				>
 					Spasi
 				</LoaderSubmitButton>
 			</form>

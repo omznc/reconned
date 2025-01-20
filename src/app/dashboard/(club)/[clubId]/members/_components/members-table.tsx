@@ -23,7 +23,10 @@ interface MembersTableProps {
 export function MembersTable(props: MembersTableProps) {
 	const confirm = useConfirm();
 
-	const handleRemove = async (member: ClubMembership & { userName: string; }, clubId: string) => {
+	const handleRemove = async (
+		member: ClubMembership & { userName: string },
+		clubId: string,
+	) => {
 		if (member.role === "CLUB_OWNER") {
 			return;
 		}
@@ -121,23 +124,22 @@ export function MembersTable(props: MembersTableProps) {
 						variant: "custom",
 						component: (_, row) => (
 							<div className="flex gap-2">
-								<Button asChild variant='secondary' size="sm"
-								>
-									<Link href={`/users/${row.userId}`} target="_blank">Profil</Link>
+								<Button asChild variant="secondary" size="sm">
+									<Link href={`/users/${row.userId}`} target="_blank">
+										Profil
+									</Link>
 								</Button>
-								{
-									row.role !== "CLUB_OWNER" && (
-										<div className="flex justify-end">
-											<Button
-												variant="destructive"
-												size="sm"
-												onClick={() => handleRemove(row, row.clubId)}
-											>
-												Ukloni
-											</Button>
-										</div>
-									)
-								}
+								{row.role !== "CLUB_OWNER" && (
+									<div className="flex justify-end">
+										<Button
+											variant="destructive"
+											size="sm"
+											onClick={() => handleRemove(row, row.clubId)}
+										>
+											Ukloni
+										</Button>
+									</div>
+								)}
 							</div>
 						),
 					},

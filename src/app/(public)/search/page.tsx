@@ -13,7 +13,7 @@ interface Props {
 	}>;
 }
 
-async function SearchResults({ query, tab }: { query?: string; tab?: string; }) {
+async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 	if (!query) {
 		return null;
 	}
@@ -25,25 +25,24 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 					{
 						name: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 					{
 						description: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 				],
 				AND: { isPrivate: false },
 			},
 			include: {
 				_count: {
-					select: { members: true }
-				}
+					select: { members: true },
+				},
 			},
-			take: 25
-
+			take: 25,
 		}),
 		prisma.user.findMany({
 			where: {
@@ -51,20 +50,20 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 					{
 						callsign: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 					{
 						name: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 					{
 						location: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 				],
 				AND: { isPrivate: false },
@@ -75,13 +74,12 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 					include: {
 						club: {
 							select: {
-								name: true
-							}
-						}
-					}
-				}
-			}
-
+								name: true,
+							},
+						},
+					},
+				},
+			},
 		}),
 		prisma.event.findMany({
 			where: {
@@ -89,38 +87,40 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 					{
 						name: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 					{
 						description: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 					{
 						location: {
 							contains: query,
-							mode: "insensitive"
-						}
+							mode: "insensitive",
+						},
 					},
 				],
 				AND: { isPrivate: false },
 			},
 			include: {
-				club: true
+				club: true,
 			},
-			take: 25
+			take: 25,
 		}),
 	]);
 
 	// Determine the first non-empty tab
-	const defaultTab = tab || (() => {
-		if (clubs.length > 0) return "clubs";
-		if (users.length > 0) return "users";
-		if (events.length > 0) return "events";
-		return "clubs"; // fallback to clubs if all empty
-	})();
+	const defaultTab =
+		tab ||
+		(() => {
+			if (clubs.length > 0) return "clubs";
+			if (users.length > 0) return "users";
+			if (events.length > 0) return "events";
+			return "clubs"; // fallback to clubs if all empty
+		})();
 
 	return (
 		<Tabs defaultValue={defaultTab} className="w-full">
@@ -172,7 +172,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 							title={`${user.name} ${user.callsign ? `(${user.callsign})` : ""}`}
 							description={user.bio}
 							href={`/users/${user.id}`}
-							badges={user.clubMembership.map((membership) => membership.club.name)}
+							badges={user.clubMembership.map(
+								(membership) => membership.club.name,
+							)}
 							meta={user.location || undefined}
 							type="user"
 						/>
@@ -196,7 +198,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 							badges={[
 								event.club.name,
 								event.isPrivate ? "Privatno" : "Javno",
-								format(event.dateStart, "dd.MM.yyyy")
+								format(event.dateStart, "dd.MM.yyyy"),
 							]}
 							meta={event.location || undefined}
 							type="event"

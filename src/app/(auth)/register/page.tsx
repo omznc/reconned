@@ -52,7 +52,7 @@ export default function RegisterPage() {
 
 						const success = await authClient.signUp.email(
 							{
-								email: email !== '' ? email : localEmail,
+								email: email !== "" ? email : localEmail,
 								password,
 								name,
 							},
@@ -137,7 +137,10 @@ export default function RegisterPage() {
 							Podaci nisu ispravni ili korisnik već postoji
 						</p>
 					)}
-					<LoaderSubmitButton isLoading={isLoading} className="w-full plausible-event-name=register-button-click">
+					<LoaderSubmitButton
+						isLoading={isLoading}
+						className="w-full plausible-event-name=register-button-click"
+					>
 						Registruj se
 					</LoaderSubmitButton>
 					<GoogleLoginButton isLoading={isLoading} />

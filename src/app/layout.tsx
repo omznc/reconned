@@ -28,21 +28,25 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-async function LayoutContent({ children }: { children: ReactNode; }) {
+async function LayoutContent({ children }: { children: ReactNode }) {
 	const [messages, user, locale] = await Promise.all([
 		getMessages(),
 		isAuthenticated(),
-		getLocale()
+		getLocale(),
 	]);
 
-	const font = user?.font ? user.font as "sans" | "mono" : "sans";
-	const theme = user?.theme ? user.theme as "dark" | "light" : "dark";
+	const font = user?.font ? (user.font as "sans" | "mono") : "sans";
+	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
 
 	return (
 		<html lang={locale} suppressHydrationWarning>
 			<head>
 				<meta name="darkreader-lock" />
-				<Script defer data-domain="reconned.com" src="https://scout.reconned.com/js/script.outbound-links.tagged-events.js" />
+				<Script
+					defer
+					data-domain="reconned.com"
+					src="https://scout.reconned.com/js/script.outbound-links.tagged-events.js"
+				/>
 			</head>
 			<NextIntlClientProvider messages={messages}>
 				<FontProvider initial={font}>
@@ -80,7 +84,7 @@ async function LayoutContent({ children }: { children: ReactNode; }) {
 					</FontBody>
 				</FontProvider>
 			</NextIntlClientProvider>
-		</html >
+		</html>
 	);
 }
 
@@ -89,24 +93,42 @@ export default function RootLayout({
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	return (
-		<LayoutContent>{children}</LayoutContent>
-	);
+	return <LayoutContent>{children}</LayoutContent>;
 }
 
 export const metadata: Metadata = {
 	title: "RECONNED - Airsoft klubovi, susreti, i igrači",
-	description: "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
+	description:
+		"Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
 	metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
 		? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
 		: undefined,
 	keywords: [
-		"airsoft Bosna", "airsoft BiH", "airsoft oružje", "airsoft replike",
-		"airsoft oprema", "airsoft klubovi BiH", "airsoft shop BiH", "airsoft trgovina",
-		"airsoft puške", "airsoft pištolji", "airsoft metci", "airsoft kuglice",
-		"airsoft maska", "airsoft odjeća", "airsoft uniforme", "airsoft BiH forum",
-		"airsoft događaji BiH", "airsoft pravila", "airsoft taktike", "airsoft igrači BiH",
-		"najbolji airsoft BiH", "kupovina airsoft BiH", "prodaja airsoft BiH",
-		"airsoft timovi BiH", "airsoft lokacije BiH", "airsoft teren BiH"
-	]
+		"airsoft Bosna",
+		"airsoft BiH",
+		"airsoft oružje",
+		"airsoft replike",
+		"airsoft oprema",
+		"airsoft klubovi BiH",
+		"airsoft shop BiH",
+		"airsoft trgovina",
+		"airsoft puške",
+		"airsoft pištolji",
+		"airsoft metci",
+		"airsoft kuglice",
+		"airsoft maska",
+		"airsoft odjeća",
+		"airsoft uniforme",
+		"airsoft BiH forum",
+		"airsoft događaji BiH",
+		"airsoft pravila",
+		"airsoft taktike",
+		"airsoft igrači BiH",
+		"najbolji airsoft BiH",
+		"kupovina airsoft BiH",
+		"prodaja airsoft BiH",
+		"airsoft timovi BiH",
+		"airsoft lokacije BiH",
+		"airsoft teren BiH",
+	],
 };

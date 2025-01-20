@@ -23,7 +23,7 @@ import { usePathname } from "next/navigation";
 import type { NavItem } from "./types.ts";
 import { renderCollapsedItem, renderExpandedItem } from "./utils.tsx";
 
-export function NavApp({ isAdmin }: { isAdmin: boolean; }) {
+export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 
@@ -34,9 +34,9 @@ export function NavApp({ isAdmin }: { isAdmin: boolean; }) {
 				{items
 					.filter((item) => !item.protected || (item.protected && isAdmin))
 					.map((item) =>
-						(!(sidebarOpen || isMobile))
+						!(sidebarOpen || isMobile)
 							? renderCollapsedItem(item, path)
-							: renderExpandedItem(item, path)
+							: renderExpandedItem(item, path),
 					)}
 			</SidebarMenu>
 		</SidebarGroup>

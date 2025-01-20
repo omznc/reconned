@@ -28,7 +28,8 @@ export async function UserOverview({ user }: UserOverviewProps) {
 		getPageViews(`/users/${user.id}`),
 		getPageViews(`/users/${user.slug}`),
 	]);
-	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const visitors =
+		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const futureEvents = user.eventRegistration.filter(
 		(reg) => reg.event.dateStart > new Date() && !reg.attended,
 	);
@@ -56,20 +57,15 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							{user.name} {user.callsign && `(${user.callsign})`}
 						</h1>
 					</div>
-					<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">{user.bio}</p>
+					<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">
+						{user.bio}
+					</p>
 				</div>
-
 			</div>
-			<Badge className="h-fit">
-				{t("views", { count: visitors })}
-			</Badge>
-			{
-				user.clubMembership.length === 0 && (
-					<Badge className="h-fit">
-						{t("freelancer")}
-					</Badge>
-				)
-			}
+			<Badge className="h-fit">{t("views", { count: visitors })}</Badge>
+			{user.clubMembership.length === 0 && (
+				<Badge className="h-fit">{t("freelancer")}</Badge>
+			)}
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>
@@ -119,7 +115,9 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</CardHeader>
 					<CardContent>
 						{futureEvents.length === 0 ? (
-							<p className="text-muted-foreground">{t("upcomingEvents.noEvents")}</p>
+							<p className="text-muted-foreground">
+								{t("upcomingEvents.noEvents")}
+							</p>
 						) : (
 							<ul className="space-y-2">
 								{futureEvents.map((reg) => (
@@ -146,7 +144,9 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</CardHeader>
 					<CardContent>
 						{pastEvents.length === 0 ? (
-							<p className="text-muted-foreground">{t("pastEvents.noEvents")}</p>
+							<p className="text-muted-foreground">
+								{t("pastEvents.noEvents")}
+							</p>
 						) : (
 							<ul className="space-y-2">
 								{pastEvents.map((reg) => (

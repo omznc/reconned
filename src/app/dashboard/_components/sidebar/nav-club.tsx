@@ -1,8 +1,18 @@
 "use client";
 
 import {
-	Building2, Search, Pencil, ChartBar, BookUser, MailPlus,
-	CalendarFold, Plus, CalendarDays, DiamondMinus, DollarSign, NotebookPen,
+	Building2,
+	Search,
+	Pencil,
+	ChartBar,
+	BookUser,
+	MailPlus,
+	CalendarFold,
+	Plus,
+	CalendarDays,
+	DiamondMinus,
+	DollarSign,
+	NotebookPen,
 } from "lucide-react";
 import {
 	SidebarGroup,
@@ -14,10 +24,13 @@ import { usePathname } from "next/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { User } from "better-auth";
 import type { NavItem } from "@/app/dashboard/_components/sidebar/types";
-import { renderCollapsedItem, renderExpandedItem } from "@/app/dashboard/_components/sidebar/utils";
+import {
+	renderCollapsedItem,
+	renderExpandedItem,
+} from "@/app/dashboard/_components/sidebar/utils";
 
 interface NavClubProps {
-	user: User & { managedClubs: string[]; };
+	user: User & { managedClubs: string[] };
 }
 
 export function NavClub({ user }: NavClubProps) {
@@ -35,13 +48,13 @@ export function NavClub({ user }: NavClubProps) {
 			<SidebarGroupLabel>Moj klub</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) =>
-					(!(sidebarOpen || isMobile))
+					!(sidebarOpen || isMobile)
 						? renderCollapsedItem(item, path)
 						: renderExpandedItem(item, path, {
-							hasAccess: (subItem) =>
-								!subItem.protected ||
-								(subItem.protected && user?.managedClubs?.includes(clubId))
-						})
+								hasAccess: (subItem) =>
+									!subItem.protected ||
+									(subItem.protected && user?.managedClubs?.includes(clubId)),
+							}),
 				)}
 			</SidebarMenu>
 		</SidebarGroup>

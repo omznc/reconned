@@ -30,24 +30,24 @@ export default async function EventApplicationPage(
 
 	const conditionalPrivateWhere = user
 		? {
-			OR: [
-				{
-					isPrivate: false,
-				},
-				{
-					club: {
-						members: {
-							some: {
-								userId: user?.id,
+				OR: [
+					{
+						isPrivate: false,
+					},
+					{
+						club: {
+							members: {
+								some: {
+									userId: user?.id,
+								},
 							},
 						},
 					},
-				},
-			],
-		}
+				],
+			}
 		: {
-			isPrivate: false,
-		};
+				isPrivate: false,
+			};
 
 	const event = await prisma.event.findFirst({
 		where: {

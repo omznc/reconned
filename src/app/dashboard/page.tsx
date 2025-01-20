@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
-	const t = await getTranslations('dashboard.root');
+	const t = await getTranslations("dashboard.root");
 	const user = await isAuthenticated();
 
 	if (!user) {
@@ -50,13 +50,13 @@ export default async function DashboardPage() {
 									},
 								},
 								orderBy: {
-									dateStart: 'asc',
+									dateStart: "asc",
 								},
 							},
 							reviews: {
 								take: 1,
 								orderBy: {
-									createdAt: 'desc',
+									createdAt: "desc",
 								},
 							},
 						},
@@ -81,24 +81,42 @@ export default async function DashboardPage() {
 
 	return (
 		<div className="container py-6 space-y-6">
-			<h1 className="text-2xl font-bold">{t("welcome", { name: user.name })}</h1>
+			<h1 className="text-2xl font-bold">
+				{t("welcome", { name: user.name })}
+			</h1>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">{t("statistics.meetings")}</div>
-					<div className="text-2xl font-bold">{stats._count.eventRegistration}</div>
+					<div className="text-sm text-muted-foreground">
+						{t("statistics.meetings")}
+					</div>
+					<div className="text-2xl font-bold">
+						{stats._count.eventRegistration}
+					</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">{t("statistics.clubs")}</div>
-					<div className="text-2xl font-bold">{stats._count.clubMembership}</div>
+					<div className="text-sm text-muted-foreground">
+						{t("statistics.clubs")}
+					</div>
+					<div className="text-2xl font-bold">
+						{stats._count.clubMembership}
+					</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">{t("statistics.writtenReviews")}</div>
-					<div className="text-2xl font-bold">{stats._count.reviewsWritten}</div>
+					<div className="text-sm text-muted-foreground">
+						{t("statistics.writtenReviews")}
+					</div>
+					<div className="text-2xl font-bold">
+						{stats._count.reviewsWritten}
+					</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">{t("statistics.receivedReviews")}</div>
-					<div className="text-2xl font-bold">{stats._count.reviewsReceived}</div>
+					<div className="text-sm text-muted-foreground">
+						{t("statistics.receivedReviews")}
+					</div>
+					<div className="text-2xl font-bold">
+						{stats._count.reviewsReceived}
+					</div>
 				</div>
 			</div>
 
@@ -144,21 +162,33 @@ export default async function DashboardPage() {
 									{/* Club Stats */}
 									<div className="flex items-center justify-between rounded-lg border bg-background/50 p-4">
 										<div className="text-center">
-											<p className="text-2xl font-bold">{membership.club._count.members}</p>
+											<p className="text-2xl font-bold">
+												{membership.club._count.members}
+											</p>
 											<p className="text-xs text-muted-foreground">
-												{membership.club._count.members === 1 ? 'član' : 'članova'}
+												{membership.club._count.members === 1
+													? "član"
+													: "članova"}
 											</p>
 										</div>
 										<div className="text-center">
-											<p className="text-2xl font-bold">{membership.club._count.events}</p>
+											<p className="text-2xl font-bold">
+												{membership.club._count.events}
+											</p>
 											<p className="text-xs text-muted-foreground">
-												{membership.club._count.events === 1 ? 'susret' : 'susreta'}
+												{membership.club._count.events === 1
+													? "susret"
+													: "susreta"}
 											</p>
 										</div>
 										<div className="text-center">
-											<p className="text-2xl font-bold">{membership.club._count.reviews}</p>
+											<p className="text-2xl font-bold">
+												{membership.club._count.reviews}
+											</p>
 											<p className="text-xs text-muted-foreground">
-												{membership.club._count.reviews === 1 ? 'recenzija' : 'recenzija'}
+												{membership.club._count.reviews === 1
+													? "recenzija"
+													: "recenzija"}
 											</p>
 										</div>
 									</div>
@@ -167,17 +197,23 @@ export default async function DashboardPage() {
 									<div className="space-y-3">
 										{membership.club.events[0] && (
 											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">{t("nextEvent")}</p>
+												<p className="text-sm font-medium mb-1">
+													{t("nextEvent")}
+												</p>
 												<p className="text-sm text-muted-foreground line-clamp-1">
-													{membership.club.events[0].name} • {' '}
-													{membership.club.events[0].dateStart.toLocaleDateString('bs')}
+													{membership.club.events[0].name} •{" "}
+													{membership.club.events[0].dateStart.toLocaleDateString(
+														"bs",
+													)}
 												</p>
 											</div>
 										)}
 
 										{membership.club.reviews[0] && (
 											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">{t("latestReview")}</p>
+												<p className="text-sm font-medium mb-1">
+													{t("latestReview")}
+												</p>
 												<p className="text-sm text-muted-foreground line-clamp-2">
 													{membership.club.reviews[0].content}
 												</p>
@@ -205,7 +241,7 @@ export default async function DashboardPage() {
 									<div>
 										<div className="font-medium">{registration.event.name}</div>
 										<div className="text-sm text-muted-foreground">
-											{registration.event.dateStart.toLocaleDateString('bs')}
+											{registration.event.dateStart.toLocaleDateString("bs")}
 										</div>
 									</div>
 									<div className="text-sm capitalize">
