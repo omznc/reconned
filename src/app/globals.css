@@ -150,7 +150,3 @@ body {
 .leaflet-popup-content-wrapper {
 	border-radius: 0px !important;
 }
-
-.leaflet-container a {
-	@apply : font-red-500 !important;
-}

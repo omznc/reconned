@@ -78,13 +78,64 @@
 			},
 			"error": "Došlo je do greške",
 			"loading": "Učitavanje..."
+		},
+		"help": {
+			"title": "Pomoć",
+			"googleMaps": {
+				"steps": {
+					"step1": "Otvorite Google Maps i pronađite željenu lokaciju",
+					"step2": "Kliknite na dugme \"Share\" (Podijeli)",
+					"step3": "U dijalogu za dijeljenje, odaberite tab \"Embed a map\" (Ugradi mapu)",
+					"step4": "Kopirajte čitav link",
+					"step5": "Zalijepite kopirani link u polje za Google Maps na formi za kreiranje susreta"
+				}
+			}
+		},
+		"user": {
+			"overview": {
+				"alertTitle": "Vaš račun",
+				"alertDescription": "Ovdje možete vidjeti svoj profil",
+				"edit": "Izmjeni profil",
+				"view": "Pogledaj javni profil"
+			},
+			"settings": {
+				"title": "Općento",
+				"imageUploadError": "Došlo je do greške prilikom uploada slike",
+				"profileUpdated": "Podataci o korisniku su spašeni",
+				"profileUpdateError": "Došlo je do greške prilikom spašavanja podataka",
+				"name": "Vaše ime",
+				"callsign": "Callsign/Pozivni znak",
+				"location": "Lokacija",
+				"locationDescription": "Grad ili mjesto gdje se nalazite",
+				"bio": "O vama",
+				"bioDescription": "Ovo je vaša prilika da se istaknete u nekoliko recenica",
+				"public": "Prikazano javno",
+				"private": "Sakriveno",
+				"privateProfile": "Privatni profil",
+				"privateProfileDescription": "Sakrijte profil od javnog pristupa. Preporučujemo da ostavite profil javnim.",
+				"profilePhoto": "Profilna slika",
+				"profilePhotoDescription": "Preporučujemo da postavite profilnu sliku.",
+				"fileUpload": "Povucite ili kliknite za upload slike",
+				"fileUploadFormats": "Podržani formati:",
+				"deleteProfilePhoto": {
+					"title": "Jeste li sigurni?",
+					"body": "Da li ste sigurni da želite obrisati profilnu sliku?",
+					"confirm": "Obriši profilnu sliku",
+					"cancel": "Ne, vrati se"
+				},
+				"contact": "Kontakt",
+				"phone": "Broj telefona",
+				"website": "Web stranica",
+				"save": "Spasi promjene",
+				"linkTaken": "Izabrani link je zauzet"
+			}
 		}
 	},
 	"components": {
 		"footer": {
 			"about": {
 				"title": "O nama",
-				"description": "RECONNED je nova platforma za airsoft entuzijaste. Otkrijte klubove, susrete, i igrače, širom Bosne i Hercegovine. Vodite svoj klub, organizujte susrete, i pronađite nove prilike. RECONNED je projekt napravljen od strane 2 airsoft igrača iz BIH -"
+				"description": "RECONNED je nova platforma za airsoft entuzijaste. Otkrijte klubove, susrete, i igrače, širom Bosne i Hercegovine. Vodite svoj klub, organizujte susrete, i pronađite nove prilike. RECONNED je projekt napravljen od strane 2 airsoft igrača iz BIH - <omar></omar> i <safet></safet>"
 			},
 			"quickLinks": {
 				"title": "Brzi linkovi",
@@ -224,6 +275,30 @@
 			"published": "Objavljeno {date}",
 			"readMore": "Pročitaj više",
 			"showLess": "Prikaži manje"
+		},
+		"eventOverview": {
+			"editEvent": "Izmjeni susret",
+			"apply": "Prijava",
+			"registrationsClosed": "Prijave zatvorene",
+			"registeredCount": "{count} prijavljenih",
+			"privateEvent": "Privatni susret",
+			"publicEvent": "Javni susret",
+			"views": "{count} pregled/a",
+			"location": "Lokacija",
+			"showLocation": "Prikaži lokaciju",
+			"map": "Mapa",
+			"showEventMap": "Prikaži mapu susreta"
+		},
+		"clubOverview": {
+			"views": "{count} pregled/a",
+			"map": "Mapa",
+			"edit": "Izmjeni klub",
+			"members": "{count} član/ova",
+			"private": "Privatni klub",
+			"public": "Javni klub",
+			"posts": "Objave",
+			"createPost": "Nova objava",
+			"noPosts": "Nema objava"
 		}
 	}
 }

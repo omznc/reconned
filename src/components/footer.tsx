@@ -13,21 +13,24 @@ export function Footer() {
 					<div>
 						<h3 className="font-bold mb-4">{t("about.title")}</h3>
 						<p className="text-sm ">
-							{t("about.description")}{" "}
-							<Link
-								className="text-red-500 hover:text-red-400 transition-colors"
-								href="https://safetpojskic.com?utm_source=reconned&utm_medium=footer"
-							>
-								Safet Pojskić
-							</Link>{" "}
-							&{" "}
-							<Link
-								className="text-red-500 hover:text-red-400 transition-colors"
-								href="https://omarzunic.com?utm_source=reconned&utm_medium=footer"
-							>
-								Omar Zunić
-							</Link>
-							.
+							{t.rich("about.description", {
+								omar: () => (
+									<Link
+										className="text-red-500 hover:text-red-400 transition-colors"
+										href="https://omarzunic.com?utm_source=reconned&utm_medium=footer"
+									>
+										Omar Zunić
+									</Link>
+								),
+								safet: () => (
+									<Link
+										className="text-red-500 hover:text-red-400 transition-colors"
+										href="https://safetpojskic.com?utm_source=reconned&utm_medium=footer"
+									>
+										Safet Pojskić
+									</Link>
+								)
+							})}
 						</p>
 					</div>
 					<div>

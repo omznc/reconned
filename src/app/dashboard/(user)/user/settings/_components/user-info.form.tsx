@@ -44,6 +44,7 @@ import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { SlugInput } from "@/components/slug/slug-input";
 import { ImageCropDialog } from "@/app/dashboard/(user)/user/settings/_components/image-crop-dialog";
 import type { DropzoneOptions } from "react-dropzone";
+import { useTranslations } from "next-intl";
 
 interface UserInfoFormProps {
 	user: User;
@@ -56,6 +57,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [cropFile, setCropFile] = useState<File | null>(null);
 	const confirm = useConfirm();
+	const t = useTranslations('dashboard.user.settings');
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -100,7 +102,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				});
 
 				if (!resp?.data?.url) {
-					toast.error("Došlo je do greške prilikom uploada slike");
+					toast.error(t('imageUploadError'));
 					return;
 				}
 
@@ -120,9 +122,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 			setFiles([]);
 
-			toast.success("Podataci o korisniku su spašeni");
+			toast.success(t('profileUpdated'));
 		} catch (_error) {
-			toast.error("Došlo je do greške prilikom spašavanja podataka");
+			toast.error(t('profileUpdateError'));
 		}
 		setIsLoading(false);
 	}
@@ -134,7 +136,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				className="space-y-4 max-w-3xl"
 			>
 				<div>
-					<h3 className="text-lg font-semibold">Općento</h3>
+					<h3 className="text-lg font-semibold">{t('title')}</h3>
 				</div>
 				<FormField
 					control={form.control}
@@ -142,13 +144,14 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Ime korisnika* ({form.watch("name")?.length}/
+								{t('name')}* ({form.watch("name")?.length}/
 								{userInfoShema.shape.name.maxLength})
+
 							</FormLabel>
 							<FormControl>
-								<Input placeholder="ASK Veis" type="text" {...field} />
+								<Input placeholder="Veis" type="text" {...field} />
 							</FormControl>
-							<FormDescription>Vaše ime</FormDescription>
+							<FormDescription>{t('name')}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -159,11 +162,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="callsign"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Pozivni znak</FormLabel>
+							<FormLabel>{t('callsign')}</FormLabel>
 							<FormControl>
-								<Input placeholder="Veis" {...field} />
+								<Input placeholder="Ninja" {...field} />
 							</FormControl>
-							<FormDescription>Pozivni znak</FormDescription>
+							<FormDescription>{t('callsign')}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -174,11 +177,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="location"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Lokacija*</FormLabel>
+							<FormLabel>{t('location')}</FormLabel>
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
-							<FormDescription>Gdje se nalazite?</FormDescription>
+							<FormDescription>{t("locationDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -207,7 +210,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Opis ({form.watch("bio")?.length}/
+								{t('bio')} ({form.watch("bio")?.length}/
 								{userInfoShema.shape.bio.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -218,7 +221,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								/>
 							</FormControl>
 							<FormDescription>
-								Ovo je vaša prilika da se istaknete.
+								{t('bioDescription')}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -238,7 +241,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 									render={({ field: privateField }) => (
 										<div className="flex items-center gap-2">
 											<FormLabel className="text-sm text-muted-foreground">
-												{privateField.value ? "Sakriveno" : "Javno prikazano"}
+												{privateField.value ? t("private") : t("public")}
 											</FormLabel>
 											<Switch
 												checked={privateField.value}
@@ -251,7 +254,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormControl>
 								<Input placeholder="me@gmail.com" type="email" {...field} />
 							</FormControl>
-							<FormDescription>Vaš email</FormDescription>
+							<FormDescription>Email</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -264,14 +267,13 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
 								<div className="flex items-center gap-2">
-									<FormLabel>Privatni profil</FormLabel>
+									<FormLabel>{t("privateProfile")}</FormLabel>
 									<span className="text-sm text-muted-foreground">
-										({field.value ? "Profil je privatan" : "Profil je javan"})
+										{field.value ? t("private") : t("public")}
 									</span>
 								</div>
 								<FormDescription>
-									Sakrijte profil od javnog pristupa. Preporučujemo da ostavite
-									profil javnim.
+									{t("privateProfileDescription")}
 								</FormDescription>
 							</div>
 							<FormControl>
@@ -289,7 +291,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="image"
 					render={() => (
 						<FormItem>
-							<FormLabel>Profilna slika</FormLabel>
+							<FormLabel>{t("profilePhoto")}</FormLabel>
 							<FormControl>
 								<FileUploader
 									key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
@@ -314,13 +316,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 											<div className="flex items-center justify-center flex-col p-8 w-full ">
 												<CloudUpload className="text-gray-500 w-10 h-10" />
 												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													<span className="font-semibold">
-														Kliknite da dodate fajl
-													</span>
-													, ili ga samo prebacite ovde
+													{t("fileUpload")}
 												</p>
 												<p className="text-xs text-gray-500 dark:text-gray-400">
-													Dozvoljeni formati: JPG, JPEG, PNG
+													{t("fileUploadFormats")} JPG, JPEG, PNG
 												</p>
 											</div>
 										</FileInput>
@@ -345,7 +344,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								</FileUploader>
 							</FormControl>
 							<FormDescription>
-								Preporučujemo da postavite profilnu sliku.
+								{t("profilePhotoDescription")}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -370,11 +369,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								variant={"destructive"}
 								onClick={async () => {
 									const resp = await confirm({
-										title: "Jeste li sigurni?",
-										body: "Da li ste sigurni da želite obrisati profilnu sliku?",
+										title: t('deleteProfilePhoto.title'),
+										body: t('deleteProfilePhoto.body'),
 										actionButtonVariant: "destructive",
-										actionButton: "Obriši profilnu sliku",
-										cancelButton: "Ne, vrati se",
+										actionButton: t('deleteProfilePhoto.confirm'),
+										cancelButton: t('deleteProfilePhoto.cancel'),
 									});
 
 									if (!resp) {
@@ -391,7 +390,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (
-									"Obriši profilnu sliku"
+									t('deleteProfilePhoto.confirm')
 								)}
 							</Button>
 						</HoverCardTrigger>
@@ -407,7 +406,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				)}
 
 				<div>
-					<h3 className="text-lg font-semibold">Kontakt</h3>
+					<h3 className="text-lg font-semibold">{t("contact")}</h3>
 				</div>
 
 				<FormField
@@ -416,14 +415,14 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<div className="flex justify-between items-center">
-								<FormLabel>Telefon</FormLabel>
+								<FormLabel>{t("phone")}</FormLabel>
 								<FormField
 									control={form.control}
 									name="isPrivatePhone"
 									render={({ field: privateField }) => (
 										<div className="flex items-center gap-2">
 											<FormLabel className="text-sm text-muted-foreground">
-												{privateField.value ? "Sakriveno" : "Javno prikazano"}
+												{privateField.value ? t("private") : t("public")}
 											</FormLabel>
 											<Switch
 												checked={privateField.value}
@@ -440,7 +439,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>Broj telefona</FormDescription>
+							<FormDescription>{t('phone')}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -451,11 +450,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="website"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Web stranica</FormLabel>
+							<FormLabel>{t("website")}</FormLabel>
 							<FormControl>
 								<Input placeholder="https://google.com" {...field} />
 							</FormControl>
-							<FormDescription>Web stranica</FormDescription>
+							<FormDescription>{t("website")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -464,7 +463,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					isLoading={isLoading}
 					disabled={!isSlugValid && !!form.watch("slug")}
 				>
-					Spasi
+					{t('save')}
 				</LoaderSubmitButton>
 			</form>
 		</Form>

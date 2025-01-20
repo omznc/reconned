@@ -9,6 +9,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
+import { getLocale } from "next-intl/server";
 
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -160,6 +161,15 @@ export const auth = betterAuth({
 								name: user.name,
 							},
 						}),
+					});
+					const locale = await getLocale();
+					await prisma.user.update({
+						where: {
+							id: user.id,
+						},
+						data: {
+							language: locale
+						}
 					});
 				},
 			},

@@ -12,7 +12,7 @@ model User {
   callsign      String?
   gear          Json[]
 
-  language String @default("en")
+  language String @default("ba")
   font     String @default("sans")
   theme    String @default("dark")
 

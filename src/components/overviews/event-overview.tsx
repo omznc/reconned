@@ -13,6 +13,7 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { isAfter, isBefore } from "date-fns";
 import { BadgeSoon } from "@/components/badge-soon";
 import { getPageViews } from "@/lib/analytics";
+import { getTranslations } from "next-intl/server";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -25,6 +26,7 @@ interface EventOverviewProps {
 }
 
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
+	const t = await getTranslations("components.eventOverview");
 	const user = await isAuthenticated();
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
 	const [analyticsId, analyticsSlug] = await Promise.all([
@@ -77,7 +79,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 										href={`/dashboard/${clubId}/events/create?id=${event.id}`}
 									>
 										<Pencil className="size-4" />
-										Izmjeni susret
+										{t("editEvent")}
 									</Link>
 								</Button>
 							)}
@@ -91,12 +93,12 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 										size="sm"
 										className="w-full md:w-auto"
 									>
-										Prijava <BadgeSoon className="ml-2" />
+										{t("apply")} <BadgeSoon className="ml-2" />
 									</Button>
 								</Link>
 							) : user ? (
 								<p className="text-sm text-muted-foreground">
-									Prijave zatvorene
+									{t("registrationsClosed")}
 								</p>
 							) : null}
 							<AddEventToCalendarButton event={event} />
@@ -110,18 +112,18 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					<div className="flex flex-wrap -mt-2">
 						<Badge className="flex h-fit items-center gap-1">
 							<UserIcon className="size-4" />
-							{event._count?.eventRegistration} prijavljenih
+							{t("registeredCount", { count: event._count?.eventRegistration })}
 						</Badge>
 						<Badge className="flex h-fit items-center gap-1">
 							{event.isPrivate ? (
 								<>
 									<EyeOff className="size-4" />
-									Privatni susret
+									{t("privateEvent")}
 								</>
 							) : (
 								<>
 									<Eye className="size-4" />
-									Javni susret
+									{t("publicEvent")}
 								</>
 							)}
 						</Badge>
@@ -131,13 +133,13 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 								{event.location}
 							</Badge>
 						)}
-						<Badge className="h-fit">{visitors} pregled/a</Badge>
+						<Badge className="h-fit">{t("views", { count: visitors })}</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.googleMapsLink && (
 						<div className="size-full flex flex-col gap-2">
-							<h2 className="text-xl font-semibold">Lokacija</h2>
-							<LoadChildOnClick title="Prikaži lokaciju">
+							<h2 className="text-xl font-semibold">{t("location")}</h2>
+							<LoadChildOnClick title={t("showLocation")}>
 								<iframe
 									src={event.googleMapsLink}
 									loading="lazy"
@@ -151,8 +153,8 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					{event.mapData &&
 						JSON.stringify(event.mapData) !== `{"pois":[],"areas":[]}` && (
 							<div className="size-full flex flex-col gap-2">
-								<h2 className="text-xl font-semibold">Mapa</h2>
-								<LoadChildOnClick title="Prikaži mapu susreta">
+								<h2 className="text-xl font-semibold">{t("map")}</h2>
+								<LoadChildOnClick title={t("showEventMap")}>
 									<MapComponent
 										// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 										defaultMapData={event.mapData as any}

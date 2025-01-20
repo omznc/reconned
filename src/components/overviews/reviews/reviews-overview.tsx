@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
 import { format } from "date-fns";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 interface ReviewsOverviewProps {
@@ -92,11 +91,10 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 						{[1, 2, 3, 4, 5].map((star) => (
 							<Star
 								key={star}
-								className={`h-6 w-6 ${
-									star <= averageRating
+								className={`h-6 w-6 ${star <= averageRating
 										? "fill-yellow-400 text-yellow-400"
 										: "fill-muted text-muted"
-								}`}
+									}`}
 							/>
 						))}
 						<span className="ml-2 text-sm text-muted-foreground">
@@ -114,11 +112,10 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 											{[1, 2, 3, 4, 5].map((star) => (
 												<Star
 													key={star}
-													className={`h-4 w-4 ${
-														star <= review.rating
+													className={`h-4 w-4 ${star <= review.rating
 															? "fill-yellow-400 text-yellow-400"
 															: "fill-muted text-muted"
-													}`}
+														}`}
 												/>
 											))}
 										</div>

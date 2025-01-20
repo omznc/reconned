@@ -17,22 +17,23 @@ import { ClubPost } from "@/components/overviews/club-post";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPageViews } from "@/lib/analytics";
-import { Map } from "lucide-react"; // Add this import
+import { getTranslations } from "next-intl/server";
 
 interface ClubOverviewProps {
 	club: Club & {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date })[];
+		posts: (Post & { createdAt: Date; })[];
 	};
 	isManager?: boolean;
 }
 
 export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
-	const [analyticsId, analyticsSlug] = await Promise.all([
+	const [analyticsId, analyticsSlug, t] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
+		getTranslations('components.clubOverview')
 	]);
 	const visitors =
 		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
@@ -66,7 +67,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<div className="flex items-center gap-2">
 							<h1 className="text-2xl font-semibold">{club.name}</h1>
 							<Badge variant="outline" className="h-fit">
-								{visitors} pregled/a
+								{t('views', { count: visitors })}
 							</Badge>
 						</div>
 						<p className="text-accent-foreground/80">{club.description}</p>
@@ -77,7 +78,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
 								<MapIcon className="h-4 w-4 mr-2" />
-								Mapa
+								{t('map')}
 							</Link>
 						</Button>
 					)}
@@ -85,7 +86,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/information`}>
 								<Cog className="h-4 w-4 mr-2" />
-								Uredi klub
+								{t('edit')}
 							</Link>
 						</Button>
 					)}
@@ -94,19 +95,18 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 			<div className="flex flex-wrap gap-0">
 				<Badge className="flex items-center gap-1">
 					<UserIcon className="w-4 h-4" />
-					{club._count?.members}{" "}
-					{club._count?.members === 1 ? "član" : "članova"}
+					{t('members', { count: club._count?.members })}
 				</Badge>
 				<Badge className="flex items-center gap-1">
 					{club.isPrivate ? (
 						<>
 							<EyeOff className="w-4 h-4" />
-							Privatni klub
+							{t('private')}
 						</>
 					) : (
 						<>
 							<Eye className="w-4 h-4" />
-							Javni klub
+							{t('public')}
 						</>
 					)}
 				</Badge>
@@ -133,19 +133,21 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 			<div className="space-y-4">
 				<div className="flex items-center justify-between">
 					<h2 className="text-xl font-semibold flex items-center gap-2">
-						Objave
+						{t('posts')}
 					</h2>
 					{isManager && (
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/posts`}>
 								<Pencil className="h-4 w-4" />
-								Nova objava
+								{t('createPost')}
 							</Link>
 						</Button>
 					)}
 				</div>
 				{!posts || posts.length === 0 ? (
-					<p className="text-muted-foreground">Nema objava</p>
+					<p className="text-muted-foreground">
+						{t('noPosts')}
+					</p>
 				) : (
 					<div className="space-y-4">
 						{posts?.map((post) => (
