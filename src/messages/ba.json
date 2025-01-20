@@ -1,5 +1,86 @@
 {
 	"public": {
+		"notFound": {
+			"title": "Izgubili ste se",
+			"message": "Stranica nije pronađena",
+			"backHome": "Vrati se na početnu stranicu"
+		},
+		"home": {
+			"hero": {
+				"title": "Samo Airsoft,<br></br> ali bolje.",
+				"description": "Pridružite se najnaprednijoj airsoft zajednici. Pronađite susrete, povežite se s igračima i unaprijedite svoju igru.",
+				"search": "Pretraži sve",
+				"map": "Prikaži mapu",
+				"about": "Saznaj više",
+				"events": "Susreti",
+				"clubs": "Klubovi",
+				"members": "Igrači",
+				"dashboard": "Aplikacija",
+				"sponsors": "Sponzori"
+			},
+			"upcomingEventsTitle": "Nadolazeći susreti",
+			"upcomingEventsSubtitle": "Vidimo se na terenu",
+			"upcomingEventsNone": "Nema nadolazećih susreta",
+			"eventCard": {
+				"canFreelance": "Dozvoljeni freelanceri",
+				"cannotFreelance": "Samo za članove",
+				"breakfast": "Doručak",
+				"lunch": "Ručak",
+				"dinner": "Večera",
+				"snacks": "Užina",
+				"drinks": "Piće",
+				"prizes": "Nagrade",
+				"privateEvent": "Ovo je privatni susret, ali ste vi u klubu {clubName}.",
+				"starts": "Počinje",
+				"view": "Pogledaj"
+			}
+		},
+		"sponsors": {
+			"title": "Sponzori i partneri",
+			"description": "Realistično je reći da ovaj sajt ne bi postojao bez angažmana i podrške svih koje možete naći ispod. Hvala.",
+			"currentSponsors": "Naši trenutni sponzori",
+			"contactUs": "Kontaktirajte Nas",
+			"contactDescription": "Želite pomoći ili imate pitanja? Slobodno nas kontaktirajte na",
+			"cta": {
+				"title": "Vi",
+				"description": "Ovo mjesto može biti vaše"
+			}
+		},
+		"about": {
+			"title": "Ko smo mi?",
+			"subtitle": "Mi smo dva programera iz Bosne i Hercegovine koji su odlučili da prebace Airsoft događanja sa Facebook-a i Viber-a, na nešto \"naše\".",
+			"platform": {
+				"title": "O platformi",
+				"description": "Krajnji cilj <logo></logo> platforme je unifikacija airsoft zajednice u Bosni i Hercegovini, a možda i šire. Naša platforma omogućava klubovima da se predstave, organizuju susrete, i pronađu nove članove. Igračima omogućava da pronađu klubove, susrete, i igrače, sve na jednom mjestu."
+			},
+			"sustainability": {
+				"title": "Održivost",
+				"description": "Cilj nije, i nikada neće biti čista zarada. Svaki dio platforme će eventualno biti open-source, a samim tim i dostupan svima. Trenutno kompletno lično finansiramo razvoj platforme, ali ćemo dati klubovima i individuama šansu da pomognu u razvoju i održavanju, uz neke pogodnosti.",
+				"emphasis": "Glavne funkcionalnosti će uvijek biti besplatne za korištenje."
+			},
+			"help": {
+				"title": "Kako pomoći?",
+				"description": "Ako ste zainteresovani za pomoć u razvoju platforme, slobodno nas kontaktirajte. Pomoć u obliku marketinga, programiranja, te općenito sponsorstva je uvijek dobrodošla.",
+				"sponsors": "Pogledajte listu sponzora."
+			}
+		}
+	},
+	"dashboard": {
+		"root": {
+			"welcome": "Dobrodošli, {name}",
+			"myClubs": "Moji klubovi",
+			"recentEvents": "Nedavni susreti",
+			"statistics": {
+				"meetings": "Susreti",
+				"clubs": "Klubovi",
+				"writtenReviews": "Napisane recenzije",
+				"receivedReviews": "Primljene recenzije"
+			},
+			"error": "Došlo je do greške",
+			"loading": "Učitavanje..."
+		}
+	},
+	"components": {
 		"footer": {
 			"about": {
 				"title": "O nama",
@@ -25,9 +106,7 @@
 			"copyright": "© {year} RECONNED. Sva prava zadržana.",
 			"sponsors": "Pogledajte naše sponzore i partnere",
 			"version": "Verzija {commit}"
-		}
-	},
-	"components": {
+		},
 		"table": {
 			"showColumns": "Prikaži kolone",
 			"noData": "Nema pronađenih podataka",
@@ -145,21 +224,6 @@
 			"published": "Objavljeno {date}",
 			"readMore": "Pročitaj više",
 			"showLess": "Prikaži manje"
-		}
-	},
-	"dashboard": {
-		"root": {
-			"welcome": "Dobrodošli, {name}",
-			"myClubs": "Moji klubovi",
-			"recentEvents": "Nedavni susreti",
-			"statistics": {
-				"meetings": "Susreti",
-				"clubs": "Klubovi",
-				"writtenReviews": "Napisane recenzije",
-				"receivedReviews": "Primljene recenzije"
-			},
-			"error": "Došlo je do greške",
-			"loading": "Učitavanje..."
 		}
 	}
 }

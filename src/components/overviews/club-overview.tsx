@@ -5,6 +5,7 @@ import {
 	Cog,
 	Eye,
 	EyeOff,
+	MapIcon,
 	MapPin,
 	Pencil,
 	Phone,
@@ -74,7 +75,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					{club.latitude && club.longitude && (
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
-								<Map className="h-4 w-4 mr-2" />
+								<MapIcon className="h-4 w-4 mr-2" />
 								Mapa
 							</Link>
 						</Button>

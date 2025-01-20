@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 export function Footer() {
-	const t = useTranslations("public.footer");
+	const t = useTranslations("components.footer");
 
 	return (
 		<footer className="w-full p-8 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
