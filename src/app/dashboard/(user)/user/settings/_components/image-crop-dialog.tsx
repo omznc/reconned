@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import ReactCrop, { type Crop } from "react-image-crop";
 import { useCallback, useState } from "react";
 import "react-image-crop/dist/ReactCrop.css";
+import { useTranslations } from "next-intl";
 
 interface ImageCropDialogProps {
 	file: File | null;
@@ -32,6 +33,7 @@ export function ImageCropDialog({
 		y: 5,
 	});
 	const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
+	const t = useTranslations('dashboard.user.settings');
 
 	const onImageLoad = useCallback((img: HTMLImageElement) => {
 		setImageRef(img);
@@ -108,9 +110,9 @@ export function ImageCropDialog({
 		<Dialog open={!!file} onOpenChange={onClose}>
 			<DialogContent className="max-w-[800px]">
 				<DialogHeader>
-					<DialogTitle>Izrežite profilnu sliku</DialogTitle>
+					<DialogTitle>{t('cropPhotoTitle')}</DialogTitle>
 					<DialogDescription>
-						Pomjerite i prilagodite sliku tako da bude kvadratnog oblika.
+						{t('cropPhotoDescription')}
 					</DialogDescription>
 				</DialogHeader>
 				<div className="my-4 flex justify-center">
@@ -132,9 +134,9 @@ export function ImageCropDialog({
 				</div>
 				<DialogFooter>
 					<Button variant="ghost" onClick={onClose}>
-						Otkaži
+						{t('cancel')}
 					</Button>
-					<Button onClick={handleCrop}>Sačuvaj</Button>
+					<Button onClick={handleCrop}>{t('save')}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

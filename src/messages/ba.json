@@ -127,7 +127,10 @@
 				"phone": "Broj telefona",
 				"website": "Web stranica",
 				"save": "Spasi promjene",
-				"linkTaken": "Izabrani link je zauzet"
+				"linkTaken": "Izabrani link je zauzet",
+				"cropPhotoTitle": "Izreži sliku",
+				"cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
+				"cancel": "Otkaži",
 			},
 			"security": {}
 		},
