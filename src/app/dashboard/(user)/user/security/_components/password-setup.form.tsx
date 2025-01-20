@@ -12,6 +12,7 @@ import {
 import { Input } from "@components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
@@ -21,8 +22,10 @@ import type { z } from "zod";
 export function SetupPasswordForm({
 	isLoading,
 	setIsLoading,
-}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>> }) {
+}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>>; }) {
 	const router = useRouter();
+	const t = useTranslations('dashboard.security.passwordSetup');
+
 
 	const setupPasswordForm = useForm<z.infer<typeof setupPasswordSchema>>({
 		resolver: zodResolver(setupPasswordSchema),
@@ -41,15 +44,15 @@ export function SetupPasswordForm({
 			});
 
 			if (response?.data?.success) {
-				toast.success("Lozinka uspješno postavljena.");
+				toast.success(t('success'));
 				router.refresh();
 			} else {
-				toast.error("Došlo je do greške prilikom postavljanja lozinke.");
+				toast.error(t('error'));
 			}
 			setIsLoading(false);
 		} catch (_e) {
 			toast(
-				"Došlo je do greške prilikom postavljanja lozinke. Molimo pokušajte ponovo.",
+				t('error')
 			);
 		} finally {
 			setIsLoading(false);
@@ -63,14 +66,14 @@ export function SetupPasswordForm({
 				className="space-y-4 w-full"
 			>
 				<div>
-					<h3 className="text-lg font-semibold">Postavi lozinku</h3>
+					<h3 className="text-lg font-semibold">{t('title')}</h3>
 				</div>
 				<FormField
 					control={setupPasswordForm.control}
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Nova lozinka</FormLabel>
+							<FormLabel>{t('newPassowrd')}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -80,7 +83,7 @@ export function SetupPasswordForm({
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
 					<LockIcon className="w-4 h-4 mr-2" />
-					{isLoading ? "Postavljanje lozinke..." : "Postavi lozinku"}
+					{isLoading ? t('loading') : t('submit')}
 				</Button>
 			</form>
 		</Form>

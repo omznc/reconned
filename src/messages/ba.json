@@ -128,6 +128,77 @@
 				"website": "Web stranica",
 				"save": "Spasi promjene",
 				"linkTaken": "Izabrani link je zauzet"
+			},
+			"security": {}
+		},
+		"security": {
+			"passwordChange": {
+				"error": "Došlo je do greške prilikom promjene lozinke. Molimo pokušajte ponovo.",
+				"success": "Lozinka uspješno promjenjena",
+				"title": "Promjeni lozinku",
+				"currentPassword": "Trenutna lozinka",
+				"newPassword": "Nova lozinka",
+				"confirmPassword": "Potvrdi novu lozinku",
+				"changePassword": "Promjeni lozinku",
+				"loading": "Samo momenat..."
+			},
+			"passwordSetup": {
+				"error": "Došlo je do greške prilikom postavljanja lozinke. Molimo pokušajte ponovo.",
+				"success": "Lozinka uspješno postavljena",
+				"title": "Postavi lozinku",
+				"newPassword": "Nova lozinka",
+				"setupPassword": "Postavi lozinku",
+				"loading": "Samo momenat..."
+			},
+			"securitySettings": {
+				"createdAt": "Kreiran {date}",
+				"addNewPasskey": "Dodaj novi Passkey",
+				"addNewPasskeyDescription": "Dodajte novi passkey za brže i sigurnije prijavljivanje na vaš račun.",
+				"add": "Dodaj",
+				"twoFactor": "Dvofaktorska autentikacija",
+				"twoFactorUnavailable": "Dvofaktorska autentikacija nije dostupna",
+				"twoFactorUnavailableDescription": "Da biste koristili 2-faktorsku autentikaciju, morate prvo postaviti lozinku.",
+				"twoFactorDisable": "Onemogući 2-faktorsku autentikaciju",
+				"twoFactorDisableDescription": "Ukoliko isključite 2-faktorsku autentikaciju, bićete u mogućnosti da se prijavite na vaš nalog bez potvrde putem aplikacije.",
+				"disable": "Onemogući",
+				"twoFactorDisablePrompt": {
+					"title": "Onemogućiti 2-faktorsku autentikaciju?",
+					"body": "Da li ste sigurni da želite onemogućiti 2-faktorsku autentikaciju? Ovo će ukloniti sve postavke i podatke vezane za 2-faktorsku autentikaciju.",
+					"confirm": "Onemogući",
+					"cancel": "Ne, vrati se",
+					"invalidPassword": "Unesite ispravnu lozinku"
+				},
+				"backupCodes": "Rezervni kodovi",
+				"download": "Preuzmi",
+				"regenerate": "Regeneriši kodove",
+				"regenerateDescription": "Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na sigurno mjesto.",
+				"regenerateSuccess": "Kodovi uspješno regenerisani",
+				"regenerateError": "Došlo je do greške prilikom regenerisanja kodova",
+				"twoFactorEnable": "Omogući 2-faktorsku autentikaciju",
+				"twoFactorEnableDescription": "Omogućite 2-faktorsku autentikaciju za dodatnu sigurnost vašeg računa.",
+				"twoFactorEnablePrompt": {
+					"title": "Omogućiti 2-faktorsku autentikaciju?",
+					"body": "Da li ste sigurni da želite omogućiti 2-faktorsku autentikaciju? Ako jeste, upišite svoju lozinku.",
+					"confirm": "Omogući",
+					"cancel": "Ne, vrati se"
+				},
+				"twoFactorConfirmPrompt": {
+					"scanQr": "Skenirajte QR kod sa vašom aplikacijom za 2-faktorsku autentikaciju.",
+					"enterCode": "Ako ne možete skenirati QR kod, unesite ovaj kod:",
+					"verifyCode": "Potvrdite 6-cifreni kod koji ste dobili od aplikacije",
+					"invalidCode": "Unesite ispravan 6-cifreni kod",
+					"confirm": "Potvrdi"
+				},
+				"activeSessions": "Aktivne sesije",
+				"activeSessionsDescription": "Ovdje možete vidjeti sve aktivne sesije na vašem računu. Ako primjetite nešto sumnjivo, odjavite se sa svih uređaja.",
+				"logoutAll": "Odjavi se sa svih uređaja, osim ovog",
+				"logoutAllAction": "Odjavi se",
+				"logoutAllSuccess": "Odjavljeni ste sa svih ostalih uređaja",
+				"logoutAllError": "Došlo je do greške prilikom odjavljivanja sa ostalih uređaja.",
+				"logoutSingleSuccess": "Odjavljeni ste sa ovog uređaja",
+				"logoutSingleError": "Došlo je do greške prilikom odjavljivanja sa ovog uređaja.",
+				"currentSession": "Trenutna sesija",
+				"sessionLastUsed": "Posljednji put korištena {date}"
 			}
 		}
 	},
