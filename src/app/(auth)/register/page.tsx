@@ -1,7 +1,6 @@
 "use client";
 import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { Button } from "@/components/ui/button";
 import {
 	CardContent,
 	CardDescription,
@@ -11,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -26,6 +26,8 @@ export default function RegisterPage() {
 		clearOnDefault: true,
 		shallow: true,
 	});
+	const t = useTranslations('public.auth');
+
 
 	useEffect(() => {
 		authClient.oneTap();
@@ -34,10 +36,9 @@ export default function RegisterPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">Registracija</CardTitle>
+				<CardTitle className="text-2xl">{t('register')}</CardTitle>
 				<CardDescription>
-					Upisite svoj email i lozinku kako bi ste se pridružili svijetu
-					airsofta.
+					{t('registerDescription')}
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -74,7 +75,7 @@ export default function RegisterPage() {
 						}
 
 						toast.success(
-							"Uspješno ste se registrovali! Provjerite svoj email kako bi ste potvrdili registraciju.",
+							t('registerSuccess'),
 						);
 
 						router.push("/login");
@@ -82,7 +83,7 @@ export default function RegisterPage() {
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="name">Ime</Label>
+						<Label htmlFor="name">{t('name')}</Label>
 						<Input
 							type="text"
 							name="name"
@@ -107,21 +108,21 @@ export default function RegisterPage() {
 						/>
 						{!!email && (
 							<p className="text-sm text-gray-500">
-								Email je automatski popunjen.{" "}
+								{t('emailAutofilled')}{" "}
 								<span
 									className="text-foreground cursor-pointer inline"
 									onClick={() => {
 										setEmail("");
 									}}
 								>
-									Ukloni.
+									{t('remove')}
 								</span>
 							</p>
 						)}
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="password">Lozinka</Label>
+						<Label htmlFor="password">{t('password')}</Label>
 						<Input
 							type="password"
 							name="password"
@@ -134,14 +135,14 @@ export default function RegisterPage() {
 
 					{isError && (
 						<p className="text-red-500 -mb-2">
-							Podaci nisu ispravni ili korisnik već postoji
+							{t('invalidDataOrUserExists')}
 						</p>
 					)}
 					<LoaderSubmitButton
 						isLoading={isLoading}
 						className="w-full plausible-event-name=register-button-click"
 					>
-						Registruj se
+						{t('register')}
 					</LoaderSubmitButton>
 					<GoogleLoginButton isLoading={isLoading} />
 				</form>
@@ -152,7 +153,7 @@ export default function RegisterPage() {
 						href="/login"
 						className="underline"
 					>
-						Prijavite se
+						{t('login')}
 					</Link>
 				</div>
 			</CardContent>

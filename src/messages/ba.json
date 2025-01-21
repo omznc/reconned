@@ -1,4 +1,41 @@
 {
+	"emails": {
+		"emailVerification": {
+			"title": "Verifikujte vašu email adresu",
+			"hello": "Zdravo,",
+			"helloUser": "Zdravo {name},",
+			"message": "Molimo vas da kliknete na dugme ispod kako biste verifikovali vašu email adresu.",
+			"action": "Verifikuj email",
+			"footer": "Ako niste tražili verifikaciju, ignorišite ovaj email."
+		},
+		"airsoftInvitation": {
+			"title": "Pozvani ste da se pridružite klubu {clubName}!",
+			"invitation": "Pozivnica",
+			"hello": "Zdravo,",
+			"helloUser": "Zdravo {name},",
+			"message": "Pozvani ste da se pridružite klubu {clubName}. Radujemo se što ćemo vas vidjeti na terenu!",
+			"action": "Prihvati Poziv",
+			"footer": "Ako niste očekivali ovu pozivnicu, molimo vas da zanemarite ovaj email."
+		},
+		"createAccount": {
+			"title": "Pozvani ste na airsoft susret! Kreirajte račun da biste se pridružili.",
+			"invitationTitle": "Pozvani ste na airsoft susret!",
+			"message": "Pozvani ste da se pridružite susretu {eventName} koji će se održati {eventDate}. Da biste potvrdili vaše učešće, potrebno je da kreirate račun na našoj platformi.",
+			"clubMessage": "Vaš račun će automatski biti povezan sa klubom {clubName} i moći ćete odmah pristupiti detaljima susreta.",
+			"action": "Kreiraj Račun",
+			"emailLinked": "Ovaj link je povezan sa email adresom: {email}",
+			"footer": "Ako niste očekivali ovaj poziv, molimo vas da zanemarite ovaj email."
+		},
+		"rateEvent": {
+			"title": "Ocjenite vaše iskustvo na susretu {eventName}!",
+			"heading": "Kako vam je bilo na susretu?",
+			"hello": "Pozdrav,",
+			"helloUser": "Pozdrav {name},",
+			"message": "Hvala vam što ste prisustvovali susretu {eventName} održanom {date}. Vaše mišljenje nam je važno i pomoći će nam da unaprijedimo buduće susrete.",
+			"action": "Ocijeni Susret",
+			"footer": "{clubName} - Hvala vam na vašem učešću!"
+		}
+	},
 	"public": {
 		"notFound": {
 			"title": "Izgubili ste se",
@@ -63,6 +100,39 @@
 				"description": "Ako ste zainteresovani za pomoć u razvoju platforme, slobodno nas kontaktirajte. Pomoć u obliku marketinga, programiranja, te općenito sponsorstva je uvijek dobrodošla.",
 				"sponsors": "Pogledajte listu sponzora."
 			}
+		},
+		"auth": {
+			"home": "Početna",
+			"login": "Prijava",
+			"loginDescription": "Upišite svoj email i lozinku kako bi ste se pridružili svijetu airsofta.",
+			"unverified": "Vaš email nije potvrđen. Molimo provjerite vaš inbox.",
+			"verifyEmail": "Potvrdite svoj email",
+			"password": "Lozinka",
+			"forgotPassword": "Zaboravili ste lozinku?",
+			"forgotPasswordNoEmail": "Unesite email kako bi ste dobili link za resetovanje lozinke.",
+			"forgotPasswordWrongEmail": "Email nije ispravan.",
+			"forgotPasswordSuccess": "Link za resetovanje lozinke je poslan na vaš email.",
+			"loading": "Samo momenat...",
+			"invalidData": "Uneseni podaci nisu ispravni.",
+			"invalidDataOrUserExists": "Uneseni podaci nisu ispravni ili korisnik već postoji.",
+			"register": "Registracija",
+			"registerDescription": "Napravite svoj račun i pridružite se airsoft zajednici.",
+			"registerSuccess": "Uspješno ste se registrovali. Provjerite vaš email kako bi ste potvrdili račun.",
+			"name": "Ime",
+			"emailAutofilled": "Email je automatski popunjen",
+			"remove": "Ukloni",
+			"resetPassword": "Resetuj lozinku",
+			"resetPasswordDescription": "Upišite novu šifru kako bi ste pristupili svom računu.",
+			"resetPasswordSuccess": "Lozinka uspješno resetovana. Sada se možete prijaviti.",
+			"resetPasswordError": "Došlo je do greške prilikom resetovanja lozinke. Molimo pokušajte ponovo.",
+			"confirmPassword": "Potvrdi lozinku",
+			"twoFactor": "Dvofaktorska autentikacija",
+			"twoFactorDescription": "Upišite kod iz vaše aplikacije ili iskoristite rezervni kod.",
+			"twoFactorError": "Uneseni kod nije ispravan.",
+			"code": "Kod",
+			"verify": "Potvrdi",
+			"noAccountQuestion": "Nemate račun?",
+			"rememberDevice": "Zapamti ovaj uređaj"
 		}
 	},
 	"dashboard": {
@@ -130,7 +200,7 @@
 				"linkTaken": "Izabrani link je zauzet",
 				"cropPhotoTitle": "Izreži sliku",
 				"cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
-				"cancel": "Otkaži",
+				"cancel": "Otkaži"
 			},
 			"security": {}
 		},

@@ -20,12 +20,14 @@ import { useQueryState } from "nuqs";
 import { Key } from "lucide-react";
 import type { SuccessContext } from "better-auth/react";
 import { BadgeSoon } from "@/components/badge-soon";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
+	const t = useTranslations('public.auth');
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
@@ -72,10 +74,9 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">Prijava</CardTitle>
+				<CardTitle className="text-2xl">{t('login')}</CardTitle>
 				<CardDescription>
-					Upisite svoj email i lozinku kako bi ste se pridružili svijetu
-					airsofta.
+					{t('loginDescription')}
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -104,7 +105,7 @@ export default function LoginPage() {
 								onError: (ctx) => {
 									if (ctx.error.status === 403) {
 										toast.error(
-											"Vaš račun nije verificiran. Molimo provjerite svoj email.",
+											t('unverified'),
 										);
 									} else {
 										setIsError(true);
@@ -129,7 +130,7 @@ export default function LoginPage() {
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
-							<Label htmlFor="password">Lozinka</Label>
+							<Label htmlFor="password">{t('password')}</Label>
 							<Button
 								type="button"
 								onClick={async () => {
@@ -142,13 +143,13 @@ export default function LoginPage() {
 									) as HTMLInputElement;
 									if (!emailInput?.value) {
 										toast.error(
-											"Unesite email kako bi ste resetirali lozinku.",
+											t('forgotPasswordNoEmail'),
 										);
 										setIsForgotPasswordLoading(false);
 										return;
 									}
 									if (!emailInput?.checkValidity()) {
-										toast.error("Unesite ispravan email.");
+										toast.error(t('forgotPasswordWrongEmail'));
 										setIsForgotPasswordLoading(false);
 										return;
 									}
@@ -158,7 +159,7 @@ export default function LoginPage() {
 										redirectTo: "/reset-password",
 									});
 									toast.success(
-										"Ako imate račun, poslat ćemo vam email za resetiranje lozinke.",
+										t('forgotPasswordSuccess'),
 									);
 									setIsForgotPasswordLoading(false);
 								}}
@@ -167,8 +168,8 @@ export default function LoginPage() {
 								disabled={isLoading || isForgotPasswordLoading}
 							>
 								{isForgotPasswordLoading
-									? "Samo trenutak..."
-									: "Zaboravili ste lozinku?"}
+									? t('loading')
+									: t('forgotPassword')}
 							</Button>
 						</div>
 						<Input
@@ -180,14 +181,14 @@ export default function LoginPage() {
 						/>
 					</div>
 					{isError && (
-						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
+						<p className="text-red-500 -mb-2">{t('invalidData')}</p>
 					)}
 					<LoaderSubmitButton
 						isLoading={isLoading}
 						disabled={isForgotPasswordLoading}
 						className="w-full plausible-event-name=login-button-click"
 					>
-						Prijavi se
+						{t('login')}
 					</LoaderSubmitButton>
 					<div className="flex items-center gap-2">
 						<Button
@@ -229,7 +230,7 @@ export default function LoginPage() {
 						}
 						className="underline"
 					>
-						Registrirajte se
+						{t('register')}
 					</Link>
 				</div>
 			</CardContent>

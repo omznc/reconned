@@ -12,6 +12,7 @@ import {
 	Text,
 } from "@react-email/components";
 import { emailStyles } from "@/emails/styles";
+import { getTranslations } from "next-intl/server";
 
 interface ClubInvitationEmailProps {
 	code: string;
@@ -22,7 +23,7 @@ interface ClubInvitationEmailProps {
 	clubLocation: string;
 }
 
-export const ClubInvitationEmail = ({
+export const ClubInvitationEmail = async ({
 	code,
 	url,
 	name,
@@ -30,10 +31,14 @@ export const ClubInvitationEmail = ({
 	clubName,
 	clubLocation,
 }: ClubInvitationEmailProps) => {
+	const t = await getTranslations("public.emails.airsoftInvitation");
+
 	return (
 		<Html>
 			<Head />
-			<Preview>Pozvani ste da se pridružite klubu {clubName}!</Preview>
+			<Preview>{t('title', {
+				clubName,
+			})}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -47,27 +52,31 @@ export const ClubInvitationEmail = ({
 							{clubName} - {clubLocation}
 						</Heading>
 					</Section>
-					<Heading style={emailStyles.h1}>Pozivnica</Heading>
+					<Heading style={emailStyles.h1}>{t('invitation')}</Heading>
 					{name ? (
-						<Text style={emailStyles.text}>Pozdrav {name},</Text>
+						<Text style={emailStyles.text}>{t('helloUser', {
+							name,
+						})}</Text>
 					) : (
-						<Text style={emailStyles.text}>Pozdrav,</Text>
+						<Text style={emailStyles.text}>{t('hello')}</Text>
 					)}
 					<Text style={emailStyles.text}>
-						Pozvani ste da se pridružite klubu {clubName}. Radujemo se što ćemo
-						vas vidjeti na terenu!
+						{
+							t('message', {
+								clubName
+							})
+						}
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={url}>
-							Prihvati Poziv
+							{t('action')}
 						</Button>
 					</Section>
 					<Text style={emailStyles.text}>Ili koristite ovaj pozivni kod:</Text>
 					<code style={emailStyles.code}>{code}</code>
 					<Hr style={emailStyles.hr} />
 					<Text style={emailStyles.footer}>
-						Ako niste očekivali ovu pozivnicu, molimo vas da zanemarite ovaj
-						email.
+						{t('footer')}
 					</Text>
 				</Container>
 			</Body>

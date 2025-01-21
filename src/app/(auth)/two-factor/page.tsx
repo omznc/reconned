@@ -15,11 +15,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQueryState } from "nuqs";
+import { useTranslations } from "next-intl";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
+	const t = useTranslations('public.auth');
+
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
@@ -51,9 +55,9 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">2-faktor autentikacija</CardTitle>
+				<CardTitle className="text-2xl">{t('twoFactor')}</CardTitle>
 				<CardDescription>
-					Upišite kod iz vaše aplikacije ili iskoristite rezervni kod.
+					{t('twoFactorDescription')}
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -63,12 +67,13 @@ export default function LoginPage() {
 
 						const formData = new FormData(e.currentTarget);
 						const code = formData.get("totp") as string;
+						const rememberDevice = formData.get("rememberDevice") === "on";
 
 						// Try TOTP first, if it fails try backup code
-						const totpResult = await authClient.twoFactor.verifyTotp(
+						await authClient.twoFactor.verifyTotp(
 							{
 								code,
-								trustDevice: true, // Remember this device for 60 days
+								trustDevice: rememberDevice, // Remember this device for 60 days
 							},
 							{
 								onRequest: () => {
@@ -92,7 +97,7 @@ export default function LoginPage() {
 											onSuccess: handleSuccessfulLogin,
 											onError: () => {
 												setIsError(true);
-												toast.error("Neispravan kod, pokušajte ponovo.");
+												toast.error(t('twoFactorError'));
 											},
 										},
 									);
@@ -103,7 +108,7 @@ export default function LoginPage() {
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="totp">Kod</Label>
+						<Label htmlFor="totp">{t('twoFactorError')}</Label>
 						<Input
 							id="totp"
 							type="text"
@@ -113,13 +118,22 @@ export default function LoginPage() {
 							autoComplete="off"
 						/>
 					</div>
-					{isError && <p className="text-red-500">Neispravan kod</p>}
+					<div className="flex items-center space-x-2">
+						<Checkbox
+							id="rememberDevice"
+							name="rememberDevice"
+						/>
+						<Label htmlFor="rememberDevice">
+							{t('rememberDevice')}
+						</Label>
+					</div>
+					{isError && <p className="text-red-500">{t('twoFactorError')}</p>}
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
-						Verificiraj
+						{t('verify')}
 					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
-					{"Nemate račun? "}
+					{t('noAccountQuestion')}{" "}
 					<Link
 						href={
 							redirectTo

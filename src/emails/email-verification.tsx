@@ -13,20 +13,22 @@ import {
 } from "@react-email/components";
 import { env } from "@/lib/env";
 import { emailStyles } from "@/emails/styles";
+import { getTranslations } from "next-intl/server";
 
 interface EmailVerificationProps {
 	verificationUrl: string;
 	userName?: string;
 }
 
-export const EmailVerification = ({
+export const EmailVerification = async ({
 	verificationUrl,
 	userName,
 }: EmailVerificationProps) => {
+	const t = await getTranslations("public.emails.emailVerification");
 	return (
 		<Html>
 			<Head />
-			<Preview>Verifikujte vašu email adresu</Preview>
+			<Preview>{t('title')}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -37,24 +39,25 @@ export const EmailVerification = ({
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>Verifikacija Email Adrese</Heading>
+					<Heading style={emailStyles.h1}>{t('title')}</Heading>
 					{userName ? (
-						<Text style={emailStyles.text}>Pozdrav {userName},</Text>
+						<Text style={emailStyles.text}>{t('helloUser', {
+							name: userName,
+						})}</Text>
 					) : (
-						<Text style={emailStyles.text}>Pozdrav,</Text>
+						<Text style={emailStyles.text}>{t('hello')}</Text>
 					)}
 					<Text style={emailStyles.text}>
-						Molimo vas da kliknete na dugme ispod kako biste verifikovali vašu
-						email adresu.
+						{t('message')}
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={verificationUrl}>
-							Verifikuj Email
+							{t('action')}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
 					<Text style={emailStyles.footer}>
-						Ako niste očekivali ovaj email, molimo vas da ga zanemarite.
+						{t('footer')}
 					</Text>
 				</Container>
 			</Body>
