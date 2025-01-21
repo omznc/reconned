@@ -12,6 +12,7 @@ import {
 	Text,
 } from "@react-email/components";
 import { emailStyles } from "@/emails/styles";
+import { getTranslations } from "next-intl/server";
 
 interface RateEventEmailProps {
 	eventName: string;
@@ -22,7 +23,7 @@ interface RateEventEmailProps {
 	clubName: string;
 }
 
-export const RateEventEmail = ({
+export const RateEventEmail = async ({
 	eventName,
 	eventDate,
 	rateUrl,
@@ -30,10 +31,12 @@ export const RateEventEmail = ({
 	clubLogo,
 	clubName,
 }: RateEventEmailProps) => {
+	const t = await getTranslations("emails.rateEvent");
+
 	return (
 		<Html>
 			<Head />
-			<Preview>Ocjenite vaše iskustvo na susretu {eventName}!</Preview>
+			<Preview>{t("title", { eventName })}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -44,26 +47,24 @@ export const RateEventEmail = ({
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>Kako vam je bilo na susretu?</Heading>
+					<Heading style={emailStyles.h1}>{t("heading")}</Heading>
 					{playerName ? (
-						<Text style={emailStyles.text}>Pozdrav {playerName},</Text>
+						<Text style={emailStyles.text}>
+							{t("helloUser", { name: playerName })}
+						</Text>
 					) : (
-						<Text style={emailStyles.text}>Pozdrav,</Text>
+						<Text style={emailStyles.text}>{t("hello")}</Text>
 					)}
 					<Text style={emailStyles.text}>
-						Hvala vam što ste prisustvovali susretu {eventName} održanom{" "}
-						{eventDate}. Vaše mišljenje nam je važno i pomoći će nam da
-						unaprijedimo buduće susrete.
+						{t("message", { eventName, date: eventDate })}
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={rateUrl}>
-							Ocijeni Susret
+							{t("action")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>
-						{clubName} - Hvala vam na vašem učešću!
-					</Text>
+					<Text style={emailStyles.footer}>{t("footer", { clubName })}</Text>
 				</Container>
 			</Body>
 		</Html>

@@ -12,6 +12,7 @@ import {
 	Text,
 } from "@react-email/components";
 import { emailStyles } from "@/emails/styles";
+import { getTranslations } from "next-intl/server";
 
 interface CreateAccountEmailProps {
 	eventName: string;
@@ -22,7 +23,7 @@ interface CreateAccountEmailProps {
 	clubName: string;
 }
 
-export const CreateAccountEmail = ({
+export const CreateAccountEmail = async ({
 	eventName,
 	eventDate,
 	signupUrl,
@@ -30,12 +31,12 @@ export const CreateAccountEmail = ({
 	clubLogo,
 	clubName,
 }: CreateAccountEmailProps) => {
+	const t = await getTranslations("emails.createAccount");
+
 	return (
 		<Html>
 			<Head />
-			<Preview>
-				Pozvani ste na airsoft susret! Kreirajte račun da biste se pridružili.
-			</Preview>
+			<Preview>{t("title")}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -46,30 +47,21 @@ export const CreateAccountEmail = ({
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>
-						Pozvani ste na airsoft susret!
-					</Heading>
+					<Heading style={emailStyles.h1}>{t("invitationTitle")}</Heading>
 					<Text style={emailStyles.text}>
-						Pozvani ste da se pridružite susretu {eventName} koji će se održati{" "}
-						{eventDate}. Da biste potvrdili vaše učešće, potrebno je da kreirate
-						račun na našoj platformi.
+						{t("message", { eventName, eventDate })}
 					</Text>
-					<Text style={emailStyles.text}>
-						Vaš račun će automatski biti povezan sa klubom {clubName} i moći
-						ćete odmah pristupiti detaljima susreta.
-					</Text>
+					<Text style={emailStyles.text}>{t("clubMessage", { clubName })}</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={signupUrl}>
-							Kreiraj Račun
+							{t("action")}
 						</Button>
 					</Section>
 					<Text style={emailStyles.smallText}>
-						Ovaj link je povezan sa email adresom: {inviteeEmail}
+						{t("emailLinked", { email: inviteeEmail })}
 					</Text>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>
-						Ako niste očekivali ovaj poziv, molimo vas da zanemarite ovaj email.
-					</Text>
+					<Text style={emailStyles.footer}>{t("footer")}</Text>
 				</Container>
 			</Body>
 		</Html>

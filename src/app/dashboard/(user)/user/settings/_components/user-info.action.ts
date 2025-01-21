@@ -7,11 +7,13 @@ import { validateSlug } from "@/components/slug/validate-slug";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 
 export const saveUserInformation = safeActionClient
 	.schema(userInfoShema)
 	.action(async ({ parsedInput, ctx }) => {
+		const t = await getTranslations("dashboard.user.settings");
 		// Validate slug
 		if (parsedInput.slug) {
 			const valid = await validateSlug({
@@ -19,7 +21,7 @@ export const saveUserInformation = safeActionClient
 				slug: parsedInput.slug,
 			});
 			if (!valid) {
-				throw new Error("Izabrani link je već zauzet.");
+				throw new Error(t("linkTaken"));
 			}
 		}
 

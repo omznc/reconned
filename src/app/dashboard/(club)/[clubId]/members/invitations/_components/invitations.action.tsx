@@ -70,16 +70,19 @@ export const sendInvitation = safeActionClient
 			const resp = await sendEmail({
 				to: parsedInput.userEmail,
 				subject: `Pozivnica za klub ${ctx.club.name}`,
-				html: await render(<ClubInvitationEmail
-					code={invite.inviteCode}
-					url={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/member-invite/${invite.inviteCode}`}
-					name={parsedInput.userName}
-					clubLogo={ctx.club?.logo || ""}
-					clubName={ctx.club?.name || "Airsoft BiH"}
-					clubLocation={ctx.club?.location || "BiH"}
-				/>, {
-					pretty: true
-				}),
+				html: await render(
+					<ClubInvitationEmail
+						code={invite.inviteCode}
+						url={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/member-invite/${invite.inviteCode}`}
+						name={parsedInput.userName}
+						clubLogo={ctx.club?.logo || ""}
+						clubName={ctx.club?.name || "Airsoft BiH"}
+						clubLocation={ctx.club?.location || "BiH"}
+					/>,
+					{
+						pretty: true,
+					},
+				),
 			});
 
 			revalidatePath(`/dashboard/${ctx.club.id}/members/invitations`);

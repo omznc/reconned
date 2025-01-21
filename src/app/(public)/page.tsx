@@ -25,20 +25,20 @@ import {
 	MapPin,
 	DollarSign,
 	Calendar,
-	Wrench,
 	LayoutDashboard,
 	Medal,
 	Search,
-	Map,
 	ShieldQuestion,
 	Building2,
 	Users,
+	MapIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { BadgeSoon } from "@/components/badge-soon";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -58,24 +58,24 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-			OR: [
-				{
-					isPrivate: false,
-				},
-				{
-					club: {
-						members: {
-							some: {
-								userId: user?.id,
+				OR: [
+					{
+						isPrivate: false,
+					},
+					{
+						club: {
+							members: {
+								some: {
+									userId: user?.id,
+								},
 							},
 						},
 					},
-				},
-			],
-		}
+				],
+			}
 		: {
-			isPrivate: false,
-		};
+				isPrivate: false,
+			};
 
 	const events = await prisma.event.findMany({
 		where: {
@@ -114,67 +114,108 @@ export default async function Home({ searchParams }: PageProps) {
 		take: 3,
 	});
 
+	const t = await getTranslations("public.home");
+
 	return (
 		<>
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
-							Samo Airsoft, <br /> ali bolje.
+							{t.rich("hero.title", {
+								br: () => <br />,
+							})}
 						</h1>
-						<p className="text-xl text-text/80 mb-8">
-							Pridružite se najnaprednijoj airsoft zajednici. Pronađite
-							susrete, povežite se s igračima i unaprijedite svoju igru.
-						</p>
+						<p className="text-xl text-text/80 mb-8">{t("hero.description")}</p>
 						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
-							<Button size="sm" variant="default" className="aspect-square flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="default"
+								className="aspect-square flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="/search">
 									<Search className="scale-150 mb-2" />
-									<span className="text-sm">Pretraži sve</span>
+									<span className="text-sm">{t("hero.search")}</span>
 								</Link>
 							</Button>
-							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="outline"
+								className="aspect-square flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="/events">
 									<Calendar className="scale-150 mb-2" />
-									<span className="text-sm">Susreti</span>
+									<span className="text-sm">{t("hero.events")}</span>
 								</Link>
 							</Button>
-							<Button size="sm" variant="outline" className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="outline"
+								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="#">
 									<Building2 className="scale-150 mb-2" />
-									<span className="text-sm">Klubovi</span>
+									<span className="text-sm">{t("hero.clubs")}</span>
 									<BadgeSoon />
 								</Link>
 							</Button>
-							<Button size="sm" variant="outline" className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="outline"
+								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="#">
 									<Users className="scale-150 mb-2" />
-									<span className="text-sm">Korisnici</span>
+									<span className="text-sm">{t("hero.members")}</span>
 									<BadgeSoon />
 								</Link>
 							</Button>
-							<Button size="sm" variant="default" className="aspect-square flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="default"
+								className="aspect-square flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="/map">
-									<Map className="scale-150 mb-2" />
-									<span className="text-sm">Mapa klubova</span>
+									<MapIcon className="scale-150 mb-2" />
+									<span className="text-sm">{t("hero.map")}</span>
 								</Link>
 							</Button>
-							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="outline"
+								className="aspect-square flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="/about">
 									<ShieldQuestion className="scale-150 mb-2" />
-									<span className="text-sm">O nama</span>
+									<span className="text-sm">{t("hero.about")}</span>
 								</Link>
 							</Button>
-							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="outline"
+								className="aspect-square flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="/dashboard">
 									<LayoutDashboard className="scale-150 mb-2" />
-									<span className="text-sm">Aplikacija</span>
+									<span className="text-sm">{t("hero.dashboard")}</span>
 								</Link>
 							</Button>
-							<Button size="sm" variant="outline" className="aspect-square flex-col h-auto p-2" asChild>
+							<Button
+								size="sm"
+								variant="outline"
+								className="aspect-square flex-col h-auto p-2"
+								asChild
+							>
 								<Link href="/sponsors">
 									<Medal className="scale-150 mb-2" />
-									<span className="text-sm">Sponzori</span>
+									<span className="text-sm">{t("hero.sponsors")}</span>
 								</Link>
 							</Button>
 						</div>
@@ -185,13 +226,13 @@ export default async function Home({ searchParams }: PageProps) {
 			<div className="flex flex-col size-full gap-8 max-w-[1200px] px-4 py-8">
 				<div className="flex flex-col gap-4">
 					<div>
-						<h2 className="text-2xl font-bold">Nadolazeći susreti</h2>
-						<p className="text-gray-400">Vidimo se na terenu</p>
+						<h2 className="text-2xl font-bold">{t("upcomingEventsTitle")}</h2>
+						<p className="text-gray-400">{t("upcomingEventsSubtitle")}</p>
 					</div>
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{upcomingEvents.length === 0 && (
 							<div className="text-muted-foreground">
-								Trenutno nema nadolazećih susreta.
+								{t("upcomingEventsNone")}
 							</div>
 						)}
 
@@ -247,15 +288,15 @@ export default async function Home({ searchParams }: PageProps) {
 											className="flex-grow justify-center"
 										>
 											{event.allowFreelancers
-												? "Dozvoljeni freelanceri"
-												: "Samo klubovi"}
+												? t("eventCard.canFreelance")
+												: t("eventCard.cannotFreelance")}
 										</Badge>
 										{event.hasBreakfast && (
 											<Badge
 												variant="outline"
 												className="flex-grow justify-center"
 											>
-												Doručak
+												{t("eventCard.breakfast")}
 											</Badge>
 										)}
 										{event.hasLunch && (
@@ -263,7 +304,7 @@ export default async function Home({ searchParams }: PageProps) {
 												variant="outline"
 												className="flex-grow justify-center"
 											>
-												Ručak
+												{t("eventCard.lunch")}
 											</Badge>
 										)}
 										{event.hasDinner && (
@@ -271,7 +312,7 @@ export default async function Home({ searchParams }: PageProps) {
 												variant="outline"
 												className="flex-grow justify-center"
 											>
-												Večera
+												{t("eventCard.dinner")}
 											</Badge>
 										)}
 										{event.hasSnacks && (
@@ -279,7 +320,7 @@ export default async function Home({ searchParams }: PageProps) {
 												variant="outline"
 												className="flex-grow justify-center"
 											>
-												Grickalice
+												{t("eventCard.snacks")}
 											</Badge>
 										)}
 										{event.hasDrinks && (
@@ -287,7 +328,7 @@ export default async function Home({ searchParams }: PageProps) {
 												variant="outline"
 												className="flex-grow justify-center"
 											>
-												Pića
+												{t("eventCard.drinks")}
 											</Badge>
 										)}
 										{event.hasPrizes && (
@@ -295,21 +336,22 @@ export default async function Home({ searchParams }: PageProps) {
 												variant="outline"
 												className="flex-grow justify-center"
 											>
-												Nagrade
+												{t("eventCard.prizes")}
 											</Badge>
 										)}
 									</div>
 									{event.isPrivate && (
 										<span className="text-xs text-muted-foreground">
-											Ovo je privatan susret, ali ste vi u klubu{" "}
-											{event.club?.name}S.
+											{t("eventCard.privateEvent", {
+												club: event.club?.name,
+											})}
 										</span>
 									)}
 								</CardContent>
 								<CardFooter className="flex justify-between items-center">
 									<div className="flex flex-col">
 										<div className="text-sm text-muted-foreground">
-											Kreće{" "}
+											{t("eventCard.starts")}{" "}
 											{formatDistanceToNow(event.dateStart, {
 												addSuffix: true,
 												locale: bs,
@@ -325,7 +367,9 @@ export default async function Home({ searchParams }: PageProps) {
 										)}
 									</div>
 									<Button asChild={true}>
-										<Link href={`/events/${event.id}`}>Pogledaj</Link>
+										<Link href={`/events/${event.id}`}>
+											{t("eventCard.view")}
+										</Link>
 									</Button>
 								</CardFooter>
 							</Card>

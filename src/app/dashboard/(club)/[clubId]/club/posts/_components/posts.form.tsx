@@ -23,6 +23,7 @@ import { useQueryState } from "nuqs";
 import { Switch } from "@/components/ui/switch";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface PostsFormProps {
 	clubId: string;
@@ -37,6 +38,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		editingPost?.content ?? "",
 	);
 	const confirm = useConfirm();
+	const t = useTranslations("dashboard.club.posts");
 
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
@@ -61,13 +63,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			await savePost(values);
 			form.reset();
 			setPostId(null);
-			toast.success(
-				values.id
-					? "Objava je uspješno izmijenjena"
-					: "Objava je uspješno sačuvana",
-			);
+			toast.success(values.id ? t("successCreated") : t("successEdited"));
 		} catch (error) {
-			toast.error("Greška pri čuvanju objave");
+			toast.error(t("error"));
 		} finally {
 			if (values.id) {
 				router.back();
@@ -82,8 +80,11 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		}
 
 		const confirmed = await confirm({
-			title: "Brisanje objave",
-			body: "Da li ste sigurni da želite izbrisati ovu objavu?",
+			title: t("delete.title"),
+			body: t("delete.body"),
+			cancelButton: t("delete.cancel"),
+			actionButton: t("delete.confirm"),
+			actionButtonVariant: "destructive",
 		});
 
 		if (!confirmed) {
@@ -97,9 +98,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 				clubId,
 			});
 			setPostId(null);
-			toast.success("Objava je uspješno izbrisana");
+			toast.success(t("delete.success"));
 		} catch (error) {
-			toast.error("Greška pri brisanju objave");
+			toast.error(t("delete.error"));
 		} finally {
 			router.back();
 		}
@@ -110,7 +111,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
 				<h1 className="text-2xl font-semibold">
-					{editingPost ? "Izmjena objave" : "Nova objava"}
+					{editingPost ? t("editing") : t("creating")}
 				</h1>
 				{editingPost && (
 					<Button
@@ -118,7 +119,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						onClick={handleDelete}
 						disabled={isLoading}
 					>
-						Izbriši
+						{t("delete.confirm")}
 					</Button>
 				)}
 			</div>
@@ -129,7 +130,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="title"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Naslov</FormLabel>
+								<FormLabel>{t("title")}</FormLabel>
 								<FormControl>
 									<Input placeholder="Nova objava..." {...field} />
 								</FormControl>
@@ -141,9 +142,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 					<FormField
 						control={form.control}
 						name="content"
-						render={({ field }) => (
+						render={() => (
 							<FormItem>
-								<FormLabel>Sadržaj</FormLabel>
+								<FormLabel>{t("content")}</FormLabel>
 								<FormControl>
 									<Editor
 										editable
@@ -175,7 +176,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="isPublic"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Javna objava</FormLabel>
+								<FormLabel>{t("public")}</FormLabel>
 								<FormControl>
 									<Switch
 										checked={field.value}
@@ -188,7 +189,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 					/>
 
 					<Button type="submit" disabled={isLoading}>
-						Sačuvaj
+						{editingPost ? t("saveNewPost") : t("saveEditPost")}
 					</Button>
 				</form>
 			</Form>

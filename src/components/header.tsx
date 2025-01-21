@@ -1,6 +1,4 @@
 "use client";
-
-import { useFont } from "@/components/font-switcher";
 import { Logo } from "@/components/logos/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,40 +11,53 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { User } from "better-auth";
-import { ArrowLeft, LogOut, Moon, Sun, Type } from "lucide-react";
-import { useTheme } from "next-themes";
+import { ArrowLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
+import { FontSwitcher } from "@/components/personalization/font/font-switcher";
+import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 
-export function Header({ user }: { user: User | null; }) {
-	const { theme, setTheme } = useTheme();
+export function Header({
+	user,
+	countries,
+}: {
+	user: User | null;
+	countries: {
+		id: number;
+		name: string;
+		emoji: string;
+		iso2: string;
+	}[];
+}) {
+	const t = useTranslations("components.header");
 	const path = usePathname();
-	const { font, setFont } = useFont();
+
 	return (
-		<header className="flex flex-col md:flex-row gap-4 select-none w-full items-center justify-between p-2 md:p-4">
+		<header className="flex flex-col md:flex-row gap-2 select-none w-full items-center justify-between p-2 md:p-4">
 			<Link href="/" className="w-full h-auto md:w-fit md:h-full">
-				<Logo className="w-full h-auto md:w-fit md:h-full p-2 md:p-0" />
+				<Logo className="w-full h-auto max-h-[80px] md:w-fit md:h-full p-2 md:p-0" />
 			</Link>
-			{
-				path !== '/' && (
-					<Button asChild variant='ghost' className="w-full hover:bg-transparent">
-						<Link href="/" className="w-full h-auto md:w-fit md:h-full">
-							<ArrowLeft className="w-6 h-6" />
-							Nazad na početnu
-						</Link>
-					</Button>
-				)
-			}
+			{path !== "/" && (
+				<Button asChild variant="ghost" className="w-full hover:bg-transparent">
+					<Link href="/" className="w-full h-auto md:w-fit md:h-full">
+						<ArrowLeft className="w-6 h-6" />
+						{t("backToHome")}
+					</Link>
+				</Button>
+			)}
 			<div
 				className="flex gap-2 md:w-fit w-full"
 				suppressHydrationWarning={true}
 			>
+				<LanguageSwitcher countries={countries} />
 				{user ? (
 					<>
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
 							<Link href="/dashboard?autoSelectFirst=true" className="w-full">
-								Aplikacija
+								{t("dashboard")}
 							</Link>
 						</Button>
 						<DropdownMenu>
@@ -59,32 +70,13 @@ export function Header({ user }: { user: User | null; }) {
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="mr-4" sideOffset={12}>
-								<DropdownMenuLabel>Personalizacija</DropdownMenuLabel>
+								<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>
 								<DropdownMenuItem asChild={true}>
-									<Button
-										variant="ghost"
-										onClick={() =>
-											setTheme(theme === "dark" ? "light" : "dark")
-										}
-										suppressHydrationWarning
-										className="w-full items-center justify-start cursor-pointer"
-									>
-										<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-										<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-										Promijeni temu
-									</Button>
+									<ThemeSwitcher />
 								</DropdownMenuItem>
 
 								<DropdownMenuItem asChild={true}>
-									<Button
-										variant="ghost"
-										onClick={() => setFont(font === "sans" ? "mono" : "sans")}
-										suppressHydrationWarning
-										className="w-full items-center justify-start cursor-pointer"
-									>
-										<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-										Promijeni font
-									</Button>
+									<FontSwitcher />
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 
@@ -95,7 +87,7 @@ export function Header({ user }: { user: User | null; }) {
 										className="flex items-centergap-2 plausible-event-name=logout-header-click"
 									>
 										<LogOut className="w-4 h-4" />
-										Odjava
+										{t("logout")}
 									</Link>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -108,7 +100,7 @@ export function Header({ user }: { user: User | null; }) {
 							suppressHydrationWarning={true}
 							href="/login"
 						>
-							Prijava
+							{t("login")}
 						</Link>
 					</Button>
 				)}

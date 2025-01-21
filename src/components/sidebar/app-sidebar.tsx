@@ -1,9 +1,9 @@
 "use client";
 
-import { NavApp } from "@/app/dashboard/_components/sidebar/nav-app";
-import { NavClub } from "@/app/dashboard/_components/sidebar/nav-club";
-import { UserSwitcher } from "@/app/dashboard/_components/sidebar/user-switcher";
-import { ClubSwitcher } from "@/app/dashboard/_components/sidebar/club-switcher";
+import { NavApp } from "@/components/sidebar/nav-app";
+import { NavClub } from "@/components/sidebar/nav-club";
+import { UserSwitcher } from "@/components/sidebar/user-switcher";
+import { ClubSwitcher } from "@/components/sidebar/club-switcher";
 import { useCurrentClub } from "@/components/current-club-provider";
 import {
 	Sidebar,
@@ -24,18 +24,20 @@ import {
 } from "next/navigation";
 import { useEffect } from "react";
 import type { User } from "better-auth";
+import { useTranslations } from "next-intl";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined; };
+	user: User & { managedClubs: string[]; role?: string | null | undefined };
 }
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const { setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
+	const t = useTranslations("components.sidebar");
 
 	useEffect(() => {
 		if (searchParams.get("autoSelectFirst") && !params.clubId) {
@@ -73,7 +75,7 @@ export function AppSidebar(props: AppSidebarProps) {
 						{sidebar.open ? (
 							<div className="px-3 py-2 border bg-background/20">
 								<p className="text-xs text-muted-foreground">
-									Beta verzija aplikacije - Moguće su promjene i greške.
+									{t("betaMessage")}
 								</p>
 							</div>
 						) : (
@@ -89,6 +91,6 @@ export function AppSidebar(props: AppSidebarProps) {
 				<UserSwitcher />
 			</SidebarFooter>
 			<SidebarRail />
-		</Sidebar >
+		</Sidebar>
 	);
 }

@@ -17,31 +17,28 @@ export default async function Page(props: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-			OR: [
-				{
-					isPrivate: false,
-				},
-				{
-					club: {
-						members: {
-							some: {
-								userId: user?.id,
+				OR: [
+					{
+						isPrivate: false,
+					},
+					{
+						club: {
+							members: {
+								some: {
+									userId: user?.id,
+								},
 							},
 						},
 					},
-				},
-			],
-		}
+				],
+			}
 		: {
-			isPrivate: false,
-		};
+				isPrivate: false,
+			};
 
 	const event = await prisma.event.findFirst({
 		where: {
-			OR: [
-				{ id: params.id },
-				{ slug: params.id }
-			],
+			OR: [{ id: params.id }, { slug: params.id }],
 			...conditionalPrivateWhere,
 		},
 		include: {
@@ -72,10 +69,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		where: {
 			AND: [
 				{
-					OR: [
-						{ id: params.id },
-						{ slug: params.id }
-					]
+					OR: [{ id: params.id }, { slug: params.id }],
 				},
 				{
 					OR: [
@@ -89,9 +83,9 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 								},
 							},
 						},
-					]
-				}
-			]
+					],
+				},
+			],
 		},
 	});
 

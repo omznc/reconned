@@ -1,4 +1,6 @@
-import { env } from "@/lib/env";
+import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig = {
 	reactStrictMode: true,
@@ -21,6 +23,6 @@ const nextConfig = {
 			},
 		],
 	},
-};
+} as NextConfig;
 
-module.exports = nextConfig;
+export default withNextIntl(nextConfig);

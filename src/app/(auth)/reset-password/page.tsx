@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -20,6 +21,7 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
+	const t = useTranslations("public.auth");
 
 	if (!token) {
 		redirect("/login");
@@ -28,10 +30,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">Restuj šifru</CardTitle>
-				<CardDescription>
-					Upišite novu šifru kako bi ste pristupili svom računu.
-				</CardDescription>
+				<CardTitle className="text-2xl">{t("resetPassword")}</CardTitle>
+				<CardDescription>{t("resetPasswordDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -60,14 +60,12 @@ export default function LoginPage() {
 									setIsLoading(false);
 								},
 								onSuccess: () => {
-									toast.success("Šifra uspješno resetirana, ulogujte se.");
+									toast.success(t("resetPasswordSuccess"));
 									router.push("/login");
 								},
 								onError: (ctx) => {
 									if (ctx.error.status === 403) {
-										toast.error(
-											"Problem pri resetiranju šifre. Molimo pokušajte ponovo.",
-										);
+										toast.error(t("resetPasswordError"));
 									} else {
 										setIsError(true);
 									}
@@ -78,7 +76,7 @@ export default function LoginPage() {
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="password">Lozinka</Label>
+						<Label htmlFor="password">{t("password")}</Label>
 						<Input
 							id="password"
 							type="password"
@@ -87,7 +85,7 @@ export default function LoginPage() {
 						/>
 					</div>
 					<div className="grid gap-2">
-						<Label htmlFor="confirmPassword">Potvrdi lozinku</Label>
+						<Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
 						<Input
 							id="confirmPassword"
 							type="password"
@@ -95,17 +93,15 @@ export default function LoginPage() {
 							required={true}
 						/>
 					</div>
-					{isError && (
-						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
-					)}
+					{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
-						Potvrdi
+						{t("resetPassword")}
 					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Nemate račun? "}
 					<Link href="/register" className="underline">
-						Registrirajte se
+						{t("register")}
 					</Link>
 				</div>
 			</CardContent>

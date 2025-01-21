@@ -1,7 +1,7 @@
 import { ClubInfoForm } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getCountries } from "@/lib/countries";
+import { getCountries } from "@/lib/cached-countries";
 import { Role } from "@prisma/client";
 import { notFound } from "next/navigation";
 
@@ -55,7 +55,11 @@ export default async function Page(props: PageProps) {
 
 	return (
 		<div className="p-6">
-			<ClubInfoForm club={club} countries={countries} isClubOwner={isClubOwner} />
+			<ClubInfoForm
+				club={club}
+				countries={countries}
+				isClubOwner={isClubOwner}
+			/>
 		</div>
 	);
 }

@@ -20,18 +20,20 @@ import { useQueryState } from "nuqs";
 import { Key } from "lucide-react";
 import type { SuccessContext } from "better-auth/react";
 import { BadgeSoon } from "@/components/badge-soon";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
+	const t = useTranslations("public.auth");
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
 
 	useEffect(() => {
-		if (!(PublicKeyCredential.isConditionalMediationAvailable?.())) {
+		if (!PublicKeyCredential.isConditionalMediationAvailable?.()) {
 			return;
 		}
 
@@ -46,10 +48,12 @@ export default function LoginPage() {
 		authClient.oneTap();
 	}, [message, setMessage]);
 
-	// biome-ignore lint/suspicious/noExplicitAny: It's not typed.
-	function handleSuccessfulLogin(context: SuccessContext<any>): void | Promise<void> {
+	function handleSuccessfulLogin(
+		// biome-ignore lint/suspicious/noExplicitAny: It's not typed.
+		context: SuccessContext<any>,
+	): void | Promise<void> {
 		if (context.data.twoFactorRedirect) {
-			router.push('/two-factor');
+			router.push("/two-factor");
 			return;
 		}
 		const inviteUrl = document.cookie
@@ -70,11 +74,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">Prijava</CardTitle>
-				<CardDescription>
-					Upisite svoj email i lozinku kako bi ste se pridružili svijetu
-					airsofta.
-				</CardDescription>
+				<CardTitle className="text-2xl">{t("login")}</CardTitle>
+				<CardDescription>{t("loginDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -101,9 +102,7 @@ export default function LoginPage() {
 								onSuccess: handleSuccessfulLogin,
 								onError: (ctx) => {
 									if (ctx.error.status === 403) {
-										toast.error(
-											"Vaš račun nije verificiran. Molimo provjerite svoj email.",
-										);
+										toast.error(t("unverified"));
 									} else {
 										setIsError(true);
 									}
@@ -127,24 +126,24 @@ export default function LoginPage() {
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
-							<Label htmlFor="password">Lozinka</Label>
+							<Label htmlFor="password">{t("password")}</Label>
 							<Button
 								type="button"
 								onClick={async () => {
-									if (isForgotPasswordLoading) { return; }
+									if (isForgotPasswordLoading) {
+										return;
+									}
 									setIsForgotPasswordLoading(true);
 									const emailInput = document.getElementById(
 										"email",
 									) as HTMLInputElement;
 									if (!emailInput?.value) {
-										toast.error(
-											"Unesite email kako bi ste resetirali lozinku.",
-										);
+										toast.error(t("forgotPasswordNoEmail"));
 										setIsForgotPasswordLoading(false);
 										return;
 									}
 									if (!emailInput?.checkValidity()) {
-										toast.error("Unesite ispravan email.");
+										toast.error(t("forgotPasswordWrongEmail"));
 										setIsForgotPasswordLoading(false);
 										return;
 									}
@@ -153,16 +152,14 @@ export default function LoginPage() {
 										email: emailInput.value,
 										redirectTo: "/reset-password",
 									});
-									toast.success(
-										"Ako imate račun, poslat ćemo vam email za resetiranje lozinke.",
-									);
+									toast.success(t("forgotPasswordSuccess"));
 									setIsForgotPasswordLoading(false);
 								}}
 								variant="ghost"
 								className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 								disabled={isLoading || isForgotPasswordLoading}
 							>
-								{isForgotPasswordLoading ? "Samo trenutak..." : "Zaboravili ste lozinku?"}
+								{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
 							</Button>
 						</div>
 						<Input
@@ -173,11 +170,13 @@ export default function LoginPage() {
 							required={true}
 						/>
 					</div>
-					{isError && (
-						<p className="text-red-500 -mb-2">Podaci nisu ispravni</p>
-					)}
-					<LoaderSubmitButton isLoading={isLoading} disabled={isForgotPasswordLoading} className="w-full plausible-event-name=login-button-click">
-						Prijavi se
+					{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
+					<LoaderSubmitButton
+						isLoading={isLoading}
+						disabled={isForgotPasswordLoading}
+						className="w-full plausible-event-name=login-button-click"
+					>
+						{t("login")}
 					</LoaderSubmitButton>
 					<div className="flex items-center gap-2">
 						<Button
@@ -205,7 +204,6 @@ export default function LoginPage() {
 						>
 							<Key className="w-4 h-4 inline-block" /> Passkey
 							<BadgeSoon />
-
 						</Button>
 						<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
 					</div>
@@ -220,7 +218,7 @@ export default function LoginPage() {
 						}
 						className="underline"
 					>
-						Registrirajte se
+						{t("register")}
 					</Link>
 				</div>
 			</CardContent>

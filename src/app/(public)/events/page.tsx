@@ -25,24 +25,24 @@ export default async function Page() {
 			},
 			...(user
 				? {
-					OR: [
-						{
-							isPrivate: false,
-						},
-						{
-							club: {
-								members: {
-									some: {
-										userId: user?.id,
+						OR: [
+							{
+								isPrivate: false,
+							},
+							{
+								club: {
+									members: {
+										some: {
+											userId: user?.id,
+										},
 									},
 								},
 							},
-						},
-					],
-				}
+						],
+					}
 				: {
-					isPrivate: false,
-				}),
+						isPrivate: false,
+					}),
 		},
 		orderBy: {
 			dateStart: "asc",
