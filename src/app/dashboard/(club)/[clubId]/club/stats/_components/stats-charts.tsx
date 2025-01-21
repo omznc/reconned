@@ -19,6 +19,7 @@ import { useCallback, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Maximize2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type ChartData = {
 	title: string;
@@ -29,10 +30,10 @@ type ChartData = {
 };
 
 type StatsChartsProps = {
-	memberData: Array<{ date: string; members: number }>;
-	roleData: Array<{ role: string; count: number }>;
-	eventData: Array<{ month: string; count: number }>;
-	registrationData: Array<{ name: string; registrations: number }>;
+	memberData: Array<{ date: string; members: number; }>;
+	roleData: Array<{ role: string; count: number; }>;
+	eventData: Array<{ month: string; count: number; }>;
+	registrationData: Array<{ name: string; registrations: number; }>;
 };
 
 export function StatsCharts({
@@ -44,31 +45,33 @@ export function StatsCharts({
 	const [fullscreenChart, setFullscreenChart] = useState<ChartData | null>(
 		null,
 	);
+	const t = useTranslations('dashboard.club.stats');
+
 
 	const chartConfig = {
 		members: {
-			label: "Broj članova",
+			label: t('members'),
 			theme: {
 				light: "hsl(221.2 83.2% 53.3%)",
 				dark: "hsl(217.2 91.2% 59.8%)",
 			},
 		},
 		registrations: {
-			label: "Broj registracija",
+			label: t('registrations'),
 			theme: {
 				light: "hsl(262.1 83.3% 57.8%)",
 				dark: "hsl(263.4 70% 50.4%)",
 			},
 		},
 		roles: {
-			label: "Uloge članova",
+			label: t('roles'),
 			theme: {
 				light: "hsl(142.1 76.2% 36.3%)",
 				dark: "hsl(143.8 61.2% 40.2%)",
 			},
 		},
 		events: {
-			label: "Susreti po mjesecu",
+			label: t('events'),
 			theme: {
 				light: "hsl(346.8 77.2% 49.8%)",
 				dark: "hsl(346.8 77.2% 49.8%)",
@@ -83,7 +86,7 @@ export function StatsCharts({
 
 	const charts: ChartData[] = [
 		{
-			title: "Rast članova",
+			title: t('userGrowth'),
 			data: memberData,
 			renderChart: (data) => (
 				<AreaChart data={data} accessibilityLayer>
@@ -92,7 +95,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Area
 						dataKey="members"
-						name="Članovi"
+						name={t('members')}
 						fill="var(--color-members)"
 						stroke="var(--color-members)"
 						fillOpacity={0.2}
@@ -103,7 +106,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: "Distribucija uloga",
+			title: t('roleDistribution'),
 			data: roleData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
@@ -113,9 +116,9 @@ export function StatsCharts({
 						className="text-xs"
 						tickFormatter={(value) => {
 							const roles = {
-								user: "Član",
-								manager: "Menadžer",
-								club_owner: "Vlasnik",
+								user: t('member'),
+								manager: t('manager'),
+								club_owner: t('clubOwner'),
 							};
 							return roles[value as keyof typeof roles] || value;
 						}}
@@ -123,7 +126,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Bar
 						dataKey="count"
-						name="Broj članova"
+						name={t('members')}
 						fill="var(--color-roles)"
 						radius={4}
 					/>
@@ -132,7 +135,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: "Susreti po mjesecu",
+			title: t('events'),
 			data: eventData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
@@ -141,7 +144,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Bar
 						dataKey="count"
-						name="Broj susreta"
+						name={t('numberOfEvents')}
 						fill="var(--color-events)"
 						radius={4}
 					/>
@@ -150,7 +153,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: "Registracije po susretu",
+			title: t('registrations'),
 			data: registrationData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
@@ -159,7 +162,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Bar
 						dataKey="registrations"
-						name="Broj registracija"
+						name={t('numberOfRegistrations')}
 						fill="var(--color-registrations)"
 						radius={4}
 					/>

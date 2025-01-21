@@ -284,6 +284,102 @@
 			"status": "Status",
 			"clubName": "Klub",
 			"actions": "Akcije"
+		},
+		"addClub": {
+			"addClub": "Dodaj klub",
+			"createClub": "Kreiraj novi klub",
+			"createClubDescription": "Ova opcija je za vas ako želite napraviti novi klub, čiji ćete biti jedini vlasnik.",
+			"joinClub": "Pridruži se klubu",
+			"joinClubDescription": "Vaš klub je već na ovom sajtu? Možete zatražiti pozivnicu, ili prihvatiti već dobijenu."
+		},
+		"club": {
+			"info": {
+				"photoUploadError": "Došlo je do greške prilikom uploada slike",
+				"clubCreationError": "Došlo je do greške prilikom kreiranja kluba",
+				"clubCreationSuccess": "Klub uspješno kreiran",
+				"clubSaved": "Podaci o klubu su spašeni",
+				"error": "Došlo je do greške",
+				"clubEditTitle": "Mijenjate podatke o klubu",
+				"clubEditDescription": "Promjene će biti vidljive odmah nakon što ih sačuvate.",
+				"clubDelete": {
+					"title": "Jeste li sigurni?",
+					"body": "Ako obrišete klub, nećete ga moći vratiti nazad.",
+					"confirm": "Obriši klub",
+					"cancel": "Ne, vrati se"
+				},
+				"general": "Općenito",
+				"name": "Naziv kluba",
+				"nameDescription": "Naziv kluba će biti prikazan svuda na sajtu, ako je klub javan.",
+				"country": "Država",
+				"countryDescription": "Država u kojoj se klub nalazi",
+				"noResults": "Nema rezultata",
+				"pickCountry": "Odaberite državu",
+				"searchCountry": "Pretraži države...",
+				"city": "Grad",
+				"cityDescription": "Grad u kojem se klub nalazi",
+				"exactLocation": "Tačna lokacija",
+				"exactLocationDescription": "Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <link></link>",
+				"reset": "Resetuj",
+				"description": "Opis",
+				"descriptionDescription": "Opišite svoj klub u nekoliko rečenica",
+				"foundedDate": "Datum osnivanja",
+				"foundedDateDescription": "Kada je klub osnovan?",
+				"chooseDate": "Odaberite datum",
+				"isAllied": "U savezu ASK FBIH",
+				"isAlliedDescription": "Ako ste dio saveza airsoft klubova u FBIH, odaberite ovu opciju. Provjeriti ćemo vaš status.",
+				"private": "Privatni klub",
+				"privateDescription": "Privatni klubovi su vidljivi samo članovima kluba. Javni klubovi su vidljivi svima, te će biti prikazani na mapi. Preporučujemo da ovo ostavite isključeno.",
+				"logo": "Logo",
+				"logoDescription": "Dodajte logo kluba. Preporučujemo da koristite kvadratnu sliku sa providnom pozadinom.",
+				"fileUpload": "Povucite ili kliknite za upload slike",
+				"fileUploadFormats": "Podržani formati:",
+				"logoDelete": {
+					"title": "Jeste li sigurni?",
+					"body": "Da li ste sigurni da želite obrisati logo kluba?",
+					"confirm": "Obriši logo",
+					"cancel": "Ne, vrati se"
+				},
+				"contact": "Kontakt",
+				"phone": "Broj telefona",
+				"phoneDescription": "Broj telefona kluba, javno prikazan na profilu.",
+				"emailDescription": "Email adresa kluba, javno prikazana na profilu.",
+				"save": "Spasi promjene",
+				"create": "Kreiraj klub"
+			},
+			"posts": {
+				"succesEdited": "Objava uspješno izmjenjena",
+				"successCreated": "Objava uspješno kreirana",
+				"error": "Došlo je do greške",
+				"delete": {
+					"title": "Jeste li sigurni?",
+					"body": "Ako obrišete objavu, nećete je moći vratiti nazad.",
+					"confirm": "Obriši objavu",
+					"cancel": "Ne, vrati se",
+					"success": "Objava uspješno obrisana",
+					"error": "Došlo je do greške prilikom brisanja objave"
+				},
+				"editing": "Izmjena objave",
+				"creating": "Nova objava",
+				"title": "Naslov",
+				"content": "Sadržaj",
+				"public": "Javna objava",
+				"saveNewPost": "Spasi objavu",
+				"saveEditPost": "Spasi izmjene"
+			},
+			"spending": {},
+			"stats": {
+				"members": "Broj članova",
+				"registrations": "Broj prijava",
+				"roles": "Uloge",
+				"events": "Susreti po mjesecima",
+				"numberOfEvents": "Broj susreta",
+				"numberOfRegistrations": "Broj prijava",
+				"userGrowth": "Rast članova",
+				"roleDistribution": "Distribucija uloga",
+				"member": "Član",
+				"manager": "Menadžer",
+				"owner": "Vlasnik"
+			}
 		}
 	},
 	"components": {

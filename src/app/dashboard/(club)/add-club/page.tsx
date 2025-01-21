@@ -3,6 +3,7 @@ import { BadgeSoon } from "@/components/badge-soon";
 import { Button } from "@/components/ui/button";
 import { getCountries } from "@/lib/cached-countries";
 import { CirclePlus, MailPlus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 interface PageProps {
@@ -14,6 +15,7 @@ interface PageProps {
 export default async function Page(props: PageProps) {
 	const searchParams = await props.searchParams;
 	const countries = await getCountries();
+	const t = await getTranslations("dashboard.addClub");
 	const type = searchParams.type;
 	if (type === "invite") {
 		return <div>Invite</div>;
@@ -25,19 +27,18 @@ export default async function Page(props: PageProps) {
 	return (
 		<>
 			<div>
-				<h3 className="text-lg font-semibold">Dodajte klub</h3>
+				<h3 className="text-lg font-semibold">{t('addClub')}</h3>
 			</div>
 			<div className="flex flex-col gap-4 w-full">
 				<div className="flex flex-col gap-2">
 					<Button asChild={true}>
 						<Link href="?type=new" className="flex items-center gap-2">
 							<CirclePlus />
-							Napravite novi klub
+							{t('createClub')}
 						</Link>
 					</Button>
 					<span className="text-gray-500">
-						Ova opcija je za vas ako želite napraviti novi klub, čiji ćete biti
-						jedini vlasnik.
+						{t('createClubDescription')}
 					</span>
 				</div>
 				<div className="flex gap-1 items-center">
@@ -52,13 +53,12 @@ export default async function Page(props: PageProps) {
 							className="flex pointer-events-none opacity-50 items-center gap-2"
 						>
 							<MailPlus />
-							Prijavi se za klub
+							{t('joinClub')}
 							<BadgeSoon />
 						</Link>
 					</Button>
 					<span className="text-gray-500">
-						Vaš klub je već na ovom sajtu? Možete zatražiti pozivnicu preko ove
-						opcije.
+						{t('joinClubDescription')}
 					</span>
 				</div>
 			</div>

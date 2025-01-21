@@ -43,6 +43,10 @@ export function LanguageSwitcher(props: LanguageSwitcherProps) {
 		(country) => country.iso2.toLocaleLowerCase() === language,
 	);
 
+	if (VALID_LOCALES.length <= 1) {
+		return null;
+	}
+
 	return (
 		<Select value={language} onValueChange={setLanguage}>
 			<SelectTrigger className="w-fit">

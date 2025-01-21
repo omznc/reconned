@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { cache } from "react";
+import type { Country as PrismaCountry } from "@prisma/client";
 
 export const getCountries = cache(async () => {
 	const countries = await prisma.country.findMany({
@@ -18,3 +19,5 @@ export const getCountries = cache(async () => {
 		emoji: country.emoji as string,
 	}));
 });
+
+export type Country = Pick<PrismaCountry, "id" | "name" | "emoji" | "iso2">;
