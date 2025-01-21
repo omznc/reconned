@@ -13,10 +13,7 @@ import {
 	Download,
 	KeyRound,
 	Trash2,
-	Phone,
-	MonitorSmartphone,
 	Laptop,
-	TabletSmartphone,
 	Smartphone,
 	Tablet,
 	ShieldQuestion,
@@ -52,8 +49,7 @@ export function SecuritySettings({
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const prompt = usePrompt();
-	const t = useTranslations('dashboard.security.securitySettings');
-
+	const t = useTranslations("dashboard.security.securitySettings");
 
 	const getDeviceIcon = (userAgent?: string) => {
 		if (!userAgent) return ShieldQuestion;
@@ -84,11 +80,11 @@ export function SecuritySettings({
 								{/* Kreiran{" "}
 								{passkey.createdAt &&
 									formatDate(passkey.createdAt, "dd.MM.yyyy")} */}
-								{
-									t('createdAt', {
-										date: passkey.createdAt && formatDate(passkey.createdAt, "dd.MM.yyyy")
-									})
-								}
+								{t("createdAt", {
+									date:
+										passkey.createdAt &&
+										formatDate(passkey.createdAt, "dd.MM.yyyy"),
+								})}
 							</AlertDescription>
 						</div>
 						<Button
@@ -120,10 +116,8 @@ export function SecuritySettings({
 				))}
 				<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 					<div className="flex flex-col">
-						<AlertTitle>{t('addNewPaskey')}</AlertTitle>
-						<AlertDescription>
-							{t('addNewPasskeyDescription')}
-						</AlertDescription>
+						<AlertTitle>{t("addNewPasskey")}</AlertTitle>
+						<AlertDescription>{t("addNewPasskeyDescription")}</AlertDescription>
 					</div>
 					<Button
 						type="button"
@@ -148,19 +142,19 @@ export function SecuritySettings({
 						}}
 					>
 						<KeyRound className="w-4 h-4 mr-2" />
-						{t('add')}
+						{t("add")}
 						<BadgeSoon />
 					</Button>
 				</Alert>
 			</div>
 			<div className="flex flex-col gap-1">
-				<h3 className="text-lg font-semibold">{t('twoFactor')}</h3>
+				<h3 className="text-lg font-semibold">{t("twoFactor")}</h3>
 			</div>
 			{!hasPassword && (
 				<Alert className="flex flex-col gap-1">
-					<AlertTitle>{t('twoFactorDescription')}</AlertTitle>
+					<AlertTitle>{t("twoFactorUnavailable")}</AlertTitle>
 					<AlertDescription>
-						{t('twoFactorUnavailableDescription')}
+						{t("twoFactorUnavailableDescription")}
 					</AlertDescription>
 				</Alert>
 			)}
@@ -170,9 +164,9 @@ export function SecuritySettings({
 						<>
 							<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 								<div className="flex flex-col">
-									<AlertTitle>{t('twoFactorDisable')}</AlertTitle>
+									<AlertTitle>{t("twoFactorDisable")}</AlertTitle>
 									<AlertDescription>
-										{t('twoFactorDisableDescription')}
+										{t("twoFactorDisableDescription")}
 									</AlertDescription>
 								</div>
 								<Button
@@ -182,11 +176,11 @@ export function SecuritySettings({
 									className="w-full md:w-auto"
 									onClick={async () => {
 										const confirmed = await prompt({
-											cancelButton: t('twoFactorDisablePrompt.cancel'),
+											cancelButton: t("twoFactorDisablePrompt.cancel"),
 											cancelButtonVariant: "ghost",
-											title: t('twoFactorDisablePrompt.title'),
-											body: t('twoFactorDisablePrompt.body'),
-											actionButton: t('twoFactorDisablePrompt.confirm'),
+											title: t("twoFactorDisablePrompt.title"),
+											body: t("twoFactorDisablePrompt.body"),
+											actionButton: t("twoFactorDisablePrompt.confirm"),
 											inputType: "input",
 											inputProps: {
 												type: "password",
@@ -211,18 +205,20 @@ export function SecuritySettings({
 												},
 												onError: () => {
 													setIsLoading(false);
-													toast.error(t('twoFactorDisablePrompt.invalidPassword'));
+													toast.error(
+														t("twoFactorDisablePrompt.invalidPassword"),
+													);
 												},
 											},
 										);
 									}}
 								>
-									{t('disable')}
+									{t("disable")}
 								</Button>
 							</Alert>
 							<Alert className="flex flex-col gap-1">
 								<AlertTitle className="flex items-center justify-between">
-									<span>{t('backupCodes')}</span>
+									<span>{t("backupCodes")}</span>
 									<div className="flex gap-2">
 										<Button
 											type="button"
@@ -240,7 +236,7 @@ export function SecuritySettings({
 											}}
 										>
 											<Download className="w-4 h-4 mr-2" />
-											{t('download')}
+											{t("download")}
 										</Button>
 										<Button
 											type="button"
@@ -274,26 +270,24 @@ export function SecuritySettings({
 														onSuccess: () => {
 															setIsLoading(false);
 															router.refresh();
-															toast.success(t('regenerateSuccess'));
+															toast.success(t("regenerateSuccess"));
 														},
 														onError: () => {
 															setIsLoading(false);
-															toast.error(
-																t('regenerateError'),
-															);
+															toast.error(t("regenerateError"));
 														},
 													},
 												);
 											}}
 										>
 											<Dice5 className="w-4 h-4 mr-2" />
-											{t('regenerate')}
+											{t("regenerate")}
 											<BadgeSoon />
 										</Button>
 									</div>
 								</AlertTitle>
 								<AlertDescription>
-									{t('regenerateDescription')}
+									{t("regenerateDescription")}
 								</AlertDescription>
 								<div className="bg-background border p-4 mt-2 flex flex-wrap gap-2">
 									{backupCodes?.map((code) => (
@@ -314,9 +308,9 @@ export function SecuritySettings({
 					) : (
 						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 							<div className="flex flex-col">
-								<AlertTitle>{t('twoFactorEnable')}</AlertTitle>
+								<AlertTitle>{t("twoFactorEnable")}</AlertTitle>
 								<AlertDescription>
-									{t('twoFactorEnableDescription')}
+									{t("twoFactorEnableDescription")}
 								</AlertDescription>
 							</div>
 							<Button
@@ -325,11 +319,11 @@ export function SecuritySettings({
 								className="w-full md:w-auto"
 								onClick={async () => {
 									const password = await prompt({
-										cancelButton: t('twoFactorEnablePrompt.cancel'),
+										cancelButton: t("twoFactorEnablePrompt.cancel"),
 										cancelButtonVariant: "ghost",
-										title: t('twoFactorEnablePrompt.title'),
-										body: t('twoFactorEnablePrompt.body'),
-										actionButton: t('twoFactorEnablePrompt.confirm'),
+										title: t("twoFactorEnablePrompt.title"),
+										body: t("twoFactorEnablePrompt.body"),
+										actionButton: t("twoFactorEnablePrompt.confirm"),
 										inputType: "input",
 										inputProps: {
 											type: "password",
@@ -364,21 +358,16 @@ export function SecuritySettings({
 									}
 
 									const confirmed = await prompt({
-										cancelButton: t('twoFactorEnablePrompt.cancel'),
+										cancelButton: t("twoFactorEnablePrompt.cancel"),
 										cancelButtonVariant: "ghost",
-										title: t('twoFactorEnablePrompt.title'),
+										title: t("twoFactorEnablePrompt.title"),
 										body: (
 											<div className="space-y-2">
-												<p>
-													{t('twoFactorConfirmPrompt.scanQr')}
-												</p>
+												<p>{t("twoFactorConfirmPrompt.scanQr")}</p>
 												<div className="bg-white p-2 w-fit">
 													<QRCodeSVG value={resp.data.totpURI} />
 												</div>
-												<p>
-													{t('twoFactorConfirmPrompt.enterCode')}
-
-												</p>
+												<p>{t("twoFactorConfirmPrompt.enterCode")}</p>
 												<code className="font-semibold">
 													{
 														resp.data.totpURI
@@ -387,12 +376,11 @@ export function SecuritySettings({
 													}
 												</code>
 												<span className="block mt-2">
-													{t('twoFactorConfirmPrompt.verifyCode')}
-
+													{t("twoFactorConfirmPrompt.verifyCode")}
 												</span>
 											</div>
 										),
-										actionButton: t('twoFactorEnablePrompt.confirm'),
+										actionButton: t("twoFactorEnablePrompt.confirm"),
 										inputType: "input",
 										inputProps: {
 											type: "text",
@@ -417,30 +405,28 @@ export function SecuritySettings({
 											},
 											onError: () => {
 												setIsLoading(false);
-												toast.error(t('twoFactorConfirmPrompt.invalidCode'));
+												toast.error(t("twoFactorConfirmPrompt.invalidCode"));
 											},
 										},
 									);
 								}}
 							>
-								{
-									t('twoFactorConfirmPrompt.confirm')
-								}
+								{t("twoFactorConfirmPrompt.confirm")}
 							</Button>
 						</Alert>
 					)}
 				</div>
 			)}
 			<div className="flex flex-col gap-1">
-				<h3 className="text-lg font-semibold">{t('activeSessions')}</h3>
+				<h3 className="text-lg font-semibold">{t("activeSessions")}</h3>
 				<p className="text-sm text-muted-foreground">
-					{t('activeSessionsDescription')}
+					{t("activeSessionsDescription")}
 				</p>
 			</div>
 			{sessions.length > 1 && (
 				<Alert>
 					<AlertDescription className="flex justify-between items-center">
-						<span>{t('logoutAll')}</span>
+						<span>{t("logoutAll")}</span>
 						<Button
 							type="button"
 							variant="destructive"
@@ -453,17 +439,17 @@ export function SecuritySettings({
 										onSuccess: () => {
 											setIsLoading(false);
 											router.refresh();
-											toast.success(t('logoutAllSuccess'));
+											toast.success(t("logoutAllSuccess"));
 										},
 										onError: () => {
 											setIsLoading(false);
-											toast.error(t('logoutAllError'));
+											toast.error(t("logoutAllError"));
 										},
 									},
 								);
 							}}
 						>
-							{t('logoutAllAction')}
+							{t("logoutAllAction")}
 						</Button>
 					</AlertDescription>
 				</Alert>
@@ -489,7 +475,7 @@ export function SecuritySettings({
 											{session.userAgent?.split("/")[0] || "Nepoznat uređaj"}
 											{session.isCurrentSession && (
 												<span className="text-xs border bg-background text-primary px-2 py-1">
-													{t('currentSession')}
+													{t("currentSession")}
 												</span>
 											)}
 										</AlertTitle>
@@ -500,14 +486,12 @@ export function SecuritySettings({
 												</span>
 											)}
 											<span className="block text-xs">
-												{
-													t('sessionLastUsed', {
-														date: formatDistanceToNow(session.updatedAt, {
-															addSuffix: true,
-															locale: bs,
-														})
-													})
-												}
+												{t("sessionLastUsed", {
+													date: formatDistanceToNow(session.updatedAt, {
+														addSuffix: true,
+														locale: bs,
+													}),
+												})}
 											</span>
 										</AlertDescription>
 									</div>
@@ -526,11 +510,11 @@ export function SecuritySettings({
 													onSuccess: () => {
 														setIsLoading(false);
 														router.refresh();
-														toast.success(t('logoutSingleSuccess'));
+														toast.success(t("logoutSingleSuccess"));
 													},
 													onError: () => {
 														setIsLoading(false);
-														toast.error(t('logoutSingleError'));
+														toast.error(t("logoutSingleError"));
 													},
 												},
 											);

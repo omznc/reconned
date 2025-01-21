@@ -26,8 +26,7 @@ export default function RegisterPage() {
 		clearOnDefault: true,
 		shallow: true,
 	});
-	const t = useTranslations('public.auth');
-
+	const t = useTranslations("public.auth");
 
 	useEffect(() => {
 		authClient.oneTap();
@@ -36,10 +35,8 @@ export default function RegisterPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t('register')}</CardTitle>
-				<CardDescription>
-					{t('registerDescription')}
-				</CardDescription>
+				<CardTitle className="text-2xl">{t("register")}</CardTitle>
+				<CardDescription>{t("registerDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -74,16 +71,14 @@ export default function RegisterPage() {
 							return;
 						}
 
-						toast.success(
-							t('registerSuccess'),
-						);
+						toast.success(t("registerSuccess"));
 
 						router.push("/login");
 					}}
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="name">{t('name')}</Label>
+						<Label htmlFor="name">{t("name")}</Label>
 						<Input
 							type="text"
 							name="name"
@@ -108,21 +103,21 @@ export default function RegisterPage() {
 						/>
 						{!!email && (
 							<p className="text-sm text-gray-500">
-								{t('emailAutofilled')}{" "}
+								{t("emailAutofilled")}{" "}
 								<span
 									className="text-foreground cursor-pointer inline"
 									onClick={() => {
 										setEmail("");
 									}}
 								>
-									{t('remove')}
+									{t("remove")}
 								</span>
 							</p>
 						)}
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="password">{t('password')}</Label>
+						<Label htmlFor="password">{t("password")}</Label>
 						<Input
 							type="password"
 							name="password"
@@ -134,15 +129,13 @@ export default function RegisterPage() {
 					</div>
 
 					{isError && (
-						<p className="text-red-500 -mb-2">
-							{t('invalidDataOrUserExists')}
-						</p>
+						<p className="text-red-500 -mb-2">{t("invalidDataOrUserExists")}</p>
 					)}
 					<LoaderSubmitButton
 						isLoading={isLoading}
 						className="w-full plausible-event-name=register-button-click"
 					>
-						{t('register')}
+						{t("register")}
 					</LoaderSubmitButton>
 					<GoogleLoginButton isLoading={isLoading} />
 				</form>
@@ -153,7 +146,7 @@ export default function RegisterPage() {
 						href="/login"
 						className="underline"
 					>
-						{t('login')}
+						{t("login")}
 					</Link>
 				</div>
 			</CardContent>

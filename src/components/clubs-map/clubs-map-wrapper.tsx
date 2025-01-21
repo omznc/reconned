@@ -3,10 +3,7 @@
 import dynamic from "next/dynamic";
 
 const ClubsMap = dynamic(
-	() =>
-		import("@/components/clubs-map/clubs-map").then(
-			(mod) => mod.ClubsMap,
-		),
+	() => import("@/components/clubs-map/clubs-map").then((mod) => mod.ClubsMap),
 	{
 		ssr: false,
 	},

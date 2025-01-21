@@ -11,7 +11,6 @@ import {
 	SelectLabel,
 	SelectTrigger,
 } from "@/components/ui/select";
-import type { Country } from "@prisma/client";
 import { VALID_LOCALES } from "@/i18n/valid-locales";
 import { useTranslations } from "next-intl";
 

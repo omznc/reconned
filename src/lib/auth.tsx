@@ -168,8 +168,8 @@ export const auth = betterAuth({
 							id: user.id,
 						},
 						data: {
-							language: locale
-						}
+							language: locale,
+						},
 					});
 				},
 			},

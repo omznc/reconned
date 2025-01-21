@@ -30,7 +30,7 @@ export async function sendEmailVerificationAction({
 	try {
 		const resp = await sendEmail({
 			to,
-			subject: t('verifyEmail'),
+			subject: t("verifyEmail"),
 			html: await render(
 				<EmailVerification userName={name} verificationUrl={url.toString()} />,
 				{

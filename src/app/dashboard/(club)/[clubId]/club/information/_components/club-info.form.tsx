@@ -76,8 +76,7 @@ import { useTranslations } from "next-intl";
 
 // Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(
-	() =>
-		import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap),
+	() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap),
 	{
 		ssr: false,
 	},
@@ -97,7 +96,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
 	const confirm = useConfirm();
-	const t = useTranslations('dashboard.club.info');
+	const t = useTranslations("dashboard.club.info");
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -158,7 +157,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				});
 
 				if (!resp?.data?.url) {
-					toast.error(t('photoUploadError'));
+					toast.error(t("photoUploadError"));
 					return;
 				}
 
@@ -182,7 +181,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			 */
 			if (files?.[0] && !props.club?.id) {
 				if (!newClubId) {
-					toast.error(t('clubCreationError'));
+					toast.error(t("clubCreationError"));
 					return;
 				}
 				const resp = await getClubImageUploadUrl({
@@ -194,7 +193,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				});
 
 				if (!resp?.data?.url) {
-					toast.error(t('photoUploadError'));
+					toast.error(t("photoUploadError"));
 					return;
 				}
 
@@ -227,11 +226,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 			setFiles([]);
 
-			toast.success(
-				props.club?.id ? t('clubSaved') : t('clubCreationSuccess'),
-			);
+			toast.success(props.club?.id ? t("clubSaved") : t("clubCreationSuccess"));
 		} catch (error) {
-			toast.error(t('error'));
+			toast.error(t("error"));
 		}
 		setIsLoading(false);
 	}
@@ -245,10 +242,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				{props.club && (
 					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>{t('clubEditTitle')}</AlertTitle>
-							<AlertDescription>
-								{t('clubEditDescription')}
-							</AlertDescription>
+							<AlertTitle>{t("clubEditTitle")}</AlertTitle>
+							<AlertDescription>{t("clubEditDescription")}</AlertDescription>
 						</div>
 						<div className="flex gap-1">
 							{props.isClubOwner && (
@@ -259,11 +254,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									className="w-fit"
 									onClick={async () => {
 										const resp = await confirm({
-											title: t('clubDelete.title'),
-											body: t('clubDelete.body'),
+											title: t("clubDelete.title"),
+											body: t("clubDelete.body"),
 											actionButtonVariant: "destructive",
-											actionButton: t('clubDelete.confirm'),
-											cancelButton: t('clubDelete.cancel'),
+											actionButton: t("clubDelete.confirm"),
+											cancelButton: t("clubDelete.cancel"),
 										});
 										if (resp) {
 											setIsLoading(true);
@@ -279,7 +274,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									{isLoading ? (
 										<Loader className="animate-spin size-4" />
 									) : (
-										t('clubDelete.confirm')
+										t("clubDelete.confirm")
 									)}
 								</Button>
 							)}
@@ -287,7 +282,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					</Alert>
 				)}
 				<div>
-					<h3 className="text-lg font-semibold">{t('general')}</h3>
+					<h3 className="text-lg font-semibold">{t("general")}</h3>
 				</div>
 				<FormField
 					control={form.control}
@@ -295,13 +290,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t('name')}* ({form.watch("name")?.length}/
+								{t("name")}* ({form.watch("name")?.length}/
 								{clubInfoSchema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="Veis" type="text" {...field} />
 							</FormControl>
-							<FormDescription>{t('nameDescription')}</FormDescription>
+							<FormDescription>{t("nameDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -312,7 +307,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="countryId"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t('country')}*</FormLabel>
+							<FormLabel>{t("country")}*</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -327,19 +322,17 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										>
 											{field.value
 												? props.countries.find(
-													(country) => country.id === field.value,
-												)?.name
-												: t('pickCountry')}
+														(country) => country.id === field.value,
+													)?.name
+												: t("pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
 								</PopoverTrigger>
 								<PopoverContent className="w-full p-0">
 									<Command>
-										<CommandInput placeholder={t('searchCountry')} />
-										<CommandEmpty>{
-											t('noResults')
-										}</CommandEmpty>
+										<CommandInput placeholder={t("searchCountry")} />
+										<CommandEmpty>{t("noResults")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
 											{props.countries.map((country) => (
 												<CommandItem
@@ -365,9 +358,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									</Command>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>
-								{t('countryDescription')}
-							</FormDescription>
+							<FormDescription>{t("countryDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -378,11 +369,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="location"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t('city')}*</FormLabel>
+							<FormLabel>{t("city")}*</FormLabel>
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
-							<FormDescription>{t('cityDescription')}</FormDescription>
+							<FormDescription>{t("cityDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -390,7 +381,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormItem>
 					<FormLabel className="flex items-center justify-between">
-						<span>{t('exactLocation')}</span>
+						<span>{t("exactLocation")}</span>
 						<Button
 							type="button"
 							variant="ghost"
@@ -402,7 +393,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							}
 							className="h-6 px-2 text-xs data-[hidden=true]:opacity-0"
 						>
-							{t('reset')}
+							{t("reset")}
 						</Button>
 					</FormLabel>
 					<FormControl>
@@ -411,13 +402,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								clubs={
 									props.club
 										? [
-											{
-												...props.club,
-												latitude: form.watch("latitude") || null,
-												longitude: form.watch("longitude") || null,
-												location: props.club.location || undefined,
-											},
-										]
+												{
+													...props.club,
+													latitude: form.watch("latitude") || null,
+													longitude: form.watch("longitude") || null,
+													location: props.club.location || undefined,
+												},
+											]
 										: []
 								}
 								interactive={true}
@@ -426,18 +417,14 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</div>
 					</FormControl>
 					<FormDescription>
-						{
-							t.rich('exactLocationDescription', {
-								link: () =>
-								(
-									<Link target="_blank" className="text-red-500" href="/map">
-										mapi airsoft klubova
-										<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
-									</Link>
-								)
-
-							})
-						}
+						{t.rich("exactLocationDescription", {
+							link: () => (
+								<Link target="_blank" className="text-red-500" href="/map">
+									mapi airsoft klubova
+									<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
+								</Link>
+							),
+						})}
 					</FormDescription>
 				</FormItem>
 
@@ -464,7 +451,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t('description')}* ({form.watch("description")?.length}/
+								{t("description")}* ({form.watch("description")?.length}/
 								{clubInfoSchema.shape.description.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -474,9 +461,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>
-								{t('descriptionDescription')}
-							</FormDescription>
+							<FormDescription>{t("descriptionDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -487,7 +472,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="dateFounded"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t('foundedDate')}*</FormLabel>
+							<FormLabel>{t("foundedDate")}*</FormLabel>
 							<Popover>
 								<PopoverTrigger asChild={true}>
 									<FormControl>
@@ -501,7 +486,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											{field.value ? (
 												format(field.value, "PPP")
 											) : (
-												<span>{t('chooseDate')}</span>
+												<span>{t("chooseDate")}</span>
 											)}
 											<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 										</Button>
@@ -515,7 +500,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									/>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>{t('foundedDateDescription')}</FormDescription>
+							<FormDescription>{t("foundedDateDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -527,10 +512,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>{t('isAllied')}</FormLabel>
-								<FormDescription>
-									{t('isAlliedDescription')}
-								</FormDescription>
+								<FormLabel>{t("isAllied")}</FormLabel>
+								<FormDescription>{t("isAlliedDescription")}</FormDescription>
 							</div>
 							<FormControl>
 								<Switch
@@ -548,10 +531,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>{t('private')}</FormLabel>
-								<FormDescription>
-									{t('privateDescription')}
-								</FormDescription>
+								<FormLabel>{t("private")}</FormLabel>
+								<FormDescription>{t("privateDescription")}</FormDescription>
 							</div>
 							<FormControl>
 								<Switch
@@ -568,7 +549,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="logo"
 					render={() => (
 						<FormItem>
-							<FormLabel>{t('logo')}</FormLabel>
+							<FormLabel>{t("logo")}</FormLabel>
 							<FormControl>
 								<FileUploader
 									key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
@@ -586,10 +567,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											<div className="flex items-center justify-center flex-col p-8 w-full ">
 												<CloudUpload className="text-gray-500 w-10 h-10" />
 												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													{t('fileUpload')}
+													{t("fileUpload")}
 												</p>
 												<p className="text-xs text-gray-500 dark:text-gray-400">
-													{t('fileUploadFormats')} JPG, JPEG, PNG
+													{t("fileUploadFormats")} JPG, JPEG, PNG
 												</p>
 											</div>
 										</FileInput>
@@ -613,9 +594,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									</FileUploaderContent>
 								</FileUploader>
 							</FormControl>
-							<FormDescription>
-								{t('logoDescription')}
-							</FormDescription>
+							<FormDescription>{t("logoDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -634,11 +613,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									}
 
 									const resp = await confirm({
-										title: t('logoDelete.title'),
-										body: t('logoDelete.body'),
+										title: t("logoDelete.title"),
+										body: t("logoDelete.body"),
 										actionButtonVariant: "destructive",
-										actionButton: t('logoDelete.confirm'),
-										cancelButton: t('logoDelete.cancel'),
+										actionButton: t("logoDelete.confirm"),
+										cancelButton: t("logoDelete.cancel"),
 									});
 
 									if (!resp) {
@@ -658,7 +637,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (
-									t('logoDelete.confirm')
+									t("logoDelete.confirm")
 								)}
 							</Button>
 						</HoverCardTrigger>
@@ -674,7 +653,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				)}
 
 				<div>
-					<h3 className="text-lg font-semibold">{t('contact')}</h3>
+					<h3 className="text-lg font-semibold">{t("contact")}</h3>
 				</div>
 
 				<FormField
@@ -682,7 +661,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="contactPhone"
 					render={({ field }) => (
 						<FormItem className="flex flex-col items-start">
-							<FormLabel>{t('phone')}</FormLabel>
+							<FormLabel>{t("phone")}</FormLabel>
 							<FormControl className="w-full">
 								<PhoneInput
 									placeholder="063 000 000"
@@ -690,9 +669,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									defaultCountry="BA"
 								/>
 							</FormControl>
-							<FormDescription>
-								{t('phoneDescription')}
-							</FormDescription>
+							<FormDescription>{t("phoneDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -711,9 +688,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>
-								{t('emailDescription')}
-							</FormDescription>
+							<FormDescription>{t("emailDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -722,7 +697,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					isLoading={isLoading}
 					disabled={!isSlugValid && !!form.watch("slug")}
 				>
-					{props.club ? t('save') : t('create')}
+					{props.club ? t("save") : t("create")}
 				</LoaderSubmitButton>
 			</form>
 		</Form>

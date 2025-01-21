@@ -33,7 +33,7 @@ export function ImageCropDialog({
 		y: 5,
 	});
 	const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
-	const t = useTranslations('dashboard.user.settings');
+	const t = useTranslations("dashboard.user.settings");
 
 	const onImageLoad = useCallback((img: HTMLImageElement) => {
 		setImageRef(img);
@@ -110,10 +110,8 @@ export function ImageCropDialog({
 		<Dialog open={!!file} onOpenChange={onClose}>
 			<DialogContent className="max-w-[800px]">
 				<DialogHeader>
-					<DialogTitle>{t('cropPhotoTitle')}</DialogTitle>
-					<DialogDescription>
-						{t('cropPhotoDescription')}
-					</DialogDescription>
+					<DialogTitle>{t("cropPhotoTitle")}</DialogTitle>
+					<DialogDescription>{t("cropPhotoDescription")}</DialogDescription>
 				</DialogHeader>
 				<div className="my-4 flex justify-center">
 					<div className="max-h-[500px] w-auto">
@@ -134,9 +132,9 @@ export function ImageCropDialog({
 				</div>
 				<DialogFooter>
 					<Button variant="ghost" onClick={onClose}>
-						{t('cancel')}
+						{t("cancel")}
 					</Button>
-					<Button onClick={handleCrop}>{t('save')}</Button>
+					<Button onClick={handleCrop}>{t("save")}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

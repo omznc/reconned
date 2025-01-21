@@ -2,7 +2,7 @@
 
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
-import type { Club, ClubMembership, User } from "@prisma/client";
+import type { ClubMembership, User } from "@prisma/client";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 

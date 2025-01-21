@@ -57,7 +57,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [cropFile, setCropFile] = useState<File | null>(null);
 	const confirm = useConfirm();
-	const t = useTranslations('dashboard.user.settings');
+	const t = useTranslations("dashboard.user.settings");
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -102,7 +102,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				});
 
 				if (!resp?.data?.url) {
-					toast.error(t('imageUploadError'));
+					toast.error(t("imageUploadError"));
 					return;
 				}
 
@@ -122,9 +122,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 			setFiles([]);
 
-			toast.success(t('profileUpdated'));
+			toast.success(t("profileUpdated"));
 		} catch (_error) {
-			toast.error(t('profileUpdateError'));
+			toast.error(t("profileUpdateError"));
 		}
 		setIsLoading(false);
 	}
@@ -136,7 +136,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				className="space-y-4 max-w-3xl"
 			>
 				<div>
-					<h3 className="text-lg font-semibold">{t('title')}</h3>
+					<h3 className="text-lg font-semibold">{t("title")}</h3>
 				</div>
 				<FormField
 					control={form.control}
@@ -144,14 +144,13 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t('name')}* ({form.watch("name")?.length}/
+								{t("name")}* ({form.watch("name")?.length}/
 								{userInfoShema.shape.name.maxLength})
-
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="Veis" type="text" {...field} />
 							</FormControl>
-							<FormDescription>{t('name')}</FormDescription>
+							<FormDescription>{t("name")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -162,11 +161,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="callsign"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t('callsign')}</FormLabel>
+							<FormLabel>{t("callsign")}</FormLabel>
 							<FormControl>
 								<Input placeholder="Ninja" {...field} />
 							</FormControl>
-							<FormDescription>{t('callsign')}</FormDescription>
+							<FormDescription>{t("callsign")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -177,7 +176,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					name="location"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t('location')}</FormLabel>
+							<FormLabel>{t("location")}</FormLabel>
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
@@ -210,7 +209,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t('bio')} ({form.watch("bio")?.length}/
+								{t("bio")} ({form.watch("bio")?.length}/
 								{userInfoShema.shape.bio.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -220,9 +219,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>
-								{t('bioDescription')}
-							</FormDescription>
+							<FormDescription>{t("bioDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -343,9 +340,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 									</FileUploaderContent>
 								</FileUploader>
 							</FormControl>
-							<FormDescription>
-								{t("profilePhotoDescription")}
-							</FormDescription>
+							<FormDescription>{t("profilePhotoDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -369,11 +364,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								variant={"destructive"}
 								onClick={async () => {
 									const resp = await confirm({
-										title: t('deleteProfilePhoto.title'),
-										body: t('deleteProfilePhoto.body'),
+										title: t("deleteProfilePhoto.title"),
+										body: t("deleteProfilePhoto.body"),
 										actionButtonVariant: "destructive",
-										actionButton: t('deleteProfilePhoto.confirm'),
-										cancelButton: t('deleteProfilePhoto.cancel'),
+										actionButton: t("deleteProfilePhoto.confirm"),
+										cancelButton: t("deleteProfilePhoto.cancel"),
 									});
 
 									if (!resp) {
@@ -390,7 +385,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (
-									t('deleteProfilePhoto.confirm')
+									t("deleteProfilePhoto.confirm")
 								)}
 							</Button>
 						</HoverCardTrigger>
@@ -439,7 +434,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>{t('phone')}</FormDescription>
+							<FormDescription>{t("phone")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -463,7 +458,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					isLoading={isLoading}
 					disabled={!isSlugValid && !!form.watch("slug")}
 				>
-					{t('save')}
+					{t("save")}
 				</LoaderSubmitButton>
 			</form>
 		</Form>

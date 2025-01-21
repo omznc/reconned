@@ -24,12 +24,12 @@ import { useTranslations } from "next-intl";
 
 interface ClubSwitcherProps {
 	clubs: Club[];
-	user: { managedClubs: string[]; };
+	user: { managedClubs: string[] };
 }
 
 export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	const router = useRouter();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const { clubId } = useCurrentClub();
 	const t = useTranslations("components.sidebar");
 
@@ -72,17 +72,17 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 											</span>
 											<span className="truncate text-xs fade-in">
 												{user?.managedClubs?.includes(clubId)
-													? t('manager')
-													: t('member')}
+													? t("manager")
+													: t("member")}
 											</span>
 										</div>
 									) : (
 										<div className="grid flex-1 text-left text-sm leading-tight">
 											<span className="truncate fade-in font-semibold">
-												{t('clubs')}
+												{t("clubs")}
 											</span>
 											<span className="truncate fade-in text-xs">
-												{t('selectClub')}
+												{t("selectClub")}
 											</span>
 										</div>
 									)}
@@ -94,10 +94,10 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 									</div>
 									<div className="grid flex-1 text-left text-sm leading-tight">
 										<span className="truncate fade-in font-semibold">
-											{t('clubs')}
+											{t("clubs")}
 										</span>
 										<span className="truncate fade-in text-xs">
-											{t('selectClub')}
+											{t("selectClub")}
 										</span>
 									</div>
 								</>
@@ -112,7 +112,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						sideOffset={4}
 					>
 						<DropdownMenuLabel className="text-xs text-muted-foreground">
-							{t('clubs')}
+							{t("clubs")}
 						</DropdownMenuLabel>
 						{clubs.map((club) => (
 							<DropdownMenuItem
@@ -152,7 +152,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 									<Plus className="size-4" />
 								</div>
 								<div className="font-medium text-muted-foreground">
-									{t('addClub')}
+									{t("addClub")}
 								</div>
 							</DropdownMenuItem>
 						</Link>

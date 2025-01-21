@@ -29,7 +29,7 @@ export function Footer() {
 									>
 										Safet Pojskić
 									</Link>
-								)
+								),
 							})}
 						</p>
 					</div>

@@ -15,30 +15,26 @@ import {
 import { useTranslations } from "next-intl";
 
 export default function Page() {
-	const t = useTranslations('dashboard.help');
+	const t = useTranslations("dashboard.help");
 	return (
 		<>
 			<div className="mb-6">
-				<h3 className="text-lg font-semibold">{t('title')}</h3>
+				<h3 className="text-lg font-semibold">{t("title")}</h3>
 			</div>
 			<Accordion type="single" collapsible className="space-y-4">
 				<HelpItem title="Kako dodati Google Maps na susret" id="google-maps">
 					<div className="space-y-4 text-muted-foreground">
 						<ol className="pl-4 space-y-2 list-disc">
-							<li>{t('googleMaps.steps.step1')}</li>
-							<li>{t('googleMaps.steps.step2')}</li>
-							<li>
-								{t('googleMaps.steps.step3')}
-							</li>
-							<li>{t('googleMaps.steps.step4')}</li>
+							<li>{t("googleMaps.steps.step1")}</li>
+							<li>{t("googleMaps.steps.step2")}</li>
+							<li>{t("googleMaps.steps.step3")}</li>
+							<li>{t("googleMaps.steps.step4")}</li>
 							<Image
 								src={GoogleMap1Image}
 								alt="Google Maps dijalog za dijeljenje"
 								className="w-full border md:w-1/2 dark:invert"
 							/>
-							<li>
-								{t('googleMaps.steps.step5')}
-							</li>
+							<li>{t("googleMaps.steps.step5")}</li>
 						</ol>
 					</div>
 				</HelpItem>

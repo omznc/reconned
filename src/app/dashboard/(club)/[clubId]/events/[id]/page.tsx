@@ -56,7 +56,7 @@ export default async function Page(props: PageProps) {
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t('event')}</h3>
+				<h3 className="text-lg font-semibold">{t("event")}</h3>
 				<Button
 					disabled={disabledAttendence}
 					variant="default"
@@ -68,7 +68,7 @@ export default async function Page(props: PageProps) {
 						href={`/dashboard/${params.clubId}/events/${params.id}/attendance`}
 					>
 						<Users className="h-4 w-4" />
-						{t('attendance')}
+						{t("attendence")}
 					</Link>
 				</Button>
 			</div>

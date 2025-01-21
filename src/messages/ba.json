@@ -147,7 +147,9 @@
 				"receivedReviews": "Primljene recenzije"
 			},
 			"error": "Došlo je do greške",
-			"loading": "Učitavanje..."
+			"loading": "Učitavanje...",
+			"nextEvent": "Sljedeći susret",
+			"latestReview": "Najnovija recenzija"
 		},
 		"help": {
 			"title": "Pomoć",
@@ -347,7 +349,7 @@
 				"create": "Kreiraj klub"
 			},
 			"posts": {
-				"succesEdited": "Objava uspješno izmjenjena",
+				"successEdited": "Objava uspješno izmjenjena",
 				"successCreated": "Objava uspješno kreirana",
 				"error": "Došlo je do greške",
 				"delete": {
@@ -404,7 +406,7 @@
 					"registrationNotClosed": "Prijave su idalje otvorene",
 					"eventEnded": "Susret je završen",
 					"backToEvent": "Nazad na susret",
-					"unavailable": "Ova funkcionalnost nije dostupna",
+					"unavailable": "Ova funkcionalnost nije dostupna"
 				},
 				"create": {
 					"registrationsOpenIn": "Registracije se otvaraju za <number></number> dan/a",
@@ -469,7 +471,7 @@
 					"locationDescription": "Gdje se susret održava?",
 					"googleMapsDescription": "Možete dodati Google Maps embed link. Ta će se mapa moći prikazati na stranici vašeg susreta.",
 					"googleMapsLink": "Gdje to naći?",
-					"rules":"Pravila",
+					"rules": "Pravila",
 					"rulesDescription": "Odaberite pravila koja će važiti za ovaj susret.",
 					"noRules": "Ovaj klub nema pravila.",
 					"createRule": "Dodaj pravila",
@@ -494,6 +496,7 @@
 			"settings": "Postavke",
 			"security": "Sigurnost",
 			"myEvents": "Moji susreti",
+			"club": "klub",
 			"clubs": "Klubovi",
 			"selectClub": "Odaberite klub",
 			"addClub": "Dodaj klub",

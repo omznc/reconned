@@ -7,9 +7,8 @@ import {
 } from "@/app/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { safeActionClient } from "@/lib/safe-action";
 import { z } from "zod";
-import { clubLogoFileSchema } from "@/app/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { getS3FileUploadUrl, deleteS3File } from "@/lib/storage";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { after } from "next/server";
 
 export const createPurchase = safeActionClient

@@ -24,7 +24,7 @@ import type { NavItem } from "./types.ts";
 import { renderCollapsedItem, renderExpandedItem } from "./utils.tsx";
 import { useTranslations } from "next-intl";
 
-export function NavApp({ isAdmin }: { isAdmin: boolean; }) {
+export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const t = useTranslations("components.sidebar");
@@ -100,17 +100,16 @@ export function NavApp({ isAdmin }: { isAdmin: boolean; }) {
 
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>{t('dashboard')}</SidebarGroupLabel>
+			<SidebarGroupLabel>{t("dashboard")}</SidebarGroupLabel>
 			<SidebarMenu>
 				{items
 					.filter((item) => !item.protected || (item.protected && isAdmin))
 					.map((item) =>
-						!(sidebarOpen || isMobile)
-							? renderCollapsedItem(item, path)
-							: renderExpandedItem(item, path),
+						sidebarOpen || isMobile
+							? renderExpandedItem(item, path)
+							: renderCollapsedItem(item, path),
 					)}
 			</SidebarMenu>
 		</SidebarGroup>
 	);
 }
-

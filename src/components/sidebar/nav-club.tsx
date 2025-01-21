@@ -44,7 +44,6 @@ export function NavClub({ user }: NavClubProps) {
 		return null;
 	}
 
-
 	const getItems = (clubId: string): NavItem[] => [
 		{
 			title: t("club"),
@@ -140,15 +139,16 @@ export function NavClub({ user }: NavClubProps) {
 	const items = getItems(clubId);
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>{t('myClub')}</SidebarGroupLabel>
+			<SidebarGroupLabel>{t("myClub")}</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) =>
-					(sidebarOpen || isMobile)
+					sidebarOpen || isMobile
 						? renderExpandedItem(item, path, {
 							hasAccess: (subItem) =>
 								!subItem.protected ||
 								(subItem.protected && user?.managedClubs?.includes(clubId)),
-						}) : renderCollapsedItem(item, path),
+						})
+						: renderCollapsedItem(item, path),
 				)}
 			</SidebarMenu>
 		</SidebarGroup>

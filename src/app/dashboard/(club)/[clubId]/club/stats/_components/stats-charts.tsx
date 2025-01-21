@@ -45,33 +45,32 @@ export function StatsCharts({
 	const [fullscreenChart, setFullscreenChart] = useState<ChartData | null>(
 		null,
 	);
-	const t = useTranslations('dashboard.club.stats');
-
+	const t = useTranslations("dashboard.club.stats");
 
 	const chartConfig = {
 		members: {
-			label: t('members'),
+			label: t("members"),
 			theme: {
 				light: "hsl(221.2 83.2% 53.3%)",
 				dark: "hsl(217.2 91.2% 59.8%)",
 			},
 		},
 		registrations: {
-			label: t('registrations'),
+			label: t("registrations"),
 			theme: {
 				light: "hsl(262.1 83.3% 57.8%)",
 				dark: "hsl(263.4 70% 50.4%)",
 			},
 		},
 		roles: {
-			label: t('roles'),
+			label: t("roles"),
 			theme: {
 				light: "hsl(142.1 76.2% 36.3%)",
 				dark: "hsl(143.8 61.2% 40.2%)",
 			},
 		},
 		events: {
-			label: t('events'),
+			label: t("events"),
 			theme: {
 				light: "hsl(346.8 77.2% 49.8%)",
 				dark: "hsl(346.8 77.2% 49.8%)",
@@ -86,7 +85,7 @@ export function StatsCharts({
 
 	const charts: ChartData[] = [
 		{
-			title: t('userGrowth'),
+			title: t("userGrowth"),
 			data: memberData,
 			renderChart: (data) => (
 				<AreaChart data={data} accessibilityLayer>
@@ -95,7 +94,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Area
 						dataKey="members"
-						name={t('members')}
+						name={t("members")}
 						fill="var(--color-members)"
 						stroke="var(--color-members)"
 						fillOpacity={0.2}
@@ -106,7 +105,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: t('roleDistribution'),
+			title: t("roleDistribution"),
 			data: roleData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
@@ -116,9 +115,9 @@ export function StatsCharts({
 						className="text-xs"
 						tickFormatter={(value) => {
 							const roles = {
-								user: t('member'),
-								manager: t('manager'),
-								club_owner: t('clubOwner'),
+								user: t("member"),
+								manager: t("manager"),
+								club_owner: t("owner"),
 							};
 							return roles[value as keyof typeof roles] || value;
 						}}
@@ -126,7 +125,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Bar
 						dataKey="count"
-						name={t('members')}
+						name={t("members")}
 						fill="var(--color-roles)"
 						radius={4}
 					/>
@@ -135,7 +134,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: t('events'),
+			title: t("events"),
 			data: eventData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
@@ -144,7 +143,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Bar
 						dataKey="count"
-						name={t('numberOfEvents')}
+						name={t("numberOfEvents")}
 						fill="var(--color-events)"
 						radius={4}
 					/>
@@ -153,7 +152,7 @@ export function StatsCharts({
 			),
 		},
 		{
-			title: t('registrations'),
+			title: t("registrations"),
 			data: registrationData,
 			renderChart: (data) => (
 				<BarChart data={data} accessibilityLayer>
@@ -162,7 +161,7 @@ export function StatsCharts({
 					<YAxis className="text-xs" />
 					<Bar
 						dataKey="registrations"
-						name={t('numberOfRegistrations')}
+						name={t("numberOfRegistrations")}
 						fill="var(--color-registrations)"
 						radius={4}
 					/>

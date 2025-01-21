@@ -1,6 +1,4 @@
 "use client";
-
-import { useFont } from "@/components/personalization/font/font-provider";
 import { Logo } from "@/components/logos/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

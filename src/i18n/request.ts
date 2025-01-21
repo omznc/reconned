@@ -10,6 +10,8 @@ export default getRequestConfig(async () => {
 	// We get this from Cloudflare
 	const country = headersList.get("cf-ipcountry")?.toLowerCase() ?? "ba";
 
+	console.log("Country from Cloudflare:", country);
+
 	// If the user is logged in, they have a locale
 	if (user?.language) {
 		if (VALID_LOCALES.includes(user.language)) {

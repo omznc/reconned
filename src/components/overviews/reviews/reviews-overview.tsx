@@ -91,10 +91,11 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 						{[1, 2, 3, 4, 5].map((star) => (
 							<Star
 								key={star}
-								className={`h-6 w-6 ${star <= averageRating
+								className={`h-6 w-6 ${
+									star <= averageRating
 										? "fill-yellow-400 text-yellow-400"
 										: "fill-muted text-muted"
-									}`}
+								}`}
 							/>
 						))}
 						<span className="ml-2 text-sm text-muted-foreground">
@@ -112,10 +113,11 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 											{[1, 2, 3, 4, 5].map((star) => (
 												<Star
 													key={star}
-													className={`h-4 w-4 ${star <= review.rating
+													className={`h-4 w-4 ${
+														star <= review.rating
 															? "fill-yellow-400 text-yellow-400"
 															: "fill-muted text-muted"
-														}`}
+													}`}
 												/>
 											))}
 										</div>

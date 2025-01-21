@@ -22,8 +22,7 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations('public.auth');
-
+	const t = useTranslations("public.auth");
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
@@ -55,10 +54,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t('twoFactor')}</CardTitle>
-				<CardDescription>
-					{t('twoFactorDescription')}
-				</CardDescription>
+				<CardTitle className="text-2xl">{t("twoFactor")}</CardTitle>
+				<CardDescription>{t("twoFactorDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -97,7 +94,7 @@ export default function LoginPage() {
 											onSuccess: handleSuccessfulLogin,
 											onError: () => {
 												setIsError(true);
-												toast.error(t('twoFactorError'));
+												toast.error(t("twoFactorError"));
 											},
 										},
 									);
@@ -108,7 +105,7 @@ export default function LoginPage() {
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="totp">{t('twoFactorError')}</Label>
+						<Label htmlFor="totp">{t("twoFactorError")}</Label>
 						<Input
 							id="totp"
 							type="text"
@@ -119,21 +116,16 @@ export default function LoginPage() {
 						/>
 					</div>
 					<div className="flex items-center space-x-2">
-						<Checkbox
-							id="rememberDevice"
-							name="rememberDevice"
-						/>
-						<Label htmlFor="rememberDevice">
-							{t('rememberDevice')}
-						</Label>
+						<Checkbox id="rememberDevice" name="rememberDevice" />
+						<Label htmlFor="rememberDevice">{t("rememberDevice")}</Label>
 					</div>
-					{isError && <p className="text-red-500">{t('twoFactorError')}</p>}
+					{isError && <p className="text-red-500">{t("twoFactorError")}</p>}
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
-						{t('verify')}
+						{t("verify")}
 					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
-					{t('noAccountQuestion')}{" "}
+					{t("noAccountQuestion")}{" "}
 					<Link
 						href={
 							redirectTo

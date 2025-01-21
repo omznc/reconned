@@ -13,7 +13,7 @@ interface Props {
 	}>;
 }
 
-async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
+async function SearchResults({ query, tab }: { query?: string; tab?: string; }) {
 	if (!query) {
 		return null;
 	}
@@ -116,9 +116,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 	const defaultTab =
 		tab ||
 		(() => {
-			if (clubs.length > 0) return "clubs";
-			if (users.length > 0) return "users";
-			if (events.length > 0) return "events";
+			if (clubs.length > 0) { return "clubs"; }
+			if (users.length > 0) { return "users"; }
+			if (events.length > 0) { return "events"; }
 			return "clubs"; // fallback to clubs if all empty
 		})();
 

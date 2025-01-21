@@ -38,7 +38,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		editingPost?.content ?? "",
 	);
 	const confirm = useConfirm();
-	const t = useTranslations('dashboard.club.posts');
+	const t = useTranslations("dashboard.club.posts");
 
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
@@ -63,13 +63,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			await savePost(values);
 			form.reset();
 			setPostId(null);
-			toast.success(
-				values.id
-					? t('successCreated')
-					: t('successEdited')
-			);
+			toast.success(values.id ? t("successCreated") : t("successEdited"));
 		} catch (error) {
-			toast.error(t('error'));
+			toast.error(t("error"));
 		} finally {
 			if (values.id) {
 				router.back();
@@ -115,7 +111,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
 				<h1 className="text-2xl font-semibold">
-					{editingPost ? t('editing') : t('creating')}
+					{editingPost ? t("editing") : t("creating")}
 				</h1>
 				{editingPost && (
 					<Button
@@ -123,7 +119,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						onClick={handleDelete}
 						disabled={isLoading}
 					>
-						{t('delete.confirm')}
+						{t("delete.confirm")}
 					</Button>
 				)}
 			</div>
@@ -134,7 +130,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="title"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t('title')}</FormLabel>
+								<FormLabel>{t("title")}</FormLabel>
 								<FormControl>
 									<Input placeholder="Nova objava..." {...field} />
 								</FormControl>
@@ -148,7 +144,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="content"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t('content')}</FormLabel>
+								<FormLabel>{t("content")}</FormLabel>
 								<FormControl>
 									<Editor
 										editable
@@ -180,7 +176,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="isPublic"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t('public')}</FormLabel>
+								<FormLabel>{t("public")}</FormLabel>
 								<FormControl>
 									<Switch
 										checked={field.value}
@@ -193,7 +189,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 					/>
 
 					<Button type="submit" disabled={isLoading}>
-						{editingPost ? t('saveNewPost') : t('saveEditPost')}
+						{editingPost ? t("saveNewPost") : t("saveEditPost")}
 					</Button>
 				</form>
 			</Form>

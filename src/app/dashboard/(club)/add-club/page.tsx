@@ -27,19 +27,17 @@ export default async function Page(props: PageProps) {
 	return (
 		<>
 			<div>
-				<h3 className="text-lg font-semibold">{t('addClub')}</h3>
+				<h3 className="text-lg font-semibold">{t("addClub")}</h3>
 			</div>
 			<div className="flex flex-col gap-4 w-full">
 				<div className="flex flex-col gap-2">
 					<Button asChild={true}>
 						<Link href="?type=new" className="flex items-center gap-2">
 							<CirclePlus />
-							{t('createClub')}
+							{t("createClub")}
 						</Link>
 					</Button>
-					<span className="text-gray-500">
-						{t('createClubDescription')}
-					</span>
+					<span className="text-gray-500">{t("createClubDescription")}</span>
 				</div>
 				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
@@ -53,13 +51,11 @@ export default async function Page(props: PageProps) {
 							className="flex pointer-events-none opacity-50 items-center gap-2"
 						>
 							<MailPlus />
-							{t('joinClub')}
+							{t("joinClub")}
 							<BadgeSoon />
 						</Link>
 					</Button>
-					<span className="text-gray-500">
-						{t('joinClubDescription')}
-					</span>
+					<span className="text-gray-500">{t("joinClubDescription")}</span>
 				</div>
 			</div>
 		</>

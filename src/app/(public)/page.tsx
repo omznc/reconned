@@ -28,7 +28,6 @@ import {
 	LayoutDashboard,
 	Medal,
 	Search,
-	Map,
 	ShieldQuestion,
 	Building2,
 	Users,
@@ -39,7 +38,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { BadgeSoon } from "@/components/badge-soon";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {
@@ -344,7 +342,7 @@ export default async function Home({ searchParams }: PageProps) {
 									</div>
 									{event.isPrivate && (
 										<span className="text-xs text-muted-foreground">
-											{t("eventCard.private", {
+											{t("eventCard.privateEvent", {
 												club: event.club?.name,
 											})}
 										</span>

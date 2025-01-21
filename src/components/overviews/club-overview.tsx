@@ -24,7 +24,7 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date; })[];
+		posts: (Post & { createdAt: Date })[];
 	};
 	isManager?: boolean;
 }
@@ -33,7 +33,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 	const [analyticsId, analyticsSlug, t] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
-		getTranslations('components.clubOverview')
+		getTranslations("components.clubOverview"),
 	]);
 	const visitors =
 		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
@@ -67,7 +67,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<div className="flex items-center gap-2">
 							<h1 className="text-2xl font-semibold">{club.name}</h1>
 							<Badge variant="outline" className="h-fit">
-								{t('views', { count: visitors })}
+								{t("views", { count: visitors })}
 							</Badge>
 						</div>
 						<p className="text-accent-foreground/80">{club.description}</p>
@@ -78,7 +78,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
 								<MapIcon className="h-4 w-4 mr-2" />
-								{t('map')}
+								{t("map")}
 							</Link>
 						</Button>
 					)}
@@ -86,7 +86,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/information`}>
 								<Cog className="h-4 w-4 mr-2" />
-								{t('edit')}
+								{t("edit")}
 							</Link>
 						</Button>
 					)}
@@ -95,18 +95,18 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 			<div className="flex flex-wrap gap-0">
 				<Badge className="flex items-center gap-1">
 					<UserIcon className="w-4 h-4" />
-					{t('members', { count: club._count?.members })}
+					{t("members", { count: club._count?.members })}
 				</Badge>
 				<Badge className="flex items-center gap-1">
 					{club.isPrivate ? (
 						<>
 							<EyeOff className="w-4 h-4" />
-							{t('private')}
+							{t("private")}
 						</>
 					) : (
 						<>
 							<Eye className="w-4 h-4" />
-							{t('public')}
+							{t("public")}
 						</>
 					)}
 				</Badge>
@@ -133,21 +133,19 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 			<div className="space-y-4">
 				<div className="flex items-center justify-between">
 					<h2 className="text-xl font-semibold flex items-center gap-2">
-						{t('posts')}
+						{t("posts")}
 					</h2>
 					{isManager && (
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/posts`}>
 								<Pencil className="h-4 w-4" />
-								{t('createPost')}
+								{t("createPost")}
 							</Link>
 						</Button>
 					)}
 				</div>
 				{!posts || posts.length === 0 ? (
-					<p className="text-muted-foreground">
-						{t('noPosts')}
-					</p>
+					<p className="text-muted-foreground">{t("noPosts")}</p>
 				) : (
 					<div className="space-y-4">
 						{posts?.map((post) => (

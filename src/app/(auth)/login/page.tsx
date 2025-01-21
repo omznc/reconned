@@ -27,7 +27,7 @@ export default function LoginPage() {
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations('public.auth');
+	const t = useTranslations("public.auth");
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
@@ -48,8 +48,8 @@ export default function LoginPage() {
 		authClient.oneTap();
 	}, [message, setMessage]);
 
-	// biome-ignore lint/suspicious/noExplicitAny: It's not typed.
 	function handleSuccessfulLogin(
+		// biome-ignore lint/suspicious/noExplicitAny: It's not typed.
 		context: SuccessContext<any>,
 	): void | Promise<void> {
 		if (context.data.twoFactorRedirect) {
@@ -74,10 +74,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t('login')}</CardTitle>
-				<CardDescription>
-					{t('loginDescription')}
-				</CardDescription>
+				<CardTitle className="text-2xl">{t("login")}</CardTitle>
+				<CardDescription>{t("loginDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -104,9 +102,7 @@ export default function LoginPage() {
 								onSuccess: handleSuccessfulLogin,
 								onError: (ctx) => {
 									if (ctx.error.status === 403) {
-										toast.error(
-											t('unverified'),
-										);
+										toast.error(t("unverified"));
 									} else {
 										setIsError(true);
 									}
@@ -130,7 +126,7 @@ export default function LoginPage() {
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
-							<Label htmlFor="password">{t('password')}</Label>
+							<Label htmlFor="password">{t("password")}</Label>
 							<Button
 								type="button"
 								onClick={async () => {
@@ -142,14 +138,12 @@ export default function LoginPage() {
 										"email",
 									) as HTMLInputElement;
 									if (!emailInput?.value) {
-										toast.error(
-											t('forgotPasswordNoEmail'),
-										);
+										toast.error(t("forgotPasswordNoEmail"));
 										setIsForgotPasswordLoading(false);
 										return;
 									}
 									if (!emailInput?.checkValidity()) {
-										toast.error(t('forgotPasswordWrongEmail'));
+										toast.error(t("forgotPasswordWrongEmail"));
 										setIsForgotPasswordLoading(false);
 										return;
 									}
@@ -158,18 +152,14 @@ export default function LoginPage() {
 										email: emailInput.value,
 										redirectTo: "/reset-password",
 									});
-									toast.success(
-										t('forgotPasswordSuccess'),
-									);
+									toast.success(t("forgotPasswordSuccess"));
 									setIsForgotPasswordLoading(false);
 								}}
 								variant="ghost"
 								className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 								disabled={isLoading || isForgotPasswordLoading}
 							>
-								{isForgotPasswordLoading
-									? t('loading')
-									: t('forgotPassword')}
+								{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
 							</Button>
 						</div>
 						<Input
@@ -180,15 +170,13 @@ export default function LoginPage() {
 							required={true}
 						/>
 					</div>
-					{isError && (
-						<p className="text-red-500 -mb-2">{t('invalidData')}</p>
-					)}
+					{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
 					<LoaderSubmitButton
 						isLoading={isLoading}
 						disabled={isForgotPasswordLoading}
 						className="w-full plausible-event-name=login-button-click"
 					>
-						{t('login')}
+						{t("login")}
 					</LoaderSubmitButton>
 					<div className="flex items-center gap-2">
 						<Button
@@ -230,7 +218,7 @@ export default function LoginPage() {
 						}
 						className="underline"
 					>
-						{t('register')}
+						{t("register")}
 					</Link>
 				</div>
 			</CardContent>

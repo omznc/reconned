@@ -29,7 +29,6 @@ import { toast } from "sonner";
 import { createPurchase, getPurchaseReceiptUploadUrl } from "./spending.action";
 import type { PurchaseFormValues } from "@/app/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { purchaseFormSchema } from "@/app/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import {
 	FileUploader,
 	FileInput,

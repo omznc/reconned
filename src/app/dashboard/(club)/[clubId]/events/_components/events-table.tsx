@@ -102,7 +102,7 @@ export function EventsTable({
 													href={`/dashboard/${clubId}/events/${item.id}/attendance`}
 												>
 													<Users className="size-4" />
-													{t("attendance")}
+													{t("attendence")}
 												</Link>
 											</Button>
 											<Button variant={"outline"} asChild>

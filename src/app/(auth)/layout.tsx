@@ -21,8 +21,7 @@ export default function RootLayout({
 	children: ReactNode;
 }>) {
 	const path = usePathname();
-	const t = useTranslations('public.auth');
-
+	const t = useTranslations("public.auth");
 
 	return (
 		<Card className="w-full border-0 mx-auto md:border flex flex-col items-center justify-center md:justify-start h-dvh shadow-none md:max-w-sm overflow-hidden md:h-fit">
@@ -30,7 +29,7 @@ export default function RootLayout({
 				<Button variant={"outline"} className="w-full" asChild={true}>
 					<Link href="/" className="flex items-center gap-2">
 						<House className="w-4 h-4" />
-						{t('home')}
+						{t("home")}
 					</Link>
 				</Button>
 			</div>

@@ -38,13 +38,13 @@ export function EventsTable({
 	totalEvents,
 	pageSize,
 }: EventsTableProps) {
-	const t = useTranslations('dashboard.events');
+	const t = useTranslations("dashboard.events");
 
 	return (
 		<GenericDataTable
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
-			searchPlaceholder={t('search')}
+			searchPlaceholder={t("search")}
 			tableConfig={{
 				dateFormat: "d. MMMM yyyy.",
 				locale: "bs",

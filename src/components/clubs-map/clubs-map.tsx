@@ -55,7 +55,7 @@ interface ClubsMapProps {
 function LocationMarker({
 	position,
 	logo,
-}: { position: [number, number]; logo?: string | null; }) {
+}: { position: [number, number]; logo?: string | null }) {
 	return position ? (
 		<Marker position={position} icon={createClubIcon(logo, 32)} />
 	) : null;
@@ -63,7 +63,7 @@ function LocationMarker({
 
 function MapEventHandler({
 	onLocationSelect,
-}: { onLocationSelect?: (lat: number, lng: number) => void; }) {
+}: { onLocationSelect?: (lat: number, lng: number) => void }) {
 	useMapEvents({
 		click: (e) => {
 			if (onLocationSelect) {
@@ -103,20 +103,18 @@ export function ClubsMap({
 
 	return (
 		<div className="relative h-full w-full">
-			{
-				!interactive && (
-					<div className="absolute right-4 top-4 z-[10] bg-white border dark:bg-[#0d0d0d] shadow-md p-3 flex items-center gap-3">
-						<Slider
-							value={[logoSize]}
-							onValueChange={([value]) => setLogoSize(value ?? 32)}
-							min={16}
-							max={128}
-							step={4}
-							className="w-32"
-						/>
-					</div>
-				)
-			}
+			{!interactive && (
+				<div className="absolute right-4 top-4 z-[10] bg-white border dark:bg-[#0d0d0d] shadow-md p-3 flex items-center gap-3">
+					<Slider
+						value={[logoSize]}
+						onValueChange={([value]) => setLogoSize(value ?? 32)}
+						min={16}
+						max={128}
+						step={4}
+						className="w-32"
+					/>
+				</div>
+			)}
 
 			<MapContainer
 				center={[
@@ -155,7 +153,7 @@ export function ClubsMap({
 											href={`/clubs/${club.slug || club.id}`}
 											className="text-sm text-red-500 hover:underline plausible-event-name=club-map-profile-link"
 										>
-											{t('viewProfile')}
+											{t("viewProfile")}
 										</Link>
 									</div>
 								</Popup>

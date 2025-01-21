@@ -1,11 +1,7 @@
 "use client";
-
-import { useFont } from "@/components/personalization/font/font-provider";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
-import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -21,11 +17,13 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, LogOut, Type } from "lucide-react";
+import { ChevronsUpDown, LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
+	const t = useTranslations("components.sidebar");
 	const { user } = useIsAuthenticated();
 	return (
 		<SidebarMenu>
@@ -72,7 +70,7 @@ export function UserSwitcher() {
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuLabel>{t('personalization')}</DropdownMenuLabel>
+						<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>
 						<DropdownMenuItem asChild={true}>
 							<ThemeSwitcher />
 						</DropdownMenuItem>
@@ -88,7 +86,7 @@ export function UserSwitcher() {
 								className="cursor-pointer plausible-event-name=logout-sidebar-click"
 							>
 								<LogOut />
-								{t('logout')}
+								{t("logout")}
 							</Link>
 						</DropdownMenuItem>
 					</DropdownMenuContent>

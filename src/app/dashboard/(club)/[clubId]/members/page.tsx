@@ -1,5 +1,4 @@
 import { MembersTable } from "@/app/dashboard/(club)/[clubId]/members/_components/members-table";
-import { GenericDataTable } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@prisma/client";
 

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { removeMember } from "./members.action";
-import { cn } from "@/lib/utils";
 import type { ClubMembership } from "@prisma/client";
 import Link from "next/link";
 

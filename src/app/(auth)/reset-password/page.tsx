@@ -21,8 +21,7 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations('public.auth');
-
+	const t = useTranslations("public.auth");
 
 	if (!token) {
 		redirect("/login");
@@ -31,10 +30,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t('resetPassword')}</CardTitle>
-				<CardDescription>
-					{t('resetPasswordDescription')}
-				</CardDescription>
+				<CardTitle className="text-2xl">{t("resetPassword")}</CardTitle>
+				<CardDescription>{t("resetPasswordDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -63,14 +60,12 @@ export default function LoginPage() {
 									setIsLoading(false);
 								},
 								onSuccess: () => {
-									toast.success(t('resetPasswordSuccess'));
+									toast.success(t("resetPasswordSuccess"));
 									router.push("/login");
 								},
 								onError: (ctx) => {
 									if (ctx.error.status === 403) {
-										toast.error(
-											t('resetPasswordError')
-										);
+										toast.error(t("resetPasswordError"));
 									} else {
 										setIsError(true);
 									}
@@ -81,7 +76,7 @@ export default function LoginPage() {
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="password">{t('password')}</Label>
+						<Label htmlFor="password">{t("password")}</Label>
 						<Input
 							id="password"
 							type="password"
@@ -90,7 +85,7 @@ export default function LoginPage() {
 						/>
 					</div>
 					<div className="grid gap-2">
-						<Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
+						<Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
 						<Input
 							id="confirmPassword"
 							type="password"
@@ -98,17 +93,15 @@ export default function LoginPage() {
 							required={true}
 						/>
 					</div>
-					{isError && (
-						<p className="text-red-500 -mb-2">{t("invalidData")}</p>
-					)}
+					{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
-						{t('resetPassword')}
+						{t("resetPassword")}
 					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
 					{"Nemate račun? "}
 					<Link href="/register" className="underline">
-						{t('register')}
+						{t("register")}
 					</Link>
 				</div>
 			</CardContent>

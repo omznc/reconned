@@ -28,12 +28,12 @@ import { useTranslations } from "next-intl";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined; };
+	user: User & { managedClubs: string[]; role?: string | null | undefined };
 }
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const { setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
@@ -75,7 +75,7 @@ export function AppSidebar(props: AppSidebarProps) {
 						{sidebar.open ? (
 							<div className="px-3 py-2 border bg-background/20">
 								<p className="text-xs text-muted-foreground">
-									{t('betaMessage')}
+									{t("betaMessage")}
 								</p>
 							</div>
 						) : (
