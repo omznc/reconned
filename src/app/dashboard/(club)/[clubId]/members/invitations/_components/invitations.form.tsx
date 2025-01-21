@@ -58,7 +58,7 @@ async function searchUsers(query: string) {
 }
 
 export function InvitationsForm() {
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const [users, setUsers] = useState<SearchUser[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -122,7 +122,8 @@ export function InvitationsForm() {
 				<div>
 					<h3 className="text-lg font-semibold">Pozovi korisnika u klub</h3>
 					<span className="text-muted-foreground">
-						Pozivnice će isteći nakon 7 dana, a biti će obrisane nakon 3 mjeseca.
+						Pozivnice će isteći nakon 7 dana, a biti će obrisane nakon 3
+						mjeseca.
 					</span>
 				</div>
 				<FormField

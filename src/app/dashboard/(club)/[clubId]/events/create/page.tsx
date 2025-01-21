@@ -23,10 +23,10 @@ export default async function Page(props: PageProps) {
 
 	const existingEvent = searchParams?.id
 		? await prisma.event.findFirst({
-			where: {
-				id: searchParams.id,
-			},
-		})
+				where: {
+					id: searchParams.id,
+				},
+			})
 		: null;
 
 	const rules = await prisma.clubRule.findMany({

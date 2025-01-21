@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { House } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -20,6 +21,7 @@ export default function RootLayout({
 	children: ReactNode;
 }>) {
 	const path = usePathname();
+	const t = useTranslations("public.auth");
 
 	return (
 		<Card className="w-full border-0 mx-auto md:border flex flex-col items-center justify-center md:justify-start h-dvh shadow-none md:max-w-sm overflow-hidden md:h-fit">
@@ -27,7 +29,7 @@ export default function RootLayout({
 				<Button variant={"outline"} className="w-full" asChild={true}>
 					<Link href="/" className="flex items-center gap-2">
 						<House className="w-4 h-4" />
-						Početna
+						{t("home")}
 					</Link>
 				</Button>
 			</div>

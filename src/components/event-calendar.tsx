@@ -32,13 +32,15 @@ import { parse as parseDateFns, format as formatDateFns } from "date-fns";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
+import { useTranslations } from "next-intl";
 
 interface EventCalendarProps {
-	events: (Event & { club: { name: string; }; image?: string | null; })[];
+	events: (Event & { club: { name: string }; image?: string | null })[];
 }
 
 export function EventCalendar(props: EventCalendarProps) {
-	const params = useParams<{ clubId: string; }>();
+	const t = useTranslations("components.calendar");
+	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(
@@ -236,11 +238,11 @@ export function EventCalendar(props: EventCalendarProps) {
 						disabled={isSameMonth(new Date(), currentDate)}
 						title={
 							isSameMonth(new Date(), currentDate)
-								? "Već je danas"
-								: "Idi na trenutni mjesec"
+								? t("alreadyToday")
+								: t("goToToday")
 						}
 					>
-						Danas
+						{t("today")}
 					</Button>
 					<div className="flex">
 						<Button
@@ -260,7 +262,15 @@ export function EventCalendar(props: EventCalendarProps) {
 			<div className="flex-1 overflow-auto">
 				<div className="grid grid-cols-7 border-l">
 					{/* Day headers */}
-					{["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"].map((day) => (
+					{[
+						t("days.mon"),
+						t("days.tue"),
+						t("days.wed"),
+						t("days.thu"),
+						t("days.fri"),
+						t("days.sat"),
+						t("days.sun"),
+					].map((day) => (
 						<div
 							key={day}
 							className="h-12 border-b border-r px-2 py-1 font-medium"
@@ -379,7 +389,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																	<div className="text-sm space-y-1">
 																		<div className="grid grid-cols-[auto,1fr] gap-2">
 																			<span className="font-medium">
-																				Početak:
+																				{t("eventDetails.start")}:
 																			</span>
 																			<span>
 																				{format(
@@ -392,7 +402,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																			{event.dateEnd && (
 																				<>
 																					<span className="font-medium">
-																						Kraj:
+																						{t("eventDetails.end")}:
 																					</span>
 																					<span>
 																						{format(
@@ -407,7 +417,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																			{event.location && (
 																				<>
 																					<span className="font-medium">
-																						Lokacija:
+																						{t("eventDetails.location")}:
 																					</span>
 																					<span>{event.location}</span>
 																				</>
@@ -416,7 +426,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																			{event?.costPerPerson && (
 																				<>
 																					<span className="font-medium">
-																						Cijena:
+																						{t("eventDetails.cost")}:
 																					</span>
 																					<span>{event.costPerPerson} KM</span>
 																				</>
@@ -443,12 +453,12 @@ export function EventCalendar(props: EventCalendarProps) {
 																			}}
 																		>
 																			<Plus className="h-4 w-4 mr-2" />
-																			Prijavi se <BadgeSoon className="ml-2" />
+																			{t("eventDetails.apply")}{" "}
+																			<BadgeSoon className="ml-2" />
 																		</Button>
 																	) : (
 																		<p className="text-sm text-muted-foreground text-center mt-2">
-																			Prijave za ovaj susret trenutno nisu
-																			otvorene
+																			{t("eventDetails.registrationsClosed")}
 																		</p>
 																	)}
 																</div>

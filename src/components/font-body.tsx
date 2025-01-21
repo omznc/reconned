@@ -1,6 +1,6 @@
 "use client";
 
-import { useFont } from "@/components/font-switcher";
+import { useFont } from "@/components/personalization/font/font-provider";
 import { useEffect, useState, type ReactNode } from "react";
 
 interface FontBodyProps {

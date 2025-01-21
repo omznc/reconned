@@ -1,8 +1,7 @@
 "use client";
-
-import { useFont } from "@/components/font-switcher";
+import { FontSwitcher } from "@/components/personalization/font/font-switcher";
+import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -18,15 +17,14 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, LogOut, Moon, Sun, Type } from "lucide-react";
-import { useTheme } from "next-themes";
+import { ChevronsUpDown, LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
+	const t = useTranslations("components.sidebar");
 	const { user } = useIsAuthenticated();
-	const { theme, setTheme } = useTheme();
-	const { font, setFont } = useFont();
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
@@ -38,10 +36,7 @@ export function UserSwitcher() {
 						>
 							<Avatar className="h-8 w-8 rounded-lg">
 								{user?.image && (
-									<AvatarImage
-										src={user?.image}
-										alt={user?.name}
-									/>
+									<AvatarImage src={user?.image} alt={user?.name} />
 								)}
 								<AvatarFallback className="rounded-lg">
 									{user?.name?.charAt(0).toUpperCase()}
@@ -75,36 +70,23 @@ export function UserSwitcher() {
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuLabel>Personalizacija</DropdownMenuLabel>
+						<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>
 						<DropdownMenuItem asChild={true}>
-							<Button
-								variant="ghost"
-								onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-								suppressHydrationWarning
-								className="w-full items-center justify-start cursor-pointer"
-							>
-								<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-								<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-								Promijeni temu
-							</Button>
+							<ThemeSwitcher />
 						</DropdownMenuItem>
 
 						<DropdownMenuItem asChild={true}>
-							<Button
-								variant="ghost"
-								onClick={() => setFont(font === "sans" ? "mono" : "sans")}
-								suppressHydrationWarning
-								className="w-full items-center justify-start cursor-pointer"
-							>
-								<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-								Promijeni font
-							</Button>
+							<FontSwitcher />
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>
-							<Link href="/logout" prefetch={false} className="cursor-pointer plausible-event-name=logout-sidebar-click">
+							<Link
+								href="/logout"
+								prefetch={false}
+								className="cursor-pointer plausible-event-name=logout-sidebar-click"
+							>
 								<LogOut />
-								Odjava
+								{t("logout")}
 							</Link>
 						</DropdownMenuItem>
 					</DropdownMenuContent>

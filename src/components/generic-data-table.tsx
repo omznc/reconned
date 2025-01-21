@@ -31,6 +31,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 // Dot notation path type
 type DotNotation<T extends object> = {
@@ -149,6 +150,7 @@ export function GenericDataTable<T>({
 	totalPages,
 	tableConfig,
 }: GenericTableProps<T>) {
+	const t = useTranslations("components.table");
 	const [search, setSearch] = useQueryState("search", { shallow: false });
 	const [page, setPage] = useQueryState("page", {
 		defaultValue: "1",
@@ -302,7 +304,7 @@ export function GenericDataTable<T>({
 
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="outline">Prikaži kolone</Button>
+						<Button variant="outline">{t("showColumns")}</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-[200px]">
 						{columns.map((column) => (
@@ -349,12 +351,14 @@ export function GenericDataTable<T>({
 						className="h-9 px-2 lg:px-3"
 					>
 						<X className="h-4 w-4" />
-						<span className="ml-2 md:hidden inline lg:inline">Ukloni</span>
+						<span className="ml-2 md:hidden inline lg:inline">
+							{t("filters.clear")}
+						</span>
 					</Button>
 				)}
 
 				<div className="ml-auto text-sm text-muted-foreground">
-					Stranica {page} od {totalPages}
+					{t("navigation.page", { page, total: totalPages })}
 				</div>
 			</div>
 
@@ -390,7 +394,7 @@ export function GenericDataTable<T>({
 									colSpan={columns.length}
 									className="text-center h-24"
 								>
-									Nema pronađenih podataka
+									{t("noData")}
 								</TableCell>
 							</TableRow>
 						) : (
@@ -417,7 +421,7 @@ export function GenericDataTable<T>({
 			<div className="space-y-4 md:hidden">
 				{data.length === 0 ? (
 					<div className="text-center py-8 text-muted-foreground">
-						Nema pronađenih podataka
+						{t("noData")}
 					</div>
 				) : (
 					data.map((item, idx) => (
@@ -450,14 +454,14 @@ export function GenericDataTable<T>({
 					onClick={() => setPage((prev) => String(Number(prev) - 1))}
 					disabled={page === "1"}
 				>
-					Nazad
+					{t("navigation.previous")}
 				</Button>
 				<Button
 					variant="outline"
 					onClick={() => setPage((prev) => String(Number(prev) + 1))}
 					disabled={Number(page) >= totalPages}
 				>
-					Naprijed
+					{t("navigation.next")}
 				</Button>
 			</div>
 		</div>

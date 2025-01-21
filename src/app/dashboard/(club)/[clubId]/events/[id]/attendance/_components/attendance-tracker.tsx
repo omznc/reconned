@@ -14,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import type { Event, EventRegistration, User } from "@prisma/client";
 import { toggleAttendance } from "@/app/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance.action";
+import { useTranslations } from "next-intl";
 
 type ExtendedEventRegistration = EventRegistration & {
 	invitedUsers: User[];
@@ -36,6 +37,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const [optimisticRegistrations, setOptimisticRegistrations] = useState<
 		Record<string, ExtendedEventRegistration>
 	>({});
+	const t = useTranslations("dashboard.club.events.attendenceTracking");
 
 	const registrations = event.eventRegistration.map((reg) => ({
 		...reg,
@@ -87,7 +89,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				...prev,
 				[registration.id]: registration,
 			}));
-			toast.error("Došlo je do greške");
+			toast.error(t("error"));
 		} finally {
 			setIsLoading(null);
 		}
@@ -115,10 +117,12 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 								<HoverCard openDelay={100}>
 									<HoverCardTrigger asChild>
 										<p className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-											+{" "}
-											{registration.invitedUsers.length +
-												registration.invitedUsersNotOnApp.length}{" "}
-											drugih <Eye className="h-4 w-4 inline" />
+											{t("others", {
+												count:
+													registration.invitedUsers.length +
+													registration.invitedUsersNotOnApp.length,
+											})}
+											<Eye className="h-4 w-4 inline" />
 										</p>
 									</HoverCardTrigger>
 									<HoverCardContent className="w-64 p-2">
@@ -134,8 +138,11 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 													<span className="text-sm">{user.name}</span>
 												</div>
 											))}
-											{registration.invitedUsersNotOnApp.map((user, idx) => (
-												<div key={idx} className="flex items-center gap-2">
+											{registration.invitedUsersNotOnApp.map((user) => (
+												<div
+													key={`${user.email}-${user.name}-avatar`}
+													className="flex items-center gap-2"
+												>
 													<Avatar className="h-6 w-6">
 														<AvatarFallback className="text-xs">
 															{user.name?.slice(0, 2).toUpperCase()}
@@ -171,14 +178,14 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	return (
 		<div className="space-y-4 w-full max-w-3xl">
 			<Input
-				placeholder="Pretraži učesnike..."
+				placeholder={t("search")}
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
 			/>
 			<div className="grid md:grid-cols-2 gap-4">
 				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">
-						Registrovani ({notAttending.length})
+						{t("registered")} ({notAttending.length})
 					</h2>
 					{notAttending.map((registration) => (
 						<RegistrationCard
@@ -188,7 +195,9 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 					))}
 				</div>
 				<div className="space-y-4 w-fit">
-					<h2 className="font-semibold">Prisutni ({attendees.length})</h2>
+					<h2 className="font-semibold">
+						{t("attending")} ({attendees.length})
+					</h2>
 					{attendees.map((registration) => (
 						<RegistrationCard
 							key={registration.id}

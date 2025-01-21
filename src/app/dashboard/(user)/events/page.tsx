@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 import { EventsTable } from "@/app/dashboard/(user)/events/_components/events-table";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -18,6 +19,7 @@ export default async function Page(props: PageProps) {
 	const { search, sortBy, sortOrder, page } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = 10;
+	const t = await getTranslations("dashboard.events");
 
 	if (!user) {
 		return notFound();
@@ -74,7 +76,7 @@ export default async function Page(props: PageProps) {
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">Moji susreti</h3>
+				<h3 className="text-lg font-semibold">{t("title")}</h3>
 			</div>
 			<EventsTable
 				events={events}

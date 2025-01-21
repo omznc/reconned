@@ -9,6 +9,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
+import { getLocale } from "next-intl/server";
 
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -34,9 +35,12 @@ export const auth = betterAuth({
 			await sendEmail({
 				to: user.email,
 				subject: "Resetujte svoju lozinku",
-				html: await render(<PasswordReset userName={user.name} resetUrl={url} />, {
-					pretty: true,
-				})
+				html: await render(
+					<PasswordReset userName={user.name} resetUrl={url} />,
+					{
+						pretty: true,
+					},
+				),
 			});
 		},
 	},
@@ -89,6 +93,24 @@ export const auth = betterAuth({
 				input: true,
 				required: false,
 			},
+			language: {
+				type: "string",
+				default: "ba",
+				input: true,
+				required: false,
+			},
+			font: {
+				type: "string",
+				default: "sans",
+				input: true,
+				required: false,
+			},
+			theme: {
+				type: "string",
+				default: "dark",
+				input: true,
+				required: false,
+			},
 		},
 	},
 	databaseHooks: {
@@ -127,7 +149,7 @@ export const auth = betterAuth({
 						headers: {
 							"Content-Type": "application/json",
 							"User-Agent": "Reconned",
-							Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`
+							Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`,
 						},
 						body: JSON.stringify({
 							name: "signup",
@@ -137,15 +159,23 @@ export const auth = betterAuth({
 								distinct_id: user.id,
 								email: user.email,
 								name: user.name,
-							}
+							},
 						}),
+					});
+					const locale = await getLocale();
+					await prisma.user.update({
+						where: {
+							id: user.id,
+						},
+						data: {
+							language: locale,
+						},
 					});
 				},
 			},
 		},
 	},
 });
-
 
 export const isAuthenticated = cache(async () => {
 	const allHeaders = await headers();

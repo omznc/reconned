@@ -27,22 +27,23 @@ export default async function Page() {
 		headers: await headers(),
 	});
 
-	const backupCodes = await auth.api.viewBackupCodes({
-		body: {
-			userId: user.id,
-		},
-		headers: await headers(),
-	}).catch((e) => {
-		console.log(e);
-		return {
-			backupCodes: [],
-		};
-	});
+	const backupCodes = await auth.api
+		.viewBackupCodes({
+			body: {
+				userId: user.id,
+			},
+			headers: await headers(),
+		})
+		.catch((e) => {
+			console.log(e);
+			return {
+				backupCodes: [],
+			};
+		});
 
 	const sessions = await auth.api.listSessions({
 		headers: await headers(),
 	});
-
 
 	return (
 		<SecuritySettings
@@ -54,7 +55,7 @@ export default async function Page() {
 				...session,
 				isCurrentSession: session.id === user.session.id,
 				ipAddress: session.ipAddress ?? null,
-				userAgent: session.userAgent ?? null
+				userAgent: session.userAgent ?? null,
 			}))}
 		/>
 	);

@@ -5,11 +5,12 @@ import type { Post } from "@prisma/client";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { format, formatRelative } from "date-fns";
+import { formatRelative } from "date-fns";
 import { bs } from "date-fns/locale";
 import { useState } from "react";
 import "@/components/editor/editor.css";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface ClubPostProps {
 	post: Post & { createdAt: Date };
@@ -32,6 +33,7 @@ function isLongContent(content: string): boolean {
 }
 
 export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
+	const t = useTranslations("components.post");
 	const [isExpanded, setIsExpanded] = useState(false);
 	const content = post.content;
 	const isOverflowing = isLongContent(content);
@@ -42,9 +44,10 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 				<div className="space-y-1">
 					<h3 className="font-medium">{post.title}</h3>
 					<p className="text-sm text-muted-foreground">
-						Objavljeno{" "}
-						{formatRelative(post.createdAt, new Date(), {
-							locale: bs,
+						{t("published", {
+							date: formatRelative(post.createdAt, new Date(), {
+								locale: bs,
+							}),
 						})}
 					</p>
 				</div>
@@ -76,7 +79,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					onClick={() => setIsExpanded(!isExpanded)}
 					className="w-full"
 				>
-					{isExpanded ? "Prikaži manje" : "Pročitaj više"}
+					{isExpanded ? t("showLess") : t("readMore")}
 				</Button>
 			)}
 			{post.images?.length > 0 && (

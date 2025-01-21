@@ -35,7 +35,7 @@ export function ManagersTable({
 	pageSize,
 }: ManagersTableProps) {
 	const confirm = useConfirm();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 
 	const handleDemote = async (manager: Manager) => {
 		const confirmed = await confirm({
@@ -50,7 +50,7 @@ export function ManagersTable({
 
 		const response = await demoteFromManager({
 			memberId: manager.id,
-			clubId: params.clubId
+			clubId: params.clubId,
 		});
 
 		if (!response?.data?.success) {

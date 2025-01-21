@@ -49,7 +49,12 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import { ArrowUpRight, Calendar as CalendarIcon, Loader, Trash } from "lucide-react";
+import {
+	ArrowUpRight,
+	Calendar as CalendarIcon,
+	Loader,
+	Trash,
+} from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -66,12 +71,16 @@ import { SlugInput } from "@/components/slug/slug-input";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import type { Country } from "@/lib/countries";
+import type { Country } from "@/lib/cached-countries";
+import { useTranslations } from "next-intl";
 
 // Dynamically import map to avoid SSR issues
-const MapSelector = dynamic(() => import("@/app/(public)/map/_components/clubs-map").then(m => m.ClubsMap), {
-	ssr: false,
-});
+const MapSelector = dynamic(
+	() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap),
+	{
+		ssr: false,
+	},
+);
 
 interface ClubInfoFormProps {
 	club?: Club | null;
@@ -87,6 +96,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
 	const confirm = useConfirm();
+	const t = useTranslations("dashboard.club.info");
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -147,7 +157,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				});
 
 				if (!resp?.data?.url) {
-					toast.error("Došlo je do greške prilikom uploada slike");
+					toast.error(t("photoUploadError"));
 					return;
 				}
 
@@ -171,7 +181,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			 */
 			if (files?.[0] && !props.club?.id) {
 				if (!newClubId) {
-					toast.error("Došlo je do greške prilikom kreiranja kluba");
+					toast.error(t("clubCreationError"));
 					return;
 				}
 				const resp = await getClubImageUploadUrl({
@@ -183,7 +193,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				});
 
 				if (!resp?.data?.url) {
-					toast.error("Došlo je do greške prilikom uploada slike");
+					toast.error(t("photoUploadError"));
 					return;
 				}
 
@@ -216,11 +226,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 			setFiles([]);
 
-			toast.success(
-				props.club?.id ? "Podataci o klubu su sačuvani" : "Klub je kreiran",
-			);
+			toast.success(props.club?.id ? t("clubSaved") : t("clubCreationSuccess"));
 		} catch (error) {
-			toast.error("Došlo je do greške.");
+			toast.error(t("error"));
 		}
 		setIsLoading(false);
 	}
@@ -234,10 +242,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				{props.club && (
 					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>Mijenjate podatke o klubu</AlertTitle>
-							<AlertDescription>
-								Promjene će biti vidljive odmah nakon što ih sačuvate.
-							</AlertDescription>
+							<AlertTitle>{t("clubEditTitle")}</AlertTitle>
+							<AlertDescription>{t("clubEditDescription")}</AlertDescription>
 						</div>
 						<div className="flex gap-1">
 							{props.isClubOwner && (
@@ -248,11 +254,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									className="w-fit"
 									onClick={async () => {
 										const resp = await confirm({
-											title: "Jeste li sigurni?",
-											body: "Ako obrišete klub, nećete ga moći vratiti nazad.",
+											title: t("clubDelete.title"),
+											body: t("clubDelete.body"),
 											actionButtonVariant: "destructive",
-											actionButton: `Obriši ${props.club?.name}`,
-											cancelButton: "Ne, vrati se",
+											actionButton: t("clubDelete.confirm"),
+											cancelButton: t("clubDelete.cancel"),
 										});
 										if (resp) {
 											setIsLoading(true);
@@ -268,7 +274,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									{isLoading ? (
 										<Loader className="animate-spin size-4" />
 									) : (
-										"Obriši klub"
+										t("clubDelete.confirm")
 									)}
 								</Button>
 							)}
@@ -276,7 +282,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					</Alert>
 				)}
 				<div>
-					<h3 className="text-lg font-semibold">Općento</h3>
+					<h3 className="text-lg font-semibold">{t("general")}</h3>
 				</div>
 				<FormField
 					control={form.control}
@@ -284,13 +290,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Ime kluba* ({form.watch("name")?.length}/
+								{t("name")}* ({form.watch("name")?.length}/
 								{clubInfoSchema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
-								<Input placeholder="ASK Veis" type="text" {...field} />
+								<Input placeholder="Veis" type="text" {...field} />
 							</FormControl>
-							<FormDescription>Javno vidljivo ime vašeg kluba</FormDescription>
+							<FormDescription>{t("nameDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -301,7 +307,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="countryId"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>Država*</FormLabel>
+							<FormLabel>{t("country")}*</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -311,22 +317,23 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											aria-expanded={open}
 											className={cn(
 												"w-full justify-between",
-												!field.value && "text-muted-foreground"
+												!field.value && "text-muted-foreground",
 											)}
 										>
 											{field.value
-												? props.countries.find((country) => country.id === field.value)?.name
-												: "Odaberite državu"}
+												? props.countries.find(
+														(country) => country.id === field.value,
+													)?.name
+												: t("pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
 								</PopoverTrigger>
 								<PopoverContent className="w-full p-0">
 									<Command>
-										<CommandInput placeholder="Pretraži države..." />
-										<CommandEmpty>Nema rezultata.</CommandEmpty>
+										<CommandInput placeholder={t("searchCountry")} />
+										<CommandEmpty>{t("noResults")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
-
 											{props.countries.map((country) => (
 												<CommandItem
 													key={country.id}
@@ -341,7 +348,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 															"mr-2 h-4 w-4",
 															country.id === field.value
 																? "opacity-100"
-																: "opacity-0"
+																: "opacity-0",
 														)}
 													/>
 													{country.emoji} {country.name}
@@ -351,9 +358,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									</Command>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>
-								U kojoj državi se nalazi vaš klub?
-							</FormDescription>
+							<FormDescription>{t("countryDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -364,11 +369,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="location"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Grad*</FormLabel>
+							<FormLabel>{t("city")}*</FormLabel>
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
-							<FormDescription>U kojem ste gradu?</FormDescription>
+							<FormDescription>{t("cityDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -376,7 +381,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormItem>
 					<FormLabel className="flex items-center justify-between">
-						<span>Tačna lokacija</span>
+						<span>{t("exactLocation")}</span>
 						<Button
 							type="button"
 							variant="ghost"
@@ -388,29 +393,38 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							}
 							className="h-6 px-2 text-xs data-[hidden=true]:opacity-0"
 						>
-							Resetuj
+							{t("reset")}
 						</Button>
 					</FormLabel>
 					<FormControl>
 						<div className="h-[400px] w-full -z-10 rounded-lg overflow-hidden border">
 							<MapSelector
-								clubs={props.club
-									? [{
-										...props.club,
-										latitude: form.watch("latitude") || null,
-										longitude: form.watch("longitude") || null,
-										location: props.club.location || undefined,
-									}]
-									: []}
+								clubs={
+									props.club
+										? [
+												{
+													...props.club,
+													latitude: form.watch("latitude") || null,
+													longitude: form.watch("longitude") || null,
+													location: props.club.location || undefined,
+												},
+											]
+										: []
+								}
 								interactive={true}
 								onLocationSelect={handleLocationSelect}
 							/>
 						</div>
 					</FormControl>
 					<FormDescription>
-						Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <Link target="_blank" className="text-red-500" href="/map">mapi airsoft klubova
-							<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
-						</Link>
+						{t.rich("exactLocationDescription", {
+							link: () => (
+								<Link target="_blank" className="text-red-500" href="/map">
+									mapi airsoft klubova
+									<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
+								</Link>
+							),
+						})}
 					</FormDescription>
 				</FormItem>
 
@@ -437,7 +451,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								Opis kluba* ({form.watch("description")?.length}/
+								{t("description")}* ({form.watch("description")?.length}/
 								{clubInfoSchema.shape.description.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -447,9 +461,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>
-								Ovo je vaša prilika da se istaknete. Šta vaš klub čini posebnim.{" "}
-							</FormDescription>
+							<FormDescription>{t("descriptionDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -460,7 +472,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="dateFounded"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>Datum osnivanja*</FormLabel>
+							<FormLabel>{t("foundedDate")}*</FormLabel>
 							<Popover>
 								<PopoverTrigger asChild={true}>
 									<FormControl>
@@ -474,7 +486,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											{field.value ? (
 												format(field.value, "PPP")
 											) : (
-												<span>Pick a date</span>
+												<span>{t("chooseDate")}</span>
 											)}
 											<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 										</Button>
@@ -488,7 +500,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									/>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>Od kada je klub aktivan?</FormDescription>
+							<FormDescription>{t("foundedDateDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -500,11 +512,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>U savezu ASK FBIH</FormLabel>
-								<FormDescription>
-									Ako ste dio saveza airsoft klubova u FBIH, odaberite ovu
-									opciju. Provjeriti ćemo vaš status.
-								</FormDescription>
+								<FormLabel>{t("isAllied")}</FormLabel>
+								<FormDescription>{t("isAlliedDescription")}</FormDescription>
 							</div>
 							<FormControl>
 								<Switch
@@ -522,11 +531,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Privatni klub</FormLabel>
-								<FormDescription>
-									Sakrijte prikaz kliba javnosti. Preporučujemo da ovo ostavite
-									isključeno.
-								</FormDescription>
+								<FormLabel>{t("private")}</FormLabel>
+								<FormDescription>{t("privateDescription")}</FormDescription>
 							</div>
 							<FormControl>
 								<Switch
@@ -543,7 +549,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="logo"
 					render={() => (
 						<FormItem>
-							<FormLabel>Logo kluba</FormLabel>
+							<FormLabel>{t("logo")}</FormLabel>
 							<FormControl>
 								<FileUploader
 									key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
@@ -561,13 +567,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											<div className="flex items-center justify-center flex-col p-8 w-full ">
 												<CloudUpload className="text-gray-500 w-10 h-10" />
 												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													<span className="font-semibold">
-														Kliknite da dodate fajl
-													</span>
-													, ili ga samo prebacite ovde
+													{t("fileUpload")}
 												</p>
 												<p className="text-xs text-gray-500 dark:text-gray-400">
-													Dozvoljeni formati: JPG, JPEG, PNG
+													{t("fileUploadFormats")} JPG, JPEG, PNG
 												</p>
 											</div>
 										</FileInput>
@@ -591,9 +594,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									</FileUploaderContent>
 								</FileUploader>
 							</FormControl>
-							<FormDescription>
-								Preporučujemo da dodate vaš logo.
-							</FormDescription>
+							<FormDescription>{t("logoDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -612,11 +613,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									}
 
 									const resp = await confirm({
-										title: "Jeste li sigurni?",
-										body: "Ako obrišete logo, nećete ga moći vratiti nazad.",
+										title: t("logoDelete.title"),
+										body: t("logoDelete.body"),
 										actionButtonVariant: "destructive",
-										actionButton: "Obriši logo",
-										cancelButton: "Ne, vrati se",
+										actionButton: t("logoDelete.confirm"),
+										cancelButton: t("logoDelete.cancel"),
 									});
 
 									if (!resp) {
@@ -636,7 +637,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (
-									"Obriši trenutni logo"
+									t("logoDelete.confirm")
 								)}
 							</Button>
 						</HoverCardTrigger>
@@ -652,7 +653,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				)}
 
 				<div>
-					<h3 className="text-lg font-semibold">Kontakt</h3>
+					<h3 className="text-lg font-semibold">{t("contact")}</h3>
 				</div>
 
 				<FormField
@@ -660,7 +661,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="contactPhone"
 					render={({ field }) => (
 						<FormItem className="flex flex-col items-start">
-							<FormLabel>Telefon</FormLabel>
+							<FormLabel>{t("phone")}</FormLabel>
 							<FormControl className="w-full">
 								<PhoneInput
 									placeholder="063 000 000"
@@ -668,9 +669,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									defaultCountry="BA"
 								/>
 							</FormControl>
-							<FormDescription>
-								Ovaj broj telefona će biti javno prikazan za kontakt.
-							</FormDescription>
+							<FormDescription>{t("phoneDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -689,17 +688,18 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>
-								Ovaj e-mail će biti javno prikazan za kontakt.
-							</FormDescription>
+							<FormDescription>{t("emailDescription")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
-					{props.club ? "Spasi" : "Kreiraj klub"}
+				<LoaderSubmitButton
+					isLoading={isLoading}
+					disabled={!isSlugValid && !!form.watch("slug")}
+				>
+					{props.club ? t("save") : t("create")}
 				</LoaderSubmitButton>
-			</form >
-		</Form >
+			</form>
+		</Form>
 	);
 }

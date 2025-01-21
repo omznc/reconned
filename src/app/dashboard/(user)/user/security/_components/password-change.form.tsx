@@ -12,6 +12,7 @@ import {
 import { Input } from "@components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -20,7 +21,8 @@ import type { z } from "zod";
 export function PasswordChangeForm({
 	isLoading,
 	setIsLoading,
-}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>>; }) {
+}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>> }) {
+	const t = useTranslations("dashboard.security.passwordChange");
 	const changePasswordForm = useForm<z.infer<typeof passwordChangeSchema>>({
 		resolver: zodResolver(passwordChangeSchema),
 		defaultValues: {
@@ -46,19 +48,17 @@ export function PasswordChangeForm({
 					},
 					onError: () => {
 						setIsLoading(false);
-						toast.error("Došlo je do greške prilikom promjene lozinke.");
+						toast.error(t("error"));
 					},
 					onSuccess: () => {
 						setIsLoading(false);
-						toast.success("Lozinka uspješno promijenjena.");
+						toast.success(t("success"));
 					},
 				},
 			);
 			changePasswordForm.reset();
 		} catch (_e) {
-			toast(
-				"Došlo je do greške prilikom promjene lozinke. Molimo pokušajte ponovo.",
-			);
+			toast(t("error"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -71,14 +71,14 @@ export function PasswordChangeForm({
 				className="space-y-4 w-full"
 			>
 				<div>
-					<h3 className="text-lg font-semibold">Promijeni lozinku</h3>
+					<h3 className="text-lg font-semibold">{t("title")}</h3>
 				</div>
 				<FormField
 					control={changePasswordForm.control}
 					name="currentPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Trenutna lozinka</FormLabel>
+							<FormLabel>{t("currentPassword")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -91,7 +91,7 @@ export function PasswordChangeForm({
 					name="newPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Nova lozinka</FormLabel>
+							<FormLabel>{t("newPassword")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -104,7 +104,7 @@ export function PasswordChangeForm({
 					name="confirmPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Potvrdi novu lozinku</FormLabel>
+							<FormLabel>{t("confirmPassword")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -114,7 +114,7 @@ export function PasswordChangeForm({
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
 					<LockIcon className="w-4 h-4 mr-2" />
-					{isLoading ? "Mijenjanje lozinke..." : "Promijeni lozinku"}
+					{isLoading ? t("loading") : t("changePassword")}
 				</Button>
 			</form>
 		</Form>

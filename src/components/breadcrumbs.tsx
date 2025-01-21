@@ -157,5 +157,5 @@ const TRANSLATIONS = {
 	emails: "Emailovi",
 	posts: "Nova objava",
 	spending: "Potrošnja",
-	'add-club': "Dodaj klub",
+	"add-club": "Dodaj klub",
 };

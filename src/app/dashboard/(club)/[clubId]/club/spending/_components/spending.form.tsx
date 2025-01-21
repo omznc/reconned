@@ -29,7 +29,6 @@ import { toast } from "sonner";
 import { createPurchase, getPurchaseReceiptUploadUrl } from "./spending.action";
 import type { PurchaseFormValues } from "@/app/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { purchaseFormSchema } from "@/app/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import {
 	FileUploader,
 	FileInput,
@@ -48,7 +47,7 @@ interface FileUploadProgress {
 
 export function AddPurchaseModal() {
 	const [open, setOpen] = useState(false);
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const form = useForm<PurchaseFormValues>({
 		resolver: zodResolver(purchaseFormSchema),
@@ -276,7 +275,7 @@ export function AddPurchaseModal() {
 														className={cn(
 															"outline-dashed outline-1 outline-slate-500",
 															!canAddMoreFiles &&
-															"opacity-50 cursor-not-allowed pointer-events-none",
+																"opacity-50 cursor-not-allowed pointer-events-none",
 														)}
 													>
 														<div className="flex items-center justify-center flex-col p-8 w-full">

@@ -12,6 +12,10 @@ model User {
   callsign      String?
   gear          Json[]
 
+  language String @default("ba")
+  font     String @default("sans")
+  theme    String @default("dark")
+
   // Privacy
   isPrivate      Boolean @default(false)
   isPrivateEmail Boolean @default(true)

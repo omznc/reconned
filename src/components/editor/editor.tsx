@@ -62,13 +62,12 @@ export const Editor = ({
 			Link.configure({
 				openOnClick: false,
 				autolink: true,
-				defaultProtocol: 'https',
-				protocols: ['http', 'https'],
+				defaultProtocol: "https",
+				protocols: ["http", "https"],
 				HTMLAttributes: {
-					class: 'text-primary underline',
+					class: "text-primary underline",
 				},
 			}),
-
 		],
 		content: initialValue,
 		editable,
@@ -83,7 +82,7 @@ export const Editor = ({
 			return;
 		}
 
-		const previousUrl = editor.getAttributes('link').href;
+		const previousUrl = editor.getAttributes("link").href;
 		const url = await prompt({
 			title: "Unesi link",
 			body: "Ako ne unesete http:// ili https://, automatski će se dodati https://",
@@ -101,12 +100,12 @@ export const Editor = ({
 			return;
 		}
 
-		if (url === '') {
+		if (url === "") {
 			editor.chain().focus().unsetLink().run();
 			return;
 		}
 
-		if (!(url.startsWith('http://') || url.startsWith('https://'))) {
+		if (!(url.startsWith("http://") || url.startsWith("https://"))) {
 			editor.chain().focus().unsetLink().run();
 			return;
 		}
@@ -191,16 +190,13 @@ export const Editor = ({
 
 					<div className="w-px h-6 bg-border mx-1" />
 
-					<ToolbarButton
-						onClick={setLink}
-						active={editor.isActive('link')}
-					>
+					<ToolbarButton onClick={setLink} active={editor.isActive("link")}>
 						<LinkIcon className="h-4 w-4" />
 					</ToolbarButton>
 
 					<ToolbarButton
 						onClick={() => editor.chain().focus().unsetLink().run()}
-						disabled={!editor.isActive('link')}
+						disabled={!editor.isActive("link")}
 					>
 						<Link2Off className="h-4 w-4" />
 					</ToolbarButton>
@@ -209,10 +205,7 @@ export const Editor = ({
 
 			<div
 				onClick={handleContainerClick}
-				className={cn(
-					"cursor-text",
-					editable ? "min-h-[150px]" : ""
-				)}
+				className={cn("cursor-text", editable ? "min-h-[150px]" : "")}
 			>
 				<EditorContent
 					editor={editor}

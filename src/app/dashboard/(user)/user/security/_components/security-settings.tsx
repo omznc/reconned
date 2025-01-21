@@ -8,7 +8,16 @@ import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { authClient } from "@auth/client";
 import { Button } from "@components/ui/button";
 import { formatDate, formatDistanceToNow } from "date-fns";
-import { Dice5, Download, KeyRound, Trash2, Phone, MonitorSmartphone, Laptop, TabletSmartphone, Smartphone, Tablet, ShieldQuestion } from "lucide-react";
+import {
+	Dice5,
+	Download,
+	KeyRound,
+	Trash2,
+	Laptop,
+	Smartphone,
+	Tablet,
+	ShieldQuestion,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
@@ -18,6 +27,7 @@ import type { Session } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import type { Passkey } from "better-auth/plugins/passkey";
+import { useTranslations } from "next-intl";
 
 interface SecuritySettingsProps {
 	passkeys: Passkey[];
@@ -39,6 +49,7 @@ export function SecuritySettings({
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const prompt = usePrompt();
+	const t = useTranslations("dashboard.security.securitySettings");
 
 	const getDeviceIcon = (userAgent?: string) => {
 		if (!userAgent) return ShieldQuestion;
@@ -66,9 +77,14 @@ export function SecuritySettings({
 						<div className="flex flex-col">
 							<AlertTitle>{passkey.name ?? "Passkey"}</AlertTitle>
 							<AlertDescription>
-								Kreiran{" "}
+								{/* Kreiran{" "}
 								{passkey.createdAt &&
-									formatDate(passkey.createdAt, "dd.MM.yyyy")}
+									formatDate(passkey.createdAt, "dd.MM.yyyy")} */}
+								{t("createdAt", {
+									date:
+										passkey.createdAt &&
+										formatDate(passkey.createdAt, "dd.MM.yyyy"),
+								})}
 							</AlertDescription>
 						</div>
 						<Button
@@ -100,11 +116,8 @@ export function SecuritySettings({
 				))}
 				<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 					<div className="flex flex-col">
-						<AlertTitle>Dodaj novi passkey</AlertTitle>
-						<AlertDescription>
-							Dodajte novi passkey za brže i sigurnije prijavljivanje na vaš
-							račun.
-						</AlertDescription>
+						<AlertTitle>{t("addNewPasskey")}</AlertTitle>
+						<AlertDescription>{t("addNewPasskeyDescription")}</AlertDescription>
 					</div>
 					<Button
 						type="button"
@@ -129,36 +142,31 @@ export function SecuritySettings({
 						}}
 					>
 						<KeyRound className="w-4 h-4 mr-2" />
-						Dodaj
+						{t("add")}
 						<BadgeSoon />
 					</Button>
 				</Alert>
 			</div>
 			<div className="flex flex-col gap-1">
-				<h3 className="text-lg font-semibold">2-faktorska autentikacija</h3>
+				<h3 className="text-lg font-semibold">{t("twoFactor")}</h3>
 			</div>
-			{
-				!hasPassword && (
-					<Alert className="flex flex-col gap-1">
-						<AlertTitle>2-faktorska autentikacija nije dostupna</AlertTitle>
-						<AlertDescription>
-							Da biste koristili 2-faktorsku autentikaciju, morate prvo postaviti
-							lozinku.
-						</AlertDescription>
-					</Alert>
-				)
-			}
+			{!hasPassword && (
+				<Alert className="flex flex-col gap-1">
+					<AlertTitle>{t("twoFactorUnavailable")}</AlertTitle>
+					<AlertDescription>
+						{t("twoFactorUnavailableDescription")}
+					</AlertDescription>
+				</Alert>
+			)}
 			{hasPassword && (
 				<div className="space-y-2">
 					{hasTwoFactor ? (
 						<>
 							<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 								<div className="flex flex-col">
-									<AlertTitle>Isključi 2-faktorsku autentikaciju</AlertTitle>
+									<AlertTitle>{t("twoFactorDisable")}</AlertTitle>
 									<AlertDescription>
-										Ukoliko isključite 2-faktorsku autentikaciju, bićete u
-										mogućnosti da se prijavite na vaš nalog bez potvrde putem
-										aplikacije.
+										{t("twoFactorDisableDescription")}
 									</AlertDescription>
 								</div>
 								<Button
@@ -168,11 +176,11 @@ export function SecuritySettings({
 									className="w-full md:w-auto"
 									onClick={async () => {
 										const confirmed = await prompt({
-											cancelButton: "Otkaži",
+											cancelButton: t("twoFactorDisablePrompt.cancel"),
 											cancelButtonVariant: "ghost",
-											title: "Isključi 2-faktorsku autentikaciju",
-											body: "Da li ste sigurni da želite isključiti 2-faktorsku autentikaciju? Ako jeste, upišite svoju lozinku.",
-											actionButton: "Isključi",
+											title: t("twoFactorDisablePrompt.title"),
+											body: t("twoFactorDisablePrompt.body"),
+											actionButton: t("twoFactorDisablePrompt.confirm"),
 											inputType: "input",
 											inputProps: {
 												type: "password",
@@ -197,36 +205,38 @@ export function SecuritySettings({
 												},
 												onError: () => {
 													setIsLoading(false);
-													toast.error("Neispavna lozinka, pokušajte ponovo.");
+													toast.error(
+														t("twoFactorDisablePrompt.invalidPassword"),
+													);
 												},
 											},
 										);
 									}}
 								>
-									Isključi
+									{t("disable")}
 								</Button>
 							</Alert>
 							<Alert className="flex flex-col gap-1">
 								<AlertTitle className="flex items-center justify-between">
-									<span>Rezervni kodovi</span>
+									<span>{t("backupCodes")}</span>
 									<div className="flex gap-2">
 										<Button
 											type="button"
 											variant="outline"
 											disabled={isLoading}
 											onClick={() => {
-												const text = backupCodes?.join('\n') ?? '';
-												const blob = new Blob([text], { type: 'text/plain' });
+												const text = backupCodes?.join("\n") ?? "";
+												const blob = new Blob([text], { type: "text/plain" });
 												const url = window.URL.createObjectURL(blob);
-												const a = document.createElement('a');
+												const a = document.createElement("a");
 												a.href = url;
-												a.download = 'rezervni-kodovi.txt';
+												a.download = "rezervni-kodovi.txt";
 												a.click();
 												window.URL.revokeObjectURL(url);
 											}}
 										>
 											<Download className="w-4 h-4 mr-2" />
-											Preuzmi kao txt
+											{t("download")}
 										</Button>
 										<Button
 											type="button"
@@ -260,25 +270,24 @@ export function SecuritySettings({
 														onSuccess: () => {
 															setIsLoading(false);
 															router.refresh();
-															toast.success("Rezervni kodovi su regenerisani.");
+															toast.success(t("regenerateSuccess"));
 														},
 														onError: () => {
 															setIsLoading(false);
-															toast.error("Neispravna lozinka ili druga greška.");
+															toast.error(t("regenerateError"));
 														},
-													}
+													},
 												);
 											}}
 										>
 											<Dice5 className="w-4 h-4 mr-2" />
-											Regeneriši kodove
+											{t("regenerate")}
 											<BadgeSoon />
 										</Button>
 									</div>
 								</AlertTitle>
 								<AlertDescription>
-									Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom.
-									Sačuvajte ih na sigurno mjesto.
+									{t("regenerateDescription")}
 								</AlertDescription>
 								<div className="bg-background border p-4 mt-2 flex flex-wrap gap-2">
 									{backupCodes?.map((code) => (
@@ -288,7 +297,8 @@ export function SecuritySettings({
 												toast.success("Kopirano u clipboard.");
 											}}
 											key={code}
-											className="flex-grow cursor-pointer text-center bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono">
+											className="flex-grow cursor-pointer text-center bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono"
+										>
 											{code}
 										</code>
 									))}
@@ -298,10 +308,9 @@ export function SecuritySettings({
 					) : (
 						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 							<div className="flex flex-col">
-								<AlertTitle>Uključi 2-faktorsku autentikaciju</AlertTitle>
+								<AlertTitle>{t("twoFactorEnable")}</AlertTitle>
 								<AlertDescription>
-									Uključite 2-faktorsku autentikaciju na vaš nalog kako biste
-									dodali dodatni sloj sigurnosti.
+									{t("twoFactorEnableDescription")}
 								</AlertDescription>
 							</div>
 							<Button
@@ -310,11 +319,11 @@ export function SecuritySettings({
 								className="w-full md:w-auto"
 								onClick={async () => {
 									const password = await prompt({
-										cancelButton: "Otkaži",
+										cancelButton: t("twoFactorEnablePrompt.cancel"),
 										cancelButtonVariant: "ghost",
-										title: "Uključi 2-faktorsku autentikaciju",
-										body: "Da li ste sigurni da želite uključiti 2-faktorsku autentikaciju? Ako jeste, upišite svoju lozinku.",
-										actionButton: "Uključi",
+										title: t("twoFactorEnablePrompt.title"),
+										body: t("twoFactorEnablePrompt.body"),
+										actionButton: t("twoFactorEnablePrompt.confirm"),
 										inputType: "input",
 										inputProps: {
 											type: "password",
@@ -349,22 +358,16 @@ export function SecuritySettings({
 									}
 
 									const confirmed = await prompt({
-										cancelButton: "Otkaži",
+										cancelButton: t("twoFactorEnablePrompt.cancel"),
 										cancelButtonVariant: "ghost",
-										title: "Uključi 2-faktorsku autentikaciju",
+										title: t("twoFactorEnablePrompt.title"),
 										body: (
 											<div className="space-y-2">
-												<p>
-													Skenirajte QR kod sa vašom aplikacijom za
-													2-faktorsku autentikaciju.
-												</p>
+												<p>{t("twoFactorConfirmPrompt.scanQr")}</p>
 												<div className="bg-white p-2 w-fit">
 													<QRCodeSVG value={resp.data.totpURI} />
 												</div>
-												<p>
-													Ukoliko ne možete skenirati QR kod, upišite ovaj kod
-													u vašu aplikaciju:
-												</p>
+												<p>{t("twoFactorConfirmPrompt.enterCode")}</p>
 												<code className="font-semibold">
 													{
 														resp.data.totpURI
@@ -373,12 +376,11 @@ export function SecuritySettings({
 													}
 												</code>
 												<span className="block mt-2">
-													Unesite kod sa vaše aplikacije za 2-faktorsku
-													autentikaciju:
+													{t("twoFactorConfirmPrompt.verifyCode")}
 												</span>
 											</div>
 										),
-										actionButton: "Uključi",
+										actionButton: t("twoFactorEnablePrompt.confirm"),
 										inputType: "input",
 										inputProps: {
 											type: "text",
@@ -402,49 +404,52 @@ export function SecuritySettings({
 												router.refresh();
 											},
 											onError: () => {
-												setIsLoading(false); toast.error("Neispavan kod, pokušajte ponovo.");
+												setIsLoading(false);
+												toast.error(t("twoFactorConfirmPrompt.invalidCode"));
 											},
 										},
 									);
 								}}
 							>
-								Uključi
+								{t("twoFactorConfirmPrompt.confirm")}
 							</Button>
 						</Alert>
 					)}
 				</div>
 			)}
 			<div className="flex flex-col gap-1">
-				<h3 className="text-lg font-semibold">Aktivne sesije</h3>
+				<h3 className="text-lg font-semibold">{t("activeSessions")}</h3>
 				<p className="text-sm text-muted-foreground">
-					Sesija je mjesto gdje ste prijavljeni na vaš nalog. Ovdje možete
-					vidjeti sve aktivne sesije i ukinuti ih.
+					{t("activeSessionsDescription")}
 				</p>
 			</div>
 			{sessions.length > 1 && (
 				<Alert>
 					<AlertDescription className="flex justify-between items-center">
-						<span>Ukinite sve ostale aktivne sesije osim trenutne</span>
+						<span>{t("logoutAll")}</span>
 						<Button
 							type="button"
 							variant="destructive"
 							disabled={isLoading}
 							onClick={async () => {
-								await authClient.revokeOtherSessions({}, {
-									onRequest: () => setIsLoading(true),
-									onSuccess: () => {
-										setIsLoading(false);
-										router.refresh();
-										toast.success("Sve ostale sesije su ukinute");
+								await authClient.revokeOtherSessions(
+									{},
+									{
+										onRequest: () => setIsLoading(true),
+										onSuccess: () => {
+											setIsLoading(false);
+											router.refresh();
+											toast.success(t("logoutAllSuccess"));
+										},
+										onError: () => {
+											setIsLoading(false);
+											toast.error(t("logoutAllError"));
+										},
 									},
-									onError: () => {
-										setIsLoading(false);
-										toast.error("Došlo je do greške");
-									},
-								});
+								);
 							}}
 						>
-							Ukini sve ostale
+							{t("logoutAllAction")}
 						</Button>
 					</AlertDescription>
 				</Alert>
@@ -456,11 +461,12 @@ export function SecuritySettings({
 						return (
 							<Alert
 								key={session.id}
-								className={
-									cn("flex flex-col md:flex-row gap-1 justify-between -z-0", {
+								className={cn(
+									"flex flex-col md:flex-row gap-1 justify-between -z-0",
+									{
 										"bg-primary/10": session.isCurrentSession,
-									})
-								}
+									},
+								)}
 							>
 								<div className="flex gap-4 items-center">
 									<Icon className="w-8 h-8" />
@@ -469,19 +475,22 @@ export function SecuritySettings({
 											{session.userAgent?.split("/")[0] || "Nepoznat uređaj"}
 											{session.isCurrentSession && (
 												<span className="text-xs border bg-background text-primary px-2 py-1">
-													Trenutna sesija
+													{t("currentSession")}
 												</span>
 											)}
 										</AlertTitle>
 										<AlertDescription>
 											{session.ipAddress && (
-												<span className="block text-xs">IP: {session.ipAddress}</span>
+												<span className="block text-xs">
+													IP: {session.ipAddress}
+												</span>
 											)}
 											<span className="block text-xs">
-												Posljednji put korišteno:{" "}
-												{formatDistanceToNow(session.updatedAt, {
-													addSuffix: true,
-													locale: bs,
+												{t("sessionLastUsed", {
+													date: formatDistanceToNow(session.updatedAt, {
+														addSuffix: true,
+														locale: bs,
+													}),
 												})}
 											</span>
 										</AlertDescription>
@@ -501,13 +510,13 @@ export function SecuritySettings({
 													onSuccess: () => {
 														setIsLoading(false);
 														router.refresh();
-														toast.success("Sesija je uspješno ukinuta");
+														toast.success(t("logoutSingleSuccess"));
 													},
 													onError: () => {
 														setIsLoading(false);
-														toast.error("Došlo je do greške");
+														toast.error(t("logoutSingleError"));
 													},
-												}
+												},
 											);
 										}}
 									>
