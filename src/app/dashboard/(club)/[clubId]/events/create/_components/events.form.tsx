@@ -74,6 +74,7 @@ import {
 } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SlugInput } from "@/components/slug/slug-input";
+import { useTranslations } from "next-intl";
 
 export const MapComponent = dynamic(
 	() => import("@/components/map-component").then((mod) => mod.MapComponent),
@@ -87,66 +88,7 @@ interface CreateEventFormProps {
 	rules: ClubRule[];
 }
 
-function EventTimelineDescription({
-	dateRegistrationsOpen,
-	dateRegistrationsClose,
-	dateStart,
-	dateEnd,
-}: {
-	dateRegistrationsOpen: Date;
-	dateRegistrationsClose: Date;
-	dateStart: Date;
-	dateEnd: Date;
-}) {
-	// Add validation check
-	if (
-		!(dateRegistrationsOpen && dateRegistrationsClose && dateStart && dateEnd)
-	) {
-		return null;
-	}
 
-	const now = new Date();
-
-	const regOpenDiff = dateRegistrationsOpen.getTime() - now.getTime();
-	const regCloseDiff = dateRegistrationsClose.getTime() - now.getTime();
-	const startDiff = dateStart.getTime() - now.getTime();
-	const eventDuration =
-		(dateEnd.getTime() - dateStart.getTime()) / (1000 * 60 * 60);
-
-	const parts = [] as ReactNode[];
-
-	if (regOpenDiff > 0) {
-		const days = Math.floor(regOpenDiff / (1000 * 60 * 60 * 24));
-		parts.push(
-			<span key="regOpen">
-				Registracije se otvaraju za <AnimatedNumber value={days} /> dan/a
-			</span>,
-		);
-	} else if (regCloseDiff > 0) {
-		parts.push(<span key="regOpen">Registracije su otvorene</span>);
-	} else {
-		parts.push(<span key="regClose">Registracije su zatvorene</span>);
-	}
-
-	if (startDiff > 0) {
-		const days = Math.floor(startDiff / (1000 * 60 * 60 * 24));
-		parts.push(
-			<span key="start">
-				, susret počinje za <AnimatedNumber value={days} /> dan/a
-			</span>,
-		);
-	} else {
-		parts.push(<span key="start">, susret je počeo</span>);
-	}
-
-	parts.push(
-		<span key="duration">
-			, traje <AnimatedNumber value={Math.round(eventDuration)} /> sati/a.
-		</span>,
-	);
-
-	return <p className="text-sm text-muted-foreground min-h-[50px]">{parts}</p>;
-}
 
 export default function CreateEventForm(props: CreateEventFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
@@ -154,6 +96,85 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
+	const t = useTranslations("dashboard.club.events.create");
+
+	function EventTimelineDescription({
+		dateRegistrationsOpen,
+		dateRegistrationsClose,
+		dateStart,
+		dateEnd,
+	}: {
+		dateRegistrationsOpen: Date;
+		dateRegistrationsClose: Date;
+		dateStart: Date;
+		dateEnd: Date;
+	}) {
+		// Add validation check
+		if (
+			!(dateRegistrationsOpen && dateRegistrationsClose && dateStart && dateEnd)
+		) {
+			return null;
+		}
+
+		const now = new Date();
+
+		const regOpenDiff = dateRegistrationsOpen.getTime() - now.getTime();
+		const regCloseDiff = dateRegistrationsClose.getTime() - now.getTime();
+		const startDiff = dateStart.getTime() - now.getTime();
+		const eventDuration =
+			(dateEnd.getTime() - dateStart.getTime()) / (1000 * 60 * 60);
+
+		const parts = [] as ReactNode[];
+
+		if (regOpenDiff > 0) {
+			const days = Math.floor(regOpenDiff / (1000 * 60 * 60 * 24));
+			parts.push(
+				<span key="regOpen">
+					{
+						t.rich('registrationsOpenIn', {
+							number: () => <AnimatedNumber value={days} />,
+						})
+					}
+				</span>,
+			);
+		} else if (regCloseDiff > 0) {
+			parts.push(<span key="regOpen">{
+				t('registrationsOpen')
+			}</span>);
+		} else {
+			parts.push(<span key="regClose">
+				{t('registrationsClosed')}
+			</span>);
+		}
+
+		if (startDiff > 0) {
+			const days = Math.floor(startDiff / (1000 * 60 * 60 * 24));
+			parts.push(
+				<span key="start">
+					{
+						t.rich('eventStartsIn', {
+							number: () => <AnimatedNumber value={days} />,
+						})
+					}
+				</span>,
+			);
+		} else {
+			parts.push(<span key="start">{t('eventStarted')}</span>);
+		}
+
+		parts.push(
+			<span key="duration">
+				{
+					t.rich('eventDuration', {
+						number: () => <AnimatedNumber value={Math.round(eventDuration)} />,
+					})
+				}
+			</span>,
+		);
+
+		return <p className="text-sm text-muted-foreground min-h-[50px]">{parts}</p>;
+	}
+
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -165,7 +186,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	};
 
 	const router = useRouter();
-	const clubId = useParams<{ clubId: string }>().clubId;
+	const clubId = useParams<{ clubId: string; }>().clubId;
 
 	const startDate = new Date();
 	startDate.setDate(startDate.getDate() + 15);
@@ -246,7 +267,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			const event = await createEvent(values);
 
 			if (!event?.data || event.serverError) {
-				toast.error("Došlo je do greške prilikom spašavanja podataka");
+				toast.error(t('error'));
 				return;
 			}
 
@@ -261,7 +282,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				});
 
 				if (!resp?.data?.url) {
-					toast.error("Došlo je do greške prilikom uploada slike");
+					toast.error(t("photoUploadError"));
 					return;
 				}
 
@@ -283,9 +304,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 
 			setFiles([]);
-			toast.success("Podataci o susretu su sačuvani");
+			toast.success(t("success"));
 		} catch (error) {
-			toast.error("Došlo je do greške prilikom spašavanja susreta");
+			toast.error(t("error"));
 		}
 		setIsLoading(false);
 	}
@@ -296,9 +317,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				{props.event?.id && (
 					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>Mijenjate susret</AlertTitle>
+							<AlertTitle>{t('editingTitle')}</AlertTitle>
 							<AlertDescription>
-								Ovaj susret je već kreiran, trenutno ga uređujete.
+								{t('editingDescription')}
 							</AlertDescription>
 						</div>
 						<div className="flex gap-1">
@@ -309,11 +330,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								className="w-fit"
 								onClick={async () => {
 									const resp = await confirm({
-										title: "Jeste li sigurni?",
-										body: "Ako obrišete susret, nećete ga moći vratiti nazad.",
+										title: t('delete.title'),
+										body: t('delete.body'),
 										actionButtonVariant: "destructive",
-										actionButton: `Obriši ${props.event?.name}`,
-										cancelButton: "Ne, vrati se",
+										actionButton: t('delete.confirm'),
+										cancelButton: t('delete.cancel'),
 									});
 									if (resp) {
 										setIsLoading(true);
@@ -329,7 +350,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								{isLoading ? (
 									<Loader className="animate-spin size-4" />
 								) : (
-									"Obriši susret"
+									t('delete.confirm')
 								)}
 							</Button>
 							<Button variant="outline" asChild={true}>
@@ -338,25 +359,27 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									href={`/dashboard/${clubId}/events/${props.event.id}`}
 								>
 									<Eye className="size-4" />
-									Pregled
+									{t('view')}
 								</Link>
 							</Button>
 						</div>
 					</Alert>
 				)}
 				<div>
-					<h3 className="text-lg font-semibold">Općenito</h3>
+					<h3 className="text-lg font-semibold">{t('general')}</h3>
 				</div>
 				<FormField
 					control={form.control}
 					name="name"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Ime*</FormLabel>
+							<FormLabel>{t('name')}*</FormLabel>
 							<FormControl>
 								<Input placeholder="Food Wars 24" type="text" {...field} />
 							</FormControl>
-							<FormDescription>Ovo je naziv vašeg susreta.</FormDescription>
+							<FormDescription>
+								{t('nameDescription')}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -367,17 +390,16 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					name="description"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Opis</FormLabel>
+							<FormLabel>{t('description')}</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder="Ponesite pribor za jelo..."
+									placeholder={t('descriptionPlaceholder')}
 									className="min-h-32"
 									{...field}
 								/>
 							</FormControl>
 							<FormDescription>
-								Opis susreta. Ovo može biti priča, briefing, ili bilo šta što ne
-								spada u druge kategorije.
+								{t('descriptionDescription')}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -406,7 +428,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					name="image"
 					render={() => (
 						<FormItem>
-							<FormLabel>Slika susreta</FormLabel>
+							<FormLabel>{t('photo')}</FormLabel>
 							<FormControl>
 								<FileUploader
 									value={files}
@@ -424,13 +446,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											<div className="flex items-center justify-center flex-col p-8 w-full ">
 												<CloudUpload className="text-gray-500 w-10 h-10" />
 												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													<span className="font-semibold">
-														Kliknite da dodate fajl
-													</span>
-													, ili ga samo prebacite ovde
+													{t('fileUpload')}
 												</p>
 												<p className="text-xs text-gray-500 dark:text-gray-400">
-													Dozvoljeni formati: JPG, JPEG, PNG
+													{t('fileUploadFormats')} JPG, JPEG, PNG
 												</p>
 											</div>
 										</FileInput>
@@ -455,8 +474,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								</FileUploader>
 							</FormControl>
 							<FormDescription>
-								Imate neku sliku koja bi bila savršena za ovaj susret? Dodajte
-								je.
+								{t('photoDescription')}
 							</FormDescription>
 						</FormItem>
 					)}
@@ -470,11 +488,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								variant={"destructive"}
 								onClick={async () => {
 									const resp = await confirm({
-										title: "Jeste li sigurni?",
-										body: "Ako obrišete sliku, nećete je moći vratiti nazad.",
+										title: t('deletePhoto.title'),
+										body: t('deletePhoto.body'),
 										actionButtonVariant: "destructive",
-										actionButton: "Obriši sliku",
-										cancelButton: "Ne, vrati se",
+										actionButton: t('deletePhoto.confirm'),
+										cancelButton: t('deletePhoto.cancel'),
 									});
 
 									if (!resp) {
@@ -495,7 +513,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								{isDeletingImage ? (
 									<Loader className="size-5 animate-spin" />
 								) : (
-									"Obriši trenutnu sliku"
+									t('deletePhoto.confirm')
 								)}
 							</Button>
 						</HoverCardTrigger>
@@ -515,12 +533,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					name="costPerPerson"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Kotizacija/cijena</FormLabel>
+							<FormLabel>{t('price')}</FormLabel>
 							<FormControl>
 								<Input placeholder="20" type="number" {...field} />
 							</FormControl>
 							<FormDescription>
-								Koliko susret košta po igraču, u KM?
+								{t('priceDescription')}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -528,7 +546,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				/>
 
 				<div>
-					<h3 className="text-lg font-semibold">Vrijeme</h3>
+					<h3 className="text-lg font-semibold">{t('time')}</h3>
 					{!(
 						form.formState.errors.dateRegistrationsOpen ||
 						form.formState.errors.dateRegistrationsClose ||
@@ -555,7 +573,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							name="dateStart"
 							render={({ field }) => (
 								<FormItem className="flex flex-col">
-									<FormLabel>Početak*</FormLabel>
+									<FormLabel>{t('start')}*</FormLabel>
 									<Popover>
 										<PopoverTrigger asChild={true}>
 											<FormControl>
@@ -571,7 +589,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															locale: bs,
 														})
 													) : (
-														<span>Odaberite datum</span>
+														<span>{t("selectDate")}</span>
 													)}
 													<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 												</Button>
@@ -584,7 +602,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											/>
 										</PopoverContent>
 									</Popover>
-									<FormDescription>Kada susret počinje?</FormDescription>
+									<FormDescription>
+										{t('startDescription')}
+									</FormDescription>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -597,7 +617,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							name="dateEnd"
 							render={({ field }) => (
 								<FormItem className="flex flex-col">
-									<FormLabel>Kraj*</FormLabel>
+									<FormLabel>{t('end')}*</FormLabel>
 									<Popover>
 										<PopoverTrigger asChild={true}>
 											<FormControl>
@@ -613,7 +633,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															locale: bs,
 														})
 													) : (
-														<span>Odaberite datum</span>
+														<span>{t("selectDate")}</span>
 													)}
 													<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 												</Button>
@@ -626,7 +646,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											/>
 										</PopoverContent>
 									</Popover>
-									<FormDescription>Kada susret završava?</FormDescription>
+									<FormDescription>
+										{t('endDescription')}
+									</FormDescription>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -641,7 +663,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							name="dateRegistrationsOpen"
 							render={({ field }) => (
 								<FormItem className="flex flex-col">
-									<FormLabel>Početak registracije</FormLabel>
+									<FormLabel>{t('registrationStart')}</FormLabel>
 									<Popover>
 										<PopoverTrigger asChild={true}>
 											<FormControl>
@@ -657,7 +679,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															locale: bs,
 														})
 													) : (
-														<span>Odaberite datum</span>
+														<span>{t("selectDate")}</span>
 													)}
 													<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 												</Button>
@@ -671,8 +693,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										</PopoverContent>
 									</Popover>
 									<FormDescription>
-										Kada se igrači mogu registrirati? Ostavite prazno da
-										dozvolite registraciju odmah.
+										{
+											t('registrationStartDescription')
+										}
 									</FormDescription>
 									<FormMessage />
 								</FormItem>
@@ -686,7 +709,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							name="dateRegistrationsClose"
 							render={({ field }) => (
 								<FormItem className="flex flex-col">
-									<FormLabel>Kraj registracije*</FormLabel>
+									<FormLabel>{t('registrationEnd')}*</FormLabel>
 									<Popover>
 										<PopoverTrigger asChild={true}>
 											<FormControl>
@@ -702,7 +725,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															locale: bs,
 														})
 													) : (
-														<span>Odaberite datum</span>
+														<span>{t("selectDate")}</span>
 													)}
 													<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 												</Button>
@@ -716,7 +739,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										</PopoverContent>
 									</Popover>
 									<FormDescription>
-										Kada završavaju registracije?
+										{t('registrationEndDescription')}
 									</FormDescription>
 									<FormMessage />
 								</FormItem>
@@ -726,7 +749,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				</div>
 
 				<div>
-					<h3 className="text-lg font-semibold">Vidljivost</h3>
+					<h3 className="text-lg font-semibold">{t('visibility')}</h3>
 				</div>
 
 				<FormField
@@ -735,10 +758,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Privatni susret</FormLabel>
+								<FormLabel>{t('private')}</FormLabel>
 								<FormDescription>
-									Susret će biti vidljiv samo vašem klubu. Korisno ako planirate
-									trening.
+									{t('privateDescription')}
 								</FormDescription>
 							</div>
 							<FormControl>
@@ -757,10 +779,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>Freelancer prijave</FormLabel>
+								<FormLabel>{t('freelancers')}</FormLabel>
 								<FormDescription>
-									Na susret se mogu prijaviti ljudi koji nisu aktivno u nekom
-									klubu.
+									{t('freelancersDescription')}
 								</FormDescription>
 							</div>
 							<FormControl>
@@ -774,7 +795,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				/>
 
 				<div>
-					<h3 className="text-lg font-semibold">Organizacija</h3>
+					<h3 className="text-lg font-semibold">{t('organization')}</h3>
 				</div>
 
 				<div className="grid grid-cols-6 md:grid-cols-12 gap-4">
@@ -785,10 +806,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel>Doručak</FormLabel>
-										<FormDescription>
-											Da li će susret imati doručak?
-										</FormDescription>
+										<FormLabel>{t('breakfast')}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -808,10 +826,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel>Ručak</FormLabel>
-										<FormDescription>
-											Da li će susret imati ručak?
-										</FormDescription>
+										<FormLabel>{t('lunch')}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -833,10 +848,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel>Večera</FormLabel>
-										<FormDescription>
-											Da li će susret imati večeru?
-										</FormDescription>
+										<FormLabel>{t('dinner')}</FormLabel>
+
 									</div>
 									<FormControl>
 										<Switch
@@ -856,10 +869,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel>Grickalice</FormLabel>
-										<FormDescription>
-											Da li će susret imati grickalice?
-										</FormDescription>
+										<FormLabel>{t('snacks')}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -881,10 +891,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel>Pića</FormLabel>
-										<FormDescription>
-											Da li će susret imati pića?
-										</FormDescription>
+										<FormLabel>{t('drinks')}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -904,10 +911,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel>Nagrade</FormLabel>
-										<FormDescription>
-											Da li će biti nagrade za pobjednike?
-										</FormDescription>
+										<FormLabel>{t('prizes')}</FormLabel>
 									</div>
 									<FormControl>
 										<Switch
@@ -922,7 +926,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				</div>
 
 				<div>
-					<h3 className="text-lg font-semibold">Lokacija</h3>
+					<h3 className="text-lg font-semibold">{t('location')}</h3>
 				</div>
 
 				<div className="grid grid-cols-6 md:grid-cols-12 gap-4">
@@ -932,11 +936,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							name="location"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Lokacija*</FormLabel>
+									<FormLabel>{t('location')}*</FormLabel>
 									<FormControl>
 										<Input placeholder="Livno" type="text" {...field} />
 									</FormControl>
-									<FormDescription>Gdje se ordžava susret?</FormDescription>
+									<FormDescription>{t("locationDescription")}</FormDescription>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -957,14 +961,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										/>
 									</FormControl>
 									<FormDescription>
-										Možete dodati Google Maps embed link. Ta će se mapa moći
-										prikazati na stranici vašeg susreta.{" "}
+										{t('googleMapsDescription')}{" "}
 										<Link
 											target="_blank"
 											className="font-semibold flex gap-0.5 items-center"
 											href={"/dashboard/help#google-maps"}
 										>
-											Gdje to naći? <ArrowUpRight className="size-3" />
+											{t('googleMapsLink')} <ArrowUpRight className="size-3" />
 										</Link>
 									</FormDescription>
 									<FormMessage />
@@ -974,7 +977,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					</div>
 				</div>
 				<div>
-					<h3 className="text-lg font-semibold">Pravila</h3>
+					<h3 className="text-lg font-semibold">{t('rules')}</h3>
 				</div>
 
 				<FormField
@@ -987,7 +990,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 						return (
 							<FormItem>
-								<FormLabel>Pravila susreta</FormLabel>
+								<FormLabel>{t('rules')}</FormLabel>
 								<FormDescription>
 									Odaberite pravila koja će važiti za ovaj susret.
 								</FormDescription>
@@ -996,12 +999,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										{/* TODO: Hot reload rules when they're added. */}
 										{props.rules?.length === 0 && (
 											<p className="text-muted-foreground">
-												Ovaj klub nema pravila. Možete ih dodati{" "}
+												{t('noRules')}{" "}
 												<Link
 													className="text-primary-foreground"
 													href={`/dashboard/${clubId}/events/rules`}
 												>
-													ovdje.
+													{t('createRule')}
 												</Link>
 											</p>
 										)}
@@ -1033,11 +1036,14 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																new Date(rule.createdAt),
 																new Date(),
 															) === 0
-																? "Promijenjeno danas"
-																: `Promijenjeno prije ${differenceInDays(
+																? t('changedToday')
+																: t('changedAgo', {
+																	time: differenceInDays(
 																		new Date(rule.createdAt),
 																		new Date(),
-																	)} dan/a`}
+																	)
+																})
+															}
 														</p>
 													</div>
 												</div>
@@ -1070,7 +1076,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<p className="text-muted-foreground">
 														{(selectedRule.description?.length ?? 0) > 0
 															? selectedRule.description
-															: "Bez opisa"}
+															: t('noDescription')}
 													</p>
 												</SheetHeader>
 												<div className="mt-6 flex-1 overflow-y-auto">
@@ -1093,7 +1099,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					}}
 				/>
 				<div className="flex flex-col gap-3">
-					<Label>Mapa</Label>
+					<Label>{t('map')}</Label>
 					<MapComponent
 						defaultMapData={form.watch("mapData")}
 						onSaveMapData={(data) => {
@@ -1106,7 +1112,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					isLoading={isLoading}
 					disabled={!isSlugValid && !!form.watch("slug")}
 				>
-					{props.event ? "Ažuriraj susret" : "Kreiraj susret"}
+					{props.event ? t('save') : t('create')}
 				</LoaderSubmitButton>
 			</form>
 		</Form>

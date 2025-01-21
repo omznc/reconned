@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Event } from "@prisma/client";
 import { Eye, Pen, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface EventsTableProps {
 	events: (Event & {
@@ -25,11 +26,12 @@ export function EventsTable({
 	pageSize,
 	userIsManager,
 }: EventsTableProps) {
+	const t = useTranslations("dashboard.club.events");
 	return (
 		<GenericDataTable
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
-			searchPlaceholder="Pretraži susrete..."
+			searchPlaceholder={t("search")}
 			tableConfig={{
 				dateFormat: "d. MMMM yyyy.",
 				locale: "bs",
@@ -37,33 +39,33 @@ export function EventsTable({
 			columns={[
 				{
 					key: "name",
-					header: "Naziv",
+					header: t("name"),
 					sortable: true,
 				},
 				{
 					key: "location",
-					header: "Lokacija",
+					header: t("location"),
 					sortable: true,
 				},
 				{
 					key: "dateStart",
-					header: "Datum početka",
+					header: t("dateStart"),
 					sortable: true,
 				},
 				{
 					key: "dateRegistrationsClose",
-					header: "Registracije do",
+					header: t("dateRegistrationsClose"),
 					sortable: true,
 				},
 				{
 					key: "isPrivate",
-					header: "Tip",
+					header: t("type"),
 					sortable: true,
 					cellConfig: {
 						variant: "badge",
 						valueMap: {
-							true: "Privatni",
-							false: "Javni",
+							true: t("private"),
+							false: t("public"),
 						},
 						badgeVariants: {
 							true: "bg-red-100 text-red-800",
@@ -73,12 +75,12 @@ export function EventsTable({
 				},
 				{
 					key: "_count.eventRegistration",
-					header: "Prijave",
+					header: t("registrations"),
 					sortable: true,
 				},
 				{
 					key: "visit",
-					header: "Akcije",
+					header: t("actions"),
 					cellConfig: {
 						variant: "custom",
 						component: (_, item) => {
@@ -100,7 +102,7 @@ export function EventsTable({
 													href={`/dashboard/${clubId}/events/${item.id}/attendance`}
 												>
 													<Users className="size-4" />
-													Prisustvo
+													{t("attendance")}
 												</Link>
 											</Button>
 											<Button variant={"outline"} asChild>
@@ -108,7 +110,7 @@ export function EventsTable({
 													href={`/dashboard/${clubId}/events/create?id=${item.id}`}
 												>
 													<Pen className="size-4 mr-2" />
-													Uredi
+													{t("edit")}
 												</Link>
 											</Button>
 										</>
@@ -117,7 +119,7 @@ export function EventsTable({
 									<Button asChild>
 										<Link href={`/dashboard/${clubId}/events/${item.id}`}>
 											<Eye className="size-4 mr-2" />
-											Posjeti
+											{t("view")}
 										</Link>
 									</Button>
 								</div>

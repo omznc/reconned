@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	params: Promise<{
@@ -16,6 +17,8 @@ interface PageProps {
 export default async function Page(props: PageProps) {
 	const params = await props.params;
 	const user = await isAuthenticated();
+	const t = await getTranslations("dashboard.club.events");
+
 	if (!user) {
 		return notFound();
 	}
@@ -53,7 +56,7 @@ export default async function Page(props: PageProps) {
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">Susret</h3>
+				<h3 className="text-lg font-semibold">{t('event')}</h3>
 				<Button
 					disabled={disabledAttendence}
 					variant="default"
@@ -65,7 +68,7 @@ export default async function Page(props: PageProps) {
 						href={`/dashboard/${params.clubId}/events/${params.id}/attendance`}
 					>
 						<Users className="h-4 w-4" />
-						Prisustvo
+						{t('attendance')}
 					</Link>
 				</Button>
 			</div>
