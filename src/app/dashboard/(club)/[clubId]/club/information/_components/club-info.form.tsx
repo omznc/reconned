@@ -76,7 +76,7 @@ import type { Country } from "@/lib/countries";
 // Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(
 	() =>
-		import("@/app/(public)/map/_components/clubs-map").then((m) => m.ClubsMap),
+		import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap),
 	{
 		ssr: false,
 	},
@@ -325,8 +325,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										>
 											{field.value
 												? props.countries.find(
-														(country) => country.id === field.value,
-													)?.name
+													(country) => country.id === field.value,
+												)?.name
 												: "Odaberite državu"}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -407,13 +407,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								clubs={
 									props.club
 										? [
-												{
-													...props.club,
-													latitude: form.watch("latitude") || null,
-													longitude: form.watch("longitude") || null,
-													location: props.club.location || undefined,
-												},
-											]
+											{
+												...props.club,
+												latitude: form.watch("latitude") || null,
+												longitude: form.watch("longitude") || null,
+												location: props.club.location || undefined,
+											},
+										]
 										: []
 								}
 								interactive={true}

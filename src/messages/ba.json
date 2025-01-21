@@ -273,9 +273,53 @@
 				"currentSession": "Trenutna sesija",
 				"sessionLastUsed": "Posljednji put korištena {date}"
 			}
+		},
+		"events": {
+			"title": "Moji susreti",
+			"search": "Pretraži susrete...",
+			"name": "Naziv",
+			"location": "Lokacija",
+			"dateStart": "Početak",
+			"dateRegistrationsClose": "Zatvaranje prijava",
+			"status": "Status",
+			"clubName": "Klub",
+			"actions": "Akcije"
 		}
 	},
 	"components": {
+		"sidebar": {
+			"betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",
+			"home": "Početna",
+			"dashboard": "Aplikacija",
+			"help": "Pomoć",
+			"user": "Korisnik",
+			"overview": "Pregled",
+			"settings": "Postavke",
+			"security": "Sigurnost",
+			"myEvents": "Moji susreti",
+			"clubs": "Klubovi",
+			"selectClub": "Odaberite klub",
+			"addClub": "Dodaj klub",
+			"myClub": "Moj klub",
+			"manager": "Menadžer",
+			"member": "Član",
+			"info": "Informacije",
+			"stats": "Statistike",
+			"spending": "Troškovi",
+			"newPost": "Nova objava",
+			"members": "Članovi",
+			"invitations": "Pozivnice",
+			"managers": "Menadžeri",
+			"events": "Susreti",
+			"newEvent": "Novi susret",
+			"calendar": "Kalendar",
+			"rules": "Pravila",
+			"admin": "Administracija",
+			"users": "Korisnici",
+			"emails": "Emailovi",
+			"personalization": "Personalizacija",
+			"logout": "Odjava"
+		},
 		"footer": {
 			"about": {
 				"title": "O nama",
@@ -329,6 +373,9 @@
 		},
 		"languageSwitcher": {
 			"select": "Odaberite jezik"
+		},
+		"clubsMap": {
+			"viewProfile": "Pogledaj profil"
 		},
 		"calendar": {
 			"today": "Danas",

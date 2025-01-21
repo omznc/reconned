@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 const ClubsMap = dynamic(
 	() =>
-		import("@/app/(public)/map/_components/clubs-map").then(
+		import("@/components/clubs-map/clubs-map").then(
 			(mod) => mod.ClubsMap,
 		),
 	{

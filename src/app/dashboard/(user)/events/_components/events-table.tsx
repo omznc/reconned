@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Event } from "@prisma/client";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
 
 function getEventStatus(dateStart: Date, dateEnd: Date) {
 	const now = new Date();
@@ -37,11 +38,13 @@ export function EventsTable({
 	totalEvents,
 	pageSize,
 }: EventsTableProps) {
+	const t = useTranslations('dashboard.events');
+
 	return (
 		<GenericDataTable
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
-			searchPlaceholder="Pretraži susrete..."
+			searchPlaceholder={t('search')}
 			tableConfig={{
 				dateFormat: "d. MMMM yyyy.",
 				locale: "bs",
@@ -49,22 +52,22 @@ export function EventsTable({
 			columns={[
 				{
 					key: "name",
-					header: "Naziv",
+					header: t("name"),
 					sortable: true,
 				},
 				{
 					key: "location",
-					header: "Lokacija",
+					header: t("location"),
 					sortable: true,
 				},
 				{
 					key: "dateStart",
-					header: "Datum početka",
+					header: t("dateStart"),
 					sortable: true,
 				},
 				{
 					key: "dateRegistrationsClose",
-					header: "Registracije do",
+					header: t("dateRegistrationsClose"),
 					sortable: true,
 				},
 				{
@@ -88,12 +91,12 @@ export function EventsTable({
 				},
 				{
 					key: "club.name",
-					header: "Klub",
+					header: t("clubName"),
 					sortable: true,
 				},
 				{
 					key: "visit",
-					header: "Akcije",
+					header: t("actions"),
 					cellConfig: {
 						variant: "custom",
 						component: (_, item) => (

@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { useQueryState } from "nuqs";
+import { useTranslations } from "next-intl";
 
 // Fix Leaflet's default marker issue in Next.js
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -54,7 +55,7 @@ interface ClubsMapProps {
 function LocationMarker({
 	position,
 	logo,
-}: { position: [number, number]; logo?: string | null }) {
+}: { position: [number, number]; logo?: string | null; }) {
 	return position ? (
 		<Marker position={position} icon={createClubIcon(logo, 32)} />
 	) : null;
@@ -62,7 +63,7 @@ function LocationMarker({
 
 function MapEventHandler({
 	onLocationSelect,
-}: { onLocationSelect?: (lat: number, lng: number) => void }) {
+}: { onLocationSelect?: (lat: number, lng: number) => void; }) {
 	useMapEvents({
 		click: (e) => {
 			if (onLocationSelect) {
@@ -81,6 +82,7 @@ export function ClubsMap({
 	const [mounted, setMounted] = useState(false);
 	const [logoSize, setLogoSize] = useState(32); // Default size
 	const [clubId] = useQueryState("clubId");
+	const t = useTranslations("components.clubsMap");
 
 	const prefilledClub = clubs.find(
 		(club) => club.id === clubId || club.slug === clubId,
@@ -101,19 +103,22 @@ export function ClubsMap({
 
 	return (
 		<div className="relative h-full w-full">
-			<div className="absolute right-4 top-4 z-[10] bg-white border dark:bg-[#0d0d0d] shadow-md p-3 flex items-center gap-3">
-				<Slider
-					value={[logoSize]}
-					onValueChange={([value]) => setLogoSize(value ?? 32)}
-					min={16}
-					max={128}
-					step={4}
-					className="w-32"
-				/>
-			</div>
+			{
+				!interactive && (
+					<div className="absolute right-4 top-4 z-[10] bg-white border dark:bg-[#0d0d0d] shadow-md p-3 flex items-center gap-3">
+						<Slider
+							value={[logoSize]}
+							onValueChange={([value]) => setLogoSize(value ?? 32)}
+							min={16}
+							max={128}
+							step={4}
+							className="w-32"
+						/>
+					</div>
+				)
+			}
 
 			<MapContainer
-				// center={[43.8563, 18.4131]} // Sarajevo coordinates
 				center={[
 					prefilledClub?.latitude || 43.8563,
 					prefilledClub?.longitude || 18.4131,
@@ -150,7 +155,7 @@ export function ClubsMap({
 											href={`/clubs/${club.slug || club.id}`}
 											className="text-sm text-red-500 hover:underline plausible-event-name=club-map-profile-link"
 										>
-											Pogledaj profil
+											{t('viewProfile')}
 										</Link>
 									</div>
 								</Popup>

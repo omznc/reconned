@@ -1,4 +1,4 @@
-import { ClubsMapWrapper } from "@/app/(public)/map/_components/clubs-map-wrapper";
+import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 

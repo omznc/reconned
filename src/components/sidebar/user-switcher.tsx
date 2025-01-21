@@ -27,7 +27,6 @@ import Link from "next/link";
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
 	const { user } = useIsAuthenticated();
-	const { font, setFont } = useFont();
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
@@ -73,7 +72,7 @@ export function UserSwitcher() {
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuLabel>Personalizacija</DropdownMenuLabel>
+						<DropdownMenuLabel>{t('personalization')}</DropdownMenuLabel>
 						<DropdownMenuItem asChild={true}>
 							<ThemeSwitcher />
 						</DropdownMenuItem>
@@ -89,7 +88,7 @@ export function UserSwitcher() {
 								className="cursor-pointer plausible-event-name=logout-sidebar-click"
 							>
 								<LogOut />
-								Odjava
+								{t('logout')}
 							</Link>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
