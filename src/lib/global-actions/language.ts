@@ -12,7 +12,7 @@ export const setLanguageAction = safeActionClient
 		}),
 	)
 	.action(async ({ parsedInput, ctx }) => {
-		if (!VALID_LOCALES.includes(parsedInput.language)) {
+		if (!VALID_LOCALES.includes(parsedInput.language as never)) {
 			throw new Error("Invalid language");
 		}
 

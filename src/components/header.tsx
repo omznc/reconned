@@ -21,15 +21,8 @@ import { LanguageSwitcher } from "@/components/personalization/language/language
 
 export function Header({
 	user,
-	countries,
 }: {
 	user: User | null;
-	countries: {
-		id: number;
-		name: string;
-		emoji: string;
-		iso2: string;
-	}[];
 }) {
 	const t = useTranslations("components.header");
 	const path = usePathname();
@@ -51,7 +44,7 @@ export function Header({
 				className="flex gap-2 md:w-fit w-full"
 				suppressHydrationWarning={true}
 			>
-				<LanguageSwitcher countries={countries} />
+				<LanguageSwitcher />
 				{user ? (
 					<>
 						{/* TODO: Manager-only? */}

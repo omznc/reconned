@@ -132,7 +132,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 							<FormItem>
 								<FormLabel>{t("title")}</FormLabel>
 								<FormControl>
-									<Input placeholder="Nova objava..." {...field} />
+									<Input placeholder={t("creating")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

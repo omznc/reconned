@@ -12,7 +12,6 @@ export function FontSwitcher() {
 	const t = useTranslations("components.fontSwitcher");
 
 	useEffect(() => {
-		localStorage.setItem("preferred-font", font);
 		if (font !== "sans" && font !== "mono") {
 			return;
 		}

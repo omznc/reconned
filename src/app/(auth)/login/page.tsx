@@ -209,7 +209,7 @@ export default function LoginPage() {
 					</div>
 				</form>
 				<div className="mt-4 text-center text-sm">
-					{"Nemate račun? "}
+					{t("noAccountQuestion")}{" "}
 					<Link
 						href={
 							redirectTo

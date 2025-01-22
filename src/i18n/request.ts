@@ -1,56 +1,52 @@
 import "server-only";
-import { VALID_LOCALES } from "@/i18n/valid-locales";
+import { LANGUAGE_MAPS, VALID_LOCALES } from "@/i18n/valid-locales";
 import { isAuthenticated } from "@/lib/auth";
 import { getRequestConfig } from "next-intl/server";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import deepmerge from "deepmerge";
 
-const languageMaps = {
-	bs: ["ba", "hr", "sr"],
-	en: ["en", "us", "gb", "au", "ca", "nz", "ie", "za"],
-};
-
 export default getRequestConfig(async () => {
-	const [user, headersList] = await Promise.all([isAuthenticated(), headers()]);
+	const [user, headersList, cookieStore] = await Promise.all([
+		isAuthenticated(),
+		headers(),
+		cookies(),
+	]);
 
-	// We get this from Cloudflare
+	const cookieLocale = cookieStore.get("preferred-language")?.value;
 	const cloudflareCountry =
 		headersList.get("cf-ipcountry")?.toLowerCase() ?? "ba";
+
 	let lang = "bs";
-	for (const [locale, countries] of Object.entries(languageMaps)) {
-		if (countries.includes(cloudflareCountry)) {
-			lang = locale;
-			break;
+
+	// First check cookies
+	// biome-ignore lint/suspicious/noExplicitAny: It's not typed.
+	if (cookieLocale && VALID_LOCALES.includes(cookieLocale as any)) {
+		lang = cookieLocale;
+	} else {
+		// Then check Cloudflare country
+		for (const [locale, countries] of Object.entries(LANGUAGE_MAPS)) {
+			if (countries.includes(cloudflareCountry as never)) {
+				lang = locale;
+				break;
+			}
 		}
 	}
+
 	const defaultMessages = (await import("../messages/bs.json")).default;
 
 	// If the user is logged in, they have a locale
-	if (user?.language) {
-		if (VALID_LOCALES.includes(user.language)) {
-			return {
-				locale: user.language,
-				messages: deepmerge(
-					defaultMessages,
-					(await import(`../messages/${user.language}.json`)).default,
-				),
-			};
-		}
-
-		// If the user has an invalid locale, check if the request has a valid locale
-		if (VALID_LOCALES.includes(lang)) {
-			return {
-				locale: lang,
-				messages: deepmerge(
-					defaultMessages,
-					(await import(`../messages/${lang}.json`)).default,
-				),
-			};
-		}
+	if (user?.language && VALID_LOCALES.includes(user.language as never)) {
+		return {
+			locale: user.language,
+			messages: deepmerge(
+				defaultMessages,
+				(await import(`../messages/${user.language}.json`)).default,
+			),
+		};
 	}
 
-	// Otherwise, check if the request has a valid locale
-	if (VALID_LOCALES.includes(lang)) {
+	// Use the language we determined from cookies or Cloudflare
+	if (VALID_LOCALES.includes(lang as never)) {
 		return {
 			locale: lang,
 			messages: deepmerge(
@@ -61,7 +57,6 @@ export default getRequestConfig(async () => {
 	}
 
 	// Default to bosnian
-	// Should this be english eventually?
 	return {
 		locale: "bs",
 		messages: defaultMessages,

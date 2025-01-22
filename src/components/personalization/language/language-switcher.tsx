@@ -11,65 +11,43 @@ import {
 	SelectLabel,
 	SelectTrigger,
 } from "@/components/ui/select";
-import { VALID_LOCALES } from "@/i18n/valid-locales";
+import { LANGUAGE_TRANSLATIONS, VALID_LOCALES } from "@/i18n/valid-locales";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
-type LanguageSwitcherProps = {
-	countries: {
-		id: number;
-		name: string;
-		emoji: string;
-		iso2: string;
-	}[];
-};
-export function LanguageSwitcher(props: LanguageSwitcherProps) {
+export function LanguageSwitcher() {
 	const { language, setLanguage } = useLanguage();
 	const t = useTranslations("components.languageSwitcher");
+	const router = useRouter();
 
 	useEffect(() => {
-		if (!VALID_LOCALES.includes(language)) {
+		if (!VALID_LOCALES.includes(language as (typeof VALID_LOCALES)[number])) {
 			return;
 		}
-
-		localStorage.setItem("preferred-language", language);
+		document.cookie = `preferred-language=${language};path=/;max-age=31536000`;
 
 		setLanguageAction({
 			language: language,
 		});
+		router.refresh();
 	}, [language]);
-
-	const selectedCountry = props.countries.find(
-		(country) => country.iso2.toLocaleLowerCase() === language,
-	);
-
-	if (VALID_LOCALES.length <= 1) {
-		return null;
-	}
 
 	return (
 		<Select value={language} onValueChange={setLanguage}>
 			<SelectTrigger className="w-fit">
-				<span className="mr-2 text-lg">{selectedCountry?.emoji}</span>
+				<span className="mr-2">{LANGUAGE_TRANSLATIONS[language as keyof typeof LANGUAGE_TRANSLATIONS] ?? "🌐"}</span>
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
 					<SelectLabel>{t("select")}</SelectLabel>
 				</SelectGroup>
-				{props.countries
-					.filter((country) =>
-						VALID_LOCALES.includes(country.iso2.toLowerCase()),
-					)
-					.map((country) => (
+				{VALID_LOCALES
+					.map((locale) => (
 						<SelectItem
-							key={country.iso2.toLowerCase()}
-							value={country.iso2.toLowerCase()}
+							key={locale}
+							value={locale}
 						>
-							{country.emoji ? (
-								<span className="mr-2 text-lg">{country.emoji}</span>
-							) : (
-								<span className="mr-2 text-lg">🏳️</span> // Fallback emoji
-							)}
-							{country.name}
+							{LANGUAGE_TRANSLATIONS[locale]}
 						</SelectItem>
 					))}
 			</SelectContent>
