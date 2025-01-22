@@ -31,7 +31,7 @@ import {
 import { useTranslations } from "next-intl";
 
 interface NavClubProps {
-	user: User & { managedClubs: string[] };
+	user: User & { managedClubs: string[]; };
 }
 
 export function NavClub({ user }: NavClubProps) {
