@@ -52,7 +52,6 @@ export default async function Page(props: PageProps) {
 							slug: true,
 							image: true,
 							role: true,
-							isAdmin: true,
 						},
 					}
 				},

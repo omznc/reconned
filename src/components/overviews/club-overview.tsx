@@ -27,7 +27,7 @@ interface ClubOverviewProps {
 			members: number;
 		};
 		posts: (Post & { createdAt: Date; })[];
-		members?: (ClubMembership & { user: Pick<User, "role" | "isAdmin" | "id" | "image" | "name" | "callsign" | "slug">; })[];
+		members?: (ClubMembership & { user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">; })[];
 	};
 	isManager?: boolean;
 }
@@ -192,7 +192,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 										}
 										<div className="flex flex-col gap-0">
 											<h3 className="flex items-center gap-2 font-semibold">{membership.user.name} {
-												(membership.user.role === "admin" || membership.user.isAdmin) && <AdminIcon />
+												membership.user.role === "admin" && <AdminIcon />
 											}</h3>
 											<p className="text-muted-foreground -mt-2">{membership.user.slug}</p>
 										</div>

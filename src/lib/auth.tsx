@@ -20,6 +20,12 @@ export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
 	}),
+	session: {
+		cookieCache: {
+			enabled: true,
+			maxAge: 60 * 5, // 5 minutes
+		}
+	},
 	trustedOrigins: [
 		"http://localhost:3000",
 		"https://localhost:3000",
@@ -81,12 +87,6 @@ export const auth = betterAuth({
 	],
 	user: {
 		additionalFields: {
-			isAdmin: {
-				type: "boolean",
-				default: false,
-				input: false,
-				required: false,
-			},
 			callsign: {
 				type: "string",
 				default: "",

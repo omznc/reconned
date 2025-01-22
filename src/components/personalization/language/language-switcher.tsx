@@ -47,7 +47,10 @@ export function LanguageSwitcher() {
 				</SelectGroup>
 				{VALID_LOCALES.map((locale) => (
 					<SelectItem key={locale} value={locale}>
-						{LANGUAGE_TRANSLATIONS[locale]}
+						<div className="flex flex-col">
+							{LANGUAGE_TRANSLATIONS[locale]}
+							{locale === 'en' && <span className="text-muted-foreground">In progress</span>}
+						</div>
 					</SelectItem>
 				))}
 			</SelectContent>
