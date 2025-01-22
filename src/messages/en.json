@@ -45,7 +45,7 @@
 		"home": {
 			"hero": {
 				"title": "Just Airsoft,<br></br> but better.",
-				"description": "Join the most advanced airsoft community. ",
+				"description": "Join the most advanced airsoft community. Find matches, connect with players and improve your game.",
 				"search": "Search all",
 				"map": "Show map",
 				"about": "Find out more",
@@ -74,7 +74,7 @@
 		},
 		"sponsors": {
 			"title": "Sponsors and partners",
-			"description": "It is realistic to say that this site would not exist without the engagement and support of everyone you can find below. ",
+			"description": "It is realistic to say that this site would not exist without the engagement and support of everyone you can find below. Thank you.",
 			"currentSponsors": "Our current sponsors",
 			"contactUs": "Contact Us",
 			"contactDescription": "Want to help or have questions? ",
@@ -88,16 +88,16 @@
 			"subtitle": "We are two programmers from Bosnia and Herzegovina who decided to move Airsoft events from Facebook and Viber to something \"ours\".",
 			"platform": {
 				"title": "About the platform",
-				"description": "The ultimate goal <logo></logo> platform is the unification of the airsoft community in Bosnia and Herzegovina, and perhaps beyond. "
+				"description": "The ultimate goal of the <logo></logo> platform is the unification of the airsoft community in Bosnia and Herzegovina, and perhaps beyond. Our platform allows clubs to present themselves, organize events, and find new members. It enables players to find clubs, events, and other players, all in one place."
 			},
 			"sustainability": {
 				"title": "Sustainability",
-				"description": "The goal is not, and never will be pure profit. ",
+				"description": "The goal is not, and never will be pure profit. Every part of the platform will eventually be open-source, and thus available to everyone. Currently, we are completely self-funding the platform's development, but we will give clubs and individuals a chance to help with development and maintenance, with some benefits.",
 				"emphasis": "Core functionalities will always be free to use."
 			},
 			"help": {
 				"title": "How to help?",
-				"description": "If you are interested in helping with the development of the platform, please feel free to contact us. ",
+				"description": "If you are interested in helping with the development of the platform, please feel free to contact us. Help in the form of marketing, programming, and general sponsorship is always welcome.",
 				"sponsors": "See the list of sponsors."
 			}
 		},
@@ -209,7 +209,7 @@
 		},
 		"security": {
 			"passwordChange": {
-				"error": "An error occurred while changing the password. ",
+				"error": "An error occurred while changing your password. ",
 				"success": "Password successfully changed",
 				"title": "Change password",
 				"currentPassword": "Current password",
@@ -219,7 +219,7 @@
 				"loading": "Just a moment..."
 			},
 			"passwordSetup": {
-				"error": "An error occurred while setting the password. ",
+				"error": "An error occurred while setting your password. ",
 				"success": "Password successfully set",
 				"title": "Set a password",
 				"newPassword": "New password",
@@ -282,7 +282,7 @@
 			"search": "Search events...",
 			"name": "Name",
 			"location": "Location",
-			"dateStart": "The beginning",
+			"dateStart": "Start",
 			"dateRegistrationsClose": "Closing applications",
 			"status": "Status",
 			"clubName": "Club",
@@ -388,7 +388,7 @@
 				"search": "Search events...",
 				"name": "Name",
 				"location": "Location",
-				"dateStart": "The beginning",
+				"dateStart": "Start",
 				"dateRegistrationsClose": "Closing applications",
 				"type": "The guy",
 				"private": "Private",
@@ -448,9 +448,9 @@
 					"price": "Registration fee/price",
 					"priceDescription": "How much does it cost to participate in the event? ",
 					"time": "Time",
-					"start": "The beginning",
+					"start": "Start",
 					"startDescription": "When does the event start?",
-					"end": "The end",
+					"end": "End",
 					"endDescription": "When does the event end?",
 					"registrationStart": "Start of applications",
 					"registrationStartDescription": "When do meetup registrations open?",
@@ -593,8 +593,8 @@
 				"sun": "Sun"
 			},
 			"eventDetails": {
-				"start": "The beginning",
-				"end": "The end",
+				"start": "Start",
+				"end": "End",
 				"location": "Location",
 				"cost": "Price",
 				"apply": "Log in",
@@ -693,6 +693,33 @@
 			"posts": "Announcements",
 			"createPost": "New post",
 			"noPosts": "There are no posts"
+		},
+		"breadcrumbs": {
+			"currentClub": "Current club",
+			"currentEvent": "Current event",
+			"translations": {
+				"dashboard": "Application",
+				"club": "Club",
+				"events": "Events",
+				"information": "Information",
+				"create": "Create",
+				"stats": "Statistics",
+				"members": "Members",
+				"settings": "Settings",
+				"calendar": "Calendar",
+				"invitations": "Invitations",
+				"security": "Security",
+				"user": "User",
+				"help": "Help",
+				"managers": "Managers",
+				"rules": "Rules",
+				"attendance": "Attendance",
+				"admin": "Administration",
+				"emails": "Emails",
+				"posts": "New post",
+				"spending": "Spending",
+				"add-club": "Add club"
+			}
 		}
 	}
 }
