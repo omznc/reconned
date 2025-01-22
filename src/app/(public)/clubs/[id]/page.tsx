@@ -16,13 +16,13 @@ export default async function Page(props: PageProps) {
 	const user = await isAuthenticated();
 	const isMemberOfClub = user
 		? await prisma.clubMembership.findFirst({
-				where: {
-					userId: user?.id,
-					club: {
-						OR: [{ id: params.id }, { slug: params.id }],
-					},
+			where: {
+				userId: user?.id,
+				club: {
+					OR: [{ id: params.id }, { slug: params.id }],
 				},
-			})
+			},
+		})
 		: false;
 
 	const club = await prisma.club.findFirst({
@@ -41,6 +41,21 @@ export default async function Page(props: PageProps) {
 					createdAt: "desc",
 				},
 				...(isMemberOfClub ? {} : { where: { isPublic: true } }),
+			},
+			members: {
+				include: {
+					user: {
+						select: {
+							id: true,
+							name: true,
+							callsign: true,
+							slug: true,
+							image: true,
+							role: true,
+							isAdmin: true,
+						},
+					}
+				},
 			},
 		},
 	});

@@ -14,7 +14,7 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const user = await isAuthenticated();
 	if (!user) {
-		redirect("/prijava");
+		redirect("/login");
 	}
 
 	const clubs = await prisma.club.findMany({

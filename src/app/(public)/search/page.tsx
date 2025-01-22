@@ -1,10 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { prisma } from "@/lib/prisma";
-import { Users, Shield, Calendar } from "lucide-react";
+import {
+	Users,
+	Shield,
+	Calendar,
+} from "lucide-react";
 import { Suspense } from "react";
 import { format } from "date-fns";
 import { SearchResultCard } from "@/app/(public)/search/_components/search-result-card";
 import { Search } from "@/app/(public)/search/_components/search";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
 
 interface Props {
 	searchParams: Promise<{
@@ -13,7 +19,7 @@ interface Props {
 	}>;
 }
 
-async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
+async function SearchResults({ query, tab }: { query?: string; tab?: string; }) {
 	if (!query) {
 		return null;
 	}
@@ -75,11 +81,18 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 						club: {
 							select: {
 								name: true,
+
 							},
+						},
+					},
+					where: {
+						club: {
+							isPrivate: false,
 						},
 					},
 				},
 			},
+
 		}),
 		prisma.event.findMany({
 			where: {
@@ -129,90 +142,108 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 		})();
 
 	return (
-		<Tabs defaultValue={defaultTab} className="w-full">
-			<TabsList className="grid w-full grid-cols-3 mb-8">
-				<TabsTrigger value="clubs" className="flex gap-2">
-					<Shield className="h-4 w-4" />
-					Klubovi ({clubs.length})
-				</TabsTrigger>
-				<TabsTrigger value="users" className="flex gap-2">
-					<Users className="h-4 w-4" />
-					Korisnici ({users.length})
-				</TabsTrigger>
-				<TabsTrigger value="events" className="flex gap-2">
-					<Calendar className="h-4 w-4" />
-					Susreti ({events.length})
-				</TabsTrigger>
-			</TabsList>
+		<TooltipProvider>
+			<Tabs defaultValue={defaultTab} className="w-full">
+				<TabsList className="grid w-full grid-cols-3 mb-8">
+					<TabsTrigger value="clubs" className="flex gap-2">
+						<Shield className="h-4 w-4 hidden md:block" />
+						Klubovi ({clubs.length})
+					</TabsTrigger>
+					<TabsTrigger value="users" className="flex gap-2">
+						<Users className="h-4 w-4 hidden md:block" />
+						Korisnici ({users.length})
+					</TabsTrigger>
+					<TabsTrigger value="events" className="flex gap-2">
+						<Calendar className="h-4 w-4 hidden md:block" />
+						Susreti ({events.length})
+					</TabsTrigger>
+				</TabsList>
 
-			<TabsContent value="clubs" className="grid gap-4">
-				{clubs.length === 0 ? (
-					<div className="text-center text-muted-foreground py-12">
-						Nema pronađenih klubova
-					</div>
-				) : (
-					clubs.map((club) => (
-						<SearchResultCard
-							image={club.logo}
-							key={club.id}
-							title={club.name}
-							description={club.description}
-							href={`/clubs/${club.id}`}
-							meta={`${club._count.members} članova`}
-							type="club"
-						/>
-					))
-				)}
-			</TabsContent>
+				<TabsContent value="clubs" className="grid gap-4">
+					{clubs.length === 0 ? (
+						<div className="text-center text-muted-foreground py-12">
+							Nema pronađenih klubova
+						</div>
+					) : (
+						clubs.map((club) => (
+							<SearchResultCard
+								image={club.logo}
+								key={club.id}
+								title={
+									<span className="flex gap-2 items-center">
+										{club.name}{" "}
+										{club.verified && <VerifiedClubIcon />}
+									</span>
+								}
+								description={club.description}
+								href={`/clubs/${club.id}`}
+								meta={`${club._count.members} članova`}
+								type="club"
+							/>
+						))
+					)}
+				</TabsContent>
 
-			<TabsContent value="users" className="grid gap-4">
-				{users.length === 0 ? (
-					<div className="text-center text-muted-foreground py-12">
-						Nema pronađenih korisnika
-					</div>
-				) : (
-					users.map((user) => (
-						<SearchResultCard
-							image={user.image}
-							key={user.id}
-							title={`${user.name} ${user.callsign ? `(${user.callsign})` : ""}`}
-							description={user.bio}
-							href={`/users/${user.id}`}
-							badges={user.clubMembership.map(
-								(membership) => membership.club.name,
-							)}
-							meta={user.location || undefined}
-							type="user"
-						/>
-					))
-				)}
-			</TabsContent>
+				<TabsContent value="users" className="grid gap-4">
+					{users.length === 0 ? (
+						<div className="text-center text-muted-foreground py-12">
+							Nema pronađenih korisnika
+						</div>
+					) : (
+						users.map((user) => (
+							<SearchResultCard
+								image={user.image}
+								key={user.id}
+								title={
+									<span className="flex gap-2 items-center">
+										{user.name} {user.callsign ? `(${user.callsign})` : ""}{" "}
+										{(user.role === "admin" || user.isAdmin) && (
+											<AdminIcon />
+										)}
+									</span>
+								}
+								description={user.bio}
+								href={`/users/${user.id}`}
+								badges={
+									user.clubMembership.length === 0
+										? ["Freelancer"]
+										: user.clubMembership.map(
+											(membership) => membership.club.name,
+										)
+								}
+								meta={user.location || undefined}
+								type="user"
+							/>
+						))
+					)}
+				</TabsContent>
 
-			<TabsContent value="events" className="grid gap-4">
-				{events.length === 0 ? (
-					<div className="text-center text-muted-foreground py-12">
-						Nema pronađenih susreta
-					</div>
-				) : (
-					events.map((event) => (
-						<SearchResultCard
-							image={event.image}
-							key={event.id}
-							title={event.name}
-							description={event.description}
-							href={`/events/${event.id}`}
-							badges={[
-								event.club.name,
-								event.isPrivate ? "Privatno" : "Javno",
-								format(event.dateStart, "dd.MM.yyyy"),
-							]}
-							meta={event.location || undefined}
-							type="event"
-						/>
-					))
-				)}
-			</TabsContent>
-		</Tabs>
+				<TabsContent value="events" className="grid gap-4">
+					{events.length === 0 ? (
+						<div className="text-center text-muted-foreground py-12">
+							Nema pronađenih susreta
+						</div>
+					) : (
+						events.map((event) => (
+							<SearchResultCard
+								image={event.image}
+								key={event.id}
+								title={event.name}
+								description={event.description}
+								href={`/events/${event.id}`}
+								badges={[
+									event.club.name,
+									event.isPrivate ? "Privatno" : "Javno",
+									format(event.dateStart, "dd.MM.yyyy"),
+								]}
+								meta={event.location || undefined}
+								type="event"
+							/>
+						))
+					)}
+				</TabsContent>
+			</Tabs>
+		</TooltipProvider>
 	);
 }
 

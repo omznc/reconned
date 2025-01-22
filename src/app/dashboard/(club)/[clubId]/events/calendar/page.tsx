@@ -39,6 +39,7 @@ export default async function Page(props: PageProps) {
 			club: {
 				select: {
 					name: true,
+					verified: true,
 				},
 			},
 		},

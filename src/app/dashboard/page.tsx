@@ -17,7 +17,7 @@ export default async function DashboardPage() {
 	const user = await isAuthenticated();
 
 	if (!user) {
-		redirect("/prijava");
+		redirect("/login");
 	}
 
 	const stats = await prisma.user.findUnique({

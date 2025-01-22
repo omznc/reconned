@@ -12,6 +12,7 @@ model Club {
   logo         String?
   contactPhone String?
   contactEmail String?
+  verified     Boolean   @default(false)
 
   events      Event[]
   rules       ClubRule[]
