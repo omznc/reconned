@@ -693,6 +693,33 @@
 			"posts": "Objave",
 			"createPost": "Nova objava",
 			"noPosts": "Nema objava"
+		},
+		"breadcrumbs": {
+			"currentClub": "Trenutni klub",
+			"currentEvent": "Trenutni susret",
+			"translations": {
+				"dashboard": "Aplikacija",
+				"club": "Klub",
+				"events": "Susreti",
+				"information": "Informacije",
+				"create": "Kreiraj",
+				"stats": "Statistike",
+				"members": "Članovi",
+				"settings": "Postavke",
+				"calendar": "Kalendar",
+				"invitations": "Pozivnice",
+				"security": "Sigurnost",
+				"user": "Korisnik",
+				"help": "Pomoć",
+				"managers": "Menadžeri",
+				"rules": "Pravila",
+				"attendance": "Prisustvo",
+				"admin": "Administracija",
+				"emails": "Emailovi",
+				"posts": "Nova objava",
+				"spending": "Potrošnja",
+				"add-club": "Dodaj klub"
+			}
 		}
 	}
 }

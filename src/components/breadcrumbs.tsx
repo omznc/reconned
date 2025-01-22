@@ -19,6 +19,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslations } from "next-intl";
 
 type BreadcrumbsProps = {
 	clubs?: Array<{
@@ -35,6 +36,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const path = usePathname();
 	const sections = path.split("/").filter(Boolean);
+	const t = useTranslations("components.breadcrumbs");
 
 	useEffect(() => {
 		const main = document.querySelector("main");
@@ -63,7 +65,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Trenutni klub</p>
+						<p>{t("currentClub")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);
@@ -81,13 +83,14 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Trenutni susret</p>
+						<p>{t("currentEvent")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);
 		}
 
-		return TRANSLATIONS[section as keyof typeof TRANSLATIONS] || section;
+		// @ts-expect-error
+		return t(`translations.${section}`) || section;
 	};
 
 	return (
@@ -135,27 +138,3 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		</div>
 	);
 }
-
-const TRANSLATIONS = {
-	dashboard: "Aplikacija",
-	club: "Klub",
-	events: "Susreti",
-	information: "Informacije",
-	create: "Kreiraj",
-	stats: "Statistike",
-	members: "Članovi",
-	settings: "Postavke",
-	calendar: "Kalendar",
-	invitations: "Pozivnice",
-	security: "Sigurnost",
-	user: "Korisnik",
-	help: "Pomoć",
-	managers: "Menadžeri",
-	rules: "Pravila",
-	attendance: "Prisustvo",
-	admin: "Administacija",
-	emails: "Emailovi",
-	posts: "Nova objava",
-	spending: "Potrošnja",
-	"add-club": "Dodaj klub",
-};
