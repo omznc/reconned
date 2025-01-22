@@ -99,7 +99,8 @@ export default function LoginPage() {
 					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
-					{"Nemate račun? "}
+					{t("noAccountQuestion")}{" "}
+
 					<Link href="/register" className="underline">
 						{t("register")}
 					</Link>

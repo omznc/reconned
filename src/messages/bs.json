@@ -102,6 +102,8 @@
 			}
 		},
 		"auth": {
+			"haveAccountQuestion": "Već imate račun?",
+			"noAccountQuestion": "Nemate račun?",
 			"home": "Početna",
 			"login": "Prijava",
 			"loginDescription": "Upišite svoj email i lozinku kako bi ste se pridružili svijetu airsofta.",
@@ -131,7 +133,6 @@
 			"twoFactorError": "Uneseni kod nije ispravan.",
 			"code": "Kod",
 			"verify": "Potvrdi",
-			"noAccountQuestion": "Nemate račun?",
 			"rememberDevice": "Zapamti ovaj uređaj"
 		}
 	},
@@ -141,7 +142,7 @@
 			"myClubs": "Moji klubovi",
 			"recentEvents": "Nedavni susreti",
 			"statistics": {
-				"meetings": "Susreti",
+				"events": "Susreti",
 				"clubs": "Klubovi",
 				"writtenReviews": "Napisane recenzije",
 				"receivedReviews": "Primljene recenzije"
@@ -321,6 +322,7 @@
 				"cityDescription": "Grad u kojem se klub nalazi",
 				"exactLocation": "Tačna lokacija",
 				"exactLocationDescription": "Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <link></link>",
+				"exactLocationLink": "mapi airsoft klubova",
 				"reset": "Resetuj",
 				"description": "Opis",
 				"descriptionDescription": "Opišite svoj klub u nekoliko rečenica",

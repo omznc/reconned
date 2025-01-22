@@ -83,7 +83,7 @@ export default function RegisterPage() {
 							type="text"
 							name="name"
 							id="name"
-							placeholder="Ime"
+							placeholder={t("name")}
 							autoComplete="name"
 							required={true}
 						/>
@@ -122,7 +122,7 @@ export default function RegisterPage() {
 							type="password"
 							name="password"
 							id="password"
-							placeholder="Lozinka"
+							placeholder={t("password")}
 							autoComplete="current-password"
 							required={true}
 						/>
@@ -140,7 +140,7 @@ export default function RegisterPage() {
 					<GoogleLoginButton isLoading={isLoading} />
 				</form>
 				<div className="mt-4 text-center text-sm">
-					{"Imate račun? "}
+					{t("haveAccountQuestion")}{" "}
 					<Link
 						suppressHydrationWarning={true}
 						href="/login"

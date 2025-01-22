@@ -105,7 +105,7 @@ export default function LoginPage() {
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="totp">{t("twoFactorError")}</Label>
+						<Label htmlFor="totp">{t("twoFactor")}</Label>
 						<Input
 							id="totp"
 							type="text"
@@ -134,7 +134,7 @@ export default function LoginPage() {
 						}
 						className="underline"
 					>
-						Registrirajte se
+						{t("register")}
 					</Link>
 				</div>
 			</CardContent>

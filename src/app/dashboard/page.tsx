@@ -88,7 +88,7 @@ export default async function DashboardPage() {
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<div className="p-4 border rounded-lg bg-sidebar">
 					<div className="text-sm text-muted-foreground">
-						{t("statistics.meetings")}
+						{t("statistics.events")}
 					</div>
 					<div className="text-2xl font-bold">
 						{stats._count.eventRegistration}

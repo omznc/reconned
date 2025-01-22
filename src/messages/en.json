@@ -14,13 +14,13 @@
 			"hello": "Hello,",
 			"helloUser": "Hi {name},",
 			"message": "You are invited to join the {clubName} club. ",
-			"action": "Accept Call",
+			"action": "Accept invite",
 			"footer": "If you did not expect this invitation, please ignore this email."
 		},
 		"createAccount": {
-			"title": "You are invited to an airsoft meeting! ",
-			"invitationTitle": "You are invited to an airsoft meeting!",
-			"message": "You are invited to join the {eventName} meeting that will take place on {eventDate}. ",
+			"title": "You are invited to an airsoft event! ",
+			"invitationTitle": "You are invited to an airsoft event!",
+			"message": "You are invited to join the {eventName} event that will take place on {eventDate}. ",
 			"clubMessage": "Your account will automatically be linked to club {clubName} and you will be able to access match details immediately.",
 			"action": "Create Account",
 			"emailLinked": "This link is associated with the email address: {email}",
@@ -28,11 +28,11 @@
 		},
 		"rateEvent": {
 			"title": "Rate your experience at {eventName}!",
-			"heading": "How was your meeting?",
+			"heading": "How was your event?",
 			"hello": "Greetings,",
 			"helloUser": "Hello {name},",
-			"message": "Thank you for attending the {eventName} meeting held on {date}. ",
-			"action": "Rate the meeting",
+			"message": "Thank you for attending the {eventName} event held on {date}. ",
+			"action": "Rate the event",
 			"footer": "{clubName} - Thank you for your participation!"
 		}
 	},
@@ -40,22 +40,22 @@
 		"notFound": {
 			"title": "You are lost",
 			"message": "Page not found",
-			"backHome": "Return to home page"
+			"backHome": "Return to homepage"
 		},
 		"home": {
 			"hero": {
-				"title": "Airsoft only,<br></br> but better.",
+				"title": "Just Airsoft,<br></br> but better.",
 				"description": "Join the most advanced airsoft community. ",
 				"search": "Search all",
 				"map": "Show map",
 				"about": "Find out more",
-				"events": "Encounters",
+				"events": "Events",
 				"clubs": "Clubs",
 				"members": "Players",
 				"dashboard": "Application",
 				"sponsors": "Sponsors"
 			},
-			"upcomingEventsTitle": "Upcoming encounters",
+			"upcomingEventsTitle": "Upcoming events",
 			"upcomingEventsSubtitle": "See you on the field",
 			"upcomingEventsNone": "There are no upcoming matches",
 			"eventCard": {
@@ -67,7 +67,7 @@
 				"snacks": "A snack",
 				"drinks": "A drink",
 				"prizes": "Awards",
-				"privateEvent": "This is a private meeting, but you are in the {clubName} club.",
+				"privateEvent": "This is a private event, but you are in the {clubName} club.",
 				"starts": "It's starting",
 				"view": "Look"
 			}
@@ -102,7 +102,9 @@
 			}
 		},
 		"auth": {
-			"home": "Home page",
+			"haveAccountQuestion": "Already have an account?",
+			"noAccountQuestion": "Don't have an account?",
+			"home": "Homepage",
 			"login": "Login",
 			"loginDescription": "Enter your email and password to join the world of airsoft.",
 			"unverified": "Your email has not been verified. ",
@@ -115,7 +117,7 @@
 			"loading": "Just a moment...",
 			"invalidData": "The data entered is incorrect.",
 			"invalidDataOrUserExists": "The entered data is incorrect or the user already exists.",
-			"register": "Registration",
+			"register": "Register",
 			"registerDescription": "Create your account and join the airsoft community.",
 			"registerSuccess": "You have successfully registered. ",
 			"name": "Name",
@@ -131,7 +133,6 @@
 			"twoFactorError": "The code entered is not valid.",
 			"code": "Code",
 			"verify": "Confirm",
-			"noAccountQuestion": "Don't have an account?",
 			"rememberDevice": "Remember this device"
 		}
 	},
@@ -139,16 +140,16 @@
 		"root": {
 			"welcome": "Welcome, {name}",
 			"myClubs": "My clubs",
-			"recentEvents": "Recent encounters",
+			"recentEvents": "Recent events",
 			"statistics": {
-				"meetings": "Encounters",
+				"events": "Events",
 				"clubs": "Clubs",
 				"writtenReviews": "Written reviews",
 				"receivedReviews": "Reviews received"
 			},
 			"error": "An error occurred",
 			"loading": "Loading...",
-			"nextEvent": "Next meeting",
+			"nextEvent": "Next event",
 			"latestReview": "Latest review"
 		},
 		"help": {
@@ -159,7 +160,7 @@
 					"step2": "Click the \"Share\" button",
 					"step3": "In the share dialog, select the \"Embed a map\" tab",
 					"step4": "Copy the entire link",
-					"step5": "Paste the copied link into the Google Maps field on the meeting creation form"
+					"step5": "Paste the copied link into the Google Maps field on the event creation form"
 				}
 			}
 		},
@@ -171,7 +172,7 @@
 				"view": "View public profile"
 			},
 			"settings": {
-				"title": "In general",
+				"title": "General",
 				"imageUploadError": "An error occurred while uploading the image",
 				"profileUpdated": "User data has been saved",
 				"profileUpdateError": "An error occurred while saving data",
@@ -277,8 +278,8 @@
 			}
 		},
 		"events": {
-			"title": "My encounters",
-			"search": "Search encounters...",
+			"title": "My events",
+			"search": "Search events...",
 			"name": "Name",
 			"location": "Location",
 			"dateStart": "The beginning",
@@ -309,7 +310,7 @@
 					"confirm": "Delete the club",
 					"cancel": "No, come back"
 				},
-				"general": "In general",
+				"general": "General",
 				"name": "Club name",
 				"nameDescription": "The name of the club will be displayed everywhere on the site, if the club is public.",
 				"country": "Country",
@@ -320,7 +321,8 @@
 				"city": "City",
 				"cityDescription": "The city where the club is located",
 				"exactLocation": "Exact location",
-				"exactLocationDescription": "Click on the map to mark the exact location of your club.  <link></link>",
+				"exactLocationDescription": "Click on the map to mark the exact location of your club. If your club is public, you'll be able to see it on the <link></link>",
+				"exactLocationLink": "airsoft clubs map",
 				"reset": "Reset",
 				"description": "Description",
 				"descriptionDescription": "Describe your club in a few sentences",
@@ -328,7 +330,7 @@
 				"foundedDateDescription": "When was the club founded?",
 				"chooseDate": "Select a date",
 				"isAllied": "In the ASK FBIH alliance",
-				"isAlliedDescription": "If you are part of the federation of airsoft clubs in FBIH, select this option. ",
+				"isAlliedDescription": "If you are part of the SAKFBIH, select this option. Will be verified.",
 				"private": "Private club",
 				"privateDescription": "Private clubs are only visible to club members. ",
 				"logo": "Logo",
@@ -373,17 +375,17 @@
 				"members": "Number of members",
 				"registrations": "Number of applications",
 				"roles": "Roles",
-				"events": "Meetings by month",
-				"numberOfEvents": "Number of encounters",
+				"events": "Events by month",
+				"numberOfEvents": "Number of events",
 				"numberOfRegistrations": "Number of applications",
 				"userGrowth": "Membership growth",
 				"roleDistribution": "Role distribution",
 				"member": "Member",
-				"manager": "The manager",
+				"manager": "Manager",
 				"owner": "The owner"
 			},
 			"events": {
-				"search": "Search encounters...",
+				"search": "Search events...",
 				"name": "Name",
 				"location": "Location",
 				"dateStart": "The beginning",
@@ -396,7 +398,7 @@
 				"attendence": "Presence",
 				"edit": "Edit",
 				"view": "Look",
-				"event": "Meeting",
+				"event": "Event",
 				"attendenceTracking": {
 					"search": "Search participants...",
 					"error": "An error occurred while saving presence",
@@ -404,16 +406,16 @@
 					"registered": "Registered",
 					"attending": "Present",
 					"registrationNotClosed": "Applications are still open",
-					"eventEnded": "The meeting is over",
-					"backToEvent": "Back to the meeting",
+					"eventEnded": "The event is over",
+					"backToEvent": "Back to the event",
 					"unavailable": "This functionality is not available"
 				},
 				"create": {
 					"registrationsOpenIn": "Registrations open for <number></number> day/s",
 					"registrationsOpen": "Registrations are open",
 					"registrationsClosed": "Registrations are closed",
-					"eventStartsIn": ", the match starts for <number></number> day/s",
-					"eventStarted": ", the meeting has already started",
+					"eventStartsIn": ", the event starts for <number></number> day/s",
+					"eventStarted": ", the event has already started",
 					"eventDuration": ", lasts <number></number> hour/s.",
 					"error": "An error occurred while saving data",
 					"photoUploadError": "An error occurred while uploading the image",
@@ -426,10 +428,10 @@
 						"confirm": "Delete encounter",
 						"cancel": "No, come back"
 					},
-					"view": "Watch the match",
-					"general": "In general",
+					"view": "View",
+					"general": "General",
 					"name": "Name of the encounter",
-					"nameDescription": "The name of the match will be displayed everywhere on the site",
+					"nameDescription": "The name of the event will be displayed everywhere on the site",
 					"description": "Description",
 					"descriptionDescription": "Description of the encounter. ",
 					"descriptionPlaceholder": "Bring cutlery...",
@@ -439,25 +441,25 @@
 					"fileUploadFormats": "Supported formats:",
 					"deletePhoto": {
 						"title": "Are you sure?",
-						"body": "Are you sure you want to delete the meeting image?",
+						"body": "Are you sure you want to delete the event image?",
 						"confirm": "Delete image",
 						"cancel": "No, come back"
 					},
 					"price": "Registration fee/price",
-					"priceDescription": "How much does it cost to participate in the meeting? ",
+					"priceDescription": "How much does it cost to participate in the event? ",
 					"time": "Time",
 					"start": "The beginning",
-					"startDescription": "When does the match start?",
+					"startDescription": "When does the event start?",
 					"end": "The end",
-					"endDescription": "When does the match end?",
+					"endDescription": "When does the event end?",
 					"registrationStart": "Start of applications",
 					"registrationStartDescription": "When do meetup registrations open?",
 					"registrationEnd": "End of applications",
-					"registrationEndDescription": "When do the registrations for the meeting close?",
+					"registrationEndDescription": "When do the registrations for the event close?",
 					"selectDate": "Select a date",
 					"visibility": "Visibility",
 					"private": "Private",
-					"privateDescription": "Private meetings are visible only to club members.",
+					"privateDescription": "Private events are visible only to club members.",
 					"freelancers": "Freelancers allowed",
 					"freelancersDescription": "Do you allow players who are not members of a club to register for a match?",
 					"organization": "Organization",
@@ -468,7 +470,7 @@
 					"drinks": "A drink",
 					"prizes": "Awards",
 					"location": "Location",
-					"locationDescription": "Where is the meeting taking place?",
+					"locationDescription": "Where is the event taking place?",
 					"googleMapsDescription": "You can add a Google Maps embed link. ",
 					"googleMapsLink": "Where to find it?",
 					"rules": "Rules",
@@ -488,20 +490,20 @@
 	"components": {
 		"sidebar": {
 			"betaMessage": "Beta version of the application - Changes and errors are possible.",
-			"home": "Home page",
+			"home": "Homepage",
 			"dashboard": "Application",
 			"help": "Help",
 			"user": "User",
 			"overview": "Overview",
 			"settings": "Settings",
 			"security": "Security",
-			"myEvents": "My encounters",
+			"myEvents": "My events",
 			"club": "Club",
 			"clubs": "Clubs",
 			"selectClub": "Select a club",
 			"addClub": "Add a club",
 			"myClub": "My club",
-			"manager": "The manager",
+			"manager": "Manager",
 			"member": "Member",
 			"info": "Information",
 			"stats": "Statistics",
@@ -510,7 +512,7 @@
 			"members": "Members",
 			"invitations": "Invitations",
 			"managers": "Managers",
-			"events": "Encounters",
+			"events": "Events",
 			"newEvent": "A new encounter",
 			"calendar": "Calendar",
 			"rules": "Rules",
@@ -518,16 +520,16 @@
 			"users": "Users",
 			"emails": "Emails",
 			"personalization": "Personalization",
-			"logout": "Checkout"
+			"logout": "Sign out"
 		},
 		"footer": {
 			"about": {
 				"title": "About us",
-				"description": "RECONNED is a new platform for airsoft enthusiasts.  <omar></omar> and <safet></safet>"
+				"description": "RECONNED is a new platform for airsoft enthusiasts. Discover clubs, events, and players across Bosnia and Herzegovina. Manage your club, organize events, and find new opportunities. RECONNED is a project created by 2 airsoft players from BiH - <omar></omar> and <safet></safet>"
 			},
 			"quickLinks": {
 				"title": "Quick links",
-				"events": "Encounters",
+				"events": "Events",
 				"dashboard": "Application",
 				"map": "Map",
 				"search": "Search",
@@ -539,7 +541,7 @@
 			"support": {
 				"title": "Support",
 				"contact": "Contact",
-				"faq": "Frequently asked questions",
+				"faq": "FAQ",
 				"privacy": "Privacy"
 			},
 			"copyright": "© {year} RECONNED. ",
@@ -559,14 +561,14 @@
 			}
 		},
 		"header": {
-			"backToHome": "Back to home page",
+			"backToHome": "Back to homepage",
 			"dashboard": "Application",
 			"login": "Login",
-			"logout": "Checkout",
+			"logout": "Sign out",
 			"personalization": "Personalization"
 		},
 		"themeSwitcher": {
-			"toggle": "Change subject"
+			"toggle": "Change theme"
 		},
 		"fontSwitcher": {
 			"toggle": "Change font"
@@ -596,11 +598,11 @@
 				"location": "Location",
 				"cost": "Price",
 				"apply": "Log in",
-				"registrationsClosed": "Registrations for this meeting are currently not open"
+				"registrationsClosed": "Registrations for this event are currently not open"
 			}
 		},
 		"error": {
-			"backToHome": "Return to home page"
+			"backToHome": "Return to homepage"
 		},
 		"addToCalendar": {
 			"addToCalendar": "Add to calendar",
@@ -616,12 +618,12 @@
 				"other": "The rest",
 				"rules": "Rules",
 				"gear": "Equipment",
-				"private": "This is a private meeting for club members only.",
+				"private": "This is a private event for club members only.",
 				"freelancers": "Freelancers are welcome to register for this meetup."
 			}
 		},
 		"badge": {
-			"soon": "Coming soon"
+			"soon": "Soon"
 		},
 		"slug": {
 			"label": "Special link",
@@ -636,19 +638,19 @@
 			}
 		},
 		"userOverview": {
-			"views": "{count} review/s",
+			"views": "{count} view/s",
 			"freelancer": "Freelancer",
 			"clubs": {
 				"title": "Clubs",
 				"noClubs": "He is not a member of any club"
 			},
 			"upcomingEvents": {
-				"title": "Upcoming meetings",
+				"title": "Upcoming events",
 				"noEvents": "There are no upcoming matches"
 			},
 			"pastEvents": {
-				"title": "Previous encounters",
-				"noEvents": "No previous encounters"
+				"title": "Previous events",
+				"noEvents": "No previous events"
 			}
 		},
 		"reviews": {
@@ -659,7 +661,7 @@
 			"allReviews": "All ratings for {type}",
 			"types": {
 				"club": "club",
-				"event": "meeting",
+				"event": "event",
 				"user": "the user"
 			}
 		},
@@ -673,18 +675,18 @@
 			"apply": "Login",
 			"registrationsClosed": "Applications closed",
 			"registeredCount": "{count} registered",
-			"privateEvent": "Private meeting",
-			"publicEvent": "Public meeting",
-			"views": "{count} review/s",
+			"privateEvent": "Private event",
+			"publicEvent": "Public event",
+			"views": "{count} view/s",
 			"location": "Location",
 			"showLocation": "Show location",
 			"map": "Map",
 			"showEventMap": "Show match map"
 		},
 		"clubOverview": {
-			"views": "{count} review/s",
+			"views": "{count} view/s",
 			"map": "Map",
-			"edit": "Change club",
+			"edit": "Edit club",
 			"members": "{count} member/s",
 			"private": "Private club",
 			"public": "Public club",

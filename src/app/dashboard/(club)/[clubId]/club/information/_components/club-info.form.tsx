@@ -322,8 +322,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										>
 											{field.value
 												? props.countries.find(
-														(country) => country.id === field.value,
-													)?.name
+													(country) => country.id === field.value,
+												)?.name
 												: t("pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -402,13 +402,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								clubs={
 									props.club
 										? [
-												{
-													...props.club,
-													latitude: form.watch("latitude") || null,
-													longitude: form.watch("longitude") || null,
-													location: props.club.location || undefined,
-												},
-											]
+											{
+												...props.club,
+												latitude: form.watch("latitude") || null,
+												longitude: form.watch("longitude") || null,
+												location: props.club.location || undefined,
+											},
+										]
 										: []
 								}
 								interactive={true}
@@ -420,7 +420,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						{t.rich("exactLocationDescription", {
 							link: () => (
 								<Link target="_blank" className="text-red-500" href="/map">
-									mapi airsoft klubova
+									{t("exactLocationLink")}
 									<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
 								</Link>
 							),
