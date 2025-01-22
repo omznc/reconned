@@ -44,7 +44,7 @@ export default async function Page() {
 					<AlertTitle>{t("alertTitle")}</AlertTitle>
 					<AlertDescription>{t("alertDescription")}</AlertDescription>
 				</div>
-				<div className="flex gap-1">
+				<div className="flex gap-1 flex-col md:flex-row">
 					<Button variant="outline" asChild={true}>
 						<Link
 							className="flex items-center gap-1"

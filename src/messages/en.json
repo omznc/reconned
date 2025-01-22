@@ -169,7 +169,7 @@
 				"alertTitle": "Your account",
 				"alertDescription": "You can see your profile here",
 				"edit": "Edit profile",
-				"view": "View public profile"
+				"view": "View profile"
 			},
 			"settings": {
 				"title": "General",

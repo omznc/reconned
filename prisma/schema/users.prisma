@@ -31,7 +31,6 @@ model User {
   banReason        String?
   banExpires       DateTime?
   twoFactorEnabled Boolean?
-  isAdmin          Boolean?
 
   reviewsReceived Review[] @relation("UserReviews")
   reviewsWritten  Review[] @relation("ReviewAuthor")

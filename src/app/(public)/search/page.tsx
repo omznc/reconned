@@ -197,7 +197,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 								title={
 									<span className="flex gap-2 items-center">
 										{user.name} {user.callsign ? `(${user.callsign})` : ""}{" "}
-										{(user.role === "admin" || user.isAdmin) && (
+										{user.role === "admin" && (
 											<AdminIcon />
 										)}
 									</span>
