@@ -642,7 +642,7 @@
 			"freelancer": "Freelancer",
 			"clubs": {
 				"title": "Clubs",
-				"noClubs": "He is not a member of any club"
+				"noClubs": "Not a member of any club"
 			},
 			"upcomingEvents": {
 				"title": "Upcoming events",
