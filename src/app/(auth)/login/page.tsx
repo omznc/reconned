@@ -33,14 +33,6 @@ export default function LoginPage() {
 	const [message, setMessage] = useQueryState("message");
 
 	useEffect(() => {
-		if (!PublicKeyCredential.isConditionalMediationAvailable?.()) {
-			return;
-		}
-
-		void authClient.signIn.passkey({ autoFill: true });
-	}, []);
-
-	useEffect(() => {
 		if (message) {
 			toast.info(decodeURIComponent(message));
 			setMessage(null, { shallow: true });

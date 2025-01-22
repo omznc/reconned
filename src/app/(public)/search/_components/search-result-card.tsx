@@ -4,9 +4,10 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { ArrowUpRight, Building2, Calendar, User } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface SearchResultCardProps {
-	title: string;
+	title: ReactNode;
 	description?: string | null;
 	href: string;
 	badges?: string[];
@@ -30,7 +31,7 @@ export function SearchResultCard({
 				<div className="flex gap-4">
 					<div
 						className={cn(
-							"relative w-[150px] h-[150px] shrink-0 border-r overflow-hidden",
+							"relative w-[150px] h-[200px] md:h-[150px] shrink-0 border-r overflow-hidden",
 							!image && "bg-muted",
 						)}
 					>
@@ -38,10 +39,10 @@ export function SearchResultCard({
 							<>
 								<Image
 									src={image}
-									alt={title}
+									alt={typeof title === "string" ? title : "Image"}
 									fill
 									className={cn({
-										"object-cover": type !== "club",
+										"object-cover h-full": type !== "club",
 										"object-contain": type === "club",
 									})}
 								/>

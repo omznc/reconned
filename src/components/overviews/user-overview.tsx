@@ -45,9 +45,9 @@ export async function UserOverview({ user }: UserOverviewProps) {
 						suppressHydrationWarning={true}
 						src={user.image}
 						alt={user.name}
-						width={150}
-						height={150}
-						className="h-[200px] w-auto object-cover"
+						width={300}
+						height={300}
+						className="h-[400px] md:h-[200px] w-auto aspect-square object-cover"
 						draggable={false}
 					/>
 				)}

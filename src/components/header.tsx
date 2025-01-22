@@ -28,7 +28,7 @@ export function Header({
 	const path = usePathname();
 
 	return (
-		<header className="flex flex-col md:flex-row gap-2 select-none w-full items-center justify-between p-2 md:p-4">
+		<header className="flex flex-col md:flex-row gap-2 select-none w-full items-center justify-between p-4 md:p-4">
 			<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 				<Logo className="w-full h-auto max-h-[80px] md:w-fit md:h-full p-2 md:p-0" />
 			</Link>

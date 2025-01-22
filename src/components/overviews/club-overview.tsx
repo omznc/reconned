@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import type { Club, Post } from "@prisma/client";
+import type { Club, ClubMembership, Post, User } from "@prisma/client";
 import {
+	ArrowUpRight,
 	AtSign,
 	Cog,
 	Eye,
@@ -9,7 +10,6 @@ import {
 	MapPin,
 	Pencil,
 	Phone,
-	User as UserIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
@@ -18,13 +18,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPageViews } from "@/lib/analytics";
 import { getTranslations } from "next-intl/server";
+import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
+import { cn } from "@/lib/utils";
 
 interface ClubOverviewProps {
 	club: Club & {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date })[];
+		posts: (Post & { createdAt: Date; })[];
+		members?: (ClubMembership & { user: Pick<User, "role" | "isAdmin" | "id" | "image" | "name" | "callsign" | "slug">; })[];
 	};
 	isManager?: boolean;
 }
@@ -65,10 +68,9 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					)}
 					<div className="flex select-none flex-col gap-1">
 						<div className="flex items-center gap-2">
-							<h1 className="text-2xl font-semibold">{club.name}</h1>
-							<Badge variant="outline" className="h-fit">
-								{t("views", { count: visitors })}
-							</Badge>
+							<h1 className="text-2xl flex gap-2 items-center font-semibold">{club.name} {
+								club.verified && <VerifiedClubIcon />
+							}</h1>
 						</div>
 						<p className="text-accent-foreground/80">{club.description}</p>
 					</div>
@@ -93,10 +95,6 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 				</div>
 			</div>
 			<div className="flex flex-wrap gap-0">
-				<Badge className="flex items-center gap-1">
-					<UserIcon className="w-4 h-4" />
-					{t("members", { count: club._count?.members })}
-				</Badge>
 				<Badge className="flex items-center gap-1">
 					{club.isPrivate ? (
 						<>
@@ -128,36 +126,83 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						{club.contactPhone}
 					</Badge>
 				)}
+				<Badge className="h-fit">
+					{t("views", { count: visitors })}
+				</Badge>
 			</div>
 			<ReviewsOverview type="club" typeId={club.id} />
-			<div className="space-y-4">
-				<div className="flex items-center justify-between">
-					<h2 className="text-xl font-semibold flex items-center gap-2">
-						{t("posts")}
-					</h2>
-					{isManager && (
-						<Button asChild>
-							<Link href={`/dashboard/${club.id}/club/posts`}>
-								<Pencil className="h-4 w-4" />
-								{t("createPost")}
-							</Link>
-						</Button>
+			<div className={cn("grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none", {
+				"md:grid-cols-3": (club.members?.length ?? 0) > 0,
+			})}>
+				<div className="space-y-4 md:col-span-2">
+					<div className="flex items-center justify-between">
+						<h2 className="text-xl font-semibold flex items-center gap-2">
+							{t("posts")}
+						</h2>
+						{isManager && (
+							<Button asChild>
+								<Link href={`/dashboard/${club.id}/club/posts`}>
+									<Pencil className="h-4 w-4" />
+									{t("createPost")}
+								</Link>
+							</Button>
+						)}
+					</div>
+					{!posts || posts.length === 0 ? (
+						<p className="text-muted-foreground">{t("noPosts")}</p>
+					) : (
+						<div className="space-y-4">
+							{posts?.map((post) => (
+								<ClubPost
+									key={post.id}
+									post={post}
+									clubId={club.id}
+									isManager={isManager}
+								/>
+							))}
+						</div>
 					)}
 				</div>
-				{!posts || posts.length === 0 ? (
-					<p className="text-muted-foreground">{t("noPosts")}</p>
-				) : (
-					<div className="space-y-4">
-						{posts?.map((post) => (
-							<ClubPost
-								key={post.id}
-								post={post}
-								clubId={club.id}
-								isManager={isManager}
-							/>
-						))}
-					</div>
-				)}
+				{
+					(club.members?.length ?? 0) > 0 && (
+						<div className="space-y-4">
+							<h2 className="text-xl font-semibold items-center flex h-[40px]">{t("members", {
+								count: club.members?.length ?? 0,
+							})}</h2>
+							<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
+								{club.members?.map((membership) => (
+									<Link className="relative flex group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10" key={membership.user.id} href={`/users/${membership.user.id}`}>
+										<ArrowUpRight className="h-4 w-4 hidden group-hover:block text-red-500 right-2 top-2 absolute" />
+										{
+											membership.user.image ? (
+												<Image
+													src={membership.user.image}
+													alt={membership.user.name}
+													width={32}
+													height={32}
+													className="size-8"
+												/>
+											) : (
+												<div className="size-8 bg-muted flex items-center justify-center">
+													<span className="text-xs text-muted-foreground">
+														{membership.user.name.charAt(0)}
+													</span>
+												</div>
+											)
+										}
+										<div className="flex flex-col gap-0">
+											<h3 className="flex items-center gap-2 font-semibold">{membership.user.name} {
+												(membership.user.role === "admin" || membership.user.isAdmin) && <AdminIcon />
+											}</h3>
+											<p className="text-muted-foreground -mt-2">{membership.user.slug}</p>
+										</div>
+									</Link>
+								))}
+							</div>
+						</div>
+					)
+				}
+
 			</div>
 		</div>
 	);

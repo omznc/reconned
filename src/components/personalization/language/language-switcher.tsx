@@ -35,21 +35,21 @@ export function LanguageSwitcher() {
 	return (
 		<Select value={language} onValueChange={setLanguage}>
 			<SelectTrigger className="w-fit">
-				<span className="mr-2">{LANGUAGE_TRANSLATIONS[language as keyof typeof LANGUAGE_TRANSLATIONS] ?? "🌐"}</span>
+				<span className="mr-2">
+					{LANGUAGE_TRANSLATIONS[
+						language as keyof typeof LANGUAGE_TRANSLATIONS
+					] ?? "🌐"}
+				</span>
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
 					<SelectLabel>{t("select")}</SelectLabel>
 				</SelectGroup>
-				{VALID_LOCALES
-					.map((locale) => (
-						<SelectItem
-							key={locale}
-							value={locale}
-						>
-							{LANGUAGE_TRANSLATIONS[locale]}
-						</SelectItem>
-					))}
+				{VALID_LOCALES.map((locale) => (
+					<SelectItem key={locale} value={locale}>
+						{LANGUAGE_TRANSLATIONS[locale]}
+					</SelectItem>
+				))}
 			</SelectContent>
 		</Select>
 	);
