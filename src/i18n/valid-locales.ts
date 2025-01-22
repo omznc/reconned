@@ -1,1 +1,1 @@
-export const VALID_LOCALES = ["ba"];
+export const VALID_LOCALES = ["bs", "en"];
