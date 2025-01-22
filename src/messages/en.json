@@ -419,24 +419,24 @@
 					"eventDuration": ", lasts <number></number> hour/s.",
 					"error": "An error occurred while saving data",
 					"photoUploadError": "An error occurred while uploading the image",
-					"success": "Data about the encounter is saved",
-					"editingTitle": "Change of encounter",
-					"editingDescription": "This encounter has already been created, you are currently editing it.",
+					"success": "Data about the susret is saved",
+					"editingTitle": "Change of susret",
+					"editingDescription": "This susret has already been created, you are currently editing it.",
 					"delete": {
 						"title": "Are you sure?",
-						"body": "If you delete an encounter, you won't be able to get it back.",
-						"confirm": "Delete encounter",
+						"body": "If you delete an susret, you won't be able to get it back.",
+						"confirm": "Delete susret",
 						"cancel": "No, come back"
 					},
 					"view": "View",
 					"general": "General",
-					"name": "Name of the encounter",
+					"name": "Name of the susret",
 					"nameDescription": "The name of the event will be displayed everywhere on the site",
 					"description": "Description",
-					"descriptionDescription": "Description of the encounter. ",
+					"descriptionDescription": "Description of the susret. ",
 					"descriptionPlaceholder": "Bring cutlery...",
 					"photo": "Image",
-					"photoDescription": "Add a photo of the encounter. ",
+					"photoDescription": "Add a photo of the susret. ",
 					"fileUpload": "Drag or click to upload image",
 					"fileUploadFormats": "Supported formats:",
 					"deletePhoto": {
@@ -474,7 +474,7 @@
 					"googleMapsDescription": "You can add a Google Maps embed link. ",
 					"googleMapsLink": "Where to find it?",
 					"rules": "Rules",
-					"rulesDescription": "Select the rules that will apply to this encounter.",
+					"rulesDescription": "Select the rules that will apply to this susret.",
 					"noRules": "This club has no rules.",
 					"createRule": "Add rules",
 					"changedToday": "Changed today",
@@ -482,7 +482,7 @@
 					"noDescription": "No description",
 					"map": "Map",
 					"save": "Save changes",
-					"create": "Create an encounter"
+					"create": "Create an susret"
 				}
 			}
 		}
@@ -513,7 +513,7 @@
 			"invitations": "Invitations",
 			"managers": "Managers",
 			"events": "Events",
-			"newEvent": "A new encounter",
+			"newEvent": "A new susret",
 			"calendar": "Calendar",
 			"rules": "Rules",
 			"admin": "Administration",
@@ -671,7 +671,7 @@
 			"showLess": "Show less"
 		},
 		"eventOverview": {
-			"editEvent": "Edit encounter",
+			"editEvent": "Edit susret",
 			"apply": "Login",
 			"registrationsClosed": "Applications closed",
 			"registeredCount": "{count} registered",
