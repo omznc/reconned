@@ -10,8 +10,6 @@ export default getRequestConfig(async () => {
 	// We get this from Cloudflare
 	const country = headersList.get("cf-ipcountry")?.toLowerCase() ?? "ba";
 
-	console.log("Country from Cloudflare:", country);
-
 	// If the user is logged in, they have a locale
 	if (user?.language) {
 		if (VALID_LOCALES.includes(user.language)) {
@@ -38,7 +36,8 @@ export default getRequestConfig(async () => {
 		};
 	}
 
-	// Default to bs
+	// Default to bosnian
+	// Should this be english eventually?
 	return {
 		locale: "ba",
 		messages: (await import("../messages/ba.json")).default,

@@ -496,7 +496,7 @@
 			"settings": "Postavke",
 			"security": "Sigurnost",
 			"myEvents": "Moji susreti",
-			"club": "klub",
+			"club": "Klub",
 			"clubs": "Klubovi",
 			"selectClub": "Odaberite klub",
 			"addClub": "Dodaj klub",
@@ -625,6 +625,7 @@
 		},
 		"slug": {
 			"label": "Specijalni link",
+			"slugPlaceholder": "moj-link",
 			"description": "Kratki link koji ćete moći podjeliti.",
 			"placeholder": "moj-link",
 			"available": "Link je dostupan.",
