@@ -720,6 +720,12 @@
 				"spending": "Potrošnja",
 				"add-club": "Dodaj klub"
 			}
+		},
+		"icons": {
+			"clubOwner": "Vlasnik kluba",
+			"clubManager": "Menadžer kluba",
+			"administrator": "Administrator",
+			"verifiedClub": "Verificiran klub"
 		}
 	}
 }

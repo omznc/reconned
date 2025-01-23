@@ -720,6 +720,12 @@
 				"spending": "Spending",
 				"add-club": "Add club"
 			}
+		},
+		"icons": {
+			"clubOwner": "Club owner",
+			"clubManager": "Club manager",
+			"administrator": "Administrator",
+			"verifiedClub": "Verified club"
 		}
 	}
 }
