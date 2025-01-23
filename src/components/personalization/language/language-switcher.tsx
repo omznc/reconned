@@ -21,6 +21,7 @@ export function LanguageSwitcher() {
 	const router = useRouter();
 
 	useEffect(() => {
+		console.log("LanguageSwitcher", language);
 		if (!VALID_LOCALES.includes(language as (typeof VALID_LOCALES)[number])) {
 			return;
 		}

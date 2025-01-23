@@ -16,7 +16,12 @@ export const setLanguageAction = safeActionClient
 			throw new Error("Invalid language");
 		}
 
-		if (ctx.user.language === parsedInput.language) {
+		const user = await prisma.user.findUnique({
+			where: { id: ctx.user.id },
+			select: { language: true },
+		});
+
+		if (user?.language === parsedInput.language) {
 			return;
 		}
 

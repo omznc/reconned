@@ -133,7 +133,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="default"
-								className="aspect-square flex-col h-auto p-2"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="/search">
@@ -144,7 +144,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square flex-col h-auto p-2"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="/events">
@@ -155,7 +155,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2"
+								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="#">
@@ -167,7 +167,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2"
+								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="#">
@@ -179,7 +179,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="default"
-								className="aspect-square flex-col h-auto p-2"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="/map">
@@ -190,7 +190,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square flex-col h-auto p-2"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="/about">
@@ -201,7 +201,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square flex-col h-auto p-2"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="/dashboard">
@@ -212,7 +212,7 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square flex-col h-auto p-2"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
 								<Link href="/sponsors">
@@ -239,142 +239,139 @@ export default async function Home({ searchParams }: PageProps) {
 						)}
 
 						{upcomingEvents.map((event) => (
-							<Card key={event.id} className="flex flex-col bg-sidebar">
-								<CardHeader className="p-0">
-									{event.image && (
-										<Image
-											src={event.image}
-											alt={event.name}
-											width={400}
-											height={200}
-											className="w-full mb-4 h-48 object-cover"
-										/>
-									)}
-									<CardTitle className="mt-4 px-6">
-										{event.name} ({event.club?.name})
-									</CardTitle>
-									<CardDescription className="px-6 pb-6">
-										{event.description}
-									</CardDescription>
-								</CardHeader>
-								<CardContent className="flex-grow flex-col flex gap-1">
-									<div className="flex items-center">
-										<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
-										<span>
-											{format(event.dateStart, "MMM d, yyyy")}
-											{event.dateEnd &&
-												` - ${format(event.dateEnd, "MMM d, yyyy")}`}
-										</span>
-									</div>
-									{event.dateStart && (
+							<Link key={event.id} href={`/events/${event.id}`}>
+								<Card className="flex flex-col bg-sidebar hover:border-red-500 transition-all">
+									<CardHeader className="p-0">
+										{event.image && (
+											<Image
+												src={event.image}
+												alt={event.name}
+												width={400}
+												height={200}
+												className="w-full mb-4 h-48 object-cover"
+											/>
+										)}
+										<CardTitle className="mt-4 px-6">
+											{event.name} ({event.club?.name})
+										</CardTitle>
+										<CardDescription className="px-6 pb-6">
+											{event.description}
+										</CardDescription>
+									</CardHeader>
+									<CardContent className="flex-grow flex-col flex gap-1">
 										<div className="flex items-center">
-											<Clock className="w-5 h-5 mr-2 text-muted-foreground" />
-											<span>{format(event.dateStart, "h:mm a")}</span>
+											<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
+											<span>
+												{format(event.dateStart, "MMM d, yyyy")}
+												{event.dateEnd &&
+													` - ${format(event.dateEnd, "MMM d, yyyy")}`}
+											</span>
 										</div>
-									)}
-									{event.location && (
-										<div className="flex items-center">
-											<MapPin className="w-5 h-5 mr-2 text-muted-foreground" />
-											<span>{event.location}</span>
+										{event.dateStart && (
+											<div className="flex items-center">
+												<Clock className="w-5 h-5 mr-2 text-muted-foreground" />
+												<span>{format(event.dateStart, "h:mm a")}</span>
+											</div>
+										)}
+										{event.location && (
+											<div className="flex items-center">
+												<MapPin className="w-5 h-5 mr-2 text-muted-foreground" />
+												<span>{event.location}</span>
+											</div>
+										)}
+										{event.costPerPerson !== undefined && (
+											<div className="flex items-center">
+												<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
+												<span>{event.costPerPerson.toFixed(2)}KM po osobi</span>
+											</div>
+										)}
+										<div className="flex flex-wrap gap-2 my-4">
+											<Badge
+												variant="outline"
+												className="flex-grow justify-center"
+											>
+												{event.allowFreelancers
+													? t("eventCard.canFreelance")
+													: t("eventCard.cannotFreelance")}
+											</Badge>
+											{event.hasBreakfast && (
+												<Badge
+													variant="outline"
+													className="flex-grow justify-center"
+												>
+													{t("eventCard.breakfast")}
+												</Badge>
+											)}
+											{event.hasLunch && (
+												<Badge
+													variant="outline"
+													className="flex-grow justify-center"
+												>
+													{t("eventCard.lunch")}
+												</Badge>
+											)}
+											{event.hasDinner && (
+												<Badge
+													variant="outline"
+													className="flex-grow justify-center"
+												>
+													{t("eventCard.dinner")}
+												</Badge>
+											)}
+											{event.hasSnacks && (
+												<Badge
+													variant="outline"
+													className="flex-grow justify-center"
+												>
+													{t("eventCard.snacks")}
+												</Badge>
+											)}
+											{event.hasDrinks && (
+												<Badge
+													variant="outline"
+													className="flex-grow justify-center"
+												>
+													{t("eventCard.drinks")}
+												</Badge>
+											)}
+											{event.hasPrizes && (
+												<Badge
+													variant="outline"
+													className="flex-grow justify-center"
+												>
+													{t("eventCard.prizes")}
+												</Badge>
+											)}
 										</div>
-									)}
-									{event.costPerPerson !== undefined && (
-										<div className="flex items-center">
-											<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
-											<span>{event.costPerPerson.toFixed(2)}KM po osobi</span>
-										</div>
-									)}
-									<div className="flex flex-wrap gap-2 my-4">
-										<Badge
-											variant="outline"
-											className="flex-grow justify-center"
-										>
-											{event.allowFreelancers
-												? t("eventCard.canFreelance")
-												: t("eventCard.cannotFreelance")}
-										</Badge>
-										{event.hasBreakfast && (
-											<Badge
-												variant="outline"
-												className="flex-grow justify-center"
-											>
-												{t("eventCard.breakfast")}
-											</Badge>
+										{event.isPrivate && (
+											<span className="text-xs text-muted-foreground">
+												{t("eventCard.privateEvent", {
+													club: event.club?.name,
+												})}
+											</span>
 										)}
-										{event.hasLunch && (
-											<Badge
-												variant="outline"
-												className="flex-grow justify-center"
-											>
-												{t("eventCard.lunch")}
-											</Badge>
-										)}
-										{event.hasDinner && (
-											<Badge
-												variant="outline"
-												className="flex-grow justify-center"
-											>
-												{t("eventCard.dinner")}
-											</Badge>
-										)}
-										{event.hasSnacks && (
-											<Badge
-												variant="outline"
-												className="flex-grow justify-center"
-											>
-												{t("eventCard.snacks")}
-											</Badge>
-										)}
-										{event.hasDrinks && (
-											<Badge
-												variant="outline"
-												className="flex-grow justify-center"
-											>
-												{t("eventCard.drinks")}
-											</Badge>
-										)}
-										{event.hasPrizes && (
-											<Badge
-												variant="outline"
-												className="flex-grow justify-center"
-											>
-												{t("eventCard.prizes")}
-											</Badge>
-										)}
-									</div>
-									{event.isPrivate && (
-										<span className="text-xs text-muted-foreground">
-											{t("eventCard.privateEvent", {
-												club: event.club?.name,
-											})}
-										</span>
-									)}
-								</CardContent>
-								<CardFooter className="flex justify-between items-center">
-									<div className="flex flex-col">
-										<div className="text-sm text-muted-foreground">
-											{t("eventCard.starts")}{" "}
-											{formatDistanceToNow(event.dateStart, {
-												addSuffix: true,
-												locale: bs,
-											})}
-										</div>
-										{event.dateRegistrationsClose && (
-											<div className="text-sm mr-1 text-muted-foreground">
-												Prijave još{" "}
-												{formatDistanceToNow(event.dateRegistrationsClose, {
+									</CardContent>
+									<CardFooter className="flex justify-between items-center">
+										<div className="flex flex-col">
+											<div className="text-sm text-muted-foreground">
+												{t("eventCard.starts")}{" "}
+												{formatDistanceToNow(event.dateStart, {
+													addSuffix: true,
 													locale: bs,
 												})}
 											</div>
-										)}
-									</div>
-									<Button asChild={true}>
-										<Link href={`/events/${event.id}`}>
-											{t("eventCard.view")}
-										</Link>
-									</Button>
-								</CardFooter>
-							</Card>
+											{event.dateRegistrationsClose && (
+												<div className="text-sm mr-1 text-muted-foreground">
+													Prijave još{" "}
+													{formatDistanceToNow(event.dateRegistrationsClose, {
+														locale: bs,
+													})}
+												</div>
+											)}
+										</div>
+									</CardFooter>
+								</Card>
+							</Link>
 						))}
 					</div>
 				</div>
