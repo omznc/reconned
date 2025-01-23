@@ -5,6 +5,7 @@ import { getRequestConfig } from "next-intl/server";
 import { headers, cookies } from "next/headers";
 import deepmerge from "deepmerge";
 import { prisma } from "@/lib/prisma";
+import type { User } from "@prisma/client";
 
 export default getRequestConfig(async () => {
 	const [userCached, headersList, cookieStore] = await Promise.all([
@@ -13,11 +14,14 @@ export default getRequestConfig(async () => {
 		cookies(),
 	]);
 
-	// We're caching the session on the user object so we have to requery the language
-	const user = await prisma.user.findUnique({
-		where: { id: userCached?.id },
-		select: { language: true },
-	});
+	let user: { language: string } | null = null;
+
+	if (userCached) {
+		user = await prisma.user.findUnique({
+			where: { id: userCached.id },
+			select: { language: true },
+		});
+	}
 
 	const cookieLocale = cookieStore.get("preferred-language")?.value;
 	const cloudflareCountry =
