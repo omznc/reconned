@@ -19,6 +19,10 @@ const nextConfig = {
 			},
 			{
 				protocol: "https",
+				hostname: "cdn-beta.reconned.com",
+			},
+			{
+				protocol: "https",
 				hostname: "lh3.googleusercontent.com",
 			},
 		],

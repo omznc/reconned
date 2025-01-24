@@ -25,19 +25,24 @@ import {
 import { useEffect } from "react";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
+import { env } from "@/lib/env";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined };
+	user: User & { managedClubs: string[]; role?: string | null | undefined; };
 }
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const { setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
 	const t = useTranslations("components.sidebar");
+
+	// TODO: We'll do beta only now, but otherwise we'll keep this only on the beta subdomain.
+	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta") || true;
+
 
 	useEffect(() => {
 		if (searchParams.get("autoSelectFirst") && !params.clubId) {
@@ -70,24 +75,28 @@ export function AppSidebar(props: AppSidebarProps) {
 				<NavClub user={props.user} />
 			</SidebarContent>
 			<SidebarFooter>
-				<SidebarMenu>
-					<SidebarMenuItem>
-						{sidebar.open ? (
-							<div className="px-3 py-2 border bg-background/20">
-								<p className="text-xs text-muted-foreground">
-									{t("betaMessage")}
-								</p>
-							</div>
-						) : (
-							<div className="px-1 py-2 border bg-background/20 flex flex-col items-center">
-								<p className="text-xs text-muted-foreground">B</p>
-								<p className="text-xs text-muted-foreground">E</p>
-								<p className="text-xs text-muted-foreground">T</p>
-								<p className="text-xs text-muted-foreground">A</p>
-							</div>
-						)}
-					</SidebarMenuItem>
-				</SidebarMenu>
+				{
+					isBeta && (
+						<SidebarMenu>
+							<SidebarMenuItem>
+								{sidebar.open ? (
+									<div className="px-3 py-2 border bg-background/20">
+										<p className="text-xs text-muted-foreground">
+											{t("betaMessage")}
+										</p>
+									</div>
+								) : (
+									<div className="px-1 py-2 border bg-background/20 flex flex-col items-center">
+										<p className="text-xs text-muted-foreground">B</p>
+										<p className="text-xs text-muted-foreground">E</p>
+										<p className="text-xs text-muted-foreground">T</p>
+										<p className="text-xs text-muted-foreground">A</p>
+									</div>
+								)}
+							</SidebarMenuItem>
+						</SidebarMenu>
+					)
+				}
 				<UserSwitcher />
 			</SidebarFooter>
 			<SidebarRail />

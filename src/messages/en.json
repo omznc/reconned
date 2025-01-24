@@ -64,12 +64,12 @@
 				"breakfast": "Breakfast",
 				"lunch": "Lunch",
 				"dinner": "Dinner",
-				"snacks": "A snack",
-				"drinks": "A drink",
+				"snacks": "Snacks",
+				"drinks": "Drinks",
 				"prizes": "Awards",
 				"privateEvent": "This is a private event, but you are in the {clubName} club.",
-				"starts": "It's starting",
-				"view": "Look"
+				"starts": "Starts",
+				"view": "View"
 			}
 		},
 		"sponsors": {
@@ -397,7 +397,7 @@
 				"actions": "Actions",
 				"attendence": "Presence",
 				"edit": "Edit",
-				"view": "Look",
+				"view": "View",
 				"event": "Event",
 				"attendenceTracking": {
 					"search": "Search participants...",
@@ -466,8 +466,8 @@
 					"breakfast": "Breakfast",
 					"lunch": "Lunch",
 					"dinner": "Dinner",
-					"snacks": "A snack",
-					"drinks": "A drink",
+					"snacks": "Snacks",
+					"drinks": "Drinks",
 					"prizes": "Awards",
 					"location": "Location",
 					"locationDescription": "Where is the event taking place?",
@@ -489,7 +489,7 @@
 	},
 	"components": {
 		"sidebar": {
-			"betaMessage": "Beta version of the application - Changes and errors are possible.",
+			"betaMessage": "Beta version - Changes and errors are possible.",
 			"home": "Homepage",
 			"dashboard": "Application",
 			"help": "Help",
@@ -582,7 +582,7 @@
 		"calendar": {
 			"today": "Today",
 			"alreadyToday": "It's already today",
-			"goToToday": "Go to the current month",
+			"goToToday": "Go to today",
 			"days": {
 				"mon": "Mon",
 				"tue": "Tuesday",
@@ -591,6 +591,20 @@
 				"fri": "Fri",
 				"sat": "Sat",
 				"sun": "Sun"
+			},
+			"months": {
+				"jan": "January",
+				"feb": "February",
+				"mar": "March",
+				"apr": "April",
+				"may": "May",
+				"jun": "June",
+				"jul": "July",
+				"aug": "August",
+				"sep": "September",
+				"oct": "October",
+				"nov": "November",
+				"dec": "December"
 			},
 			"eventDetails": {
 				"start": "Start",
@@ -610,8 +624,8 @@
 				"breakfast": "Breakfast",
 				"lunch": "Lunch",
 				"dinner": "Dinner",
-				"snacks": "A snack",
-				"drinks": "A drink",
+				"snacks": "Snacks",
+				"drinks": "Drinks",
 				"prizes": "Awards"
 			},
 			"sections": {
@@ -634,7 +648,7 @@
 			"taken": "The link is taken!",
 			"errors": {
 				"notAuthenticated": "You are not logged in",
-				"unknownType": "Unknown guy"
+				"unknownType": "Unknown type"
 			}
 		},
 		"userOverview": {

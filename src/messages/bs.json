@@ -592,6 +592,20 @@
 				"sat": "Sub",
 				"sun": "Ned"
 			},
+			"months": {
+				"jan": "Januar",
+				"feb": "Februar",
+				"mar": "Mart",
+				"apr": "April",
+				"may": "Maj",
+				"jun": "Juni",
+				"jul": "Juli",
+				"aug": "August",
+				"sep": "Septembar",
+				"oct": "Oktobar",
+				"nov": "Novembar",
+				"dec": "Decembar"
+			},
 			"eventDetails": {
 				"start": "Početak",
 				"end": "Kraj",

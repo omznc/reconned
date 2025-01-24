@@ -33,6 +33,8 @@ export const auth = betterAuth({
 		"https://airsoft-bih.vercel.app/api/auth",
 		"https://reconned.com",
 		"https://reconned.com/api/auth",
+		"https://beta.reconned.com",
+		"https://beta.reconned.com/api/auth",
 	],
 	emailAndPassword: {
 		enabled: true,
@@ -144,7 +146,7 @@ export const auth = betterAuth({
 			// On create send an event to plausible
 			create: {
 				after: async (user) => {
-					await fetch("https://scout.reconned.com/api/event", {
+					await fetch(`${env.PLAUSIBLE_HOST}/api/event`, {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
