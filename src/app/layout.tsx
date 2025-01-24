@@ -28,7 +28,7 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-async function LayoutContent({ children }: { children: ReactNode }) {
+async function LayoutContent({ children }: { children: ReactNode; }) {
 	const [messages, user, locale] = await Promise.all([
 		getMessages(),
 		isAuthenticated(),
@@ -38,14 +38,18 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 	const font = user?.font ? (user.font as "sans" | "mono") : "sans";
 	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
 
+	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta");
+
 	return (
 		<html lang={locale} suppressHydrationWarning>
 			<head>
 				<meta name="darkreader-lock" />
+				{/* Beta site should never be indexed */}
+				{isBeta && <meta name="robots" content="noindex" />}
 				<Script
 					defer
-					data-domain="reconned.com"
-					src="https://scout.reconned.com/js/script.outbound-links.tagged-events.js"
+					data-domain={env.PLAUSIBLE_SITE_ID}
+					src={`${env.PLAUSIBLE_HOST}}/js/script.outbound-links.tagged-events.js`}
 				/>
 			</head>
 			<NextIntlClientProvider messages={messages}>
