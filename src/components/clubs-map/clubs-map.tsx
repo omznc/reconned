@@ -3,7 +3,6 @@
 import {
 	MapContainer,
 	TileLayer,
-	Marker,
 	Popup,
 	useMapEvents,
 } from "react-leaflet";
@@ -14,26 +13,25 @@ import { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { useQueryState } from "nuqs";
 import { useTranslations } from "next-intl";
+import { MapPin } from "lucide-react";
+import { Marker } from '@adamscybot/react-leaflet-component-marker';
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
-// Fix Leaflet's default marker issue in Next.js
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-(L.Icon.Default.prototype as any)._getIconUrl = undefined;
-L.Icon.Default.mergeOptions({
-	iconRetinaUrl: "/images/leaflet/marker-icon-2x.png",
-	iconUrl: "/images/leaflet/marker-icon.png",
-	shadowUrl: "/images/leaflet/marker-shadow.png",
-});
 
 // Helper function to create a custom icon from club logo
 function createClubIcon(logoUrl: string | null | undefined, size: number) {
-	return L.divIcon({
-		html: logoUrl
-			? `<img src="${logoUrl}" style="width: ${size}px; height: ${size}px;" class="object-contain" />`
-			: `<div class="rounded-full bg-primary border-2 border-white shadow-md" style="width: ${size / 2}px; height: ${size / 2}px;"></div>`,
-		className: "club-marker",
-		iconSize: [size, size],
-		iconAnchor: [size / 2, size / 2],
-	});
+	if (logoUrl) {
+		return <Image
+			src={logoUrl}
+			alt="Club logo"
+			width={size}
+			height={size}
+			className={cn("object-contain")}
+		/>;
+	}
+
+	return <MapPin size={size} strokeWidth={2} />;
 }
 
 interface Club {
@@ -55,7 +53,7 @@ interface ClubsMapProps {
 function LocationMarker({
 	position,
 	logo,
-}: { position: [number, number]; logo?: string | null }) {
+}: { position: [number, number]; logo?: string | null; }) {
 	return position ? (
 		<Marker position={position} icon={createClubIcon(logo, 32)} />
 	) : null;
@@ -63,7 +61,7 @@ function LocationMarker({
 
 function MapEventHandler({
 	onLocationSelect,
-}: { onLocationSelect?: (lat: number, lng: number) => void }) {
+}: { onLocationSelect?: (lat: number, lng: number) => void; }) {
 	useMapEvents({
 		click: (e) => {
 			if (onLocationSelect) {
@@ -109,8 +107,8 @@ export function ClubsMap({
 						value={[logoSize]}
 						onValueChange={([value]) => setLogoSize(value ?? 32)}
 						min={16}
-						max={128}
-						step={4}
+						max={64}
+						step={16}
 						className="w-32"
 					/>
 				</div>

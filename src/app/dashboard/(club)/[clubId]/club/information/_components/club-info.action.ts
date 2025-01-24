@@ -37,7 +37,9 @@ export const saveClubInformation = safeActionClient
 				dateFounded: parsedInput.dateFounded,
 				isAllied: parsedInput.isAllied,
 				isPrivate: parsedInput.isPrivate,
-				logo: `${parsedInput.logo}?v=${Date.now()}`,
+				logo: parsedInput.logo
+					? `${parsedInput.logo}?v=${Date.now()}`
+					: undefined,
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
 				slug: parsedInput.slug,
@@ -52,7 +54,9 @@ export const saveClubInformation = safeActionClient
 				dateFounded: parsedInput.dateFounded,
 				isAllied: parsedInput.isAllied,
 				isPrivate: parsedInput.isPrivate,
-				logo: `${parsedInput.logo}?v=${Date.now()}`,
+				logo: parsedInput.logo
+					? `${parsedInput.logo}?v=${Date.now()}`
+					: undefined,
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
 				latitude: parsedInput.latitude,
