@@ -36,7 +36,9 @@ export const createEvent = safeActionClient
 			dateEnd: parsedInput.dateEnd,
 			dateRegistrationsOpen: parsedInput.dateRegistrationsOpen,
 			dateRegistrationsClose: parsedInput.dateRegistrationsClose,
-			image: `${parsedInput.image}?v=${Date.now()}`,
+			image: parsedInput.image
+				? `${parsedInput.image}?v=${Date.now()}`
+				: undefined,
 			isPrivate: parsedInput.isPrivate,
 			allowFreelancers: parsedInput.allowFreelancers,
 			hasBreakfast: parsedInput.hasBreakfast,

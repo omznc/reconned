@@ -33,7 +33,9 @@ export const saveUserInformation = safeActionClient
 				name: parsedInput.name,
 				email: parsedInput.email,
 				isPrivate: parsedInput.isPrivate,
-				image: `${parsedInput.image}?v=${Date.now()}`,
+				image: parsedInput.image
+					? `${parsedInput.image}?v=${Date.now()}`
+					: undefined,
 				bio: parsedInput.bio,
 				location: parsedInput.location,
 				website: parsedInput.website,

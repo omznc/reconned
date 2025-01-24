@@ -322,8 +322,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										>
 											{field.value
 												? props.countries.find(
-														(country) => country.id === field.value,
-													)?.name
+													(country) => country.id === field.value,
+												)?.name
 												: t("pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -399,18 +399,16 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					<FormControl>
 						<div className="h-[400px] w-full -z-10 rounded-lg overflow-hidden border">
 							<MapSelector
-								clubs={
-									props.club
-										? [
-												{
-													...props.club,
-													latitude: form.watch("latitude") || null,
-													longitude: form.watch("longitude") || null,
-													location: props.club.location || undefined,
-												},
-											]
-										: []
-								}
+								clubs={[
+									{
+										id: props.club?.id ?? "new",
+										name: form.watch("name") || "",
+										latitude: form.watch("latitude") || null,
+										longitude: form.watch("longitude") || null,
+										location: form.watch("location"),
+										logo: props.club?.logo,
+									},
+								]}
 								interactive={true}
 								onLocationSelect={handleLocationSelect}
 							/>

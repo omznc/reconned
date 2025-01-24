@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@adamscybot/react-leaflet-component-marker": "^2.0.2",
     "@aws-sdk/client-s3": "^3.732.0",
     "@aws-sdk/s3-request-presigner": "^3.732.0",
     "@geoman-io/leaflet-geoman-free": "^2.18.3",
