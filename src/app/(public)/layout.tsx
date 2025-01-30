@@ -19,15 +19,11 @@ export default async function RootLayout({
 	return (
 		<>
 			<div className="w-full min-h-screen flex flex-col items-center">
-				{
-					isBeta && (
-						<div className="top-0 left-0 z-50 w-full bg-background/20 text-center py-2">
-							<p className="text-sm">
-								{t('betaMessage')}
-							</p>
-						</div>
-					)
-				}
+				{isBeta && (
+					<div className="top-0 left-0 z-50 w-full bg-background/20 text-center py-2">
+						<p className="text-sm">{t("betaMessage")}</p>
+					</div>
+				)}
 				<Header user={user} />
 				<div className="flex-grow size-full flex flex-col items-center">
 					<div className="absolute -z-10 inset-0 bg-gradient-to-b from-red-600/30 to-transparent h-[70dvh]" />

@@ -58,24 +58,24 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-			OR: [
-				{
-					isPrivate: false,
-				},
-				{
-					club: {
-						members: {
-							some: {
-								userId: user?.id,
+				OR: [
+					{
+						isPrivate: false,
+					},
+					{
+						club: {
+							members: {
+								some: {
+									userId: user?.id,
+								},
 							},
 						},
 					},
-				},
-			],
-		}
+				],
+			}
 		: {
-			isPrivate: false,
-		};
+				isPrivate: false,
+			};
 
 	const events = await prisma.event.findMany({
 		where: {

@@ -708,7 +708,8 @@
 			"public": "Public club",
 			"posts": "Announcements",
 			"createPost": "New post",
-			"noPosts": "There are no posts"
+			"noPosts": "There are no posts",
+			"allied": "In the ASK FBIH alliance"
 		},
 		"breadcrumbs": {
 			"currentClub": "Current club",

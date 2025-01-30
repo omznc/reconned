@@ -1,7 +1,12 @@
 "use client";
 import { GoogleLoginButton } from "@/app/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
 	CardContent,
 	CardDescription,
@@ -37,10 +42,11 @@ export default function RegisterPage() {
 		<>
 			<CardHeader>
 				<CardTitle className="text-2xl">{t("register")}</CardTitle>
-				<CardDescription>{t("registerDescription")}{" "}
+				<CardDescription>
+					{t("registerDescription")}{" "}
 					<Accordion type="single" collapsible className="w-full border-b-none">
-						<AccordionItem value="item-1" className='border-b-none'>
-							<AccordionTrigger className='border-b-none'>
+						<AccordionItem value="item-1" className="border-b-none">
+							<AccordionTrigger className="border-b-none">
 								<span className="text-red-500">
 									{t("registerDescriptionTooltipTitle")}
 								</span>

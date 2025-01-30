@@ -9,7 +9,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { getLocale } from "next-intl/server";
-import { emailHarmony } from 'better-auth-harmony';
+import { emailHarmony } from "better-auth-harmony";
 
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -23,7 +23,7 @@ export const auth = betterAuth({
 		cookieCache: {
 			enabled: true,
 			maxAge: 60 * 5, // 5 minutes
-		}
+		},
 	},
 	trustedOrigins: [
 		"http://localhost:3000",
@@ -175,7 +175,7 @@ export const auth = betterAuth({
 							language: locale,
 						},
 					});
-				}
+				},
 			},
 		},
 	},

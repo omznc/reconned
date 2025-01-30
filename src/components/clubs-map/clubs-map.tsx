@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	MapContainer,
-	TileLayer,
-	Popup,
-	useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Link from "next/link";
@@ -14,21 +9,22 @@ import { Slider } from "@/components/ui/slider";
 import { useQueryState } from "nuqs";
 import { useTranslations } from "next-intl";
 import { MapPin } from "lucide-react";
-import { Marker } from '@adamscybot/react-leaflet-component-marker';
+import { Marker } from "@adamscybot/react-leaflet-component-marker";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-
 
 // Helper function to create a custom icon from club logo
 function createClubIcon(logoUrl: string | null | undefined, size: number) {
 	if (logoUrl) {
-		return <Image
-			src={logoUrl}
-			alt="Club logo"
-			width={size}
-			height={size}
-			className={cn("object-contain")}
-		/>;
+		return (
+			<Image
+				src={logoUrl}
+				alt="Club logo"
+				width={size}
+				height={size}
+				className={cn("object-contain")}
+			/>
+		);
 	}
 
 	return <MapPin size={size} strokeWidth={2} />;
@@ -53,7 +49,7 @@ interface ClubsMapProps {
 function LocationMarker({
 	position,
 	logo,
-}: { position: [number, number]; logo?: string | null; }) {
+}: { position: [number, number]; logo?: string | null }) {
 	return position ? (
 		<Marker position={position} icon={createClubIcon(logo, 32)} />
 	) : null;
@@ -61,7 +57,7 @@ function LocationMarker({
 
 function MapEventHandler({
 	onLocationSelect,
-}: { onLocationSelect?: (lat: number, lng: number) => void; }) {
+}: { onLocationSelect?: (lat: number, lng: number) => void }) {
 	useMapEvents({
 		click: (e) => {
 			if (onLocationSelect) {
