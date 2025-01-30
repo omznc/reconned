@@ -67,7 +67,7 @@ export function NavApp({ isAdmin, pendingInvites }: { isAdmin: boolean, pendingI
 					icon: Key,
 				},
 				{
-					title: `${t("invites")} (${pendingInvites})}`,
+					title: `${t("invites")} (${pendingInvites})`,
 					url: "/dashboard/user/invites",
 					icon: Bell,
 				},
