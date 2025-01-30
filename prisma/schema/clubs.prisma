@@ -1,5 +1,5 @@
 model Club {
-  id           String    @id @default(cuid())
+  id           String    @id @default(ulid())
   name         String
   location     String?
   latitude     Float?

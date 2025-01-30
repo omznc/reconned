@@ -119,6 +119,8 @@
 			"invalidDataOrUserExists": "Uneseni podaci nisu ispravni ili korisnik već postoji.",
 			"register": "Registracija",
 			"registerDescription": "Napravite svoj račun i pridružite se airsoft zajednici.",
+			"registerDescriptionTooltipTitle": "Registrirate klub?",
+			"registerDescriptionTooltipDescription": "Ako želite dodati svoj klub, registrirajte se kao vi. Nakon prijave ćete moći dodati klub i biti ćete njegov vlasnik.",
 			"registerSuccess": "Uspješno ste se registrovali. Provjerite vaš email kako bi ste potvrdili račun.",
 			"name": "Ime",
 			"emailAutofilled": "Email je automatski popunjen",

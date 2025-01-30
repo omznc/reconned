@@ -119,6 +119,8 @@
 			"invalidDataOrUserExists": "The entered data is incorrect or the user already exists.",
 			"register": "Register",
 			"registerDescription": "Create your account and join the airsoft community.",
+			"registerDescriptionTooltipTitle": "Registering a club?",
+			"registerDescriptionTooltipDescription": "If you want to add your club, register as yourself. After logging in, you will be able to add a club and be its owner.",
 			"registerSuccess": "You have successfully registered. ",
 			"name": "Name",
 			"emailAutofilled": "The email has been filled in automatically",

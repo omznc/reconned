@@ -94,8 +94,8 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					)}
 				</div>
 			</div>
-			<div className="flex flex-wrap gap-0">
-				<Badge className="flex items-center gap-1">
+			<div className="flex flex-wrap gap-2">
+				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
 					{club.isPrivate ? (
 						<>
 							<EyeOff className="w-4 h-4" />
@@ -109,24 +109,24 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					)}
 				</Badge>
 				{club.location && (
-					<Badge className="flex items-center gap-1">
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
 						<MapPin className="w-4 h-4" />
 						{club.location}
 					</Badge>
 				)}
 				{club.contactEmail && (
-					<Badge className="flex items-center gap-1">
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
 						<AtSign className="w-4 h-4" />
 						{club.contactEmail}
 					</Badge>
 				)}
 				{club.contactPhone && (
-					<Badge className="flex items-center gap-1">
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
 						<Phone className="w-4 h-4" />
 						{club.contactPhone}
 					</Badge>
 				)}
-				<Badge className="h-fit">
+				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
 					{t("views", { count: visitors })}
 				</Badge>
 			</div>
@@ -194,7 +194,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 											<h3 className="flex items-center gap-2 font-semibold">{membership.user.name} {
 												membership.user.role === "admin" && <AdminIcon />
 											}</h3>
-											<p className="text-muted-foreground -mt-2">{membership.user.slug}</p>
+											<p className="text-muted-foreground -mt-2">{membership.user.callsign}</p>
 										</div>
 									</Link>
 								))}
