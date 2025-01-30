@@ -42,7 +42,7 @@ export const saveClubInformation = safeActionClient
 					: undefined,
 				contactPhone: parsedInput.contactPhone,
 				contactEmail: parsedInput.contactEmail,
-				slug: parsedInput.slug,
+				slug: parsedInput.slug ? parsedInput.slug : undefined,
 				latitude: parsedInput.latitude,
 				longitude: parsedInput.longitude,
 				countryId: parsedInput.countryId,
@@ -61,7 +61,7 @@ export const saveClubInformation = safeActionClient
 				contactEmail: parsedInput.contactEmail,
 				latitude: parsedInput.latitude,
 				longitude: parsedInput.longitude,
-				slug: parsedInput.slug,
+				slug: parsedInput.slug ? parsedInput.slug : undefined,
 				countryId: parsedInput.countryId,
 				members: {
 					create: {
