@@ -16,13 +16,13 @@ export default async function Page(props: PageProps) {
 	const user = await isAuthenticated();
 	const isMemberOfClub = user
 		? await prisma.clubMembership.findFirst({
-			where: {
-				userId: user?.id,
-				club: {
-					OR: [{ id: params.id }, { slug: params.id }],
+				where: {
+					userId: user?.id,
+					club: {
+						OR: [{ id: params.id }, { slug: params.id }],
+					},
 				},
-			},
-		})
+			})
 		: false;
 
 	const club = await prisma.club.findFirst({
@@ -53,7 +53,7 @@ export default async function Page(props: PageProps) {
 							image: true,
 							role: true,
 						},
-					}
+					},
 				},
 			},
 		},
@@ -64,7 +64,7 @@ export default async function Page(props: PageProps) {
 	}
 
 	return (
-		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
+		<div className="flex flex-col size-full gap-8 max-w-[1200px] pb-8 px-4">
 			<ClubOverview
 				club={club}
 				isManager={user?.managedClubs.includes(club.id)}

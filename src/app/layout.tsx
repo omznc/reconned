@@ -28,7 +28,7 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-async function LayoutContent({ children }: { children: ReactNode; }) {
+async function LayoutContent({ children }: { children: ReactNode }) {
 	const [messages, user, locale] = await Promise.all([
 		getMessages(),
 		isAuthenticated(),

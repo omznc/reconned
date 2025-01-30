@@ -36,7 +36,10 @@ import { useTranslations } from "next-intl";
 import { VerifiedClubIcon } from "@/components/icons";
 
 interface EventCalendarProps {
-	events: (Event & { club: { name: string, verified: boolean; }; image?: string | null; })[];
+	events: (Event & {
+		club: { name: string; verified: boolean; };
+		image?: string | null;
+	})[];
 }
 
 export function EventCalendar(props: EventCalendarProps) {
@@ -228,8 +231,11 @@ export function EventCalendar(props: EventCalendarProps) {
 		<div className="flex flex-col h-full w-full text-foreground">
 			<header className="flex py-4 items-center justify-between border-b">
 				<h1 className="text-2xl font-bold">
-					{/* @ts-ignore This will always be untyped, sadly, but hey there's only 12 months anyways.*/}
-					{t(`months.${format(currentDate, "MMM", { locale: bs }).toLowerCase()}`)} {format(currentDate, "yyyy")}
+					{t(
+						// @ts-ignore This will always be untyped, sadly, but hey there's only 12 months anyways.
+						`months.${format(currentDate, "MMM", { locale: bs }).toLowerCase()}`,
+					)}{" "}
+					{format(currentDate, "yyyy")}
 				</h1>
 				<div className="flex items-center gap-2">
 					<Button
@@ -384,7 +390,10 @@ export function EventCalendar(props: EventCalendarProps) {
 																			{event.name}
 																		</h4>
 																		<p className="text-sm flex items-center gap-2 text-muted-foreground">
-																			{event.club.name} {event.club.verified && <VerifiedClubIcon />}
+																			{event.club.name}{" "}
+																			{event.club.verified && (
+																				<VerifiedClubIcon />
+																			)}
 																		</p>
 																	</div>
 

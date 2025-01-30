@@ -50,7 +50,9 @@ export function LanguageSwitcher() {
 					<SelectItem key={locale} value={locale}>
 						<div className="flex flex-col">
 							{LANGUAGE_TRANSLATIONS[locale]}
-							{locale === 'en' && <span className="text-muted-foreground">In progress</span>}
+							{locale === "en" && (
+								<span className="text-muted-foreground">In progress</span>
+							)}
 						</div>
 					</SelectItem>
 				))}

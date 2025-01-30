@@ -3,9 +3,11 @@ import type { Club, ClubMembership, Post, User } from "@prisma/client";
 import {
 	ArrowUpRight,
 	AtSign,
+	BadgePlus,
 	Cog,
 	Eye,
 	EyeOff,
+	Handshake,
 	MapIcon,
 	MapPin,
 	Pencil,
@@ -18,7 +20,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPageViews } from "@/lib/analytics";
 import { getTranslations } from "next-intl/server";
-import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
+import {
+	AdminIcon,
+	ClubManagerIcon,
+	ClubOwnerIcon,
+	VerifiedClubIcon,
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 interface ClubOverviewProps {
@@ -26,8 +33,10 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date; })[];
-		members?: (ClubMembership & { user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">; })[];
+		posts: (Post & { createdAt: Date })[];
+		members?: (ClubMembership & {
+			user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">;
+		})[];
 	};
 	isManager?: boolean;
 }
@@ -67,9 +76,9 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					)}
 					<div className="flex select-none flex-col gap-1 text-center md:text-left">
 						<div className="flex items-center justify-center md:justify-start gap-2">
-							<h1 className="text-2xl flex gap-2 items-center font-semibold">{club.name} {
-								club.verified && <VerifiedClubIcon />
-							}</h1>
+							<h1 className="text-2xl flex gap-2 items-center font-semibold">
+								{club.name} {club.verified && <VerifiedClubIcon />}
+							</h1>
 						</div>
 						<p className="text-accent-foreground/80">{club.description}</p>
 					</div>
@@ -113,6 +122,12 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						{club.location}
 					</Badge>
 				)}
+				{club.isAllied && (
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+						<Handshake className="w-4 h-4" />
+						{t("allied")}
+					</Badge>
+				)}
 				{club.contactEmail && (
 					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
 						<AtSign className="w-4 h-4" />
@@ -130,9 +145,14 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 				</Badge>
 			</div>
 			<ReviewsOverview type="club" typeId={club.id} />
-			<div className={cn("grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none", {
-				"md:grid-cols-3": (club.members?.length ?? 0) > 0,
-			})}>
+			<div
+				className={cn(
+					"grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none",
+					{
+						"md:grid-cols-3": (club.members?.length ?? 0) > 0,
+					},
+				)}
+			>
 				<div className="space-y-4 md:col-span-2">
 					<div className="flex items-center justify-between">
 						<h2 className="text-xl font-semibold flex items-center gap-2">
@@ -162,46 +182,68 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						</div>
 					)}
 				</div>
-				{
-					(club.members?.length ?? 0) > 0 && (
-						<div className="space-y-4">
-							<h2 className="text-xl font-semibold items-center flex h-[40px]">{t("members", {
+				{(club.members?.length ?? 0) > 0 && (
+					<div className="space-y-4">
+						<h2 className="text-xl font-semibold items-center flex h-[40px]">
+							{t("members", {
 								count: club.members?.length ?? 0,
-							})}</h2>
-							<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
-								{club.members?.map((membership) => (
-									<Link className="relative flex group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10" key={membership.user.id} href={`/users/${membership.user.id}`}>
+							})}
+						</h2>
+						<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
+							{club.members
+								?.sort((a, b) => {
+									if (a.role === "CLUB_OWNER") {
+										return -1;
+									}
+									if (b.role === "CLUB_OWNER") {
+										return 1;
+									}
+									if (a.role === "MANAGER") {
+										return -1;
+									}
+									if (b.role === "MANAGER") {
+										return 1;
+									}
+									return 0;
+								})
+								?.map((membership) => (
+									<Link
+										className="relative flex group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10"
+										key={membership.user.id}
+										href={`/users/${membership.user.id}`}
+									>
 										<ArrowUpRight className="h-4 w-4 hidden group-hover:block text-red-500 right-2 top-2 absolute" />
-										{
-											membership.user.image ? (
-												<Image
-													src={membership.user.image}
-													alt={membership.user.name}
-													width={32}
-													height={32}
-													className="size-8"
-												/>
-											) : (
-												<div className="size-8 bg-muted flex items-center justify-center">
-													<span className="text-xs text-muted-foreground">
-														{membership.user.name.charAt(0)}
-													</span>
-												</div>
-											)
-										}
+										{membership.user.image ? (
+											<Image
+												src={membership.user.image}
+												alt={membership.user.name}
+												width={32}
+												height={32}
+												className="size-8"
+											/>
+										) : (
+											<div className="size-8 bg-muted flex items-center justify-center">
+												<span className="text-xs text-muted-foreground">
+													{membership.user.name.charAt(0)}
+												</span>
+											</div>
+										)}
 										<div className="flex flex-col gap-0">
-											<h3 className="flex items-center gap-2 font-semibold">{membership.user.name} {
-												membership.user.role === "admin" && <AdminIcon />
-											}</h3>
-											<p className="text-muted-foreground -mt-2">{membership.user.callsign}</p>
+											<h3 className="flex items-center gap-2 font-semibold">
+												{membership.user.name}{" "}
+												{membership.user.role === "admin" && <AdminIcon />}{" "}
+												{membership.role === "CLUB_OWNER" && <ClubOwnerIcon />}
+												{membership.role === "MANAGER" && <ClubManagerIcon />}
+											</h3>
+											<p className="text-muted-foreground -mt-2">
+												{membership.user.callsign}
+											</p>
 										</div>
 									</Link>
 								))}
-							</div>
 						</div>
-					)
-				}
-
+					</div>
+				)}
 			</div>
 		</div>
 	);

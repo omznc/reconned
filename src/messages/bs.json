@@ -708,7 +708,8 @@
 			"public": "Javni klub",
 			"posts": "Objave",
 			"createPost": "Nova objava",
-			"noPosts": "Nema objava"
+			"noPosts": "Nema objava",
+			"allied": "U savezu ASK FBIH"
 		},
 		"breadcrumbs": {
 			"currentClub": "Trenutni klub",

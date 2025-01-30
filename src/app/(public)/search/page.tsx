@@ -1,10 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { prisma } from "@/lib/prisma";
-import {
-	Users,
-	Shield,
-	Calendar,
-} from "lucide-react";
+import { Users, Shield, Calendar } from "lucide-react";
 import { Suspense } from "react";
 import { format } from "date-fns";
 import { SearchResultCard } from "@/app/(public)/search/_components/search-result-card";
@@ -20,27 +16,27 @@ interface Props {
 }
 
 async function SearchResults({ query, tab }: { query?: string; tab?: string; }) {
-	if (!query) {
-		return null;
-	}
-
 	const [clubs, users, events] = await Promise.all([
 		prisma.club.findMany({
 			where: {
-				OR: [
-					{
-						name: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-					{
-						description: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-				],
+				...(query
+					? {
+						OR: [
+							{
+								name: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+							{
+								description: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+						],
+					}
+					: {}),
 				AND: { isPrivate: false },
 			},
 			include: {
@@ -52,26 +48,30 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 		}),
 		prisma.user.findMany({
 			where: {
-				OR: [
-					{
-						callsign: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-					{
-						name: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-					{
-						location: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-				],
+				...(query
+					? {
+						OR: [
+							{
+								callsign: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+							{
+								name: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+							{
+								location: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+						],
+					}
+					: {}),
 				AND: { isPrivate: false },
 			},
 			take: 25,
@@ -81,7 +81,6 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 						club: {
 							select: {
 								name: true,
-
 							},
 						},
 					},
@@ -92,30 +91,33 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 					},
 				},
 			},
-
 		}),
 		prisma.event.findMany({
 			where: {
-				OR: [
-					{
-						name: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-					{
-						description: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-					{
-						location: {
-							contains: query,
-							mode: "insensitive",
-						},
-					},
-				],
+				...(query
+					? {
+						OR: [
+							{
+								name: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+							{
+								description: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+							{
+								location: {
+									contains: query,
+									mode: "insensitive",
+								},
+							},
+						],
+					}
+					: {}),
 				AND: { isPrivate: false },
 			},
 			include: {
@@ -145,15 +147,15 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 		<TooltipProvider>
 			<Tabs defaultValue={defaultTab} className="w-full">
 				<TabsList className="grid w-full grid-cols-3 mb-8">
-					<TabsTrigger value="clubs" className="flex gap-2">
+					<TabsTrigger value="clubs" className="text-xs flex gap-2">
 						<Shield className="h-4 w-4 hidden md:block" />
 						Klubovi ({clubs.length})
 					</TabsTrigger>
-					<TabsTrigger value="users" className="flex gap-2">
+					<TabsTrigger value="users" className="text-xs flex gap-2">
 						<Users className="h-4 w-4 hidden md:block" />
 						Korisnici ({users.length})
 					</TabsTrigger>
-					<TabsTrigger value="events" className="flex gap-2">
+					<TabsTrigger value="events" className="text-xs flex gap-2">
 						<Calendar className="h-4 w-4 hidden md:block" />
 						Susreti ({events.length})
 					</TabsTrigger>
@@ -165,22 +167,23 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 							Nema pronađenih klubova
 						</div>
 					) : (
-						clubs.map((club) => (
-							<SearchResultCard
-								image={club.logo}
-								key={club.id}
-								title={
-									<span className="flex gap-2 items-center">
-										{club.name}{" "}
-										{club.verified && <VerifiedClubIcon />}
-									</span>
-								}
-								description={club.description}
-								href={`/clubs/${club.id}`}
-								meta={`${club._count.members} članova`}
-								type="club"
-							/>
-						))
+						clubs
+							.sort((a, b) => b._count.members - a._count.members)
+							.map((club) => (
+								<SearchResultCard
+									image={club.logo}
+									key={club.id}
+									title={
+										<span className="flex gap-2 items-center">
+											{club.name} {club.verified && <VerifiedClubIcon />}
+										</span>
+									}
+									description={club.description}
+									href={`/clubs/${club.slug ?? club.id}`}
+									meta={`${club._count.members} članova`}
+									type="club"
+								/>
+							))
 					)}
 				</TabsContent>
 
@@ -190,31 +193,39 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 							Nema pronađenih korisnika
 						</div>
 					) : (
-						users.map((user) => (
-							<SearchResultCard
-								image={user.image}
-								key={user.id}
-								title={
-									<span className="flex gap-2 items-center">
-										{user.name} {user.callsign ? `(${user.callsign})` : ""}{" "}
-										{user.role === "admin" && (
-											<AdminIcon />
-										)}
-									</span>
+						users
+							.sort((a, b) => {
+								if (a.role === "admin") {
+									return -1;
 								}
-								description={user.bio}
-								href={`/users/${user.id}`}
-								badges={
-									user.clubMembership.length === 0
-										? ["Freelancer"]
-										: user.clubMembership.map(
-											(membership) => membership.club.name,
-										)
+								if (b.role === "admin") {
+									return 1;
 								}
-								meta={user.location || undefined}
-								type="user"
-							/>
-						))
+								return 0;
+							})
+							.map((user) => (
+								<SearchResultCard
+									image={user.image}
+									key={user.id}
+									title={
+										<span className="flex gap-2 items-center">
+											{user.name} {user.callsign ? `(${user.callsign})` : ""}{" "}
+											{user.role === "admin" && <AdminIcon />}
+										</span>
+									}
+									description={user.bio}
+									href={`/users/${user.slug ?? user.id}`}
+									badges={
+										user.clubMembership.length === 0
+											? ["Freelancer"]
+											: user.clubMembership.map(
+												(membership) => membership.club.name,
+											)
+									}
+									meta={user.location || undefined}
+									type="user"
+								/>
+							))
 					)}
 				</TabsContent>
 
@@ -224,22 +235,24 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 							Nema pronađenih susreta
 						</div>
 					) : (
-						events.map((event) => (
-							<SearchResultCard
-								image={event.image}
-								key={event.id}
-								title={event.name}
-								description={event.description}
-								href={`/events/${event.id}`}
-								badges={[
-									event.club.name,
-									event.isPrivate ? "Privatno" : "Javno",
-									format(event.dateStart, "dd.MM.yyyy"),
-								]}
-								meta={event.location || undefined}
-								type="event"
-							/>
-						))
+						events
+							.sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime())
+							.map((event) => (
+								<SearchResultCard
+									image={event.image}
+									key={event.id}
+									title={event.name}
+									description={event.description}
+									href={`/events/${event.slug ?? event.id}`}
+									badges={[
+										event.club.name,
+										event.isPrivate ? "Privatno" : "Javno",
+										format(event.dateStart, "dd.MM.yyyy"),
+									]}
+									meta={event.location || undefined}
+									type="event"
+								/>
+							))
 					)}
 				</TabsContent>
 			</Tabs>

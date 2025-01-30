@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 						{name ?? "Airsoft klub"}
 					</div>
 					<div tw="flex text-2xl mt-2 text-zinc-200">
-						{description?.slice(0, 100) ?? ""}
+						{description?.slice(0, 400) ?? ""}
 					</div>
 				</div>
 			</div>

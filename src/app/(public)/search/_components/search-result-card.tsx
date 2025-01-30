@@ -28,10 +28,10 @@ export function SearchResultCard({
 	return (
 		<Link href={href} className="block group">
 			<Card className="relative overflow-hidden transition-all hover:border-red-500 border bg-sidebar">
-				<div className="flex gap-4">
+				<div className="flex flex-col md:flex-row gap-4">
 					<div
 						className={cn(
-							"relative w-[150px] h-[200px] md:h-[150px] shrink-0 border-r overflow-hidden",
+							"relative w-full md:w-[150px] h-[200px] md:h-[150px] shrink-0 md:border-r overflow-hidden",
 							!image && "bg-muted",
 						)}
 					>
