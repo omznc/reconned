@@ -41,10 +41,17 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		events: club.events,
 	}));
 
+	const invitesCountForUser = await prisma.clubInvite.count({
+		where: {
+			email: user.email,
+			status: "PENDING",
+		},
+	});
+
 	return (
 		<SidebarProvider>
 			<CurrentClubProvider>
-				<AppSidebar clubs={clubs} user={user} />
+				<AppSidebar clubs={clubs} user={user} invitesCount={invitesCountForUser} />
 				<SidebarInset className="max-h-dvh overflow-auto flex items-center p-4 justify-start">
 					<Breadcrumbs clubs={simplifiedClubs} />
 					<div className="space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">

@@ -173,6 +173,13 @@
 				"edit": "Edit profile",
 				"view": "View profile"
 			},
+			"invites": {
+				"title": "Invitations",
+				"noInvites": "You have no invitations",
+				"approve": "Accept",
+				"dismiss": "Dismiss",
+				"viewClub": "View club"
+			},
 			"settings": {
 				"title": "General",
 				"imageUploadError": "An error occurred while uploading the image",
@@ -522,7 +529,9 @@
 			"users": "Users",
 			"emails": "Emails",
 			"personalization": "Personalization",
-			"logout": "Sign out"
+			"logout": "Sign out",
+			"pendingInvitesMessage": "You have {count} pending invitation/s",
+			"invites": "Invitations"
 		},
 		"footer": {
 			"about": {
@@ -735,7 +744,8 @@
 				"emails": "Emails",
 				"posts": "New post",
 				"spending": "Spending",
-				"add-club": "Add club"
+				"add-club": "Add club",
+				"invites": "Invitations"
 			}
 		},
 		"icons": {

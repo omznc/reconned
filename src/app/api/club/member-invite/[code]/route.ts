@@ -12,6 +12,8 @@ interface RouteParams {
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
 	const { code } = await params;
+	const { searchParams } = new URL(req.url);
+	const action = searchParams.get("action");
 
 	// Validate the invite regardless of auth status
 	const invite = await prisma.clubInvite.findUnique({
@@ -25,6 +27,16 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 	if (!invite) {
 		redirect(`/error?message=${encodeURIComponent("Nepostojeći poziv")}`);
+	}
+
+	if (action === "dismiss") {
+		await prisma.clubInvite.update({
+			where: { id: invite.id },
+			data: {
+				status: "REJECTED",
+			},
+		});
+		redirect("/dashboard/user/invites?message=dismissed");
 	}
 
 	if (invite.expiresAt < new Date()) {

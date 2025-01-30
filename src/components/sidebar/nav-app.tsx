@@ -11,6 +11,7 @@ import {
 	Search,
 	Shield,
 	User,
+	Bell,
 } from "lucide-react";
 
 import {
@@ -24,7 +25,7 @@ import type { NavItem } from "./types.ts";
 import { renderCollapsedItem, renderExpandedItem } from "./utils.tsx";
 import { useTranslations } from "next-intl";
 
-export function NavApp({ isAdmin }: { isAdmin: boolean }) {
+export function NavApp({ isAdmin, pendingInvites }: { isAdmin: boolean, pendingInvites: number; }) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const t = useTranslations("components.sidebar");
@@ -64,6 +65,11 @@ export function NavApp({ isAdmin }: { isAdmin: boolean }) {
 					title: t("security"),
 					url: "/dashboard/user/security",
 					icon: Key,
+				},
+				{
+					title: `${t("invites")} (${pendingInvites})}`,
+					url: "/dashboard/user/invites",
+					icon: Bell,
 				},
 			],
 		},

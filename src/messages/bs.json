@@ -173,6 +173,13 @@
 				"edit": "Izmjeni profil",
 				"view": "Pogledaj profil"
 			},
+			"invites": {
+				"title": "Pozivnice",
+				"noInvites": "Nemate pozivnica",
+				"approve": "Prihvati",
+				"dismiss": "Odbaci",
+				"viewClub": "Pogledaj klub"
+			},
 			"settings": {
 				"title": "Općento",
 				"imageUploadError": "Došlo je do greške prilikom uploada slike",
@@ -522,7 +529,9 @@
 			"users": "Korisnici",
 			"emails": "Emailovi",
 			"personalization": "Personalizacija",
-			"logout": "Odjava"
+			"logout": "Odjava",
+			"pendingInvitesMessage": "Imate {count} neodgovorenih pozivnica",
+			"invites": "Pozivnice"
 		},
 		"footer": {
 			"about": {
@@ -735,7 +744,8 @@
 				"emails": "Emailovi",
 				"posts": "Nova objava",
 				"spending": "Potrošnja",
-				"add-club": "Dodaj klub"
+				"add-club": "Dodaj klub",
+				"invites": "Pozivnice"
 			}
 		},
 		"icons": {
