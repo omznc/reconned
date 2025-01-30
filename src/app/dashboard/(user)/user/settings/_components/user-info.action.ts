@@ -40,7 +40,7 @@ export const saveUserInformation = safeActionClient
 				location: parsedInput.location,
 				website: parsedInput.website,
 				phone: parsedInput.phone,
-				slug: parsedInput.slug,
+				slug: parsedInput.slug ? parsedInput.slug : undefined,
 				callsign: parsedInput.callsign,
 				isPrivateEmail: parsedInput.isPrivateEmail,
 				isPrivatePhone: parsedInput.isPrivatePhone,
