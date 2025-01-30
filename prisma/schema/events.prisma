@@ -1,5 +1,5 @@
 model Event {
-  id          String  @id @default(cuid())
+  id          String  @id @default(ulid())
   name        String
   description String
   club        Club    @relation(fields: [clubId], references: [id], onDelete: Cascade)

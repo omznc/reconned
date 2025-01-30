@@ -3,18 +3,17 @@ import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
 import PasswordReset from "@/emails/password-reset";
 import { env } from "@/lib/env";
 import { sendEmail } from "@/lib/mail";
-import { PrismaClient } from "@prisma/client";
 import { render } from "@react-email/components";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { getLocale } from "next-intl/server";
+import { emailHarmony } from 'better-auth-harmony';
 
 import { headers } from "next/headers";
 import { cache } from "react";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
@@ -85,6 +84,9 @@ export const auth = betterAuth({
 		oneTap(),
 		admin({
 			defaultRole: "user",
+		}),
+		emailHarmony({
+			allowNormalizedSignin: true,
 		}),
 	],
 	user: {
@@ -173,7 +175,7 @@ export const auth = betterAuth({
 							language: locale,
 						},
 					});
-				},
+				}
 			},
 		},
 	},

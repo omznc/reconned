@@ -1,16 +1,17 @@
 model User {
-  id            String  @id @default(cuid())
-  email         String  @unique
-  name          String
-  emailVerified Boolean
-  image         String?
-  slug          String? @unique
-  bio           String?
-  location      String?
-  website       String?
-  phone         String?
-  callsign      String?
-  gear          Json[]
+  id              String  @id @default(ulid())
+  email           String  @unique
+  name            String
+  emailVerified   Boolean
+  normalizedEmail String? @unique
+  image           String?
+  slug            String? @unique
+  bio             String?
+  location        String?
+  website         String?
+  phone           String?
+  callsign        String?
+  gear            Json[]
 
   language String @default("bs")
   font     String @default("sans")
@@ -31,7 +32,7 @@ model User {
   banReason        String?
   banExpires       DateTime?
   twoFactorEnabled Boolean?
-
+  
   reviewsReceived Review[] @relation("UserReviews")
   reviewsWritten  Review[] @relation("ReviewAuthor")
 
