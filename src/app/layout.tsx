@@ -49,7 +49,7 @@ async function LayoutContent({ children }: { children: ReactNode; }) {
 				<Script
 					defer
 					data-domain={env.PLAUSIBLE_SITE_ID}
-					src={`${env.PLAUSIBLE_HOST}}/js/script.outbound-links.tagged-events.js`}
+					src={`${env.PLAUSIBLE_HOST}/js/script.outbound-links.tagged-events.js`}
 				/>
 			</head>
 			<NextIntlClientProvider messages={messages}>
