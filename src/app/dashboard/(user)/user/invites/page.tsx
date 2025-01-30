@@ -48,13 +48,13 @@ export default async function InvitesPage() {
                                             {t("viewClub")}
                                         </Button>
                                     </Link>
-                                    <Link href={`/api/club/member-invite/${invite.inviteCode}`}
+                                    <Link prefetch={false} href={`/api/club/member-invite/${invite.inviteCode}`}
                                         className="inline-flex">
                                         <Button variant="default">
                                             {t("approve")}
                                         </Button>
                                     </Link>
-                                    <Link href={`/api/club/member-invite/${invite.inviteCode}?action=dismiss`}
+                                    <Link prefetch={false} href={`/api/club/member-invite/${invite.inviteCode}?action=dismiss`}
                                         className="inline-flex">
                                         <Button variant="outline">
                                             {t("dismiss")}

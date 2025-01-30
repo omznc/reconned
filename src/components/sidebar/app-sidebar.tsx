@@ -27,6 +27,7 @@ import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
 import { env } from "@/lib/env";
 import Link from "next/link";
+import { MailPlus } from "lucide-react";
 
 interface AppSidebarProps {
 	clubs: Club[];
@@ -77,11 +78,18 @@ export function AppSidebar(props: AppSidebarProps) {
 			</SidebarContent>
 			<SidebarFooter>
 				{props.invitesCount > 0 && (
-					<Link href='/dashboard/user/invites' className="px-3 py-2 border bg-red-500/10">
-						<p className="text-xs text-muted-foreground">
-							{t("pendingInvitesMessage", { count: props.invitesCount })}
-						</p>
-					</Link>
+					sidebar.open ? (
+						<Link href='/dashboard/user/invites' className="px-3 py-2 border bg-red-500/10">
+							<p className="text-xs text-muted-foreground">
+								{t("pendingInvitesMessage", { count: props.invitesCount })}
+							</p>
+						</Link>
+					) : (
+						<Link href='/dashboard/user/invites' className="px-1 py-2 border bg-red-500/10 flex flex-col items-center">
+							<MailPlus size={12} />
+						</Link>
+					)
+
 				)}
 				{isBeta && (
 					<SidebarMenu>
