@@ -53,8 +53,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between">
-				<div className="flex gap-4">
-					{/* TODO: Handle if unset */}
+				<div className="flex flex-col md:flex-row gap-4">
 					{club.logo && (
 						<Image
 							suppressHydrationWarning={true}
@@ -62,12 +61,12 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 							alt={club.name}
 							width={150}
 							height={150}
-							className="h-[150px] w-auto"
+							className="h-[150px] md:h-[150px] w-auto mx-auto md:mx-0"
 							draggable={false}
 						/>
 					)}
-					<div className="flex select-none flex-col gap-1">
-						<div className="flex items-center gap-2">
+					<div className="flex select-none flex-col gap-1 text-center md:text-left">
+						<div className="flex items-center justify-center md:justify-start gap-2">
 							<h1 className="text-2xl flex gap-2 items-center font-semibold">{club.name} {
 								club.verified && <VerifiedClubIcon />
 							}</h1>

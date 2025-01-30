@@ -454,7 +454,7 @@ export function SecuritySettings({
 					</AlertDescription>
 				</Alert>
 			)}
-			<ScrollArea className="max-h-[400px] border">
+			<ScrollArea className="max-h-[400px] border overflow-y-auto">
 				<div className="p-4 space-y-2">
 					{sessions.map((session) => {
 						const Icon = getDeviceIcon(session.userAgent ?? undefined);
