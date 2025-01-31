@@ -298,11 +298,22 @@
 			"actions": "Actions"
 		},
 		"addClub": {
-			"addClub": "Add a club",
-			"createClub": "Create a new club",
+			"addClub": "Add club",
+			"createClub": "Create new club",
 			"createClubDescription": "This option is for you if you want to create a new club, of which you will be the sole owner.",
-			"joinClub": "Join the club",
-			"joinClubDescription": "Is your club already on this site? "
+			"joinClub": "Join club",
+			"joinClubDescription": "Your club is already on this site? You can request an invitation, or accept one you've already received.",
+			"requestAccess": "Request club access",
+			"requestAccessDescription": "Select the club you want to join",
+			"selectClub": "Select club",
+			"selectClubPlaceholder": "Select club...",
+			"sendRequest": "Send request",
+			"requestSent": "Request sent successfully",
+			"requestFailed": "Error sending request",
+			"searchFailed": "Error searching clubs",
+			"searchClubs": "Search clubs...",
+			"enterTwoChars": "Enter at least two characters",
+			"noClubsFound": "No clubs found"
 		},
 		"club": {
 			"info": {
@@ -493,6 +504,12 @@
 					"save": "Save changes",
 					"create": "Create an susret"
 				}
+			},
+			"members": {
+				"invitations": {
+					"approve": "Prihvati",
+					"dismiss": "Odbaci"
+				}
 			}
 		}
 	},
@@ -531,6 +548,7 @@
 			"personalization": "Personalization",
 			"logout": "Sign out",
 			"pendingInvitesMessage": "You have {count} pending invitation/s",
+			"inviteRequestsMessage": "Your club has {count} pending join request/s",
 			"invites": "Invitations"
 		},
 		"footer": {
@@ -745,7 +763,8 @@
 				"posts": "New post",
 				"spending": "Spending",
 				"add-club": "Add club",
-				"invites": "Invitations"
+				"invites": "Invitations",
+				"users": "Users"
 			}
 		},
 		"icons": {

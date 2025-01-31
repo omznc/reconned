@@ -2,6 +2,7 @@
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -17,7 +18,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, Cog, LogOut, UserCog } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
@@ -71,6 +72,20 @@ export function UserSwitcher() {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>
+						<DropdownMenuItem asChild={true}>
+							<Button
+								variant="ghost"
+								className="w-full pl-4 items-center justify-start cursor-pointer"
+								asChild
+							>
+								<Link href="/dashboard/user/settings" className="cursor-pointer">
+
+									<UserCog className="h-[1.2rem] w-[1.2rem] transition-all" />
+									{t("settings")}
+								</Link>
+							</Button>
+
+						</DropdownMenuItem>
 						<DropdownMenuItem asChild={true}>
 							<ThemeSwitcher />
 						</DropdownMenuItem>

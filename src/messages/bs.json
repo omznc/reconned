@@ -302,7 +302,18 @@
 			"createClub": "Kreiraj novi klub",
 			"createClubDescription": "Ova opcija je za vas ako želite napraviti novi klub, čiji ćete biti jedini vlasnik.",
 			"joinClub": "Pridruži se klubu",
-			"joinClubDescription": "Vaš klub je već na ovom sajtu? Možete zatražiti pozivnicu, ili prihvatiti već dobijenu."
+			"joinClubDescription": "Vaš klub je već na ovom sajtu? Možete zatražiti pozivnicu, ili prihvatiti već dobijenu.",
+			"requestAccess": "Zatraži pristup klubu",
+			"requestAccessDescription": "Odaberite klub kojem želite pristupiti",
+			"selectClub": "Odaberi klub",
+			"selectClubPlaceholder": "Odaberi klub...",
+			"sendRequest": "Pošalji zahtjev",
+			"requestSent": "Zahtjev uspješno poslan",
+			"requestFailed": "Greška pri slanju zahtjeva",
+			"searchFailed": "Greška pri pretrazi klubova",
+			"searchClubs": "Pretraži klubove...",
+			"enterTwoChars": "Unesite najmanje dva slova",
+			"noClubsFound": "Nema pronađenih klubova"
 		},
 		"club": {
 			"info": {
@@ -493,6 +504,12 @@
 					"save": "Spasi promjene",
 					"create": "Kreiraj susret"
 				}
+			},
+			"members": {
+				"invitations": {
+					"approve": "Prihvati",
+					"dismiss": "Odbaci"
+				}
 			}
 		}
 	},
@@ -530,7 +547,8 @@
 			"emails": "Emailovi",
 			"personalization": "Personalizacija",
 			"logout": "Odjava",
-			"pendingInvitesMessage": "Imate {count} neodgovorenih pozivnica",
+			"pendingInvitesMessage": "Imate {count} neodgovoren/ih pozivnicu/a",
+			"inviteRequestsMessage": "Klub ima {count} neodgovoren/ih zahtjev/a za pristup",
 			"invites": "Pozivnice"
 		},
 		"footer": {
@@ -745,7 +763,8 @@
 				"posts": "Nova objava",
 				"spending": "Potrošnja",
 				"add-club": "Dodaj klub",
-				"invites": "Pozivnice"
+				"invites": "Pozivnice",
+				"users": "Korisnici"
 			}
 		},
 		"icons": {
