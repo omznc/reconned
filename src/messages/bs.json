@@ -569,7 +569,8 @@
 				"dashboard": "Aplikacija",
 				"map": "Mapa",
 				"search": "Pretraga",
-				"about": "O nama"
+				"about": "O nama",
+				"stats": "Statistike"
 			},
 			"community": {
 				"title": "Zajednica"

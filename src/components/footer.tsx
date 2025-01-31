@@ -51,6 +51,9 @@ export function Footer() {
 							<li>
 								<Link href="/about">{t("quickLinks.about")}</Link>
 							</li>
+							<li>
+								<Link href="/stats" target="_blank">{t("quickLinks.stats")}</Link>
+							</li>
 						</ul>
 					</div>
 					<div>

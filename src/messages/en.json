@@ -569,7 +569,8 @@
 				"dashboard": "Application",
 				"map": "Map",
 				"search": "Search",
-				"about": "About us"
+				"about": "About us",
+				"stats": "Statistics"
 			},
 			"community": {
 				"title": "Community"

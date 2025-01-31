@@ -44,6 +44,12 @@ const nextConfig = {
 				destination: "/clubs/:path*",
 				permanent: true,
 			},
+			{
+				source: "/stats",
+				destination:
+					"https://scout.reconned.com/share/reconned.com?auth=Z_HrtmMkcNRQ1zcVm4iky",
+				permanent: true,
+			},
 		];
 	},
 } as NextConfig;
