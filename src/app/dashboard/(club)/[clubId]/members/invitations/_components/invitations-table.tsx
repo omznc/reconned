@@ -7,6 +7,11 @@ import { toast } from "sonner";
 import { revokeInvitation } from "./invitations.action.tsx";
 import type { InviteStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useQueryState } from "nuqs";
 
 interface FormattedInvite {
 	id: string;
@@ -31,6 +36,9 @@ export function InvitationsTable({
 	totalPages,
 }: InvitationsTableProps) {
 	const confirm = useConfirm();
+	const t = useTranslations("dashboard.club.members.invitations");
+	const path = usePathname();
+	const [message] = useQueryState("message");
 
 	const handleRevoke = async (invite: FormattedInvite, clubId: string) => {
 		if (invite.status !== "PENDING") {
@@ -61,6 +69,15 @@ export function InvitationsTable({
 
 		toast.success("Pozivnica je uspješno opozvana.");
 	};
+
+	useEffect(() => {
+		toast.dismiss("message");
+		if (message) {
+			toast.success(decodeURIComponent(message), {
+				id: "message",
+			});
+		}
+	}, [message]);
 
 	return (
 		<GenericDataTable
@@ -93,6 +110,7 @@ export function InvitationsTable({
 							REJECTED: "Odbijeno",
 							EXPIRED: "Isteklo",
 							REVOKED: "Opozvano",
+							REQUESTED: "Zahtjev",
 						},
 						badgeVariants: {
 							PENDING: "bg-yellow-100 text-yellow-800",
@@ -100,6 +118,7 @@ export function InvitationsTable({
 							REJECTED: "bg-red-100 text-red-800",
 							EXPIRED: "bg-gray-100 text-gray-800",
 							REVOKED: "bg-orange-100 text-orange-800",
+							REQUESTED: "bg-blue-100 text-blue-800",
 						},
 					},
 				},
@@ -131,20 +150,45 @@ export function InvitationsTable({
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
-							<div
-								className={cn("flex justify-end", {
-									"cursor-not-allowed": row.status !== "PENDING",
-								})}
-							>
-								<Button
-									variant="destructive"
-									size="sm"
-									disabled={row.status !== "PENDING"}
-									onClick={() => handleRevoke(row, row.club.id)}
-								>
-									{row.status === "PENDING" ? "Opozovi" : "Nije aktivna"}
-								</Button>
-							</div>
+							<>
+								{
+									row.status === 'REQUESTED' ? (
+										<div
+											className="flex gap-2 "
+										>
+											<Link prefetch={false} href={`/api/club/member-invite/${row.inviteCode}?redirectTo=${encodeURIComponent(path)
+												}`}
+												className="inline-flex">
+												<Button variant="default">
+													{t("approve")}
+												</Button>
+											</Link>
+											<Link prefetch={false} href={`/api/club/member-invite/${row.inviteCode}?action=dismiss&redirectTo=${encodeURIComponent(path)
+												}`}
+												className="inline-flex">
+												<Button variant="destructive" >
+													{t("dismiss")}
+												</Button>
+											</Link>
+										</div>
+									) : (
+										<div
+											className={cn("flex justify-end", {
+												"cursor-not-allowed": row.status !== "PENDING",
+											})}
+										>
+											<Button
+												variant="destructive"
+												size="sm"
+												disabled={row.status !== "PENDING"}
+												onClick={() => handleRevoke(row, row.club.id)}
+											>
+												{row.status === "PENDING" ? "Opozovi" : "Nije aktivna"}
+											</Button>
+										</div>
+									)
+								}
+							</>
 						),
 					},
 				},

@@ -33,12 +33,16 @@ interface AppSidebarProps {
 	clubs: Club[];
 	user: User & { managedClubs: string[]; role?: string | null | undefined; };
 	invitesCount: number;
+	inviteRequestsCount: {
+		id: string;
+		count: number;
+	}[];
 }
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
 	const params = useParams<{ clubId: string; }>();
-	const { setClubId } = useCurrentClub();
+	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
 	const t = useTranslations("components.sidebar");
@@ -67,6 +71,8 @@ export function AppSidebar(props: AppSidebarProps) {
 		}
 	}, [params.clubId, setClubId]);
 
+	const invites = props.inviteRequestsCount.filter((invite) => invite.id === clubId)[0];
+
 	return (
 		<Sidebar collapsible="icon" variant="floating">
 			<SidebarHeader>
@@ -91,6 +97,21 @@ export function AppSidebar(props: AppSidebarProps) {
 					)
 
 				)}
+				{
+					(invites?.count ?? 0) > 0 && (
+						sidebar.open ? (
+							<Link href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`} className="px-3 py-2 border bg-red-500/10">
+								<p className="text-xs text-muted-foreground">
+									{t("inviteRequestsMessage", { count: (invites?.count ?? 0) })}
+								</p>
+							</Link>
+						) : (
+							<Link href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`} className="px-1 py-2 border bg-red-500/10 flex flex-col items-center">
+								<MailPlus size={12} />
+							</Link>
+						)
+					)
+				}
 				{isBeta && (
 					<SidebarMenu>
 						<SidebarMenuItem>

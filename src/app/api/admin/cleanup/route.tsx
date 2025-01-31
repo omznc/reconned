@@ -47,6 +47,16 @@ export async function GET(request: Request) {
 				},
 			}),
 
+			// Set expired club invites to expired
+			prisma.clubInvite.updateMany({
+				where: {
+					expiresAt: { lt: now },
+				},
+				data: {
+					status: "EXPIRED",
+				},
+			}),
+
 			// Clean up expired club invites older than 3 months
 			prisma.clubInvite.deleteMany({
 				where: {

@@ -5,6 +5,8 @@ import { getCountries } from "@/lib/cached-countries";
 import { CirclePlus, MailPlus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { RequestAccessForm } from "./_components/request-access.form";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -17,9 +19,17 @@ export default async function Page(props: PageProps) {
 	const countries = await getCountries();
 	const t = await getTranslations("dashboard.addClub");
 	const type = searchParams.type;
+
 	if (type === "invite") {
-		return <div>Invite</div>;
+		return (
+			<div className="space-y-4">
+				<h3 className="text-lg font-semibold">{t("requestAccess")}</h3>
+				<p className="text-muted-foreground">{t("requestAccessDescription")}</p>
+				<RequestAccessForm />
+			</div>
+		);
 	}
+
 	if (type === "new") {
 		// @ts-ignore
 		return <ClubInfoForm countries={countries} />;
@@ -48,11 +58,10 @@ export default async function Page(props: PageProps) {
 					<Button asChild={true}>
 						<Link
 							href="?type=invite"
-							className="flex pointer-events-none opacity-50 items-center gap-2"
+							className="flex items-center gap-2"
 						>
 							<MailPlus />
 							{t("joinClub")}
-							<BadgeSoon />
 						</Link>
 					</Button>
 					<span className="text-gray-500">{t("joinClubDescription")}</span>
