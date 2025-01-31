@@ -78,13 +78,14 @@ export function UserSwitcher() {
 								className="w-full pl-4 items-center justify-start cursor-pointer"
 								asChild
 							>
-								<Link href="/dashboard/user/settings" className="cursor-pointer">
-
+								<Link
+									href="/dashboard/user/settings"
+									className="cursor-pointer"
+								>
 									<UserCog className="h-[1.2rem] w-[1.2rem] transition-all" />
 									{t("settings")}
 								</Link>
 							</Button>
-
 						</DropdownMenuItem>
 						<DropdownMenuItem asChild={true}>
 							<ThemeSwitcher />

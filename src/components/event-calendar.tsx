@@ -37,14 +37,14 @@ import { VerifiedClubIcon } from "@/components/icons";
 
 interface EventCalendarProps {
 	events: (Event & {
-		club: { name: string; verified: boolean; };
+		club: { name: string; verified: boolean };
 		image?: string | null;
 	})[];
 }
 
 export function EventCalendar(props: EventCalendarProps) {
 	const t = useTranslations("components.calendar");
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(

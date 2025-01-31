@@ -136,6 +136,12 @@
 			"code": "Code",
 			"verify": "Confirm",
 			"rememberDevice": "Remember this device"
+		},
+		"clubs": {
+			"title": "Clubs"
+		},
+		"users": {
+			"title": "Players"
 		}
 	},
 	"dashboard": {

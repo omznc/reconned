@@ -92,7 +92,7 @@ export function Footer() {
 					<p>{t("copyright", { year: new Date().getFullYear() })}</p>
 					<Link
 						href="/sponsors"
-						className="text-red-500 mt-2 hover:text-red-400"
+						className="text-red-500 font-bold mt-2 hover:text-red-400"
 					>
 						{t("sponsors")}
 					</Link>

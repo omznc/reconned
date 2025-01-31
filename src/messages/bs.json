@@ -136,6 +136,12 @@
 			"code": "Kod",
 			"verify": "Potvrdi",
 			"rememberDevice": "Zapamti ovaj uređaj"
+		},
+		"clubs": {
+			"title": "Klubovi"
+		},
+		"users": {
+			"title": "Igrači"
 		}
 	},
 	"dashboard": {
