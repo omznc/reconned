@@ -60,8 +60,7 @@ export function Footer() {
 						<h3 className="font-bold mb-4">{t("community.title")}</h3>
 						<ul className="space-y-2 text-sm ">
 							<li>
-								<Link href="#">Discord</Link>
-								<BadgeSoon className="ml-2" />
+								<Link href="https://discord.gg/fANDrYmFSy">Discord</Link>
 							</li>
 							<li>
 								<Link href="#">Facebook</Link>
