@@ -39,6 +39,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { BadgeSoon } from "@/components/badge-soon";
 import { getTranslations } from "next-intl/server";
+import { MessageHandler } from "@/app/(public)/_components/message-handler";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -58,24 +59,24 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
+			OR: [
+				{
+					isPrivate: false,
+				},
+				{
+					club: {
+						members: {
+							some: {
+								userId: user?.id,
 							},
 						},
 					},
-				],
-			}
+				},
+			],
+		}
 		: {
-				isPrivate: false,
-			};
+			isPrivate: false,
+		};
 
 	const events = await prisma.event.findMany({
 		where: {
@@ -120,6 +121,7 @@ export default async function Home({ searchParams }: PageProps) {
 
 	return (
 		<>
+			<MessageHandler />
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
