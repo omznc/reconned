@@ -15,27 +15,27 @@ interface Props {
 	}>;
 }
 
-async function SearchResults({ query, tab }: { query?: string; tab?: string; }) {
+async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 	const [clubs, users, events] = await Promise.all([
 		prisma.club.findMany({
 			where: {
 				...(query
 					? {
-						OR: [
-							{
-								name: {
-									contains: query,
-									mode: "insensitive",
+							OR: [
+								{
+									name: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-							{
-								description: {
-									contains: query,
-									mode: "insensitive",
+								{
+									description: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-						],
-					}
+							],
+						}
 					: {}),
 				AND: { isPrivate: false },
 			},
@@ -50,27 +50,27 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 			where: {
 				...(query
 					? {
-						OR: [
-							{
-								callsign: {
-									contains: query,
-									mode: "insensitive",
+							OR: [
+								{
+									callsign: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-							{
-								name: {
-									contains: query,
-									mode: "insensitive",
+								{
+									name: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-							{
-								location: {
-									contains: query,
-									mode: "insensitive",
+								{
+									location: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-						],
-					}
+							],
+						}
 					: {}),
 				AND: { isPrivate: false },
 			},
@@ -96,27 +96,27 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 			where: {
 				...(query
 					? {
-						OR: [
-							{
-								name: {
-									contains: query,
-									mode: "insensitive",
+							OR: [
+								{
+									name: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-							{
-								description: {
-									contains: query,
-									mode: "insensitive",
+								{
+									description: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-							{
-								location: {
-									contains: query,
-									mode: "insensitive",
+								{
+									location: {
+										contains: query,
+										mode: "insensitive",
+									},
 								},
-							},
-						],
-					}
+							],
+						}
 					: {}),
 				AND: { isPrivate: false },
 			},
@@ -219,8 +219,8 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string; }) 
 										user.clubMembership.length === 0
 											? ["Freelancer"]
 											: user.clubMembership.map(
-												(membership) => membership.club.name,
-											)
+													(membership) => membership.club.name,
+												)
 									}
 									meta={user.location || undefined}
 									type="user"

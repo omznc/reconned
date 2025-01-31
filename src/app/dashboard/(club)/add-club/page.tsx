@@ -56,10 +56,7 @@ export default async function Page(props: PageProps) {
 				</div>
 				<div className="flex flex-col gap-2">
 					<Button asChild={true}>
-						<Link
-							href="?type=invite"
-							className="flex items-center gap-2"
-						>
+						<Link href="?type=invite" className="flex items-center gap-2">
 							<MailPlus />
 							{t("joinClub")}
 						</Link>

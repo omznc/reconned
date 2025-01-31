@@ -74,7 +74,7 @@ export const sendInvitation = safeActionClient
 					<ClubInvitationEmail
 						code={invite.inviteCode}
 						url={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/member-invite/${invite.inviteCode}&redirectTo=${encodeURIComponent(
-							'/',
+							"/",
 						)}`}
 						name={parsedInput.userName}
 						clubLogo={ctx.club?.logo || ""}

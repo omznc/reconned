@@ -78,8 +78,6 @@ export function InvitationsTable({
 		toast.success("Pozivnica je uspješno opozvana.");
 	};
 
-
-
 	return (
 		<GenericDataTable
 			data={invites}
@@ -152,43 +150,43 @@ export function InvitationsTable({
 						variant: "custom",
 						component: (_, row) => (
 							<>
-								{
-									row.status === 'REQUESTED' ? (
-										<div
-											className="flex gap-2 "
+								{row.status === "REQUESTED" ? (
+									<div className="flex gap-2 ">
+										<Link
+											prefetch={false}
+											href={`/api/club/member-invite/${row.inviteCode}?redirectTo=${encodeURIComponent(
+												path,
+											)}`}
+											className="inline-flex"
 										>
-											<Link prefetch={false} href={`/api/club/member-invite/${row.inviteCode}?redirectTo=${encodeURIComponent(path)
-												}`}
-												className="inline-flex">
-												<Button variant="default">
-													{t("approve")}
-												</Button>
-											</Link>
-											<Link prefetch={false} href={`/api/club/member-invite/${row.inviteCode}?action=dismiss&redirectTo=${encodeURIComponent(path)
-												}`}
-												className="inline-flex">
-												<Button variant="destructive" >
-													{t("dismiss")}
-												</Button>
-											</Link>
-										</div>
-									) : (
-										<div
-											className={cn("flex justify-end", {
-												"cursor-not-allowed": row.status !== "PENDING",
-											})}
+											<Button variant="default">{t("approve")}</Button>
+										</Link>
+										<Link
+											prefetch={false}
+											href={`/api/club/member-invite/${row.inviteCode}?action=dismiss&redirectTo=${encodeURIComponent(
+												path,
+											)}`}
+											className="inline-flex"
 										>
-											<Button
-												variant="destructive"
-												size="sm"
-												disabled={row.status !== "PENDING"}
-												onClick={() => handleRevoke(row, row.club.id)}
-											>
-												{row.status === "PENDING" ? "Opozovi" : "Nije aktivna"}
-											</Button>
-										</div>
-									)
-								}
+											<Button variant="destructive">{t("dismiss")}</Button>
+										</Link>
+									</div>
+								) : (
+									<div
+										className={cn("flex justify-end", {
+											"cursor-not-allowed": row.status !== "PENDING",
+										})}
+									>
+										<Button
+											variant="destructive"
+											size="sm"
+											disabled={row.status !== "PENDING"}
+											onClick={() => handleRevoke(row, row.club.id)}
+										>
+											{row.status === "PENDING" ? "Opozovi" : "Nije aktivna"}
+										</Button>
+									</div>
+								)}
 							</>
 						),
 					},

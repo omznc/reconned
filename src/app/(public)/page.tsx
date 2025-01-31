@@ -157,25 +157,23 @@ export default async function Home({ searchParams }: PageProps) {
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2 hover:border-red-500 transition-all"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
-								<Link href="#">
+								<Link href="/clubs">
 									<Building2 className="scale-150 mb-2" />
 									<span className="text-sm">{t("hero.clubs")}</span>
-									<BadgeSoon />
 								</Link>
 							</Button>
 							<Button
 								size="sm"
 								variant="outline"
-								className="aspect-square opacity-50 pointer-events-none flex-col h-auto p-2 hover:border-red-500 transition-all"
+								className="aspect-square flex-col h-auto p-2 hover:border-red-500 transition-all"
 								asChild
 							>
-								<Link href="#">
+								<Link href="/users">
 									<Users className="scale-150 mb-2" />
 									<span className="text-sm">{t("hero.members")}</span>
-									<BadgeSoon />
 								</Link>
 							</Button>
 							<Button

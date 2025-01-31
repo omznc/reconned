@@ -31,7 +31,7 @@ import { MailPlus } from "lucide-react";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined; };
+	user: User & { managedClubs: string[]; role?: string | null | undefined };
 	invitesCount: number;
 	inviteRequestsCount: {
 		id: string;
@@ -41,7 +41,7 @@ interface AppSidebarProps {
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
@@ -71,7 +71,9 @@ export function AppSidebar(props: AppSidebarProps) {
 		}
 	}, [params.clubId, setClubId]);
 
-	const invites = props.inviteRequestsCount.filter((invite) => invite.id === clubId)[0];
+	const invites = props.inviteRequestsCount.filter(
+		(invite) => invite.id === clubId,
+	)[0];
 
 	return (
 		<Sidebar collapsible="icon" variant="floating">
@@ -79,39 +81,49 @@ export function AppSidebar(props: AppSidebarProps) {
 				<ClubSwitcher clubs={props.clubs} user={props.user} />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavApp isAdmin={props.user.role === "admin"} pendingInvites={props.invitesCount} />
+				<NavApp
+					isAdmin={props.user.role === "admin"}
+					pendingInvites={props.invitesCount}
+				/>
 				<NavClub user={props.user} />
 			</SidebarContent>
 			<SidebarFooter>
-				{props.invitesCount > 0 && (
-					sidebar.open ? (
-						<Link href='/dashboard/user/invites' className="px-3 py-2 border bg-red-500/10">
+				{props.invitesCount > 0 &&
+					(sidebar.open ? (
+						<Link
+							href="/dashboard/user/invites"
+							className="px-3 py-2 border bg-red-500/10"
+						>
 							<p className="text-xs text-muted-foreground">
 								{t("pendingInvitesMessage", { count: props.invitesCount })}
 							</p>
 						</Link>
 					) : (
-						<Link href='/dashboard/user/invites' className="px-1 py-2 border bg-red-500/10 flex flex-col items-center">
+						<Link
+							href="/dashboard/user/invites"
+							className="px-1 py-2 border bg-red-500/10 flex flex-col items-center"
+						>
 							<MailPlus size={12} />
 						</Link>
-					)
-
-				)}
-				{
-					(invites?.count ?? 0) > 0 && (
-						sidebar.open ? (
-							<Link href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`} className="px-3 py-2 border bg-red-500/10">
-								<p className="text-xs text-muted-foreground">
-									{t("inviteRequestsMessage", { count: (invites?.count ?? 0) })}
-								</p>
-							</Link>
-						) : (
-							<Link href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`} className="px-1 py-2 border bg-red-500/10 flex flex-col items-center">
-								<MailPlus size={12} />
-							</Link>
-						)
-					)
-				}
+					))}
+				{(invites?.count ?? 0) > 0 &&
+					(sidebar.open ? (
+						<Link
+							href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`}
+							className="px-3 py-2 border bg-red-500/10"
+						>
+							<p className="text-xs text-muted-foreground">
+								{t("inviteRequestsMessage", { count: invites?.count ?? 0 })}
+							</p>
+						</Link>
+					) : (
+						<Link
+							href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`}
+							className="px-1 py-2 border bg-red-500/10 flex flex-col items-center"
+						>
+							<MailPlus size={12} />
+						</Link>
+					))}
 				{isBeta && (
 					<SidebarMenu>
 						<SidebarMenuItem>
