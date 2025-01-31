@@ -27,6 +27,25 @@ const nextConfig = {
 			},
 		],
 	},
+	async redirects() {
+		return [
+			{
+				source: "/u/:path*",
+				destination: "/users/:path*",
+				permanent: true,
+			},
+			{
+				source: "/e/:path*",
+				destination: "/events/:path*",
+				permanent: true,
+			},
+			{
+				source: "/c/:path*",
+				destination: "/clubs/:path*",
+				permanent: true,
+			},
+		];
+	},
 } as NextConfig;
 
 export default withNextIntl(nextConfig);
