@@ -7,6 +7,7 @@ import {
 	Cog,
 	Eye,
 	EyeOff,
+	Globe,
 	Handshake,
 	MapIcon,
 	MapPin,
@@ -33,7 +34,7 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date })[];
+		posts: (Post & { createdAt: Date; })[];
 		members?: (ClubMembership & {
 			user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">;
 		})[];
@@ -139,6 +140,19 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<Phone className="w-4 h-4" />
 						{club.contactPhone}
 					</Badge>
+				)}
+				{club.website && (
+					<Link
+						href={club.website}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="md:flex-grow-0 flex-grow"
+					>
+						<Badge className="flex items-center gap-1 hover:cursor-pointer">
+							<Globe className="w-4 h-4" />
+							{club.website}
+						</Badge>
+					</Link>
 				)}
 				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
 					{t("views", { count: visitors })}

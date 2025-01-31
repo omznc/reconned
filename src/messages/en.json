@@ -373,6 +373,7 @@
 				"phone": "Phone number",
 				"phoneDescription": "The club's phone number, publicly displayed on the profile.",
 				"emailDescription": "Email address of the club, publicly displayed on the profile.",
+				"website": "Website",
 				"save": "Save changes",
 				"create": "Create a club"
 			},
