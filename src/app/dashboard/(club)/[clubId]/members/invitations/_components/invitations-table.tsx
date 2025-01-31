@@ -39,6 +39,14 @@ export function InvitationsTable({
 	const t = useTranslations("dashboard.club.members.invitations");
 	const path = usePathname();
 	const [message] = useQueryState("message");
+	useEffect(() => {
+		toast.dismiss("message");
+		if (message) {
+			toast.success(decodeURIComponent(message), {
+				id: "message",
+			});
+		}
+	}, [message]);
 
 	const handleRevoke = async (invite: FormattedInvite, clubId: string) => {
 		if (invite.status !== "PENDING") {
@@ -70,14 +78,7 @@ export function InvitationsTable({
 		toast.success("Pozivnica je uspješno opozvana.");
 	};
 
-	useEffect(() => {
-		toast.dismiss("message");
-		if (message) {
-			toast.success(decodeURIComponent(message), {
-				id: "message",
-			});
-		}
-	}, [message]);
+
 
 	return (
 		<GenericDataTable
