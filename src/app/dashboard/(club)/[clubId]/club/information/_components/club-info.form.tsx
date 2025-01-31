@@ -124,6 +124,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			latitude: props.club?.latitude || undefined,
 			longitude: props.club?.longitude || undefined,
 			countryId: props.club?.countryId || undefined,
+			website: props.club?.website || undefined,
 		},
 		mode: "onBlur",
 	});
@@ -322,8 +323,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										>
 											{field.value
 												? props.countries.find(
-														(country) => country.id === field.value,
-													)?.name
+													(country) => country.id === field.value,
+												)?.name
 												: t("pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -691,6 +692,22 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
+
+				<FormField
+					control={form.control}
+					name="website"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{t("website")}</FormLabel>
+							<FormControl>
+								<Input placeholder="https://..." {...field} />
+							</FormControl>
+							<FormDescription>{t("website")}</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
 				<LoaderSubmitButton
 					isLoading={isLoading}
 					disabled={!isSlugValid && !!form.watch("slug")}

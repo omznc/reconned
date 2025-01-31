@@ -33,6 +33,7 @@ export const clubInfoSchema = z.object({
 	contactPhone: z.string().optional(),
 	contactEmail: z.string().optional(),
 	clubId: z.string().optional(),
+	website: z.string().optional(),
 });
 
 export const clubLogoFileSchema = z.object({
