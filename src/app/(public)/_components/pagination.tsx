@@ -2,36 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
-import Link from "next/link";
-
+import { parseAsInteger, useQueryState } from "nuqs";
 interface PaginationOptions {
 	totalItems: number;
-	currentPage: number;
 	itemsPerPage: number;
 	siblingsCount?: number;
 }
 
 export function Pagination({
 	totalItems,
-	currentPage,
 	itemsPerPage,
 	siblingsCount = 1,
 }: PaginationOptions) {
-	const pathname = usePathname();
-	const searchParams = useSearchParams();
+	const [currentPage, setPage] = useQueryState("page", parseAsInteger.withDefault(1).withOptions({
+		shallow: false,
+	}));
 	const totalPages = Math.ceil(totalItems / itemsPerPage);
 
 	// Don't render pagination if there's only one page
 	if (totalPages <= 1) {
 		return null;
 	}
-
-	const createPageUrl = (page: number) => {
-		const params = new URLSearchParams(searchParams);
-		params.set("page", page.toString());
-		return `${pathname}?${params.toString()}`;
-	};
 
 	// Generate array of page numbers to show
 	const generatePages = () => {
@@ -70,27 +61,25 @@ export function Pagination({
 			<Button
 				variant="outline"
 				size="icon"
-				asChild
-				disabled={currentPage === 1}
+				onClick={() => setPage(currentPage - 1)}
+				disabled={currentPage <= 1}
 			>
-				<Link href={createPageUrl(currentPage - 1)}>
-					<ChevronLeft className="h-4 w-4" />
-				</Link>
+				<ChevronLeft className="h-4 w-4" />
 			</Button>
 
-			{pages.map((page, i) =>
-				page === "dots" ? (
+			{pages.map((pageNum, i) =>
+				pageNum === "dots" ? (
 					<Button key={`dots-${i}`} variant="outline" size="icon" disabled>
 						<MoreHorizontal className="h-4 w-4" />
 					</Button>
 				) : (
 					<Button
-						key={page}
-						variant={currentPage === page ? "default" : "outline"}
+						key={pageNum}
+						variant={currentPage === pageNum ? "default" : "outline"}
 						size="icon"
-						asChild
+						onClick={() => setPage(pageNum)}
 					>
-						<Link href={createPageUrl(page)}>{page}</Link>
+						{pageNum}
 					</Button>
 				),
 			)}
@@ -98,12 +87,10 @@ export function Pagination({
 			<Button
 				variant="outline"
 				size="icon"
-				asChild
-				disabled={currentPage === totalPages}
+				onClick={() => setPage(currentPage + 1)}
+				disabled={currentPage >= totalPages}
 			>
-				<Link href={createPageUrl(currentPage + 1)}>
-					<ChevronRight className="h-4 w-4" />
-				</Link>
+				<ChevronRight className="h-4 w-4" />
 			</Button>
 		</div>
 	);

@@ -57,7 +57,7 @@ export function UserSwitcher() {
 						sideOffset={4}
 					>
 						<DropdownMenuLabel className="p-0 font-normal">
-							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+							<Link href='/dashboard/user' className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 								<Avatar className="h-8 w-8 rounded-lg">
 									<AvatarImage src={user?.image ?? ""} alt={user?.name} />
 									<AvatarFallback className="rounded-lg">
@@ -68,7 +68,7 @@ export function UserSwitcher() {
 									<span className="truncate font-semibold">{user?.name}</span>
 									<span className="truncate text-xs">{user?.email}</span>
 								</div>
-							</div>
+							</Link>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>

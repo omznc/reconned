@@ -7,6 +7,7 @@ import Link from "next/link";
 import { getPageViews } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { getTranslations } from "next-intl/server";
+import { Globe } from "lucide-react";
 
 interface ExtendedUser extends User {
 	clubMembership: {
@@ -62,10 +63,28 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</p>
 				</div>
 			</div>
-			<Badge className="h-fit">{t("views", { count: visitors })}</Badge>
-			{user.clubMembership.length === 0 && (
-				<Badge className="h-fit">{t("freelancer")}</Badge>
-			)}
+			<div className="flex flex-wrap gap-2">
+				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
+				{user.clubMembership.length === 0 && (
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{t("freelancer")}</Badge>
+				)}
+				{
+					user.website && (
+						<Link
+							href={user.website}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="md:flex-grow-0 flex-grow"
+						>
+							<Badge className="flex items-center gap-1 hover:cursor-pointer">
+								<Globe size={16} />
+								{user.website}
+							</Badge>
+						</Link>
+					)
+
+				}
+			</div>
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>

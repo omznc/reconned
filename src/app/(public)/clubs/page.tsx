@@ -68,7 +68,6 @@ export default async function Page(props: {
 			</div>
 			<Pagination
 				totalItems={total}
-				currentPage={page}
 				itemsPerPage={ITEMS_PER_PAGE}
 			/>
 		</div>
