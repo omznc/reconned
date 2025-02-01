@@ -738,7 +738,7 @@
 			"views": "{count} pregled/a",
 			"map": "Mapa",
 			"edit": "Izmjeni klub",
-			"members": "{count} član/ova",
+			"members": "Članovi",
 			"private": "Privatni klub",
 			"public": "Javni klub",
 			"posts": "Objave",

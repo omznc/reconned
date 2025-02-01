@@ -168,12 +168,12 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 				)}
 			>
 				<div className="space-y-4 md:col-span-2">
-					<div className="flex items-center justify-between">
+					<div className="flex h-10 items-center justify-between">
 						<h2 className="text-xl font-semibold flex items-center gap-2">
 							{t("posts")}
 						</h2>
 						{isManager && (
-							<Button asChild>
+							<Button asChild size='sm'>
 								<Link href={`/dashboard/${club.id}/club/posts`}>
 									<Pencil className="h-4 w-4" />
 									{t("createPost")}
@@ -198,10 +198,8 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 				</div>
 				{(club.members?.length ?? 0) > 0 && (
 					<div className="space-y-4">
-						<h2 className="text-xl font-semibold items-center flex h-[40px]">
-							{t("members", {
-								count: club.members?.length ?? 0,
-							})}
+						<h2 className="text-xl h-10 font-semibold items-center flex">
+							{t("members")}
 						</h2>
 						<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
 							{club.members

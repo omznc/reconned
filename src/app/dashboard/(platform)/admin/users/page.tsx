@@ -2,6 +2,7 @@ import { UserSheet } from "@/app/dashboard/(platform)/admin/users/_components/us
 import { UserTable } from "@/app/dashboard/(platform)/admin/users/_components/user-table";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
+import { getUser } from "./actions";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -18,25 +19,28 @@ export default async function UsersPage({ searchParams }: PageProps) {
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = 10;
 
+	// Fetch selected user separately if userId is present
+	const selectedUser = userId ? await getUser(userId) : null;
+
 	const where = {
 		...(search
 			? {
-					OR: [
-						{ name: { contains: search, mode: "insensitive" } },
-						{ email: { contains: search, mode: "insensitive" } },
-						{ callsign: { contains: search, mode: "insensitive" } },
-					],
-				}
+				OR: [
+					{ name: { contains: search, mode: "insensitive" } },
+					{ email: { contains: search, mode: "insensitive" } },
+					{ callsign: { contains: search, mode: "insensitive" } },
+				],
+			}
 			: {}),
 	} satisfies Prisma.UserWhereInput;
 
 	const orderBy: Prisma.UserOrderByWithRelationInput = sortBy
 		? {
-				...(sortBy === "name" && { name: sortOrder ?? "asc" }),
-				...(sortBy === "email" && { email: sortOrder ?? "asc" }),
-				...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
-				...(sortBy === "createdAt" && { createdAt: sortOrder ?? "asc" }),
-			}
+			...(sortBy === "name" && { name: sortOrder ?? "asc" }),
+			...(sortBy === "email" && { email: sortOrder ?? "asc" }),
+			...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
+			...(sortBy === "createdAt" && { createdAt: sortOrder ?? "asc" }),
+		}
 		: { createdAt: "desc" };
 
 	const users = await prisma.user.findMany({
@@ -64,7 +68,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
 			<div>
 				<h3 className="text-lg font-semibold">Svi članovi</h3>
 			</div>
-			<UserSheet user={users.find((user) => user.id === userId)} />
+			<UserSheet user={selectedUser ?? undefined} />
 			<UserTable users={users} totalUsers={totalUsers} pageSize={pageSize} />
 		</>
 	);
