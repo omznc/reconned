@@ -1,10 +1,9 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { InviteActions } from "@/app/dashboard/(user)/user/invites/_components/invite-actions";
 
 export default async function InvitesPage() {
 	const user = await isAuthenticated();
@@ -39,29 +38,7 @@ export default async function InvitesPage() {
 							</CardHeader>
 							<CardContent className="flex items-center justify-between">
 								<p>{invite.club.description}</p>
-								<div className="flex gap-2">
-									<Link
-										target="_blank"
-										href={`/club/${invite.club.slug ?? invite.club.id}`}
-										className="inline-flex"
-									>
-										<Button variant="outline">{t("viewClub")}</Button>
-									</Link>
-									<Link
-										prefetch={false}
-										href={`/api/club/member-invite/${invite.inviteCode}?redirectTo=${encodeURIComponent("/dashboard/user/invites")}`}
-										className="inline-flex"
-									>
-										<Button variant="default">{t("approve")}</Button>
-									</Link>
-									<Link
-										prefetch={false}
-										href={`/api/club/member-invite/${invite.inviteCode}?action=dismiss&redirectTo=${encodeURIComponent("/dashboard/user/invites")}`}
-										className="inline-flex"
-									>
-										<Button variant="outline">{t("dismiss")}</Button>
-									</Link>
-								</div>
+								<InviteActions invite={invite} />
 							</CardContent>
 						</Card>
 					))}
