@@ -24,6 +24,7 @@ import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { uploadToImgur, ImgurError } from "@/lib/imgur";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { useState, useId } from "react";
 
 interface EditorProps {
 	initialValue?: string;
@@ -62,6 +63,7 @@ export const Editor = ({
 	onChange,
 }: EditorProps) => {
 	const t = useTranslations();
+	const [isUploading, setIsUploading] = useState(false);
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -81,6 +83,7 @@ export const Editor = ({
 			}),
 		],
 		content: initialValue,
+		immediatelyRender: false,
 		editable,
 		onUpdate: ({ editor }) => {
 			onChange?.(editor.getHTML());
@@ -143,14 +146,12 @@ export const Editor = ({
 				if (!file) {
 					return;
 				}
-				// File checks
-				// Max 8MB
 				if (file.size > 8 * 1024 * 1024) {
 					toast.error("5MB max");
 					return;
 				}
 
-
+				setIsUploading(true);
 				const imageUrl = await uploadToImgur(file);
 				editor.chain().focus().setImage({ src: imageUrl }).run();
 			} catch (error) {
@@ -159,6 +160,8 @@ export const Editor = ({
 				} else {
 					toast.error(t('imgur.error.generic'));
 				}
+			} finally {
+				setIsUploading(false);
 			}
 		};
 
@@ -173,6 +176,13 @@ export const Editor = ({
 
 	return (
 		<div className="relative border rounded-lg">
+			{isUploading && (
+				<div className="absolute inset-x-0 top-0 z-50">
+					<div className="h-1 w-full bg-muted">
+						<div className="h-full bg-primary animate-progress" />
+					</div>
+				</div>
+			)}
 			{editable && editor && (
 				<div className="flex flex-wrap gap-1 p-1 border-b items-center">
 					<ToolbarButton
@@ -255,9 +265,11 @@ export const Editor = ({
 
 					<div className="w-px h-6 bg-border mx-1" />
 
-					<ToolbarButton onClick={handleImageUpload}>
-						<ImageIcon className="h-4 w-4" />
-					</ToolbarButton>
+					<div className="relative">
+						<ToolbarButton onClick={handleImageUpload} disabled={isUploading}>
+							<ImageIcon className="h-4 w-4" />
+						</ToolbarButton>
+					</div>
 				</div>
 			)}
 
