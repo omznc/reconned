@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useQueryState } from "nuqs";
+import { ClubInviteActions } from "./club-invite-actions";
 
 interface FormattedInvite {
 	id: string;
@@ -151,26 +152,7 @@ export function InvitationsTable({
 						component: (_, row) => (
 							<>
 								{row.status === "REQUESTED" ? (
-									<div className="flex gap-2 ">
-										<Link
-											prefetch={false}
-											href={`/api/club/member-invite/${row.inviteCode}?redirectTo=${encodeURIComponent(
-												path,
-											)}`}
-											className="inline-flex"
-										>
-											<Button variant="default">{t("approve")}</Button>
-										</Link>
-										<Link
-											prefetch={false}
-											href={`/api/club/member-invite/${row.inviteCode}?action=dismiss&redirectTo=${encodeURIComponent(
-												path,
-											)}`}
-											className="inline-flex"
-										>
-											<Button variant="destructive">{t("dismiss")}</Button>
-										</Link>
-									</div>
+									<ClubInviteActions invite={row} />
 								) : (
 									<div
 										className={cn("flex justify-end", {
