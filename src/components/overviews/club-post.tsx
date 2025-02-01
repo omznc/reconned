@@ -12,7 +12,7 @@ import "@/components/editor/editor.css";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useOverflow } from "@/hooks/use-overflow";
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface ClubPostProps {
 	post: Post & { createdAt: Date; };
