@@ -1,21 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 import { authClient } from "@/lib/auth-client";
 import type { User } from "@prisma/client";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
-import { useQueryState } from "nuqs";
 import { BanIcon, CheckCircle, TrashIcon, UserIcon } from "lucide-react";
 
-export function UserActions({ user }: { user: User }) {
-	const [_, setOpen] = useQueryState("userId", {
-		shallow: false,
-		defaultValue: "",
-		clearOnDefault: true,
-	});
+export function UserActions({ user }: { user: User; }) {
+	const searchParams = useSearchParams();
 	const router = useRouter();
 	const confirm = useConfirm();
 
@@ -89,7 +84,9 @@ export function UserActions({ user }: { user: User }) {
 		} catch (error) {
 			toast.error("Došlo je do greške prilikom izvršavanja akcije.");
 		} finally {
-			setOpen("");
+			const params = new URLSearchParams(searchParams);
+			params.delete("userId");
+			router.replace(`?${params.toString()}`);
 		}
 	};
 

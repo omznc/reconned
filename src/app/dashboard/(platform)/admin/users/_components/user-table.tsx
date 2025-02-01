@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { ClubMembership, User } from "@prisma/client";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSearchParams } from "next/navigation";
 
 interface UserTableProps {
 	users: (User & {
@@ -19,6 +20,14 @@ interface UserTableProps {
 }
 
 export function UserTable(props: UserTableProps) {
+	const searchParams = useSearchParams();
+
+	const getActionUrl = (userId: string) => {
+		const params = new URLSearchParams(searchParams.toString());
+		params.set("userId", userId);
+		return `?${params.toString()}`;
+	};
+
 	return (
 		<GenericDataTable
 			data={props.users}
@@ -95,7 +104,7 @@ export function UserTable(props: UserTableProps) {
 									</Link>
 								</Button>
 								<Button asChild size="sm">
-									<Link href={`?userId=${user.id}`}>Akcije</Link>
+									<Link href={getActionUrl(user.id)}>Akcije</Link>
 								</Button>
 							</div>
 						),

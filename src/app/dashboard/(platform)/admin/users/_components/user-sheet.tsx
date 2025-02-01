@@ -26,8 +26,8 @@ type Props = {
 export function UserSheet({ user }: Props) {
 	const [open, setOpen] = useQueryState("userId", {
 		shallow: false,
-		defaultValue: "",
 		clearOnDefault: true,
+		history: "replace",
 	});
 	return (
 		<Credenza open={Boolean(open)} onOpenChange={() => setOpen("")}>

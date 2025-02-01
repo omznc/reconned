@@ -738,7 +738,7 @@
 			"views": "{count} view/s",
 			"map": "Map",
 			"edit": "Edit club",
-			"members": "{count} member/s",
+			"members": "Members",
 			"private": "Private club",
 			"public": "Public club",
 			"posts": "Announcements",
