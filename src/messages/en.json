@@ -781,5 +781,12 @@
 			"administrator": "Administrator",
 			"verifiedClub": "Verified club"
 		}
+	},
+	"imgur": {
+		"error": {
+			"overCapacity": "Imgur is currently over capacity. Please try again later.",
+			"rateLimit": "Too many attempts. Please wait a few minutes.",
+			"generic": "Error uploading image."
+		}
 	}
 }

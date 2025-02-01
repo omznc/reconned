@@ -34,6 +34,7 @@ export const auth = betterAuth({
 		"https://reconned.com/api/auth",
 		"https://beta.reconned.com",
 		"https://beta.reconned.com/api/auth",
+		"http://127-0-0-1.sslip.io"
 	],
 	emailAndPassword: {
 		enabled: true,

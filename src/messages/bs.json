@@ -781,5 +781,12 @@
 			"administrator": "Administrator",
 			"verifiedClub": "Verificiran klub"
 		}
+	},
+	"imgur": {
+		"error": {
+			"overCapacity": "Imgur je trenutno preopterećen. Molimo pokušajte ponovo kasnije.",
+			"rateLimit": "Previše pokušaja. Molimo sačekajte nekoliko minuta.",
+			"generic": "Greška pri otpremanju slike."
+		}
 	}
 }

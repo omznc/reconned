@@ -11,32 +11,19 @@ import { useState } from "react";
 import "@/components/editor/editor.css";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useOverflow } from "@/hooks/use-overflow";
+import DOMPurify from 'dompurify';
 
 interface ClubPostProps {
-	post: Post & { createdAt: Date };
+	post: Post & { createdAt: Date; };
 	clubId: string;
 	isManager?: boolean;
-}
-
-function isLongContent(content: string): boolean {
-	// Check if content has multiple paragraphs or lots of text
-	if (!content) {
-		return false;
-	}
-
-	const paragraphs = content.split("\n");
-	if (paragraphs.length > 7) {
-		return true;
-	}
-
-	return false;
 }
 
 export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 	const t = useTranslations("components.post");
 	const [isExpanded, setIsExpanded] = useState(false);
-	const content = post.content;
-	const isOverflowing = isLongContent(content);
+	const { ref, isOverflowing } = useOverflow();
 
 	return (
 		<div className="border bg-sidebar rounded-lg p-4 space-y-3">
@@ -60,41 +47,43 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 				)}
 			</div>
 			<div
-				className={isExpanded ? "" : "max-h-[300px] overflow-hidden relative"}
+				ref={ref}
+				className={cn(
+					"relative",
+					!isExpanded && "max-h-[500px] overflow-hidden"
+				)}
 			>
 				<div
-					className={cn(
-						"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 p-4",
-					)}
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-					dangerouslySetInnerHTML={{ __html: content }}
+					className="prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 p-4"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: I have to, it's an editor
+					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
 				/>
+				{(post.images?.length > 0 && post.images[0]) && (
+					<div className="relative w-full">
+						<Image
+							src={post.images[0]}
+							alt={`${post.title} - Slika`}
+							width={800}
+							height={400}
+							className={cn(
+								"rounded-md object-cover w-full",
+								!isExpanded && "max-h-[400px]"
+							)}
+						/>
+					</div>
+				)}
 				{!isExpanded && isOverflowing && (
-					<div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-sidebar to-transparent" />
+					<div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-sidebar to-transparent pointer-events-none" />
 				)}
 			</div>
 			{isOverflowing && (
 				<Button
 					variant="ghost"
 					onClick={() => setIsExpanded(!isExpanded)}
-					className="w-full"
+					className="w-full hover:bg-transparent"
 				>
 					{isExpanded ? t("showLess") : t("readMore")}
 				</Button>
-			)}
-			{post.images?.length > 0 && (
-				<div className="grid grid-cols-2 gap-2">
-					{post.images.map((image, i) => (
-						<Image
-							key={image}
-							src={image}
-							alt={`Image ${i + 1}`}
-							width={300}
-							height={200}
-							className="rounded-md object-cover"
-						/>
-					))}
-				</div>
 			)}
 		</div>
 	);
