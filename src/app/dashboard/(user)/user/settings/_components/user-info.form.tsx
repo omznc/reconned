@@ -249,7 +249,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								/>
 							</div>
 							<FormControl>
-								<Input placeholder="me@gmail.com" type="email" {...field} />
+								<Input disabled={true} placeholder="me@gmail.com" type="email" {...field} />
 							</FormControl>
 							<FormDescription>Email</FormDescription>
 							<FormMessage />

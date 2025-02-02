@@ -32,14 +32,15 @@ model User {
   banReason        String?
   banExpires       DateTime?
   twoFactorEnabled Boolean?
-  
+
   reviewsReceived Review[] @relation("UserReviews")
   reviewsWritten  Review[] @relation("ReviewAuthor")
 
-  sessions   Session[]
-  accounts   Account[]
-  passkeys   Passkey[]
-  twofactors TwoFactor[]
+  sessions     Session[]
+  accounts     Account[]
+  passkeys     Passkey[]
+  twofactors   TwoFactor[]
+  achievements Achievement[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
