@@ -34,7 +34,7 @@ export default async function Page() {
 			},
 			headers: await headers(),
 		})
-		.catch((e) => {
+		.catch(() => {
 			return {
 				backupCodes: [],
 			};

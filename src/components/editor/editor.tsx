@@ -24,7 +24,7 @@ import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { uploadToImgur, ImgurError } from "@/lib/imgur";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { useState, useId } from "react";
+import { useState } from "react";
 
 interface EditorProps {
 	initialValue?: string;
@@ -66,6 +66,7 @@ export const Editor = ({
 	const [isUploading, setIsUploading] = useState(false);
 	const editor = useEditor({
 		extensions: [
+			// @ts-ignore I don't get it.
 			StarterKit,
 			Link.configure({
 				openOnClick: false,
