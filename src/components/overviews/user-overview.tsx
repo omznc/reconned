@@ -7,7 +7,7 @@ import Link from "next/link";
 import { getPageViews } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { getTranslations } from "next-intl/server";
-import { Globe } from "lucide-react";
+import { Globe, MapPin } from "lucide-react";
 
 interface ExtendedUser extends User {
 	clubMembership: {
@@ -63,6 +63,23 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</p>
 				</div>
 			</div>
+			{/* New Additional User Information Card */}
+			{/* <Card>
+				<CardHeader>
+					<CardTitle>{t("additionalInfo.title")}</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<ul className="space-y-2">
+						<li>{t("email")}: {user.email}</li>
+						{user.location && (
+							<li>{t("location")}: {user.location}</li>
+						)}
+						{user.phone && !user.isPrivatePhone && (
+							<li>{t("phone")}: {user.phone}</li>
+						)}
+					</ul>
+				</CardContent>
+			</Card> */}
 			<div className="flex flex-wrap gap-2">
 				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
 				{user.clubMembership.length === 0 && (
@@ -82,7 +99,23 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							</Badge>
 						</Link>
 					)
-
+				}
+				{
+					user.location && (
+						<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+							<MapPin size={16} />
+							{user.location}</Badge>
+					)
+				}
+				{
+					user.phone && !user.isPrivatePhone && (
+						<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{user.phone}</Badge>
+					)
+				}
+				{
+					user.email && !user.isPrivateEmail && (
+						<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{user.email}</Badge>
+					)
 				}
 			</div>
 			<div className="grid gap-4 md:grid-cols-2">
@@ -186,6 +219,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</CardContent>
 				</Card>
 			</div>
+
 			<ReviewsOverview type="user" typeId={user.id} />
 		</div>
 	);
