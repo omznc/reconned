@@ -14,6 +14,7 @@ interface MembersTableProps {
 		userName: string;
 		userCallsign: string | null;
 		userAvatar: string | null;
+		userSlug: string | null;
 	})[];
 	totalMembers: number;
 	pageSize: number;
@@ -23,7 +24,7 @@ export function MembersTable(props: MembersTableProps) {
 	const confirm = useConfirm();
 
 	const handleRemove = async (
-		member: ClubMembership & { userName: string },
+		member: ClubMembership & { userName: string; },
 		clubId: string,
 	) => {
 		if (member.role === "CLUB_OWNER") {
@@ -124,7 +125,7 @@ export function MembersTable(props: MembersTableProps) {
 						component: (_, row) => (
 							<div className="flex gap-2">
 								<Button asChild variant="secondary" size="sm">
-									<Link href={`/users/${row.userId}`} target="_blank">
+									<Link href={`/users/${row.userSlug ?? row.userId}`} target="_blank">
 										Profil
 									</Link>
 								</Button>

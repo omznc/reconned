@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@prisma/client";
 
 interface PageProps {
-	params: Promise<{ clubId: string }>;
+	params: Promise<{ clubId: string; }>;
 	searchParams: Promise<{
 		search?: string;
 		role?: string;
@@ -24,30 +24,30 @@ export default async function MembersPage(props: PageProps) {
 		...(role && role !== "all" ? { role: role as Role } : {}),
 		...(search
 			? {
-					OR: [
-						{ user: { name: { contains: search, mode: "insensitive" } } },
-						{ user: { email: { contains: search, mode: "insensitive" } } },
-						{ user: { callsign: { contains: search, mode: "insensitive" } } },
-					],
-				}
+				OR: [
+					{ user: { name: { contains: search, mode: "insensitive" } } },
+					{ user: { email: { contains: search, mode: "insensitive" } } },
+					{ user: { callsign: { contains: search, mode: "insensitive" } } },
+				],
+			}
 			: {}),
 	} satisfies Prisma.ClubMembershipWhereInput;
 
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
-				...(sortBy === "userName" && {
-					user: { name: sortOrder ?? "asc" },
-				}),
-				...(sortBy === "userCallsign" && {
-					user: { callsign: sortOrder ?? "asc" },
-				}),
-				...(sortBy === "createdAt" && {
-					createdAt: sortOrder ?? "asc",
-				}),
-				...(sortBy === "role" && {
-					role: sortOrder ?? "asc",
-				}),
-			}
+			...(sortBy === "userName" && {
+				user: { name: sortOrder ?? "asc" },
+			}),
+			...(sortBy === "userCallsign" && {
+				user: { callsign: sortOrder ?? "asc" },
+			}),
+			...(sortBy === "createdAt" && {
+				createdAt: sortOrder ?? "asc",
+			}),
+			...(sortBy === "role" && {
+				role: sortOrder ?? "asc",
+			}),
+		}
 		: { createdAt: "desc" };
 
 	const members = await prisma.clubMembership.findMany({
@@ -65,6 +65,7 @@ export default async function MembersPage(props: PageProps) {
 					bio: true,
 					website: true,
 					createdAt: true,
+					slug: true,
 				},
 			},
 		},
@@ -77,6 +78,7 @@ export default async function MembersPage(props: PageProps) {
 		userName: member.user.name,
 		userCallsign: member.user.callsign,
 		userAvatar: member.user.image,
+		userSlug: member.user.slug,
 	}));
 
 	const totalMembers = await prisma.clubMembership.count({ where });
