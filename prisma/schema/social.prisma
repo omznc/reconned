@@ -34,3 +34,14 @@ model Post {
 
   @@index([clubId])
 }
+
+model Achievement {
+  id          String @id @default(cuid())
+  slug        String @unique
+  description String? // Only used to identify in the database. The actual description is in the i18n files, using the slug as the key.
+
+  achievedBy User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
