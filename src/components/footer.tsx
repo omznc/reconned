@@ -2,12 +2,22 @@ import { BadgeSoon } from "@/components/badge-soon";
 import { env } from "@/lib/env";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { SiDiscord, SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
+// Removed QuickLinkIcon import and added required lucide icons.
+import {
+	Calendar,
+	LayoutDashboard,
+	MapIcon,
+	Search,
+	ShieldQuestion,
+	BarChart2
+} from "lucide-react";
 
 export function Footer() {
 	const t = useTranslations("components.footer");
 
 	return (
-		<footer className="w-full p-8 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
+		<footer className="w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
 			<div className="container z-10 mx-auto px-4 py-8">
 				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 					<div>
@@ -35,41 +45,55 @@ export function Footer() {
 					</div>
 					<div>
 						<h3 className="font-bold mb-4">{t("quickLinks.title")}</h3>
-						<ul className="space-y-2 text-sm ">
+						<ul className="space-y-2 text-sm">
 							<li>
-								<Link href="/events">{t("quickLinks.events")}</Link>
+								<Link href="/events" className="flex items-center hover:text-red-500 transition-all">
+									<Calendar className="w-5 h-5 mr-2" />{t("quickLinks.events")}
+								</Link>
 							</li>
 							<li>
-								<Link href="/dashboard">{t("quickLinks.dashboard")}</Link>
+								<Link href="/dashboard" className="flex items-center hover:text-red-500 transition-all">
+									<LayoutDashboard className="w-5 h-5 mr-2" />{t("quickLinks.dashboard")}
+								</Link>
 							</li>
 							<li>
-								<Link href="/map">{t("quickLinks.map")}</Link>
+								<Link href="/map" className="flex items-center hover:text-red-500 transition-all">
+									<MapIcon className="w-5 h-5 mr-2" />{t("quickLinks.map")}
+								</Link>
 							</li>
 							<li>
-								<Link href="/search">{t("quickLinks.search")}</Link>
+								<Link href="/search" className="flex items-center hover:text-red-500 transition-all">
+									<Search className="w-5 h-5 mr-2" />{t("quickLinks.search")}
+								</Link>
 							</li>
 							<li>
-								<Link href="/about">{t("quickLinks.about")}</Link>
+								<Link href="/about" className="flex items-center hover:text-red-500 transition-all">
+									<ShieldQuestion className="w-5 h-5 mr-2" />{t("quickLinks.about")}
+								</Link>
 							</li>
 							<li>
-								<Link href="/stats" target="_blank">{t("quickLinks.stats")}</Link>
+								<Link href="/stats" target="_blank" className="flex items-center hover:text-red-500 transition-all">
+									<BarChart2 className="w-5 h-5 mr-2" />{t("quickLinks.stats")}
+								</Link>
 							</li>
 						</ul>
 					</div>
 					<div>
 						<h3 className="font-bold mb-4">{t("community.title")}</h3>
-						<ul className="space-y-2 text-sm ">
-							<li>
-								<Link href="https://discord.gg/fANDrYmFSy">Discord</Link>
-							</li>
-							<li>
-								<Link href="#">Facebook</Link>
-								<BadgeSoon className="ml-2" />
-							</li>
-							<li>
-								<Link href="#">Instagram</Link>
-								<BadgeSoon className="ml-2" />
-							</li>
+						<ul className="space-y-2 text-sm">
+							<Link target="_blank" href="https://discord.gg/fANDrYmFSy" className="hover:text-red-500 transition-all flex items-center gap-2">
+								<SiDiscord className="size-4" />
+								<span>Discord</span>
+							</Link>
+							<Link target="_blank" href="https://instagram.com/reconnedairsoft" className="hover:text-red-500 transition-all flex items-center gap-2">
+								<SiInstagram className="size-4" />
+								<span>Instagram</span>
+							</Link>
+							<Link href="#" className="hover:text-red-500 transition-all flex items-center gap-2">
+								<SiFacebook className="size-4" />
+								<span>Facebook</span>
+								<BadgeSoon className="-mb-0.5" />
+							</Link>
 						</ul>
 					</div>
 					<div>
