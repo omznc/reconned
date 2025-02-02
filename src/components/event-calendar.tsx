@@ -25,7 +25,7 @@ import {
 	HoverCardContent,
 } from "@/components/ui/hover-card";
 import { Button } from "@components/ui/button";
-import { bs } from "date-fns/locale";
+import { enUS, bs } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parse as parseDateFns, format as formatDateFns } from "date-fns";
@@ -37,14 +37,14 @@ import { VerifiedClubIcon } from "@/components/icons";
 
 interface EventCalendarProps {
 	events: (Event & {
-		club: { name: string; verified: boolean };
+		club: { name: string; verified: boolean; };
 		image?: string | null;
 	})[];
 }
 
 export function EventCalendar(props: EventCalendarProps) {
 	const t = useTranslations("components.calendar");
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(
@@ -233,7 +233,7 @@ export function EventCalendar(props: EventCalendarProps) {
 				<h1 className="text-2xl font-bold">
 					{t(
 						// @ts-ignore This will always be untyped, sadly, but hey there's only 12 months anyways.
-						`months.${format(currentDate, "MMM", { locale: bs }).toLowerCase()}`,
+						`months.${format(currentDate, "MMM", { locale: enUS }).toLowerCase()}`,
 					)}{" "}
 					{format(currentDate, "yyyy")}
 				</h1>
