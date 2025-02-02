@@ -222,7 +222,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 									<Link
 										className="relative flex group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10"
 										key={membership.user.id}
-										href={`/users/${membership.user.id}`}
+										href={`/users/${membership.user.slug ?? membership.user.id}`}
 									>
 										<ArrowUpRight className="h-4 w-4 hidden group-hover:block text-red-500 right-2 top-2 absolute" />
 										{membership.user.image ? (

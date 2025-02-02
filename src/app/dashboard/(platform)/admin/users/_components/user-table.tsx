@@ -99,7 +99,7 @@ export function UserTable(props: UserTableProps) {
 						component: (_, user) => (
 							<div className="flex gap-2">
 								<Button asChild variant="secondary" size="sm">
-									<Link href={`/users/${user.id}`} target="_blank">
+									<Link href={`/users/${user.slug ?? user.id}`} target="_blank">
 										Profil
 									</Link>
 								</Button>
