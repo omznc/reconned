@@ -30,6 +30,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,12 +59,13 @@ async function searchUsers(query: string) {
 }
 
 export function InvitationsForm() {
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const [users, setUsers] = useState<SearchUser[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
+	const t = useTranslations("dashboard.club.members.invitations");
 
 	const form = useForm<z.infer<typeof sendInvitationSchema>>({
 		resolver: zodResolver(sendInvitationSchema),
@@ -82,7 +84,7 @@ export function InvitationsForm() {
 					const results = await searchUsers(value);
 					setUsers(results);
 				} catch (_error) {
-					toast.error("Neuspjela pretraga korisnika. Molimo pokušajte ponovo.");
+					toast.error(t('searchError'));
 				} finally {
 					setIsLoading(false);
 				}
@@ -103,13 +105,13 @@ export function InvitationsForm() {
 			const response = await sendInvitation(values);
 
 			if (!response?.data?.success) {
-				toast.error(response?.data?.error || "Neuspjelo slanje pozivnice.");
+				toast.error(response?.data?.error || t('sendError'));
 				return;
 			}
 
-			toast.success("Pozivnica uspješno poslana.");
+			toast.success(t('sendSuccess'));
 		} catch (_error) {
-			toast.error("Neuspjelo slanje pozivnice.");
+			toast.error(t('sendError'));
 		} finally {
 			form.reset({ userName: "", userEmail: "", clubId: params.clubId });
 			router.refresh();
@@ -120,10 +122,9 @@ export function InvitationsForm() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
 				<div>
-					<h3 className="text-lg font-semibold">Pozovi korisnika u klub</h3>
+					<h3 className="text-lg font-semibold">{t('title')}</h3>
 					<span className="text-muted-foreground">
-						Pozivnice će isteći nakon 7 dana, a biti će obrisane nakon 3
-						mjeseca.
+						{t('description')}
 					</span>
 				</div>
 				<FormField
@@ -131,7 +132,7 @@ export function InvitationsForm() {
 					name="userName"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>Korisnik</FormLabel>
+							<FormLabel>{t('user')}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -145,7 +146,7 @@ export function InvitationsForm() {
 										>
 											{field.value
 												? users.find((user) => user.id === field.value)?.name
-												: "Odaberite korisnika..."}
+												: t('searchPlaceholder')}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
@@ -153,7 +154,7 @@ export function InvitationsForm() {
 								<PopoverContent className="sm:w-[448px] p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder="Pretražite korisnike..."
+											placeholder={t('searchPlaceholder')}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -163,9 +164,9 @@ export function InvitationsForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>Unesite najmanje 2 znaka</CommandEmpty>
+												<CommandEmpty>{t('minimumChars')}</CommandEmpty>
 											) : users.length === 0 ? (
-												<CommandEmpty>Nema pronađenih korisnika</CommandEmpty>
+												<CommandEmpty>{t('noResults')}</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{users.map((user) => (
@@ -207,7 +208,7 @@ export function InvitationsForm() {
 								</PopoverContent>
 							</Popover>
 							<FormDescription>
-								Ako je korisnik već na platformi, možete ga pronaći ovdje.
+								{t('chooseUserDescription')}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -228,8 +229,7 @@ export function InvitationsForm() {
 								<Input {...field} />
 							</FormControl>
 							<FormDescription>
-								Ako ne možete pronaći korisnika, ili već znate njihov email,
-								unesite ga ovdje.
+								{t('emailDescription')}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -239,7 +239,7 @@ export function InvitationsForm() {
 					type="submit"
 					disabled={form.formState.isSubmitting || !form.formState.isDirty}
 				>
-					Pošalji pozivnicu
+					{t('send')}
 				</Button>
 			</form>
 		</Form>

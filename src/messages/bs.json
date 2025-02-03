@@ -513,9 +513,69 @@
 				}
 			},
 			"members": {
+				"allMembers": "Svi članovi",
+				"membersTable": {
+					"remove": {
+						"title": "Jeste li sigurni?",
+						"body": "Da li ste sigurni da želite ukloniti {name} iz kluba?",
+						"confirm": "Ukloni",
+						"cancel": "Ne, vrati se",
+						"success": "Član uspješno uklonjen",
+						"error": "Došlo je do greške prilikom uklanjanja člana"
+					},
+					"searchPlaceholder": "Pretraži članove...",
+					"name": "Ime",
+					"callsign": "Callsign",
+					"role": "Uloga",
+					"allRoles": "Sve uloge",
+					"owner": "Vlasnik",
+					"manager": "Menadžer",
+					"member": "Član",
+					"joinedDate": "Datum pridruživanja",
+					"actions": "Akcije",
+					"profile": "Profil",
+					"removeMember": "Ukloni"
+				},
 				"invitations": {
+					"table": {
+						"revoke": {
+							"title": "Jeste li sigurni?",
+							"body": "Da li ste sigurni da želite povući pozivnicu za pristup klubu?",
+							"confirm": "Povuci",
+							"cancel": "Ne, vrati se",
+							"success": "Pozivnica uspješno povučena",
+							"error": "Došlo je do greške prilikom povlačenja pozivnice"
+						},
+						"searchPlaceholder": "Pretraži pozivnice...",
+						"user": "Korisnik",
+						"status": "Status",
+						"pending": "Na čekanju",
+						"accepted": "Prihvaćeno",
+						"rejected": "Odbijeno",
+						"expired": "Isteklo",
+						"revoked": "Povučeno",
+						"requested": "Zahtjev",
+						"created": "Datum slanja",
+						"expires": "Ističe",
+						"code": "Kod",
+						"actions": "Akcije",
+						"inactive": "Neaktivno",
+						"all": "Svi statusi"
+					},
 					"approve": "Prihvati",
-					"dismiss": "Odbaci"
+					"dismiss": "Odbaci",
+					"searchError": "Neuspjela pretraga korisnika. Molimo pokušajte ponovo.",
+					"send": "Pošalji pozivnicu",
+					"sendError": "Došlo je do greške prilikom slanja pozivnice. Molimo pokušajte ponovo.",
+					"sendSuccess": "Pozivnica uspješno poslana",
+					"title": "Pozovi korisnika u klub",
+					"description": "Pozivnice će isteći nakon 7 dana, a biti će obrisane nakon 3 mjeseca.",
+					"user": "Korisnik",
+					"searchPlaceholder": "Pretraži korisnike...",
+					"minimumChars": "Unesite najmanje 2 slova",
+					"noResults": "Nema rezultata",
+					"chooseUserDescription": "Ako je korisnik već na platformi, možete ga pronaći ovdje.",
+					"emailDescription": "Ako ne možete pronaći korisnika, ili već znate njihov email, unesite ga ovdje."
 				}
 			}
 		}

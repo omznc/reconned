@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { removeMember } from "./members.action";
 import type { ClubMembership } from "@prisma/client";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface MembersTableProps {
 	members: (ClubMembership & {
@@ -22,6 +23,7 @@ interface MembersTableProps {
 
 export function MembersTable(props: MembersTableProps) {
 	const confirm = useConfirm();
+	const t = useTranslations("dashboard.club.members.membersTable");
 
 	const handleRemove = async (
 		member: ClubMembership & { userName: string; },
@@ -32,10 +34,10 @@ export function MembersTable(props: MembersTableProps) {
 		}
 
 		const confirmed = await confirm({
-			title: "Ukloni člana",
-			body: `Da li ste sigurni da želite ukloniti ${member.userName} iz kluba?`,
-			cancelButton: "Odustani",
-			actionButton: "Ukloni",
+			title: t('remove.title'),
+			body: t('remove.body', { name: member.userName }),
+			cancelButton: t('remove.cancel'),
+			actionButton: t('remove.confirm'),
 			actionButtonVariant: "destructive",
 		});
 
@@ -49,18 +51,18 @@ export function MembersTable(props: MembersTableProps) {
 		});
 
 		if (!response?.data?.success) {
-			toast.error(response?.data?.error || "Neuspjelo uklanjanje člana.");
+			toast.error(response?.data?.error || t('remove.error'));
 			return;
 		}
 
-		toast.success("Član je uspješno uklonjen iz kluba.");
+		toast.success(t('remove.success'));
 	};
 
 	return (
 		<GenericDataTable
 			data={props.members}
 			totalPages={Math.ceil(props.totalMembers / props.pageSize)}
-			searchPlaceholder="Pretraži članove..."
+			searchPlaceholder={t('searchPlaceholder')}
 			tableConfig={{
 				dateFormat: "d. MMMM yyyy.",
 				locale: "bs",
@@ -86,24 +88,24 @@ export function MembersTable(props: MembersTableProps) {
 				},
 				{
 					key: "userName",
-					header: "Ime",
+					header: t('name'),
 					sortable: true,
 				},
 				{
 					key: "userCallsign",
-					header: "Callsign",
+					header: t('callsign'),
 					sortable: true,
 				},
 				{
 					key: "role",
-					header: "Uloga",
+					header: t('role'),
 					sortable: true,
 					cellConfig: {
 						variant: "badge",
 						valueMap: {
-							CLUB_OWNER: "Vlasnik",
-							MANAGER: "Menadžer",
-							USER: "Član",
+							CLUB_OWNER: t('owner'),
+							MANAGER: t('manager'),
+							USER: t('member'),
 						},
 						badgeVariants: {
 							CLUB_OWNER: "bg-red-100 text-red-800",
@@ -114,19 +116,19 @@ export function MembersTable(props: MembersTableProps) {
 				},
 				{
 					key: "createdAt",
-					header: "Datum pridruživanja",
+					header: t('joinedDate'),
 					sortable: true,
 				},
 				{
 					key: "actions",
-					header: "Akcije",
+					header: t('actions'),
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
 							<div className="flex gap-2">
 								<Button asChild variant="secondary" size="sm">
 									<Link href={`/users/${row.userSlug ?? row.userId}`} target="_blank">
-										Profil
+										{t('profile')}
 									</Link>
 								</Button>
 								{row.role !== "CLUB_OWNER" && (
@@ -136,7 +138,7 @@ export function MembersTable(props: MembersTableProps) {
 											size="sm"
 											onClick={() => handleRemove(row, row.clubId)}
 										>
-											Ukloni
+											{t('removeMember')}
 										</Button>
 									</div>
 								)}
@@ -150,10 +152,10 @@ export function MembersTable(props: MembersTableProps) {
 					key: "role",
 					label: "Filter po ulozi",
 					options: [
-						{ label: "Sve uloge", value: "all" },
-						{ label: "Vlasnik", value: "CLUB_OWNER" },
-						{ label: "Menadžer", value: "MANAGER" },
-						{ label: "Član", value: "USER" },
+						{ label: t('allRoles'), value: "all" },
+						{ label: t('owner'), value: "CLUB_OWNER" },
+						{ label: t('manager'), value: "MANAGER" },
+						{ label: t('member'), value: "USER" },
 					],
 				},
 			]}
