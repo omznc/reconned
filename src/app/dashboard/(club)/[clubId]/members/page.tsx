@@ -1,6 +1,7 @@
 import { MembersTable } from "@/app/dashboard/(club)/[clubId]/members/_components/members-table";
 import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	params: Promise<{ clubId: string; }>;
@@ -18,6 +19,7 @@ export default async function MembersPage(props: PageProps) {
 	const { search, role, sortBy, sortOrder, page } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = 10;
+	const t = await getTranslations('dashboard.club.members');
 
 	const where = {
 		clubId: clubId,
@@ -86,7 +88,7 @@ export default async function MembersPage(props: PageProps) {
 	return (
 		<>
 			<div>
-				<h3 className="text-lg font-semibold">Svi članovi</h3>
+				<h3 className="text-lg font-semibold">{t("allMembers")}</h3>
 			</div>
 			<MembersTable
 				members={formattedMembers}

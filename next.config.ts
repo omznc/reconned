@@ -6,6 +6,12 @@ const nextConfig = {
 	reactStrictMode: true,
 	experimental: {
 		reactCompiler: true,
+		staleTimes: {
+			staleTimes: {
+				dynamic: 30,
+				static: 180,
+			},
+		},
 	},
 	images: {
 		remotePatterns: [

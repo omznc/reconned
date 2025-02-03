@@ -37,8 +37,8 @@ export function InvitationsTable({
 	totalPages,
 }: InvitationsTableProps) {
 	const confirm = useConfirm();
-	const t = useTranslations("dashboard.club.members.invitations");
-	const path = usePathname();
+	const t = useTranslations("dashboard.club.members.invitations.table");
+
 	const [message] = useQueryState("message");
 	useEffect(() => {
 		toast.dismiss("message");
@@ -55,10 +55,10 @@ export function InvitationsTable({
 		}
 
 		const confirmed = await confirm({
-			title: "Opozovi pozivnicu",
-			body: `Da li ste sigurni da želite opozvati pozivnicu za ${invite.email}?`,
-			cancelButton: "Odustani",
-			actionButton: "Opozovi",
+			title: t('revoke.title'),
+			body: t('revoke.body'),
+			cancelButton: t('revoke.cancel'),
+			actionButton: t('revoke.confirm'),
 			actionButtonVariant: "destructive",
 		});
 
@@ -72,18 +72,18 @@ export function InvitationsTable({
 		});
 
 		if (!response?.data?.success) {
-			toast.error(response?.data?.error || "Neuspjelo opozivanje pozivnice.");
+			toast.error(response?.data?.error || t('revoke.error'));
 			return;
 		}
 
-		toast.success("Pozivnica je uspješno opozvana.");
+		toast.success(t('revoke.success'));
 	};
 
 	return (
 		<GenericDataTable
 			data={invites}
 			totalPages={totalPages}
-			searchPlaceholder="Pretraži pozivnice..."
+			searchPlaceholder={t('searchPlaceholder')}
 			tableConfig={{
 				dateFormat: "d. MMMM yyyy.",
 				locale: "bs",
@@ -96,21 +96,21 @@ export function InvitationsTable({
 				},
 				{
 					key: "userName",
-					header: "Korisnik",
+					header: t('user')
 				},
 				{
 					key: "status",
-					header: "Status",
+					header: t('status'),
 					sortable: true,
 					cellConfig: {
 						variant: "badge",
 						valueMap: {
-							PENDING: "Na čekanju",
-							ACCEPTED: "Prihvaćeno",
-							REJECTED: "Odbijeno",
-							EXPIRED: "Isteklo",
-							REVOKED: "Opozvano",
-							REQUESTED: "Zahtjev",
+							PENDING: t('pending'),
+							ACCEPTED: t('accepted'),
+							REJECTED: t('rejected'),
+							EXPIRED: t('expired'),
+							REVOKED: t('revoked'),
+							REQUESTED: t('requested'),
 						},
 						badgeVariants: {
 							PENDING: "bg-yellow-100 text-yellow-800",
@@ -124,17 +124,17 @@ export function InvitationsTable({
 				},
 				{
 					key: "createdAt",
-					header: "Datum slanja",
+					header: t('created'),
 					sortable: true,
 				},
 				{
 					key: "expiresAt",
-					header: "Ističe",
+					header: t('expires'),
 					sortable: true,
 				},
 				{
 					key: "inviteCode",
-					header: "Kod pozivnice",
+					header: t('code'),
 					cellConfig: {
 						variant: "custom",
 						component: (value) => (
@@ -146,7 +146,7 @@ export function InvitationsTable({
 				},
 				{
 					key: "actions",
-					header: "Akcije",
+					header: t('actions'),
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
@@ -165,7 +165,7 @@ export function InvitationsTable({
 											disabled={row.status !== "PENDING"}
 											onClick={() => handleRevoke(row, row.club.id)}
 										>
-											{row.status === "PENDING" ? "Opozovi" : "Nije aktivna"}
+											{row.status === "PENDING" ? t('revoke.confirm') : t('inactive')}
 										</Button>
 									</div>
 								)}
@@ -177,13 +177,15 @@ export function InvitationsTable({
 			filters={[
 				{
 					key: "status",
-					label: "Filter po statusu",
+					label: t('status'),
 					options: [
-						{ label: "Svi statusi", value: "all" },
-						{ label: "Na čekanju", value: "PENDING" },
-						{ label: "Prihvaćeno", value: "ACCEPTED" },
-						{ label: "Odbijeno", value: "REJECTED" },
-						{ label: "Isteklo", value: "EXPIRED" },
+						{ label: t('all'), value: "all" },
+						{ label: t('pending'), value: "PENDING" },
+						{ label: t('accepted'), value: "ACCEPTED" },
+						{ label: t('rejected'), value: "REJECTED" },
+						{ label: t('expired'), value: "EXPIRED" },
+						{ label: t('revoked'), value: "REVOKED" },
+						{ label: t('requested'), value: "REQUESTED" },
 					],
 				},
 			]}

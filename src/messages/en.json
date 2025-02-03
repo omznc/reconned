@@ -513,9 +513,69 @@
 				}
 			},
 			"members": {
+				"allMembers": "All members",
+				"membersTable": {
+					"remove": {
+						"title": "Are you sure?",
+						"body": "Are you sure you want to remove {name} from the club?",
+						"confirm": "Remove",
+						"cancel": "No, go back",
+						"success": "Member successfully removed",
+						"error": "An error occurred while removing the member"
+					},
+					"searchPlaceholder": "Search members...",
+					"name": "Name",
+					"callsign": "Callsign",
+					"role": "Role",
+					"allRoles": "All roles",
+					"owner": "Owner",
+					"manager": "Manager",
+					"member": "Member",
+					"joinedDate": "Join date",
+					"actions": "Actions",
+					"profile": "Profile",
+					"removeMember": "Remove"
+				},
 				"invitations": {
-					"approve": "Prihvati",
-					"dismiss": "Odbaci"
+					"table": {
+						"revoke": {
+							"title": "Are you sure?",
+							"body": "Are you sure you want to revoke the club access invitation?",
+							"confirm": "Revoke",
+							"cancel": "No, go back",
+							"success": "Invitation successfully revoked",
+							"error": "An error occurred while revoking the invitation"
+						},
+						"searchPlaceholder": "Search invitations...",
+						"user": "User",
+						"status": "Status",
+						"pending": "Pending",
+						"accepted": "Accepted",
+						"rejected": "Rejected",
+						"expired": "Expired",
+						"revoked": "Revoked",
+						"requested": "Requested",
+						"created": "Date sent",
+						"expires": "Expires",
+						"code": "Code",
+						"actions": "Actions",
+						"inactive": "Inactive",
+						"all": "All"
+					},
+					"approve": "Accept",
+					"dismiss": "Dismiss",
+					"searchError": "Failed to search users. Please try again.",
+					"send": "Send invitation",
+					"sendError": "An error occurred while sending the invitation. Please try again.",
+					"sendSuccess": "Invitation sent successfully",
+					"title": "Invite user to club",
+					"description": "Invitations will expire after 7 days, and will be deleted after 3 months.",
+					"user": "User",
+					"searchPlaceholder": "Search users...",
+					"minimumChars": "Enter at least 2 characters",
+					"noResults": "No results",
+					"chooseUserDescription": "If the user is already on the platform, you can find them here.",
+					"emailDescription": "If you can't find the user, or already know their email, enter it here."
 				}
 			}
 		}
@@ -546,7 +606,7 @@
 			"invitations": "Invitations",
 			"managers": "Managers",
 			"events": "Events",
-			"newEvent": "A new susret",
+			"newEvent": "Create an event",
 			"calendar": "Calendar",
 			"rules": "Rules",
 			"admin": "Administration",
