@@ -13,11 +13,12 @@ import {
 import type { User } from "better-auth";
 import { ArrowLeft, LogOut } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { authClient } from "@/lib/auth-client";
 
 export function Header({
 	user,
@@ -26,6 +27,7 @@ export function Header({
 }) {
 	const t = useTranslations("components.header");
 	const path = usePathname();
+	const router = useRouter();
 
 	return (
 		<header className="flex flex-col md:flex-row gap-2 select-none w-full items-center justify-between p-4 md:p-4">
@@ -74,14 +76,23 @@ export function Header({
 								<DropdownMenuSeparator />
 
 								<DropdownMenuItem asChild={true} className="cursor-pointer">
-									<Link
-										href="/logout"
-										prefetch={false}
-										className="flex items-centergap-2 plausible-event-name=logout-header-click"
+									<Button
+										variant="ghost"
+										onClick={async () => {
+											await authClient.signOut({
+												fetchOptions: {
+													onSuccess: () => {
+														router.push("/login");
+													},
+												},
+											});
+										}}
+										suppressHydrationWarning
+										className="w-full items-center justify-start cursor-pointer"
 									>
 										<LogOut className="w-4 h-4" />
 										{t("logout")}
-									</Link>
+									</Button>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>

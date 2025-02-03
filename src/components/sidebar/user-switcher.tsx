@@ -17,15 +17,17 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, Cog, LogOut, UserCog } from "lucide-react";
+import { authClient, useIsAuthenticated } from "@/lib/auth-client";
+import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
 	const t = useTranslations("components.sidebar");
 	const { user } = useIsAuthenticated();
+	const router = useRouter();
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
@@ -96,14 +98,23 @@ export function UserSwitcher() {
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>
-							<Link
-								href="/logout"
-								prefetch={false}
-								className="cursor-pointer plausible-event-name=logout-sidebar-click"
+							<Button
+								variant="ghost"
+								onClick={async () => {
+									await authClient.signOut({
+										fetchOptions: {
+											onSuccess: () => {
+												router.push("/login");
+											},
+										},
+									});
+								}}
+								suppressHydrationWarning
+								className="w-full items-center justify-start cursor-pointer"
 							>
-								<LogOut />
+								<LogOut className="w-4 h-4" />
 								{t("logout")}
-							</Link>
+							</Button>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

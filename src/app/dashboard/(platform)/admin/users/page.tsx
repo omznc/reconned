@@ -2,7 +2,6 @@ import { UserSheet } from "@/app/dashboard/(platform)/admin/users/_components/us
 import { UserTable } from "@/app/dashboard/(platform)/admin/users/_components/user-table";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
-import { getUser } from "./actions";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -20,7 +19,20 @@ export default async function UsersPage({ searchParams }: PageProps) {
 	const pageSize = 10;
 
 	// Fetch selected user separately if userId is present
-	const selectedUser = userId ? await getUser(userId) : null;
+	const selectedUser = userId ? await prisma.user.findUnique({
+		where: { id: userId },
+		include: {
+			clubMembership: {
+				include: {
+					club: {
+						select: {
+							name: true,
+						},
+					},
+				},
+			},
+		},
+	}) : null;
 
 	const where = {
 		...(search
