@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { UserOverview } from "@/components/overviews/user-overview";
 import type { Metadata } from "next";
 import { env } from "@/lib/env";
+import NotFoundTemporary from "@/app/not-found";
 
 interface PageProps {
 	params: Promise<{
@@ -42,7 +43,9 @@ export default async function Page(props: PageProps) {
 	});
 
 	if (!user) {
-		return notFound();
+		// TODO https://github.com/vercel/next.js/issues/63388
+		// notFound();
+		return <NotFoundTemporary />;
 	}
 
 	// Filter out private events and private clubs

@@ -4,6 +4,7 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import NotFoundTemporary from "@/app/not-found";
 
 interface PageProps {
 	params: Promise<{
@@ -19,24 +20,24 @@ export default async function Page(props: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
+			OR: [
+				{
+					isPrivate: false,
+				},
+				{
+					club: {
+						members: {
+							some: {
+								userId: user?.id,
 							},
 						},
 					},
-				],
-			}
+				},
+			],
+		}
 		: {
-				isPrivate: false,
-			};
+			isPrivate: false,
+		};
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -54,7 +55,9 @@ export default async function Page(props: PageProps) {
 	});
 
 	if (!event) {
-		return notFound();
+		// TODO https://github.com/vercel/next.js/issues/63388
+		// notFound();
+		return <NotFoundTemporary />;
 	}
 
 	return (

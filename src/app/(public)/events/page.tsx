@@ -25,24 +25,24 @@ export default async function Page() {
 			},
 			...(user
 				? {
-						OR: [
-							{
-								isPrivate: false,
-							},
-							{
-								club: {
-									members: {
-										some: {
-											userId: user?.id,
-										},
+					OR: [
+						{
+							isPrivate: false,
+						},
+						{
+							club: {
+								members: {
+									some: {
+										userId: user?.id,
 									},
 								},
 							},
-						],
-					}
+						},
+					],
+				}
 				: {
-						isPrivate: false,
-					}),
+					isPrivate: false,
+				}),
 		},
 		orderBy: {
 			dateStart: "asc",
@@ -58,7 +58,7 @@ export default async function Page() {
 		take: 100,
 	});
 	return (
-		<div className="flex flex-col gap-4 max-w-[1200px] py-8">
+		<div className="flex flex-col gap-4 max-w-[1200px] py-8 px-4">
 			<h1 className="text-xl font-bold">Nadolazeći susreti</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{upcomingEvents.length === 0 && (
