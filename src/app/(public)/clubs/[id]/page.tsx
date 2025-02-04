@@ -4,6 +4,7 @@ import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
 import type { Metadata } from "next";
 import { env } from "@/lib/env";
+import NotFoundTemporary from '@/app/not-found';
 
 interface PageProps {
 	params: Promise<{
@@ -16,13 +17,13 @@ export default async function Page(props: PageProps) {
 	const user = await isAuthenticated();
 	const isMemberOfClub = user
 		? await prisma.clubMembership.findFirst({
-				where: {
-					userId: user?.id,
-					club: {
-						OR: [{ id: params.id }, { slug: params.id }],
-					},
+			where: {
+				userId: user?.id,
+				club: {
+					OR: [{ id: params.id }, { slug: params.id }],
 				},
-			})
+			},
+		})
 		: false;
 
 	const club = await prisma.club.findFirst({
@@ -60,7 +61,9 @@ export default async function Page(props: PageProps) {
 	});
 
 	if (!club) {
-		notFound();
+		// TODO https://github.com/vercel/next.js/issues/63388
+		// notFound();
+		return <NotFoundTemporary />;
 	}
 
 	return (
