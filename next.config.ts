@@ -12,6 +12,8 @@ const nextConfig = {
 				static: 180,
 			},
 		},
+		webpackMemoryOptimizations: true,
+		viewTransition: true,
 	},
 	images: {
 		remotePatterns: [
