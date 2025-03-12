@@ -1,4 +1,4 @@
-<img src="public/logo.png" alt="Airsoft Event Management System Logo" width="100%" height="auto" style="background: white; padding: 1rem;" />
+<img src="https://reconned.com/reconned-logo-light.svg" alt="Airsoft Event Management System Logo" width="100%" height="auto" style="background: white; padding: 1rem;" />
 
 # Airsoft Event Management System
 
