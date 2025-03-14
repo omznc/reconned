@@ -20,8 +20,8 @@ import {
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
@@ -59,7 +59,10 @@ export function UserSwitcher() {
 						sideOffset={4}
 					>
 						<DropdownMenuLabel className="p-0 font-normal">
-							<Link href='/dashboard/user' className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+							<Link
+								href="/dashboard/user"
+								className="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
+							>
 								<Avatar className="h-8 w-8 rounded-lg">
 									<AvatarImage src={user?.image ?? ""} alt={user?.name} />
 									<AvatarFallback className="rounded-lg">

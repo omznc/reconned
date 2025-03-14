@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { ClubRule, Event } from "@prisma/client";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { isAfter, isBefore } from "date-fns";
 import { BadgeSoon } from "@/components/badge-soon";

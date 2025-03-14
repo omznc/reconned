@@ -3,7 +3,6 @@ import type { Club, ClubMembership, Post, User } from "@prisma/client";
 import {
 	ArrowUpRight,
 	AtSign,
-	BadgePlus,
 	Cog,
 	Eye,
 	EyeOff,
@@ -18,7 +17,7 @@ import Image from "next/image";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { ClubPost } from "@/components/overviews/club-post";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
 import { getTranslations } from "next-intl/server";
 import {
@@ -34,7 +33,7 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date; })[];
+		posts: (Post & { createdAt: Date })[];
 		members?: (ClubMembership & {
 			user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">;
 		})[];
@@ -173,7 +172,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 							{t("posts")}
 						</h2>
 						{isManager && (
-							<Button asChild size='sm'>
+							<Button asChild size="sm">
 								<Link href={`/dashboard/${club.id}/club/posts`}>
 									<Pencil className="h-4 w-4" />
 									{t("createPost")}

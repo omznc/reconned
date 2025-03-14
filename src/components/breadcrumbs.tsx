@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Building2Icon, CalendarFoldIcon } from "lucide-react";
@@ -20,6 +19,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
 
 type BreadcrumbsProps = {
 	clubs?: Array<{
@@ -89,7 +89,6 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 			);
 		}
 
-		// @ts-expect-error
 		return t(`translations.${section}`) || section;
 	};
 

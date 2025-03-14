@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { User } from "better-auth";
 import { ArrowLeft, LogOut } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link, useRouter, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
@@ -35,7 +34,11 @@ export function Header({
 				<Logo className="w-full h-auto max-h-[80px] md:w-fit md:h-full p-2 md:p-0" />
 			</Link>
 			{path !== "/" && (
-				<Button asChild variant="ghost" className="w-full hover:bg-transparent md:-mr-12">
+				<Button
+					asChild
+					variant="ghost"
+					className="w-full hover:bg-transparent md:-mr-12"
+				>
 					<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 						<ArrowLeft className="w-6 h-6" />
 						{t("backToHome")}

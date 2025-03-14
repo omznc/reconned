@@ -1,9 +1,8 @@
 "use client";
 
 import { MapContainer, TileLayer, Popup, useMapEvents } from "react-leaflet";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { useQueryState } from "nuqs";

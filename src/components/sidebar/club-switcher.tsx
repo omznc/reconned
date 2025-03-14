@@ -17,8 +17,8 @@ import {
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { Club } from "@prisma/client";
 import Image from "next/image";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 

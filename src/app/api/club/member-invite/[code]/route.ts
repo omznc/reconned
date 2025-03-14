@@ -1,8 +1,9 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import type { NextRequest } from "next/server";
+import { getLocale } from "next-intl/server";
 
 interface RouteParams {
 	params: Promise<{
@@ -16,6 +17,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 	const action = searchParams.get("action");
 	const redirectTo = searchParams.get("redirectTo") ?? "/";
 
+	const locale = await getLocale();
+
 	const invite = await prisma.clubInvite.findUnique({
 		where: { inviteCode: code },
 		include: {
@@ -25,15 +28,17 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 	});
 
 	if (!invite) {
-		redirect(
-			`${redirectTo}?message=${encodeURIComponent("Nepostojeći poziv")}`,
-		);
+		return redirect({
+			href: `${redirectTo}?message=${encodeURIComponent("Nepostojeći poziv")}`,
+			locale,
+		});
 	}
 
 	if (invite.status === "EXPIRED") {
-		redirect(
-			`${redirectTo}?message=${encodeURIComponent("Pozivnica je istekla")}`,
-		);
+		return redirect({
+			href: `${redirectTo}?message=${encodeURIComponent("Pozivnica je istekla")}`,
+			locale,
+		});
 	}
 
 	const user = await isAuthenticated();
@@ -51,19 +56,26 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 			});
 
 			if (!isManager && invite.userId !== user?.id) {
-				redirect(
-					`${redirectTo}?message=${encodeURIComponent("Nemate dozvolu")}`,
-				);
+				return redirect({
+					href: `${redirectTo}?message=${encodeURIComponent("Nemate dozvolu")}`,
+					locale,
+				});
 			}
 		} else if (invite.email.toLowerCase() !== user?.email?.toLowerCase()) {
-			redirect(`${redirectTo}?message=${encodeURIComponent("Nemate dozvolu")}`);
+			return redirect({
+				href: `${redirectTo}?message=${encodeURIComponent("Nemate dozvolu")}`,
+				locale,
+			});
 		}
 
 		await prisma.clubInvite.update({
 			where: { id: invite.id },
 			data: { status: "REJECTED" },
 		});
-		redirect(`${redirectTo}?message=Odbijeno`);
+		return redirect({
+			href: `${redirectTo}?message=Odbijeno`,
+			locale,
+		});
 	}
 
 	if (invite.status === "REQUESTED") {
@@ -77,15 +89,17 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 		});
 
 		if (!isManager) {
-			redirect(
-				`${redirectTo}?message=${encodeURIComponent("Samo menadžeri mogu odobriti zahtjeve")}`,
-			);
+			return redirect({
+				href: `${redirectTo}?message=${encodeURIComponent("Samo menadžeri mogu odobriti zahtjeve")}`,
+				locale,
+			});
 		}
 
 		if (!invite.userId) {
-			redirect(
-				`${redirectTo}?message=${encodeURIComponent("Nepostojeći korisnik")}`,
-			);
+			return redirect({
+				href: `${redirectTo}?message=${encodeURIComponent("Nepostojeći korisnik")}`,
+				locale,
+			});
 		}
 
 		// Process the request approval
@@ -97,16 +111,18 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
 			await tx.clubMembership.create({
 				data: {
-					userId: invite.userId!,
+					userId: invite.userId as string,
 					clubId: invite.clubId,
 					role: "USER",
 				},
 			});
 		});
 
-		redirect(`${redirectTo}?message=${encodeURIComponent("Zahtjev odobren")}`);
+		return redirect({
+			href: `${redirectTo}?message=${encodeURIComponent("Zahtjev odobren")}`,
+			locale,
+		});
 	}
-	console.log("Invite status is not REQUESTED");
 
 	// Continue with existing invite acceptance logic
 	if (invite.expiresAt < new Date()) {
@@ -114,15 +130,17 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 			where: { id: invite.id },
 			data: { status: "EXPIRED" },
 		});
-		redirect(
-			`${redirectTo}?message=${encodeURIComponent("Pozivnica je istekla")}`,
-		);
+		return redirect({
+			href: `${redirectTo}?message=${encodeURIComponent("Pozivnica je istekla")}`,
+			locale,
+		});
 	}
 
 	if (invite.status !== "PENDING") {
-		redirect(
-			`${redirectTo}?message=${encodeURIComponent("Pozivnica je već iskorištena")}`,
-		);
+		return redirect({
+			href: `${redirectTo}?message=${encodeURIComponent("Pozivnica je već iskorištena")}`,
+			locale,
+		});
 	}
 
 	// If no user is logged in, check if account exists
@@ -150,16 +168,20 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 			});
 		}
 
-		redirect(existingUser ? "/login" : `/register?email=${invite.email}`);
+		return redirect({
+			href: existingUser ? "/login" : `/register?email=${invite.email}`,
+			locale,
+		});
 	}
 
 	// User is logged in - verify email matches
 	if (invite.email.toLowerCase() !== user.email?.toLowerCase()) {
 		// Wrong account logged in
 		const currentUrl = req.url;
-		redirect(
-			`/login?redirectTo=${encodeURIComponent(currentUrl)}&message=${encodeURIComponent("Pozivnica nije za vaš nalog")}`,
-		);
+		return redirect({
+			href: `/login?redirectTo=${encodeURIComponent(currentUrl)}&message=${encodeURIComponent("Pozivnica nije za vaš nalog")}`,
+			locale,
+		});
 	}
 
 	const existingMembership = await prisma.clubMembership.findFirst({
@@ -170,9 +192,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 	});
 
 	if (existingMembership) {
-		redirect(
-			`${redirectTo}?message=${encodeURIComponent("Već ste član kluba")}`,
-		);
+		return redirect({
+			href: `${redirectTo}?message=${encodeURIComponent("Već ste član kluba")}`,
+			locale,
+		});
 	}
 
 	await prisma.$transaction(async (tx) => {
@@ -195,7 +218,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 		return { updatedInvite, membership };
 	});
 
-	redirect(
-		`${redirectTo}?message=${encodeURIComponent("Članstvo uspješno prihvaćeno")}`,
-	);
+	return redirect({
+		href: `${redirectTo}?message=${encodeURIComponent("Članstvo uspješno prihvaćeno")}`,
+		locale,
+	});
 }
