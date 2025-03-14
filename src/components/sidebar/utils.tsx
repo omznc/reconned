@@ -1,6 +1,6 @@
 import { BadgeSoon } from "@/components/badge-soon";
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { NavItem, NavSubItem } from "./types";
 import {
 	DropdownMenu,

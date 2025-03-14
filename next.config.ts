@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin({
+	experimental: {
+		createMessagesDeclaration: "./messages/en.json",
+	},
+});
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig = {
 	reactStrictMode: true,
@@ -14,6 +19,7 @@ const nextConfig = {
 		},
 		webpackMemoryOptimizations: true,
 		viewTransition: true,
+		nodeMiddleware: true,
 	},
 	images: {
 		remotePatterns: [
@@ -66,4 +72,4 @@ const nextConfig = {
 	},
 } as NextConfig;
 
-export default withNextIntl(nextConfig);
+export default withSentryConfig(withNextIntl(nextConfig));

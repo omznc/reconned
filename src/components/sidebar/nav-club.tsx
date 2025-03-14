@@ -20,7 +20,7 @@ import {
 	SidebarMenu,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { User } from "better-auth";
 import type { NavItem } from "@/components/sidebar/types";

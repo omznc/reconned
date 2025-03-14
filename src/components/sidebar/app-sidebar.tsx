@@ -16,17 +16,12 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import type { Club } from "@prisma/client";
-import {
-	redirect,
-	useParams,
-	usePathname,
-	useSearchParams,
-} from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import type { User } from "better-auth";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { env } from "@/lib/env";
-import Link from "next/link";
+import { Link, redirect, usePathname } from "@/i18n/navigation";
 import { MailPlus } from "lucide-react";
 
 interface AppSidebarProps {
@@ -45,6 +40,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();
+	const locale = useLocale();
 	const t = useTranslations("components.sidebar");
 
 	// TODO: We'll do beta only now, but otherwise we'll keep this only on the beta subdomain.
@@ -54,7 +50,10 @@ export function AppSidebar(props: AppSidebarProps) {
 		if (searchParams.get("autoSelectFirst") && !params.clubId) {
 			const firstClub = props.clubs[0];
 			if (firstClub) {
-				redirect(`/dashboard/${firstClub.id}`);
+				return redirect({
+					href: `/dashboard/${firstClub.id}`,
+					locale,
+				});
 			}
 		}
 	}, [params.clubId, props.clubs, searchParams]);

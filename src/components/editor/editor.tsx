@@ -74,12 +74,12 @@ export const Editor = ({
 				defaultProtocol: "https",
 				protocols: ["http", "https"],
 				HTMLAttributes: {
-					class: 'rounded-lg max-h-[500px] object-contain',
+					class: "rounded-lg max-h-[500px] object-contain",
 				},
 			}),
 			Image.configure({
 				HTMLAttributes: {
-					class: 'rounded-lg max-h-[500px] object-contain',
+					class: "rounded-lg max-h-[500px] object-contain",
 				},
 			}),
 		],
@@ -133,9 +133,9 @@ export const Editor = ({
 			return;
 		}
 
-		const input = document.createElement('input');
-		input.type = 'file';
-		input.accept = 'image/*';
+		const input = document.createElement("input");
+		input.type = "file";
+		input.accept = "image/*";
 
 		input.onchange = async () => {
 			if (!input.files?.length) {
@@ -159,7 +159,7 @@ export const Editor = ({
 				if (error instanceof ImgurError) {
 					toast.error(error.message);
 				} else {
-					toast.error(t('imgur.error.generic'));
+					toast.error(t("imgur.error.generic"));
 				}
 			} finally {
 				setIsUploading(false);

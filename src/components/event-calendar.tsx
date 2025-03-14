@@ -2,7 +2,7 @@
 
 import { useQueryState } from "nuqs";
 import type { Event } from "@prisma/client";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
 	startOfMonth,
 	endOfMonth,
@@ -34,17 +34,18 @@ import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 import { useTranslations } from "next-intl";
 import { VerifiedClubIcon } from "@/components/icons";
+import { useRouter } from "@/i18n/navigation";
 
 interface EventCalendarProps {
 	events: (Event & {
-		club: { name: string; verified: boolean; };
+		club: { name: string; verified: boolean };
 		image?: string | null;
 	})[];
 }
 
 export function EventCalendar(props: EventCalendarProps) {
 	const t = useTranslations("components.calendar");
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(

@@ -1,4 +1,4 @@
-import { sendEmailVerificationAction } from "@/app/(auth)/_actions/send-email-verification.action";
+import { sendEmailVerificationAction } from "@/app/[locale]/(auth)/_actions/send-email-verification.action";
 import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
 import PasswordReset from "@/emails/password-reset";
 import { env } from "@/lib/env";
@@ -34,7 +34,7 @@ export const auth = betterAuth({
 		"https://reconned.com/api/auth",
 		"https://beta.reconned.com",
 		"https://beta.reconned.com/api/auth",
-		"http://127-0-0-1.sslip.io"
+		"http://127-0-0-1.sslip.io",
 	],
 	emailAndPassword: {
 		enabled: true,

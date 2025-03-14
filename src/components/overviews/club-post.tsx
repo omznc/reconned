@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { Post } from "@prisma/client";
 import { Pencil } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { formatRelative } from "date-fns";
 import { bs } from "date-fns/locale";
@@ -12,10 +12,10 @@ import "@/components/editor/editor.css";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useOverflow } from "@/hooks/use-overflow";
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from "isomorphic-dompurify";
 
 interface ClubPostProps {
-	post: Post & { createdAt: Date; };
+	post: Post & { createdAt: Date };
 	clubId: string;
 	isManager?: boolean;
 }
@@ -50,7 +50,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 				ref={ref}
 				className={cn(
 					"relative",
-					!isExpanded && "max-h-[500px] overflow-hidden"
+					!isExpanded && "max-h-[500px] overflow-hidden",
 				)}
 			>
 				<div
@@ -58,7 +58,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: I have to, it's an editor
 					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
 				/>
-				{(post.images?.length > 0 && post.images[0]) && (
+				{post.images?.length > 0 && post.images[0] && (
 					<div className="relative w-full">
 						<Image
 							src={post.images[0]}
@@ -67,7 +67,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 							height={400}
 							className={cn(
 								"rounded-md object-cover w-full",
-								!isExpanded && "max-h-[400px]"
+								!isExpanded && "max-h-[400px]",
 							)}
 						/>
 					</div>

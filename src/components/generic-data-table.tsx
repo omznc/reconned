@@ -20,7 +20,7 @@ import {
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
 import { ArrowUpDown, Search, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
 import { useState, useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -36,8 +36,8 @@ import { useTranslations } from "next-intl";
 // Dot notation path type
 type DotNotation<T extends object> = {
 	[K in keyof T & (string | number)]: T[K] extends object
-	? `${K}` | `${K}.${DotNotation<T[K]>}`
-	: `${K}`;
+		? `${K}` | `${K}.${DotNotation<T[K]>}`
+		: `${K}`;
 }[keyof T & (string | number)];
 
 // Column key type that supports both dot notation and arbitrary strings
@@ -60,7 +60,7 @@ interface CellConfig<T> {
 interface Filter {
 	key: string;
 	label: string;
-	options: { label: string; value: string; }[];
+	options: { label: string; value: string }[];
 }
 
 interface GenericTableProps<T> {

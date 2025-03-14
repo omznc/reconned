@@ -12,7 +12,6 @@ import {
 	Shield,
 	User,
 	Bell,
-	Building,
 	Building2,
 } from "lucide-react";
 
@@ -22,7 +21,7 @@ import {
 	SidebarMenu,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import type { NavItem } from "./types.ts";
 import { renderCollapsedItem, renderExpandedItem } from "./utils.tsx";
 import { useTranslations } from "next-intl";
@@ -30,7 +29,7 @@ import { useTranslations } from "next-intl";
 export function NavApp({
 	isAdmin,
 	pendingInvites,
-}: { isAdmin: boolean; pendingInvites: number; }) {
+}: { isAdmin: boolean; pendingInvites: number }) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const t = useTranslations("components.sidebar");

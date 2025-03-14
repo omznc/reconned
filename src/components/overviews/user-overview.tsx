@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { Club, User, Event } from "@prisma/client";
 import { format } from "date-fns";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { getTranslations } from "next-intl/server";
@@ -81,42 +81,43 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</CardContent>
 			</Card> */}
 			<div className="flex flex-wrap gap-2">
-				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
+				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					{t("views", { count: visitors })}
+				</Badge>
 				{user.clubMembership.length === 0 && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{t("freelancer")}</Badge>
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+						{t("freelancer")}
+					</Badge>
 				)}
-				{
-					user.website && (
-						<Link
-							href={user.website}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="md:flex-grow-0 flex-grow"
-						>
-							<Badge className="flex items-center gap-1 hover:cursor-pointer">
-								<Globe size={16} />
-								{user.website}
-							</Badge>
-						</Link>
-					)
-				}
-				{
-					user.location && (
-						<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
-							<MapPin size={16} />
-							{user.location}</Badge>
-					)
-				}
-				{
-					user.phone && !user.isPrivatePhone && (
-						<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{user.phone}</Badge>
-					)
-				}
-				{
-					user.email && !user.isPrivateEmail && (
-						<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">{user.email}</Badge>
-					)
-				}
+				{user.website && (
+					<Link
+						href={user.website}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="md:flex-grow-0 flex-grow"
+					>
+						<Badge className="flex items-center gap-1 hover:cursor-pointer">
+							<Globe size={16} />
+							{user.website}
+						</Badge>
+					</Link>
+				)}
+				{user.location && (
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+						<MapPin size={16} />
+						{user.location}
+					</Badge>
+				)}
+				{user.phone && !user.isPrivatePhone && (
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+						{user.phone}
+					</Badge>
+				)}
+				{user.email && !user.isPrivateEmail && (
+					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+						{user.email}
+					</Badge>
+				)}
 			</div>
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>

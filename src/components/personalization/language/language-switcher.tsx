@@ -1,8 +1,4 @@
 "use client";
-
-import { useLanguage } from "@/components/personalization/language/language-provider";
-import { setLanguageAction } from "@/lib/global-actions/language";
-import { useEffect } from "react";
 import {
 	Select,
 	SelectContent,
@@ -12,33 +8,26 @@ import {
 	SelectTrigger,
 } from "@/components/ui/select";
 import { LANGUAGE_TRANSLATIONS, VALID_LOCALES } from "@/i18n/valid-locales";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 export function LanguageSwitcher() {
-	const { language, setLanguage } = useLanguage();
 	const t = useTranslations("components.languageSwitcher");
 	const router = useRouter();
-
-	useEffect(() => {
-		console.log("LanguageSwitcher", language);
-		if (!VALID_LOCALES.includes(language as (typeof VALID_LOCALES)[number])) {
-			return;
-		}
-		document.cookie = `preferred-language=${language};path=/;max-age=31536000`;
-
-		setLanguageAction({
-			language: language,
-		});
-		router.refresh();
-	}, [language]);
+	const path = usePathname();
+	const locale = useLocale();
 
 	return (
-		<Select value={language} onValueChange={setLanguage}>
+		<Select
+			value={locale}
+			onValueChange={(value) => {
+				router.replace(path, { locale: value });
+			}}
+		>
 			<SelectTrigger className="w-fit">
 				<span className="mr-2">
 					{LANGUAGE_TRANSLATIONS[
-						language as keyof typeof LANGUAGE_TRANSLATIONS
+						locale as keyof typeof LANGUAGE_TRANSLATIONS
 					] ?? "🌐"}
 				</span>
 			</SelectTrigger>
