@@ -8,4 +8,4 @@ export const LANGUAGE_MAPS = {
 export const LANGUAGE_TRANSLATIONS = {
 	bs: "Bosanski",
 	en: "English",
-} as const;
+};

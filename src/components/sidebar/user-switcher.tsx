@@ -22,6 +22,7 @@ import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();
@@ -53,7 +54,7 @@ export function UserSwitcher() {
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
 						side={isMobile ? "bottom" : "right"}
 						align="end"
 						sideOffset={4}
@@ -98,6 +99,9 @@ export function UserSwitcher() {
 
 						<DropdownMenuItem asChild={true}>
 							<FontSwitcher />
+						</DropdownMenuItem>
+						<DropdownMenuItem asChild={true}>
+							<LanguageSwitcher />
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>

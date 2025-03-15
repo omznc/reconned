@@ -103,7 +103,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 				</div>
 			</div>
 			<div className="flex flex-wrap gap-2">
-				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+				<Badge className="md:grow-0 grow flex items-center gap-1">
 					{club.isPrivate ? (
 						<>
 							<EyeOff className="w-4 h-4" />
@@ -117,25 +117,25 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 					)}
 				</Badge>
 				{club.location && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						<MapPin className="w-4 h-4" />
 						{club.location}
 					</Badge>
 				)}
 				{club.isAllied && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						<Handshake className="w-4 h-4" />
 						{t("allied")}
 					</Badge>
 				)}
 				{club.contactEmail && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						<AtSign className="w-4 h-4" />
 						{club.contactEmail}
 					</Badge>
 				)}
 				{club.contactPhone && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						<Phone className="w-4 h-4" />
 						{club.contactPhone}
 					</Badge>
@@ -145,7 +145,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						href={club.website}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="md:flex-grow-0 flex-grow"
+						className="md:grow-0 grow"
 					>
 						<Badge className="flex items-center gap-1 hover:cursor-pointer">
 							<Globe className="w-4 h-4" />
@@ -153,7 +153,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						</Badge>
 					</Link>
 				)}
-				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+				<Badge className="md:grow-0 grow flex items-center gap-1">
 					{t("views", { count: visitors })}
 				</Badge>
 			</div>

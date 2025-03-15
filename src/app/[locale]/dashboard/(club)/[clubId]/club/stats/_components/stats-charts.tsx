@@ -203,7 +203,7 @@ export function StatsCharts({
 				open={!!fullscreenChart}
 				onOpenChange={() => setFullscreenChart(null)}
 			>
-				<DialogContent className="max-w-screen-xl w-[90vw] h-[90vh]">
+				<DialogContent className="max-w-(--breakpoint-xl) w-[90vw] h-[90vh]">
 					{fullscreenChart && (
 						<>
 							<DialogTitle>{fullscreenChart.title}</DialogTitle>

@@ -61,7 +61,7 @@ export default function SponsorsPage() {
 											data-has-dark={!!sponsor.logoDark}
 											width={200}
 											height={100}
-											className="mb-4 size-[200px] object-contain block data-[has-dark=true]:dark:hidden"
+											className="mb-4 size-[200px] object-contain block dark:data-[has-dark=true]:hidden"
 										/>
 										{sponsor.logoDark && (
 											<Image
@@ -94,7 +94,7 @@ export default function SponsorsPage() {
 										data-has-dark={true}
 										width={200}
 										height={100}
-										className="mb-4 size-[200px] object-contain block data-[has-dark=true]:dark:hidden"
+										className="mb-4 size-[200px] object-contain block dark:data-[has-dark=true]:hidden"
 									/>
 									<Image
 										src={"/reconned-logo-dark.svg"}
