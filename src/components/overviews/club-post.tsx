@@ -73,7 +73,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					</div>
 				)}
 				{!isExpanded && isOverflowing && (
-					<div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-sidebar to-transparent pointer-events-none" />
+					<div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-sidebar to-transparent pointer-events-none" />
 				)}
 			</div>
 			{isOverflowing && (

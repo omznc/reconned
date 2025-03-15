@@ -25,8 +25,8 @@ export default async function RootLayout({
 					</div>
 				)}
 				<Header user={user} />
-				<div className="flex-grow size-full flex flex-col items-center">
-					<div className="absolute -z-10 inset-0 bg-gradient-to-b from-red-600/30 to-transparent h-[70dvh]" />
+				<div className="grow size-full flex flex-col items-center">
+					<div className="absolute -z-10 inset-0 bg-linear-to-b from-red-600/30 to-transparent h-[70dvh]" />
 					{children}
 				</div>
 			</div>

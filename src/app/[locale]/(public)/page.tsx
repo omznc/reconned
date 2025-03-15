@@ -257,7 +257,7 @@ export default async function Home({ searchParams }: PageProps) {
 											{event.description}
 										</CardDescription>
 									</CardHeader>
-									<CardContent className="flex-grow flex-col flex gap-1">
+									<CardContent className="grow flex-col flex gap-1">
 										<div className="flex items-center">
 											<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
 											<span>
@@ -287,7 +287,7 @@ export default async function Home({ searchParams }: PageProps) {
 										<div className="flex flex-wrap gap-2 my-4">
 											<Badge
 												variant="outline"
-												className="flex-grow justify-center"
+												className="grow justify-center"
 											>
 												{event.allowFreelancers
 													? t("eventCard.canFreelance")
@@ -296,7 +296,7 @@ export default async function Home({ searchParams }: PageProps) {
 											{event.hasBreakfast && (
 												<Badge
 													variant="outline"
-													className="flex-grow justify-center"
+													className="grow justify-center"
 												>
 													{t("eventCard.breakfast")}
 												</Badge>
@@ -304,7 +304,7 @@ export default async function Home({ searchParams }: PageProps) {
 											{event.hasLunch && (
 												<Badge
 													variant="outline"
-													className="flex-grow justify-center"
+													className="grow justify-center"
 												>
 													{t("eventCard.lunch")}
 												</Badge>
@@ -312,7 +312,7 @@ export default async function Home({ searchParams }: PageProps) {
 											{event.hasDinner && (
 												<Badge
 													variant="outline"
-													className="flex-grow justify-center"
+													className="grow justify-center"
 												>
 													{t("eventCard.dinner")}
 												</Badge>
@@ -320,7 +320,7 @@ export default async function Home({ searchParams }: PageProps) {
 											{event.hasSnacks && (
 												<Badge
 													variant="outline"
-													className="flex-grow justify-center"
+													className="grow justify-center"
 												>
 													{t("eventCard.snacks")}
 												</Badge>
@@ -328,7 +328,7 @@ export default async function Home({ searchParams }: PageProps) {
 											{event.hasDrinks && (
 												<Badge
 													variant="outline"
-													className="flex-grow justify-center"
+													className="grow justify-center"
 												>
 													{t("eventCard.drinks")}
 												</Badge>
@@ -336,7 +336,7 @@ export default async function Home({ searchParams }: PageProps) {
 											{event.hasPrizes && (
 												<Badge
 													variant="outline"
-													className="flex-grow justify-center"
+													className="grow justify-center"
 												>
 													{t("eventCard.prizes")}
 												</Badge>

@@ -97,7 +97,7 @@ export function ClubsMap({
 	return (
 		<div className="relative h-full w-full">
 			{!interactive && (
-				<div className="absolute right-4 top-4 z-[10] bg-white border dark:bg-[#0d0d0d] shadow-md p-3 flex items-center gap-3">
+				<div className="absolute right-4 top-4 z-10 bg-white border dark:bg-[#0d0d0d] shadow-md p-3 flex items-center gap-3">
 					<Slider
 						value={[logoSize]}
 						onValueChange={([value]) => setLogoSize(value ?? 32)}

@@ -399,7 +399,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																	</div>
 
 																	<div className="text-sm space-y-1">
-																		<div className="grid grid-cols-[auto,1fr] gap-2">
+																		<div className="grid grid-cols-[auto_1fr] gap-2">
 																			<span className="font-medium">
 																				{t("eventDetails.start")}:
 																			</span>

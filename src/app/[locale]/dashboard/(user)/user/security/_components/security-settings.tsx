@@ -297,7 +297,7 @@ export function SecuritySettings({
 												toast.success("Kopirano u clipboard.");
 											}}
 											key={code}
-											className="flex-grow cursor-pointer text-center bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono"
+											className="grow cursor-pointer text-center bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono"
 										>
 											{code}
 										</code>

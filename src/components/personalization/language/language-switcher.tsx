@@ -1,15 +1,17 @@
 "use client";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { LANGUAGE_TRANSLATIONS, VALID_LOCALES } from "@/i18n/valid-locales";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { Globe } from "lucide-react";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function LanguageSwitcher() {
 	const t = useTranslations("components.languageSwitcher");
@@ -18,34 +20,35 @@ export function LanguageSwitcher() {
 	const locale = useLocale();
 
 	return (
-		<Select
-			value={locale}
-			onValueChange={(value) => {
-				router.replace(path, { locale: value });
-			}}
-		>
-			<SelectTrigger className="w-fit">
-				<span className="mr-2">
-					{LANGUAGE_TRANSLATIONS[
-						locale as keyof typeof LANGUAGE_TRANSLATIONS
-					] ?? "🌐"}
-				</span>
-			</SelectTrigger>
-			<SelectContent>
-				<SelectGroup>
-					<SelectLabel>{t("select")}</SelectLabel>
-				</SelectGroup>
-				{VALID_LOCALES.map((locale) => (
-					<SelectItem key={locale} value={locale}>
-						<div className="flex flex-col">
-							{LANGUAGE_TRANSLATIONS[locale]}
-							{locale === "en" && (
-								<span className="text-muted-foreground">In progress</span>
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button
+					variant="ghost"
+					suppressHydrationWarning
+					className="w-full items-center justify-start cursor-pointer"
+				>
+					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="start">
+				<DropdownMenuLabel>{t("select")}</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				{VALID_LOCALES.map((localeOption) => (
+					<DropdownMenuItem
+						key={localeOption}
+						onClick={() => router.replace(path, { locale: localeOption })}
+						className={locale === localeOption ? "bg-accent" : ""}
+					>
+						<div className="flex items-center gap-2">
+							<span>{LANGUAGE_TRANSLATIONS[localeOption]}</span>
+							{localeOption === "en" && (
+								<span className="text-xs text-muted-foreground">In progress</span>
 							)}
 						</div>
-					</SelectItem>
+					</DropdownMenuItem>
 				))}
-			</SelectContent>
-		</Select>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	);
 }

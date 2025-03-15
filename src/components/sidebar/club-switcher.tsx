@@ -24,12 +24,12 @@ import { useTranslations } from "next-intl";
 
 interface ClubSwitcherProps {
 	clubs: Club[];
-	user: { managedClubs: string[] };
+	user: { managedClubs: string[]; };
 }
 
 export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	const router = useRouter();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const { clubId } = useCurrentClub();
 	const t = useTranslations("components.sidebar");
 
@@ -106,7 +106,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
 						align="start"
 						side="bottom"
 						sideOffset={4}
@@ -116,7 +116,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						</DropdownMenuLabel>
 						{clubs.map((club) => (
 							<DropdownMenuItem
-								key={club.name}
+								key={club.id}
 								onClick={() => {
 									const currentFullUrl = window.location.href;
 

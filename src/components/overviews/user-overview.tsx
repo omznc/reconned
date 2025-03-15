@@ -81,11 +81,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</CardContent>
 			</Card> */}
 			<div className="flex flex-wrap gap-2">
-				<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+				<Badge className="md:grow-0 grow flex items-center gap-1">
 					{t("views", { count: visitors })}
 				</Badge>
 				{user.clubMembership.length === 0 && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						{t("freelancer")}
 					</Badge>
 				)}
@@ -94,7 +94,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 						href={user.website}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="md:flex-grow-0 flex-grow"
+						className="md:grow-0 grow"
 					>
 						<Badge className="flex items-center gap-1 hover:cursor-pointer">
 							<Globe size={16} />
@@ -103,18 +103,18 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</Link>
 				)}
 				{user.location && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						<MapPin size={16} />
 						{user.location}
 					</Badge>
 				)}
 				{user.phone && !user.isPrivatePhone && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						{user.phone}
 					</Badge>
 				)}
 				{user.email && !user.isPrivateEmail && (
-					<Badge className="md:flex-grow-0 flex-grow flex items-center gap-1">
+					<Badge className="md:grow-0 grow flex items-center gap-1">
 						{user.email}
 					</Badge>
 				)}

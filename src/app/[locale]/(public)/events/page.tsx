@@ -83,7 +83,7 @@ export default async function Page() {
 								{event.description}
 							</CardDescription>
 						</CardHeader>
-						<CardContent className="flex-grow flex-col flex gap-1">
+						<CardContent className="grow flex-col flex gap-1">
 							<div className="flex items-center">
 								<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
 								<span>
@@ -105,28 +105,28 @@ export default async function Page() {
 								<span>{event.costPerPerson.toFixed(2)}KM po osobi</span>
 							</div>
 							<div className="flex flex-wrap gap-2 my-4">
-								<Badge className="flex-grow justify-center">
+								<Badge className="grow justify-center">
 									{event.allowFreelancers
 										? "Dozvoljeni freelanceri"
 										: "Samo klubovi"}
 								</Badge>
 								{event.hasBreakfast && (
-									<Badge className="flex-grow justify-center">Doručak</Badge>
+									<Badge className="grow justify-center">Doručak</Badge>
 								)}
 								{event.hasLunch && (
 									<Badge className="flex-growjustify-center ">Ručak</Badge>
 								)}
 								{event.hasDinner && (
-									<Badge className="flex-grow justify-center ">Večera</Badge>
+									<Badge className="grow justify-center ">Večera</Badge>
 								)}
 								{event.hasSnacks && (
-									<Badge className="flex-grow justify-center">Grickalice</Badge>
+									<Badge className="grow justify-center">Grickalice</Badge>
 								)}
 								{event.hasDrinks && (
-									<Badge className="flex-grow justify-center">Pića</Badge>
+									<Badge className="grow justify-center">Pića</Badge>
 								)}
 								{event.hasPrizes && (
-									<Badge className="flex-grow justify-center ">Nagrade</Badge>
+									<Badge className="grow justify-center ">Nagrade</Badge>
 								)}
 							</div>
 						</CardContent>

@@ -46,7 +46,7 @@ export function SearchResultCard({
 										"object-contain": type === "club",
 									})}
 								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
+								<div className="absolute inset-0 bg-linear-to-t from-background/60 to-transparent" />
 							</>
 						) : (
 							<div className="w-full h-full bg-muted grid place-items-center">

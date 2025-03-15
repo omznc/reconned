@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
 import { auth } from "@/lib/auth";
+import { getLocale } from "next-intl/server";
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -17,7 +18,7 @@ export default async function authMiddleware(request: NextRequest) {
 			const locationHeader = resp.headers.get("Location");
 			const locale = locationHeader
 				? new URL(locationHeader).pathname.split("/")[1]
-				: "en"; // Default to 'en' if not found
+				: await getLocale();
 
 			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 		}

@@ -128,7 +128,7 @@ export default async function Page(props: Props) {
 										</p>
 									</CardContent>
 
-									<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/50 to-primary scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+									<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-primary/50 to-primary scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
 								</div>
 							</Card>
 						</Link>
