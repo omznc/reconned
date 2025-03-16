@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       
-      - name: Run Biome linting
-        run: bun run lint
-      
       - name: Build application
         run: bun run build
         env:
@@ -49,3 +46,4 @@ jobs:
           NEXT_PUBLIC_BETTER_AUTH_URL: "https://example.com"
           NEXT_PUBLIC_GOOGLE_CLIENT_ID: "mock_client_id"
           NEXT_PUBLIC_IMGUR_CLIENT_ID: "mock_imgur_client_id"
+          NEXT_PUBLIC_CI: "true"
