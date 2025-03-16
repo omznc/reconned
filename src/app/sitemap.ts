@@ -10,6 +10,11 @@ const defaultLocale = routing.defaultLocale;
 const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+	// In CI, return an empty sitemap
+	if (env.NEXT_PUBLIC_CI === "true") {
+		return [];
+	}
+
 	// Get all data concurrently
 	const [clubs, events, users] = await Promise.all([
 		// Get public clubs

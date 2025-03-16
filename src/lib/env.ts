@@ -27,6 +27,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_MAX_FILE_SIZE: z.string().optional(), // 5 MB
 		NEXT_PUBLIC_SOURCE_COMMIT: z.string().optional(),
 		NEXT_PUBLIC_IMGUR_CLIENT_ID: z.string().min(1),
+		NEXT_PUBLIC_CI: z.string().optional(),
 	},
 	experimental__runtimeEnv: {
 		NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
@@ -36,5 +37,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_MAX_FILE_SIZE: process.env.NEXT_PUBLIC_MAX_FILE_SIZE,
 		NEXT_PUBLIC_SOURCE_COMMIT: process.env.SOURCE_COMMIT,
 		NEXT_PUBLIC_IMGUR_CLIENT_ID: process.env.NEXT_PUBLIC_IMGUR_CLIENT_ID,
+		NEXT_PUBLIC_CI: process.env.NEXT_PUBLIC_CI,
 	},
 });
