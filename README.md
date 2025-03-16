@@ -41,7 +41,6 @@ bun dev
 ```
 
 ## Features
-
 - User authentication
 - Club management
 - Event management
@@ -49,7 +48,7 @@ bun dev
 - View statistics tracking
 - Responsive design
 - Type-safe server actions
-- Bosnian language interface
+- i18n support
 
 ## Development Guidelines
 
@@ -57,12 +56,17 @@ bun dev
 - Follow TypeScript best practices
 - Use React Server Components by default
 - Use client components only when necessary
-- Group related components in `_components` folders
+- Group related components in `_components` folders (see below)
 - Format code using Biome
-
-### Language
-- Write all user-facing strings in Bosnian
 
 ### Contributing
 - See [CONTRIBUTING.md](CONTRIBUTING.md)
 
+# License
+
+This software is available under two licenses:
+
+1. **Non-Commercial/Non-Profit Use**: [MIT License](LICENSE.md)
+2. **Commercial Use**: Please contact the author for commercial licensing options.
+
+The full terms of each license can be found in the corresponding LICENSE files.
