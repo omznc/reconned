@@ -8,6 +8,7 @@
 - No ESLint or Prettier - exclusively use Biome
 - Use shadcn/ui components with Tailwind CSS for UI components
 - Use TypeScript for type safety
+- Always use absolute imports
 
 ## State Management & Data Fetching
 - Use `next-safe-action` for type-safe server actions
@@ -44,5 +45,5 @@ can import them in actions as well.
 ## Language
 - Use bosnian for all code strings
 - Use English for comments, variables, declarations, paths, etc.
-- When I say 'translate', extrac tkeys from the files and add them to bs.json. If we're in an async component we have to use (await) import { getTranslations } from "next-intl/server", otherwise we use useTranslations.
+- When I say 'translate', extract keys from the files and add them to bs.json. If we're in an async component we have to use (await) import { getTranslations } from "next-intl/server", otherwise we use useTranslations.
 
