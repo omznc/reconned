@@ -2,7 +2,7 @@ import { env } from "@/lib/env";
 
 type SendEmailParams = {
 	to: string | string[];
-	subject: string;
+	subject: string | string;
 	html: string;
 	from?: string;
 };
