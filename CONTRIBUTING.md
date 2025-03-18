@@ -1,5 +1,14 @@
 # Contributing
 
+## How to run
+
+Use the latest version of bun, set the environment variables (example can be found in .env.example), and run the following command:
+
+```bash
+bun dev
+```
+This will start the development server on port 3000.
+
 ## Structure
 ### Components
 
