@@ -2,7 +2,7 @@
 
 # Airsoft Event Management System
 
-A Next.js 13+ application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
+A Next.js 15+ application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
 
 ## Tech Stack
 
