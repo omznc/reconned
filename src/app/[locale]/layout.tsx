@@ -15,7 +15,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import notFound from "@/app/not-found";
 
@@ -29,7 +29,7 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-async function LayoutContent({ children }: { children: ReactNode }) {
+async function LayoutContent({ children }: { children: ReactNode; }) {
 	const [messages, user] = await Promise.all([
 		getMessages(),
 		isAuthenticated(),
@@ -104,42 +104,17 @@ export default function RootLayout({
 	return <LayoutContent>{children}</LayoutContent>;
 }
 
-export const metadata: Metadata = {
-	title: "RECONNED - Airsoft klubovi, susreti, i igrači",
-	description:
-		"Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
-	metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
-		? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
-		: undefined,
-	keywords: [
-		"airsoft Bosna",
-		"airsoft BiH",
-		"airsoft oružje",
-		"airsoft replike",
-		"airsoft oprema",
-		"airsoft klubovi BiH",
-		"airsoft shop BiH",
-		"airsoft trgovina",
-		"airsoft puške",
-		"airsoft pištolji",
-		"airsoft metci",
-		"airsoft kuglice",
-		"airsoft maska",
-		"airsoft odjeća",
-		"airsoft uniforme",
-		"airsoft BiH forum",
-		"airsoft događaji BiH",
-		"airsoft pravila",
-		"airsoft taktike",
-		"airsoft igrači BiH",
-		"najbolji airsoft BiH",
-		"kupovina airsoft BiH",
-		"prodaja airsoft BiH",
-		"airsoft timovi BiH",
-		"airsoft lokacije BiH",
-		"airsoft teren BiH",
-	],
-};
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public.layout.metadata");
+	return {
+		title: t("title"),
+		description: t("description"),
+		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
+			? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
+			: undefined,
+		keywords: t("keywords").split(", "),
+	};
+}
 
 export function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));

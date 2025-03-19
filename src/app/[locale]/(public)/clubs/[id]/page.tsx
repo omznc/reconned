@@ -5,6 +5,7 @@ import { isAuthenticated } from "@/lib/auth";
 import type { Metadata } from "next";
 import { env } from "@/lib/env";
 import NotFoundTemporary from "@/app/not-found";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	params: Promise<{
@@ -18,13 +19,13 @@ export default async function Page(props: PageProps) {
 	const user = await isAuthenticated();
 	const isMemberOfClub = user
 		? await prisma.clubMembership.findFirst({
-				where: {
-					userId: user?.id,
-					club: {
-						OR: [{ id: params.id }, { slug: params.id }],
-					},
+			where: {
+				userId: user?.id,
+				club: {
+					OR: [{ id: params.id }, { slug: params.id }],
 				},
-			})
+			},
+		})
 		: false;
 
 	const club = await prisma.club.findFirst({
@@ -77,9 +78,9 @@ export default async function Page(props: PageProps) {
 	);
 }
 
-// TODO: Localize this
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
 	const params = await props.params;
+	const t = await getTranslations("public.clubs.metadata");
 
 	const club = await prisma.club.findFirst({
 		where: {
@@ -103,7 +104,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 	return {
 		title: `${club.name} - RECONNED`,
-		description: club.description?.slice(0, 160) ?? "Airsoft klub",
+		description: club.description?.slice(0, 160) ?? t("description"),
 		openGraph: {
 			images: [
 				{
