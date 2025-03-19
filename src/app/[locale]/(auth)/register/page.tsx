@@ -19,8 +19,13 @@ import { authClient } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -32,10 +37,94 @@ export default function RegisterPage() {
 		shallow: true,
 	});
 	const t = useTranslations("public.auth");
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const turnstileRef = useRef<TurnstileWidgetRef>(null);
+
+	// Register form schema with Zod
+	const registerSchema = z.object({
+		name: z.string().min(1, t("nameRequired")),
+		email: z.string().email(t("invalidEmail")),
+		password: z.string().min(8, t("passwordTooShort")),
+	});
+
+	type RegisterFormValues = z.infer<typeof registerSchema>;
+
+	// Initialize react-hook-form
+	const form = useForm<RegisterFormValues>({
+		resolver: zodResolver(registerSchema),
+		defaultValues: {
+			name: "",
+			email: email || "",
+			password: "",
+		},
+		mode: "onChange",
+	});
+
+	// Update form email value when email query param changes
+	useEffect(() => {
+		if (email) {
+			form.setValue("email", email);
+		}
+	}, [email, form]);
 
 	useEffect(() => {
 		authClient.oneTap();
 	}, []);
+
+	async function onSubmit(data: RegisterFormValues) {
+		if (!turnstileToken) {
+			toast.error(t("captchaError"));
+			console.error("Missing turnstile token on register submit");
+			return;
+		}
+
+		// Create headers with the token
+		const headers = new Headers();
+		headers.append("x-captcha-response", turnstileToken);
+
+		setIsLoading(true);
+
+
+		await authClient.signUp.email(
+			{
+				email: data.email,
+				password: data.password,
+				name: data.name,
+			},
+			{
+				onRequest: () => {
+					setIsLoading(true);
+				},
+				onResponse: () => {
+					setIsLoading(false);
+					// Reset Turnstile widget UI on response, don't clear token state
+					if (turnstileRef.current) {
+						turnstileRef.current.reset();
+					}
+				},
+				onSuccess: () => {
+					toast.success(t("registerSuccess"));
+					router.push("/login");
+					router.refresh();
+				},
+				onError: (ctx) => {
+					console.error("Register error:", ctx.error);
+					if (ctx.error.status === 403) {
+						toast.error(t("unverified"));
+					} else {
+						if (ctx.error.message === "Missing CAPTCHA response") {
+							toast.error(t("captchaError"));
+							router.refresh();
+						}
+						setIsError(true);
+					}
+				},
+				fetchOptions: {
+					headers: headers,
+				},
+			},
+		);
+	}
 
 	return (
 		<>
@@ -58,106 +147,105 @@ export default function RegisterPage() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form
-					onSubmit={async (e) => {
-						e.preventDefault();
-
-						const formData = new FormData(e.currentTarget);
-						const localEmail = formData.get("email") as string;
-						const password = formData.get("password") as string;
-						const name = formData.get("name") as string;
-
-						const success = await authClient.signUp.email(
-							{
-								email: email !== "" ? email : localEmail,
-								password,
-								name,
-							},
-							{
-								onRequest: () => {
-									setIsLoading(true);
-								},
-								onResponse: () => {
-									setIsLoading(false);
-								},
-								onError: (e) => {
-									setIsError(true);
-								},
-							},
-						);
-
-						if (success.error) {
-							return;
-						}
-
-						toast.success(t("registerSuccess"));
-
-						router.push("/login");
-					}}
-					className="grid gap-4"
-				>
-					<div className="grid gap-2">
-						<Label htmlFor="name">{t("name")}</Label>
-						<Input
-							type="text"
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+						<FormField
+							control={form.control}
 							name="name"
-							id="name"
-							placeholder={t("name")}
-							autoComplete="name"
-							required={true}
+							render={({ field }) => (
+								<FormItem>
+									<Label htmlFor="name">{t("name")}</Label>
+									<FormControl>
+										<Input
+											{...field}
+											id="name"
+											type="text"
+											placeholder={t("name")}
+											autoComplete="name"
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="email">Email</Label>
-						<Input
-							key={email}
-							type="email"
+
+						<FormField
+							control={form.control}
 							name="email"
-							id="email"
-							placeholder="Email"
-							disabled={!!email}
-							defaultValue={email ?? undefined}
-							autoComplete="email"
-							required={true}
+							render={({ field }) => (
+								<FormItem>
+									<Label htmlFor="email">Email</Label>
+									<FormControl>
+										<Input
+											{...field}
+											id="email"
+											type="email"
+											placeholder="Email"
+											disabled={!!email}
+											autoComplete="email"
+										/>
+									</FormControl>
+									{!!email && (
+										<p className="text-sm text-gray-500">
+											{t("emailAutofilled")}{" "}
+											<span
+												className="text-foreground cursor-pointer inline"
+												onClick={() => {
+													setEmail("");
+												}}
+											>
+												{t("remove")}
+											</span>
+										</p>
+									)}
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-						{!!email && (
-							<p className="text-sm text-gray-500">
-								{t("emailAutofilled")}{" "}
-								<span
-									className="text-foreground cursor-pointer inline"
-									onClick={() => {
-										setEmail("");
-									}}
-								>
-									{t("remove")}
-								</span>
-							</p>
-						)}
-					</div>
 
-					<div className="grid gap-2">
-						<Label htmlFor="password">{t("password")}</Label>
-						<Input
-							type="password"
+						<FormField
+							control={form.control}
 							name="password"
-							id="password"
-							placeholder={t("password")}
-							autoComplete="current-password"
-							required={true}
+							render={({ field }) => (
+								<FormItem>
+									<Label htmlFor="password">{t("password")}</Label>
+									<FormControl>
+										<Input
+											{...field}
+											id="password"
+											type="password"
+											placeholder={t("password")}
+											autoComplete="new-password"
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-					</div>
 
-					{isError && (
-						<p className="text-red-500 -mb-2">{t("invalidDataOrUserExists")}</p>
-					)}
-					<LoaderSubmitButton
-						isLoading={isLoading}
-						className="w-full plausible-event-name=register-button-click"
-					>
-						{t("register")}
-					</LoaderSubmitButton>
-					<GoogleLoginButton isLoading={isLoading} />
-				</form>
+						<TurnstileWidget
+							ref={turnstileRef}
+							onVerify={(token) => {
+								if (token && token.length > 0) {
+									setTurnstileToken(token);
+								}
+							}}
+						/>
+
+						{isError && (
+							<p className="text-red-500 -mb-2">{t("invalidDataOrUserExists")}</p>
+						)}
+
+						<LoaderSubmitButton
+							isLoading={isLoading}
+							className="w-full plausible-event-name=register-button-click"
+							disabled={!(turnstileToken && form.formState.isValid)}
+						>
+							{t("register")}
+						</LoaderSubmitButton>
+						<GoogleLoginButton isLoading={isLoading} />
+					</form>
+				</Form>
 				<div className="mt-4 text-center text-sm">
 					{t("haveAccountQuestion")}{" "}
 					<Link
