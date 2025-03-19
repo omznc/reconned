@@ -138,10 +138,28 @@
 			"rememberDevice": "Remember this device"
 		},
 		"clubs": {
-			"title": "Clubs"
+			"title": "Clubs",
+			"metadata": {
+				"description": "Airsoft club"
+			}
 		},
 		"users": {
-			"title": "Players"
+			"title": "Players",
+			"metadata": {
+				"description": "Airsoft player"
+			}
+		},
+		"events": {
+			"metadata": {
+				"description": "Airsoft event"
+			}
+		},
+		"layout": {
+			"metadata": {
+				"description": "The first universal platform for airsoft clubs, events, and players.",
+				"title": "RECONNED - Airsoft clubs, events, and players",
+				"keywords": "airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH"
+			}
 		}
 	},
 	"dashboard": {
