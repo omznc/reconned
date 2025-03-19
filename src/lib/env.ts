@@ -17,6 +17,7 @@ export const env = createEnv({
 		ONESIGNAL_APP_ID: z.string().min(1),
 		ONESIGNAL_API_KEY: z.string().min(1),
 		ADMIN_WEBHOOK_TOKEN: z.string().min(1),
+		TURNSTILE_SECRET_KEY: z.string().min(1),
 		// POLAR_ACCESS_TOKEN: z.string().min(1), This is a surprise tool that will help us later
 	},
 	client: {
@@ -28,6 +29,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_SOURCE_COMMIT: z.string().optional(),
 		NEXT_PUBLIC_IMGUR_CLIENT_ID: z.string().min(1),
 		NEXT_PUBLIC_CI: z.string().optional(),
+		NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1),
 	},
 	experimental__runtimeEnv: {
 		NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
@@ -38,5 +40,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_SOURCE_COMMIT: process.env.SOURCE_COMMIT,
 		NEXT_PUBLIC_IMGUR_CLIENT_ID: process.env.NEXT_PUBLIC_IMGUR_CLIENT_ID,
 		NEXT_PUBLIC_CI: process.env.NEXT_PUBLIC_CI,
+		NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 	},
 });

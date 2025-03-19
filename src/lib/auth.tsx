@@ -6,7 +6,7 @@ import { sendEmail } from "@/lib/mail";
 import { render } from "@react-email/components";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin, oneTap, twoFactor } from "better-auth/plugins";
+import { admin, captcha, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { getLocale } from "next-intl/server";
 import { emailHarmony } from "better-auth-harmony";
@@ -89,6 +89,12 @@ export const auth = betterAuth({
 		emailHarmony({
 			allowNormalizedSignin: true,
 		}),
+		captcha({
+			provider: "cloudflare-turnstile",
+			secretKey: env.TURNSTILE_SECRET_KEY,
+			endpoints: ["/sign-up", "/sign-in", "/forget-password"],
+		}),
+
 	],
 	user: {
 		additionalFields: {

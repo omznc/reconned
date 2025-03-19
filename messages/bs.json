@@ -135,7 +135,12 @@
       "twoFactorError": "Uneseni kod nije ispravan.",
       "code": "Kod",
       "verify": "Potvrdi",
-      "rememberDevice": "Zapamti ovaj uređaj"
+      "rememberDevice": "Zapamti ovaj uređaj",
+      "captchaError": "Problem pri Captcha provjeri",
+      "invalidEmail": "Nevažeći email",
+      "passwordRequired": "Vaša lozinka je obavezna",
+      "passwordTooShort": "Ta lozinka je prekratka",
+      "nameRequired": "Vaše ime je obavezno"
     },
     "clubs": {
       "title": "Klubovi",

@@ -14,13 +14,18 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useQueryState } from "nuqs";
 import { Key } from "lucide-react";
 import type { SuccessContext } from "better-auth/react";
 import { BadgeSoon } from "@/components/badge-soon";
 import { useTranslations } from "next-intl";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -28,9 +33,29 @@ export default function LoginPage() {
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
 	const t = useTranslations("public.auth");
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
+
+	// Login form schema with Zod
+	const loginSchema = z.object({
+		email: z.string().email(t("invalidEmail")),
+		password: z.string().min(1, t("passwordRequired")),
+	});
+
+	type LoginFormValues = z.infer<typeof loginSchema>;
+
+	// Initialize react-hook-form
+	const form = useForm<LoginFormValues>({
+		resolver: zodResolver(loginSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+		mode: "onChange",
+	});
 
 	useEffect(() => {
 		if (message) {
@@ -63,6 +88,56 @@ export default function LoginPage() {
 		router.refresh();
 	}
 
+	async function onSubmit(data: LoginFormValues) {
+		if (!turnstileToken) {
+			toast.error(t("captchaError"));
+			return;
+		}
+
+
+		const headers = new Headers();
+		headers.append("x-captcha-response", turnstileToken);
+
+		await authClient.signIn.email(
+			{
+				email: data.email,
+				password: data.password,
+			},
+			{
+				onRequest: () => {
+					setIsLoading(true);
+				},
+				onResponse: () => {
+					setIsLoading(false);
+					// Only reset widget UI, don't clear token state on errors
+					if (turnstileRef.current) {
+						turnstileRef.current.reset();
+					}
+				},
+				onSuccess: handleSuccessfulLogin,
+				onError: (ctx) => {
+					if (ctx.error.status === 403) {
+						toast.error(t("unverified"));
+					} else {
+						if (ctx.error.message === "Missing CAPTCHA response") {
+							toast.error(t("captchaError"));
+							router.refresh();
+						}
+						setIsError(true);
+					}
+				},
+				fetchOptions: {
+					headers: headers,
+				},
+			},
+		);
+	}
+
+	// Debug the token state to see when it changes
+	useEffect(() => {
+		console.log("Turnstile token state changed:", turnstileToken ? "token set" : "no token");
+	}, [turnstileToken]);
+
 	return (
 		<>
 			<CardHeader>
@@ -70,136 +145,135 @@ export default function LoginPage() {
 				<CardDescription>{t("loginDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form
-					onSubmit={async (e) => {
-						e.preventDefault();
-
-						const formData = new FormData(e.currentTarget);
-
-						const email = formData.get("email") as string;
-						const password = formData.get("password") as string;
-
-						await authClient.signIn.email(
-							{
-								email,
-								password,
-							},
-							{
-								onRequest: () => {
-									setIsLoading(true);
-								},
-								onResponse: () => {
-									setIsLoading(false);
-								},
-								onSuccess: handleSuccessfulLogin,
-								onError: (ctx) => {
-									if (ctx.error.status === 403) {
-										toast.error(t("unverified"));
-									} else {
-										setIsError(true);
-									}
-								},
-							},
-						);
-					}}
-					className="grid gap-4"
-				>
-					<div className="grid gap-2">
-						<Label htmlFor="email">Email</Label>
-						<Input
-							id="email"
-							type="email"
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+						<FormField
+							control={form.control}
 							name="email"
-							placeholder="mail@example.com"
-							autoComplete="email webauthn"
-							suppressHydrationWarning
-							required={true}
+							render={({ field }) => (
+								<FormItem>
+									<Label htmlFor="email">Email</Label>
+									<FormControl>
+										<Input
+											{...field}
+											id="email"
+											type="email"
+											placeholder="mail@example.com"
+											autoComplete="email webauthn"
+											suppressHydrationWarning
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
-					</div>
-					<div className="grid gap-2">
-						<div className="flex items-center">
-							<Label htmlFor="password">{t("password")}</Label>
+
+						<FormField
+							control={form.control}
+							name="password"
+							render={({ field }) => (
+								<FormItem>
+									<div className="flex items-center">
+										<Label htmlFor="password">{t("password")}</Label>
+										<Button
+											type="button"
+											onClick={async () => {
+												if (isForgotPasswordLoading) {
+													return;
+												}
+												setIsForgotPasswordLoading(true);
+												const email = form.getValues("email");
+												if (!email) {
+													toast.error(t("forgotPasswordNoEmail"));
+													setIsForgotPasswordLoading(false);
+													return;
+												}
+
+												if (!form.formState.dirtyFields.email || form.getFieldState("email").invalid) {
+													toast.error(t("forgotPasswordWrongEmail"));
+													setIsForgotPasswordLoading(false);
+													return;
+												}
+
+												await authClient.forgetPassword({
+													email,
+													redirectTo: "/reset-password",
+												});
+												toast.success(t("forgotPasswordSuccess"));
+												setIsForgotPasswordLoading(false);
+											}}
+											variant="ghost"
+											className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
+											disabled={isLoading || isForgotPasswordLoading}
+										>
+											{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
+										</Button>
+									</div>
+									<FormControl>
+										<Input
+											{...field}
+											id="password"
+											type="password"
+											autoComplete="current-password webauthn"
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
+
+						<TurnstileWidget
+							ref={turnstileRef}
+							onVerify={(token) => {
+								if (token && token.length > 0) {
+									setTurnstileToken(token);
+								}
+							}}
+						/>
+
+						<LoaderSubmitButton
+							isLoading={isLoading}
+							disabled={isForgotPasswordLoading || !turnstileToken || !form.formState.isValid}
+							className="w-full plausible-event-name=login-button-click"
+						>
+							{t("login")}
+						</LoaderSubmitButton>
+
+						<div className="flex items-center gap-2">
 							<Button
+								variant="outline"
+								className="w-full"
+								disabled={isLoading || true}
 								type="button"
 								onClick={async () => {
-									if (isForgotPasswordLoading) {
-										return;
-									}
-									setIsForgotPasswordLoading(true);
-									const emailInput = document.getElementById(
-										"email",
-									) as HTMLInputElement;
-									if (!emailInput?.value) {
-										toast.error(t("forgotPasswordNoEmail"));
-										setIsForgotPasswordLoading(false);
-										return;
-									}
-									if (!emailInput?.checkValidity()) {
-										toast.error(t("forgotPasswordWrongEmail"));
-										setIsForgotPasswordLoading(false);
-										return;
-									}
-
-									await authClient.forgetPassword({
-										email: emailInput.value,
-										redirectTo: "/reset-password",
-									});
-									toast.success(t("forgotPasswordSuccess"));
-									setIsForgotPasswordLoading(false);
+									await authClient.signIn.passkey(
+										{},
+										{
+											onRequest: () => {
+												setIsLoading(true);
+											},
+											onResponse: () => {
+												setIsLoading(false);
+											},
+											onSuccess: handleSuccessfulLogin,
+											onError: () => {
+												setIsError(true);
+											},
+										},
+									);
 								}}
-								variant="ghost"
-								className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
-								disabled={isLoading || isForgotPasswordLoading}
 							>
-								{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
+								<Key className="w-4 h-4 inline-block" /> Passkey
+								<BadgeSoon />
 							</Button>
+							<GoogleLoginButton
+								turnstileToken={turnstileToken}
+								isLoading={isLoading} redirectTo={redirectTo} />
 						</div>
-						<Input
-							autoComplete="current-password webauthn"
-							id="password"
-							type="password"
-							name="password"
-							required={true}
-						/>
-					</div>
-					{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
-					<LoaderSubmitButton
-						isLoading={isLoading}
-						disabled={isForgotPasswordLoading}
-						className="w-full plausible-event-name=login-button-click"
-					>
-						{t("login")}
-					</LoaderSubmitButton>
-					<div className="flex items-center gap-2">
-						<Button
-							variant="outline"
-							className="w-full"
-							disabled={isLoading || true}
-							type="button"
-							onClick={async () => {
-								await authClient.signIn.passkey(
-									{},
-									{
-										onRequest: () => {
-											setIsLoading(true);
-										},
-										onResponse: () => {
-											setIsLoading(false);
-										},
-										onSuccess: handleSuccessfulLogin,
-										onError: () => {
-											setIsError(true);
-										},
-									},
-								);
-							}}
-						>
-							<Key className="w-4 h-4 inline-block" /> Passkey
-							<BadgeSoon />
-						</Button>
-						<GoogleLoginButton isLoading={isLoading} redirectTo={redirectTo} />
-					</div>
-				</form>
+					</form>
+				</Form>
 				<div className="mt-4 text-center text-sm">
 					{t("noAccountQuestion")}{" "}
 					<Link
