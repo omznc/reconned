@@ -156,6 +156,10 @@ export function GenericDataTable<T>({
 		defaultValue: "1",
 		shallow: false,
 	});
+	const [perPage, setPerPage] = useQueryState("perPage", {
+		defaultValue: "25",
+		shallow: false,
+	});
 	const [sortBy, setSortBy] = useQueryState("sortBy", { shallow: false });
 	const [sortOrder, setSortOrder] = useQueryState("sortOrder", {
 		shallow: false,
@@ -249,12 +253,21 @@ export function GenericDataTable<T>({
 		}
 	};
 
+	const handlePerPageChange = async (value: string) => {
+		setIsLoading(true);
+		await setPerPage(value);
+		// Reset to page 1 when changing items per page
+		await setPage("1");
+		setIsLoading(false);
+	};
+
 	const resetAll = async () => {
 		setIsLoading(true);
 		await setSearch(null);
 		await setSortBy(null);
 		await setSortOrder(null);
 		await setPage("1");
+		await setPerPage("25");
 		await setHiddenColumns(null);
 		setFilterValues({});
 		setInputValue("");
@@ -446,22 +459,42 @@ export function GenericDataTable<T>({
 				)}
 			</div>
 
-			{/* Pagination */}
-			<div className="flex items-center justify-end space-x-2">
-				<Button
-					variant="outline"
-					onClick={() => setPage((prev) => String(Number(prev) - 1))}
-					disabled={page === "1"}
-				>
-					{t("navigation.previous")}
-				</Button>
-				<Button
-					variant="outline"
-					onClick={() => setPage((prev) => String(Number(prev) + 1))}
-					disabled={Number(page) >= totalPages}
-				>
-					{t("navigation.next")}
-				</Button>
+			{/* Pagination with Per Page Selector */}
+			<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+				<div className="flex gap-2 w-full sm:w-auto items-center justify-start">
+					<Select value={perPage} onValueChange={handlePerPageChange}>
+						<SelectTrigger className="w-[70px]">
+							<SelectValue placeholder={perPage} />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="25">25</SelectItem>
+							<SelectItem value="50">50</SelectItem>
+							<SelectItem value="100">100</SelectItem>
+						</SelectContent>
+					</Select>
+					<span className="text-sm text-muted-foreground">
+						{t("navigation.perPage")}
+					</span>
+				</div>
+
+				<div className="flex items-center justify-center w-full sm:w-auto gap-2">
+					<Button
+						variant="outline"
+						onClick={() => setPage((prev) => String(Number(prev) - 1))}
+						disabled={page === "1"}
+						className="flex-1 sm:flex-none"
+					>
+						{t("navigation.previous")}
+					</Button>
+					<Button
+						variant="outline"
+						onClick={() => setPage((prev) => String(Number(prev) + 1))}
+						disabled={Number(page) >= totalPages}
+						className="flex-1 sm:flex-none"
+					>
+						{t("navigation.next")}
+					</Button>
+				</div>
 			</div>
 		</div>
 	);

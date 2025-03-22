@@ -40,6 +40,7 @@ jobs:
           ONESIGNAL_APP_ID: "mock_onesignal_app_id"
           ONESIGNAL_API_KEY: "mock_onesignal_api_key"
           ADMIN_WEBHOOK_TOKEN: "mock_admin_webhook_token"
+          TURNSTILE_SECRET_KEY=: "mock_turnstile_secret_key"
           
           # Client variables
           NEXT_PUBLIC_CDN_URL: "https://example.com"
@@ -47,3 +48,4 @@ jobs:
           NEXT_PUBLIC_GOOGLE_CLIENT_ID: "mock_client_id"
           NEXT_PUBLIC_IMGUR_CLIENT_ID: "mock_imgur_client_id"
           NEXT_PUBLIC_CI: "true"
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: "mock_turnstile_site_key"

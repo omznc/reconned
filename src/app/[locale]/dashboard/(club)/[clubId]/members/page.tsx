@@ -11,14 +11,19 @@ interface PageProps {
 		sortBy?: string;
 		sortOrder?: "asc" | "desc";
 		page?: string;
+		perPage?: string;
 	}>;
 }
 
 export default async function MembersPage(props: PageProps) {
 	const { clubId } = await props.params;
-	const { search, role, sortBy, sortOrder, page } = await props.searchParams;
+	const { search, role, sortBy, sortOrder, page, perPage } =
+		await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize = 10;
+	const pageSize =
+		perPage === "25" || perPage === "50" || perPage === "100"
+			? Number(perPage)
+			: 25;
 	const t = await getTranslations("dashboard.club.members");
 
 	const where = {

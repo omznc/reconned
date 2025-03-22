@@ -22,24 +22,24 @@ export default async function Page(props: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-			OR: [
-				{
-					isPrivate: false,
-				},
-				{
-					club: {
-						members: {
-							some: {
-								userId: user?.id,
+				OR: [
+					{
+						isPrivate: false,
+					},
+					{
+						club: {
+							members: {
+								some: {
+									userId: user?.id,
+								},
 							},
 						},
 					},
-				},
-			],
-		}
+				],
+			}
 		: {
-			isPrivate: false,
-		};
+				isPrivate: false,
+			};
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -73,7 +73,6 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 	const params = await props.params;
 	const user = await isAuthenticated();
 	const t = await getTranslations("public.events.metadata");
-
 
 	const event = await prisma.event.findFirst({
 		where: {

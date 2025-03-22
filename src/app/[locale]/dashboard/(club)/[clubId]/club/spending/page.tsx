@@ -12,6 +12,7 @@ interface PageProps {
 		sortBy?: string;
 		sortOrder?: "asc" | "desc";
 		page?: string;
+		perPage?: string;
 	}>;
 }
 
@@ -20,10 +21,13 @@ export default async function SpendingPage(props: PageProps) {
 		return <ErrorPage title="Ova funkcionalnost nije dostupna" />;
 	}
 	const { clubId } = await props.params;
-	const { search, sortBy, sortOrder, page } = await props.searchParams;
+	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize = 10;
+	const pageSize =
+		perPage === "25" || perPage === "50" || perPage === "100"
+			? Number(perPage)
+			: 25;
 
 	const where = {
 		clubId,

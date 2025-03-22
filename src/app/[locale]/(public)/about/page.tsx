@@ -13,7 +13,26 @@ export default async function Home() {
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
 							{t("title")}
 						</h1>
-						<p className="text-xl text-text/80 mb-8">{t("subtitle")}</p>
+						<p className="text-xl text-text/80 mb-8">
+							{t.rich("subtitle", {
+								omar: () => (
+									<Link
+										className="text-red-500 hover:text-red-400 transition-colors"
+										href="https://omarzunic.com?utm_source=reconned&utm_medium=about-page"
+									>
+										Omar Zunić
+									</Link>
+								),
+								safet: () => (
+									<Link
+										className="text-red-500 hover:text-red-400 transition-colors"
+										href="https://safetpojskic.com?utm_source=reconned&utm_medium=about-page"
+									>
+										Safet Pojskić
+									</Link>
+								),
+							})}
+						</p>
 					</div>
 				</div>
 			</div>

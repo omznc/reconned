@@ -28,13 +28,10 @@ export const auth = betterAuth({
 	trustedOrigins: [
 		"http://localhost:3000",
 		"https://localhost:3000",
-		"https://airsoft-bih.vercel.app",
-		"https://airsoft-bih.vercel.app/api/auth",
 		"https://reconned.com",
 		"https://reconned.com/api/auth",
 		"https://beta.reconned.com",
 		"https://beta.reconned.com/api/auth",
-		"http://127-0-0-1.sslip.io",
 	],
 	emailAndPassword: {
 		enabled: true,
@@ -94,7 +91,6 @@ export const auth = betterAuth({
 			secretKey: env.TURNSTILE_SECRET_KEY,
 			endpoints: ["/sign-up", "/sign-in", "/forget-password"],
 		}),
-
 	],
 	user: {
 		additionalFields: {

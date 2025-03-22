@@ -21,11 +21,20 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import {
+	TurnstileWidget,
+	type TurnstileWidgetRef,
+} from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from "@/components/ui/form";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -83,7 +92,6 @@ export default function RegisterPage() {
 		headers.append("x-captcha-response", turnstileToken);
 
 		setIsLoading(true);
-
 
 		await authClient.signUp.email(
 			{
@@ -233,7 +241,9 @@ export default function RegisterPage() {
 						/>
 
 						{isError && (
-							<p className="text-red-500 -mb-2">{t("invalidDataOrUserExists")}</p>
+							<p className="text-red-500 -mb-2">
+								{t("invalidDataOrUserExists")}
+							</p>
 						)}
 
 						<LoaderSubmitButton

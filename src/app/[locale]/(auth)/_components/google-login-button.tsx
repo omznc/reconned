@@ -5,7 +5,7 @@ import { authClient } from "@/lib/auth-client";
 export function GoogleLoginButton({
 	isLoading,
 	redirectTo,
-	turnstileToken
+	turnstileToken,
 }: {
 	isLoading: boolean;
 	redirectTo?: string | null;
@@ -25,8 +25,8 @@ export function GoogleLoginButton({
 						fetchOptions: {
 							headers: {
 								"x-captcha-response": turnstileToken || "",
-							}
-						}
+							},
+						},
 					},
 					{},
 				);

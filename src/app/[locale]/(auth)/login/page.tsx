@@ -21,11 +21,20 @@ import { Key } from "lucide-react";
 import type { SuccessContext } from "better-auth/react";
 import { BadgeSoon } from "@/components/badge-soon";
 import { useTranslations } from "next-intl";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import {
+	TurnstileWidget,
+	type TurnstileWidgetRef,
+} from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +103,6 @@ export default function LoginPage() {
 			return;
 		}
 
-
 		const headers = new Headers();
 		headers.append("x-captcha-response", turnstileToken);
 
@@ -135,7 +143,10 @@ export default function LoginPage() {
 
 	// Debug the token state to see when it changes
 	useEffect(() => {
-		console.log("Turnstile token state changed:", turnstileToken ? "token set" : "no token");
+		console.log(
+			"Turnstile token state changed:",
+			turnstileToken ? "token set" : "no token",
+		);
 	}, [turnstileToken]);
 
 	return (
@@ -189,7 +200,10 @@ export default function LoginPage() {
 													return;
 												}
 
-												if (!form.formState.dirtyFields.email || form.getFieldState("email").invalid) {
+												if (
+													!form.formState.dirtyFields.email ||
+													form.getFieldState("email").invalid
+												) {
 													toast.error(t("forgotPasswordWrongEmail"));
 													setIsForgotPasswordLoading(false);
 													return;
@@ -206,7 +220,9 @@ export default function LoginPage() {
 											className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 											disabled={isLoading || isForgotPasswordLoading}
 										>
-											{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
+											{isForgotPasswordLoading
+												? t("loading")
+												: t("forgotPassword")}
 										</Button>
 									</div>
 									<FormControl>
@@ -222,7 +238,9 @@ export default function LoginPage() {
 							)}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
+						{isError && (
+							<p className="text-red-500 -mb-2">{t("invalidData")}</p>
+						)}
 
 						<TurnstileWidget
 							ref={turnstileRef}
@@ -235,7 +253,11 @@ export default function LoginPage() {
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							disabled={isForgotPasswordLoading || !turnstileToken || !form.formState.isValid}
+							disabled={
+								isForgotPasswordLoading ||
+								!turnstileToken ||
+								!form.formState.isValid
+							}
 							className="w-full plausible-event-name=login-button-click"
 						>
 							{t("login")}
@@ -270,7 +292,9 @@ export default function LoginPage() {
 							</Button>
 							<GoogleLoginButton
 								turnstileToken={turnstileToken}
-								isLoading={isLoading} redirectTo={redirectTo} />
+								isLoading={isLoading}
+								redirectTo={redirectTo}
+							/>
 						</div>
 					</form>
 				</Form>
