@@ -15,7 +15,6 @@ export default async function RootLayout({
 	const user = await isAuthenticated();
 	const t = await getTranslations("components.sidebar");
 
-	// TODO: We'll do beta only now, but otherwise we'll keep this only on the beta subdomain.
 	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta");
 
 	return (
