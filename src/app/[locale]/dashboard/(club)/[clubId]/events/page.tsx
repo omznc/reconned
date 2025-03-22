@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -14,14 +15,20 @@ interface PageProps {
 		sortBy?: string;
 		sortOrder?: "asc" | "desc";
 		page?: string;
+		perPage?: string;
 	}>;
 }
 
 export default async function Page(props: PageProps) {
 	const { clubId } = await props.params;
-	const { search, sortBy, sortOrder, page } = await props.searchParams;
+	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize = 10;
+	const pageSize =
+		perPage === "25" || perPage === "50" || perPage === "100"
+			? Number(perPage)
+			: 25;
+
+	const t = await getTranslations("dashboard.club.events");
 
 	const user = await isAuthenticated();
 	if (!user) {
@@ -73,11 +80,11 @@ export default async function Page(props: PageProps) {
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">Svi susreti</h3>
+				<h3 className="text-lg font-semibold">{t("allEvents")}</h3>
 				<Button asChild>
 					<Link href={`/dashboard/${clubId}/events/create`}>
 						<PlusCircle className="size-4 mr-2" />
-						Novi susret
+						{t("createEvent")}
 					</Link>
 				</Button>
 			</div>

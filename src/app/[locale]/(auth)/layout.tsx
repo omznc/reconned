@@ -7,8 +7,8 @@ import { House } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import type { ReactNode } from "react";
-import background from './background-blur.webp';
-import backgroundLight from './background-blur-light.webp';
+import background from "./background-blur.webp";
+import backgroundLight from "./background-blur-light.webp";
 import Image from "next/image";
 
 const variants = {

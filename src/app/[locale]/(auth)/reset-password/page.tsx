@@ -15,11 +15,20 @@ import { useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import {
+	TurnstileWidget,
+	type TurnstileWidgetRef,
+} from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [token, _] = useQueryState("token");
@@ -32,13 +41,15 @@ export default function LoginPage() {
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
 	// Reset password form schema with Zod
-	const resetPasswordSchema = z.object({
-		password: z.string().min(6, t("passwordTooShort")),
-		confirmPassword: z.string(),
-	}).refine((data) => data.password === data.confirmPassword, {
-		message: "Šifre se ne podudaraju.",
-		path: ["confirmPassword"],
-	});
+	const resetPasswordSchema = z
+		.object({
+			password: z.string().min(6, t("passwordTooShort")),
+			confirmPassword: z.string(),
+		})
+		.refine((data) => data.password === data.confirmPassword, {
+			message: "Šifre se ne podudaraju.",
+			path: ["confirmPassword"],
+		});
 
 	type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
@@ -117,11 +128,7 @@ export default function LoginPage() {
 								<FormItem>
 									<Label htmlFor="password">{t("password")}</Label>
 									<FormControl>
-										<Input
-											{...field}
-											id="password"
-											type="password"
-										/>
+										<Input {...field} id="password" type="password" />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -133,20 +140,20 @@ export default function LoginPage() {
 							name="confirmPassword"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
+									<Label htmlFor="confirmPassword">
+										{t("confirmPassword")}
+									</Label>
 									<FormControl>
-										<Input
-											{...field}
-											id="confirmPassword"
-											type="password"
-										/>
+										<Input {...field} id="confirmPassword" type="password" />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
+						{isError && (
+							<p className="text-red-500 -mb-2">{t("invalidData")}</p>
+						)}
 
 						<TurnstileWidget
 							ref={turnstileRef}

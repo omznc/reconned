@@ -37,13 +37,19 @@ export function LanguageSwitcher() {
 				{VALID_LOCALES.map((localeOption) => (
 					<DropdownMenuItem
 						key={localeOption}
-						onClick={() => router.replace(path, { locale: localeOption })}
+						onClick={() =>
+							localeOption !== locale
+								? router.replace(path, { locale: localeOption })
+								: null
+						}
 						className={locale === localeOption ? "bg-accent" : ""}
 					>
 						<div className="flex items-center gap-2">
 							<span>{LANGUAGE_TRANSLATIONS[localeOption]}</span>
 							{localeOption === "en" && (
-								<span className="text-xs text-muted-foreground">In progress</span>
+								<span className="text-xs text-muted-foreground">
+									In progress
+								</span>
 							)}
 						</div>
 					</DropdownMenuItem>

@@ -91,4 +91,6 @@ model ClubInvite {
   @@index([email])
   @@index([status])
   @@index([inviteCode])
+  @@index([clubId])
+  @@index([userId])
 }

@@ -405,7 +405,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					</HoverCard>
 				)}
 
-				<div>
+				<div className="mt-8">
 					<h3 className="text-lg font-semibold">{t("contact")}</h3>
 				</div>
 

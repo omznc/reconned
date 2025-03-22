@@ -42,7 +42,12 @@ export default async function Page(props: PageProps) {
 	}
 
 	const page = Math.max(1, Number(searchParams.page ?? 1));
-	const pageSize = 10;
+	const pageSize =
+		searchParams.perPage === "25" ||
+		searchParams.perPage === "50" ||
+		searchParams.perPage === "100"
+			? Number(searchParams.perPage)
+			: 25;
 
 	const where: Prisma.ClubInviteWhereInput = {
 		clubId: params.clubId,

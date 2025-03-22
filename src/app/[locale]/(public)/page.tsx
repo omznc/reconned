@@ -285,10 +285,7 @@ export default async function Home({ searchParams }: PageProps) {
 											</div>
 										)}
 										<div className="flex flex-wrap gap-2 my-4">
-											<Badge
-												variant="outline"
-												className="grow justify-center"
-											>
+											<Badge variant="outline" className="grow justify-center">
 												{event.allowFreelancers
 													? t("eventCard.canFreelance")
 													: t("eventCard.cannotFreelance")}

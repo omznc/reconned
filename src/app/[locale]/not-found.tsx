@@ -10,12 +10,8 @@ export default async function NotFound() {
 			<body>
 				<main className="flex fade-in-up flex-col items-center justify-between p-24">
 					<Frown className="size-24 mb-4" />
-					<h1 className="text-4xl font-bold mb-4 text-center">
-						{t("title")}
-					</h1>
-					<p className="text-lg mb-8 text-center">{
-						t('message')
-					}</p>
+					<h1 className="text-4xl font-bold mb-4 text-center">{t("title")}</h1>
+					<p className="text-lg mb-8 text-center">{t("message")}</p>
 					<Button asChild={true}>
 						<Link
 							href="/"

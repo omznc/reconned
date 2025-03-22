@@ -12,10 +12,10 @@ export const validateSlug = safeActionClient
 			slug: z.string().min(1),
 		}),
 	)
-	.action(async ({ parsedInput, ctx }) => {
+	.action(async ({ parsedInput }) => {
 		const user = await isAuthenticated();
 		if (!user) {
-			throw new Error("Unauthorized");
+			return false;
 		}
 
 		const { type, slug } = parsedInput;

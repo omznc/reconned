@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import {
 	SiDiscord,
 	SiFacebook,
+	SiGithub,
 	SiInstagram,
 } from "@icons-pack/react-simple-icons";
 // Removed QuickLinkIcon import and added required lucide icons.
@@ -26,30 +27,20 @@ export function Footer() {
 				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 					<div>
 						<h3 className="font-bold mb-4">{t("about.title")}</h3>
-						<p className="text-sm ">
-							{t.rich("about.description", {
-								omar: () => (
-									<Link
-										className="text-red-500 hover:text-red-400 transition-colors"
-										href="https://omarzunic.com?utm_source=reconned&utm_medium=footer"
-									>
-										Omar Zunić
-									</Link>
-								),
-								safet: () => (
-									<Link
-										className="text-red-500 hover:text-red-400 transition-colors"
-										href="https://safetpojskic.com?utm_source=reconned&utm_medium=footer"
-									>
-										Safet Pojskić
-									</Link>
-								),
-							})}
-						</p>
+						<p className="text-sm ">{t("about.description")}</p>
 					</div>
 					<div>
 						<h3 className="font-bold mb-4">{t("quickLinks.title")}</h3>
 						<ul className="space-y-2 text-sm">
+							<li>
+								<Link
+									href="/about"
+									className="flex items-center hover:text-red-500 transition-all"
+								>
+									<ShieldQuestion className="w-5 h-5 mr-2" />
+									{t("quickLinks.about")} 👀
+								</Link>
+							</li>
 							<li>
 								<Link
 									href="/events"
@@ -88,15 +79,6 @@ export function Footer() {
 							</li>
 							<li>
 								<Link
-									href="/about"
-									className="flex items-center hover:text-red-500 transition-all"
-								>
-									<ShieldQuestion className="w-5 h-5 mr-2" />
-									{t("quickLinks.about")}
-								</Link>
-							</li>
-							<li>
-								<Link
 									href="/stats"
 									target="_blank"
 									className="flex items-center hover:text-red-500 transition-all"
@@ -120,11 +102,19 @@ export function Footer() {
 							</Link>
 							<Link
 								target="_blank"
-								href="https://instagram.com/reconnedairsoft"
+								href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
 								className="hover:text-red-500 transition-all flex items-center gap-2"
 							>
 								<SiInstagram className="size-4" />
 								<span>Instagram</span>
+							</Link>
+							<Link
+								target="_blank"
+								href="https://github.com/omznc/reconned?utm_source=reconned.com"
+								className="hover:text-red-500 transition-all flex items-center gap-2"
+							>
+								<SiGithub className="size-4" />
+								<span>Github</span>
 							</Link>
 							<Link
 								href="#"
