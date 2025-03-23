@@ -9,6 +9,7 @@ export class ImgurError extends Error {
 	}
 }
 
+// TODO: Replace this in favour of a self-hosted storage
 export async function uploadToImgur(file: File): Promise<string> {
 	const formData = new FormData();
 	formData.append("image", file);
@@ -26,11 +27,11 @@ export async function uploadToImgur(file: File): Promise<string> {
 	if (!response.ok) {
 		if (data.status) {
 			throw new ImgurError("imgur.error.overCapacity", 403);
-		} else if (data.status === 429) {
-			throw new ImgurError("imgur.error.rateLimit", 429);
-		} else {
-			throw new ImgurError("imgur.error.generic", response.status);
 		}
+		if (data.status === 429) {
+			throw new ImgurError("imgur.error.rateLimit", 429);
+		}
+		throw new ImgurError("imgur.error.generic", response.status);
 	}
 
 	return data.data.link;

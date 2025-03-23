@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { ArrowUpDown, Search, X } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
@@ -31,13 +32,13 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 // Dot notation path type
 type DotNotation<T extends object> = {
 	[K in keyof T & (string | number)]: T[K] extends object
-		? `${K}` | `${K}.${DotNotation<T[K]>}`
-		: `${K}`;
+	? `${K}` | `${K}.${DotNotation<T[K]>}`
+	: `${K}`;
 }[keyof T & (string | number)];
 
 // Column key type that supports both dot notation and arbitrary strings
@@ -60,7 +61,7 @@ interface CellConfig<T> {
 interface Filter {
 	key: string;
 	label: string;
-	options: { label: string; value: string }[];
+	options: { label: string; value: string; }[];
 }
 
 interface GenericTableProps<T> {
@@ -101,6 +102,7 @@ const renderCell = <T extends Record<string, any>>(
 	item: T,
 	column: Column<T>,
 	tableConfig?: GenericTableProps<T>["tableConfig"],
+	currentLocale?: string,
 ) => {
 	const config = column.cellConfig;
 
@@ -122,8 +124,9 @@ const renderCell = <T extends Record<string, any>>(
 		value instanceof Date ||
 		(typeof value === "string" && Date.parse(value))
 	) {
+		const dateLocale = currentLocale === "bs" ? bs : enUS;
 		return format(new Date(value), tableConfig?.dateFormat || "PPP", {
-			locale: tableConfig?.locale === "bs" ? bs : undefined,
+			locale: dateLocale,
 		});
 	}
 
@@ -151,6 +154,7 @@ export function GenericDataTable<T>({
 	tableConfig,
 }: GenericTableProps<T>) {
 	const t = useTranslations("components.table");
+	const locale = useLocale();
 	const [search, setSearch] = useQueryState("search", { shallow: false });
 	const [page, setPage] = useQueryState("page", {
 		defaultValue: "1",
@@ -419,7 +423,7 @@ export function GenericDataTable<T>({
 										.map((column) => (
 											<TableCell key={String(column.key)}>
 												{/* @ts-expect-error */}
-												{renderCell(item, column, tableConfig)}
+												{renderCell(item, column, tableConfig, locale)}
 											</TableCell>
 										))}
 								</TableRow>
@@ -450,7 +454,7 @@ export function GenericDataTable<T>({
 										</span>
 										<span className="font-medium">
 											{/* @ts-expect-error I know, I know */}
-											{renderCell(item, column, tableConfig)}
+											{renderCell(item, column, tableConfig, locale)}
 										</span>
 									</div>
 								))}

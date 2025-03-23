@@ -40,9 +40,6 @@ export default async function Page(props: PageProps) {
 	}
 	return (
 		<>
-			<div>
-				<h3 className="text-lg font-semibold">Klub</h3>
-			</div>
 			<ClubOverview
 				club={club}
 				isManager={user.managedClubs.includes(club.id)}

@@ -82,10 +82,6 @@ export function InvitationsTable({
 			data={invites}
 			totalPages={totalPages}
 			searchPlaceholder={t("searchPlaceholder")}
-			tableConfig={{
-				dateFormat: "d. MMMM yyyy.",
-				locale: "bs",
-			}}
 			columns={[
 				{
 					key: "email",

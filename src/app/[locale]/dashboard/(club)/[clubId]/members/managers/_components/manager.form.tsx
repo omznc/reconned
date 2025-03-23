@@ -34,6 +34,7 @@ import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { promoteToManager } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.action";
 import { promoteToManagerSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
+import { useTranslations } from "next-intl";
 
 type Member = {
 	id: string;
@@ -56,11 +57,13 @@ async function searchMembers(clubId: string, query: string) {
 }
 
 export function AddManagerForm() {
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const [members, setMembers] = useState<Member[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const t = useTranslations('dashboard.club.members.managers');
+
 
 	const form = useForm<z.infer<typeof promoteToManagerSchema>>({
 		resolver: zodResolver(promoteToManagerSchema),
@@ -78,7 +81,7 @@ export function AddManagerForm() {
 					const results = await searchMembers(params.clubId, value);
 					setMembers(results);
 				} catch (_error) {
-					toast.error("Neuspjela pretraga članova. Molimo pokušajte ponovo.");
+					toast.error(t("search.error"));
 				} finally {
 					setIsLoading(false);
 				}
@@ -100,15 +103,15 @@ export function AddManagerForm() {
 
 			if (!response?.data?.success) {
 				toast.error(
-					response?.data?.error || "Neuspjelo unapređenje člana u menadžera.",
+					response?.data?.error || t("promote.error")
 				);
 				return;
 			}
 
-			toast("Član je uspješno unaprijeđen u menadžera.");
+			toast(t("promote.success"));
 			form.reset({ clubId: params.clubId, memberId: "" });
 		} catch (_error) {
-			toast.error("Neuspjelo unapređenje člana u menadžera.");
+			toast.error(t("promote.error"));
 		}
 	}
 
@@ -119,14 +122,18 @@ export function AddManagerForm() {
 				className="space-y-4 max-w-3xl w-full"
 			>
 				<div>
-					<h3 className="text-lg font-semibold">Dodaj novog menadžera</h3>
+					<h3 className="text-lg font-semibold">
+						{t("promote.title")}
+					</h3>
 				</div>
 				<FormField
 					control={form.control}
 					name="memberId"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>Član</FormLabel>
+							<FormLabel>{
+								t("promote.member.label")
+							}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -140,16 +147,16 @@ export function AddManagerForm() {
 										>
 											{field.value
 												? members.find((member) => member.id === field.value)
-														?.user.name
-												: "Odaberite člana..."}
-											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+													?.user.name
+												: t("promote.member.placeholder")}
+											< ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
 								</PopoverTrigger>
 								<PopoverContent className="sm:w-[448px] p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder="Pretražite članove..."
+											placeholder={t("promote.member.search")}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -159,9 +166,13 @@ export function AddManagerForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>Unesite najmanje 2 znaka</CommandEmpty>
+												<CommandEmpty>{t(
+													"promote.member.searchEmpty",
+												)}</CommandEmpty>
 											) : members.length === 0 ? (
-												<CommandEmpty>Nema pronađenih članova</CommandEmpty>
+												<CommandEmpty>{
+													t("promote.member.noResults")
+												}</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{members.map((member) => (
@@ -200,7 +211,7 @@ export function AddManagerForm() {
 								</PopoverContent>
 							</Popover>
 							<FormDescription>
-								Odaberite člana kojeg želite unaprijediti u menadžera.
+								{t("promote.member.description")}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -210,7 +221,7 @@ export function AddManagerForm() {
 					type="submit"
 					disabled={form.formState.isSubmitting || !form.formState.isDirty}
 				>
-					Unaprijedi u menadžera
+					{t("promote.submit")}
 				</Button>
 			</form>
 		</Form>

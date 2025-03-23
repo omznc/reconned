@@ -36,6 +36,7 @@ import {
 import { format } from "date-fns";
 import { useQueryState } from "nuqs";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface RulesFormProps {
 	rules: ClubRule[];
@@ -52,6 +53,8 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	const [editorContent, setEditorContent] = useState<string>(
 		editingRule?.content ?? "",
 	);
+	const t = useTranslations("dashboard.club.events.rules");
+
 
 	const form = useForm<z.infer<typeof ruleSchema>>({
 		resolver: zodResolver(ruleSchema),
@@ -79,11 +82,11 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			setRandom(Math.random());
 			toast.success(
 				values.id
-					? "Pravilnik je uspješno izmijenjen"
-					: "Pravilnik je uspješno sačuvan",
+					? t("rule.updated")
+					: t("rule.created")
 			);
 		} catch (error) {
-			toast.error("Greška pri čuvanju pravilnika");
+			toast.error(t("rule.error"));
 		}
 		setIsLoading(false);
 	}
@@ -97,9 +100,13 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Ime pravilnika</FormLabel>
+								<FormLabel>{t(
+									"rule.name"
+								)}</FormLabel>
 								<FormControl>
-									<Input placeholder="Moj pravilnik" {...field} />
+									<Input placeholder={
+										t("rule.namePlaceholder")
+									} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -111,10 +118,14 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="description"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Opis (opcionalno)</FormLabel>
+								<FormLabel>{
+									t("rule.description")
+								}</FormLabel>
 								<FormControl>
 									<Textarea
-										placeholder="Ovo je pravilnik za moj klub"
+										placeholder={
+											t("rule.descriptionPlaceholder")
+										}
 										{...field}
 									/>
 								</FormControl>
@@ -128,7 +139,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="content"
 						render={() => (
 							<FormItem>
-								<FormLabel>Sadržaj</FormLabel>
+								<FormLabel>{t(
+									"rule.content"
+								)}</FormLabel>
 								<FormControl>
 									<Editor
 										onChange={handleEditorChange}
@@ -142,7 +155,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 
 					<div className="flex gap-2 justify-start">
 						<Button type="submit" className="w-full" disabled={isLoading}>
-							{editingRule ? "Sačuvaj izmjene" : "Sačuvaj pravilnik"}
+							{editingRule ? t(
+								"rule.save"
+							) : t("rule.create")}
 						</Button>
 						{editingRule && (
 							<Button
@@ -151,7 +166,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 								variant="outline"
 								onClick={() => setRuleId(null)}
 							>
-								Otkaži
+								{t("rule.cancel")}
 							</Button>
 						)}
 					</div>
@@ -159,9 +174,13 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			</Form>
 
 			<div className="space-y-4">
-				<h3 className="text-lg font-semibold">Postojeći pravilnici</h3>
+				<h3 className="text-lg font-semibold">{
+					t("rules.title")
+				}</h3>
 				{rules.length === 0 && (
-					<div className="text-muted-foreground">Trenutno nema pravilnika.</div>
+					<div className="text-muted-foreground">{
+						t("rules.empty")
+					}</div>
 				)}
 				{rules.map((rule) => (
 					<Card
@@ -214,10 +233,10 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 										onClick={(e) => {
 											e.stopPropagation(); // Prevent card click
 											confirm({
-												title: "Izbriši pravilnik",
-												body: "Da li ste sigurni da želite izbrisati ovaj pravilnik?",
-												actionButton: "Izbriši",
-												cancelButton: "Otkaži",
+												title: t("rule.delete.title"),
+												body: t("rule.delete.body"),
+												actionButton: t("rule.delete.action"),
+												cancelButton: t("rule.delete.cancel"),
 												actionButtonVariant: "destructive",
 											}).then((confirmed) => {
 												if (confirmed) {
@@ -225,7 +244,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 														ruleId: rule.id,
 														clubId: rule.clubId,
 													}).then(() => {
-														toast.success("Pravilnik je uspješno izbrisan");
+														toast.success(t("rule.delete.success"));
 													});
 												}
 											});
@@ -240,7 +259,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 							<div className="text-sm">
 								{(rule.description?.length ?? 0) > 0
 									? rule.description
-									: "Bez opisa"}
+									: t("rule.noDescription")}
 							</div>
 						</CardContent>
 					</Card>
@@ -259,7 +278,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 								<p className="text-muted-foreground">
 									{(selectedRule.description?.length ?? 0) > 0
 										? selectedRule.description
-										: "Bez opisa"}
+										: t("rule.noDescription")}
 								</p>
 							</SheetHeader>
 							<div className="mt-6 flex-1 overflow-y-auto">

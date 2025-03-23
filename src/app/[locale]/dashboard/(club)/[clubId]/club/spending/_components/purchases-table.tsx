@@ -129,10 +129,6 @@ export function PurchasesTable(props: PurchasesTableProps) {
 				]}
 				totalPages={Math.ceil(props.totalPurchases / props.pageSize)}
 				searchPlaceholder="Pretraži kupovine..."
-				tableConfig={{
-					dateFormat: "dd.MM.yyyy",
-					locale: "bs",
-				}}
 			/>
 
 			{selectedFile && (

@@ -535,7 +535,34 @@
 					"create": "Kreiraj susret"
 				},
 				"allEvents": "Svi događaji",
-				"createEvent": "Kreirajte događaj"
+				"createEvent": "Kreirajte događaj",
+				"rules": {
+					"rule": {
+						"cancel": "Odustani",
+						"content": "Sadržaj",
+						"create": "Novi pravilnik",
+						"created": "Pravilnik je stvoren",
+						"delete": {
+							"action": "Izbriši",
+							"body": "Jeste li sigurni da želite izbrisati ovaj pravilnik?",
+							"cancel": "Odustani",
+							"success": "Pravilnik je izbrisan",
+							"title": "Izbriši pravilnik"
+						},
+						"description": "Opis (neobavezno)",
+						"descriptionPlaceholder": "Ovaj se pravilnik koristi samo za ...",
+						"error": "Došlo je do problema prilikom spašavanja tog pravilnika.",
+						"name": "Naziv pravilnika",
+						"namePlaceholder": "Moj pravilnik",
+						"noDescription": "Ovaj pravilnik nema opis",
+						"save": "Spremi pravilnik",
+						"updated": "Pravilnik je ažuriran."
+					},
+					"rules": {
+						"empty": "Nemate pravilnika.",
+						"title": "Postojeći pravilnici"
+					}
+				}
 			},
 			"members": {
 				"allMembers": "Svi članovi",
@@ -601,6 +628,26 @@
 					"noResults": "Nema rezultata",
 					"chooseUserDescription": "Ako je korisnik već na platformi, možete ga pronaći ovdje.",
 					"emailDescription": "Ako ne možete pronaći korisnika, ili već znate njihov email, unesite ga ovdje."
+				},
+				"managers": {
+					"promote": {
+						"error": "Došlo je do problema prilikom promocije tog korisnika, pokušajte ponovo.",
+						"member": {
+							"description": "Odaberite člana kojeg želite da bude menadžer.",
+							"label": "Član kluba",
+							"noResults": "Nismo mogli da nađemo nikoga",
+							"placeholder": "Odaberite člana ...",
+							"search": "Članovi pretraživanja ...",
+							"searchEmpty": "Unesite najmanje 2 znaka"
+						},
+						"submit": "Dodaj",
+						"success": "Uspješno promoviran u menadžer",
+						"title": "Dodajte novog menadžera"
+					},
+					"search": {
+						"error": "Došlo je do problema sa pretraživanjem, pokušajte ponovo."
+					},
+					"title": "Menadžeri"
 				}
 			}
 		}
