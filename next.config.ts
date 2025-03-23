@@ -66,7 +66,7 @@ const nextConfig = {
 				permanent: true,
 			},
 			{
-				source: "/:locale(${localesString})/stats",
+				source: `/:locale(${localesString})/stats`,
 				destination:
 					"https://scout.reconned.com/share/reconned.com?auth=Z_HrtmMkcNRQ1zcVm4iky",
 				permanent: true,
