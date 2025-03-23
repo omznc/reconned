@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { isAfter, isBefore } from "date-fns";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 interface EventApplicationPageProps {
@@ -18,8 +18,9 @@ interface EventApplicationPageProps {
 export default async function EventApplicationPage(
 	props: EventApplicationPageProps,
 ) {
+	const t = await getTranslations('dashboard.club.events');
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
-		return <ErrorPage title="Ova funkcionalnost nije dostupna" />;
+		return <ErrorPage title={t('attendenceTracking.unavailable')} />;
 	}
 
 	const [locale, user, params] = await Promise.all([
@@ -36,24 +37,24 @@ export default async function EventApplicationPage(
 
 	const conditionalPrivateWhere = user
 		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
+			OR: [
+				{
+					isPrivate: false,
+				},
+				{
+					club: {
+						members: {
+							some: {
+								userId: user?.id,
 							},
 						},
 					},
-				],
-			}
+				},
+			],
+		}
 		: {
-				isPrivate: false,
-			};
+			isPrivate: false,
+		};
 
 	const event = await prisma.event.findFirst({
 		where: {

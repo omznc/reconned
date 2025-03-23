@@ -26,7 +26,7 @@ export function MembersTable(props: MembersTableProps) {
 	const t = useTranslations("dashboard.club.members.membersTable");
 
 	const handleRemove = async (
-		member: ClubMembership & { userName: string },
+		member: ClubMembership & { userName: string; },
 		clubId: string,
 	) => {
 		if (member.role === "CLUB_OWNER") {
@@ -63,10 +63,6 @@ export function MembersTable(props: MembersTableProps) {
 			data={props.members}
 			totalPages={Math.ceil(props.totalMembers / props.pageSize)}
 			searchPlaceholder={t("searchPlaceholder")}
-			tableConfig={{
-				dateFormat: "d. MMMM yyyy.",
-				locale: "bs",
-			}}
 			columns={[
 				{
 					key: "avatar",

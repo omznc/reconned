@@ -32,10 +32,7 @@ export function EventsTable({
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
 			searchPlaceholder={t("search")}
-			tableConfig={{
-				dateFormat: "d. MMMM yyyy.",
-				locale: "bs",
-			}}
+
 			columns={[
 				{
 					key: "name",
