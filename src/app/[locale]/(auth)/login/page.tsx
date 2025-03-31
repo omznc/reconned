@@ -110,32 +110,30 @@ export default function LoginPage() {
 			{
 				email: data.email,
 				password: data.password,
-			},
-			{
-				onRequest: () => {
-					setIsLoading(true);
-				},
-				onResponse: () => {
-					setIsLoading(false);
-					// Only reset widget UI, don't clear token state on errors
-					if (turnstileRef.current) {
-						turnstileRef.current.reset();
-					}
-				},
-				onSuccess: handleSuccessfulLogin,
-				onError: (ctx) => {
-					if (ctx.error.status === 403) {
-						toast.error(t("unverified"));
-					} else {
-						if (ctx.error.message === "Missing CAPTCHA response") {
-							toast.error(t("captchaError"));
-							router.refresh();
-						}
-						setIsError(true);
-					}
-				},
 				fetchOptions: {
 					headers: headers,
+					onRequest: () => {
+						setIsLoading(true);
+					},
+					onResponse: () => {
+						setIsLoading(false);
+						// Only reset widget UI, don't clear token state on errors
+						if (turnstileRef.current) {
+							turnstileRef.current.reset();
+						}
+					},
+					onSuccess: handleSuccessfulLogin,
+					onError: (ctx) => {
+						if (ctx.error.status === 403) {
+							toast.error(t("unverified"));
+						} else {
+							if (ctx.error.message === "Missing CAPTCHA response") {
+								toast.error(t("captchaError"));
+								router.refresh();
+							}
+							setIsError(true);
+						}
+					}
 				},
 			},
 		);
