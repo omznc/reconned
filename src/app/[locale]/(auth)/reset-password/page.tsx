@@ -81,32 +81,30 @@ export default function LoginPage() {
 		await authClient.resetPassword(
 			{
 				newPassword: data.password,
-			},
-			{
-				onRequest: () => {
-					setIsLoading(true);
-				},
-				onResponse: () => {
-					setIsLoading(false);
-					// Reset Turnstile widget UI on response, don't clear token
-					if (turnstileRef.current) {
-						turnstileRef.current.reset();
-					}
-				},
-				onSuccess: () => {
-					toast.success(t("resetPasswordSuccess"));
-					router.push("/login");
-				},
-				onError: (ctx) => {
-					console.error("Reset password error:", ctx.error);
-					if (ctx.error.status === 403) {
-						toast.error(t("resetPasswordError"));
-					} else {
-						setIsError(true);
-					}
-				},
 				fetchOptions: {
 					headers: headers,
+					onRequest: () => {
+						setIsLoading(true);
+					},
+					onResponse: () => {
+						setIsLoading(false);
+						// Reset Turnstile widget UI on response, don't clear token
+						if (turnstileRef.current) {
+							turnstileRef.current.reset();
+						}
+					},
+					onSuccess: () => {
+						toast.success(t("resetPasswordSuccess"));
+						router.push("/login");
+					},
+					onError: (ctx) => {
+						console.error("Reset password error:", ctx.error);
+						if (ctx.error.status === 403) {
+							toast.error(t("resetPasswordError"));
+						} else {
+							setIsError(true);
+						}
+					},
 				},
 			},
 		);
