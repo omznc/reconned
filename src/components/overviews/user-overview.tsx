@@ -39,6 +39,16 @@ export async function UserOverview({ user }: UserOverviewProps) {
 	);
 	return (
 		<div className="space-y-6">
+			{user.headerImage && (
+				<div className="relative w-full h-48">
+					<Image
+						src={user.headerImage}
+						alt={`${user.name} header`}
+						layout="fill"
+						className="object-cover"
+					/>
+				</div>
+			)}
 			<div className="flex flex-col md:flex-row gap-4">
 				{/* TODO: Handle if unset */}
 				{user.image && (

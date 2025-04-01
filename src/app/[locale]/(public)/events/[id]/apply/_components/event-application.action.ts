@@ -3,7 +3,7 @@
 import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
 import { eventApplicationSchema } from "./event-application.schema";
-import { revalidateLocalizedPaths } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 

@@ -17,10 +17,8 @@ type ClubSearch = {
 	member_count: number;
 };
 
-
-
 export default async function Page(props: {
-	searchParams: Promise<{ page?: string; }>;
+	searchParams: Promise<{ page?: string }>;
 }) {
 	const searchParams = await props.searchParams;
 	const t = await getTranslations("public.clubs");
@@ -61,7 +59,8 @@ export default async function Page(props: {
 						description={club.description}
 						href={`/clubs/${club.slug ?? club.id}`}
 						badges={[
-							`${club.member_count} ${club.member_count === 1 ? "član" : "članova"
+							`${club.member_count} ${
+								club.member_count === 1 ? "član" : "članova"
 							}`,
 						]}
 						meta={club.location || undefined}

@@ -2,7 +2,7 @@
 
 import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
-import { revalidateLocalizedPaths } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { addMonths } from "date-fns";
 import { membershipExtensionSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
 
