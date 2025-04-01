@@ -11,9 +11,10 @@ import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { revalidateTag } from "next/cache";
-import { redirect, revalidateLocalizedPaths } from "@/i18n/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
 import { disconnectInstagramAPI } from "@/lib/instagram";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
 export const saveClubInformation = safeActionClient
 	.schema(clubInfoSchema)

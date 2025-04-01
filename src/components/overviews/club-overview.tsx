@@ -42,7 +42,7 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date })[];
+		posts: (Post & { createdAt: Date; })[];
 		members?: (ClubMembership & {
 			user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">;
 		})[];
@@ -54,7 +54,7 @@ interface ClubOverviewProps {
 
 async function fetchInstagramPhotos(
 	clubId: string,
-): Promise<{ photos: InstagramMedia[]; username: string | null }> {
+): Promise<{ photos: InstagramMedia[]; username: string | null; }> {
 	try {
 		// Check token validity and refresh if needed
 		const { token, igBusinessId } = await checkAndRefreshToken(clubId);
@@ -87,9 +87,9 @@ export async function ClubOverview({
 		club.instagramConnected
 			? fetchInstagramPhotos(club.id)
 			: Promise.resolve({
-					photos: [],
-					username: club.instagramUsername || null,
-				}),
+				photos: [],
+				username: club.instagramUsername || null,
+			}),
 	]);
 	const visitors =
 		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
@@ -107,16 +107,6 @@ export async function ClubOverview({
 
 	return (
 		<div className="space-y-6">
-			{club.headerImage && (
-				<div className="relative w-full h-48">
-					<Image
-						src={club.headerImage}
-						alt={`${club.name} header`}
-						layout="fill"
-						className="object-cover"
-					/>
-				</div>
-			)}
 			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between">
 				<div className="flex flex-col md:flex-row gap-4">
 					{club.logo ? (

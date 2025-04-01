@@ -4,11 +4,11 @@ import {
 	userInfoShema,
 } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { getTranslations } from "next-intl/server";
-import { revalidateLocalizedPaths } from "@/i18n/navigation";
 
 export const saveUserInformation = safeActionClient
 	.schema(userInfoShema)
