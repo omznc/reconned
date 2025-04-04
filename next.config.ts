@@ -22,7 +22,6 @@ const nextConfig = {
 		},
 		webpackMemoryOptimizations: true,
 		viewTransition: true,
-		nodeMiddleware: true,
 	},
 	images: {
 		remotePatterns: [
