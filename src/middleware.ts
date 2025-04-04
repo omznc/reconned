@@ -2,17 +2,22 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
-import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
+import { env } from "@/lib/env";
+import { headers } from "next/headers";
 
 const handleI18nRouting = createMiddleware(routing);
 
 export default async function authMiddleware(request: NextRequest) {
 	const resp = handleI18nRouting(request);
 	if (request.nextUrl.pathname.includes("/dashboard")) {
-		const session = await auth.api.getSession({
-			headers: request.headers,
-		});
+		const resp = await fetch(
+			`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/auth/get-session`,
+			{
+				headers: await headers(),
+			},
+		);
+		const session = await resp.json();
 
 		if (!session) {
 			const locationHeader = resp.headers.get("Location");
@@ -28,5 +33,4 @@ export default async function authMiddleware(request: NextRequest) {
 
 export const config = {
 	matcher: ["/((?!api|_next|.*\\..*).*)"],
-	runtime: "nodejs",
 };
