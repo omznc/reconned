@@ -2,9 +2,10 @@ import { MembersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_
 import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
+import { isAuthenticated } from "@/lib/auth";
 
 interface PageProps {
-	params: Promise<{ clubId: string }>;
+	params: Promise<{ clubId: string; }>;
 	searchParams: Promise<{
 		search?: string;
 		role?: string;
@@ -16,45 +17,53 @@ interface PageProps {
 }
 
 export default async function MembersPage(props: PageProps) {
-	const { clubId } = await props.params;
-	const { search, role, sortBy, sortOrder, page, perPage } =
-		await props.searchParams;
+	const [params, searchParams] = await Promise.all([
+		props.params,
+		props.searchParams
+	]);
+
+	const { clubId } = params;
+	const { search, role, sortBy, sortOrder, page, perPage } = searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize =
 		perPage === "25" || perPage === "50" || perPage === "100"
 			? Number(perPage)
 			: 25;
-	const t = await getTranslations("dashboard.club.members");
+
+	const [t, user] = await Promise.all([
+		getTranslations("dashboard.club.members"),
+		isAuthenticated()
+	]);
 
 	const where = {
 		clubId: clubId,
 		...(role && role !== "all" ? { role: role as Role } : {}),
 		...(search
 			? {
-					OR: [
-						{ user: { name: { contains: search, mode: "insensitive" } } },
-						{ user: { email: { contains: search, mode: "insensitive" } } },
-						{ user: { callsign: { contains: search, mode: "insensitive" } } },
-					],
-				}
+				OR: [
+					{ user: { name: { contains: search, mode: "insensitive" } } },
+					{ user: { email: { contains: search, mode: "insensitive" } } },
+					{ user: { callsign: { contains: search, mode: "insensitive" } } },
+				],
+			}
 			: {}),
 	} satisfies Prisma.ClubMembershipWhereInput;
 
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
-				...(sortBy === "userName" && {
-					user: { name: sortOrder ?? "asc" },
-				}),
-				...(sortBy === "userCallsign" && {
-					user: { callsign: sortOrder ?? "asc" },
-				}),
-				...(sortBy === "createdAt" && {
-					createdAt: sortOrder ?? "asc",
-				}),
-				...(sortBy === "role" && {
-					role: sortOrder ?? "asc",
-				}),
-			}
+			...(sortBy === "userName" && {
+				user: { name: sortOrder ?? "asc" },
+			}),
+			...(sortBy === "userCallsign" && {
+				user: { callsign: sortOrder ?? "asc" },
+			}),
+			...(sortBy === "createdAt" && {
+				createdAt: sortOrder ?? "asc",
+			}),
+			...(sortBy === "role" && {
+				role: sortOrder ?? "asc",
+			}),
+		}
 		: { createdAt: "desc" };
 
 	const members = await prisma.clubMembership.findMany({
@@ -99,6 +108,7 @@ export default async function MembersPage(props: PageProps) {
 				members={formattedMembers}
 				totalMembers={totalMembers}
 				pageSize={pageSize}
+				currentUserId={user?.id}
 			/>
 		</>
 	);

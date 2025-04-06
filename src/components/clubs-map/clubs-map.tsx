@@ -10,7 +10,6 @@ import { useTranslations } from "next-intl";
 import { MapPin } from "lucide-react";
 import { Marker } from "@adamscybot/react-leaflet-component-marker";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 
 // Helper function to create a custom icon from club logo
 function createClubIcon(logoUrl: string | null | undefined, size: number) {
@@ -21,12 +20,22 @@ function createClubIcon(logoUrl: string | null | undefined, size: number) {
 				alt="Club logo"
 				width={size}
 				height={size}
-				className={cn("object-contain")}
+				className="object-contain transition-transform hover:scale-125"
+				style={{
+					width: `${size}px`,
+					height: `${size}px`,
+				}}
 			/>
 		);
 	}
 
-	return <MapPin size={size} strokeWidth={2} />;
+	return (
+		<MapPin
+			size={size}
+			strokeWidth={2}
+			className="text-red-500 transition-transform hover:scale-110"
+		/>
+	);
 }
 
 interface Club {
@@ -48,7 +57,7 @@ interface ClubsMapProps {
 function LocationMarker({
 	position,
 	logo,
-}: { position: [number, number]; logo?: string | null }) {
+}: { position: [number, number]; logo?: string | null; }) {
 	return position ? (
 		<Marker position={position} icon={createClubIcon(logo, 32)} />
 	) : null;
@@ -56,7 +65,7 @@ function LocationMarker({
 
 function MapEventHandler({
 	onLocationSelect,
-}: { onLocationSelect?: (lat: number, lng: number) => void }) {
+}: { onLocationSelect?: (lat: number, lng: number) => void; }) {
 	useMapEvents({
 		click: (e) => {
 			if (onLocationSelect) {
@@ -136,12 +145,12 @@ export function ClubsMap({
 								position={[club.latitude, club.longitude]}
 								icon={createClubIcon(club.logo, logoSize)}
 							>
-								<Popup className="rounded-none">
+								<Popup className="rounded-none [&_.leaflet-popup-content-wrapper]:dark:bg-gray-800 [&_.leaflet-popup-content-wrapper]:dark:text-white">
 									<div className="flex flex-col items-center gap-2 p-2">
-										<h3 className="font-semibold text-xl text-foreground">
+										<h3 className="font-semibold text-xl text-foreground dark:text-black">
 											{club.name}
 										</h3>
-										<span className="text-foreground/80">{club.location}</span>
+										<span className="text-foreground/80 dark:text-black/80">{club.location}</span>
 										<Link
 											href={`/clubs/${club.slug || club.id}`}
 											className="text-sm text-red-500 hover:underline plausible-event-name=club-map-profile-link"

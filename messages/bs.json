@@ -880,6 +880,15 @@
 			"noPosts": "Nema objava",
 			"allied": "U savezu ASK FBIH"
 		},
+		"leaveClubButton": {
+			"title": "Napuštanje kluba",
+			"body": "Jeste li sigurni da želite napustiti ovaj klub? \nTrebat će vam pozivnica da se ponovo pridružite.",
+			"confirm": "Napusti klub",
+			"cancel": "Ne, vrati se",
+			"error": "Došlo je do greške prilikom napuštanja kluba",
+			"action": "Napusti klub",
+			"ownerError": "Vlasnik kluba ne može napustiti klub. Morate prvo prenijeti vlasništvo ili obrisati klub."
+		},
 		"breadcrumbs": {
 			"currentClub": "Trenutni klub",
 			"currentEvent": "Trenutni susret",
