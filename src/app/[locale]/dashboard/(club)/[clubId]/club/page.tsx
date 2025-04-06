@@ -15,35 +15,45 @@ export default async function Page(props: PageProps) {
 	if (!user) {
 		return notFound();
 	}
-
-	const club = await prisma.club.findUnique({
-		where: {
-			members: {
-				some: {
-					userId: user.id,
-				},
+	const [userMembership, club] = await Promise.all([
+		prisma.clubMembership.findFirst({
+			where: {
+				userId: user.id,
+				clubId: params.clubId,
 			},
-			id: params.clubId,
-		},
-		include: {
-			_count: {
-				select: {
-					members: true,
+		}),
+		prisma.club.findUnique({
+			where: {
+				members: {
+					some: {
+						userId: user.id,
+					},
 				},
+				id: params.clubId,
 			},
-			posts: true,
-		},
-	});
+			include: {
+				_count: {
+					select: {
+						members: true,
+					},
+				},
+				posts: true,
+			},
+		}),
+	]);
 
 	if (!club) {
 		return notFound();
 	}
+
+	const isManager = user.managedClubs.includes(club.id);
+
 	return (
-		<>
-			<ClubOverview
-				club={club}
-				isManager={user.managedClubs.includes(club.id)}
-			/>
-		</>
+		<ClubOverview
+			club={club}
+			isManager={isManager}
+			isMember={true}
+			currentUserMembership={userMembership}
+		/>
 	);
 }
