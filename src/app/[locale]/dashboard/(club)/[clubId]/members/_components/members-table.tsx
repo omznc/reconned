@@ -135,7 +135,7 @@ export function MembersTable(props: MembersTableProps) {
 								{props.currentUserId === row.userId && row.role !== "CLUB_OWNER" && (
 									<LeaveClubButton
 										clubId={row.clubId}
-										isClubOwner={true}
+										isClubOwner={false}
 										variant="destructive"
 										size="sm"
 									/>
