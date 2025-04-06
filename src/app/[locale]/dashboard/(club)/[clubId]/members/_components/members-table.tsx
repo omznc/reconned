@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { removeMember } from "./members.action";
+import { LeaveClubButton } from "@/components/leave-club-button";
 import type { ClubMembership } from "@prisma/client";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -19,6 +20,7 @@ interface MembersTableProps {
 	})[];
 	totalMembers: number;
 	pageSize: number;
+	currentUserId?: string;
 }
 
 export function MembersTable(props: MembersTableProps) {
@@ -130,7 +132,15 @@ export function MembersTable(props: MembersTableProps) {
 										{t("profile")}
 									</Link>
 								</Button>
-								{row.role !== "CLUB_OWNER" && (
+								{props.currentUserId === row.userId && row.role !== "CLUB_OWNER" && (
+									<LeaveClubButton
+										clubId={row.clubId}
+										isClubOwner={true}
+										variant="destructive"
+										size="sm"
+									/>
+								)}
+								{row.role !== "CLUB_OWNER" && props.currentUserId !== row.userId && (
 									<div className="flex justify-end">
 										<Button
 											variant="destructive"
