@@ -43,7 +43,7 @@ can import them in actions as well.
   - password-reset.schema.ts
 
 ## Language
-- Use bosnian for all code strings
+- All code strings need to be translated into every language under messages.
 - Use English for comments, variables, declarations, paths, etc.
 - When I say 'translate', extract keys from the files and add them to bs.json. If we're in an async component we have to use (await) import { getTranslations } from "next-intl/server", otherwise we use useTranslations.
 

@@ -17,16 +17,18 @@ interface PageProps {
 export default async function Page(props: PageProps) {
 	const params = await props.params;
 	const user = await isAuthenticated();
-	const isMemberOfClub = user
+	const userMembership = user
 		? await prisma.clubMembership.findFirst({
-				where: {
-					userId: user?.id,
-					club: {
-						OR: [{ id: params.id }, { slug: params.id }],
-					},
+			where: {
+				userId: user?.id,
+				club: {
+					OR: [{ id: params.id }, { slug: params.id }],
 				},
-			})
-		: false;
+			},
+		})
+		: null;
+
+	const isMemberOfClub = !!userMembership;
 
 	const club = await prisma.club.findFirst({
 		where: {
@@ -73,6 +75,8 @@ export default async function Page(props: PageProps) {
 			<ClubOverview
 				club={club}
 				isManager={user?.managedClubs.includes(club.id)}
+				isMember={isMemberOfClub}
+				currentUserMembership={userMembership}
 			/>
 		</div>
 	);

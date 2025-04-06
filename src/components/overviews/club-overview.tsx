@@ -27,21 +27,24 @@ import {
 	VerifiedClubIcon,
 } from "@/components/icons";
 import { cn } from "@/lib/utils";
+import { LeaveClubButton } from "@/components/leave-club-button";
 
 interface ClubOverviewProps {
 	club: Club & {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date })[];
+		posts: (Post & { createdAt: Date; })[];
 		members?: (ClubMembership & {
 			user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">;
 		})[];
 	};
 	isManager?: boolean;
+	isMember?: boolean;
+	currentUserMembership?: ClubMembership | null;
 }
 
-export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
+export async function ClubOverview({ club, isManager, isMember, currentUserMembership }: ClubOverviewProps) {
 	const [analyticsId, analyticsSlug, t] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
@@ -58,6 +61,8 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 		}
 		return 0;
 	});
+
+	const isClubOwner = currentUserMembership?.role === "CLUB_OWNER";
 
 	return (
 		<div className="space-y-6">
@@ -83,7 +88,7 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 						<p className="text-accent-foreground/80">{club.description}</p>
 					</div>
 				</div>
-				<div className="flex gap-2">
+				<div className="flex flex-col md:flex-row gap-2">
 					{club.latitude && club.longitude && (
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
@@ -99,6 +104,13 @@ export async function ClubOverview({ club, isManager }: ClubOverviewProps) {
 								{t("edit")}
 							</Link>
 						</Button>
+					)}
+					{isMember && !isClubOwner && (
+						<LeaveClubButton
+							clubId={club.id}
+							isClubOwner={isClubOwner ?? false}
+							variant='destructive'
+						/>
 					)}
 				</div>
 			</div>
