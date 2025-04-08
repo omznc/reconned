@@ -125,25 +125,53 @@ export const auth = betterAuth({
 			update: {
 				after: async (user) => {
 					if (user.emailVerified) {
-						const pendingInvite = await prisma.clubInvite.findFirst({
+						const pendingInvites = await prisma.clubInvite.findMany({
 							where: {
 								email: user.email,
 								status: "PENDING",
-								userId: null,
 								expiresAt: {
 									gt: new Date(),
 								},
 							},
+							include: {
+								club: true,
+							},
 						});
 
-						if (pendingInvite) {
-							// Link the invite to the verified user
-							await prisma.clubInvite.update({
-								where: { id: pendingInvite.id },
-								data: {
-									userId: user.id,
-								},
-							});
+						for (const invite of pendingInvites) {
+							try {
+								await prisma.$transaction(async (tx) => {
+									// Update the invite status to ACCEPTED and link to the user
+									await tx.clubInvite.update({
+										where: { id: invite.id },
+										data: {
+											status: "ACCEPTED",
+											userId: user.id,
+										},
+									});
+
+									// Check if the user already has a membership in this club
+									const existingMembership = await tx.clubMembership.findFirst({
+										where: {
+											userId: user.id,
+											clubId: invite.clubId,
+										},
+									});
+
+									// Create membership if it doesn't exist
+									if (!existingMembership) {
+										await tx.clubMembership.create({
+											data: {
+												userId: user.id,
+												clubId: invite.clubId,
+												role: "USER",
+											},
+										});
+									}
+								});
+							} catch (error) {
+								console.error(`Failed to process invite ${invite.id}:`, error);
+							}
 						}
 					}
 				},

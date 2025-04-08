@@ -57,7 +57,7 @@ interface ClubsMapProps {
 function LocationMarker({
 	position,
 	logo,
-}: { position: [number, number]; logo?: string | null; }) {
+}: { position: [number, number]; logo?: string | null }) {
 	return position ? (
 		<Marker position={position} icon={createClubIcon(logo, 32)} />
 	) : null;
@@ -65,7 +65,7 @@ function LocationMarker({
 
 function MapEventHandler({
 	onLocationSelect,
-}: { onLocationSelect?: (lat: number, lng: number) => void; }) {
+}: { onLocationSelect?: (lat: number, lng: number) => void }) {
 	useMapEvents({
 		click: (e) => {
 			if (onLocationSelect) {
@@ -150,7 +150,9 @@ export function ClubsMap({
 										<h3 className="font-semibold text-xl text-foreground dark:text-black">
 											{club.name}
 										</h3>
-										<span className="text-foreground/80 dark:text-black/80">{club.location}</span>
+										<span className="text-foreground/80 dark:text-black/80">
+											{club.location}
+										</span>
 										<Link
 											href={`/clubs/${club.slug || club.id}`}
 											className="text-sm text-red-500 hover:underline plausible-event-name=club-map-profile-link"

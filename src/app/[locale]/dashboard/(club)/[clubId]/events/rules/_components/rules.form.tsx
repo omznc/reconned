@@ -55,7 +55,6 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	);
 	const t = useTranslations("dashboard.club.events.rules");
 
-
 	const form = useForm<z.infer<typeof ruleSchema>>({
 		resolver: zodResolver(ruleSchema),
 		defaultValues: {
@@ -80,11 +79,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			form.reset();
 			setRuleId(null);
 			setRandom(Math.random());
-			toast.success(
-				values.id
-					? t("rule.updated")
-					: t("rule.created")
-			);
+			toast.success(values.id ? t("rule.updated") : t("rule.created"));
 		} catch (error) {
 			toast.error(t("rule.error"));
 		}
@@ -100,13 +95,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t(
-									"rule.name"
-								)}</FormLabel>
+								<FormLabel>{t("rule.name")}</FormLabel>
 								<FormControl>
-									<Input placeholder={
-										t("rule.namePlaceholder")
-									} {...field} />
+									<Input placeholder={t("rule.namePlaceholder")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -118,14 +109,10 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="description"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{
-									t("rule.description")
-								}</FormLabel>
+								<FormLabel>{t("rule.description")}</FormLabel>
 								<FormControl>
 									<Textarea
-										placeholder={
-											t("rule.descriptionPlaceholder")
-										}
+										placeholder={t("rule.descriptionPlaceholder")}
 										{...field}
 									/>
 								</FormControl>
@@ -139,9 +126,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="content"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t(
-									"rule.content"
-								)}</FormLabel>
+								<FormLabel>{t("rule.content")}</FormLabel>
 								<FormControl>
 									<Editor
 										onChange={handleEditorChange}
@@ -155,9 +140,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 
 					<div className="flex gap-2 justify-start">
 						<Button type="submit" className="w-full" disabled={isLoading}>
-							{editingRule ? t(
-								"rule.save"
-							) : t("rule.create")}
+							{editingRule ? t("rule.save") : t("rule.create")}
 						</Button>
 						{editingRule && (
 							<Button
@@ -174,13 +157,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			</Form>
 
 			<div className="space-y-4">
-				<h3 className="text-lg font-semibold">{
-					t("rules.title")
-				}</h3>
+				<h3 className="text-lg font-semibold">{t("rules.title")}</h3>
 				{rules.length === 0 && (
-					<div className="text-muted-foreground">{
-						t("rules.empty")
-					}</div>
+					<div className="text-muted-foreground">{t("rules.empty")}</div>
 				)}
 				{rules.map((rule) => (
 					<Card

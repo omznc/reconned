@@ -57,13 +57,12 @@ async function searchMembers(clubId: string, query: string) {
 }
 
 export function AddManagerForm() {
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const [members, setMembers] = useState<Member[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
-	const t = useTranslations('dashboard.club.members.managers');
-
+	const t = useTranslations("dashboard.club.members.managers");
 
 	const form = useForm<z.infer<typeof promoteToManagerSchema>>({
 		resolver: zodResolver(promoteToManagerSchema),
@@ -102,9 +101,7 @@ export function AddManagerForm() {
 			const response = await promoteToManager(values);
 
 			if (!response?.data?.success) {
-				toast.error(
-					response?.data?.error || t("promote.error")
-				);
+				toast.error(response?.data?.error || t("promote.error"));
 				return;
 			}
 
@@ -122,18 +119,14 @@ export function AddManagerForm() {
 				className="space-y-4 max-w-3xl w-full"
 			>
 				<div>
-					<h3 className="text-lg font-semibold">
-						{t("promote.title")}
-					</h3>
+					<h3 className="text-lg font-semibold">{t("promote.title")}</h3>
 				</div>
 				<FormField
 					control={form.control}
 					name="memberId"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{
-								t("promote.member.label")
-							}</FormLabel>
+							<FormLabel>{t("promote.member.label")}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -147,9 +140,9 @@ export function AddManagerForm() {
 										>
 											{field.value
 												? members.find((member) => member.id === field.value)
-													?.user.name
+														?.user.name
 												: t("promote.member.placeholder")}
-											< ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
 								</PopoverTrigger>
@@ -166,13 +159,13 @@ export function AddManagerForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>{t(
-													"promote.member.searchEmpty",
-												)}</CommandEmpty>
+												<CommandEmpty>
+													{t("promote.member.searchEmpty")}
+												</CommandEmpty>
 											) : members.length === 0 ? (
-												<CommandEmpty>{
-													t("promote.member.noResults")
-												}</CommandEmpty>
+												<CommandEmpty>
+													{t("promote.member.noResults")}
+												</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{members.map((member) => (

@@ -28,7 +28,7 @@ export function MembersTable(props: MembersTableProps) {
 	const t = useTranslations("dashboard.club.members.membersTable");
 
 	const handleRemove = async (
-		member: ClubMembership & { userName: string; },
+		member: ClubMembership & { userName: string },
 		clubId: string,
 	) => {
 		if (member.role === "CLUB_OWNER") {
@@ -132,25 +132,27 @@ export function MembersTable(props: MembersTableProps) {
 										{t("profile")}
 									</Link>
 								</Button>
-								{props.currentUserId === row.userId && row.role !== "CLUB_OWNER" && (
-									<LeaveClubButton
-										clubId={row.clubId}
-										isClubOwner={false}
-										variant="destructive"
-										size="sm"
-									/>
-								)}
-								{row.role !== "CLUB_OWNER" && props.currentUserId !== row.userId && (
-									<div className="flex justify-end">
-										<Button
+								{props.currentUserId === row.userId &&
+									row.role !== "CLUB_OWNER" && (
+										<LeaveClubButton
+											clubId={row.clubId}
+											isClubOwner={false}
 											variant="destructive"
 											size="sm"
-											onClick={() => handleRemove(row, row.clubId)}
-										>
-											{t("removeMember")}
-										</Button>
-									</div>
-								)}
+										/>
+									)}
+								{row.role !== "CLUB_OWNER" &&
+									props.currentUserId !== row.userId && (
+										<div className="flex justify-end">
+											<Button
+												variant="destructive"
+												size="sm"
+												onClick={() => handleRemove(row, row.clubId)}
+											>
+												{t("removeMember")}
+											</Button>
+										</div>
+									)}
 							</div>
 						),
 					},

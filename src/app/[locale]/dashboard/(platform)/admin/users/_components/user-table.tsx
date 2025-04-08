@@ -33,7 +33,6 @@ export function UserTable(props: UserTableProps) {
 			data={props.users}
 			totalPages={Math.ceil(props.totalUsers / props.pageSize)}
 			searchPlaceholder="Pretraži korisnike..."
-
 			columns={[
 				{
 					key: "avatar",

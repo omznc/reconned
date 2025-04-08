@@ -18,9 +18,9 @@ interface EventApplicationPageProps {
 export default async function EventApplicationPage(
 	props: EventApplicationPageProps,
 ) {
-	const t = await getTranslations('dashboard.club.events');
+	const t = await getTranslations("dashboard.club.events");
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
-		return <ErrorPage title={t('attendenceTracking.unavailable')} />;
+		return <ErrorPage title={t("attendenceTracking.unavailable")} />;
 	}
 
 	const [locale, user, params] = await Promise.all([
@@ -37,24 +37,24 @@ export default async function EventApplicationPage(
 
 	const conditionalPrivateWhere = user
 		? {
-			OR: [
-				{
-					isPrivate: false,
-				},
-				{
-					club: {
-						members: {
-							some: {
-								userId: user?.id,
+				OR: [
+					{
+						isPrivate: false,
+					},
+					{
+						club: {
+							members: {
+								some: {
+									userId: user?.id,
+								},
 							},
 						},
 					},
-				},
-			],
-		}
+				],
+			}
 		: {
-			isPrivate: false,
-		};
+				isPrivate: false,
+			};
 
 	const event = await prisma.event.findFirst({
 		where: {

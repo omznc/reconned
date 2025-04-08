@@ -34,7 +34,7 @@ interface ClubOverviewProps {
 		_count: {
 			members: number;
 		};
-		posts: (Post & { createdAt: Date; })[];
+		posts: (Post & { createdAt: Date })[];
 		members?: (ClubMembership & {
 			user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">;
 		})[];
@@ -44,7 +44,12 @@ interface ClubOverviewProps {
 	currentUserMembership?: ClubMembership | null;
 }
 
-export async function ClubOverview({ club, isManager, isMember, currentUserMembership }: ClubOverviewProps) {
+export async function ClubOverview({
+	club,
+	isManager,
+	isMember,
+	currentUserMembership,
+}: ClubOverviewProps) {
 	const [analyticsId, analyticsSlug, t] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
@@ -109,7 +114,7 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 						<LeaveClubButton
 							clubId={club.id}
 							isClubOwner={isClubOwner ?? false}
-							variant='destructive'
+							variant="destructive"
 						/>
 					)}
 				</div>

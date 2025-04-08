@@ -78,36 +78,34 @@ export default function LoginPage() {
 		const headers = new Headers();
 		headers.append("x-captcha-response", turnstileToken);
 
-		await authClient.resetPassword(
-			{
-				newPassword: data.password,
-				fetchOptions: {
-					headers: headers,
-					onRequest: () => {
-						setIsLoading(true);
-					},
-					onResponse: () => {
-						setIsLoading(false);
-						// Reset Turnstile widget UI on response, don't clear token
-						if (turnstileRef.current) {
-							turnstileRef.current.reset();
-						}
-					},
-					onSuccess: () => {
-						toast.success(t("resetPasswordSuccess"));
-						router.push("/login");
-					},
-					onError: (ctx) => {
-						console.error("Reset password error:", ctx.error);
-						if (ctx.error.status === 403) {
-							toast.error(t("resetPasswordError"));
-						} else {
-							setIsError(true);
-						}
-					},
+		await authClient.resetPassword({
+			newPassword: data.password,
+			fetchOptions: {
+				headers: headers,
+				onRequest: () => {
+					setIsLoading(true);
+				},
+				onResponse: () => {
+					setIsLoading(false);
+					// Reset Turnstile widget UI on response, don't clear token
+					if (turnstileRef.current) {
+						turnstileRef.current.reset();
+					}
+				},
+				onSuccess: () => {
+					toast.success(t("resetPasswordSuccess"));
+					router.push("/login");
+				},
+				onError: (ctx) => {
+					console.error("Reset password error:", ctx.error);
+					if (ctx.error.status === 403) {
+						toast.error(t("resetPasswordError"));
+					} else {
+						setIsError(true);
+					}
 				},
 			},
-		);
+		});
 	}
 
 	return (
