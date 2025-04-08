@@ -102,6 +102,9 @@
 	},
 	"packageManager": "bun@1.1.39",
 	"private": true,
+	"prisma": {
+		"schema:": "prisma/schema/schema.prisma"
+	},
 	"scripts": {
 		"build": "next build",
 		"dev": "next dev --turbo",
