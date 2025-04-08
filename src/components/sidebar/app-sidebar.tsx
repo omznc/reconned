@@ -26,7 +26,7 @@ import { MailPlus } from "lucide-react";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined; };
+	user: User & { managedClubs: string[]; role?: string | null | undefined };
 	invitesCount: number;
 	inviteRequestsCount: {
 		id: string;
@@ -36,7 +36,7 @@ interface AppSidebarProps {
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const searchParams = useSearchParams();

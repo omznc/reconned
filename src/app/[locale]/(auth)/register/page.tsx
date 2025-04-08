@@ -93,43 +93,41 @@ export default function RegisterPage() {
 
 		setIsLoading(true);
 
-		await authClient.signUp.email(
-			{
-				email: data.email,
-				password: data.password,
-				name: data.name,
-				fetchOptions: {
-					headers: headers,
-					onRequest: () => {
-						setIsLoading(true);
-					},
-					onResponse: () => {
-						setIsLoading(false);
-						// Reset Turnstile widget UI on response, don't clear token state
-						if (turnstileRef.current) {
-							turnstileRef.current.reset();
+		await authClient.signUp.email({
+			email: data.email,
+			password: data.password,
+			name: data.name,
+			fetchOptions: {
+				headers: headers,
+				onRequest: () => {
+					setIsLoading(true);
+				},
+				onResponse: () => {
+					setIsLoading(false);
+					// Reset Turnstile widget UI on response, don't clear token state
+					if (turnstileRef.current) {
+						turnstileRef.current.reset();
+					}
+				},
+				onSuccess: () => {
+					toast.success(t("registerSuccess"));
+					router.push("/login");
+					router.refresh();
+				},
+				onError: (ctx) => {
+					console.error("Register error:", ctx.error);
+					if (ctx.error.status === 403) {
+						toast.error(t("unverified"));
+					} else {
+						if (ctx.error.message === "Missing CAPTCHA response") {
+							toast.error(t("captchaError"));
+							router.refresh();
 						}
-					},
-					onSuccess: () => {
-						toast.success(t("registerSuccess"));
-						router.push("/login");
-						router.refresh();
-					},
-					onError: (ctx) => {
-						console.error("Register error:", ctx.error);
-						if (ctx.error.status === 403) {
-							toast.error(t("unverified"));
-						} else {
-							if (ctx.error.message === "Missing CAPTCHA response") {
-								toast.error(t("captchaError"));
-								router.refresh();
-							}
-							setIsError(true);
-						}
-					},
+						setIsError(true);
+					}
 				},
 			},
-		);
+		});
 	}
 
 	return (

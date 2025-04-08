@@ -35,7 +35,7 @@ export function ManagersTable({
 	pageSize,
 }: ManagersTableProps) {
 	const confirm = useConfirm();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 
 	const handleDemote = async (manager: Manager) => {
 		const confirmed = await confirm({
@@ -66,7 +66,6 @@ export function ManagersTable({
 			data={managers}
 			totalPages={Math.ceil(totalManagers / pageSize)}
 			searchPlaceholder="Pretraži menadžere..."
-
 			columns={[
 				{
 					key: "user",

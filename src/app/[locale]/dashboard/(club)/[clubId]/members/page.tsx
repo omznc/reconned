@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { isAuthenticated } from "@/lib/auth";
 
 interface PageProps {
-	params: Promise<{ clubId: string; }>;
+	params: Promise<{ clubId: string }>;
 	searchParams: Promise<{
 		search?: string;
 		role?: string;
@@ -19,7 +19,7 @@ interface PageProps {
 export default async function MembersPage(props: PageProps) {
 	const [params, searchParams] = await Promise.all([
 		props.params,
-		props.searchParams
+		props.searchParams,
 	]);
 
 	const { clubId } = params;
@@ -32,7 +32,7 @@ export default async function MembersPage(props: PageProps) {
 
 	const [t, user] = await Promise.all([
 		getTranslations("dashboard.club.members"),
-		isAuthenticated()
+		isAuthenticated(),
 	]);
 
 	const where = {
@@ -40,30 +40,30 @@ export default async function MembersPage(props: PageProps) {
 		...(role && role !== "all" ? { role: role as Role } : {}),
 		...(search
 			? {
-				OR: [
-					{ user: { name: { contains: search, mode: "insensitive" } } },
-					{ user: { email: { contains: search, mode: "insensitive" } } },
-					{ user: { callsign: { contains: search, mode: "insensitive" } } },
-				],
-			}
+					OR: [
+						{ user: { name: { contains: search, mode: "insensitive" } } },
+						{ user: { email: { contains: search, mode: "insensitive" } } },
+						{ user: { callsign: { contains: search, mode: "insensitive" } } },
+					],
+				}
 			: {}),
 	} satisfies Prisma.ClubMembershipWhereInput;
 
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
-			...(sortBy === "userName" && {
-				user: { name: sortOrder ?? "asc" },
-			}),
-			...(sortBy === "userCallsign" && {
-				user: { callsign: sortOrder ?? "asc" },
-			}),
-			...(sortBy === "createdAt" && {
-				createdAt: sortOrder ?? "asc",
-			}),
-			...(sortBy === "role" && {
-				role: sortOrder ?? "asc",
-			}),
-		}
+				...(sortBy === "userName" && {
+					user: { name: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "userCallsign" && {
+					user: { callsign: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "createdAt" && {
+					createdAt: sortOrder ?? "asc",
+				}),
+				...(sortBy === "role" && {
+					role: sortOrder ?? "asc",
+				}),
+			}
 		: { createdAt: "desc" };
 
 	const members = await prisma.clubMembership.findMany({

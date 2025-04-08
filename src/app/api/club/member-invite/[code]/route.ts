@@ -44,9 +44,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 	const user = await isAuthenticated();
 
 	if (action === "dismiss") {
-		// Check if user is authorized to dismiss
 		if (invite.status === "REQUESTED") {
-			// For requests, check if user is club manager or the requester
 			const isManager = await prisma.clubMembership.findFirst({
 				where: {
 					userId: user?.id,
@@ -79,7 +77,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 	}
 
 	if (invite.status === "REQUESTED") {
-		// Only managers can approve requests
 		const isManager = await prisma.clubMembership.findFirst({
 			where: {
 				userId: user?.id,
@@ -102,7 +99,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 			});
 		}
 
-		// Process the request approval
 		await prisma.$transaction(async (tx) => {
 			await tx.clubInvite.update({
 				where: { id: invite.id },
@@ -124,7 +120,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 		});
 	}
 
-	// Continue with existing invite acceptance logic
 	if (invite.expiresAt < new Date()) {
 		await prisma.clubInvite.update({
 			where: { id: invite.id },
@@ -143,83 +138,48 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 		});
 	}
 
-	// If no user is logged in, check if account exists
-	if (!user) {
-		const existingUser = await prisma.user.findUnique({
-			where: {
-				email: invite.email,
-			},
-		});
-
-		// Add the invite URL to cookie for post-login redirect
-		const cookieStore = await cookies();
-		const existingInviteUrl = cookieStore.get("inviteUrl");
-
-		if (!existingInviteUrl) {
-			const maxAge = Math.max(
-				0,
-				(invite.expiresAt.getTime() - Date.now()) / 1000,
-			);
-			cookieStore.set("inviteUrl", req.url, {
-				maxAge: maxAge, // Set maxAge to the remaining time until invite expires
-				httpOnly: false,
-				secure: true,
-				sameSite: "strict",
-			});
-		}
-
-		return redirect({
-			href: existingUser ? "/login" : `/register?email=${invite.email}`,
-			locale,
-		});
-	}
-
-	// User is logged in - verify email matches
-	if (invite.email.toLowerCase() !== user.email?.toLowerCase()) {
-		// Wrong account logged in
-		const currentUrl = req.url;
-		return redirect({
-			href: `/login?redirectTo=${encodeURIComponent(currentUrl)}&message=${encodeURIComponent("Pozivnica nije za vaš nalog")}`,
-			locale,
-		});
-	}
-
-	const existingMembership = await prisma.clubMembership.findFirst({
+	const existingUser = await prisma.user.findUnique({
 		where: {
-			userId: user.id,
-			clubId: invite.clubId,
+			email: invite.email,
 		},
 	});
 
-	if (existingMembership) {
+	if (existingUser) {
+		await prisma.$transaction(async (tx) => {
+			await tx.clubInvite.update({
+				where: { id: invite.id },
+				data: {
+					status: "ACCEPTED",
+					userId: existingUser.id,
+				},
+			});
+
+			const existingMembership = await tx.clubMembership.findFirst({
+				where: {
+					userId: existingUser.id,
+					clubId: invite.clubId,
+				},
+			});
+
+			if (!existingMembership) {
+				await tx.clubMembership.create({
+					data: {
+						userId: existingUser.id,
+						clubId: invite.clubId,
+						role: "USER",
+					},
+				});
+			}
+		});
+
 		return redirect({
-			href: `${redirectTo}?message=${encodeURIComponent("Već ste član kluba")}`,
+			href: user ? redirectTo : `/login?email=${invite.email}`,
 			locale,
 		});
 	}
 
-	await prisma.$transaction(async (tx) => {
-		const updatedInvite = await tx.clubInvite.update({
-			where: { id: invite.id },
-			data: {
-				status: "ACCEPTED",
-				userId: user.id,
-			},
-		});
-
-		const membership = await tx.clubMembership.create({
-			data: {
-				userId: user.id,
-				clubId: invite.clubId,
-				role: "USER",
-			},
-		});
-
-		return { updatedInvite, membership };
-	});
-
 	return redirect({
-		href: `${redirectTo}?message=${encodeURIComponent("Članstvo uspješno prihvaćeno")}`,
+		href: `/register?email=${invite.email}`,
 		locale,
 	});
 }

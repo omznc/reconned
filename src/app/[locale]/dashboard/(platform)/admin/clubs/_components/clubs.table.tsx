@@ -27,7 +27,6 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 			data={clubs}
 			totalPages={Math.ceil(totalClubs / pageSize)}
 			searchPlaceholder="Pretraži klubove..."
-
 			columns={[
 				{
 					key: "logo",

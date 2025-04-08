@@ -32,7 +32,6 @@ export function EventsTable({
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
 			searchPlaceholder={t("search")}
-
 			columns={[
 				{
 					key: "name",

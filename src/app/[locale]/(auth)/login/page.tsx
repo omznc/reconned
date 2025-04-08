@@ -44,6 +44,11 @@ export default function LoginPage() {
 	const t = useTranslations("public.auth");
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
+	const [email, setEmail] = useQueryState("email", {
+		defaultValue: "",
+		clearOnDefault: true,
+		shallow: true,
+	});
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
@@ -60,7 +65,7 @@ export default function LoginPage() {
 	const form = useForm<LoginFormValues>({
 		resolver: zodResolver(loginSchema),
 		defaultValues: {
-			email: "",
+			email: email || "",
 			password: "",
 		},
 		mode: "onChange",
@@ -82,17 +87,6 @@ export default function LoginPage() {
 			router.push("/two-factor");
 			return;
 		}
-		const inviteUrl = document.cookie
-			.split("; ")
-			.find((row) => row.startsWith("inviteUrl="))
-			?.split("=")[1];
-
-		if (inviteUrl) {
-			document.cookie = "inviteUrl=; max-age=0; path=/";
-			window.location.href = decodeURIComponent(inviteUrl);
-			return;
-		}
-
 		router.push(redirectTo ? redirectTo : "/");
 		router.refresh();
 	}
@@ -106,37 +100,35 @@ export default function LoginPage() {
 		const headers = new Headers();
 		headers.append("x-captcha-response", turnstileToken);
 
-		await authClient.signIn.email(
-			{
-				email: data.email,
-				password: data.password,
-				fetchOptions: {
-					headers: headers,
-					onRequest: () => {
-						setIsLoading(true);
-					},
-					onResponse: () => {
-						setIsLoading(false);
-						// Only reset widget UI, don't clear token state on errors
-						if (turnstileRef.current) {
-							turnstileRef.current.reset();
+		await authClient.signIn.email({
+			email: data.email,
+			password: data.password,
+			fetchOptions: {
+				headers: headers,
+				onRequest: () => {
+					setIsLoading(true);
+				},
+				onResponse: () => {
+					setIsLoading(false);
+					// Only reset widget UI, don't clear token state on errors
+					if (turnstileRef.current) {
+						turnstileRef.current.reset();
+					}
+				},
+				onSuccess: handleSuccessfulLogin,
+				onError: (ctx) => {
+					if (ctx.error.status === 403) {
+						toast.error(t("unverified"));
+					} else {
+						if (ctx.error.message === "Missing CAPTCHA response") {
+							toast.error(t("captchaError"));
+							router.refresh();
 						}
-					},
-					onSuccess: handleSuccessfulLogin,
-					onError: (ctx) => {
-						if (ctx.error.status === 403) {
-							toast.error(t("unverified"));
-						} else {
-							if (ctx.error.message === "Missing CAPTCHA response") {
-								toast.error(t("captchaError"));
-								router.refresh();
-							}
-							setIsError(true);
-						}
+						setIsError(true);
 					}
 				},
 			},
-		);
+		});
 	}
 
 	// Debug the token state to see when it changes
@@ -172,6 +164,19 @@ export default function LoginPage() {
 											suppressHydrationWarning
 										/>
 									</FormControl>
+									{!!email && (
+										<p className="text-sm text-gray-500">
+											{t("emailAutofilled")}{" "}
+											<span
+												className="text-foreground cursor-pointer inline"
+												onClick={() => {
+													setEmail("");
+												}}
+											>
+												{t("remove")}
+											</span>
+										</p>
+									)}
 									<FormMessage />
 								</FormItem>
 							)}
