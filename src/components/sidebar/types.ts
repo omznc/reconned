@@ -6,6 +6,7 @@ export interface NavItem {
 	icon?: LucideIcon;
 	protected?: boolean;
 	isSoon?: boolean;
+	isNew?: boolean;
 	items?: NavSubItem[];
 }
 
@@ -15,6 +16,7 @@ export interface NavSubItem {
 	icon?: LucideIcon;
 	protected?: boolean;
 	isSoon?: boolean;
+	isNew?: boolean;
 }
 
 export interface NavSectionProps {

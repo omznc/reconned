@@ -2,12 +2,12 @@ import { z } from "zod";
 
 export const purchaseFormSchema = z.object({
 	clubId: z.string(),
-	title: z.string().min(1, "Naslov je obavezan"),
+	title: z.string().min(1, "Title is required"),
 	description: z.string().optional(),
-	amount: z.number().min(1, "Iznos mora biti veći od 0"),
+	amount: z.number().min(1, "Amount must be greater than 0"),
 	receiptUrls: z
 		.array(z.string())
-		.max(3, "Maksimalno 3 računa po stavci")
+		.max(3, "Maximum 3 receipts per item")
 		.optional(),
 });
 

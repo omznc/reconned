@@ -23,6 +23,7 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { BadgeNew } from "@/components/badge-new";
 
 interface AdditionalProps {
 	hasAccess?: (subItem: NavSubItem) => boolean;
@@ -53,6 +54,7 @@ export const renderCollapsedItem = (item: NavItem, path: string) => (
 									{subItem.icon && <subItem.icon className="mr-2 size-4" />}
 									<span>{subItem.title}</span>
 									{subItem.isSoon && <BadgeSoon className="ml-2" />}
+									{subItem.isNew && <BadgeNew className="ml-2" />}
 								</Link>
 							</DropdownMenuItem>
 						))}
@@ -88,6 +90,7 @@ export const renderExpandedItem = (
 						{item.icon && <item.icon />}
 						<span>{item.title}</span>
 						{item.isSoon && <BadgeSoon className="ml-2" />}
+						{item.isNew && <BadgeNew className="ml-2" />}
 					</Link>
 				</SidebarMenuButton>
 			</SidebarMenuItem>
@@ -133,6 +136,7 @@ export const renderExpandedItem = (
 											{subItem.icon && <subItem.icon />}
 											<span>{subItem.title}</span>
 											{subItem.isSoon && <BadgeSoon className="ml-2" />}
+											{subItem.isNew && <BadgeNew className="ml-2" />}
 										</Link>
 									</SidebarMenuSubButton>
 								</SidebarMenuSubItem>

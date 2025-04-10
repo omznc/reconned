@@ -38,6 +38,8 @@ import {
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "@/i18n/navigation";
+import { BadgeSoon } from "@/components/badge-soon";
+import { useTranslations } from "next-intl";
 
 interface FileUploadProgress {
 	file: File;
@@ -48,8 +50,10 @@ interface FileUploadProgress {
 
 export function AddPurchaseModal() {
 	const [open, setOpen] = useState(false);
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 	const router = useRouter();
+	const t = useTranslations("dashboard.club.spending");
+
 	const form = useForm<PurchaseFormValues>({
 		resolver: zodResolver(purchaseFormSchema),
 		defaultValues: {
@@ -147,7 +151,7 @@ export function AddPurchaseModal() {
 						setUploadProgress((prev) =>
 							prev.map((p, i) => (i === index ? { ...p, status: "error" } : p)),
 						);
-						toast.error(`Greška prilikom dodavanja fajla ${file.name}`);
+						toast.error(`${t("errorReceipt")} ${file.name}`);
 						throw error;
 					}
 				}
@@ -157,14 +161,14 @@ export function AddPurchaseModal() {
 			}
 			const result = await createPurchase(data);
 			if (result?.data?.purchase) {
-				toast.success("Kupovina uspješno dodana");
+				toast.success(t("success"));
 				setOpen(false);
 				setFiles([]);
 				form.reset();
 				router.refresh();
 			}
 		} catch (error) {
-			toast.error("Greška prilikom dodavanja kupovine");
+			toast.error(t("error"));
 		}
 		setIsLoading(false);
 		setIsUploadingFiles(false);
@@ -179,12 +183,12 @@ export function AddPurchaseModal() {
 			<CredenzaTrigger asChild>
 				<Button>
 					<Plus className="mr-2 h-4 w-4" />
-					Nova stavka
+					{t("newItem")}
 				</Button>
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>Nova stavka</CredenzaTitle>
+					<CredenzaTitle>{t("newItem")}</CredenzaTitle>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -194,9 +198,9 @@ export function AddPurchaseModal() {
 								name="title"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Naslov</FormLabel>
+										<FormLabel>{t("details.title")}</FormLabel>
 										<FormControl>
-											<Input placeholder="Naziv" {...field} />
+											<Input placeholder={t("details.title")} {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -207,9 +211,9 @@ export function AddPurchaseModal() {
 								name="description"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Opis</FormLabel>
+										<FormLabel>{t("details.description")}</FormLabel>
 										<FormControl>
-											<Textarea placeholder="Opis" {...field} />
+											<Textarea placeholder={t("details.description")} {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -220,7 +224,7 @@ export function AddPurchaseModal() {
 								name="amount"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Iznos (KM)</FormLabel>
+										<FormLabel>{t("details.amount")}</FormLabel>
 										<FormControl>
 											<Input
 												type="number"
@@ -236,16 +240,16 @@ export function AddPurchaseModal() {
 									</FormItem>
 								)}
 							/>
-							<FormField
+							{/* <FormField
 								control={form.control}
 								name="receiptUrls"
 								render={() => (
 									<FormItem>
 										<FormLabel>
-											Računi ({files.length}/3)
+											{t("details.receipts")} ({files.length}/3)
 											{!canAddMoreFiles && (
 												<span className="text-destructive ml-2 text-sm">
-													Dostigli ste limit
+													{t("details.receiptsLimit")}
 												</span>
 											)}
 										</FormLabel>
@@ -276,25 +280,24 @@ export function AddPurchaseModal() {
 														className={cn(
 															"outline-dashed outline-1 outline-slate-500",
 															!canAddMoreFiles &&
-																"opacity-50 cursor-not-allowed pointer-events-none",
+															"opacity-50 cursor-not-allowed pointer-events-none",
 														)}
 													>
 														<div className="flex items-center justify-center flex-col p-8 w-full">
 															<CloudUpload className="text-gray-500 w-10 h-10" />
 															<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
 																{files.length >= 3 ? (
-																	<span>Dostigli ste limit od 3 računa</span>
+																	<span>{t("details.receiptsLimit")}</span>
 																) : (
 																	<>
 																		<span className="font-semibold">
-																			Kliknite da dodate fajl
+																			{t("details.receiptUploadInfo")}
 																		</span>
-																		, ili ga samo prebacite ovde
 																	</>
 																)}
 															</p>
 															<p className="text-xs text-gray-500 dark:text-gray-400">
-																Dozvoljeni formati: JPG, JPEG, PNG, PDF
+																{t("details.receiptFormats")}
 															</p>
 														</div>
 													</FileInput>
@@ -310,7 +313,7 @@ export function AddPurchaseModal() {
 															>
 																{file.type === "application/pdf" ? (
 																	<div className="h-[100px] mr-4 p-2 border w-auto flex flex-col items-center justify-center">
-																		<p className="text-sm">PDF Dokument</p>
+																		<p className="text-sm">{t("receipt.pdfDocument")}</p>
 																		<p className="text-sm">({file.name})</p>
 																	</div>
 																) : (
@@ -332,7 +335,7 @@ export function AddPurchaseModal() {
 																)}
 																{uploadProgress[i]?.status === "error" && (
 																	<div className="absolute top-0 right-0 p-1 bg-red-500 text-white text-xs">
-																		Greška
+																		{t("error")}
 																	</div>
 																)}
 															</FileUploaderItem>
@@ -341,22 +344,21 @@ export function AddPurchaseModal() {
 											</FileUploader>
 										</FormControl>
 										<FormDescription>
-											Dodajte slike ili PDF fajlove računa (max 5MB po fajlu,
-											max 3 računa)
+											{t("details.receiptsMaxCount")}
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
-							/>
+							/> */}
 							<LoaderSubmitButton
 								isLoading={isLoading || isUploadingFiles}
 								className="w-full"
 							>
 								{isUploadingFiles
-									? `Dodavanje fajlova (${uploadProgress.reduce((acc, curr) => acc + curr.progress, 0) / files.length}%)`
+									? `${t("uploadingFiles")} (${uploadProgress.reduce((acc, curr) => acc + curr.progress, 0) / files.length}%)`
 									: isLoading
-										? "Dodavanje kupovine..."
-										: "Sačuvaj"}
+										? t("saving")
+										: t("save")}
 							</LoaderSubmitButton>
 						</form>
 					</Form>

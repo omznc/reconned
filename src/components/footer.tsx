@@ -17,6 +17,7 @@ import {
 	ShieldQuestion,
 	BarChart2,
 } from "lucide-react";
+import { BadgeNew } from "@/components/badge-new";
 
 export function Footer() {
 	const t = useTranslations("components.footer");
@@ -115,6 +116,7 @@ export function Footer() {
 							>
 								<SiGithub className="size-4" />
 								<span>Github</span>
+								<BadgeNew className="-mb-0.5" />
 							</Link>
 							<Link
 								href="#"

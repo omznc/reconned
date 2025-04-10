@@ -12,11 +12,11 @@ import {
 import {
 	Form,
 	FormControl,
+	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
-	FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,6 +48,7 @@ import {
 import Image from "next/image";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface FileUploadProgress {
 	file: File;
@@ -56,8 +57,9 @@ interface FileUploadProgress {
 	retries: number;
 }
 
-export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
+export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase; }) {
 	const [open, setOpen] = useState(false);
+	const t = useTranslations("dashboard.club.spending");
 	const router = useRouter();
 	const confirm = useConfirm();
 	const [files, setFiles] = useState<File[]>([]);
@@ -134,7 +136,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 				const totalReceiptsCount =
 					(data.receiptUrls?.length || 0) + files.length;
 				if (totalReceiptsCount > 3) {
-					toast.error("Maksimalno 3 računa po stavci");
+					toast.error(t("details.receiptsMaxCount"));
 					return;
 				}
 				setIsUploadingFiles(true);
@@ -177,7 +179,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 							}),
 						);
 					} catch (error) {
-						toast.error(`Greška prilikom dodavanja fajla ${file.name}`);
+						toast.error(`${t("errorReceipt")} ${file.name}`);
 						throw error;
 					}
 				}
@@ -188,14 +190,14 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 
 			const result = await updatePurchase(data);
 			if (result?.data) {
-				toast.success("Kupovina uspješno izmijenjena");
+				toast.success(t("successEdit"));
 				setOpen(false);
 				setFiles([]);
 				form.reset();
 				router.refresh();
 			}
 		} catch (error) {
-			toast.error("Greška prilikom izmjene kupovine");
+			toast.error(t("error"));
 		}
 		setIsLoading(false);
 		setIsUploadingFiles(false);
@@ -211,7 +213,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>Izmijeni kupovinu</CredenzaTitle>
+					<CredenzaTitle>{t("edit")}</CredenzaTitle>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -221,7 +223,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 								name="title"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Naslov</FormLabel>
+										<FormLabel>{t("details.title")}</FormLabel>
 										<FormControl>
 											<Input {...field} />
 										</FormControl>
@@ -234,7 +236,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 								name="description"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Opis</FormLabel>
+										<FormLabel>{t("details.description")}</FormLabel>
 										<FormControl>
 											<Textarea {...field} />
 										</FormControl>
@@ -247,7 +249,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 								name="amount"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Iznos (KM)</FormLabel>
+										<FormLabel>{t("details.amount")}</FormLabel>
 										<FormControl>
 											<Input
 												type="number"
@@ -262,16 +264,16 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 									</FormItem>
 								)}
 							/>
-							<FormField
+							{/* <FormField
 								control={form.control}
 								name="receiptUrls"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>
-											Računi ({(field.value?.length || 0) + files.length}/3)
+											{t("details.receipts")} ({(field.value?.length || 0) + files.length}/3)
 											{!canAddMoreFiles && (
 												<span className="text-destructive ml-2 text-sm">
-													Dostigli ste limit
+													{t("details.receiptsLimit")}
 												</span>
 											)}
 										</FormLabel>
@@ -310,18 +312,17 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 															<CloudUpload className="text-gray-500 w-10 h-10" />
 															<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
 																{(field.value?.length || 0) >= 3 ? (
-																	<span>Dostigli ste limit od 3 računa</span>
+																	<span>{t("details.receiptsLimit")}</span>
 																) : (
 																	<>
 																		<span className="font-semibold">
-																			Kliknite da dodate fajl
+																			{t("details.receiptUploadInfo")}
 																		</span>
-																		, ili ga samo prebacite ovde
 																	</>
 																)}
 															</p>
 															<p className="text-xs text-gray-500 dark:text-gray-400">
-																Dozvoljeni formati: JPG, JPEG, PNG, PDF
+																{t("details.receiptFormats")}
 															</p>
 														</div>
 													</FileInput>
@@ -337,7 +338,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 															>
 																{file.type === "application/pdf" ? (
 																	<div className="h-[100px] mr-4 p-2 border w-auto flex flex-col items-center justify-center">
-																		<p className="text-sm">PDF Dokument</p>
+																		<p className="text-sm">{t("receipt.pdfDocument")}</p>
 																		<p className="text-sm">({file.name})</p>
 																	</div>
 																) : (
@@ -353,22 +354,20 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 											</FileUploader>
 										</FormControl>
 										<FormDescription>
-											Dodajte slike ili PDF fajlove računa (max 5MB po fajlu,
-											max 3 računa)
+											{t("details.receiptsMaxCount")}
 										</FormDescription>
 										{field.value && field.value.length > 0 && (
 											<div className="mt-4 space-y-2">
-												<h3 className="font-semibold">Računi</h3>
+												<h3 className="font-semibold">{t("details.receipts")}</h3>
 												<p className="text-sm text-muted-foreground">
-													Brisanje će ukloniti račun bez da kliknete "Sačuvaj
-													izmjene"
+													{t("deleteReceiptConfirm.body")}
 												</p>
 												<div className="flex flex-wrap gap-1">
 													{field.value.map((url, index) => (
 														<HoverCard key={url}>
 															<div className="flex items-center p-2 bg-sidebar gap-2 border">
 																<HoverCardTrigger className="text-sm cursor-pointer">
-																	Račun {index + 1}
+																	{t("receipt.title")} {index + 1}
 																</HoverCardTrigger>
 																<Button
 																	type="button"
@@ -377,10 +376,10 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 																	disabled={isDeletingReceipt}
 																	onClick={async () => {
 																		const confirmed = await confirm({
-																			title: "Jeste li sigurni?",
-																			body: "Ako obrišete račun, nećete ga moći vratiti nazad.",
-																			actionButton: "Obriši",
-																			cancelButton: "Otkaži",
+																			title: t("deleteReceiptConfirm.title"),
+																			body: t("deleteReceiptConfirm.body"),
+																			actionButton: t("deleteReceiptConfirm.action"),
+																			cancelButton: t("deleteReceiptConfirm.cancel"),
 																			actionButtonVariant: "destructive",
 																		});
 
@@ -412,14 +411,14 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 															<HoverCardContent className="w-full">
 																{url.endsWith(".pdf") ? (
 																	<embed
-																		title="Receipt"
+																		title={t("receipt.title")}
 																		src={url}
 																		className="h-[300px] w-full"
 																	/>
 																) : (
 																	<Image
 																		src={url}
-																		alt={`Receipt ${index + 1}`}
+																		alt={`${t("receipt.title")} ${index + 1}`}
 																		width={300}
 																		height={400}
 																		className="object-contain"
@@ -434,7 +433,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 										<FormMessage />
 									</FormItem>
 								)}
-							/>
+							/> */}
 							<Button
 								type="submit"
 								className="w-full mb-2"
@@ -443,21 +442,21 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 								{isUploadingFiles ? (
 									<>
 										<Loader className="mr-2 h-4 w-4 animate-spin" />
-										Dodavanje fajlova (
+										{t("uploadingFiles")} (
 										{Math.round(
 											(uploadProgress.reduce((acc, p) => acc + p.progress, 0) /
 												uploadProgress.length) *
-												100,
+											100,
 										)}
 										%)
 									</>
 								) : isLoading ? (
 									<>
 										<Loader className="mr-2 h-4 w-4 animate-spin" />
-										Izmjena kupovine...
+										{t("saving")}
 									</>
 								) : (
-									"Sačuvaj izmjene"
+									t("saveChanges")
 								)}
 							</Button>
 						</form>
