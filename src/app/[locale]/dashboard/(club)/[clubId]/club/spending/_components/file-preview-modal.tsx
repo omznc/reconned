@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface FilePreviewModalProps {
 	isOpen: boolean;
@@ -24,6 +25,7 @@ export function FilePreviewModal({
 	fileName,
 }: FilePreviewModalProps) {
 	const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
+	const t = useTranslations("dashboard.club.spending");
 
 	return (
 		<Credenza open={isOpen} onOpenChange={onClose}>
@@ -37,7 +39,7 @@ export function FilePreviewModal({
 							onClick={() => window.open(fileUrl, "_blank")}
 						>
 							<Download className="h-4 w-4 mr-2" />
-							Preuzmi
+							{t("receipt.download")}
 						</Button>
 					</CredenzaTitle>
 				</CredenzaHeader>

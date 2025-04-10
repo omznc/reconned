@@ -7,7 +7,7 @@ import { ErrorPage } from "@/components/error-page";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {
-	params: Promise<{ clubId: string }>;
+	params: Promise<{ clubId: string; }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -18,10 +18,10 @@ interface PageProps {
 }
 
 export default async function SpendingPage(props: PageProps) {
-	const t = await getTranslations("dashboard.club.events");
+	const t = await getTranslations("dashboard.club.spending");
 
 	if (!FEATURE_FLAGS.CLUBS_SPENDING) {
-		return <ErrorPage title={t("attendenceTracking.unavailable")} />;
+		return <ErrorPage title={t("title")} />;
 	}
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
@@ -36,18 +36,18 @@ export default async function SpendingPage(props: PageProps) {
 		clubId,
 		...(search
 			? {
-					OR: [
-						{ title: { contains: search, mode: "insensitive" } },
-						{ description: { contains: search, mode: "insensitive" } },
-					],
-				}
+				OR: [
+					{ title: { contains: search, mode: "insensitive" } },
+					{ description: { contains: search, mode: "insensitive" } },
+				],
+			}
 			: {}),
 	} satisfies Prisma.ClubPurchaseWhereInput;
 
 	const orderBy: Prisma.ClubPurchaseOrderByWithRelationInput = sortBy
 		? {
-				[sortBy]: sortOrder ?? "asc",
-			}
+			[sortBy]: sortOrder ?? "asc",
+		}
 		: { createdAt: "desc" };
 
 	const purchases = await prisma.clubPurchase.findMany({
@@ -62,7 +62,7 @@ export default async function SpendingPage(props: PageProps) {
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">Potrošnja</h3>
+				<h3 className="text-lg font-semibold">{t("title")}</h3>
 				<AddPurchaseModal />
 			</div>
 

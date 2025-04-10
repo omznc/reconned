@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { ClubPurchase } from "@prisma/client";
 import { useState } from "react";
 import { FilePreviewModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/file-preview-modal";
+import { useTranslations } from "next-intl";
 
 interface PurchasesTableProps {
 	purchases: ClubPurchase[];
@@ -21,6 +22,7 @@ interface PurchasesTableProps {
 export function PurchasesTable(props: PurchasesTableProps) {
 	const router = useRouter();
 	const confirm = useConfirm();
+	const t = useTranslations("dashboard.club.spending");
 	const [selectedFile, setSelectedFile] = useState<{
 		url: string;
 		name: string;
@@ -31,11 +33,11 @@ export function PurchasesTable(props: PurchasesTableProps) {
 			<GenericDataTable
 				data={props.purchases}
 				columns={[
-					{ key: "title", header: "Naslov", sortable: true },
-					{ key: "description", header: "Opis", sortable: true },
+					{ key: "title", header: t("details.title"), sortable: true },
+					{ key: "description", header: t("details.description"), sortable: true },
 					{
 						key: "amount",
-						header: "Iznos",
+						header: t("details.amount"),
 						sortable: true,
 						cellConfig: {
 							component: (value: number) => `${value.toFixed(2)} KM`,
@@ -43,7 +45,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 					{
 						key: "createdAt",
-						header: "Datum",
+						header: t("date"),
 						sortable: true,
 						cellConfig: {
 							component: (value: Date) =>
@@ -54,36 +56,36 @@ export function PurchasesTable(props: PurchasesTableProps) {
 								}).format(new Date(value)),
 						},
 					},
-					{
-						key: "receiptUrls",
-						header: "Računi",
-						sortable: false,
-						cellConfig: {
-							variant: "custom",
-							component: (value: string[], row) => (
-								<div className="flex gap-2" key={JSON.stringify(row)}>
-									{value?.map((url, index) => {
-										const fileName = `Račun ${index + 1}`;
+					// {
+					// 	key: "receiptUrls",
+					// 	header: t("details.receipts"),
+					// 	sortable: false,
+					// 	cellConfig: {
+					// 		variant: "custom",
+					// 		component: (value: string[], row) => (
+					// 			<div className="flex gap-2" key={JSON.stringify(row)}>
+					// 				{value?.map((url, index) => {
+					// 					const fileName = `${t("receipt.title")} ${index + 1}`;
 
-										return (
-											<Button
-												key={url}
-												variant="outline"
-												size="sm"
-												onClick={() => setSelectedFile({ url, name: fileName })}
-											>
-												<FileText className="h-4 w-4 mr-2" />
-												{fileName}
-											</Button>
-										);
-									})}
-								</div>
-							),
-						},
-					},
+					// 					return (
+					// 						<Button
+					// 							key={url}
+					// 							variant="outline"
+					// 							size="sm"
+					// 							onClick={() => setSelectedFile({ url, name: fileName })}
+					// 						>
+					// 							<FileText className="h-4 w-4 mr-2" />
+					// 							{fileName}
+					// 						</Button>
+					// 					);
+					// 				})}
+					// 			</div>
+					// 		),
+					// 	},
+					// },
 					{
 						key: "actions",
-						header: "Akcije",
+						header: t("details.actions"),
 						sortable: false,
 						cellConfig: {
 							variant: "custom",
@@ -96,11 +98,11 @@ export function PurchasesTable(props: PurchasesTableProps) {
 										size="icon"
 										onClick={async () => {
 											const confirmed = await confirm({
-												title: "Obriši kupovinu",
-												body: "Jeste li sigurni da želite obrisati ovu stavku potrošnje? Ova akcija je nepovratna.",
-												actionButton: "Obriši",
+												title: t("deleteConfirm.title"),
+												body: t("deleteConfirm.body"),
+												actionButton: t("deleteConfirm.action"),
 												actionButtonVariant: "destructive",
-												cancelButton: "Otkaži",
+												cancelButton: t("deleteConfirm.cancel"),
 											});
 
 											if (!confirmed) {
@@ -112,10 +114,10 @@ export function PurchasesTable(props: PurchasesTableProps) {
 												clubId: row.clubId,
 											}).then((result) => {
 												if (result?.data) {
-													toast.success("Kupovina uspješno obrisana");
+													toast.success(t("successDelete"));
 													router.refresh();
 												} else {
-													toast.error("Greška prilikom brisanja kupovine");
+													toast.error(t("errorDelete"));
 												}
 											});
 										}}
@@ -128,7 +130,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 				]}
 				totalPages={Math.ceil(props.totalPurchases / props.pageSize)}
-				searchPlaceholder="Pretraži kupovine..."
+				searchPlaceholder={t("search")}
 			/>
 
 			{selectedFile && (
