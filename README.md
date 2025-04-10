@@ -1,4 +1,5 @@
-<img src="https://reconned.com/reconned-logo-light.svg" alt="Airsoft Event Management System Logo" width="100%" height="auto" style="background: white; padding: 1rem;" />
+![Image](/public/reconned-logo-light.svg)
+
 
 A Next.js 15+ application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
 
