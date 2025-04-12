@@ -55,7 +55,6 @@ import {
 	ArrowUpRight,
 	Calendar as CalendarIcon,
 	CheckCircle,
-	Instagram,
 	Loader,
 	Trash,
 } from "lucide-react";
@@ -447,8 +446,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										>
 											{field.value
 												? props.countries.find(
-														(country) => country.id === field.value,
-													)?.name
+													(country) => country.id === field.value,
+												)?.name
 												: t("pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
