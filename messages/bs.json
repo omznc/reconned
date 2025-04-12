@@ -420,7 +420,55 @@
 				"emailDescription": "Email adresa kluba, javno prikazana na profilu.",
 				"save": "Spasi promjene",
 				"website": "Web stranica",
-				"create": "Kreiraj klub"
+				"create": "Kreiraj klub",
+				"socialMedia": "Društvene mreže",
+				"instagramConnection": "Instagram povezivanje",
+				"instagramDescription": "Povežite svoj Instagram račun da biste prikazali fotografije kluba na profilu kluba.",
+				"instagramConnect": "Poveži Instagram",
+				"instagramConnecting": "Povezivanje...",
+				"instagramConnectSuccess": "Instagram račun je uspješno povezan",
+				"instagramConnectError": "Došlo je do greške prilikom povezivanja Instagram računa",
+				"instagramConnectedMessage": "Vaš klub je povezan sa Instagram računom",
+				"instagramDisconnecting": "Odspajanje...",
+				"instagramDisconnectSuccess": "Instagram račun je uspješno odspojen",
+				"instagramDisconnectError": "Došlo je do greške prilikom odspajanja Instagram računa",
+				"instagramDisconnect": {
+					"title": "Odspojitvanje Instagram računa",
+					"body": "Da li ste sigurni da želite odspojiti Instagram račun? Nakon odspajanja, fotografije se više neće prikazivati na profilu kluba.",
+					"action": "Odspoji Instagram",
+					"confirm": "Da, odspoji",
+					"cancel": "Ne, vrati se"
+				},
+				"instagramRedirecting": "Preusmjeravanje na Instagram za autorizaciju...",
+				"instagramSelectPageTitle": "Odaberite Facebook stranicu",
+				"instagramSelectPageDescription": "Odaberite Facebook stranicu koja je povezana s Instagram Business računom koji želite povezati s vašim klubom.",
+				"instagramNoPages": "Nije pronađena niti jedna Facebook stranica",
+				"instagramNoPageDescription": "Nisu pronađene Facebook stranice povezane s vašim računom. Prvo kreirajte Facebook stranicu i povežite je s Instagram Business računom.",
+				"instagramConnected": "Instagram povezan",
+				"instagramNotConnected": "Instagram nije povezan",
+				"instagramLoadingPages": "Učitavanje stranica...",
+				"backToClub": "Natrag na klub",
+				"instagramSelectPage": "Molimo odaberite stranicu",
+				"instagramEligible": "Dostupno",
+				"instagramIneligible": "Nije dostupno",
+				"instagramIneligibleTooltip": "Ova Facebook stranica nije povezana sa Instagram Business računom. Za povezivanje, prvo povežite Instagram Business račun s ovom Facebook stranicom.",
+				"instagramSessionMissing": "Nedostaje sesija za odabir stranice",
+				"instagramPagesFetchFailed": "Neuspješno učitavanje Facebook stranica",
+				"instagramSelectedPageNotFound": "Odabrana stranica nije pronađena",
+				"instagramConnectionFailed": "Neuspjelo povezivanje Instagram računa",
+				"instagramNoEligiblePages": "Nijedna od vaših Facebook stranica nije povezana sa Instagram Business računom. Prvo povežite Instagram Business račun s vašom Facebook stranicom.",
+				"instagramError": {
+					"title": "Problem s povezivanjem Instagram računa",
+					"connectionFailed": "Problem prilikom povezivanja sa Instagram računom. Molimo pokušajte ponovo.",
+					"noFacebookPages": "Nismo pronašli nijedan Facebook Page povezan sa vašim računom.",
+					"noInstagramAccount": "Nismo pronašli Instagram Business račun povezan sa odabranom Facebook stranicom.",
+					"notConnected": "Instagram račun nije povezan sa vašim Facebook stranicom.",
+					"missingParams": "Nedostaju parametri za povezivanje sa Instagram API-jem.",
+					"authFailed": "Autorizacija nije uspjela. Molimo pokušajte ponovo.",
+					"pageNotFound": "Facebook Page nije pronađena.",
+					"personalAccount": "Instagram račun povezan sa odabranom Facebook stranicom nije Business račun. Potrebno je koristiti Instagram Business račun za povezivanje."
+				},
+				"cancel": "Odustani"
 			},
 			"posts": {
 				"successEdited": "Objava uspješno izmjenjena",
@@ -956,7 +1004,9 @@
 			"posts": "Objave",
 			"createPost": "Nova objava",
 			"noPosts": "Nema objava",
-			"allied": "U savezu ASK FBIH"
+			"allied": "U savezu ASK FBIH",
+			"instagramGallery": "Instagram",
+			"instagramGalleryDescription": "Pogledajte naše najnovije objave na Instagramu"
 		},
 		"leaveClubButton": {
 			"title": "Napuštanje kluba",
@@ -994,7 +1044,8 @@
 				"spending": "Potrošnja",
 				"add-club": "Dodaj klub",
 				"invites": "Pozivnice",
-				"users": "Korisnici"
+				"users": "Korisnici",
+				"instagram": "Instagram"
 			}
 		},
 		"icons": {
@@ -1026,6 +1077,11 @@
 			"expired": "Isteklo",
 			"expiringSoon": "Istječe uskoro",
 			"unlimited": "Bez kraja"
+		},
+		"instagramGallery": {
+			"noPhotos": "Nema fotografija za prikaz",
+			"viewMore": "Pogledaj više na Instagramu",
+			"error": "Greška pri učitavanju fotografija"
 		}
 	},
 	"imgur": {

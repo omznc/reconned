@@ -220,7 +220,6 @@ export function EventApplicationForm({
 			const data = await response.json();
 			setSearchResults(data);
 		} catch (error) {
-			console.error("Search failed:", error);
 			setSearchResults([]);
 		} finally {
 			setIsSearching(false);

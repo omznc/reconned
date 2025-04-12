@@ -7,7 +7,7 @@ import { ErrorPage } from "@/components/error-page";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {
-	params: Promise<{ clubId: string; }>;
+	params: Promise<{ clubId: string }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -36,18 +36,18 @@ export default async function SpendingPage(props: PageProps) {
 		clubId,
 		...(search
 			? {
-				OR: [
-					{ title: { contains: search, mode: "insensitive" } },
-					{ description: { contains: search, mode: "insensitive" } },
-				],
-			}
+					OR: [
+						{ title: { contains: search, mode: "insensitive" } },
+						{ description: { contains: search, mode: "insensitive" } },
+					],
+				}
 			: {}),
 	} satisfies Prisma.ClubPurchaseWhereInput;
 
 	const orderBy: Prisma.ClubPurchaseOrderByWithRelationInput = sortBy
 		? {
-			[sortBy]: sortOrder ?? "asc",
-		}
+				[sortBy]: sortOrder ?? "asc",
+			}
 		: { createdAt: "desc" };
 
 	const purchases = await prisma.clubPurchase.findMany({

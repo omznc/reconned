@@ -70,7 +70,6 @@ export default function LoginPage() {
 	async function onSubmit(data: ResetPasswordFormValues) {
 		if (!turnstileToken) {
 			toast.error(t("captchaError"));
-			console.error("Missing turnstile token on reset password submit");
 			return;
 		}
 
@@ -97,7 +96,6 @@ export default function LoginPage() {
 					router.push("/login");
 				},
 				onError: (ctx) => {
-					console.error("Reset password error:", ctx.error);
 					if (ctx.error.status === 403) {
 						toast.error(t("resetPasswordError"));
 					} else {

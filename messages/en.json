@@ -420,7 +420,55 @@
 				"emailDescription": "Email address of the club, publicly displayed on the profile.",
 				"website": "Website",
 				"save": "Save changes",
-				"create": "Create a club"
+				"create": "Create a club",
+				"cancel": "Cancel",
+				"backToClub": "Back to club",
+				"socialMedia": "Social Media",
+				"instagramConnection": "Instagram Connection",
+				"instagramDescription": "Connect your Instagram account to display club photos on the club profile.",
+				"instagramConnect": "Connect Instagram",
+				"instagramConnecting": "Connecting...",
+				"instagramConnectSuccess": "Instagram account successfully connected",
+				"instagramConnectError": "An error occurred while connecting Instagram account",
+				"instagramConnectedMessage": "Your club is connected to an Instagram account",
+				"instagramDisconnecting": "Disconnecting...",
+				"instagramDisconnectSuccess": "Instagram account successfully disconnected",
+				"instagramDisconnectError": "An error occurred while disconnecting Instagram account",
+				"instagramDisconnect": {
+					"title": "Disconnect Instagram Account",
+					"body": "Are you sure you want to disconnect the Instagram account? After disconnecting, photos will no longer be displayed on the club profile.",
+					"action": "Disconnect Instagram",
+					"confirm": "Yes, disconnect",
+					"cancel": "No, go back"
+				},
+				"instagramRedirecting": "Redirecting to Instagram for authorization...",
+				"instagramSelectPageTitle": "Select Facebook Page",
+				"instagramSelectPageDescription": "Select the Facebook page that is connected to the Instagram Business account you want to connect to your club.",
+				"instagramNoPages": "No Facebook pages found",
+				"instagramNoPageDescription": "No Facebook pages connected to your account found. First create a Facebook page and connect it to an Instagram Business account.",
+				"instagramConnected": "Instagram connected",
+				"instagramNotConnected": "Instagram not connected",
+				"instagramLoadingPages": "Loading pages...",
+				"instagramSelectPage": "Please select a page",
+				"instagramEligible": "Available",
+				"instagramIneligible": "Not available",
+				"instagramIneligibleTooltip": "This Facebook page is not connected to an Instagram Business account. To connect, first link an Instagram Business account to this Facebook page.",
+				"instagramSessionMissing": "Missing session for page selection",
+				"instagramPagesFetchFailed": "Failed to load Facebook pages",
+				"instagramSelectedPageNotFound": "Selected page not found",
+				"instagramConnectionFailed": "Failed to connect Instagram account",
+				"instagramNoEligiblePages": "None of your Facebook pages are connected to an Instagram Business account. First connect an Instagram Business account to your Facebook page.",
+				"instagramError": {
+					"title": "Problem connecting Instagram account",
+					"connectionFailed": "Problem connecting to Instagram account. Please try again.",
+					"noFacebookPages": "We couldn't find any Facebook Pages connected to your account.",
+					"noInstagramAccount": "We couldn't find an Instagram Business account connected to the selected Facebook page.",
+					"notConnected": "Instagram account is not connected to your Facebook page.",
+					"missingParams": "Missing parameters for connecting to Instagram API.",
+					"authFailed": "Authorization failed. Please try again.",
+					"pageNotFound": "Facebook Page not found.",
+					"personalAccount": "The Instagram account connected to the selected Facebook page is not a Business account. You need to use an Instagram Business account to connect."
+				}
 			},
 			"posts": {
 				"successEdited": "Post successfully modified",
@@ -956,7 +1004,9 @@
 			"posts": "Announcements",
 			"createPost": "New post",
 			"noPosts": "There are no posts",
-			"allied": "Allied with ASK FBIH"
+			"allied": "Allied with ASK FBIH",
+			"instagramGallery": "Instagram photos",
+			"instagramGalleryDescription": "View our latest posts on Instagram"
 		},
 		"breadcrumbs": {
 			"currentClub": "Current club",
@@ -985,7 +1035,8 @@
 				"spending": "Spending",
 				"add-club": "Add club",
 				"invites": "Invitations",
-				"users": "Users"
+				"users": "Users",
+				"instagram": "Instagram"
 			}
 		},
 		"icons": {
@@ -1026,6 +1077,11 @@
 			"expired": "Expired",
 			"expiringSoon": "Expires soon",
 			"unlimited": "Unlimited"
+		},
+		"instagramGallery": {
+			"error": "There's been a problem contacting Instagram",
+			"noPhotos": "Nothing to show here",
+			"viewMore": "View more on Instagram"
 		}
 	},
 	"imgur": {

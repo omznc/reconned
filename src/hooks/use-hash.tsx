@@ -1,23 +1,32 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
-const getHash = () =>
-	typeof window !== "undefined"
-		? decodeURIComponent(window.location.hash.replace("#", ""))
-		: undefined;
-
-export const useHash = () => {
-	const [hash, setHash] = useState(getHash());
+/**
+ * A hook to handle scrolling to an element when a hash is present in the URL
+ * This fixes issues with Next.js not scrolling to hash fragments on initial load
+ */
+export function useHash() {
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 
 	useEffect(() => {
-		const handleHashChange = () => {
-			setHash(getHash());
-		};
-		window.addEventListener("hashchange", handleHashChange);
-		return () => {
-			window.removeEventListener("hashchange", handleHashChange);
-		};
-	}, []);
+		// Get the hash from the URL (if any)
+		const hash = window.location.hash;
 
-	return hash;
-};
+		if (hash) {
+			// Remove the # character
+			const id = hash.substring(1);
+
+			// Find the element with the matching ID
+			const element = document.getElementById(id);
+
+			// If element exists, scroll to it with a small delay to ensure rendering is complete
+			if (element) {
+				setTimeout(() => {
+					element.scrollIntoView({ behavior: "smooth" });
+				}, 100);
+			}
+		}
+	}, [pathname, searchParams]); // Re-run when pathname or search params change
+}

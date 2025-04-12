@@ -57,7 +57,7 @@ interface FileUploadProgress {
 	retries: number;
 }
 
-export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase; }) {
+export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 	const [open, setOpen] = useState(false);
 	const t = useTranslations("dashboard.club.spending");
 	const router = useRouter();
@@ -446,7 +446,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase; }) {
 										{Math.round(
 											(uploadProgress.reduce((acc, p) => acc + p.progress, 0) /
 												uploadProgress.length) *
-											100,
+												100,
 										)}
 										%)
 									</>

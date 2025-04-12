@@ -50,7 +50,7 @@ interface FileUploadProgress {
 
 export function AddPurchaseModal() {
 	const [open, setOpen] = useState(false);
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const t = useTranslations("dashboard.club.spending");
 
@@ -213,7 +213,10 @@ export function AddPurchaseModal() {
 									<FormItem>
 										<FormLabel>{t("details.description")}</FormLabel>
 										<FormControl>
-											<Textarea placeholder={t("details.description")} {...field} />
+											<Textarea
+												placeholder={t("details.description")}
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>

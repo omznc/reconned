@@ -34,7 +34,11 @@ export function PurchasesTable(props: PurchasesTableProps) {
 				data={props.purchases}
 				columns={[
 					{ key: "title", header: t("details.title"), sortable: true },
-					{ key: "description", header: t("details.description"), sortable: true },
+					{
+						key: "description",
+						header: t("details.description"),
+						sortable: true,
+					},
 					{
 						key: "amount",
 						header: t("details.amount"),
