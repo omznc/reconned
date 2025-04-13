@@ -83,7 +83,6 @@ export default function RegisterPage() {
 	async function onSubmit(data: RegisterFormValues) {
 		if (!turnstileToken) {
 			toast.error(t("captchaError"));
-			console.error("Missing turnstile token on register submit");
 			return;
 		}
 
@@ -115,7 +114,6 @@ export default function RegisterPage() {
 					router.refresh();
 				},
 				onError: (ctx) => {
-					console.error("Register error:", ctx.error);
 					if (ctx.error.status === 403) {
 						toast.error(t("unverified"));
 					} else {

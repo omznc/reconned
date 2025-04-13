@@ -140,8 +140,10 @@ export function Footer() {
 								<BadgeSoon className="ml-2" />
 							</li>
 							<li>
-								<Link href="#">{t("support.privacy")}</Link>
-								<BadgeSoon className="ml-2" />
+								<Link href="/privacy-policy">{t("support.privacy")}</Link>
+							</li>
+							<li>
+								<Link href="/terms-of-use">{t("support.terms")}</Link>
 							</li>
 						</ul>
 					</div>

@@ -9,7 +9,6 @@ import { LeaveClubButton } from "@/components/leave-club-button";
 import type { ClubMembership } from "@prisma/client";
 import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { removeMember } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
 import { MembershipExtensionForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.form";
@@ -32,7 +31,7 @@ export function MembersTable(props: MembersTableProps) {
 	const locale = useLocale();
 
 	const handleRemove = async (
-		member: ClubMembership & { userName: string; },
+		member: ClubMembership & { userName: string },
 		clubId: string,
 	) => {
 		if (member.role === "CLUB_OWNER") {
@@ -165,7 +164,11 @@ export function MembersTable(props: MembersTableProps) {
 						variant: "custom",
 						component: (_, row) => {
 							const status = getMembershipStatus(row);
-							return <Badge className='px-2 py-1 text-xs' variant={status.variant}>{status.label}</Badge>;
+							return (
+								<Badge className="px-2 py-1 text-xs" variant={status.variant}>
+									{status.label}
+								</Badge>
+							);
 						},
 					},
 				},
@@ -220,8 +223,8 @@ export function MembersTable(props: MembersTableProps) {
 										...row,
 										user: {
 											name: row.userName,
-											image: row.userAvatar
-										}
+											image: row.userAvatar,
+										},
 									}}
 									variant="button"
 								/>

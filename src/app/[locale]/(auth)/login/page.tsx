@@ -131,14 +131,6 @@ export default function LoginPage() {
 		});
 	}
 
-	// Debug the token state to see when it changes
-	useEffect(() => {
-		console.log(
-			"Turnstile token state changed:",
-			turnstileToken ? "token set" : "no token",
-		);
-	}, [turnstileToken]);
-
 	return (
 		<>
 			<CardHeader>
