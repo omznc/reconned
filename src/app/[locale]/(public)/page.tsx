@@ -132,7 +132,7 @@ export default async function Home({ searchParams }: PageProps) {
 						<Link href="/changelog">
 							<span
 								className={
-									"inline-flex items-center rounded-full border border-green-500/30 bg-green-500/50 px-2.5 py-0.5 text-xs font text-black transition-colors hover:bg-green-500/20"
+									"inline-flex items-center rounded-full border border-green-500/30 dark:text-white bg-green-500/50 px-2.5 py-0.5 text-xs font text-black transition-colors hover:bg-green-500/20"
 								}
 							>
 								{t("hero.button")}

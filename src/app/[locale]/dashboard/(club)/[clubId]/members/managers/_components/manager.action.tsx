@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { Role } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 import {
 	demoteFromManagerSchema,
 	promoteToManagerSchema,
@@ -51,7 +51,7 @@ export const promoteToManager = safeActionClient
 				},
 			});
 
-			revalidatePath(`/dashboard/${ctx.club.id}/members`);
+			revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/members`);
 
 			return {
 				success: true,
@@ -115,7 +115,7 @@ export const demoteFromManager = safeActionClient
 				},
 			});
 
-			revalidatePath(`/dashboard/${ctx.club.id}/members`);
+			revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/members`);
 
 			return {
 				success: true,

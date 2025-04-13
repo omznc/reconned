@@ -3,7 +3,7 @@
 import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
 import { eventApplicationSchema } from "./event-application.schema";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
@@ -43,10 +43,10 @@ export const deleteRegistration = safeActionClient
 		});
 
 		// Revalidate paths
-		revalidatePath(`/events/${event.id}`);
-		revalidatePath(`/dashboard/${event.clubId}/events/${event.id}`);
+		revalidateLocalizedPaths(`/events/${event.id}`);
+		revalidateLocalizedPaths(`/dashboard/${event.clubId}/events/${event.id}`);
 		if (!event.isPrivate) {
-			revalidatePath("/");
+			revalidateLocalizedPaths("/");
 		}
 	});
 
@@ -144,9 +144,9 @@ export const submitEventApplication = safeActionClient
 		});
 
 		// Revalidate paths
-		revalidatePath(`/events/${event.id}`);
-		revalidatePath(`/dashboard/${event.clubId}/events/${event.id}`);
+		revalidateLocalizedPaths(`/events/${event.id}`);
+		revalidateLocalizedPaths(`/dashboard/${event.clubId}/events/${event.id}`);
 		if (!event.isPrivate) {
-			revalidatePath("/");
+			revalidateLocalizedPaths("/");
 		}
 	});

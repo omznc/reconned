@@ -9,7 +9,7 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/mail";
 import { safeActionClient } from "@/lib/safe-action";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 import { render } from "@react-email/components";
 
 export const sendInvitation = safeActionClient
@@ -87,7 +87,7 @@ export const sendInvitation = safeActionClient
 				),
 			});
 
-			revalidatePath(`/dashboard/${ctx.club.id}/members/invitations`);
+			revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/members/invitations`);
 
 			return {
 				success: true,
@@ -135,7 +135,7 @@ export const revokeInvitation = safeActionClient
 				},
 			});
 
-			revalidatePath(`/dashboard/${ctx.club.id}/members/invitations`);
+			revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/members/invitations`);
 
 			return {
 				success: true,

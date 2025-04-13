@@ -10,8 +10,8 @@ import { validateSlug } from "@/components/slug/validate-slug";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { redirect } from "@/i18n/navigation";
+import { revalidateTag } from "next/cache";
+import { redirect, revalidateLocalizedPaths } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
 import { disconnectInstagramAPI } from "@/lib/instagram";
 
@@ -78,9 +78,11 @@ export const saveClubInformation = safeActionClient
 		});
 
 		revalidateTag("managed-clubs");
-		revalidatePath(`/dashboard/${club.id}`, "layout");
+		revalidateLocalizedPaths(`/dashboard/${club.id}`, "layout");
 		if (!club?.isPrivate) {
-			revalidatePath(`/clubs/${club.id}`, "layout");
+			revalidateLocalizedPaths(`/clubs/${club.slug ?? club.id}`);
+			revalidateLocalizedPaths("/clubs");
+			revalidateLocalizedPaths("/search");
 		}
 
 		return { id: club.id };
@@ -113,7 +115,7 @@ export const deleteClubImage = safeActionClient
 		});
 
 		await deleteS3File(`club/${ctx.club.id}/logo`);
-		revalidatePath(`/dashboard/club/information?club=${ctx.club.id}`);
+		revalidateLocalizedPaths(`/dashboard/club/information?club=${ctx.club.id}`);
 
 		return { success: true };
 	});
@@ -135,9 +137,11 @@ export const disconnectInstagram = safeActionClient
 			},
 		});
 
-		revalidatePath(`/dashboard/${ctx.club.id}/club/information`);
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`);
 		if (!ctx.club.isPrivate) {
-			revalidatePath(`/clubs/${ctx.club.id}`);
+			revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
+			revalidateLocalizedPaths("/clubs");
+			revalidateLocalizedPaths("/search");
 		}
 
 		return { success: true };
@@ -145,7 +149,7 @@ export const disconnectInstagram = safeActionClient
 
 export const disconnectInstagramAccount = safeActionClient
 	.schema(disconnectInstagramSchema)
-	.action(async ({ parsedInput, ctx }) => {
+	.action(async ({ ctx }) => {
 		try {
 			const success = await disconnectInstagramAPI(ctx.club.id);
 
@@ -156,9 +160,14 @@ export const disconnectInstagramAccount = safeActionClient
 				};
 			}
 
-			revalidatePath(`/dashboard/${ctx.club.id}/club/information`, "page");
+			revalidateLocalizedPaths(
+				`/dashboard/${ctx.club.id}/club/information`,
+				"page",
+			);
 			if (!ctx.club.isPrivate) {
-				revalidatePath(`/clubs/${ctx.club.id}`, "page");
+				revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
+				revalidateLocalizedPaths("/clubs");
+				revalidateLocalizedPaths("/search");
 			}
 
 			return { success: true };
@@ -196,9 +205,11 @@ export const deleteClub = safeActionClient
 		});
 
 		revalidateTag("managed-clubs");
-		revalidatePath(`${locale}/dashboard/${ctx.club.id}`, "layout");
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}`, "layout");
 		if (!ctx.club.isPrivate) {
-			revalidatePath(`${locale}/clubs/${ctx.club.id}`, "layout");
+			revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
+			revalidateLocalizedPaths("/clubs");
+			revalidateLocalizedPaths("/search");
 		}
 		return redirect({
 			href: remaining > 0 ? "/dashboard?autoSelectFirst=true" : "/",
