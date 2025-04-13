@@ -29,13 +29,13 @@ import {
 } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { LeaveClubButton } from "@/components/leave-club-button";
-import { InstagramGallery } from "@/components/instagram/instagram-gallery";
 import {
 	checkAndRefreshToken,
 	getInstagramMedia,
 	type InstagramMedia,
 } from "@/lib/instagram";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
+import { ClubInstagram } from "@/components/overviews/club-instagram";
 
 interface ClubOverviewProps {
 	club: Club & {
@@ -342,7 +342,7 @@ export async function ClubOverview({
 						</Link>
 					</div>
 					<div className="p-4">
-						<InstagramGallery
+						<ClubInstagram
 							photos={instagramData.photos}
 							username={
 								instagramData.username || club.instagramUsername || undefined

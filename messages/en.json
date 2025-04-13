@@ -66,6 +66,7 @@
 		},
 		"home": {
 			"hero": {
+				"button": "View the changelog",
 				"title": "Just Airsoft,<br></br> but better.",
 				"description": "Join the most advanced airsoft community. Find matches, connect with players and improve your game.",
 				"search": "Search all",
@@ -339,6 +340,17 @@
 				"title": "Contact Us",
 				"description": "If you have any questions about these Terms of Use, please contact us at <email></email>."
 			}
+		},
+		"changelog": {
+			"back": "Back",
+			"errorLoading": "There's been a problem while trying to get the changelog",
+			"description": "The RECONNED changelog",
+			"latestRelease": "Latest version",
+			"published": "Posted {date}",
+			"previousReleases": "Previous versions",
+			"title": "Changes",
+			"version": "Version {version}",
+			"viewOnGithub": "View on GitHub"
 		}
 	},
 	"dashboard": {
@@ -1002,7 +1014,8 @@
 				"contact": "Contact",
 				"faq": "FAQ",
 				"privacy": "Privacy",
-				"terms": "Terms of Use"
+				"terms": "Terms of Use",
+				"changelog": "Changelog"
 			},
 			"copyright": "© {year} RECONNED. ",
 			"sponsors": "Check out our sponsors and partners",
@@ -1127,7 +1140,13 @@
 			"pastEvents": {
 				"title": "Previous events",
 				"noEvents": "No previous events"
-			}
+			},
+			"tabs": {
+				"events": "Events",
+				"reviews": "Reviews",
+				"memberships": "Memberships"
+			},
+			"attended": "Attended"
 		},
 		"reviews": {
 			"title": "Ratings",
@@ -1171,7 +1190,13 @@
 			"noPosts": "There are no posts",
 			"allied": "Allied with ASK FBIH",
 			"instagramGallery": "Instagram photos",
-			"instagramGalleryDescription": "View our latest posts on Instagram"
+			"instagramGalleryDescription": "View our latest posts on Instagram",
+			"noMembers": "This club has no members",
+			"tabs": {
+				"members": "Mmebers",
+				"reviews": "Reviews",
+				"posts": "Posts"
+			}
 		},
 		"breadcrumbs": {
 			"currentClub": "Current club",

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCountries } from "@/lib/cached-countries";
 import { Role } from "@prisma/client";
 import { notFound } from "next/navigation";
+import { getInstagramAuthUrl } from "@/lib/instagram";
 
 interface PageProps {
 	params: Promise<{
@@ -50,15 +51,15 @@ export default async function Page(props: PageProps) {
 		return notFound();
 	}
 
-	// The club will always have at least one member
-	const isClubOwner = club.members[0]?.role === Role.CLUB_OWNER;
+	const authUrl = await getInstagramAuthUrl(params.clubId);
 
 	return (
 		<div className="p-6">
 			<ClubInfoForm
 				club={club}
 				countries={countries}
-				isClubOwner={isClubOwner}
+				isClubOwner={club.members[0]?.role === Role.CLUB_OWNER}
+				instagramConnectionUrl={authUrl}
 			/>
 		</div>
 	);

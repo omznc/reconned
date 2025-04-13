@@ -92,6 +92,7 @@ interface ClubInfoFormProps {
 	club?: Club | null;
 	isClubOwner?: boolean;
 	countries: Country[];
+	instagramConnectionUrl?: string;
 }
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
@@ -183,26 +184,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		if (props.club) {
 			form.setValue("latitude", props.club.latitude ?? undefined);
 			form.setValue("longitude", props.club.longitude ?? undefined);
-		}
-	};
-
-	// Add this function to handle Instagram connection
-	const handleConnectInstagram = async () => {
-		setIsConnectingInstagram(true);
-		try {
-			const response = await fetch(
-				`/api/club/instagram/authorize?clubId=${props.club?.id}`,
-			);
-			const data = await response.json();
-
-			if (!data.url) {
-				throw new Error("No authorization URL returned");
-			}
-
-			window.location.href = data.url;
-		} catch (error) {
-			toast.error(t("instagramConnectError"));
-			setIsConnectingInstagram(false);
 		}
 	};
 
@@ -832,94 +813,98 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				/>
 
 				{/* Instagram integration section with alerts */}
-				<div id="instagram" className="border rounded-lg p-4 space-y-4">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<SiInstagram className="h-5 w-5" />
-							<h4 className="font-medium">{t("instagramConnection")}</h4>
+				{(props.club?.instagramConnected || props.instagramConnectionUrl) && (
+					<div id="instagram" className="border rounded-lg p-4 space-y-4">
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-2">
+								<SiInstagram className="h-5 w-5" />
+								<h4 className="font-medium">{t("instagramConnection")}</h4>
+							</div>
+
+							{props.club?.instagramConnected ? (
+								<Button
+									type="button"
+									variant="destructive"
+									size="sm"
+									onClick={handleDisconnectInstagram}
+									disabled={isDisconnectingInstagram}
+								>
+									{isDisconnectingInstagram ? (
+										<>
+											<Loader className="mr-2 h-4 w-4 animate-spin" />
+											{t("instagramDisconnecting")}
+										</>
+									) : (
+										t("instagramDisconnect.action")
+									)}
+								</Button>
+							) : (
+								<Link href={props.instagramConnectionUrl ?? ""}>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										disabled={isConnectingInstagram || !props.club?.id}
+									>
+										{isConnectingInstagram ? (
+											<>
+												<Loader className="mr-2 h-4 w-4 animate-spin" />
+												{t("instagramConnecting")}
+											</>
+										) : (
+											t("instagramConnect")
+										)}
+									</Button>
+								</Link>
+							)}
 						</div>
 
-						{props.club?.instagramConnected ? (
-							<Button
-								type="button"
-								variant="destructive"
-								size="sm"
-								onClick={handleDisconnectInstagram}
-								disabled={isDisconnectingInstagram}
-							>
-								{isDisconnectingInstagram ? (
-									<>
-										<Loader className="mr-2 h-4 w-4 animate-spin" />
-										{t("instagramDisconnecting")}
-									</>
-								) : (
-									t("instagramDisconnect.action")
-								)}
-							</Button>
-						) : (
-							<Button
-								type="button"
-								variant="outline"
-								size="sm"
-								onClick={handleConnectInstagram}
-								disabled={isConnectingInstagram || !props.club?.id}
-							>
-								{isConnectingInstagram ? (
-									<>
-										<Loader className="mr-2 h-4 w-4 animate-spin" />
-										{t("instagramConnecting")}
-									</>
-								) : (
-									t("instagramConnect")
-								)}
-							</Button>
+						{/* Instagram success message */}
+						{instagramSuccess && (
+							<Alert>
+								<CheckCircle className="h-4 w-4" />
+								<AlertTitle>{t("instagramConnectSuccess")}</AlertTitle>
+							</Alert>
+						)}
+
+						{/* Instagram error message */}
+						{instagramError && (
+							<Alert variant="destructive">
+								<AlertCircle className="h-4 w-4" />
+								<AlertTitle>{t("instagramError.title")}</AlertTitle>
+								<AlertDescription>
+									{instagramErrorMessage ||
+										t(getInstagramErrorTranslationKey(instagramError))}
+								</AlertDescription>
+							</Alert>
+						)}
+
+						{props.club?.instagramConnected &&
+							props.club?.instagramUsername && (
+								<div className="text-sm inline-flex items-center gap-1">
+									<p className="text-muted-foreground">
+										{t("instagramConnectedMessage")}
+									</p>
+									<Link
+										href={`https://instagram.com/${props.club.instagramUsername}`}
+										target="_blank"
+										className="text-blue-500 hover:underline flex items-center gap-1"
+									>
+										@{props.club.instagramUsername}
+										<ArrowUpRight className="h-3 w-3" />
+									</Link>
+								</div>
+							)}
+
+						{!props.club?.instagramConnected && (
+							<div className="text-sm">
+								<p className="text-muted-foreground">
+									{t("instagramDescription")}
+								</p>
+							</div>
 						)}
 					</div>
-
-					{/* Instagram success message */}
-					{instagramSuccess && (
-						<Alert>
-							<CheckCircle className="h-4 w-4" />
-							<AlertTitle>{t("instagramConnectSuccess")}</AlertTitle>
-						</Alert>
-					)}
-
-					{/* Instagram error message */}
-					{instagramError && (
-						<Alert variant="destructive">
-							<AlertCircle className="h-4 w-4" />
-							<AlertTitle>{t("instagramError.title")}</AlertTitle>
-							<AlertDescription>
-								{instagramErrorMessage ||
-									t(getInstagramErrorTranslationKey(instagramError))}
-							</AlertDescription>
-						</Alert>
-					)}
-
-					{props.club?.instagramConnected && props.club?.instagramUsername && (
-						<div className="text-sm inline-flex items-center gap-1">
-							<p className="text-muted-foreground">
-								{t("instagramConnectedMessage")}
-							</p>
-							<Link
-								href={`https://instagram.com/${props.club.instagramUsername}`}
-								target="_blank"
-								className="text-blue-500 hover:underline flex items-center gap-1"
-							>
-								@{props.club.instagramUsername}
-								<ArrowUpRight className="h-3 w-3" />
-							</Link>
-						</div>
-					)}
-
-					{!props.club?.instagramConnected && (
-						<div className="text-sm">
-							<p className="text-muted-foreground">
-								{t("instagramDescription")}
-							</p>
-						</div>
-					)}
-				</div>
+				)}
 
 				<LoaderSubmitButton
 					isLoading={isLoading}
