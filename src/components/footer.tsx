@@ -145,6 +145,10 @@ export function Footer() {
 							<li>
 								<Link href="/terms-of-use">{t("support.terms")}</Link>
 							</li>
+							<li>
+								<Link href="/changelog">{t("support.changelog")}</Link>
+								<BadgeNew className="ml-2" />
+							</li>
 						</ul>
 					</div>
 				</div>

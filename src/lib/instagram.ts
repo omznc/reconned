@@ -166,6 +166,11 @@ export async function debugToken(
 
 	const response = await fetch(
 		`https://graph.facebook.com/v19.0/debug_token?input_token=${accessToken}&access_token=${appAccessToken}`,
+		{
+			next: {
+				revalidate: 3600, // Cache for 1 hour
+			},
+		},
 	);
 
 	if (!response.ok) {
@@ -268,6 +273,11 @@ export async function getInstagramMedia(
 ): Promise<InstagramMediaResponse> {
 	const response = await fetch(
 		`https://graph.facebook.com/v19.0/${igBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${accessToken}`,
+		{
+			next: {
+				revalidate: 3600, // Cache for 1 hour
+			},
+		},
 	);
 
 	if (!response.ok) {
@@ -364,7 +374,7 @@ export async function checkAndRefreshToken(
 		},
 	});
 
-	if (!club?.instagramAccessToken || !club?.instagramBusinessId) {
+	if (!(club?.instagramAccessToken && club?.instagramBusinessId)) {
 		return { token: null, igBusinessId: null };
 	}
 

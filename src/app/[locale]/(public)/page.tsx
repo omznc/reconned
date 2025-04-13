@@ -124,12 +124,23 @@ export default async function Home({ searchParams }: PageProps) {
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
-						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
+						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
 							{t.rich("hero.title", {
 								br: () => <br />,
 							})}
 						</h1>
-						<p className="text-xl text-text/80 mb-8">{t("hero.description")}</p>
+						<Link href="/changelog">
+							<span
+								className={
+									"inline-flex items-center rounded-full border border-green-500/30 bg-green-500/50 px-2.5 py-0.5 text-xs font text-black transition-colors hover:bg-green-500/20"
+								}
+							>
+								{t("hero.button")}
+							</span>
+						</Link>
+						<p className="text-xl text-text/80 mb-8 mt-4">
+							{t("hero.description")}
+						</p>
 						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
 							<Button
 								size="sm"

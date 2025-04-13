@@ -66,6 +66,7 @@
 		},
 		"home": {
 			"hero": {
+				"button": "Pogledajte listu izmjena",
 				"title": "Samo Airsoft,<br></br> ali bolje.",
 				"description": "Pridružite se najnaprednijoj airsoft zajednici. Pronađite susrete, povežite se s igračima i unaprijedite svoju igru.",
 				"search": "Pretraži sve",
@@ -339,6 +340,17 @@
 				"title": "Kontaktirajte nas",
 				"description": "Ako imate pitanja o ovim Uslovima korištenja, molimo vas da nas kontaktirate putem email adrese: <email></email>."
 			}
+		},
+		"changelog": {
+			"title": "Promjene",
+			"description": "Lista izmjena na platformi (samo na engleskom)",
+			"latestRelease": "Zadnja verzija",
+			"previousReleases": "Prethodne verzije",
+			"version": "Verzija {version}",
+			"published": "Objavljeno {date}",
+			"back": "Nazad",
+			"errorLoading": "Greška pri učitavanju podataka o verzijama",
+			"viewOnGithub": "Pogledajte na GitHub-u"
 		}
 	},
 	"dashboard": {
@@ -1002,7 +1014,8 @@
 				"contact": "Kontakt",
 				"faq": "Česta pitanja",
 				"privacy": "Privatnost",
-				"terms": "Uslovi korištenja"
+				"terms": "Uslovi korištenja",
+				"changelog": "Izmjene"
 			},
 			"copyright": "© {year} RECONNED. Sva prava zadržana.",
 			"sponsors": "Pogledajte naše sponzore i partnere",
@@ -1114,20 +1127,26 @@
 			}
 		},
 		"userOverview": {
-			"views": "{count} pregled/a",
-			"freelancer": "Freelancer",
+			"views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
+			"freelancer": "Slobodni igrač",
+			"tabs": {
+				"memberships": "Članstva",
+				"events": "Susreti",
+				"reviews": "Recenzije"
+			},
 			"clubs": {
 				"title": "Klubovi",
-				"noClubs": "Nije član nijednog kluba"
+				"noClubs": "Korisnik nije član nijednog kluba"
 			},
 			"upcomingEvents": {
-				"title": "Predstojeći susreti",
-				"noEvents": "Nema predstojećih susreta"
+				"title": "Nadolazeći susreti",
+				"noEvents": "Nema nadolazećih susreta"
 			},
 			"pastEvents": {
-				"title": "Prethodni susreti",
-				"noEvents": "Nema prethodnih susreta"
-			}
+				"title": "Prošli susreti",
+				"noEvents": "Nema prošlih susreta"
+			},
+			"attended": "Prisustvovao"
 		},
 		"reviews": {
 			"title": "Ocjene",
@@ -1160,18 +1179,24 @@
 			"showEventMap": "Prikaži mapu susreta"
 		},
 		"clubOverview": {
-			"views": "{count} pregled/a",
+			"views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
 			"map": "Mapa",
-			"edit": "Izmjeni klub",
-			"members": "Članovi",
+			"edit": "Uredi",
 			"private": "Privatni klub",
 			"public": "Javni klub",
-			"posts": "Objave",
+			"allied": "Saveznički klub",
+			"instagramGallery": "Instagram galerija",
+			"instagramGalleryDescription": "Najnovije objave sa Instagrama",
+			"tabs": {
+				"posts": "Objave",
+				"members": "Članovi",
+				"reviews": "Recenzije"
+			},
+			"posts": "Objave kluba",
 			"createPost": "Nova objava",
 			"noPosts": "Nema objava",
-			"allied": "U savezu ASK FBIH",
-			"instagramGallery": "Instagram",
-			"instagramGalleryDescription": "Pogledajte naše najnovije objave na Instagramu"
+			"members": "Članovi",
+			"noMembers": "Ovaj klub trenutno nema članova"
 		},
 		"leaveClubButton": {
 			"title": "Napuštanje kluba",

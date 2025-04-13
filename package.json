@@ -100,7 +100,7 @@
 	"overrides": {
 		"react-is": "^19.0.0"
 	},
-	"packageManager": "bun@1.1.39",
+	"packageManager": "bun@1.2.10",
 	"private": true,
 	"scripts": {
 		"build": "next build --turbopack",
