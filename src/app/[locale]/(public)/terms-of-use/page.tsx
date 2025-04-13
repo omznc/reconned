@@ -1,10 +1,13 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+
+const lastUpdated = new Date("2025-04-13");
 
 export default function TermsOfUsePage() {
 	const t = useTranslations("public.terms");
+	const locale = useLocale();
 
 	return (
 		<div className="container mx-auto py-12 px-4 max-w-4xl">
@@ -12,7 +15,7 @@ export default function TermsOfUsePage() {
 
 			<div className="prose dark:prose-invert max-w-none">
 				<p className="text-lg mb-6">
-					{t("lastUpdated", { date: "April 13, 2025" })}
+					{t("lastUpdated", { date: lastUpdated.toLocaleDateString(locale) })}
 				</p>
 
 				<section className="mb-8">
