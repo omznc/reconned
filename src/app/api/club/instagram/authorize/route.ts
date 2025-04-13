@@ -1,5 +1,5 @@
 import { isAuthenticated } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getInstagramAuthUrl } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 

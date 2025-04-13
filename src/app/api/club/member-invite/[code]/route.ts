@@ -1,6 +1,5 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
 import { redirect } from "@/i18n/navigation";
 import type { NextRequest } from "next/server";
 import { getLocale } from "next-intl/server";

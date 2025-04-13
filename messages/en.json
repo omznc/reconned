@@ -187,6 +187,158 @@
 				"title": "RECONNED - Airsoft clubs, events, and players",
 				"keywords": "airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH"
 			}
+		},
+		"privacy": {
+			"title": "Privacy Policy",
+			"lastUpdated": "Last updated: {date}",
+			"viewTerms": "View our Terms of Use",
+			"introduction": {
+				"title": "Introduction",
+				"description": "RECONNED (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains what information we collect, how we use it, and how we safeguard it when you use our airsoft community platform."
+			},
+			"dataCollection": {
+				"title": "Information We Collect",
+				"description": "We collect various types of information to provide and improve our service. Here's what we collect:",
+				"personalInfo": "Personal information: name, email address, profile picture, bio, location, website, phone number, callsign, and gear settings.",
+				"accountInfo": "Account information: session data (IP addresses, user agents), authentication data (passwords, passkeys, two-factor authentication).",
+				"clubInfo": "Club information: name, location, description, founding date, logo, contact information, rules, etc.",
+				"eventInfo": "Event information: name, description, locations, dates, prices, rules, participant registrations, etc.",
+				"socialInfo": "Social information: reviews, posts, achievements, and other interactions between users.",
+				"usageInfo": "Usage information: how you use our platform, which pages you visit, and how you interact with our interface.",
+				"deviceInfo": "Device information: device type, operating system, browser version, and language settings."
+			},
+			"dataUse": {
+				"title": "How We Use Your Information",
+				"description": "We use the collected information for various purposes, including:",
+				"provideService": "To provide, maintain, and improve our platform, including connecting airsoft clubs, players, and events.",
+				"improveService": "To analyze how you use our platform and enhance user experience.",
+				"communicate": "To communicate with you, respond to your inquiries, and send notifications about our service.",
+				"security": "To protect our users and platform from fraud, abuse, and other harmful activities."
+			},
+			"dataSecurity": {
+				"title": "Data Security",
+				"description": "We implement security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. This includes encryption of sensitive data, secure servers, and regular security reviews."
+			},
+			"dataSharing": {
+				"title": "Information Sharing",
+				"description": "We don't sell your personal information to third parties. However, we may share information in the following situations:",
+				"clubMembers": "With other club members (if you're a member of a club, certain information may be visible to other members).",
+				"eventParticipants": "With event participants (if you're registered for an event, certain information may be visible to other participants).",
+				"serviceProviders": "With service providers who help us operate the platform (e.g., hosting).",
+				"legal": "When required by law or to protect our rights."
+			},
+			"cookies": {
+				"title": "Cookies and Tracking Technologies",
+				"description": "We use cookies and similar tracking technologies to collect and store certain information when you use our platform. This helps us improve your experience, analyze platform usage, and tailor content to your interests."
+			},
+			"userRights": {
+				"title": "Your Data Rights",
+				"description": "Depending on your location, you may have certain rights regarding your personal information, including:",
+				"access": "The right to access the information we have about you.",
+				"rectification": "The right to correct inaccurate or incomplete information.",
+				"deletion": "The right to delete your information in certain circumstances.",
+				"restriction": "The right to restrict the processing of your information.",
+				"objection": "The right to object to the processing of your information.",
+				"portability": "The right to data portability (obtaining a copy of your data in a structured format)."
+			},
+			"thirdPartyServices": {
+				"title": "Third-Party Services",
+				"description": "Our platform uses several third-party services that may collect information about you. These services include:",
+				"auth": "Authentication services (e.g., Google login) for easy sign-in.",
+				"storage": "Storage services for storing data and media files.",
+				"maps": "Mapping services for displaying club and event locations.",
+				"analytics": "Analytics services for tracking platform usage.",
+				"instagram": "Integration with Instagram for clubs that want to display their Instagram posts on their club profile."
+			},
+			"childrenPrivacy": {
+				"title": "Children's Privacy",
+				"description": "Our platform is not intended for use by individuals under the age of 17. We do not knowingly collect personal information from children under 17. If we discover that we have collected personal information from a child, we will take steps to delete that information."
+			},
+			"changes": {
+				"title": "Changes to This Privacy Policy",
+				"description": "We may update our Privacy Policy from time to time. We will notify you of significant changes by posting a notification on our website or through direct communication. We encourage you to periodically review this Privacy Policy to stay informed about how we are protecting your information."
+			},
+			"contact": {
+				"title": "Contact Us",
+				"description": "If you have any questions about this Privacy Policy or our privacy practices, please contact us at <email></email>."
+			}
+		},
+		"terms": {
+			"title": "Terms of Use",
+			"lastUpdated": "Last updated: {date}",
+			"viewPrivacy": "View our Privacy Policy",
+			"introduction": {
+				"title": "Introduction",
+				"description": "Welcome to RECONNED, a platform that connects airsoft enthusiasts, clubs, and events. By using our website and services, you agree to comply with these Terms of Use. Please read them carefully."
+			},
+			"acceptance": {
+				"title": "Acceptance of Terms",
+				"description": "By accessing or using the RECONNED platform, you agree to be legally bound by these Terms of Use. If you do not agree to any part of these terms, please do not use our platform."
+			},
+			"eligibility": {
+				"title": "Eligibility",
+				"description": "To use our platform, you must be at least 17 years old. By using the platform, you confirm that you are at least 17 years old and that you are not a person barred from receiving our services under the laws of Bosnia and Herzegovina or other applicable jurisdictions."
+			},
+			"userAccounts": {
+				"title": "User Accounts",
+				"description": "To access certain features of our platform, you will need to create a user account. When you do, you are responsible for:",
+				"accuracy": "Maintaining the accuracy and currency of your information.",
+				"security": "Keeping your account and password secure.",
+				"responsibility": "All activities that occur under your account.",
+				"termination": "Understanding that we may suspend or terminate your account if you violate these terms."
+			},
+			"content": {
+				"title": "User Content and Conduct",
+				"description": "Our platform allows you to post content, including text, images, and other materials.",
+				"userContent": {
+					"title": "Your Content",
+					"description": "You retain ownership of the content you post on the platform, but grant us a non-exclusive, royalty-free license to use, display, and distribute that content in connection with our services."
+				},
+				"prohibited": {
+					"title": "Prohibited Activities",
+					"description": "The following behaviors are prohibited on the RECONNED platform:",
+					"illegal": "Posting or promoting illegal activities.",
+					"harmful": "Posting content that is harmful, threatening, offensive, or harassing.",
+					"impersonation": "Impersonating another user or entity.",
+					"spam": "Sending unwanted messages or spamming the platform.",
+					"infringement": "Violating copyright or other intellectual property rights."
+				}
+			},
+			"intellectualProperty": {
+				"title": "Intellectual Property",
+				"description": "RECONNED and its content, features, and appearance are protected by copyright, trademark, and other intellectual property laws.",
+				"ownership": "All trademarks, logos, product and service names displayed on the platform are the property of RECONNED or their respective owners.",
+				"license": "We grant you a limited, non-exclusive, non-transferable license to access and use the platform for personal, non-commercial purposes.",
+				"feedback": "If you provide us with feedback or suggestions, we may use them without any obligation to you."
+			},
+			"thirdParty": {
+				"title": "Third-Party Links",
+				"description": "Our platform may contain links to third-party websites that are not owned or controlled by us. We are not responsible for the content, privacy policies, or practices of any third-party websites."
+			},
+			"disclaimer": {
+				"title": "Disclaimer of Warranties",
+				"description": "The RECONNED platform is provided \"as is\" and \"as available\", without any warranties, either express or implied. We do not guarantee that the platform will always be available, secure, error-free, or meet your specific requirements."
+			},
+			"limitation": {
+				"title": "Limitation of Liability",
+				"description": "To the extent permitted by law, RECONNED and its founders, officers, directors, employees, and agents will not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the platform."
+			},
+			"changes": {
+				"title": "Changes to Terms",
+				"description": "We reserve the right to modify or replace these Terms of Use at any time. If we make material changes, we will endeavor to notify you before the new terms take effect. By continuing to use the platform after the changes take effect, you agree to the updated terms."
+			},
+			"termination": {
+				"title": "Termination",
+				"description": "We may, in our sole discretion, modify, suspend, or terminate your access to the platform for any reason, including violation of these Terms of Use, without prior notice."
+			},
+			"governing": {
+				"title": "Governing Law",
+				"description": "These Terms of Use are governed by and construed in accordance with the laws of Bosnia and Herzegovina, regardless of conflict of law provisions."
+			},
+			"contact": {
+				"title": "Contact Us",
+				"description": "If you have any questions about these Terms of Use, please contact us at <email></email>."
+			}
 		}
 	},
 	"dashboard": {
@@ -849,7 +1001,8 @@
 				"title": "Support",
 				"contact": "Contact",
 				"faq": "FAQ",
-				"privacy": "Privacy"
+				"privacy": "Privacy",
+				"terms": "Terms of Use"
 			},
 			"copyright": "© {year} RECONNED. ",
 			"sponsors": "Check out our sponsors and partners",

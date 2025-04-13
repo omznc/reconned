@@ -16,9 +16,7 @@ import { useTranslations } from "next-intl";
 import {
 	AlertCircle,
 	ArrowLeft,
-	Facebook,
 	Info,
-	Instagram,
 	Loader,
 	ShieldAlert,
 	Verified,

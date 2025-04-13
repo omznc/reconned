@@ -12,7 +12,6 @@ import {
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -21,33 +20,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, CloudUpload, Loader, Trash } from "lucide-react";
+import { Pencil, Loader } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {
-	updatePurchase,
-	getPurchaseReceiptUploadUrl,
-	deleteReceipt,
-} from "./spending.action";
+import { updatePurchase, getPurchaseReceiptUploadUrl } from "./spending.action";
 import type { EditPurchaseFormValues } from "./spending.schema";
 import { editPurchaseFormSchema } from "./spending.schema";
 import type { ClubPurchase } from "@prisma/client";
-import {
-	FileUploader,
-	FileInput,
-	FileUploaderContent,
-	FileUploaderItem,
-} from "@/components/ui/file-upload";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import Image from "next/image";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 interface FileUploadProgress {

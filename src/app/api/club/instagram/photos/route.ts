@@ -1,13 +1,12 @@
 "use server";
 
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { type NextRequest, NextResponse } from "next/server";
 import { checkAndRefreshToken, getInstagramMedia } from "@/lib/instagram";
 
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url);
 	const clubId = searchParams.get("clubId");
-	const limit = parseInt(searchParams.get("limit") || "12");
+	const limit = Number.parseInt(searchParams.get("limit") || "12");
 
 	if (!clubId) {
 		return NextResponse.json({ error: "Club ID is required" }, { status: 400 });

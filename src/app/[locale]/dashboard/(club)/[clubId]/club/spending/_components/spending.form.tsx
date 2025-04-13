@@ -12,7 +12,6 @@ import {
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -21,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, CloudUpload } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,16 +28,8 @@ import { toast } from "sonner";
 import { createPurchase, getPurchaseReceiptUploadUrl } from "./spending.action";
 import type { PurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { purchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import {
-	FileUploader,
-	FileInput,
-	FileUploaderContent,
-	FileUploaderItem,
-} from "@/components/ui/file-upload";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { cn } from "@/lib/utils";
 import { useRouter } from "@/i18n/navigation";
-import { BadgeSoon } from "@/components/badge-soon";
 import { useTranslations } from "next-intl";
 
 interface FileUploadProgress {

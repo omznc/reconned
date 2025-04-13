@@ -3,13 +3,11 @@ import type { Club, ClubMembership, Post, User } from "@prisma/client";
 import {
 	ArrowUpRight,
 	AtSign,
-	CastleIcon,
 	Cog,
 	Eye,
 	EyeOff,
 	Globe,
 	Handshake,
-	Instagram,
 	MapIcon,
 	MapPin,
 	Pencil,

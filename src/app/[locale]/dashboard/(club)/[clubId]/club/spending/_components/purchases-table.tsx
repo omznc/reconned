@@ -1,7 +1,7 @@
 "use client";
 
 import { GenericDataTable } from "@/components/generic-data-table";
-import { Trash2, FileText } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { deletePurchase } from "./spending.action";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";

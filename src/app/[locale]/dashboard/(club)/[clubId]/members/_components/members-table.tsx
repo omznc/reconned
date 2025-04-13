@@ -9,7 +9,6 @@ import { LeaveClubButton } from "@/components/leave-club-button";
 import type { ClubMembership } from "@prisma/client";
 import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { removeMember } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
 import { MembershipExtensionForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.form";

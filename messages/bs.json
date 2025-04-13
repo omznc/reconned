@@ -187,6 +187,158 @@
 				"title": "RECONNED - Airsoft klubovi, susreti, i igrači",
 				"keywords": "airsoft Bosna, airsoft BiH, airsoft oružje, airsoft replike, airsoft oprema, airsoft klubovi BiH, airsoft shop BiH, airsoft trgovina, airsoft puške, airsoft pištolji, airsoft metci, airsoft kuglice, airsoft maska, airsoft odjeća, airsoft uniforme, airsoft BiH forum, airsoft događaji BiH, airsoft pravila, airsoft taktike, airsoft igrači BiH, najbolji airsoft BiH, kupovina airsoft BiH, prodaja airsoft BiH, airsoft timovi BiH, airsoft lokacije BiH, airsoft teren BiH"
 			}
+		},
+		"privacy": {
+			"title": "Politika privatnosti",
+			"lastUpdated": "Zadnje ažurirano: {date}",
+			"viewTerms": "Pogledajte naše Uslove korištenja",
+			"introduction": {
+				"title": "Uvod",
+				"description": "RECONNED (\"mi\", \"naš\", ili \"nas\") se obavezuje štititi vašu privatnost. Ova Politika privatnosti objašnjava koje podatke prikupljamo, kako ih koristimo i kako ih štitimo kada koristite našu platformu za airsoft zajednicu."
+			},
+			"dataCollection": {
+				"title": "Podaci koje prikupljamo",
+				"description": "Prikupljamo različite vrste podataka kako bismo vam pružili i unaprijedili našu uslugu. Evo koje podatke prikupljamo:",
+				"personalInfo": "Lični podaci: ime, email adresa, profilna slika, biografija, lokacija, web stranica, broj telefona, callsign, i podešavanja opreme.",
+				"accountInfo": "Informacije o računu: podaci o sesiji (IP adrese, korisnički agenti), podaci o autentikaciji (lozinke, passkeys, dvofaktorska autentikacija).",
+				"clubInfo": "Podaci o klubovima: naziv, lokacija, opis, datum osnivanja, logo, kontakt informacije, pravila, itd.",
+				"eventInfo": "Podaci o događajima: naziv, opis, lokacije, datumi, cijene, pravila, registracije učesnika, itd.",
+				"socialInfo": "Društveni podaci: recenzije, objave, postignuća, i druge interakcije između korisnika.",
+				"usageInfo": "Podaci o korištenju: kako koristite našu platformu, koje stranice posjećujete, i kako komunicirate s našim interfejsom.",
+				"deviceInfo": "Informacije o uređaju: tip uređaja, operativni sistem, verzija pretraživača, i postavke jezika."
+			},
+			"dataUse": {
+				"title": "Kako koristimo vaše podatke",
+				"description": "Koristimo prikupljene podatke za različite svrhe, uključujući:",
+				"provideService": "Da pružimo, održavamo i unapređujemo našu platformu, uključujući povezivanje airsoft klubova, igrača i događaja.",
+				"improveService": "Da analiziramo kako koristite našu platformu i unapredimo korisničko iskustvo.",
+				"communicate": "Da komuniciramo s vama, odgovaramo na vaše upite, i šaljemo obavještenja o našoj usluzi.",
+				"security": "Da zaštitimo naše korisnike i platformu od prevara, zloupotreba i drugih štetnih aktivnosti."
+			},
+			"dataSecurity": {
+				"title": "Sigurnost podataka",
+				"description": "Primjenjujemo sigurnosne mjere za zaštitu vaših ličnih podataka od neovlaštenog pristupa, izmjene, otkrivanja ili uništavanja. Ovo uključuje šifrovanje osjetljivih podataka, sigurne servere i redovne sigurnosne preglede."
+			},
+			"dataSharing": {
+				"title": "Dijeljenje informacija",
+				"description": "Ne prodajemo vaše lične podatke trećim stranama. Međutim, možemo dijeliti podatke u sljedećim situacijama:",
+				"clubMembers": "S drugim članovima kluba (ako ste član kluba, određene informacije mogu biti vidljive drugim članovima).",
+				"eventParticipants": "S učesnicima događaja (ako ste registrovani za događaj, određene informacije mogu biti vidljive drugim učesnicima).",
+				"serviceProviders": "S pružaocima usluga koji nam pomažu u radu platforme (npr. hosting).",
+				"legal": "Kada se to zahtijeva zakonom ili u slučaju zaštite naših prava."
+			},
+			"cookies": {
+				"title": "Kolačići i tehnologije praćenja",
+				"description": "Koristimo kolačiće i slične tehnologije praćenja da prikupimo i pohranimo određene podatke kada koristite našu platformu. Ovo nam pomaže da poboljšamo vaše iskustvo, analiziramo korištenje platforme, i prilagodimo sadržaj vašim interesima."
+			},
+			"userRights": {
+				"title": "Vaša prava vezana za podatke",
+				"description": "U zavisnosti od vaše lokacije, možete imati određena prava vezana za vaše lične podatke, uključujući:",
+				"access": "Pravo na pristup podacima koje imamo o vama.",
+				"rectification": "Pravo na ispravku netačnih ili nepotpunih podataka.",
+				"deletion": "Pravo na brisanje vaših podataka u određenim okolnostima.",
+				"restriction": "Pravo na ograničenje obrade vaših podataka.",
+				"objection": "Pravo na prigovor na obradu vaših podataka.",
+				"portability": "Pravo na prenosivost podataka (dobijanje kopije podataka u strukturiranom formatu)."
+			},
+			"thirdPartyServices": {
+				"title": "Usluge trećih strana",
+				"description": "Naša platforma koristi nekoliko usluga trećih strana koje mogu prikupljati podatke o vama. Ove usluge uključuju:",
+				"auth": "Usluge autentikacije (npr. Google prijava) za jednostavno prijavljivanje.",
+				"storage": "Usluge skladištenja za pohranu podataka i medijskih fajlova.",
+				"maps": "Usluge mapiranja za prikaz lokacija klubova i događaja.",
+				"analytics": "Analitičke usluge za praćenje korištenja platforme.",
+				"instagram": "Integracija s Instagramom za klubove koji žele prikazati svoje Instagram objave na profilu kluba."
+			},
+			"childrenPrivacy": {
+				"title": "Privatnost djece",
+				"description": "Naša platforma nije namijenjena za korištenje od strane osoba mlađih od 17 godina. Ne prikupljamo svjesno lične podatke od djece mlađe od 17 godina. Ako otkrijemo da smo prikupili lične podatke od djeteta, preduzet ćemo korake za brisanje tih podataka."
+			},
+			"changes": {
+				"title": "Promjene u politici privatnosti",
+				"description": "Možemo povremeno ažurirati našu Politiku privatnosti. Obavijestit ćemo vas o značajnim promjenama objavom na našoj web stranici ili direktnom komunikacijom. Savjetujemo vam da periodično pregledavate ovu Politiku privatnosti kako biste bili informisani o tome kako štitimo vaše podatke."
+			},
+			"contact": {
+				"title": "Kontaktirajte nas",
+				"description": "Ako imate pitanja o ovoj Politici privatnosti ili o našim praksama vezanim za privatnost, molimo vas da nas kontaktirate putem email adrese: <email></email>."
+			}
+		},
+		"terms": {
+			"title": "Uslovi korištenja",
+			"lastUpdated": "Zadnje ažurirano: {date}",
+			"viewPrivacy": "Pogledajte našu Politiku privatnosti",
+			"introduction": {
+				"title": "Uvod",
+				"description": "Dobrodošli na RECONNED, platformu koja povezuje airsoft entuzijaste, klubove i događaje. Korištenjem naše web stranice i usluga, pristajete na poštovanje ovih Uslova korištenja. Molimo vas da ih pažljivo pročitate."
+			},
+			"acceptance": {
+				"title": "Prihvatanje uslova",
+				"description": "Pristupom ili korištenjem RECONNED platforme, pristajete da budete pravno vezani ovim Uslovima korištenja. Ako se ne slažete s bilo kojim dijelom ovih uslova, molimo vas da ne koristite našu platformu."
+			},
+			"eligibility": {
+				"title": "Pravo korištenja",
+				"description": "Da biste koristili našu platformu, morate imati najmanje 17 godina. Korištenjem platforme, potvrđujete da imate najmanje 17 godina i da niste osoba kojoj je zabranjeno primanje naših usluga prema zakonima Bosne i Hercegovine ili drugih primjenjivih jurisdikcija."
+			},
+			"userAccounts": {
+				"title": "Korisnički računi",
+				"description": "Za pristup određenim funkcijama naše platforme, morat ćete stvoriti korisnički račun. Kada to učinite, odgovorni ste za:",
+				"accuracy": "Održavanje tačnosti i ažurnosti vaših informacija.",
+				"security": "Čuvanje sigurnosti vašeg računa i lozinke.",
+				"responsibility": "Sve aktivnosti koje se odvijaju pod vašim računom.",
+				"termination": "Razumijevanje da možemo suspendovati ili zatvoriti vaš račun ako prekršite ove uslove."
+			},
+			"content": {
+				"title": "Korisnički sadržaj i ponašanje",
+				"description": "Naša platforma vam omogućava da objavljujete sadržaj, uključujući tekstove, slike i druge materijale.",
+				"userContent": {
+					"title": "Vaš sadržaj",
+					"description": "Zadržavate vlasništvo nad sadržajem koji objavljujete na platformi, ali nam dajete neekskluzivnu, besplatnu licencu za korištenje, prikazivanje i distribuciju tog sadržaja u vezi s našim uslugama."
+				},
+				"prohibited": {
+					"title": "Zabranjene aktivnosti",
+					"description": "Na RECONNED platformi zabranjeno je sljedeće ponašanje:",
+					"illegal": "Objavljivanje ili promovisanje ilegalnih aktivnosti.",
+					"harmful": "Objavljivanje sadržaja koji je štetan, prijeteći, uvredljiv, ili uznemiravajući.",
+					"impersonation": "Lažno predstavljanje kao drugi korisnik ili entitet.",
+					"spam": "Slanje neželjenih poruka ili spamovanje platforme.",
+					"infringement": "Kršenje autorskih prava ili drugih prava intelektualnog vlasništva."
+				}
+			},
+			"intellectualProperty": {
+				"title": "Intelektualno vlasništvo",
+				"description": "RECONNED i njegov sadržaj, funkcionalnosti i izgled su zaštićeni zakonima o autorskim pravima, zaštitnim znakovima i drugim zakonima o intelektualnom vlasništvu.",
+				"ownership": "Svi zaštitni znakovi, logotipi, nazivi proizvoda i usluga prikazani na platformi su vlasništvo RECONNED-a ili njihovih odgovarajućih vlasnika.",
+				"license": "Dajemo vam ograničenu, neekskluzivnu, neprenosivu licencu za pristup i korištenje platforme za lične, nekomercionalne svrhe.",
+				"feedback": "Ako nam pošaljete povratne informacije ili prijedloge, možemo ih koristiti bez ikakve obaveze prema vama."
+			},
+			"thirdParty": {
+				"title": "Linkovi na treće strane",
+				"description": "Naša platforma može sadržavati linkove na web stranice trećih strana koje nisu u našem vlasništvu niti pod našom kontrolom. Nismo odgovorni za sadržaj, politike privatnosti ili prakse bilo kojih web stranica trećih strana."
+			},
+			"disclaimer": {
+				"title": "Odricanje od odgovornosti",
+				"description": "RECONNED platforma se pruža \"kako jest\" i \"kako je dostupna\", bez bilo kakvih garancija, bilo izričitih ili impliciranih. Ne garantujemo da će platforma uvijek biti dostupna, sigurna, bez grešaka ili da će ispuniti vaše specifične zahtjeve."
+			},
+			"limitation": {
+				"title": "Ograničenje odgovornosti",
+				"description": "U mjeri dopuštenoj zakonom, RECONNED i njegovi osnivači, službenici, direktori, zaposlenici i agenti neće biti odgovorni za bilo kakvu indirektnu, slučajnu, posebnu, posljedičnu ili kaznenu štetu koja proizlazi iz ili je povezana s vašim korištenjem platforme."
+			},
+			"changes": {
+				"title": "Promjene uslova",
+				"description": "Zadržavamo pravo da u bilo kojem trenutku izmijenimo ili zamijenimo ove Uslove korištenja. Ako napravimo materijalne promjene, nastojaćemo vas obavijestiti prije nego što nove odredbe stupe na snagu. Nastavkom korištenja platforme nakon što promjene stupe na snagu, pristajete na ažurirane uslove."
+			},
+			"termination": {
+				"title": "Raskid",
+				"description": "Možemo, po vlastitom nahođenju, modificirati, suspendovati ili ukinuti vaš pristup platformi iz bilo kojeg razloga, uključujući kršenje ovih Uslova korištenja, bez prethodne najave."
+			},
+			"governing": {
+				"title": "Mjerodavno pravo",
+				"description": "Ovi Uslovi korištenja regulisani su i tumačeni u skladu sa zakonima Bosne i Hercegovine, bez obzira na odredbe o sukobu zakona."
+			},
+			"contact": {
+				"title": "Kontaktirajte nas",
+				"description": "Ako imate pitanja o ovim Uslovima korištenja, molimo vas da nas kontaktirate putem email adrese: <email></email>."
+			}
 		}
 	},
 	"dashboard": {
@@ -849,7 +1001,8 @@
 				"title": "Podrška",
 				"contact": "Kontakt",
 				"faq": "Česta pitanja",
-				"privacy": "Privatnost"
+				"privacy": "Privatnost",
+				"terms": "Uslovi korištenja"
 			},
 			"copyright": "© {year} RECONNED. Sva prava zadržana.",
 			"sponsors": "Pogledajte naše sponzore i partnere",
