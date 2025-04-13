@@ -208,6 +208,7 @@
 		"help": {
 			"title": "Pomoć",
 			"googleMaps": {
+				"title": "Kako dodati Google Maps link na susret",
 				"steps": {
 					"step1": "Otvorite Google Maps i pronađite željenu lokaciju",
 					"step2": "Kliknite na dugme \"Share\" (Podijeli)",
@@ -215,6 +216,17 @@
 					"step4": "Kopirajte čitav link",
 					"step5": "Zalijepite kopirani link u polje za Google Maps na formi za kreiranje susreta"
 				}
+			},
+			"deleteClub": {
+				"title": "Kako izbrisati klub",
+				"description": "Da biste izbrisali klub, pratite ove korake:",
+				"steps": {
+					"step1": "U sidebar-u izaberite klub koji želite izbrisati",
+					"step2": "Kliknite na \"Klub\" u meniju",
+					"step3": "Kliknite na \"Informacije\" u podmeniju",
+					"step4": "Na stranici sa informacijama kluba, pronađite i kliknite na \"Obriši klub\" dugme u gornjem desnom uglu"
+				},
+				"notes": "Napomena: Brisanje kluba je trajna akcija i ne može se poništiti. Svi događaji i članstva vezana za klub će također biti izbrisana."
 			}
 		},
 		"user": {

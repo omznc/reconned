@@ -878,7 +878,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 					{/* Instagram success message */}
 					{instagramSuccess && (
-						<Alert className="bg-green-50 border-green-200">
+						<Alert>
 							<CheckCircle className="h-4 w-4" />
 							<AlertTitle>{t("instagramConnectSuccess")}</AlertTitle>
 						</Alert>
@@ -886,7 +886,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 					{/* Instagram error message */}
 					{instagramError && (
-						<Alert variant="destructive" className="bg-red-50 border-red-200">
+						<Alert variant="destructive">
 							<AlertCircle className="h-4 w-4" />
 							<AlertTitle>{t("instagramError.title")}</AlertTitle>
 							<AlertDescription>

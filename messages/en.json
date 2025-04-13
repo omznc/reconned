@@ -208,6 +208,7 @@
 		"help": {
 			"title": "Help",
 			"googleMaps": {
+				"title": "How to add a Google Maps link to an event",
 				"steps": {
 					"step1": "Open Google Maps and find the desired location",
 					"step2": "Click the \"Share\" button",
@@ -215,6 +216,17 @@
 					"step4": "Copy the entire link",
 					"step5": "Paste the copied link into the Google Maps field on the event creation form"
 				}
+			},
+			"deleteClub": {
+				"title": "How to delete a club",
+				"description": "To delete a club, follow these steps:",
+				"steps": {
+					"step1": "Select the club you want to delete from the sidebar",
+					"step2": "Click on \"Club\" in the menu",
+					"step3": "Click on \"Information\" in the submenu",
+					"step4": "On the club information page, find and click the \"Delete the club\" button in the top right corner"
+				},
+				"notes": "Note: Deleting a club is a permanent action and cannot be undone. All events and memberships related to the club will also be deleted."
 			}
 		},
 		"user": {

@@ -80,8 +80,7 @@ export async function getInstagramAuthUrl(clubId: string): Promise<string> {
 	const params = new URLSearchParams({
 		client_id: env.FACEBOOK_APP_ID,
 		redirect_uri: redirectUri,
-		scope:
-			"pages_show_list,instagram_basic,pages_read_engagement,instagram_content_publish,pages_manage_metadata,pages_read_engagement,pages_show_list",
+		scope: "pages_show_list,instagram_basic,pages_read_engagement",
 		state: clubId,
 	});
 
