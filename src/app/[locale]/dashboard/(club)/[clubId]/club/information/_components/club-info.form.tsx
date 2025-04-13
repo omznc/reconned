@@ -4,6 +4,7 @@ import {
 	deleteClubImage,
 	getClubImageUploadUrl,
 	saveClubInformation,
+	disconnectInstagramAccount,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { Button } from "@/components/ui/button";
@@ -50,15 +51,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
 import {
+	AlertCircle,
 	ArrowUpRight,
 	Calendar as CalendarIcon,
+	CheckCircle,
 	Loader,
 	Trash,
 } from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { toast } from "sonner";
@@ -73,6 +76,9 @@ import dynamic from "next/dynamic";
 import { Link } from "@/i18n/navigation";
 import type { Country } from "@/lib/cached-countries";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { useHash } from "@/hooks/use-hash";
+import { SiInstagram } from "@icons-pack/react-simple-icons";
 
 // Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(
@@ -94,9 +100,47 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [open, setOpen] = useState(false);
+	const [isConnectingInstagram, setIsConnectingInstagram] = useState(false);
+	const [isDisconnectingInstagram, setIsDisconnectingInstagram] =
+		useState(false);
+	const [instagramSuccess, setInstagramSuccess] = useState(false);
+	const [instagramError, setInstagramError] = useState<string | null>(null);
+	const [instagramErrorMessage, setInstagramErrorMessage] = useState<
+		string | null
+	>(null);
 	const router = useRouter();
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.info");
+	const searchParams = useSearchParams();
+
+	// Add hash navigation support
+	useHash();
+
+	// Check for Instagram connection messages
+	const instagramSuccessParam = searchParams.get("instagramSuccess");
+	const instagramErrorParam = searchParams.get("instagramError");
+	const errorMessageParam = searchParams.get("errorMessage");
+
+	useEffect(() => {
+		if (instagramSuccessParam) {
+			setInstagramSuccess(true);
+		}
+
+		if (instagramErrorParam) {
+			setInstagramError(instagramErrorParam);
+		}
+
+		if (errorMessageParam) {
+			setInstagramErrorMessage(errorMessageParam);
+		}
+
+		// Delete the URL parameters after setting the state
+		const newUrl = new URL(window.location.href);
+		newUrl.searchParams.delete("instagramSuccess");
+		newUrl.searchParams.delete("instagramError");
+		newUrl.searchParams.delete("errorMessage");
+		window.history.replaceState({}, document.title, newUrl.toString());
+	}, [instagramSuccessParam, instagramErrorParam, errorMessageParam]);
 
 	const dropZoneConfig = {
 		maxFiles: 1,
@@ -139,6 +183,85 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		if (props.club) {
 			form.setValue("latitude", props.club.latitude ?? undefined);
 			form.setValue("longitude", props.club.longitude ?? undefined);
+		}
+	};
+
+	// Add this function to handle Instagram connection
+	const handleConnectInstagram = async () => {
+		setIsConnectingInstagram(true);
+		try {
+			const response = await fetch(
+				`/api/club/instagram/authorize?clubId=${props.club?.id}`,
+			);
+			const data = await response.json();
+
+			if (!data.url) {
+				throw new Error("No authorization URL returned");
+			}
+
+			window.location.href = data.url;
+		} catch (error) {
+			toast.error(t("instagramConnectError"));
+			setIsConnectingInstagram(false);
+		}
+	};
+
+	// Add this function to handle Instagram disconnection
+	const handleDisconnectInstagram = async () => {
+		if (!props.club?.id) {
+			return;
+		}
+
+		const confirmed = await confirm({
+			title: t("instagramDisconnect.title"),
+			body: t("instagramDisconnect.body"),
+			actionButtonVariant: "destructive",
+			actionButton: t("instagramDisconnect.confirm"),
+			cancelButton: t("instagramDisconnect.cancel"),
+		});
+
+		if (!confirmed) {
+			return;
+		}
+
+		setIsDisconnectingInstagram(true);
+		try {
+			const result = await disconnectInstagramAccount({
+				clubId: props.club.id,
+			});
+
+			if (!result?.data?.success) {
+				throw new Error(result?.serverError);
+			}
+
+			toast.success(t("instagramDisconnectSuccess"));
+			router.refresh();
+		} catch (error) {
+			toast.error(t("instagramDisconnectError"));
+		} finally {
+			setIsDisconnectingInstagram(false);
+		}
+	};
+
+	// Helper function to get error message translation key
+	const getInstagramErrorTranslationKey = (errorCode: string): string => {
+		switch (errorCode) {
+			case "no_facebook_pages":
+				return "instagramError.noFacebookPages";
+			case "no_instagram_business_account":
+				return "instagramError.noInstagramAccount";
+			case "not_connected_to_instagram":
+				return "instagramError.notConnected";
+			case "missing_params":
+				return "instagramError.missingParams";
+			case "auth_failed":
+				return "instagramError.authFailed";
+			case "page_not_found":
+				return "instagramError.pageNotFound";
+			case "personal_account":
+				return "instagramError.personalAccount";
+			default:
+				return "instagramError.connectionFailed";
 		}
 	};
 
@@ -707,6 +830,96 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
+
+				{/* Instagram integration section with alerts */}
+				<div id="instagram" className="border rounded-lg p-4 space-y-4">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<SiInstagram className="h-5 w-5" />
+							<h4 className="font-medium">{t("instagramConnection")}</h4>
+						</div>
+
+						{props.club?.instagramConnected ? (
+							<Button
+								type="button"
+								variant="destructive"
+								size="sm"
+								onClick={handleDisconnectInstagram}
+								disabled={isDisconnectingInstagram}
+							>
+								{isDisconnectingInstagram ? (
+									<>
+										<Loader className="mr-2 h-4 w-4 animate-spin" />
+										{t("instagramDisconnecting")}
+									</>
+								) : (
+									t("instagramDisconnect.action")
+								)}
+							</Button>
+						) : (
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={handleConnectInstagram}
+								disabled={isConnectingInstagram || !props.club?.id}
+							>
+								{isConnectingInstagram ? (
+									<>
+										<Loader className="mr-2 h-4 w-4 animate-spin" />
+										{t("instagramConnecting")}
+									</>
+								) : (
+									t("instagramConnect")
+								)}
+							</Button>
+						)}
+					</div>
+
+					{/* Instagram success message */}
+					{instagramSuccess && (
+						<Alert>
+							<CheckCircle className="h-4 w-4" />
+							<AlertTitle>{t("instagramConnectSuccess")}</AlertTitle>
+						</Alert>
+					)}
+
+					{/* Instagram error message */}
+					{instagramError && (
+						<Alert variant="destructive">
+							<AlertCircle className="h-4 w-4" />
+							<AlertTitle>{t("instagramError.title")}</AlertTitle>
+							<AlertDescription>
+								{instagramErrorMessage ||
+									t(getInstagramErrorTranslationKey(instagramError))}
+							</AlertDescription>
+						</Alert>
+					)}
+
+					{props.club?.instagramConnected && props.club?.instagramUsername && (
+						<div className="text-sm inline-flex items-center gap-1">
+							<p className="text-muted-foreground">
+								{t("instagramConnectedMessage")}
+							</p>
+							<Link
+								href={`https://instagram.com/${props.club.instagramUsername}`}
+								target="_blank"
+								className="text-blue-500 hover:underline flex items-center gap-1"
+							>
+								@{props.club.instagramUsername}
+								<ArrowUpRight className="h-3 w-3" />
+							</Link>
+						</div>
+					)}
+
+					{!props.club?.instagramConnected && (
+						<div className="text-sm">
+							<p className="text-muted-foreground">
+								{t("instagramDescription")}
+							</p>
+						</div>
+					)}
+				</div>
 
 				<LoaderSubmitButton
 					isLoading={isLoading}

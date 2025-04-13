@@ -1,8 +1,6 @@
 import { getRequestConfig } from "next-intl/server";
 import { hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
-import { headers } from "next/headers";
-import { LANGUAGE_MAPS } from "@/i18n/valid-locales";
 
 export default getRequestConfig(async ({ requestLocale }) => {
 	const resolvedLocale = await requestLocale;

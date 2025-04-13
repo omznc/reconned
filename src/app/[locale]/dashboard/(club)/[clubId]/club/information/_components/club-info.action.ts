@@ -4,6 +4,7 @@ import {
 	clubLogoFileSchema,
 	deleteClubImageSchema,
 	deleteClubSchema,
+	disconnectInstagramSchema,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +13,7 @@ import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
+import { disconnectInstagramAPI } from "@/lib/instagram";
 
 export const saveClubInformation = safeActionClient
 	.schema(clubInfoSchema)
@@ -47,6 +49,7 @@ export const saveClubInformation = safeActionClient
 				latitude: parsedInput.latitude,
 				longitude: parsedInput.longitude,
 				countryId: parsedInput.countryId,
+				instagramUsername: parsedInput.instagramUsername,
 			},
 			create: {
 				name: parsedInput.name,
@@ -64,6 +67,7 @@ export const saveClubInformation = safeActionClient
 				longitude: parsedInput.longitude,
 				slug: parsedInput.slug ? parsedInput.slug : undefined,
 				countryId: parsedInput.countryId,
+				instagramUsername: parsedInput.instagramUsername,
 				members: {
 					create: {
 						userId: ctx.user.id,
@@ -112,6 +116,58 @@ export const deleteClubImage = safeActionClient
 		revalidatePath(`/dashboard/club/information?club=${ctx.club.id}`);
 
 		return { success: true };
+	});
+
+export const disconnectInstagram = safeActionClient
+	.schema(disconnectInstagramSchema)
+	.action(async ({ ctx }) => {
+		await prisma.club.update({
+			where: {
+				id: ctx.club.id,
+			},
+			data: {
+				instagramUsername: null,
+				instagramAccessToken: null,
+				instagramRefreshToken: null,
+				instagramTokenExpiry: null,
+				instagramProfilePictureUrl: null,
+				instagramConnected: false,
+			},
+		});
+
+		revalidatePath(`/dashboard/${ctx.club.id}/club/information`);
+		if (!ctx.club.isPrivate) {
+			revalidatePath(`/clubs/${ctx.club.id}`);
+		}
+
+		return { success: true };
+	});
+
+export const disconnectInstagramAccount = safeActionClient
+	.schema(disconnectInstagramSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		try {
+			const success = await disconnectInstagramAPI(ctx.club.id);
+
+			if (!success) {
+				return {
+					success: false,
+					error: "Došlo je do greške prilikom odspajanja Instagram računa",
+				};
+			}
+
+			revalidatePath(`/dashboard/${ctx.club.id}/club/information`, "page");
+			if (!ctx.club.isPrivate) {
+				revalidatePath(`/clubs/${ctx.club.id}`, "page");
+			}
+
+			return { success: true };
+		} catch (error) {
+			return {
+				success: false,
+				error: "Došlo je do greške prilikom odspajanja Instagram računa",
+			};
+		}
 	});
 
 export const deleteClub = safeActionClient

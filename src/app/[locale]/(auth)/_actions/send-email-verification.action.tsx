@@ -41,7 +41,6 @@ export async function sendEmailVerificationAction({
 
 		return resp.MessageId;
 	} catch (error) {
-		console.error(error);
 		return null;
 	}
 }

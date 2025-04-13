@@ -106,7 +106,6 @@ export async function GET(request: Request) {
 			unbannedClubs: results[4].count,
 		});
 	} catch (error) {
-		console.error("Cleanup failed:", error);
 		return NextResponse.json(
 			{ error: "Čišćenje nije uspjelo" },
 			{ status: 500 },

@@ -33,7 +33,6 @@ export const saveRule = safeActionClient
 			revalidatePath(`/dashboard/${ctx.club.id}/events/rules`);
 			return { success: true, rule };
 		} catch (error) {
-			console.error("Failed to save rule:", error);
 			throw new Error("Failed to save rule");
 		}
 	});

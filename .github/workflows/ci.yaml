@@ -40,7 +40,9 @@ jobs:
           ONESIGNAL_APP_ID: "mock_onesignal_app_id"
           ONESIGNAL_API_KEY: "mock_onesignal_api_key"
           ADMIN_WEBHOOK_TOKEN: "mock_admin_webhook_token"
-          TURNSTILE_SECRET_KEY=: "mock_turnstile_secret_key"
+          TURNSTILE_SECRET_KEY: "mock_turnstile_secret_key"
+          FACEBOOK_APP_ID: "mock_facebook_app_id"
+          FACEBOOK_APP_SECRET: "mock_facebook_app_secret"
           
           # Client variables
           NEXT_PUBLIC_CDN_URL: "https://example.com"

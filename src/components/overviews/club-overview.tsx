@@ -12,6 +12,7 @@ import {
 	MapPin,
 	Pencil,
 	Phone,
+	ShieldBan,
 } from "lucide-react";
 import Image from "next/image";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
@@ -28,6 +29,13 @@ import {
 } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { LeaveClubButton } from "@/components/leave-club-button";
+import { InstagramGallery } from "@/components/instagram/instagram-gallery";
+import {
+	checkAndRefreshToken,
+	getInstagramMedia,
+	type InstagramMedia,
+} from "@/lib/instagram";
+import { SiInstagram } from "@icons-pack/react-simple-icons";
 
 interface ClubOverviewProps {
 	club: Club & {
@@ -44,16 +52,44 @@ interface ClubOverviewProps {
 	currentUserMembership?: ClubMembership | null;
 }
 
+async function fetchInstagramPhotos(
+	clubId: string,
+): Promise<{ photos: InstagramMedia[]; username: string | null }> {
+	try {
+		// Check token validity and refresh if needed
+		const { token, igBusinessId } = await checkAndRefreshToken(clubId);
+
+		if (!(token && igBusinessId)) {
+			return { photos: [], username: null };
+		}
+
+		// Fetch Instagram photos
+		const instagramMedia = await getInstagramMedia(igBusinessId, token, 20);
+		return {
+			photos: instagramMedia.data || [],
+			username: instagramMedia.data[0]?.username || null,
+		};
+	} catch (error) {
+		return { photos: [], username: null };
+	}
+}
+
 export async function ClubOverview({
 	club,
 	isManager,
 	isMember,
 	currentUserMembership,
 }: ClubOverviewProps) {
-	const [analyticsId, analyticsSlug, t] = await Promise.all([
+	const [analyticsId, analyticsSlug, t, instagramData] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
 		getTranslations("components.clubOverview"),
+		club.instagramConnected
+			? fetchInstagramPhotos(club.id)
+			: Promise.resolve({
+					photos: [],
+					username: club.instagramUsername || null,
+				}),
 	]);
 	const visitors =
 		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
@@ -73,7 +109,7 @@ export async function ClubOverview({
 		<div className="space-y-6">
 			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between">
 				<div className="flex flex-col md:flex-row gap-4">
-					{club.logo && (
+					{club.logo ? (
 						<Image
 							suppressHydrationWarning={true}
 							src={club.logo}
@@ -83,6 +119,10 @@ export async function ClubOverview({
 							className="h-[150px] md:h-[150px] w-auto mx-auto md:mx-0"
 							draggable={false}
 						/>
+					) : (
+						<div className="h-[150px] md:h-[150px] aspect-square bg-sidebar flex items-center justify-center border mx-auto md:mx-0">
+							<ShieldBan className="size-[50px] text-foreground" />
+						</div>
 					)}
 					<div className="flex select-none flex-col gap-1 text-center md:text-left">
 						<div className="flex items-center justify-center md:justify-start gap-2">
@@ -273,6 +313,44 @@ export async function ClubOverview({
 					</div>
 				)}
 			</div>
+			{club.instagramConnected && instagramData.photos.length > 0 && (
+				<div className="rounded-lg border bg-sidebar">
+					<div className="flex items-start justify-between border-b p-4">
+						<div className="flex flex-col gap-2">
+							<div className="flex gap-2 items-center">
+								<SiInstagram className="h-5 w-5 text-primary" />
+								<h2 className="text-xl font-semibold">
+									{t("instagramGallery")}
+								</h2>
+							</div>
+							<p>{t("instagramGalleryDescription")}</p>
+						</div>
+						<Link
+							target="_blank"
+							href={`https://instagram.com/${club.instagramUsername}`}
+							className="flex gap-2 h-full"
+						>
+							{club.instagramProfilePictureUrl && (
+								<Image
+									className="aspect-square border"
+									src={club.instagramProfilePictureUrl}
+									alt={"Instagram profile photo"}
+									width={60}
+									height={60}
+								/>
+							)}
+						</Link>
+					</div>
+					<div className="p-4">
+						<InstagramGallery
+							photos={instagramData.photos}
+							username={
+								instagramData.username || club.instagramUsername || undefined
+							}
+						/>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

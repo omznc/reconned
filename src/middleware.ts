@@ -17,7 +17,8 @@ export default async function authMiddleware(request: NextRequest) {
 				headers: await headers(),
 			},
 		);
-		const session = await resp.json();
+
+		const session = await resp.text();
 
 		if (!session) {
 			const locationHeader = resp.headers.get("Location");

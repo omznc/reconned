@@ -15,6 +15,17 @@ model Club {
   verified     Boolean   @default(false)
   website      String?
 
+  // Instagram integration fields
+  instagramUsername        String?
+  instagramProfilePictureUrl String?
+  instagramAccessToken     String?
+  instagramTokenExpiry     DateTime?
+  instagramRefreshToken    String?
+  instagramConnected       Boolean   @default(false)
+  instagramBusinessId      String?   // Instagram Business Account ID
+  facebookPageId           String?   // Connected Facebook Page ID
+  instagramTokenType       String?   // Type of token (e.g., "PERMANENT", "TEMPORARY")
+
   events      Event[]
   rules       ClubRule[]
   members     ClubMembership[]
@@ -93,4 +104,16 @@ model ClubInvite {
   @@index([inviteCode])
   @@index([clubId])
   @@index([userId])
+}
+
+// Temporary storage for Instagram page selection process
+model InstagramPageSelection {
+  id          String    @id @default(cuid())
+  clubId      String
+  accessToken String    @db.Text
+  pages       String    @db.Text  // JSON string of pages
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([clubId])
 }

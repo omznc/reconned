@@ -34,6 +34,7 @@ export const clubInfoSchema = z.object({
 	contactEmail: z.string().optional(),
 	clubId: z.string().optional(),
 	website: z.string().optional(),
+	instagramUsername: z.string().optional(),
 });
 
 export const clubLogoFileSchema = z.object({
@@ -45,6 +46,10 @@ export const clubLogoFileSchema = z.object({
 });
 
 export const deleteClubImageSchema = z.object({
+	clubId: z.string(),
+});
+
+export const disconnectInstagramSchema = z.object({
 	clubId: z.string(),
 });
 

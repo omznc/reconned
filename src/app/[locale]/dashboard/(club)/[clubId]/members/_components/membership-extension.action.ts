@@ -59,7 +59,6 @@ export const extendMembership = safeActionClient
 				message: `Membership extended by ${durationMonths} months`,
 			};
 		} catch (error) {
-			console.error("Error extending membership:", error);
 			return { error: "Failed to extend membership" };
 		}
 	});
