@@ -13,6 +13,8 @@ interface PageProps {
 	}>;
 }
 
+
+
 export default async function Page(props: PageProps) {
 	const params = await props.params;
 

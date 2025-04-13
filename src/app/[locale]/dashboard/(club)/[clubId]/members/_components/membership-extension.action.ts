@@ -2,7 +2,7 @@
 
 import { safeActionClient } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 import { addMonths } from "date-fns";
 import { membershipExtensionSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
 
@@ -51,7 +51,7 @@ export const extendMembership = safeActionClient
 			});
 
 			// Revalidate path to update UI
-			revalidatePath(`/dashboard/${clubId}/members`);
+			revalidateLocalizedPaths(`/dashboard/${clubId}/members`);
 
 			return {
 				success: true,

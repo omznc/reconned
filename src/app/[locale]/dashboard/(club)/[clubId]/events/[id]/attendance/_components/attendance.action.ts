@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { toggleAttendanceSchema } from "./attendance.schema";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 
 export const toggleAttendance = safeActionClient
 	.schema(toggleAttendanceSchema)
@@ -34,7 +34,7 @@ export const toggleAttendance = safeActionClient
 			},
 		});
 
-		revalidatePath(
+		revalidateLocalizedPaths(
 			`/dashboard/${ctx.club.id}/events/${parsedInput.eventId}/attendance`,
 		);
 		return updated;

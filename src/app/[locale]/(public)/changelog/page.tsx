@@ -1,5 +1,4 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { format } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
 	Card,
@@ -96,9 +95,13 @@ export default async function ChangelogPage() {
 						</CardTitle>
 						<div className="text-sm text-muted-foreground">
 							{t("published", {
-								date: format(
-									new Date(latestRelease.published_at),
-									"MMMM dd, yyyy",
+								date: new Date(latestRelease.published_at).toLocaleDateString(
+									locale,
+									{
+										year: "numeric",
+										month: "long",
+										day: "numeric",
+									},
 								),
 							})}
 						</div>
@@ -147,6 +150,11 @@ export default async function ChangelogPage() {
 										{t("published", {
 											date: new Date(release.published_at).toLocaleDateString(
 												locale,
+												{
+													year: "numeric",
+													month: "long",
+													day: "numeric",
+												},
 											),
 										})}
 									</div>

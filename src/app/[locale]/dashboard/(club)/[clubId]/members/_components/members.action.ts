@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { leaveClubSchema, removeMemberSchema } from "./members.schema";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
 
@@ -39,7 +39,7 @@ export const removeMember = safeActionClient
 				},
 			});
 
-			revalidatePath(`/dashboard/${parsedInput.clubId}/members`);
+			revalidateLocalizedPaths(`/dashboard/${parsedInput.clubId}/members`);
 
 			return {
 				success: true,

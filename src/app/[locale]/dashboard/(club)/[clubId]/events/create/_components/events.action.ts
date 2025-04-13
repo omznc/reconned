@@ -9,7 +9,7 @@ import { validateSlug } from "@/components/slug/validate-slug";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
 
@@ -72,10 +72,10 @@ export const createEvent = safeActionClient
 		}
 
 		// revalidate paths
-		revalidatePath(`/dashboard/${ctx.club.id}/events/`);
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/events/`);
 		if (!parsedInput.isPrivate) {
-			revalidatePath("/");
-			revalidatePath(`/events/${parsedInput.eventId}`);
+			revalidateLocalizedPaths("/");
+			revalidateLocalizedPaths(`/events/${parsedInput.eventId}`);
 		}
 
 		// create or update event
@@ -154,13 +154,16 @@ export const deleteEvent = safeActionClient
 			}),
 		]);
 
-		revalidatePath(
+		revalidateLocalizedPaths(
 			`${locale}/dashboard/${ctx.club.id}/events/${parsedInput.eventId}`,
 		);
 
 		if (!event.isPrivate) {
-			revalidatePath(`${locale}/events/${parsedInput.eventId}`, "layout");
-			revalidatePath(`${locale}/`);
+			revalidateLocalizedPaths(
+				`${locale}/events/${parsedInput.eventId}`,
+				"layout",
+			);
+			revalidateLocalizedPaths(`${locale}/`);
 		}
 
 		return redirect({

@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteRuleSchema, ruleSchema } from "./rules.schema";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 
 export const saveRule = safeActionClient
 	.schema(ruleSchema)
@@ -30,7 +30,7 @@ export const saveRule = safeActionClient
 						},
 					});
 
-			revalidatePath(`/dashboard/${ctx.club.id}/events/rules`);
+			revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/events/rules`);
 			return { success: true, rule };
 		} catch (error) {
 			throw new Error("Failed to save rule");
@@ -47,6 +47,6 @@ export const deleteRule = safeActionClient
 			},
 		});
 
-		revalidatePath(`/dashboard/${ctx.club.id}/events/rules`);
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/events/rules`);
 		return { success: true };
 	});

@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { getTranslations } from "next-intl/server";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 
 export const saveUserInformation = safeActionClient
 	.schema(userInfoShema)
@@ -47,9 +47,11 @@ export const saveUserInformation = safeActionClient
 			},
 		});
 
-		revalidatePath("/dashboard/user/");
+		revalidateLocalizedPaths("/dashboard/user/");
 		if (!user.isPrivate) {
-			revalidatePath(`/user/${user.id}`);
+			revalidateLocalizedPaths(`/users/${user.slug ?? user.id}`);
+			revalidateLocalizedPaths("/users");
+			revalidateLocalizedPaths("/search");
 		}
 	});
 
@@ -77,8 +79,10 @@ export const deleteUserImage = safeActionClient.action(async ({ ctx }) => {
 
 	await deleteS3File(`user/${ctx.user.id}/image`);
 
-	revalidatePath("/dashboard/user/");
+	revalidateLocalizedPaths("/dashboard/user/");
 	if (!user.isPrivate) {
-		revalidatePath(`/user/${user.id}`);
+		revalidateLocalizedPaths(`/users/${user.slug ?? user.id}`);
+		revalidateLocalizedPaths("/users");
+		revalidateLocalizedPaths("/search");
 	}
 });

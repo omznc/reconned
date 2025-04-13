@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deletePostSchema, postSchema } from "./posts.schema";
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPaths } from "@/i18n/navigation";
 
 export const savePost = safeActionClient
 	.schema(postSchema)
@@ -31,8 +31,8 @@ export const savePost = safeActionClient
 					},
 				});
 
-		revalidatePath(`/dashboard/${ctx.club.id}/club`);
-		revalidatePath(`/dashboard/${ctx.club.id}/club/posts`);
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club`);
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/posts`);
 		return { success: true, post };
 	});
 
@@ -46,7 +46,7 @@ export const deletePost = safeActionClient
 			},
 		});
 
-		revalidatePath(`/dashboard/${ctx.club.id}/club`);
-		revalidatePath(`/dashboard/${ctx.club.id}/club/posts`);
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club`);
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/posts`);
 		return { success: true };
 	});
