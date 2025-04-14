@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { getTranslations } from "next-intl/server";
-import { revalidateLocalizedPaths } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
 export const saveUserInformation = safeActionClient
 	.schema(userInfoShema)

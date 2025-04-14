@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deletePostSchema, postSchema } from "./posts.schema";
-import { revalidateLocalizedPaths } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
 export const savePost = safeActionClient
 	.schema(postSchema)

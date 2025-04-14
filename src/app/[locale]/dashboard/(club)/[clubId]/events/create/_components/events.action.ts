@@ -9,7 +9,7 @@ import { validateSlug } from "@/components/slug/validate-slug";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
-import { revalidateLocalizedPaths } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
 
