@@ -9,6 +9,7 @@ model Club {
   slug         String?   @unique
   isAllied     Boolean   @default(false)
   isPrivate    Boolean   @default(false)
+  isPrivateStats Boolean  @default(false)
   logo         String?
   contactPhone String?
   contactEmail String?

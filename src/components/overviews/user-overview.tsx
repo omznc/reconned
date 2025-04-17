@@ -8,6 +8,7 @@ import { getPageViews } from "@/lib/analytics";
 import { Badge } from "@/components/ui/badge";
 import { getTranslations } from "next-intl/server";
 import { Globe, MapPin } from "lucide-react";
+import { isAuthenticated } from "@/lib/auth";
 
 interface ExtendedUser extends User {
 	clubMembership: {
@@ -37,6 +38,14 @@ export async function UserOverview({ user }: UserOverviewProps) {
 	const pastEvents = user.eventRegistration.filter(
 		(reg) => reg.attended || reg.event.dateStart <= new Date(),
 	);
+
+	// Get current user to check if they're viewing their own profile
+	const currentUser = await isAuthenticated();
+	const isCurrentUser = currentUser?.id === user.id;
+
+	// Determine whether to show stats based on privacy setting and user permissions
+	const shouldShowStats = !user.isPrivateStats || isCurrentUser;
+
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col md:flex-row gap-4">
@@ -81,9 +90,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</CardContent>
 			</Card> */}
 			<div className="flex flex-wrap gap-2">
-				<Badge className="md:grow-0 grow flex items-center gap-1">
-					{t("views", { count: visitors })}
-				</Badge>
+				{shouldShowStats && (
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						{t("views", { count: visitors })}
+					</Badge>
+				)}
 				{user.clubMembership.length === 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
 						{t("freelancer")}

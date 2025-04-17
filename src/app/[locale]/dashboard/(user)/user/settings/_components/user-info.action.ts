@@ -44,6 +44,7 @@ export const saveUserInformation = safeActionClient
 				callsign: parsedInput.callsign,
 				isPrivateEmail: parsedInput.isPrivateEmail,
 				isPrivatePhone: parsedInput.isPrivatePhone,
+				isPrivateStats: parsedInput.isPrivateStats,
 			},
 		});
 

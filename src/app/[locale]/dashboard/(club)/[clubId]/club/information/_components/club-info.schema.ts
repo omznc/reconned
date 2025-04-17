@@ -29,6 +29,7 @@ export const clubInfoSchema = z.object({
 	dateFounded: z.coerce.date(),
 	isAllied: z.boolean().optional(),
 	isPrivate: z.boolean().optional(),
+	isPrivateStats: z.boolean().optional(),
 	logo: z.string().optional(),
 	contactPhone: z.string().optional(),
 	contactEmail: z.string().optional(),

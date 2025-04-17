@@ -162,6 +162,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			dateFounded: props.club?.dateFounded || new Date(),
 			isAllied: props.club?.isAllied,
 			isPrivate: props.club?.isPrivate,
+			isPrivateStats: props.club?.isPrivateStats,
 			logo: props.club?.logo || undefined,
 			contactPhone: props.club?.contactPhone || undefined,
 			contactEmail: props.club?.contactEmail || undefined,
@@ -636,6 +637,27 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<div className="space-y-0.5">
 								<FormLabel>{t("private")}</FormLabel>
 								<FormDescription>{t("privateDescription")}</FormDescription>
+							</div>
+							<FormControl>
+								<Switch
+									checked={field.value}
+									onCheckedChange={field.onChange}
+								/>
+							</FormControl>
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="isPrivateStats"
+					render={({ field }) => (
+						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+							<div className="space-y-0.5">
+								<FormLabel>{t("privateStats")}</FormLabel>
+								<FormDescription>
+									{t("privateStatsDescription")}
+								</FormDescription>
 							</div>
 							<FormControl>
 								<Switch

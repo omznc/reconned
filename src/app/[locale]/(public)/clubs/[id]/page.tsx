@@ -14,20 +14,18 @@ interface PageProps {
 	}>;
 }
 
-
-
 export default async function Page(props: PageProps) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 	const userMembership = user
 		? await prisma.clubMembership.findFirst({
-			where: {
-				userId: user?.id,
-				club: {
-					OR: [{ id: params.id }, { slug: params.id }],
+				where: {
+					userId: user?.id,
+					club: {
+						OR: [{ id: params.id }, { slug: params.id }],
+					},
 				},
-			},
-		})
+			})
 		: null;
 
 	const isMemberOfClub = !!userMembership;

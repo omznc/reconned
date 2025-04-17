@@ -21,6 +21,7 @@ model User {
   isPrivate      Boolean @default(false)
   isPrivateEmail Boolean @default(true)
   isPrivatePhone Boolean @default(true)
+  isPrivateStats Boolean @default(false)
 
   clubMembership            ClubMembership[]
   clubInvitesReceived       ClubInvite[]

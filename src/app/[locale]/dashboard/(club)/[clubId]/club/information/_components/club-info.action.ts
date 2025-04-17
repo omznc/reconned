@@ -41,6 +41,7 @@ export const saveClubInformation = safeActionClient
 				dateFounded: parsedInput.dateFounded,
 				isAllied: parsedInput.isAllied,
 				isPrivate: parsedInput.isPrivate,
+				isPrivateStats: parsedInput.isPrivateStats,
 				logo: parsedInput.logo
 					? `${parsedInput.logo}?v=${Date.now()}`
 					: undefined,
@@ -59,6 +60,7 @@ export const saveClubInformation = safeActionClient
 				dateFounded: parsedInput.dateFounded,
 				isAllied: parsedInput.isAllied,
 				isPrivate: parsedInput.isPrivate,
+				isPrivateStats: parsedInput.isPrivateStats,
 				logo: parsedInput.logo
 					? `${parsedInput.logo}?v=${Date.now()}`
 					: undefined,
