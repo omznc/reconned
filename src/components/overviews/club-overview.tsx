@@ -105,6 +105,9 @@ export async function ClubOverview({
 
 	const isClubOwner = currentUserMembership?.role === "CLUB_OWNER";
 
+	// Determine whether to show stats based on privacy setting and user permissions
+	const shouldShowStats = !club.isPrivateStats || isManager || isMember;
+
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between">
@@ -210,9 +213,11 @@ export async function ClubOverview({
 						</Badge>
 					</Link>
 				)}
-				<Badge className="md:grow-0 grow flex items-center gap-1">
-					{t("views", { count: visitors })}
-				</Badge>
+				{shouldShowStats && (
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						{t("views", { count: visitors })}
+					</Badge>
+				)}
 			</div>
 			<ReviewsOverview type="club" typeId={club.id} />
 			<div
@@ -313,7 +318,7 @@ export async function ClubOverview({
 					</div>
 				)}
 			</div>
-			{club.instagramConnected && instagramData.photos.length > 0 && (
+			{club.instagramUsername && (
 				<div className="rounded-lg border bg-sidebar">
 					<div className="flex items-start justify-between border-b p-4">
 						<div className="flex flex-col gap-2">
