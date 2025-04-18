@@ -38,11 +38,11 @@ import {
 	CredenzaTrigger,
 } from "@/components/ui/credenza";
 import {
-	flattenNavigationItems,
 	getAppNavigationItems,
+	flattenNavigationItems,
 	getClubFlatItems,
-} from "./navigation-items.ts";
-import type { NavItem } from "./types.ts";
+} from "@/components/sidebar/navigation-items";
+import type { NavItem } from "@/components/sidebar/types";
 
 interface CommandMenuProps {
 	clubs: Club[];

@@ -191,7 +191,7 @@
 			"metadata": {
 				"description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
 				"title": "RECONNED - Airsoft klubovi, susreti, i igrači",
-				"keywords": "airsoft Bosna, airsoft BiH, airsoft oružje, airsoft replike, airsoft oprema, airsoft klubovi BiH, airsoft shop BiH, airsoft trgovina, airsoft puške, airsoft pištolji, airsoft metci, airsoft kuglice, airsoft maska, airsoft odjeća, airsoft uniforme, airsoft BiH forum, airsoft događaji BiH, airsoft pravila, airsoft taktike, airsoft igrači BiH, najbolji airsoft BiH, kupovina airsoft BiH, prodaja airsoft BiH, airsoft timovi BiH, airsoft lokacije BiH, airsoft teren BiH"
+				"keywords": "airsoft Bosna, airsoft BiH, airsoft oružje, airsoft replike, airsoft oprema, airsoft klubovi BiH, airsoft shop BiH, airsoft trgovina, airsoft puške, airsoft pištolji, airsoft metci, airsoft kuglice, airsoft maska, airsoft odjeća, airsoft uniforme, airsoft BiH forum, airsoft susreti BiH, airsoft pravila, airsoft taktike, airsoft igrači BiH, najbolji airsoft BiH, kupovina airsoft BiH, prodaja airsoft BiH, airsoft timovi BiH, airsoft lokacije BiH, airsoft teren BiH"
 			}
 		},
 		"privacy": {
@@ -208,7 +208,7 @@
 				"personalInfo": "Lični podaci: ime, email adresa, profilna slika, biografija, lokacija, web stranica, broj telefona, callsign, i podešavanja opreme.",
 				"accountInfo": "Informacije o računu: podaci o sesiji (IP adrese, korisnički agenti), podaci o autentikaciji (lozinke, passkeys, dvofaktorska autentikacija).",
 				"clubInfo": "Podaci o klubovima: naziv, lokacija, opis, datum osnivanja, logo, kontakt informacije, pravila, itd.",
-				"eventInfo": "Podaci o događajima: naziv, opis, lokacije, datumi, cijene, pravila, registracije učesnika, itd.",
+				"eventInfo": "Podaci o susretima: naziv, opis, lokacije, datumi, cijene, pravila, registracije učesnika, itd.",
 				"socialInfo": "Društveni podaci: recenzije, objave, postignuća, i druge interakcije između korisnika.",
 				"usageInfo": "Podaci o korištenju: kako koristite našu platformu, koje stranice posjećujete, i kako komunicirate s našim interfejsom.",
 				"deviceInfo": "Informacije o uređaju: tip uređaja, operativni sistem, verzija pretraživača, i postavke jezika."
@@ -216,7 +216,7 @@
 			"dataUse": {
 				"title": "Kako koristimo vaše podatke",
 				"description": "Koristimo prikupljene podatke za različite svrhe, uključujući:",
-				"provideService": "Da pružimo, održavamo i unapređujemo našu platformu, uključujući povezivanje airsoft klubova, igrača i događaja.",
+				"provideService": "Da pružimo, održavamo i unapređujemo našu platformu, uključujući povezivanje airsoft klubova, igrača i susreta.",
 				"improveService": "Da analiziramo kako koristite našu platformu i unapredimo korisničko iskustvo.",
 				"communicate": "Da komuniciramo s vama, odgovaramo na vaše upite, i šaljemo obavještenja o našoj usluzi.",
 				"security": "Da zaštitimo naše korisnike i platformu od prevara, zloupotreba i drugih štetnih aktivnosti."
@@ -229,7 +229,7 @@
 				"title": "Dijeljenje informacija",
 				"description": "Ne prodajemo vaše lične podatke trećim stranama. Međutim, možemo dijeliti podatke u sljedećim situacijama:",
 				"clubMembers": "S drugim članovima kluba (ako ste član kluba, određene informacije mogu biti vidljive drugim članovima).",
-				"eventParticipants": "S učesnicima događaja (ako ste registrovani za događaj, određene informacije mogu biti vidljive drugim učesnicima).",
+				"eventParticipants": "S učesnicima susreta (ako ste registrovani za susret, određene informacije mogu biti vidljive drugim učesnicima).",
 				"serviceProviders": "S pružaocima usluga koji nam pomažu u radu platforme (npr. hosting).",
 				"legal": "Kada se to zahtijeva zakonom ili u slučaju zaštite naših prava."
 			},
@@ -252,7 +252,7 @@
 				"description": "Naša platforma koristi nekoliko usluga trećih strana koje mogu prikupljati podatke o vama. Ove usluge uključuju:",
 				"auth": "Usluge autentikacije (npr. Google prijava) za jednostavno prijavljivanje.",
 				"storage": "Usluge skladištenja za pohranu podataka i medijskih fajlova.",
-				"maps": "Usluge mapiranja za prikaz lokacija klubova i događaja.",
+				"maps": "Usluge mapiranja za prikaz lokacija klubova i susreta.",
 				"analytics": "Analitičke usluge za praćenje korištenja platforme.",
 				"instagram": "Integracija s Instagramom za klubove koji žele prikazati svoje Instagram objave na profilu kluba."
 			},
@@ -275,7 +275,7 @@
 			"viewPrivacy": "Pogledajte našu Politiku privatnosti",
 			"introduction": {
 				"title": "Uvod",
-				"description": "Dobrodošli na RECONNED, platformu koja povezuje airsoft entuzijaste, klubove i događaje. Korištenjem naše web stranice i usluga, pristajete na poštovanje ovih Uslova korištenja. Molimo vas da ih pažljivo pročitate."
+				"description": "Dobrodošli na RECONNED, platformu koja povezuje airsoft entuzijaste, klubove i susrete. Korištenjem naše web stranice i usluga, pristajete na poštovanje ovih Uslova korištenja. Molimo vas da ih pažljivo pročitate."
 			},
 			"acceptance": {
 				"title": "Prihvatanje uslova",
@@ -395,7 +395,7 @@
 					"step3": "Kliknite na \"Informacije\" u podmeniju",
 					"step4": "Na stranici sa informacijama kluba, pronađite i kliknite na \"Obriši klub\" dugme u gornjem desnom uglu"
 				},
-				"notes": "Napomena: Brisanje kluba je trajna akcija i ne može se poništiti. Svi događaji i članstva vezana za klub će također biti izbrisana."
+				"notes": "Napomena: Brisanje kluba je trajna akcija i ne može se poništiti. Svi susreti i članstva vezana za klub će također biti izbrisana."
 			}
 		},
 		"user": {
@@ -833,8 +833,8 @@
 					"save": "Spasi promjene",
 					"create": "Kreiraj susret"
 				},
-				"allEvents": "Svi događaji",
-				"createEvent": "Kreirajte događaj",
+				"allEvents": "Svi susreti",
+				"createEvent": "Kreirajte susret",
 				"rules": {
 					"rule": {
 						"cancel": "Odustani",
@@ -967,7 +967,7 @@
 			"betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",
 			"githubMessage": "Sada smo open-source! Kliknite i pomozite nam da postanemo bolji!",
 			"home": "Početna",
-			"dashboard": "Nadzorna ploča",
+			"dashboard": "Aplikacija",
 			"help": "Pomoć",
 			"user": "Korisnik",
 			"overview": "Pregled",
@@ -988,7 +988,7 @@
 			"members": "Članovi",
 			"invitations": "Pozivnice",
 			"managers": "Menadžeri",
-			"events": "Događaji",
+			"events": "Susreti",
 			"newEvent": "Novi susret",
 			"calendar": "Kalendar",
 			"rules": "Pravila",
