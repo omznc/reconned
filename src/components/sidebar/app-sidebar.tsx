@@ -17,12 +17,14 @@ import {
 } from "@/components/ui/sidebar";
 import type { Club } from "@prisma/client";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { User } from "better-auth";
 import { useLocale, useTranslations } from "next-intl";
 import { env } from "@/lib/env";
 import { Link, redirect, usePathname } from "@/i18n/navigation";
-import { MailPlus } from "lucide-react";
+import { MailPlus, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useCommandMenu } from "@/components/sidebar/command-menu";
 
 interface AppSidebarProps {
 	clubs: Club[];
@@ -34,6 +36,34 @@ interface AppSidebarProps {
 	}[];
 }
 
+// Component properly using the useCommandMenu hook within the provider context
+function SearchButton({ isMac }: { isMac: boolean }) {
+	const { toggleOpen } = useCommandMenu();
+	const t = useTranslations("components.sidebar");
+	const sidebar = useSidebar();
+
+	if (!sidebar.open) {
+		return null;
+	}
+
+	return (
+		<Button
+			variant="outline"
+			size="sm"
+			className="w-full h-8 gap-2 text-xs justify-between"
+			onClick={toggleOpen}
+		>
+			<div className="flex items-center gap-2">
+				<Search className="h-3.5 w-3.5" />
+				<span>{t("searchPlaceholder")}</span>
+			</div>
+			<kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+				{isMac ? "⌘" : "Ctrl+"}K
+			</kbd>
+		</Button>
+	);
+}
+
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
 	const params = useParams<{ clubId: string }>();
@@ -42,8 +72,14 @@ export function AppSidebar(props: AppSidebarProps) {
 	const searchParams = useSearchParams();
 	const locale = useLocale();
 	const t = useTranslations("components.sidebar");
+	const [isMac, setIsMac] = useState(false);
 
 	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta");
+
+	useEffect(() => {
+		// Detect if user is on macOS
+		setIsMac(window.navigator.userAgent.indexOf("Mac") !== -1);
+	}, []);
 
 	useEffect(() => {
 		if (searchParams.get("autoSelectFirst") && !params.clubId) {
@@ -77,6 +113,7 @@ export function AppSidebar(props: AppSidebarProps) {
 		<Sidebar collapsible="icon" variant="floating">
 			<SidebarHeader>
 				<ClubSwitcher clubs={props.clubs} user={props.user} />
+				<SearchButton isMac={isMac} />
 			</SidebarHeader>
 			<SidebarContent>
 				<NavApp

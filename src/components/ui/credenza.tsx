@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 import {
     Dialog,
@@ -11,7 +10,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
+    DialogTrigger
 } from "@/components/ui/dialog";
 import {
     Drawer,
@@ -21,7 +20,7 @@ import {
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger,
+    DrawerTrigger
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -39,44 +38,91 @@ interface CredenzaProps extends BaseProps {
     asChild?: true;
 }
 
+const desktop = "(min-width: 768px)";
+
+type CredenzaContextType = {
+    isDesktop: boolean;
+};
+
+const CredenzaContext = React.createContext<CredenzaContextType | null>(null);
+
+const useCredenza = () => {
+    const context = React.useContext(CredenzaContext);
+    if (!context) {
+        throw new Error("Credenza components must be used within a Credenza");
+    }
+    return context;
+};
 
 const Credenza = ({ children, ...props }: RootCredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const Credenza = isDesktop ? Dialog : Drawer;
+    const isMobile = useIsMobile();
+    const isDesktop = !isMobile;
 
-    return <Credenza {...props}>{children}</Credenza>;
+    return (
+        <CredenzaContext.Provider value={{ isDesktop }}>
+            {isDesktop ? (
+                <Dialog {...props}>{children}</Dialog>
+            ) : (
+                <Drawer {...props}>{children}</Drawer>
+            )}
+        </CredenzaContext.Provider>
+    );
 };
 
 const CredenzaTrigger = ({ className, children, ...props }: CredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const CredenzaTrigger = isDesktop ? DialogTrigger : DrawerTrigger;
+    const { isDesktop } = useCredenza();
+
+    if (isDesktop) {
+        return (
+            <DialogTrigger className={className} {...props}>
+                {children}
+            </DialogTrigger>
+        );
+    }
 
     return (
-        <CredenzaTrigger className={className} {...props}>
+        <DrawerTrigger className={className} {...props}>
             {children}
-        </CredenzaTrigger>
+        </DrawerTrigger>
     );
 };
 
 const CredenzaClose = ({ className, children, ...props }: CredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const CredenzaClose = isDesktop ? DialogClose : DrawerClose;
+    const { isDesktop } = useCredenza();
+
+    if (isDesktop) {
+        return (
+            <DialogClose className={className} {...props}>
+                {children}
+            </DialogClose>
+        );
+    }
 
     return (
-        <CredenzaClose className={className} {...props}>
+        <DrawerClose className={className} {...props}>
             {children}
-        </CredenzaClose>
+        </DrawerClose>
     );
 };
 
 const CredenzaContent = ({ className, children, ...props }: CredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const CredenzaContent = isDesktop ? DialogContent : DrawerContent;
+    const { isDesktop } = useCredenza();
+
+    if (isDesktop) {
+        return (
+            <DialogContent className={cn("flex flex-col", className)} {...props}>
+                {children}
+            </DialogContent>
+        );
+    }
 
     return (
-        <CredenzaContent className={cn('p-4', className)} {...props}>
+        <DrawerContent
+            className={cn("flex flex-col max-h-[90dvh] min-h-[10dvh]", className)}
+            {...props}
+        >
             {children}
-        </CredenzaContent>
+        </DrawerContent>
     );
 };
 
@@ -85,54 +131,89 @@ const CredenzaDescription = ({
     children,
     ...props
 }: CredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const CredenzaDescription = isDesktop ? DialogDescription : DrawerDescription;
+    const { isDesktop } = useCredenza();
+
+    if (isDesktop) {
+        return (
+            <DialogDescription className={cn(className)} {...props}>
+                {children}
+            </DialogDescription>
+        );
+    }
 
     return (
-        <CredenzaDescription className={className} {...props}>
+        <DrawerDescription className={cn(className)} {...props}>
             {children}
-        </CredenzaDescription>
+        </DrawerDescription>
     );
 };
 
 const CredenzaHeader = ({ className, children, ...props }: CredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const CredenzaHeader = isDesktop ? DialogHeader : DrawerHeader;
+    const { isDesktop } = useCredenza();
+
+    if (isDesktop) {
+        return (
+            <DialogHeader className={className} {...props}>
+                {children}
+            </DialogHeader>
+        );
+    }
 
     return (
-        <CredenzaHeader className={className} {...props}>
+        <DrawerHeader className={className} {...props}>
             {children}
-        </CredenzaHeader>
+        </DrawerHeader>
     );
 };
 
 const CredenzaTitle = ({ className, children, ...props }: CredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const CredenzaTitle = isDesktop ? DialogTitle : DrawerTitle;
+    const { isDesktop } = useCredenza();
+
+    if (isDesktop) {
+        return (
+            <DialogTitle className={cn(className)} {...props}>
+                {children}
+            </DialogTitle>
+        );
+    }
 
     return (
-        <CredenzaTitle className={className} {...props}>
+        <DrawerTitle className={cn(className)} {...props}>
             {children}
-        </CredenzaTitle>
+        </DrawerTitle>
     );
 };
 
 const CredenzaBody = ({ className, children, ...props }: CredenzaProps) => {
+    const { isDesktop } = useCredenza();
+
     return (
-        <div className={cn("px-4 md:px-0", className)} {...props}>
+        <div
+            className={cn("px-4 md:px-0", className, {
+                "h-full overflow-y-scroll pb-10": !isDesktop
+            })}
+            {...props}
+        >
             {children}
         </div>
     );
 };
 
 const CredenzaFooter = ({ className, children, ...props }: CredenzaProps) => {
-    const isDesktop = !useIsMobile();
-    const CredenzaFooter = isDesktop ? DialogFooter : DrawerFooter;
+    const { isDesktop } = useCredenza();
+
+    if (isDesktop) {
+        return (
+            <DialogFooter className={className} {...props}>
+                {children}
+            </DialogFooter>
+        );
+    }
 
     return (
-        <CredenzaFooter className={className} {...props}>
+        <DrawerFooter className={className} {...props}>
             {children}
-        </CredenzaFooter>
+        </DrawerFooter>
     );
 };
 
@@ -145,5 +226,5 @@ export {
     CredenzaHeader,
     CredenzaTitle,
     CredenzaBody,
-    CredenzaFooter,
+    CredenzaFooter
 };
