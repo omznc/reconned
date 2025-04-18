@@ -8,7 +8,6 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-	DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
 import {
 	SidebarMenu,
@@ -175,13 +174,11 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 									)}
 								</div>
 								{club.name}
-								{index < 9 && (
-									<DropdownMenuShortcut className="ml-auto hidden md:inline-flex">
-										⇧{index + 1}
-									</DropdownMenuShortcut>
-								)}
 							</DropdownMenuItem>
 						))}
+						<DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+							{t("shiftHint")}
+						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<Link href="/dashboard/add-club">
 							<DropdownMenuItem className="gap-2 p-2">

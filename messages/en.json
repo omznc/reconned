@@ -1005,7 +1005,8 @@
 			"navigation": "Navigation",
 			"account": "Account",
 			"profile": "Profile",
-			"userSettings": "User Settings"
+			"userSettings": "User Settings",
+			"shiftHint": "You can use shift + up and down keys to move between clubs."
 		},
 		"footer": {
 			"about": {

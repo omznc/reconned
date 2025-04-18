@@ -50,6 +50,7 @@
 		"embla-carousel-autoplay": "^8.6.0",
 		"embla-carousel-react": "^8.6.0",
 		"framer-motion": "^12.6.5",
+		"fuse.js": "^7.1.0",
 		"isomorphic-dompurify": "^2.23.0",
 		"leaflet": "^1.9.4",
 		"lodash.debounce": "^4.0.8",

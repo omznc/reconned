@@ -1,6 +1,18 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo, createContext, useContext, type ReactNode, type Dispatch, type SetStateAction } from "react";
+import {
+	useState,
+	useRef,
+	useEffect,
+	useCallback,
+	useMemo,
+	createContext,
+	useContext,
+	type ReactNode,
+	type Dispatch,
+	type SetStateAction,
+} from "react";
+import Fuse from "fuse.js";
 import {
 	Command,
 	CommandEmpty,
@@ -14,11 +26,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
 import Image from "next/image";
-import {
-	Square,
-	Building2,
-	Settings,
-} from "lucide-react";
+import { Square, Building2, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Club } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,12 +37,16 @@ import {
 	CredenzaTitle,
 	CredenzaTrigger,
 } from "@/components/ui/credenza";
-import { flattenNavigationItems, getAppNavigationItems, getClubFlatItems } from "./navigation-items.ts";
+import {
+	flattenNavigationItems,
+	getAppNavigationItems,
+	getClubFlatItems,
+} from "./navigation-items.ts";
 import type { NavItem } from "./types.ts";
 
 interface CommandMenuProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined; };
+	user: User & { managedClubs: string[]; role?: string | null | undefined };
 }
 
 export function CommandMenu({ clubs, user }: CommandMenuProps) {
@@ -62,6 +74,33 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 		setOpen(false);
 	};
 
+	// Determine if this is an overview item and which section it belongs to
+	function getDisplayTitle(item: NavItem): string {
+		// If the title is "overview" and it has a club and the URL contains a section identifier
+		if (item.title.toLowerCase() === t("overview").toLowerCase() && item.url) {
+			// Extract section from URL pattern like /dashboard/{clubId}/{section} or /dashboard/{section}
+			const urlParts = item.url.split("/").filter(Boolean);
+			if (urlParts.length >= 2) {
+				// For club-specific overview pages
+				if (urlParts[0] === "dashboard" && urlParts[1] === item.club?.id) {
+					// The section is the part after the clubId
+					const section = urlParts[2];
+					if (section) {
+						return `${t("overview")} - ${t(section)}`;
+					}
+				}
+				// For general overview pages
+				else if (urlParts[0] === "dashboard") {
+					const section = urlParts[1];
+					if (section) {
+						return `${t("overview")} - ${t(section)}`;
+					}
+				}
+			}
+		}
+		return item.title;
+	}
+
 	// Generate all navigation items using our centralized functions
 	const allItems = useMemo(() => {
 		// App navigation items
@@ -74,12 +113,30 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 			const isManager = user?.managedClubs?.includes(club.id);
 			const items = getClubFlatItems(t, club.id, isManager);
 			// Add club information to each item
-			const itemsWithClub = items.map(item => ({ ...item, club }));
+			const itemsWithClub = items.map((item) => ({ ...item, club }));
 			clubItems = [...clubItems, ...itemsWithClub];
 		}
 
-		return [...flatAppItems, ...clubItems];
+		// Create enhanced items with display titles for search
+		const enhancedItems = [...flatAppItems, ...clubItems].map((item) => {
+			const displayTitle = getDisplayTitle(item);
+			return {
+				...item,
+				displayTitle,
+			};
+		});
+
+		return enhancedItems;
 	}, [clubs, clubId, t, user.managedClubs, user.role]);
+
+	// Fuse.js setup for fuzzy search
+	const fuse = useMemo(() => {
+		return new Fuse(allItems, {
+			keys: ["title", "displayTitle", "club.name", "club.url"],
+			threshold: 0.6,
+			ignoreDiacritics: true,
+		});
+	}, [allItems]);
 
 	// Filter items based on search
 	const filteredItems = useMemo(() => {
@@ -87,18 +144,12 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 			return allItems;
 		}
 
-		const lowerSearch = search.toLowerCase();
+		return fuse.search(search).map((result) => result.item);
+	}, [fuse, search]);
 
-		return allItems.filter(
-			(item) =>
-				item.title.toLowerCase().includes(lowerSearch) ||
-				(item.club?.name?.toLowerCase().includes(lowerSearch)),
-		);
-	}, [allItems, search]);
-
-	// Group filtered items
+	// Group filtered items - fix items with both isNav and club properties
 	const navItems = filteredItems.filter((item) => item.isNav && !item.club);
-	const clubItems = filteredItems.filter((item) => item.club);
+	const clubItems = filteredItems.filter((item) => !!item.club);
 
 	useEffect(() => {
 		const handleShiftNumberPress = (event: KeyboardEvent) => {
@@ -158,7 +209,6 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 					/>
 					<CommandList className="overflow-y-auto overflow-x-hidden">
 						<CommandEmpty>{t("noResults")}</CommandEmpty>
-
 						{/* User navigation section */}
 						{navItems.length > 0 && (
 							<CommandGroup heading={t("navigation")}>
@@ -170,7 +220,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 									>
 										<div className="flex items-center gap-3 flex-1">
 											{item.icon && <item.icon className="h-4 w-4" />}
-											<span>{item.title}</span>
+											<span>{getDisplayTitle(item)}</span>
 										</div>
 										{item.shortcut && (
 											<CommandShortcut>{item.shortcut}</CommandShortcut>
@@ -204,13 +254,13 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 								<CommandGroup heading={t("navigation")}>
 									{clubItems.map((item) => (
 										<CommandItem
-											key={`${item.club?.id || ""}-${item.url}`}
+											key={item.url}
 											onSelect={() => handleCommand(item.url)}
 											className="flex items-center py-3"
 										>
 											<div className="flex items-center gap-3 flex-1">
 												{item.icon && <item.icon className="h-4 w-4" />}
-												<span>{item.title}</span>
+												<span>{getDisplayTitle(item)}</span>
 											</div>
 											{item.club && (
 												<div className="flex items-center gap-2">
@@ -285,9 +335,9 @@ interface CommandMenuContextType {
 	toggleOpen: () => void;
 }
 
-const CommandMenuContext = createContext<
-	CommandMenuContextType | undefined
->(undefined);
+const CommandMenuContext = createContext<CommandMenuContextType | undefined>(
+	undefined,
+);
 
 export function CommandMenuProvider({
 	children,

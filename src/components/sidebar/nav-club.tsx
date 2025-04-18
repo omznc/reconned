@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import { getClubNavigationItems } from "@/components/sidebar/navigation-items";
 
 interface NavClubProps {
-	user: User & { managedClubs: string[]; };
+	user: User & { managedClubs: string[] };
 }
 
 export function NavClub({ user }: NavClubProps) {
@@ -40,9 +40,9 @@ export function NavClub({ user }: NavClubProps) {
 				{items.map((item) =>
 					sidebarOpen || isMobile
 						? renderExpandedItem(item, path, {
-							hasAccess: (subItem) =>
-								!subItem.protected || (subItem.protected && isManager),
-						})
+								hasAccess: (subItem) =>
+									!subItem.protected || (subItem.protected && isManager),
+							})
 						: renderCollapsedItem(item, path),
 				)}
 			</SidebarMenu>

@@ -1,7 +1,10 @@
 "use client";
 
 import { getAppNavigationItems } from "@/components/sidebar/navigation-items";
-import { renderExpandedItem, renderCollapsedItem } from "@/components/sidebar/utils";
+import {
+	renderExpandedItem,
+	renderCollapsedItem,
+} from "@/components/sidebar/utils";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -14,7 +17,7 @@ import { useTranslations } from "next-intl";
 export function NavApp({
 	isAdmin,
 	pendingInvites,
-}: { isAdmin: boolean; pendingInvites: number; }) {
+}: { isAdmin: boolean; pendingInvites: number }) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const t = useTranslations("components.sidebar");

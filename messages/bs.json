@@ -967,7 +967,7 @@
 			"betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",
 			"githubMessage": "Sada smo open-source! Kliknite i pomozite nam da postanemo bolji!",
 			"home": "Početna",
-			"dashboard": "Aplikacija",
+			"dashboard": "Nadzorna ploča",
 			"help": "Pomoć",
 			"user": "Korisnik",
 			"overview": "Pregled",
@@ -988,7 +988,7 @@
 			"members": "Članovi",
 			"invitations": "Pozivnice",
 			"managers": "Menadžeri",
-			"events": "Susreti",
+			"events": "Događaji",
 			"newEvent": "Novi susret",
 			"calendar": "Kalendar",
 			"rules": "Pravila",
@@ -1003,13 +1003,10 @@
 			"searchPlaceholder": "Pretraži...",
 			"noResults": "Nema rezultata.",
 			"navigation": "Navigacija",
-			"dashboard": "Nadzorna ploča",
-			"events": "Događaji",
-			"members": "Članovi",
-			"settings": "Postavke",
 			"account": "Račun",
 			"profile": "Profil",
-			"userSettings": "Postavke korisnika"
+			"userSettings": "Postavke korisnika",
+			"shiftHint": "Možete koristiti shift + strelice gore i dolje za mijenjanje klubova."
 		},
 		"footer": {
 			"about": {
