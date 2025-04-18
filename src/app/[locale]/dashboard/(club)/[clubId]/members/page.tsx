@@ -17,23 +17,14 @@ interface PageProps {
 }
 
 export default async function MembersPage(props: PageProps) {
-	const [params, searchParams] = await Promise.all([
-		props.params,
-		props.searchParams,
-	]);
+	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
 
 	const { clubId } = params;
 	const { search, role, sortBy, sortOrder, page, perPage } = searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const [t, user] = await Promise.all([
-		getTranslations("dashboard.club.members"),
-		isAuthenticated(),
-	]);
+	const [t, user] = await Promise.all([getTranslations("dashboard.club.members"), isAuthenticated()]);
 
 	const where = {
 		clubId: clubId,
@@ -41,9 +32,27 @@ export default async function MembersPage(props: PageProps) {
 		...(search
 			? {
 					OR: [
-						{ user: { name: { contains: search, mode: "insensitive" } } },
-						{ user: { email: { contains: search, mode: "insensitive" } } },
-						{ user: { callsign: { contains: search, mode: "insensitive" } } },
+						{
+							user: {
+								name: { contains: search, mode: "insensitive" },
+							},
+						},
+						{
+							user: {
+								email: {
+									contains: search,
+									mode: "insensitive",
+								},
+							},
+						},
+						{
+							user: {
+								callsign: {
+									contains: search,
+									mode: "insensitive",
+								},
+							},
+						},
 					],
 				}
 			: {}),

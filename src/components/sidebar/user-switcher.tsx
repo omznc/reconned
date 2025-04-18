@@ -11,12 +11,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -39,9 +34,7 @@ export function UserSwitcher() {
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
 							<Avatar className="h-8 w-8 rounded-lg">
-								{user?.image && (
-									<AvatarImage src={user?.image} alt={user?.name} />
-								)}
+								{user?.image && <AvatarImage src={user?.image} alt={user?.name} />}
 								<AvatarFallback className="rounded-lg">
 									{user?.name?.charAt(0).toUpperCase()}
 								</AvatarFallback>
@@ -84,10 +77,7 @@ export function UserSwitcher() {
 								className="w-full pl-4 items-center justify-start cursor-pointer"
 								asChild
 							>
-								<Link
-									href="/dashboard/user/settings"
-									className="cursor-pointer"
-								>
+								<Link href="/dashboard/user/settings" className="cursor-pointer">
 									<UserCog className="h-[1.2rem] w-[1.2rem] transition-all" />
 									{t("settings")}
 								</Link>

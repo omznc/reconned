@@ -51,12 +51,8 @@ export default async function Page(props: PageProps) {
 	}
 
 	// Filter out private events and private clubs
-	user.eventRegistration = user.eventRegistration.filter(
-		(reg) => !(reg.event.isPrivate || reg.event.club.isPrivate),
-	);
-	user.clubMembership = user.clubMembership.filter(
-		(membership) => !membership.club.isPrivate,
-	);
+	user.eventRegistration = user.eventRegistration.filter((reg) => !(reg.event.isPrivate || reg.event.club.isPrivate));
+	user.clubMembership = user.clubMembership.filter((membership) => !membership.club.isPrivate);
 
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
@@ -105,8 +101,6 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 				},
 			],
 		},
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
-			? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
-			: undefined,
+		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
 	};
 }

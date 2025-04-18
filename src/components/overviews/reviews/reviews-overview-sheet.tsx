@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { format } from "date-fns";
@@ -27,10 +20,7 @@ interface ReviewsOverviewSheetProps {
 	title: string;
 }
 
-export function ReviewsOverviewSheet({
-	reviews,
-	title,
-}: ReviewsOverviewSheetProps) {
+export function ReviewsOverviewSheet({ reviews, title }: ReviewsOverviewSheetProps) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
@@ -65,8 +55,7 @@ export function ReviewsOverviewSheet({
 									</div>
 									<p className="text-sm">{review.content}</p>
 									<p className="text-xs text-muted-foreground">
-										{review.author.name} •{" "}
-										{format(review.createdAt, "dd.MM.yyyy")}
+										{review.author.name} • {format(review.createdAt, "dd.MM.yyyy")}
 									</p>
 								</div>
 							))}

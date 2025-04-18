@@ -30,10 +30,7 @@ const geistMono = Geist_Mono({
 });
 
 async function LayoutContent({ children }: { children: ReactNode }) {
-	const [messages, user] = await Promise.all([
-		getMessages(),
-		isAuthenticated(),
-	]);
+	const [messages, user] = await Promise.all([getMessages(), isAuthenticated()]);
 
 	const locale = "en";
 
@@ -60,10 +57,7 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 			</head>
 			<NextIntlClientProvider messages={messages}>
 				<FontProvider initial={font}>
-					<FontBody
-						geistMonoVariable={geistMono.className}
-						geistSansVariable={geistSans.className}
-					>
+					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
 						<ThemeProvider
 							attribute="class"
 							defaultTheme={theme}
@@ -71,10 +65,7 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 							disableTransitionOnChange
 						>
 							{/* TODO: Do we even need this? */}
-							<link
-								rel="stylesheet"
-								href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-							/>
+							<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 							<Toaster
 								richColors
 								toastOptions={{
@@ -109,9 +100,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("title"),
 		description: t("description"),
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
-			? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
-			: undefined,
+		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
 		keywords: t("keywords").split(", "),
 	};
 }

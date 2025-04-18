@@ -8,9 +8,7 @@ type CurrentClubContextType = {
 	setClubId?: (id: Club["id"]) => void;
 };
 
-const CurrentClubContextBase = createContext<
-	CurrentClubContextType | undefined
->(undefined);
+const CurrentClubContextBase = createContext<CurrentClubContextType | undefined>(undefined);
 
 export const CurrentClubProvider = ({
 	children,
@@ -18,11 +16,7 @@ export const CurrentClubProvider = ({
 }: { children: ReactNode } & { clubId?: Club["id"] }) => {
 	const [clubId, setClubId] = useState<Club["id"] | undefined>(initialClubId);
 
-	return (
-		<CurrentClubContextBase.Provider value={{ clubId, setClubId }}>
-			{children}
-		</CurrentClubContextBase.Provider>
-	);
+	return <CurrentClubContextBase.Provider value={{ clubId, setClubId }}>{children}</CurrentClubContextBase.Provider>;
 };
 
 export const useCurrentClub = () => {

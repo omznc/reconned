@@ -8,6 +8,4 @@ export const membershipExtensionSchema = z.object({
 	}),
 });
 
-export type MembershipExtensionFormValues = z.infer<
-	typeof membershipExtensionSchema
->;
+export type MembershipExtensionFormValues = z.infer<typeof membershipExtensionSchema>;

@@ -10,38 +10,12 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { EventApplicationSchemaType } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
 import { eventApplicationSchema } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
-import type {
-	Club,
-	ClubRule,
-	Event,
-	EventInvite,
-	EventRegistration,
-} from "@prisma/client";
+import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@prisma/client";
 import type { User } from "better-auth";
-import {
-	CirclePlus,
-	Users,
-	AlertCircle,
-	X,
-	Plus,
-	UserIcon,
-	Mail,
-	ChevronsUpDown,
-} from "lucide-react";
+import { CirclePlus, Users, AlertCircle, X, Plus, UserIcon, Mail, ChevronsUpDown } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import "@/components/editor/editor.css";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -84,12 +58,7 @@ type SearchUser = {
 	clubMembership: { club: { name: string } }[];
 };
 
-export function EventApplicationForm({
-	existingApplication,
-	event,
-	user,
-	currentUserClubs,
-}: EventApplicationProps) {
+export function EventApplicationForm({ existingApplication, event, user, currentUserClubs }: EventApplicationProps) {
 	const [step, setStep] = useState(1);
 	const router = useRouter();
 
@@ -126,8 +95,7 @@ export function EventApplicationForm({
 			invitedUsersNotOnApp: existingApplication?.invitedUsersNotOnApp || [],
 			rulesAccepted: false,
 			paymentMethod:
-				(existingApplication?.paymentMethod as EventApplicationSchemaType["paymentMethod"]) ??
-				"cash",
+				(existingApplication?.paymentMethod as EventApplicationSchemaType["paymentMethod"]) ?? "cash",
 		},
 	});
 
@@ -141,20 +109,16 @@ export function EventApplicationForm({
 		setStep(2);
 	};
 
-	const { fields: invitedUserFields, remove: removeInvitedUsers } =
-		useFieldArray({
-			control: form.control,
-			name: "invitedUsers",
-			rules: {
-				required: true,
-				minLength: form.watch("type") === "team" ? 2 : 1,
-			},
-		});
+	const { fields: invitedUserFields, remove: removeInvitedUsers } = useFieldArray({
+		control: form.control,
+		name: "invitedUsers",
+		rules: {
+			required: true,
+			minLength: form.watch("type") === "team" ? 2 : 1,
+		},
+	});
 
-	const {
-		fields: invitedUserNotOnAppFields,
-		remove: removeInvitedUsersNotOnApp,
-	} = useFieldArray({
+	const { fields: invitedUserNotOnAppFields, remove: removeInvitedUsersNotOnApp } = useFieldArray({
 		control: form.control,
 		name: "invitedUsersNotOnApp",
 	});
@@ -179,8 +143,7 @@ export function EventApplicationForm({
 	// Update validation message
 	const handleNextStep = () => {
 		if (step === 2 && form.watch("type") === "team") {
-			const totalMembers =
-				invitedUserFields.length + invitedUserNotOnAppFields.length;
+			const totalMembers = invitedUserFields.length + invitedUserNotOnAppFields.length;
 			if (totalMembers < 2) {
 				form.setError("invitedUsers", {
 					type: "manual",
@@ -319,13 +282,11 @@ export function EventApplicationForm({
 					</span>
 					{existingApplication !== null && (
 						<>
-							{form.watch("type") === "solo" && (
-								<p className="text-sm text-primary">Trenutno odabrano</p>
-							)}
+							{form.watch("type") === "solo" && <p className="text-sm text-primary">Trenutno odabrano</p>}
 							{form.watch("type") === "team" && (
 								<p className="text-sm text-destructive">
-									Prebacivanje na samostalnu prijavu će poništiti sve trenutne
-									pozivnice članovima tima.
+									Prebacivanje na samostalnu prijavu će poništiti sve trenutne pozivnice članovima
+									tima.
 								</p>
 							)}
 						</>
@@ -339,17 +300,11 @@ export function EventApplicationForm({
 				</div>
 
 				<div className="flex flex-col gap-2">
-					<Button
-						type="button"
-						className="flex items-center gap-2"
-						onClick={() => handleTypeChange("team")}
-					>
+					<Button type="button" className="flex items-center gap-2" onClick={() => handleTypeChange("team")}>
 						<Users />
 						Prijavi tim
 					</Button>
-					<span className="text-gray-500 text-sm">
-						Odaberite ovu opciju ako dolazite s više igrača.
-					</span>
+					<span className="text-gray-500 text-sm">Odaberite ovu opciju ako dolazite s više igrača.</span>
 					{existingApplication && form.watch("type") === "team" && (
 						<p className="text-sm text-primary">Trenutno odabrano</p>
 					)}
@@ -368,8 +323,8 @@ export function EventApplicationForm({
 						{!event.allowFreelancers && currentUserClubs.length === 0 && (
 							<div className="absolute backdrop-blur-[2px] p-4 inset-0 bg-black/30 dark:bg-black/80 rounded-lg flex items-center justify-center">
 								<p className="text-sm text-center">
-									Ne možete se prijaviti samostalno jer niste član nijednog
-									kluba, a ovaj susret ne dozvoljava freelancer prijave.
+									Ne možete se prijaviti samostalno jer niste član nijednog kluba, a ovaj susret ne
+									dozvoljava freelancer prijave.
 								</p>
 							</div>
 						)}
@@ -377,24 +332,18 @@ export function EventApplicationForm({
 							<CirclePlus className="size-16 text-muted-foreground group-hover:text-primary transition-colors" />
 						</div>
 						<div className="mt-8 text-center">
-							<h3 className="text-2xl font-semibold mb-2">
-								Samostalna prijava
-							</h3>
-							<p className="text-muted-foreground">
-								Odaberite ovu opciju ako dolazite sami na susret
-							</p>
+							<h3 className="text-2xl font-semibold mb-2">Samostalna prijava</h3>
+							<p className="text-muted-foreground">Odaberite ovu opciju ako dolazite sami na susret</p>
 						</div>
 						<div className="absolute inset-0 border-2 border-primary scale-105 opacity-0 rounded-lg group-hover:opacity-100 transition-all" />
 					</button>
 					{existingApplication !== null && (
 						<>
-							{form.watch("type") === "solo" && (
-								<p className="text-sm text-primary">Trenutno odabrano</p>
-							)}
+							{form.watch("type") === "solo" && <p className="text-sm text-primary">Trenutno odabrano</p>}
 							{form.watch("type") === "team" && (
 								<p className="text-sm text-destructive">
-									Prebacivanje na samostalnu prijavu će poništiti sve trenutne
-									pozivnice članovima tima.
+									Prebacivanje na samostalnu prijavu će poništiti sve trenutne pozivnice članovima
+									tima.
 								</p>
 							)}
 						</>
@@ -412,15 +361,11 @@ export function EventApplicationForm({
 						</div>
 						<div className="mt-8 text-center">
 							<h3 className="text-2xl font-semibold mb-2">Timska prijava</h3>
-							<p className="text-muted-foreground">
-								Odaberite ovu opciju ako dolazite s više igrača
-							</p>
+							<p className="text-muted-foreground">Odaberite ovu opciju ako dolazite s više igrača</p>
 						</div>
 						<div className="absolute inset-0 border-2 border-primary scale-105 opacity-0 rounded-lg group-hover:opacity-100 transition-all" />
 					</button>
-					{form.watch("type") === "team" && (
-						<p className="text-sm text-primary">Trenutno odabrano</p>
-					)}
+					{form.watch("type") === "team" && <p className="text-sm text-primary">Trenutno odabrano</p>}
 				</div>
 			</div>
 		</div>
@@ -437,11 +382,7 @@ export function EventApplicationForm({
 
 			<div className="flex gap-2">
 				{step > 1 && (
-					<Button
-						type="button"
-						variant="outline"
-						onClick={() => setStep(step - 1)}
-					>
+					<Button type="button" variant="outline" onClick={() => setStep(step - 1)}>
 						Nazad
 					</Button>
 				)}
@@ -452,9 +393,7 @@ export function EventApplicationForm({
 				)}
 
 				{step === 4 && (
-					<Button type="submit">
-						{existingApplication ? "Sačuvaj izmjene" : "Pošalji prijavu"}
-					</Button>
+					<Button type="submit">{existingApplication ? "Sačuvaj izmjene" : "Pošalji prijavu"}</Button>
 				)}
 			</div>
 		</div>
@@ -464,34 +403,22 @@ export function EventApplicationForm({
 		<div className="space-y-2">
 			<h4 className="text-sm font-medium">Članovi s računom</h4>
 			<span className="text-sm text-muted-foreground">
-				Ove osobe imaju račun na aplikaciji, te će im se susret prikazati na
-				dashboard-u. Tu ga mogu odbiti ili vidjeti više informacija o njemu.
+				Ove osobe imaju račun na aplikaciji, te će im se susret prikazati na dashboard-u. Tu ga mogu odbiti ili
+				vidjeti više informacija o njemu.
 			</span>
 			{invitedUserFields.map((field, index) => (
-				<div
-					key={field.id}
-					className="flex bg-sidebar items-center justify-between p-2 border rounded-md"
-				>
+				<div key={field.id} className="flex bg-sidebar items-center justify-between p-2 border rounded-md">
 					<div className="flex items-center gap-2">
 						<Avatar className="h-8 w-8">
 							<AvatarImage src={field.image || ""} />
-							<AvatarFallback>
-								{field.name.charAt(0).toUpperCase()}
-							</AvatarFallback>
+							<AvatarFallback>{field.name.charAt(0).toUpperCase()}</AvatarFallback>
 						</Avatar>
 						<div className="flex flex-col">
 							<span className="font-medium">
 								{field.name}
-								{field.callsign && (
-									<span className="text-muted-foreground">
-										{" "}
-										({field.callsign})
-									</span>
-								)}
+								{field.callsign && <span className="text-muted-foreground"> ({field.callsign})</span>}
 							</span>
-							<span className="text-sm text-muted-foreground">
-								{field.email}
-							</span>
+							<span className="text-sm text-muted-foreground">{field.email}</span>
 						</div>
 					</div>
 					{index > 0 && ( // Don't allow removing the creator
@@ -514,14 +441,10 @@ export function EventApplicationForm({
 		<div className="space-y-2">
 			<h4 className="text-sm font-medium">Pozvani članovi (bez računa)</h4>
 			<span className="text-sm text-muted-foreground">
-				Članovi koji nemaju račun na aplikaciji koji će dobiti email pozivnicu.
-				Nije je obavezno iskoristiti.
+				Članovi koji nemaju račun na aplikaciji koji će dobiti email pozivnicu. Nije je obavezno iskoristiti.
 			</span>
 			{invitedUserNotOnAppFields.map((field, index) => (
-				<div
-					key={field.id}
-					className="flex bg-sidebar items-center justify-between p-2 border rounded-md"
-				>
+				<div key={field.id} className="flex bg-sidebar items-center justify-between p-2 border rounded-md">
 					<div className="flex items-center gap-2">
 						<Avatar className="h-8 w-8">
 							<AvatarFallback>
@@ -530,9 +453,7 @@ export function EventApplicationForm({
 						</Avatar>
 						<div className="flex flex-col">
 							<span className="font-medium">{field.name}</span>
-							<span className="text-sm text-muted-foreground">
-								{field.email}
-							</span>
+							<span className="text-sm text-muted-foreground">{field.email}</span>
 						</div>
 					</div>
 					<Button
@@ -567,10 +488,7 @@ export function EventApplicationForm({
 							<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent
-						align="start"
-						className="p-0 w-[var(--radix-popover-trigger-width)]"
-					>
+					<PopoverContent align="start" className="p-0 w-[var(--radix-popover-trigger-width)]">
 						<Command shouldFilter={false}>
 							<CommandInput
 								placeholder="Pretraži po imenu, emailu ili callsignu..."
@@ -586,37 +504,33 @@ export function EventApplicationForm({
 								{!isSearching && searchValue.length < 2 && (
 									<CommandEmpty>Unesite najmanje 2 karaktera...</CommandEmpty>
 								)}
-								{!isSearching &&
-									searchValue.length >= 2 &&
-									searchResults.length === 0 && (
-										<CommandEmpty>
-											<div className="p-4 text-sm space-y-4">
-												<p>Nema rezultata za "{searchValue}"</p>
-												<Button
-													type="button"
-													variant="outline"
-													className="w-full"
-													onClick={() => {
-														setTempMember({
-															name: searchValue,
-															email: "",
-														});
-														setShowAddMember(true);
-														setOpen(false);
-														setSearchValue("");
-													}}
-												>
-													<Plus className="mr-2 h-4 w-4" />
-													Dodaj novog člana
-												</Button>
-											</div>
-										</CommandEmpty>
-									)}
+								{!isSearching && searchValue.length >= 2 && searchResults.length === 0 && (
+									<CommandEmpty>
+										<div className="p-4 text-sm space-y-4">
+											<p>Nema rezultata za "{searchValue}"</p>
+											<Button
+												type="button"
+												variant="outline"
+												className="w-full"
+												onClick={() => {
+													setTempMember({
+														name: searchValue,
+														email: "",
+													});
+													setShowAddMember(true);
+													setOpen(false);
+													setSearchValue("");
+												}}
+											>
+												<Plus className="mr-2 h-4 w-4" />
+												Dodaj novog člana
+											</Button>
+										</div>
+									</CommandEmpty>
+								)}
 								<CommandGroup>
 									{searchResults.map((user) => {
-										const isAlreadyAdded = invitedUserFields.some(
-											(field) => field.id === user.id,
-										);
+										const isAlreadyAdded = invitedUserFields.some((field) => field.id === user.id);
 										return (
 											<CommandItem
 												key={user.id}
@@ -633,9 +547,7 @@ export function EventApplicationForm({
 											>
 												<Avatar className="h-8 w-8">
 													<AvatarImage src={user.image || ""} />
-													<AvatarFallback>
-														{user.name.charAt(0).toUpperCase()}
-													</AvatarFallback>
+													<AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
 												</Avatar>
 												<div className="flex flex-col">
 													<span className="font-medium">
@@ -652,15 +564,11 @@ export function EventApplicationForm({
 															</span>
 														)}
 													</span>
-													<span className="text-sm text-muted-foreground">
-														{user.email}
-													</span>
+													<span className="text-sm text-muted-foreground">{user.email}</span>
 													{user.clubMembership.length > 0 && (
 														<span className="text-xs text-muted-foreground">
 															Član:{" "}
-															{user.clubMembership
-																.map((m) => m.club.name)
-																.join(", ")}
+															{user.clubMembership.map((m) => m.club.name).join(", ")}
 														</span>
 													)}
 												</div>
@@ -677,13 +585,12 @@ export function EventApplicationForm({
 			{/* Rest of team section */}
 			{invitedUserFields.length > 0 && renderInvitedUsers()}
 			{invitedUserNotOnAppFields.length > 0 && renderInvitedUsersNotOnApp()}
-			{invitedUserFields.length === 1 &&
-				invitedUserNotOnAppFields.length === 0 && (
-					<p className="text-sm text-destructive flex items-center gap-2">
-						<AlertCircle className="h-4 w-4" />
-						Tim mora imati barem jednog člana, osim Vas
-					</p>
-				)}
+			{invitedUserFields.length === 1 && invitedUserNotOnAppFields.length === 0 && (
+				<p className="text-sm text-destructive flex items-center gap-2">
+					<AlertCircle className="h-4 w-4" />
+					Tim mora imati barem jednog člana, osim Vas
+				</p>
+			)}
 		</div>
 	);
 
@@ -692,18 +599,12 @@ export function EventApplicationForm({
 			<div className="space-y-2">
 				<Progress value={(step / 4) * 100} className="h-2" />
 				<div className="flex justify-between select-none text-sm text-muted-foreground px-1">
-					<span className={step >= 1 ? "text-foreground font-medium" : ""}>
-						Tip
-					</span>
+					<span className={step >= 1 ? "text-foreground font-medium" : ""}>Tip</span>
 					<span className={step >= 2 ? "text-foreground font-medium" : ""}>
 						{form.watch("type") === "team" ? "Tim" : "Info"}
 					</span>
-					<span className={step >= 3 ? "text-foreground font-medium" : ""}>
-						Pravila
-					</span>
-					<span className={step >= 4 ? "text-foreground font-medium" : ""}>
-						Plaćanje
-					</span>
+					<span className={step >= 3 ? "text-foreground font-medium" : ""}>Pravila</span>
+					<span className={step >= 4 ? "text-foreground font-medium" : ""}>Plaćanje</span>
 				</div>
 			</div>
 
@@ -728,10 +629,7 @@ export function EventApplicationForm({
 									{currentUserClubs.length > 0 && (
 										<div className="flex items-center gap-2">
 											<Users className="h-4 w-4 text-muted-foreground" />
-											<span>
-												Član klubova:{" "}
-												{currentUserClubs.map((c) => c.name).join(", ")}
-											</span>
+											<span>Član klubova: {currentUserClubs.map((c) => c.name).join(", ")}</span>
 										</div>
 									)}
 								</div>
@@ -749,13 +647,14 @@ export function EventApplicationForm({
 								id="memberName"
 								value={tempMember.name}
 								onChange={(e) =>
-									setTempMember((prev) => ({ ...prev, name: e.target.value }))
+									setTempMember((prev) => ({
+										...prev,
+										name: e.target.value,
+									}))
 								}
 								placeholder="Unesite puno ime i prezime"
 							/>
-							{!tempMember.name && (
-								<p className="text-sm text-destructive">Ime je obavezno</p>
-							)}
+							{!tempMember.name && <p className="text-sm text-destructive">Ime je obavezno</p>}
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="memberEmail">Email</Label>
@@ -764,19 +663,19 @@ export function EventApplicationForm({
 								type="email"
 								value={tempMember.email}
 								onChange={(e) =>
-									setTempMember((prev) => ({ ...prev, email: e.target.value }))
+									setTempMember((prev) => ({
+										...prev,
+										email: e.target.value,
+									}))
 								}
 								placeholder="Unesite email adresu"
 							/>
 							<span className="text-sm text-muted-foreground">
-								Koristeći email adresu, osobe koje nemaju račun na sajtu će
-								dobiti pozivnicu za registraciju, ali ta registracija nije
-								obavezna.
+								Koristeći email adresu, osobe koje nemaju račun na sajtu će dobiti pozivnicu za
+								registraciju, ali ta registracija nije obavezna.
 							</span>
 							{tempMember.email && !isValidEmail(tempMember.email) && (
-								<p className="text-sm text-destructive">
-									Email adresa nije validna
-								</p>
+								<p className="text-sm text-destructive">Email adresa nije validna</p>
 							)}
 						</div>
 						<div className="flex gap-2 justify-end">
@@ -793,13 +692,7 @@ export function EventApplicationForm({
 							<Button
 								type="button"
 								onClick={addCustomMember}
-								disabled={
-									!(
-										tempMember.name &&
-										tempMember.email &&
-										isValidEmail(tempMember.email)
-									)
-								}
+								disabled={!(tempMember.name && tempMember.email && isValidEmail(tempMember.email))}
 							>
 								Dodaj člana
 							</Button>
@@ -816,20 +709,18 @@ export function EventApplicationForm({
 									<div key={rule.id} className="space-y-2">
 										<h4 className="font-medium">{rule.name}</h4>
 										{rule.description && (
-											<p className="text-sm text-muted-foreground">
-												{rule.description}
-											</p>
+											<p className="text-sm text-muted-foreground">{rule.description}</p>
 										)}
 										<div
 											className={cn(
 												"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 											)}
 											// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-											dangerouslySetInnerHTML={{ __html: rule.content }}
+											dangerouslySetInnerHTML={{
+												__html: rule.content,
+											}}
 										/>
-										{index < event.rules.length - 1 && (
-											<hr className="border-t" />
-										)}
+										{index < event.rules.length - 1 && <hr className="border-t" />}
 									</div>
 								))}
 							</div>
@@ -839,22 +730,16 @@ export function EventApplicationForm({
 							<Checkbox
 								id="rules"
 								defaultChecked={form.watch("rulesAccepted")}
-								onCheckedChange={(checked) =>
-									form.setValue("rulesAccepted", checked as boolean)
-								}
+								onCheckedChange={(checked) => form.setValue("rulesAccepted", checked as boolean)}
 							/>
-							<Label
-								htmlFor="rules"
-								className="text-sm cursor-pointer select-none"
-							>
+							<Label htmlFor="rules" className="text-sm cursor-pointer select-none">
 								Pročitao/la sam i prihvatam sva pravila susreta
 							</Label>
 						</div>
 
 						<p className="text-sm text-muted-foreground flex items-center gap-2">
 							<AlertCircle className="h-4 w-4" />
-							Molimo vas da detaljno pročitate pravila prije nego što ih
-							prihvatite
+							Molimo vas da detaljno pročitate pravila prije nego što ih prihvatite
 						</p>
 
 						{form.formState.errors.rulesAccepted && (
@@ -871,9 +756,7 @@ export function EventApplicationForm({
 						<h3 className="font-medium">Način plaćanja</h3>
 						<Tabs
 							defaultValue="cash"
-							onValueChange={(val) =>
-								form.setValue("paymentMethod", val as "cash" | "bank")
-							}
+							onValueChange={(val) => form.setValue("paymentMethod", val as "cash" | "bank")}
 							className="w-full"
 						>
 							<TabsList className="grid w-full grid-cols-2">
@@ -915,9 +798,7 @@ export function EventApplicationForm({
 				{/* Common error display */}
 				{form.formState.errors.root && (
 					<Alert variant="destructive">
-						<AlertDescription>
-							{form.formState.errors.root.message}
-						</AlertDescription>
+						<AlertDescription>{form.formState.errors.root.message}</AlertDescription>
 					</Alert>
 				)}
 				{/* Common navigation buttons */}

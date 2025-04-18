@@ -19,11 +19,7 @@ import {
 } from "date-fns";
 import { Fragment, useEffect, useMemo } from "react";
 import Image from "next/image";
-import {
-	HoverCard,
-	HoverCardTrigger,
-	HoverCardContent,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Button } from "@components/ui/button";
 import { enUS, bs } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
@@ -48,11 +44,7 @@ export function EventCalendar(props: EventCalendarProps) {
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
-		defaultValue: parseDateFns(
-			formatDateFns(new Date(), "yyyy-MM"),
-			"yyyy-MM",
-			new Date(),
-		),
+		defaultValue: parseDateFns(formatDateFns(new Date(), "yyyy-MM"), "yyyy-MM", new Date()),
 		shallow: false,
 		clearOnDefault: true,
 		parse: (value: string) => parseDateFns(value, "yyyy-MM", new Date()),
@@ -101,16 +93,13 @@ export function EventCalendar(props: EventCalendarProps) {
 	}, [calendarDays]);
 
 	const getEventUrl = (event: Event) => {
-		return params.clubId
-			? `/dashboard/${event.clubId}/events/${event.id}`
-			: `/events/${event.id}`;
+		return params.clubId ? `/dashboard/${event.clubId}/events/${event.id}` : `/events/${event.id}`;
 	};
 
 	const getEventsForDay = (day: Date) => {
 		return props.events.filter(
 			(event) =>
-				isSameDay(day, event.dateStart) ||
-				(event.dateEnd && day >= event.dateStart && day <= event.dateEnd),
+				isSameDay(day, event.dateStart) || (event.dateEnd && day >= event.dateStart && day <= event.dateEnd),
 		);
 	};
 
@@ -151,13 +140,9 @@ export function EventCalendar(props: EventCalendarProps) {
 		const layers = [] as Set<string>[];
 
 		const sortedEvents = [...events].sort((a, b) => {
-			const aDuration =
-				(a.dateEnd?.getTime() ?? a.dateStart.getTime()) - a.dateStart.getTime();
-			const bDuration =
-				(b.dateEnd?.getTime() ?? b.dateStart.getTime()) - b.dateStart.getTime();
-			return (
-				bDuration - aDuration || a.dateStart.getTime() - b.dateStart.getTime()
-			);
+			const aDuration = (a.dateEnd?.getTime() ?? a.dateStart.getTime()) - a.dateStart.getTime();
+			const bDuration = (b.dateEnd?.getTime() ?? b.dateStart.getTime()) - b.dateStart.getTime();
+			return bDuration - aDuration || a.dateStart.getTime() - b.dateStart.getTime();
 		});
 
 		for (const event of sortedEvents) {
@@ -223,8 +208,7 @@ export function EventCalendar(props: EventCalendarProps) {
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();
 		return (
-			isAfter(now, new Date(event.dateRegistrationsOpen)) &&
-			isBefore(now, new Date(event.dateRegistrationsClose))
+			isAfter(now, new Date(event.dateRegistrationsOpen)) && isBefore(now, new Date(event.dateRegistrationsClose))
 		);
 	};
 
@@ -240,25 +224,15 @@ export function EventCalendar(props: EventCalendarProps) {
 				</h1>
 				<div className="flex items-center gap-2">
 					<Button
-						variant={
-							isSameMonth(new Date(), currentDate) ? "outline" : "default"
-						}
+						variant={isSameMonth(new Date(), currentDate) ? "outline" : "default"}
 						onClick={handleToday}
 						disabled={isSameMonth(new Date(), currentDate)}
-						title={
-							isSameMonth(new Date(), currentDate)
-								? t("alreadyToday")
-								: t("goToToday")
-						}
+						title={isSameMonth(new Date(), currentDate) ? t("alreadyToday") : t("goToToday")}
 					>
 						{t("today")}
 					</Button>
 					<div className="flex">
-						<Button
-							variant="outline"
-							className="border-r-0"
-							onClick={handlePreviousMonth}
-						>
+						<Button variant="outline" className="border-r-0" onClick={handlePreviousMonth}>
 							<ChevronLeft className="h-4 w-4" />
 						</Button>
 						<Button variant="outline" onClick={handleNextMonth}>
@@ -280,10 +254,7 @@ export function EventCalendar(props: EventCalendarProps) {
 						t("days.sat"),
 						t("days.sun"),
 					].map((day) => (
-						<div
-							key={day}
-							className="h-12 border-b border-r px-2 py-1 font-medium"
-						>
+						<div key={day} className="h-12 border-b border-r px-2 py-1 font-medium">
 							{day}
 						</div>
 					))}
@@ -292,10 +263,7 @@ export function EventCalendar(props: EventCalendarProps) {
 						const weekEvents = props.events.filter((event) =>
 							week.some((day) => getEventsForDay(day).includes(event)),
 						);
-						const { positions: eventPositions, maxLayer } = getEventPositions(
-							weekEvents,
-							week,
-						);
+						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents, week);
 						const weekHeight = Math.max(8, (maxLayer + 1) * 2); // 8rem minimum, 2rem per layer
 
 						return (
@@ -306,179 +274,169 @@ export function EventCalendar(props: EventCalendarProps) {
 										className={cn(
 											"border-b border-r p-1",
 											"flex flex-col",
-											isSameMonth(day, currentDate)
-												? ""
-												: "text-muted-foreground",
+											isSameMonth(day, currentDate) ? "" : "text-muted-foreground",
 											getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
 											isSameDay(day, new Date()) ? "bg-accent" : "", // Add this line to highlight today
 										)}
-										style={{ minHeight: `${weekHeight}rem` }}
+										style={{
+											minHeight: `${weekHeight}rem`,
+										}}
 									>
 										<div
 											className={cn(
 												"font-medium mb-1",
-												isSameDay(day, new Date())
-													? "text-accent-foreground"
-													: "", // Add this line to style today's text
+												isSameDay(day, new Date()) ? "text-accent-foreground" : "", // Add this line to style today's text
 											)}
 										>
 											{format(day, "d", { locale: bs })}
 										</div>
 										<div className="flex-1 relative">
-											{Array.from(new Set(getEventsForDay(day))).map(
-												(event) => {
-													const display = getEventDisplayProperties(
-														event,
-														day,
-														week,
-													);
-													if (!display || !display.shouldRender) {
-														return null;
-													}
+											{Array.from(new Set(getEventsForDay(day))).map((event) => {
+												const display = getEventDisplayProperties(event, day, week);
+												if (!display || !display.shouldRender) {
+													return null;
+												}
 
-													return (
-														<HoverCard key={event.id} openDelay={300}>
-															<HoverCardTrigger>
-																<Button
-																	onClick={() => {
-																		router.push(getEventUrl(event));
-																	}}
-																	variant="ghost"
-																	style={{
-																		position: "absolute",
-																		zIndex: eventPositions.get(event.id) ?? 1,
-																		left: 0,
-																		width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
-																		top: `${(eventPositions.get(event.id) ?? 0) * 32}px`,
-																		height: "28px",
-																	}}
-																	className={cn(
-																		"text-left px-2 py-1 text-xs font-medium text-background",
-																		"bg-primary hover:bg-primary/90 hover:text-background",
-																		{
-																			"rounded-l-none": !display.isStart,
-																			"rounded-r-none": !display.isEnd,
-																		},
-																	)}
-																>
-																	{format(event.dateStart, "HH:mm", {
-																		locale: bs,
-																	})}
-																	{event.dateEnd &&
-																		` - ${format(event.dateEnd, "HH:mm", {
-																			locale: bs,
-																		})}`}{" "}
-																	{event.name}
-																</Button>
-															</HoverCardTrigger>
-															<HoverCardContent
-																align="center"
-																side="left"
-																className="w-80 bg-sidebar"
-															>
-																{event.image && (
-																	<Image
-																		width={200}
-																		height={200}
-																		src={event.image}
-																		alt={event.name}
-																		className="object-cover w-full h-auto mb-2"
-																	/>
+												return (
+													<HoverCard key={event.id} openDelay={300}>
+														<HoverCardTrigger>
+															<Button
+																onClick={() => {
+																	router.push(getEventUrl(event));
+																}}
+																variant="ghost"
+																style={{
+																	position: "absolute",
+																	zIndex: eventPositions.get(event.id) ?? 1,
+																	left: 0,
+																	width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
+																	top: `${(eventPositions.get(event.id) ?? 0) * 32}px`,
+																	height: "28px",
+																}}
+																className={cn(
+																	"text-left px-2 py-1 text-xs font-medium text-background",
+																	"bg-primary hover:bg-primary/90 hover:text-background",
+																	{
+																		"rounded-l-none": !display.isStart,
+																		"rounded-r-none": !display.isEnd,
+																	},
 																)}
-																<div className="space-y-3">
-																	<div>
-																		<h4 className="font-semibold">
-																			{event.name}
-																		</h4>
-																		<p className="text-sm flex items-center gap-2 text-muted-foreground">
-																			{event.club.name}{" "}
-																			{event.club.verified && (
-																				<VerifiedClubIcon />
-																			)}
-																		</p>
-																	</div>
-
-																	<div className="text-sm space-y-1">
-																		<div className="grid grid-cols-[auto_1fr] gap-2">
-																			<span className="font-medium">
-																				{t("eventDetails.start")}:
-																			</span>
-																			<span>
-																				{format(
-																					event.dateStart,
-																					"d. MMMM yyyy. HH:mm",
-																					{ locale: bs },
-																				)}
-																			</span>
-
-																			{event.dateEnd && (
-																				<>
-																					<span className="font-medium">
-																						{t("eventDetails.end")}:
-																					</span>
-																					<span>
-																						{format(
-																							event.dateEnd,
-																							"d. MMMM yyyy. HH:mm",
-																							{ locale: bs },
-																						)}
-																					</span>
-																				</>
-																			)}
-
-																			{event.location && (
-																				<>
-																					<span className="font-medium">
-																						{t("eventDetails.location")}:
-																					</span>
-																					<span>{event.location}</span>
-																				</>
-																			)}
-
-																			{event?.costPerPerson && (
-																				<>
-																					<span className="font-medium">
-																						{t("eventDetails.cost")}:
-																					</span>
-																					<span>{event.costPerPerson} KM</span>
-																				</>
-																			)}
-																		</div>
-																	</div>
-
-																	{event.description && (
-																		<div className="text-sm border-t pt-2">
-																			<p className="text-muted-foreground">
-																				{event.description}
-																			</p>
-																		</div>
-																	)}
-
-																	{canApplyToEvent(event) ? (
-																		<Button
-																			variant="default"
-																			className="w-full mt-2"
-																			onClick={() => {
-																				router.push(
-																					`/events/${event.id}/apply`,
-																				);
-																			}}
-																		>
-																			<Plus className="h-4 w-4 mr-2" />
-																			{t("eventDetails.apply")}{" "}
-																			<BadgeSoon className="ml-2" />
-																		</Button>
-																	) : (
-																		<p className="text-sm text-muted-foreground text-center mt-2">
-																			{t("eventDetails.registrationsClosed")}
-																		</p>
-																	)}
+															>
+																{format(event.dateStart, "HH:mm", {
+																	locale: bs,
+																})}
+																{event.dateEnd &&
+																	` - ${format(event.dateEnd, "HH:mm", {
+																		locale: bs,
+																	})}`}{" "}
+																{event.name}
+															</Button>
+														</HoverCardTrigger>
+														<HoverCardContent
+															align="center"
+															side="left"
+															className="w-80 bg-sidebar"
+														>
+															{event.image && (
+																<Image
+																	width={200}
+																	height={200}
+																	src={event.image}
+																	alt={event.name}
+																	className="object-cover w-full h-auto mb-2"
+																/>
+															)}
+															<div className="space-y-3">
+																<div>
+																	<h4 className="font-semibold">{event.name}</h4>
+																	<p className="text-sm flex items-center gap-2 text-muted-foreground">
+																		{event.club.name}{" "}
+																		{event.club.verified && <VerifiedClubIcon />}
+																	</p>
 																</div>
-															</HoverCardContent>
-														</HoverCard>
-													);
-												},
-											)}
+
+																<div className="text-sm space-y-1">
+																	<div className="grid grid-cols-[auto_1fr] gap-2">
+																		<span className="font-medium">
+																			{t("eventDetails.start")}:
+																		</span>
+																		<span>
+																			{format(
+																				event.dateStart,
+																				"d. MMMM yyyy. HH:mm",
+																				{
+																					locale: bs,
+																				},
+																			)}
+																		</span>
+
+																		{event.dateEnd && (
+																			<>
+																				<span className="font-medium">
+																					{t("eventDetails.end")}:
+																				</span>
+																				<span>
+																					{format(
+																						event.dateEnd,
+																						"d. MMMM yyyy. HH:mm",
+																						{
+																							locale: bs,
+																						},
+																					)}
+																				</span>
+																			</>
+																		)}
+
+																		{event.location && (
+																			<>
+																				<span className="font-medium">
+																					{t("eventDetails.location")}:
+																				</span>
+																				<span>{event.location}</span>
+																			</>
+																		)}
+
+																		{event?.costPerPerson && (
+																			<>
+																				<span className="font-medium">
+																					{t("eventDetails.cost")}:
+																				</span>
+																				<span>{event.costPerPerson} KM</span>
+																			</>
+																		)}
+																	</div>
+																</div>
+
+																{event.description && (
+																	<div className="text-sm border-t pt-2">
+																		<p className="text-muted-foreground">
+																			{event.description}
+																		</p>
+																	</div>
+																)}
+
+																{canApplyToEvent(event) ? (
+																	<Button
+																		variant="default"
+																		className="w-full mt-2"
+																		onClick={() => {
+																			router.push(`/events/${event.id}/apply`);
+																		}}
+																	>
+																		<Plus className="h-4 w-4 mr-2" />
+																		{t("eventDetails.apply")}{" "}
+																		<BadgeSoon className="ml-2" />
+																	</Button>
+																) : (
+																	<p className="text-sm text-muted-foreground text-center mt-2">
+																		{t("eventDetails.registrationsClosed")}
+																	</p>
+																)}
+															</div>
+														</HoverCardContent>
+													</HoverCard>
+												);
+											})}
 										</div>
 									</div>
 								))}

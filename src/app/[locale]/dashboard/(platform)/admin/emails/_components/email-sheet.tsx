@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	SheetContent,
-	SheetHeader,
-	SheetTitle,
-	SheetDescription,
-	Sheet,
-} from "@/components/ui/sheet";
+import { SheetContent, SheetHeader, SheetTitle, SheetDescription, Sheet } from "@/components/ui/sheet";
 import { useQueryState } from "nuqs";
 
 interface EmailSheetProps {
@@ -22,21 +16,14 @@ export function EmailSheet({ renderedContent }: EmailSheetProps) {
 
 	return (
 		<Sheet open={email !== ""} onOpenChange={() => setEmail("")}>
-			<SheetContent
-				side="right"
-				className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col"
-			>
+			<SheetContent side="right" className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col">
 				<SheetHeader>
 					<SheetTitle>Prikaz email-a</SheetTitle>
 					<SheetDescription className="hidden dark:block">
 						E-mail se samo prikazuje u svijetloj temi zbog kompatibilnosti.
 					</SheetDescription>
 				</SheetHeader>
-				<iframe
-					srcDoc={renderedContent}
-					className="w-full h-full"
-					title={"Email Preview"}
-				/>
+				<iframe srcDoc={renderedContent} className="w-full h-full" title={"Email Preview"} />
 			</SheetContent>
 		</Sheet>
 	);

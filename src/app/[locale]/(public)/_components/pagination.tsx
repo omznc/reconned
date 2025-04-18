@@ -9,11 +9,7 @@ interface PaginationOptions {
 	siblingsCount?: number;
 }
 
-export function Pagination({
-	totalItems,
-	itemsPerPage,
-	siblingsCount = 1,
-}: PaginationOptions) {
+export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1 }: PaginationOptions) {
 	const [currentPage, setPage] = useQueryState(
 		"page",
 		parseAsInteger.withDefault(1).withOptions({
@@ -61,12 +57,7 @@ export function Pagination({
 
 	return (
 		<div className="flex items-center justify-center gap-2">
-			<Button
-				variant="outline"
-				size="icon"
-				onClick={() => setPage(currentPage - 1)}
-				disabled={currentPage <= 1}
-			>
+			<Button variant="outline" size="icon" onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 1}>
 				<ChevronLeft className="h-4 w-4" />
 			</Button>
 

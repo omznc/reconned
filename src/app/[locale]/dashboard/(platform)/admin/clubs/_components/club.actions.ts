@@ -10,24 +10,22 @@ const clubAdminActionSchema = z.object({
 	action: z.enum(["ban", "unban", "remove"]),
 });
 
-export const clubAdminAction = safeActionClient
-	.schema(clubAdminActionSchema)
-	.action(async ({ parsedInput }) => {
-		const { clubId, action } = parsedInput;
-		if (action === "ban") {
-			await prisma.club.update({
-				where: { id: clubId },
-				data: { banned: true },
-			});
-		} else if (action === "unban") {
-			await prisma.club.update({
-				where: { id: clubId },
-				data: { banned: false, banReason: null, banExpires: null },
-			});
-		} else if (action === "remove") {
-			await prisma.club.delete({
-				where: { id: clubId },
-			});
-		}
-		return { success: true };
-	});
+export const clubAdminAction = safeActionClient.schema(clubAdminActionSchema).action(async ({ parsedInput }) => {
+	const { clubId, action } = parsedInput;
+	if (action === "ban") {
+		await prisma.club.update({
+			where: { id: clubId },
+			data: { banned: true },
+		});
+	} else if (action === "unban") {
+		await prisma.club.update({
+			where: { id: clubId },
+			data: { banned: false, banReason: null, banExpires: null },
+		});
+	} else if (action === "remove") {
+		await prisma.club.delete({
+			where: { id: clubId },
+		});
+	}
+	return { success: true };
+});

@@ -4,29 +4,10 @@ import { sendInvitation } from "@/app/[locale]/dashboard/(club)/[clubId]/members
 import { sendInvitationSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
 import { cn } from "@/lib/utils";
 import { Button } from "@components/ui/button";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@components/ui/command";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@components/ui/form";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@components/ui/command";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 import { Input } from "@components/ui/input";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
@@ -230,10 +211,7 @@ export function InvitationsForm() {
 						</FormItem>
 					)}
 				/>
-				<Button
-					type="submit"
-					disabled={form.formState.isSubmitting || !form.formState.isDirty}
-				>
+				<Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
 					{t("send")}
 				</Button>
 			</form>

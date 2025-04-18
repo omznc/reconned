@@ -14,8 +14,7 @@ export function hasActiveClubMembership(props: {
 
 	// Check if membership has started
 	const hasStarted =
-		(props.startDate && isBefore(props.startDate, today)) ||
-		props.startDate.getTime() === today.getTime();
+		(props.startDate && isBefore(props.startDate, today)) || props.startDate.getTime() === today.getTime();
 
 	// Check if membership hasn't ended
 	const hasNotEnded = !props.endDate || isAfter(props.endDate, today);

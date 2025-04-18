@@ -1,10 +1,5 @@
 import { env } from "@/lib/env";
-import {
-	adminClient,
-	oneTapClient,
-	passkeyClient,
-	twoFactorClient,
-} from "better-auth/client/plugins";
+import { adminClient, oneTapClient, passkeyClient, twoFactorClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({

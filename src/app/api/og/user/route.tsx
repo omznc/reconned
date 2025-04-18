@@ -12,10 +12,7 @@ export async function GET(request: Request) {
 
 	if (
 		avatar &&
-		!(
-			avatar.startsWith(env.NEXT_PUBLIC_CDN_URL) ||
-			avatar.startsWith("https://lh3.googleusercontent.com")
-		)
+		!(avatar.startsWith(env.NEXT_PUBLIC_CDN_URL) || avatar.startsWith("https://lh3.googleusercontent.com"))
 	) {
 		return new Response("Invalid image URL", { status: 400 });
 	}
@@ -30,9 +27,7 @@ export async function GET(request: Request) {
 			<div tw="flex flex-row items-start">
 				{avatar && <img src={avatar} tw="w-32 h-32" alt={name ?? ""} />}
 				<div tw="flex flex-col flex-1 ml-8">
-					<div tw="text-6xl font-bold tracking-tight">
-						{name ?? "Airsoft igrač"}
-					</div>
+					<div tw="text-6xl font-bold tracking-tight">{name ?? "Airsoft igrač"}</div>
 					{callsign && <div tw="text-3xl mt-4 text-zinc-400">{callsign}</div>}
 					<div tw="text-2xl mt-8 text-zinc-200">{bio?.slice(0, 100) ?? ""}</div>
 				</div>

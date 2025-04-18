@@ -2,12 +2,9 @@
 
 import dynamic from "next/dynamic";
 
-const ClubsMap = dynamic(
-	() => import("@/components/clubs-map/clubs-map").then((mod) => mod.ClubsMap),
-	{
-		ssr: false,
-	},
-);
+const ClubsMap = dynamic(() => import("@/components/clubs-map/clubs-map").then((mod) => mod.ClubsMap), {
+	ssr: false,
+});
 
 interface Club {
 	id: string;

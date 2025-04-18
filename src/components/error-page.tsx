@@ -14,9 +14,7 @@ export function ErrorPage(props: ErrorPageProps) {
 		<div className="flex flex-col items-center gap-8 justify-center min-h-[500px] size-full">
 			<h1 className="text-4xl">{props.title}</h1>
 			<Button asChild>
-				<Link href={props.link || "/"}>
-					{props.linkText || t("backToHome")}
-				</Link>
+				<Link href={props.link || "/"}>{props.linkText || t("backToHome")}</Link>
 			</Button>
 		</div>
 	);

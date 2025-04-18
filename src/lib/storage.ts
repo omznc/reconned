@@ -1,10 +1,5 @@
 import { env } from "@/lib/env";
-import {
-	DeleteObjectCommand,
-	DeleteObjectsCommand,
-	PutObjectCommand,
-	S3Client,
-} from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, DeleteObjectsCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
@@ -41,9 +36,7 @@ export const getS3FileUploadUrl = async (props: {
 	}
 
 	if (size > maxFileSize) {
-		throw new Error(
-			`File size exceeds the maximum allowed size of ${maxFileSize} bytes`,
-		);
+		throw new Error(`File size exceeds the maximum allowed size of ${maxFileSize} bytes`);
 	}
 
 	const command = new PutObjectCommand({

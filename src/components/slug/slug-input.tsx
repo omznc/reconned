@@ -1,13 +1,7 @@
 "use client";
 
 import { validateSlug } from "@/components/slug/validate-slug";
-import {
-	FormItem,
-	FormLabel,
-	FormControl,
-	FormDescription,
-	FormMessage,
-} from "@/components/ui/form";
+import { FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { env } from "@/lib/env";
 import { useEffect, useState } from "react";

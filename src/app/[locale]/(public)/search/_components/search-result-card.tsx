@@ -16,15 +16,7 @@ interface SearchResultCardProps {
 	type: "club" | "user" | "event";
 }
 
-export function SearchResultCard({
-	title,
-	description,
-	href,
-	badges,
-	meta,
-	image,
-	type,
-}: SearchResultCardProps) {
+export function SearchResultCard({ title, description, href, badges, meta, image, type }: SearchResultCardProps) {
 	return (
 		<Link href={href} className="block group">
 			<Card className="relative overflow-hidden transition-all hover:border-red-500 border bg-sidebar">
@@ -52,13 +44,9 @@ export function SearchResultCard({
 							<div className="w-full h-full bg-muted grid place-items-center">
 								{
 									{
-										club: (
-											<Building2 className="w-12 h-12 text-muted-foreground" />
-										),
+										club: <Building2 className="w-12 h-12 text-muted-foreground" />,
 										user: <User className="w-12 h-12 text-muted-foreground" />,
-										event: (
-											<Calendar className="w-12 h-12 text-muted-foreground" />
-										),
+										event: <Calendar className="w-12 h-12 text-muted-foreground" />,
 									}[type]
 								}
 							</div>
@@ -68,23 +56,15 @@ export function SearchResultCard({
 					<div className="flex-1 p-4 pr-12">
 						<CardTitle className="text-lg mb-2">{title}</CardTitle>
 						{description && (
-							<CardDescription className="line-clamp-2 mb-3 text-ellipsis">
-								{description}
-							</CardDescription>
+							<CardDescription className="line-clamp-2 mb-3 text-ellipsis">{description}</CardDescription>
 						)}
 						<div className="flex flex-wrap items-center gap-2">
 							{badges?.map((badge) => (
-								<Badge
-									key={badge}
-									variant="outline"
-									className="bg-background/50"
-								>
+								<Badge key={badge} variant="outline" className="bg-background/50">
 									{badge}
 								</Badge>
 							))}
-							{meta && (
-								<span className="text-sm text-muted-foreground">{meta}</span>
-							)}
+							{meta && <span className="text-sm text-muted-foreground">{meta}</span>}
 						</div>
 					</div>
 

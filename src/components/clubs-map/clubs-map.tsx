@@ -29,13 +29,7 @@ function createClubIcon(logoUrl: string | null | undefined, size: number) {
 		);
 	}
 
-	return (
-		<MapPin
-			size={size}
-			strokeWidth={2}
-			className="text-red-500 transition-transform hover:scale-110"
-		/>
-	);
+	return <MapPin size={size} strokeWidth={2} className="text-red-500 transition-transform hover:scale-110" />;
 }
 
 interface Club {
@@ -54,18 +48,11 @@ interface ClubsMapProps {
 	interactive?: boolean;
 }
 
-function LocationMarker({
-	position,
-	logo,
-}: { position: [number, number]; logo?: string | null }) {
-	return position ? (
-		<Marker position={position} icon={createClubIcon(logo, 32)} />
-	) : null;
+function LocationMarker({ position, logo }: { position: [number, number]; logo?: string | null }) {
+	return position ? <Marker position={position} icon={createClubIcon(logo, 32)} /> : null;
 }
 
-function MapEventHandler({
-	onLocationSelect,
-}: { onLocationSelect?: (lat: number, lng: number) => void }) {
+function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
 	useMapEvents({
 		click: (e) => {
 			if (onLocationSelect) {
@@ -76,19 +63,13 @@ function MapEventHandler({
 	return null;
 }
 
-export function ClubsMap({
-	clubs,
-	onLocationSelect,
-	interactive = false,
-}: ClubsMapProps) {
+export function ClubsMap({ clubs, onLocationSelect, interactive = false }: ClubsMapProps) {
 	const [mounted, setMounted] = useState(false);
 	const [logoSize, setLogoSize] = useState(32); // Default size
 	const [clubId] = useQueryState("clubId");
 	const t = useTranslations("components.clubsMap");
 
-	const prefilledClub = clubs.find(
-		(club) => club.id === clubId || club.slug === clubId,
-	);
+	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
 
 	useEffect(() => {
 		setMounted(true);
@@ -119,10 +100,7 @@ export function ClubsMap({
 			)}
 
 			<MapContainer
-				center={[
-					prefilledClub?.latitude || 43.8563,
-					prefilledClub?.longitude || 18.4131,
-				]}
+				center={[prefilledClub?.latitude || 43.8563, prefilledClub?.longitude || 18.4131]}
 				zoom={prefilledClub ? 14 : 8}
 				className="h-full w-full z-0"
 			>
@@ -150,9 +128,7 @@ export function ClubsMap({
 										<h3 className="font-semibold text-xl text-foreground dark:text-black">
 											{club.name}
 										</h3>
-										<span className="text-foreground/80 dark:text-black/80">
-											{club.location}
-										</span>
+										<span className="text-foreground/80 dark:text-black/80">{club.location}</span>
 										<Link
 											href={`/clubs/${club.slug || club.id}`}
 											className="text-sm text-red-500 hover:underline plausible-event-name=club-map-profile-link"

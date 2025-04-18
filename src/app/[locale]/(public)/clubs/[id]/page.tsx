@@ -119,8 +119,6 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 				},
 			],
 		},
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
-			? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
-			: undefined,
+		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
 	};
 }

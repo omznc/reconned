@@ -29,11 +29,7 @@ interface ManagersTableProps {
 	pageSize: number;
 }
 
-export function ManagersTable({
-	managers,
-	totalManagers,
-	pageSize,
-}: ManagersTableProps) {
+export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTableProps) {
 	const confirm = useConfirm();
 	const params = useParams<{ clubId: string }>();
 
@@ -76,10 +72,7 @@ export function ManagersTable({
 						component: (_, row) => (
 							<div className="flex items-center gap-2">
 								<Avatar className="h-8 w-8">
-									<AvatarImage
-										src={row?.user.image ?? undefined}
-										alt="Avatar"
-									/>
+									<AvatarImage src={row?.user.image ?? undefined} alt="Avatar" />
 									<AvatarFallback>
 										{row.user.name
 											.split(" ")
@@ -89,9 +82,7 @@ export function ManagersTable({
 								</Avatar>
 								<span>{row.user.name}</span>
 								{row.user.callsign && (
-									<span className="text-muted-foreground">
-										({row.user.callsign})
-									</span>
+									<span className="text-muted-foreground">({row.user.callsign})</span>
 								)}
 							</div>
 						),

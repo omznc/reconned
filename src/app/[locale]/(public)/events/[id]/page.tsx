@@ -107,10 +107,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 	if (event.description) {
 		ogUrl.searchParams.set("description", event.description);
 	}
-	ogUrl.searchParams.set(
-		"date",
-		new Date(event.dateStart).toLocaleDateString("bs"),
-	);
+	ogUrl.searchParams.set("date", new Date(event.dateStart).toLocaleDateString("bs"));
 	if (event?.image) {
 		ogUrl.searchParams.set("image", event.image);
 	}
@@ -128,8 +125,6 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 				},
 			],
 		},
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL
-			? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL)
-			: undefined,
+		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
 	};
 }

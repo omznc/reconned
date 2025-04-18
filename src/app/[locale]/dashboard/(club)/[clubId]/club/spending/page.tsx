@@ -27,10 +27,7 @@ export default async function SpendingPage(props: PageProps) {
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const where = {
 		clubId,
@@ -38,7 +35,12 @@ export default async function SpendingPage(props: PageProps) {
 			? {
 					OR: [
 						{ title: { contains: search, mode: "insensitive" } },
-						{ description: { contains: search, mode: "insensitive" } },
+						{
+							description: {
+								contains: search,
+								mode: "insensitive",
+							},
+						},
 					],
 				}
 			: {}),
@@ -66,11 +68,7 @@ export default async function SpendingPage(props: PageProps) {
 				<AddPurchaseModal />
 			</div>
 
-			<PurchasesTable
-				purchases={purchases}
-				totalPurchases={totalPurchases}
-				pageSize={pageSize}
-			/>
+			<PurchasesTable purchases={purchases} totalPurchases={totalPurchases} pageSize={pageSize} />
 		</div>
 	);
 }

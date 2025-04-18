@@ -8,16 +8,7 @@ import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { authClient } from "@auth/client";
 import { Button } from "@components/ui/button";
 import { formatDate, formatDistanceToNow } from "date-fns";
-import {
-	Dice5,
-	Download,
-	KeyRound,
-	Trash2,
-	Laptop,
-	Smartphone,
-	Tablet,
-	ShieldQuestion,
-} from "lucide-react";
+import { Dice5, Download, KeyRound, Trash2, Laptop, Smartphone, Tablet, ShieldQuestion } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
@@ -70,10 +61,7 @@ export function SecuritySettings({
 			</div>
 			<div className="space-y-2">
 				{passkeys.map((passkey) => (
-					<Alert
-						key={passkey.id}
-						className="flex flex-col md:flex-row gap-1 justify-between -z-0"
-					>
+					<Alert key={passkey.id} className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
 							<AlertTitle>{passkey.name ?? "Passkey"}</AlertTitle>
 							<AlertDescription>
@@ -81,9 +69,7 @@ export function SecuritySettings({
 								{passkey.createdAt &&
 									formatDate(passkey.createdAt, "dd.MM.yyyy")} */}
 								{t("createdAt", {
-									date:
-										passkey.createdAt &&
-										formatDate(passkey.createdAt, "dd.MM.yyyy"),
+									date: passkey.createdAt && formatDate(passkey.createdAt, "dd.MM.yyyy"),
 								})}
 							</AlertDescription>
 						</div>
@@ -153,9 +139,7 @@ export function SecuritySettings({
 			{!hasPassword && (
 				<Alert className="flex flex-col gap-1">
 					<AlertTitle>{t("twoFactorUnavailable")}</AlertTitle>
-					<AlertDescription>
-						{t("twoFactorUnavailableDescription")}
-					</AlertDescription>
+					<AlertDescription>{t("twoFactorUnavailableDescription")}</AlertDescription>
 				</Alert>
 			)}
 			{hasPassword && (
@@ -165,9 +149,7 @@ export function SecuritySettings({
 							<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 								<div className="flex flex-col">
 									<AlertTitle>{t("twoFactorDisable")}</AlertTitle>
-									<AlertDescription>
-										{t("twoFactorDisableDescription")}
-									</AlertDescription>
+									<AlertDescription>{t("twoFactorDisableDescription")}</AlertDescription>
 								</div>
 								<Button
 									type="button"
@@ -205,9 +187,7 @@ export function SecuritySettings({
 												},
 												onError: () => {
 													setIsLoading(false);
-													toast.error(
-														t("twoFactorDisablePrompt.invalidPassword"),
-													);
+													toast.error(t("twoFactorDisablePrompt.invalidPassword"));
 												},
 											},
 										);
@@ -226,7 +206,9 @@ export function SecuritySettings({
 											disabled={isLoading}
 											onClick={() => {
 												const text = backupCodes?.join("\n") ?? "";
-												const blob = new Blob([text], { type: "text/plain" });
+												const blob = new Blob([text], {
+													type: "text/plain",
+												});
 												const url = window.URL.createObjectURL(blob);
 												const a = document.createElement("a");
 												a.href = url;
@@ -286,9 +268,7 @@ export function SecuritySettings({
 										</Button>
 									</div>
 								</AlertTitle>
-								<AlertDescription>
-									{t("regenerateDescription")}
-								</AlertDescription>
+								<AlertDescription>{t("regenerateDescription")}</AlertDescription>
 								<div className="bg-background border p-4 mt-2 flex flex-wrap gap-2">
 									{backupCodes?.map((code) => (
 										<code
@@ -309,9 +289,7 @@ export function SecuritySettings({
 						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 							<div className="flex flex-col">
 								<AlertTitle>{t("twoFactorEnable")}</AlertTitle>
-								<AlertDescription>
-									{t("twoFactorEnableDescription")}
-								</AlertDescription>
+								<AlertDescription>{t("twoFactorEnableDescription")}</AlertDescription>
 							</div>
 							<Button
 								type="button"
@@ -369,11 +347,7 @@ export function SecuritySettings({
 												</div>
 												<p>{t("twoFactorConfirmPrompt.enterCode")}</p>
 												<code className="font-semibold">
-													{
-														resp.data.totpURI
-															.split("?secret=")[1]
-															?.split("&")[0]
-													}
+													{resp.data.totpURI.split("?secret=")[1]?.split("&")[0]}
 												</code>
 												<span className="block mt-2">
 													{t("twoFactorConfirmPrompt.verifyCode")}
@@ -419,9 +393,7 @@ export function SecuritySettings({
 			)}
 			<div className="flex flex-col gap-1">
 				<h3 className="text-lg font-semibold">{t("activeSessions")}</h3>
-				<p className="text-sm text-muted-foreground">
-					{t("activeSessionsDescription")}
-				</p>
+				<p className="text-sm text-muted-foreground">{t("activeSessionsDescription")}</p>
 			</div>
 			{sessions.length > 1 && (
 				<Alert>
@@ -461,12 +433,9 @@ export function SecuritySettings({
 						return (
 							<Alert
 								key={session.id}
-								className={cn(
-									"flex flex-col md:flex-row gap-1 justify-between -z-0",
-									{
-										"bg-primary/10": session.isCurrentSession,
-									},
-								)}
+								className={cn("flex flex-col md:flex-row gap-1 justify-between -z-0", {
+									"bg-primary/10": session.isCurrentSession,
+								})}
 							>
 								<div className="flex gap-4 items-center">
 									<Icon className="w-8 h-8" />
@@ -481,9 +450,7 @@ export function SecuritySettings({
 										</AlertTitle>
 										<AlertDescription>
 											{session.ipAddress && (
-												<span className="block text-xs">
-													IP: {session.ipAddress}
-												</span>
+												<span className="block text-xs">IP: {session.ipAddress}</span>
 											)}
 											<span className="block text-xs">
 												{t("sessionLastUsed", {
