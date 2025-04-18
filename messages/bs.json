@@ -64,6 +64,11 @@
 			"message": "Stranica nije pronađena",
 			"backHome": "Vrati se na početnu stranicu"
 		},
+		"offline": {
+			"title": "Niste konektovani",
+			"message": "Provjerite internet konekciju i pokušajte ponovo.",
+			"returnHome": "Povratak na početnu"
+		},
 		"home": {
 			"hero": {
 				"button": "Pogledajte listu izmjena",
@@ -994,7 +999,17 @@
 			"logout": "Odjava",
 			"pendingInvitesMessage": "Imate {count} neodgovoren/ih pozivnicu/a",
 			"inviteRequestsMessage": "Klub ima {count} neodgovoren/ih zahtjev/a za pristup",
-			"invites": "Pozivnice"
+			"invites": "Pozivnice",
+			"searchPlaceholder": "Pretraži...",
+			"noResults": "Nema rezultata.",
+			"navigation": "Navigacija",
+			"dashboard": "Nadzorna ploča",
+			"events": "Događaji",
+			"members": "Članovi",
+			"settings": "Postavke",
+			"account": "Račun",
+			"profile": "Profil",
+			"userSettings": "Postavke korisnika"
 		},
 		"footer": {
 			"about": {

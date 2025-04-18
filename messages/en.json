@@ -59,6 +59,11 @@
 		}
 	},
 	"public": {
+		"offline": {
+			"title": "You are offline",
+			"message": "Please check your internet connection and try again.",
+			"returnHome": "Return to homepage"
+		},
 		"notFound": {
 			"title": "You are lost",
 			"message": "Page not found",
@@ -994,7 +999,13 @@
 			"logout": "Sign out",
 			"pendingInvitesMessage": "You have {count} pending invitation/s",
 			"inviteRequestsMessage": "Your club has {count} pending join request/s",
-			"invites": "Invitations"
+			"invites": "Invitations",
+			"searchPlaceholder": "Search...",
+			"noResults": "No results found.",
+			"navigation": "Navigation",
+			"account": "Account",
+			"profile": "Profile",
+			"userSettings": "User Settings"
 		},
 		"footer": {
 			"about": {

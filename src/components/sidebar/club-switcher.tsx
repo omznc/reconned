@@ -8,6 +8,7 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
+	DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
 import {
 	SidebarMenu,
@@ -19,7 +20,7 @@ import type { Club } from "@prisma/client";
 import Image from "next/image";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
 interface ClubSwitcherProps {
@@ -39,6 +40,45 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	);
 
 	const selectedClub = clubs.find((club) => club.id === clubId);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			// Handle Shift + Arrow Up/Down for club navigation
+			if (e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey) {
+				const currentIndex = clubs.findIndex((club) => club.id === clubId);
+				if (currentIndex === -1) {
+					return;
+				}
+
+				if (e.key === "ArrowUp" && currentIndex > 0) {
+					e.preventDefault();
+					const prevClub = clubs[currentIndex - 1];
+					if (prevClub) {
+						navigateToClub(prevClub);
+					}
+				} else if (e.key === "ArrowDown" && currentIndex < clubs.length - 1) {
+					e.preventDefault();
+					const nextClub = clubs[currentIndex + 1];
+					if (nextClub) {
+						navigateToClub(nextClub);
+					}
+				}
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [clubId, clubs]);
+
+	const navigateToClub = (club: Club) => {
+		const currentFullUrl = window.location.href;
+
+		if (!(clubId && currentFullUrl.includes(clubId))) {
+			return router.push(`/dashboard/${club.id}`);
+		}
+		const newUrl = currentFullUrl.replace(clubId, club.id);
+		router.push(newUrl);
+	};
 
 	return (
 		<SidebarMenu>
@@ -114,18 +154,10 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						<DropdownMenuLabel className="text-xs text-muted-foreground">
 							{t("clubs")}
 						</DropdownMenuLabel>
-						{clubs.map((club) => (
+						{clubs.map((club, index) => (
 							<DropdownMenuItem
 								key={club.id}
-								onClick={() => {
-									const currentFullUrl = window.location.href;
-
-									if (!(clubId && currentFullUrl.includes(clubId))) {
-										return router.push(`/dashboard/${club.id}`);
-									}
-									const newUrl = currentFullUrl.replace(clubId, club.id);
-									router.push(newUrl);
-								}}
+								onClick={() => navigateToClub(club)}
 								data-active={club.id === clubId}
 								className="gap-2 p-2 data-[active=true]:bg-accent"
 							>
@@ -143,6 +175,11 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 									)}
 								</div>
 								{club.name}
+								{index < 9 && (
+									<DropdownMenuShortcut className="ml-auto hidden md:inline-flex">
+										⇧{index + 1}
+									</DropdownMenuShortcut>
+								)}
 							</DropdownMenuItem>
 						))}
 						<DropdownMenuSeparator />
