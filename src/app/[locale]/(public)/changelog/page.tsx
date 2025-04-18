@@ -1,12 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -29,15 +23,12 @@ export default async function ChangelogPage() {
 	const locale = await getLocale();
 
 	// Get the latest releases from GitHub
-	const response = await fetch(
-		"https://api.github.com/repos/omznc/reconned/releases",
-		{
-			method: "GET",
-			headers: {
-				Accept: "application/vnd.github.v3+json",
-			},
+	const response = await fetch("https://api.github.com/repos/omznc/reconned/releases", {
+		method: "GET",
+		headers: {
+			Accept: "application/vnd.github.v3+json",
 		},
-	);
+	});
 
 	const releases: {
 		id: number;
@@ -91,18 +82,17 @@ export default async function ChangelogPage() {
 					<CardHeader className="bg-primary/5">
 						<CardTitle className="text-2xl flex items-center gap-2">
 							{latestRelease.name ||
-								t("version", { version: latestRelease.tag_name })}
+								t("version", {
+									version: latestRelease.tag_name,
+								})}
 						</CardTitle>
 						<div className="text-sm text-muted-foreground">
 							{t("published", {
-								date: new Date(latestRelease.published_at).toLocaleDateString(
-									locale,
-									{
-										year: "numeric",
-										month: "long",
-										day: "numeric",
-									},
-								),
+								date: new Date(latestRelease.published_at).toLocaleDateString(locale, {
+									year: "numeric",
+									month: "long",
+									day: "numeric",
+								}),
 							})}
 						</div>
 					</CardHeader>
@@ -144,18 +134,17 @@ export default async function ChangelogPage() {
 								<CardHeader>
 									<CardTitle className="text-xl">
 										{release.name ||
-											t("version", { version: release.tag_name })}
+											t("version", {
+												version: release.tag_name,
+											})}
 									</CardTitle>
 									<div className="text-sm text-muted-foreground">
 										{t("published", {
-											date: new Date(release.published_at).toLocaleDateString(
-												locale,
-												{
-													year: "numeric",
-													month: "long",
-													day: "numeric",
-												},
-											),
+											date: new Date(release.published_at).toLocaleDateString(locale, {
+												year: "numeric",
+												month: "long",
+												day: "numeric",
+											}),
 										})}
 									</div>
 								</CardHeader>

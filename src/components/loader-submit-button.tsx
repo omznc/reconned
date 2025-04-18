@@ -7,13 +7,7 @@ interface LoaderSubmitButtonProps {
 	isLoading?: boolean;
 	className?: string;
 	children?: ReactNode;
-	variant?:
-		| "default"
-		| "destructive"
-		| "outline"
-		| "secondary"
-		| "ghost"
-		| "link";
+	variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 	disabled?: boolean;
 }
 
@@ -23,16 +17,9 @@ export function LoaderSubmitButton(props: LoaderSubmitButtonProps) {
 			variant={props.variant}
 			disabled={props.isLoading || props.disabled}
 			type="submit"
-			className={cn(
-				"flex w-full items-center justify-center gap-2",
-				props.className,
-			)}
+			className={cn("flex w-full items-center justify-center gap-2", props.className)}
 		>
-			{props.isLoading ? (
-				<LoaderIcon className="h-4 w-4 animate-spin" />
-			) : (
-				props.children
-			)}
+			{props.isLoading ? <LoaderIcon className="h-4 w-4 animate-spin" /> : props.children}
 		</Button>
 	);
 }

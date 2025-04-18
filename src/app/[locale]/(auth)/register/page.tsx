@@ -1,18 +1,8 @@
 "use client";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
@@ -21,20 +11,11 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-	TurnstileWidget,
-	type TurnstileWidgetRef,
-} from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -137,13 +118,9 @@ export default function RegisterPage() {
 					<Accordion type="single" collapsible className="w-full border-b-none">
 						<AccordionItem value="item-1" className="border-b-none">
 							<AccordionTrigger className="border-b-none">
-								<span className="text-red-500">
-									{t("registerDescriptionTooltipTitle")}
-								</span>
+								<span className="text-red-500">{t("registerDescriptionTooltipTitle")}</span>
 							</AccordionTrigger>
-							<AccordionContent>
-								{t("registerDescriptionTooltipDescription")}
-							</AccordionContent>
+							<AccordionContent>{t("registerDescriptionTooltipDescription")}</AccordionContent>
 						</AccordionItem>
 					</Accordion>
 				</CardDescription>
@@ -234,11 +211,7 @@ export default function RegisterPage() {
 							}}
 						/>
 
-						{isError && (
-							<p className="text-red-500 -mb-2">
-								{t("invalidDataOrUserExists")}
-							</p>
-						)}
+						{isError && <p className="text-red-500 -mb-2">{t("invalidDataOrUserExists")}</p>}
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
@@ -252,11 +225,7 @@ export default function RegisterPage() {
 				</Form>
 				<div className="mt-4 text-center text-sm">
 					{t("haveAccountQuestion")}{" "}
-					<Link
-						suppressHydrationWarning={true}
-						href="/login"
-						className="underline"
-					>
+					<Link suppressHydrationWarning={true} href="/login" className="underline">
 						{t("login")}
 					</Link>
 				</div>

@@ -1,12 +1,5 @@
 import { EventCalendar } from "@/components/event-calendar";
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardDescription,
-	CardContent,
-	CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -50,9 +43,7 @@ export default async function Home({ searchParams }: PageProps) {
 	const user = await isAuthenticated();
 	const { month } = await searchParams;
 
-	const currentDate = month
-		? parseDateFns(month, "yyyy-MM", new Date())
-		: new Date();
+	const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 
@@ -138,9 +129,7 @@ export default async function Home({ searchParams }: PageProps) {
 								{t("hero.button")}
 							</span>
 						</Link>
-						<p className="text-xl text-text/80 mb-8 mt-4">
-							{t("hero.description")}
-						</p>
+						<p className="text-xl text-text/80 mb-8 mt-4">{t("hero.description")}</p>
 						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
 							<Button
 								size="sm"
@@ -243,9 +232,7 @@ export default async function Home({ searchParams }: PageProps) {
 					</div>
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{upcomingEvents.length === 0 && (
-							<div className="text-muted-foreground">
-								{t("upcomingEventsNone")}
-							</div>
+							<div className="text-muted-foreground">{t("upcomingEventsNone")}</div>
 						)}
 
 						{upcomingEvents.map((event) => (
@@ -264,17 +251,14 @@ export default async function Home({ searchParams }: PageProps) {
 										<CardTitle className="mt-4 px-6">
 											{event.name} ({event.club?.name})
 										</CardTitle>
-										<CardDescription className="px-6 pb-6">
-											{event.description}
-										</CardDescription>
+										<CardDescription className="px-6 pb-6">{event.description}</CardDescription>
 									</CardHeader>
 									<CardContent className="grow flex-col flex gap-1">
 										<div className="flex items-center">
 											<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
 											<span>
 												{format(event.dateStart, "MMM d, yyyy")}
-												{event.dateEnd &&
-													` - ${format(event.dateEnd, "MMM d, yyyy")}`}
+												{event.dateEnd && ` - ${format(event.dateEnd, "MMM d, yyyy")}`}
 											</span>
 										</div>
 										{event.dateStart && (
@@ -292,7 +276,10 @@ export default async function Home({ searchParams }: PageProps) {
 										{event.costPerPerson !== undefined && (
 											<div className="flex items-center">
 												<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
-												<span>{event.costPerPerson.toFixed(2)}KM po osobi</span>
+												<span>
+													{event.costPerPerson.toFixed(2)}
+													KM po osobi
+												</span>
 											</div>
 										)}
 										<div className="flex flex-wrap gap-2 my-4">
@@ -302,50 +289,32 @@ export default async function Home({ searchParams }: PageProps) {
 													: t("eventCard.cannotFreelance")}
 											</Badge>
 											{event.hasBreakfast && (
-												<Badge
-													variant="outline"
-													className="grow justify-center"
-												>
+												<Badge variant="outline" className="grow justify-center">
 													{t("eventCard.breakfast")}
 												</Badge>
 											)}
 											{event.hasLunch && (
-												<Badge
-													variant="outline"
-													className="grow justify-center"
-												>
+												<Badge variant="outline" className="grow justify-center">
 													{t("eventCard.lunch")}
 												</Badge>
 											)}
 											{event.hasDinner && (
-												<Badge
-													variant="outline"
-													className="grow justify-center"
-												>
+												<Badge variant="outline" className="grow justify-center">
 													{t("eventCard.dinner")}
 												</Badge>
 											)}
 											{event.hasSnacks && (
-												<Badge
-													variant="outline"
-													className="grow justify-center"
-												>
+												<Badge variant="outline" className="grow justify-center">
 													{t("eventCard.snacks")}
 												</Badge>
 											)}
 											{event.hasDrinks && (
-												<Badge
-													variant="outline"
-													className="grow justify-center"
-												>
+												<Badge variant="outline" className="grow justify-center">
 													{t("eventCard.drinks")}
 												</Badge>
 											)}
 											{event.hasPrizes && (
-												<Badge
-													variant="outline"
-													className="grow justify-center"
-												>
+												<Badge variant="outline" className="grow justify-center">
 													{t("eventCard.prizes")}
 												</Badge>
 											)}

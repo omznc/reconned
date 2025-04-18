@@ -30,10 +30,7 @@ interface InvitationsTableProps {
 	totalPages: number;
 }
 
-export function InvitationsTable({
-	invites,
-	totalPages,
-}: InvitationsTableProps) {
+export function InvitationsTable({ invites, totalPages }: InvitationsTableProps) {
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.members.invitations.table");
 
@@ -147,9 +144,7 @@ export function InvitationsTable({
 											disabled={row.status !== "PENDING"}
 											onClick={() => handleRevoke(row, row.club.id)}
 										>
-											{row.status === "PENDING"
-												? t("revoke.confirm")
-												: t("inactive")}
+											{row.status === "PENDING" ? t("revoke.confirm") : t("inactive")}
 										</Button>
 									</div>
 								)}

@@ -10,51 +10,47 @@ import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { getTranslations } from "next-intl/server";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
-export const saveUserInformation = safeActionClient
-	.schema(userInfoShema)
-	.action(async ({ parsedInput, ctx }) => {
-		const t = await getTranslations("dashboard.user.settings");
-		// Validate slug
-		if (parsedInput.slug) {
-			const valid = await validateSlug({
-				type: "user",
-				slug: parsedInput.slug,
-			});
-			if (!valid) {
-				throw new Error(t("linkTaken"));
-			}
-		}
-
-		const user = await prisma.user.update({
-			where: {
-				id: ctx.user.id,
-			},
-			data: {
-				name: parsedInput.name,
-				// email: parsedInput.email,
-				isPrivate: parsedInput.isPrivate,
-				image: parsedInput.image
-					? `${parsedInput.image}?v=${Date.now()}`
-					: undefined,
-				bio: parsedInput.bio,
-				location: parsedInput.location,
-				website: parsedInput.website,
-				phone: parsedInput.phone,
-				slug: parsedInput.slug ? parsedInput.slug : undefined,
-				callsign: parsedInput.callsign,
-				isPrivateEmail: parsedInput.isPrivateEmail,
-				isPrivatePhone: parsedInput.isPrivatePhone,
-				isPrivateStats: parsedInput.isPrivateStats,
-			},
+export const saveUserInformation = safeActionClient.schema(userInfoShema).action(async ({ parsedInput, ctx }) => {
+	const t = await getTranslations("dashboard.user.settings");
+	// Validate slug
+	if (parsedInput.slug) {
+		const valid = await validateSlug({
+			type: "user",
+			slug: parsedInput.slug,
 		});
-
-		revalidateLocalizedPaths("/dashboard/user/");
-		if (!user.isPrivate) {
-			revalidateLocalizedPaths(`/users/${user.slug ?? user.id}`);
-			revalidateLocalizedPaths("/users");
-			revalidateLocalizedPaths("/search");
+		if (!valid) {
+			throw new Error(t("linkTaken"));
 		}
+	}
+
+	const user = await prisma.user.update({
+		where: {
+			id: ctx.user.id,
+		},
+		data: {
+			name: parsedInput.name,
+			// email: parsedInput.email,
+			isPrivate: parsedInput.isPrivate,
+			image: parsedInput.image ? `${parsedInput.image}?v=${Date.now()}` : undefined,
+			bio: parsedInput.bio,
+			location: parsedInput.location,
+			website: parsedInput.website,
+			phone: parsedInput.phone,
+			slug: parsedInput.slug ? parsedInput.slug : undefined,
+			callsign: parsedInput.callsign,
+			isPrivateEmail: parsedInput.isPrivateEmail,
+			isPrivatePhone: parsedInput.isPrivatePhone,
+			isPrivateStats: parsedInput.isPrivateStats,
+		},
 	});
+
+	revalidateLocalizedPaths("/dashboard/user/");
+	if (!user.isPrivate) {
+		revalidateLocalizedPaths(`/users/${user.slug ?? user.id}`);
+		revalidateLocalizedPaths("/users");
+		revalidateLocalizedPaths("/search");
+	}
+});
 
 export const getUserImageUploadUrl = safeActionClient
 	.schema(userImageFileSchema)

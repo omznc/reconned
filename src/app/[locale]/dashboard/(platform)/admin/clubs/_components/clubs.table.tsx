@@ -56,7 +56,11 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 					header: "Ban",
 					cellConfig: {
 						variant: "badge",
-						valueMap: { false: "Aktivan", true: "Banovan", default: "Aktivan" },
+						valueMap: {
+							false: "Aktivan",
+							true: "Banovan",
+							default: "Aktivan",
+						},
 						badgeVariants: {
 							true: "bg-red-100 text-red-800",
 							default: "bg-green-100 text-green-800",

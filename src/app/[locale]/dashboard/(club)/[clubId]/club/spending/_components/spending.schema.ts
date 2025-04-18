@@ -5,10 +5,7 @@ export const purchaseFormSchema = z.object({
 	title: z.string().min(1, "Title is required"),
 	description: z.string().optional(),
 	amount: z.number().min(1, "Amount must be greater than 0"),
-	receiptUrls: z
-		.array(z.string())
-		.max(3, "Maximum 3 receipts per item")
-		.optional(),
+	receiptUrls: z.array(z.string()).max(3, "Maximum 3 receipts per item").optional(),
 });
 
 export const editPurchaseFormSchema = purchaseFormSchema.extend({

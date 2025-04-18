@@ -23,10 +23,7 @@ export default async function Page(props: PageProps) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const t = await getTranslations("dashboard.club.events");
 
@@ -48,7 +45,12 @@ export default async function Page(props: PageProps) {
 			? {
 					OR: [
 						{ name: { contains: search, mode: "insensitive" } },
-						{ description: { contains: search, mode: "insensitive" } },
+						{
+							description: {
+								contains: search,
+								mode: "insensitive",
+							},
+						},
 						{ location: { contains: search, mode: "insensitive" } },
 					],
 				}
@@ -93,9 +95,7 @@ export default async function Page(props: PageProps) {
 				totalEvents={totalEvents}
 				clubId={clubId}
 				pageSize={pageSize}
-				userIsManager={
-					user.managedClubs.includes(clubId) || Boolean(user.role === "admin")
-				}
+				userIsManager={user.managedClubs.includes(clubId) || Boolean(user.role === "admin")}
 			/>
 		</>
 	);

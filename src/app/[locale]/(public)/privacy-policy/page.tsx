@@ -15,20 +15,18 @@ export default function PrivacyPolicyPage() {
 
 			<div className="prose dark:prose-invert max-w-none">
 				<p className="text-lg mb-6">
-					{t("lastUpdated", { date: lastUpdated.toLocaleDateString(locale) })}
+					{t("lastUpdated", {
+						date: lastUpdated.toLocaleDateString(locale),
+					})}
 				</p>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("introduction.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("introduction.title")}</h2>
 					<p>{t("introduction.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("dataCollection.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("dataCollection.title")}</h2>
 					<p>{t("dataCollection.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
 						<li>{t("dataCollection.personalInfo")}</li>
@@ -53,16 +51,12 @@ export default function PrivacyPolicyPage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("dataSecurity.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("dataSecurity.title")}</h2>
 					<p>{t("dataSecurity.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("dataSharing.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("dataSharing.title")}</h2>
 					<p>{t("dataSharing.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
 						<li>{t("dataSharing.clubMembers")}</li>
@@ -78,9 +72,7 @@ export default function PrivacyPolicyPage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("userRights.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("userRights.title")}</h2>
 					<p>{t("userRights.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
 						<li>{t("userRights.access")}</li>
@@ -93,9 +85,7 @@ export default function PrivacyPolicyPage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("thirdPartyServices.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("thirdPartyServices.title")}</h2>
 					<p>{t("thirdPartyServices.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
 						<li>{t("thirdPartyServices.auth")}</li>
@@ -107,9 +97,7 @@ export default function PrivacyPolicyPage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("childrenPrivacy.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("childrenPrivacy.title")}</h2>
 					<p>{t("childrenPrivacy.description")}</p>
 				</section>
 
@@ -123,10 +111,7 @@ export default function PrivacyPolicyPage() {
 					<p>
 						{t.rich("contact.description", {
 							email: () => (
-								<a
-									href="mailto:mail@reconned.com"
-									className="text-primary hover:underline"
-								>
+								<a href="mailto:mail@reconned.com" className="text-primary hover:underline">
 									mail@reconned.com
 								</a>
 							),

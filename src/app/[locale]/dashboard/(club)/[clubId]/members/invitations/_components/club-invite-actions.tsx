@@ -19,9 +19,7 @@ export function ClubInviteActions({ invite }: ClubInviteActionsProps) {
 	const handleAction = async (action: "approve" | "dismiss") => {
 		const url =
 			action === "approve"
-				? `/api/club/member-invite/${invite.inviteCode}?redirectTo=${encodeURIComponent(
-						pathname,
-					)}`
+				? `/api/club/member-invite/${invite.inviteCode}?redirectTo=${encodeURIComponent(pathname)}`
 				: `/api/club/member-invite/${invite.inviteCode}?action=dismiss&redirectTo=${encodeURIComponent(
 						pathname,
 					)}`;

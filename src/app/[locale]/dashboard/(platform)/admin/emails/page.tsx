@@ -34,8 +34,7 @@ const emails = [
 	{
 		id: "create-account",
 		name: "Kreiranje računa",
-		description:
-			"Email koji se šalje kada je neko pozvan na susret a nema račun",
+		description: "Email koji se šalje kada je neko pozvan na susret a nema račun",
 		preview: CreateAccountEmail,
 		sampleData: {
 			eventName: "Spring Game 2024",
@@ -97,17 +96,11 @@ export default async function Page(props: Props) {
 			<div className="flex flex-col gap-4">
 				<div>
 					<h1 className="text-3xl font-bold">Email-ovi</h1>
-					<p className="text-muted-foreground">
-						Pregled svih email template-ova u sistemu
-					</p>
+					<p className="text-muted-foreground">Pregled svih email template-ova u sistemu</p>
 				</div>
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{emails.map((email) => (
-						<Link
-							href={`?email=${email.id}`}
-							key={email.id}
-							className="block h-[250px]"
-						>
+						<Link href={`?email=${email.id}`} key={email.id} className="block h-[250px]">
 							<Card
 								className={cn(
 									"group relative h-full overflow-hidden transition-all duration-300 hover:-translate-y-1",
@@ -123,9 +116,7 @@ export default async function Page(props: Props) {
 									</CardHeader>
 
 									<CardContent className="flex-1">
-										<p className="text-sm text-muted-foreground">
-											{email.description}
-										</p>
+										<p className="text-sm text-muted-foreground">{email.description}</p>
 									</CardContent>
 
 									<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-primary/50 to-primary scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />

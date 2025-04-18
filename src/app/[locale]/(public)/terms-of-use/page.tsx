@@ -15,34 +15,28 @@ export default function TermsOfUsePage() {
 
 			<div className="prose dark:prose-invert max-w-none">
 				<p className="text-lg mb-6">
-					{t("lastUpdated", { date: lastUpdated.toLocaleDateString(locale) })}
+					{t("lastUpdated", {
+						date: lastUpdated.toLocaleDateString(locale),
+					})}
 				</p>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("introduction.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("introduction.title")}</h2>
 					<p>{t("introduction.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("acceptance.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("acceptance.title")}</h2>
 					<p>{t("acceptance.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("eligibility.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("eligibility.title")}</h2>
 					<p>{t("eligibility.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("userAccounts.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("userAccounts.title")}</h2>
 					<p>{t("userAccounts.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
 						<li>{t("userAccounts.accuracy")}</li>
@@ -55,13 +49,9 @@ export default function TermsOfUsePage() {
 				<section className="mb-8">
 					<h2 className="text-2xl font-semibold mb-4">{t("content.title")}</h2>
 					<p>{t("content.description")}</p>
-					<h3 className="text-xl font-semibold mt-4 mb-2">
-						{t("content.userContent.title")}
-					</h3>
+					<h3 className="text-xl font-semibold mt-4 mb-2">{t("content.userContent.title")}</h3>
 					<p>{t("content.userContent.description")}</p>
-					<h3 className="text-xl font-semibold mt-4 mb-2">
-						{t("content.prohibited.title")}
-					</h3>
+					<h3 className="text-xl font-semibold mt-4 mb-2">{t("content.prohibited.title")}</h3>
 					<p>{t("content.prohibited.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
 						<li>{t("content.prohibited.illegal")}</li>
@@ -73,9 +63,7 @@ export default function TermsOfUsePage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("intellectualProperty.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("intellectualProperty.title")}</h2>
 					<p>{t("intellectualProperty.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
 						<li>{t("intellectualProperty.ownership")}</li>
@@ -85,23 +73,17 @@ export default function TermsOfUsePage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("thirdParty.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("thirdParty.title")}</h2>
 					<p>{t("thirdParty.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("disclaimer.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("disclaimer.title")}</h2>
 					<p>{t("disclaimer.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("limitation.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("limitation.title")}</h2>
 					<p>{t("limitation.description")}</p>
 				</section>
 
@@ -111,16 +93,12 @@ export default function TermsOfUsePage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("termination.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("termination.title")}</h2>
 					<p>{t("termination.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">
-						{t("governing.title")}
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("governing.title")}</h2>
 					<p>{t("governing.description")}</p>
 				</section>
 
@@ -129,10 +107,7 @@ export default function TermsOfUsePage() {
 					<p>
 						{t.rich("contact.description", {
 							email: () => (
-								<a
-									href="mailto:mail@reconned.com"
-									className="text-primary hover:underline"
-								>
+								<a href="mailto:mail@reconned.com" className="text-primary hover:underline">
 									mail@reconned.com
 								</a>
 							),

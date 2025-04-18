@@ -10,29 +10,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { toast } from "sonner";
 import type { ClubRule } from "@prisma/client";
-import {
-	Form,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormControl,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Trash, Calendar, Pencil } from "lucide-react";
 import { ruleSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.schema";
-import {
-	deleteRule,
-	saveRule,
-} from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.action";
+import { deleteRule, saveRule } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.action";
 import "@/components/editor/editor.css";
-import {
-	Sheet,
-	SheetContent,
-	SheetHeader,
-	SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { format } from "date-fns";
 import { useQueryState } from "nuqs";
 import { cn } from "@/lib/utils";
@@ -50,9 +35,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const confirm = useConfirm();
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
-	const [editorContent, setEditorContent] = useState<string>(
-		editingRule?.content ?? "",
-	);
+	const [editorContent, setEditorContent] = useState<string>(editingRule?.content ?? "");
 	const t = useTranslations("dashboard.club.events.rules");
 
 	const form = useForm<z.infer<typeof ruleSchema>>({
@@ -111,10 +94,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 							<FormItem>
 								<FormLabel>{t("rule.description")}</FormLabel>
 								<FormControl>
-									<Textarea
-										placeholder={t("rule.descriptionPlaceholder")}
-										{...field}
-									/>
+									<Textarea placeholder={t("rule.descriptionPlaceholder")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -128,10 +108,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 							<FormItem>
 								<FormLabel>{t("rule.content")}</FormLabel>
 								<FormControl>
-									<Editor
-										onChange={handleEditorChange}
-										initialValue={editorContent}
-									/>
+									<Editor onChange={handleEditorChange} initialValue={editorContent} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -143,12 +120,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 							{editingRule ? t("rule.save") : t("rule.create")}
 						</Button>
 						{editingRule && (
-							<Button
-								className="w-full"
-								type="button"
-								variant="outline"
-								onClick={() => setRuleId(null)}
-							>
+							<Button className="w-full" type="button" variant="outline" onClick={() => setRuleId(null)}>
 								{t("rule.cancel")}
 							</Button>
 						)}
@@ -158,9 +130,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 
 			<div className="space-y-4">
 				<h3 className="text-lg font-semibold">{t("rules.title")}</h3>
-				{rules.length === 0 && (
-					<div className="text-muted-foreground">{t("rules.empty")}</div>
-				)}
+				{rules.length === 0 && <div className="text-muted-foreground">{t("rules.empty")}</div>}
 				{rules.map((rule) => (
 					<Card
 						key={rule.id}
@@ -172,25 +142,17 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 								<div className="space-y-2">
 									<CardTitle>{rule.name}</CardTitle>
 									{rule.description && (
-										<p className="text-sm text-muted-foreground line-clamp-2">
-											{rule.description}
-										</p>
+										<p className="text-sm text-muted-foreground line-clamp-2">{rule.description}</p>
 									)}
 									<div className="flex items-center gap-4 text-sm text-muted-foreground">
 										<div className="flex items-center gap-1">
 											<Calendar className="h-3 w-3" />
-											<span>
-												Kreirano{" "}
-												{format(new Date(rule.createdAt), "dd.MM.yyyy")}
-											</span>
+											<span>Kreirano {format(new Date(rule.createdAt), "dd.MM.yyyy")}</span>
 										</div>
 										{rule.createdAt !== rule.updatedAt && (
 											<div className="flex items-center gap-1">
 												<span>•</span>
-												<span>
-													Izmjenjeno{" "}
-													{format(new Date(rule.updatedAt), "dd.MM.yyyy")}
-												</span>
+												<span>Izmjenjeno {format(new Date(rule.updatedAt), "dd.MM.yyyy")}</span>
 											</div>
 										)}
 									</div>
@@ -236,9 +198,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						</CardHeader>
 						<CardContent>
 							<div className="text-sm">
-								{(rule.description?.length ?? 0) > 0
-									? rule.description
-									: t("rule.noDescription")}
+								{(rule.description?.length ?? 0) > 0 ? rule.description : t("rule.noDescription")}
 							</div>
 						</CardContent>
 					</Card>
@@ -246,10 +206,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			</div>
 
 			<Sheet open={!!selectedRule} onOpenChange={() => setSelectedRule(null)}>
-				<SheetContent
-					side="right"
-					className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col"
-				>
+				<SheetContent side="right" className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col">
 					{selectedRule && (
 						<>
 							<SheetHeader>
@@ -266,7 +223,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 										"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 									)}
 									// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-									dangerouslySetInnerHTML={{ __html: selectedRule.content }}
+									dangerouslySetInnerHTML={{
+										__html: selectedRule.content,
+									}}
 								/>
 							</div>
 						</>

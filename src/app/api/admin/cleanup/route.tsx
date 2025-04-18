@@ -106,9 +106,6 @@ export async function GET(request: Request) {
 			unbannedClubs: results[4].count,
 		});
 	} catch (error) {
-		return NextResponse.json(
-			{ error: "Čišćenje nije uspjelo" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Čišćenje nije uspjelo" }, { status: 500 });
 	}
 }

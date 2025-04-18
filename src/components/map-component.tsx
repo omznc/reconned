@@ -51,16 +51,10 @@ const generatePinIcon = () => {
 	});
 };
 
-export const MapComponent = ({
-	defaultMapData,
-	onSaveMapData,
-	readOnly = false,
-}: MapComponentProps) => {
+export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }: MapComponentProps) => {
 	const mapRef = useRef<LeafletMap | null>(null);
 	const drawnItemsRef = useRef<FeatureGroup | null>(null);
-	const [mapData, setMapData] = useState<MapData>(
-		defaultMapData || { areas: [], pois: [] },
-	);
+	const [mapData, setMapData] = useState<MapData>(defaultMapData || { areas: [], pois: [] });
 
 	useEffect(() => {
 		if (!mapRef.current) return;
@@ -117,9 +111,7 @@ export const MapComponent = ({
 
 		// Load points of interest (POIs)
 		for (const poi of pois) {
-			marker([poi.lat, poi.lng], { icon: generatePinIcon() }).addTo(
-				drawnItemsRef.current,
-			);
+			marker([poi.lat, poi.lng], { icon: generatePinIcon() }).addTo(drawnItemsRef.current);
 		}
 	}, [defaultMapData]);
 
@@ -151,9 +143,7 @@ export const MapComponent = ({
 
 			if (layers instanceof Marker) {
 				const latlng = layers.getLatLng();
-				newMapData.pois = newMapData.pois.filter(
-					(poi) => poi.lat !== latlng.lat || poi.lng !== latlng.lng,
-				);
+				newMapData.pois = newMapData.pois.filter((poi) => poi.lat !== latlng.lat || poi.lng !== latlng.lng);
 			} else if (layers instanceof Polygon || layers instanceof Rectangle) {
 				const coordinates = layers.toGeoJSON().geometry.coordinates;
 				newMapData.areas = newMapData.areas.filter(
@@ -199,12 +189,7 @@ export const MapComponent = ({
 	const mapCenter = calculateCenter();
 
 	return (
-		<MapContainer
-			center={mapCenter}
-			zoom={13}
-			ref={mapRef}
-			style={{ height: "500px", width: "100%", zIndex: "0" }}
-		>
+		<MapContainer center={mapCenter} zoom={13} ref={mapRef} style={{ height: "500px", width: "100%", zIndex: "0" }}>
 			<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 		</MapContainer>
 	);

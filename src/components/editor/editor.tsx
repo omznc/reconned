@@ -57,11 +57,7 @@ const ToolbarButton = ({
 	);
 };
 
-export const Editor = ({
-	editable = true,
-	initialValue = "",
-	onChange,
-}: EditorProps) => {
+export const Editor = ({ editable = true, initialValue = "", onChange }: EditorProps) => {
 	const t = useTranslations();
 	const [isUploading, setIsUploading] = useState(false);
 	const editor = useEditor({
@@ -203,18 +199,14 @@ export const Editor = ({
 					<div className="w-px h-6 bg-border mx-1" />
 
 					<ToolbarButton
-						onClick={() =>
-							editor.chain().focus().toggleHeading({ level: 2 }).run()
-						}
+						onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
 						active={editor.isActive("heading", { level: 2 })}
 					>
 						<Heading2 className="h-4 w-4" />
 					</ToolbarButton>
 
 					<ToolbarButton
-						onClick={() =>
-							editor.chain().focus().toggleHeading({ level: 3 }).run()
-						}
+						onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
 						active={editor.isActive("heading", { level: 3 })}
 					>
 						<Heading3 className="h-4 w-4" />
@@ -245,9 +237,7 @@ export const Editor = ({
 						<Quote className="h-4 w-4" />
 					</ToolbarButton>
 
-					<ToolbarButton
-						onClick={() => editor.chain().focus().setHorizontalRule().run()}
-					>
+					<ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()}>
 						<Minus className="h-4 w-4" />
 					</ToolbarButton>
 
@@ -274,10 +264,7 @@ export const Editor = ({
 				</div>
 			)}
 
-			<div
-				onClick={handleContainerClick}
-				className={cn("cursor-text", editable ? "min-h-[150px]" : "")}
-			>
+			<div onClick={handleContainerClick} className={cn("cursor-text", editable ? "min-h-[150px]" : "")}>
 				<EditorContent
 					editor={editor}
 					className={cn(

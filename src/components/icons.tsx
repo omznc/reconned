@@ -1,10 +1,6 @@
 "use client";
 
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Crown, UserCog, VerifiedIcon, Wrench } from "lucide-react";
 import { useTranslations } from "next-intl";
 

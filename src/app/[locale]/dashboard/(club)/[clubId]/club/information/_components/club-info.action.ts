@@ -16,80 +16,74 @@ import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { getLocale } from "next-intl/server";
 import { disconnectInstagramAPI } from "@/lib/instagram";
 
-export const saveClubInformation = safeActionClient
-	.schema(clubInfoSchema)
-	.action(async ({ parsedInput, ctx }) => {
-		// Validate slug
-		if (parsedInput.slug) {
-			const valid = await validateSlug({
-				type: "club",
-				slug: parsedInput.slug,
-			});
-			if (!valid) {
-				throw new Error("Izabrani link je već zauzet.");
-			}
+export const saveClubInformation = safeActionClient.schema(clubInfoSchema).action(async ({ parsedInput, ctx }) => {
+	// Validate slug
+	if (parsedInput.slug) {
+		const valid = await validateSlug({
+			type: "club",
+			slug: parsedInput.slug,
+		});
+		if (!valid) {
+			throw new Error("Izabrani link je već zauzet.");
 		}
+	}
 
-		const club = await prisma.club.upsert({
-			where: {
-				id: ctx.club?.id ?? "",
-			},
-			update: {
-				name: parsedInput.name,
-				location: parsedInput.location,
-				description: parsedInput.description,
-				dateFounded: parsedInput.dateFounded,
-				isAllied: parsedInput.isAllied,
-				isPrivate: parsedInput.isPrivate,
-				isPrivateStats: parsedInput.isPrivateStats,
-				logo: parsedInput.logo
-					? `${parsedInput.logo}?v=${Date.now()}`
-					: undefined,
-				contactPhone: parsedInput.contactPhone,
-				contactEmail: parsedInput.contactEmail,
-				slug: parsedInput.slug ? parsedInput.slug : undefined,
-				latitude: parsedInput.latitude,
-				longitude: parsedInput.longitude,
-				countryId: parsedInput.countryId,
-				instagramUsername: parsedInput.instagramUsername,
-			},
-			create: {
-				name: parsedInput.name,
-				location: parsedInput.location,
-				description: parsedInput.description,
-				dateFounded: parsedInput.dateFounded,
-				isAllied: parsedInput.isAllied,
-				isPrivate: parsedInput.isPrivate,
-				isPrivateStats: parsedInput.isPrivateStats,
-				logo: parsedInput.logo
-					? `${parsedInput.logo}?v=${Date.now()}`
-					: undefined,
-				contactPhone: parsedInput.contactPhone,
-				contactEmail: parsedInput.contactEmail,
-				latitude: parsedInput.latitude,
-				longitude: parsedInput.longitude,
-				slug: parsedInput.slug ? parsedInput.slug : undefined,
-				countryId: parsedInput.countryId,
-				instagramUsername: parsedInput.instagramUsername,
-				members: {
-					create: {
-						userId: ctx.user.id,
-						role: "CLUB_OWNER",
-					},
+	const club = await prisma.club.upsert({
+		where: {
+			id: ctx.club?.id ?? "",
+		},
+		update: {
+			name: parsedInput.name,
+			location: parsedInput.location,
+			description: parsedInput.description,
+			dateFounded: parsedInput.dateFounded,
+			isAllied: parsedInput.isAllied,
+			isPrivate: parsedInput.isPrivate,
+			isPrivateStats: parsedInput.isPrivateStats,
+			logo: parsedInput.logo ? `${parsedInput.logo}?v=${Date.now()}` : undefined,
+			contactPhone: parsedInput.contactPhone,
+			contactEmail: parsedInput.contactEmail,
+			slug: parsedInput.slug ? parsedInput.slug : undefined,
+			latitude: parsedInput.latitude,
+			longitude: parsedInput.longitude,
+			countryId: parsedInput.countryId,
+			instagramUsername: parsedInput.instagramUsername,
+		},
+		create: {
+			name: parsedInput.name,
+			location: parsedInput.location,
+			description: parsedInput.description,
+			dateFounded: parsedInput.dateFounded,
+			isAllied: parsedInput.isAllied,
+			isPrivate: parsedInput.isPrivate,
+			isPrivateStats: parsedInput.isPrivateStats,
+			logo: parsedInput.logo ? `${parsedInput.logo}?v=${Date.now()}` : undefined,
+			contactPhone: parsedInput.contactPhone,
+			contactEmail: parsedInput.contactEmail,
+			latitude: parsedInput.latitude,
+			longitude: parsedInput.longitude,
+			slug: parsedInput.slug ? parsedInput.slug : undefined,
+			countryId: parsedInput.countryId,
+			instagramUsername: parsedInput.instagramUsername,
+			members: {
+				create: {
+					userId: ctx.user.id,
+					role: "CLUB_OWNER",
 				},
 			},
-		});
-
-		revalidateTag("managed-clubs");
-		revalidateLocalizedPaths(`/dashboard/${club.id}`, "layout");
-		if (!club?.isPrivate) {
-			revalidateLocalizedPaths(`/clubs/${club.slug ?? club.id}`);
-			revalidateLocalizedPaths("/clubs");
-			revalidateLocalizedPaths("/search");
-		}
-
-		return { id: club.id };
+		},
 	});
+
+	revalidateTag("managed-clubs");
+	revalidateLocalizedPaths(`/dashboard/${club.id}`, "layout");
+	if (!club?.isPrivate) {
+		revalidateLocalizedPaths(`/clubs/${club.slug ?? club.id}`);
+		revalidateLocalizedPaths("/clubs");
+		revalidateLocalizedPaths("/search");
+	}
+
+	return { id: club.id };
+});
 
 export const getClubImageUploadUrl = safeActionClient
 	.schema(clubLogoFileSchema)
@@ -105,117 +99,106 @@ export const getClubImageUploadUrl = safeActionClient
 		return resp;
 	});
 
-export const deleteClubImage = safeActionClient
-	.schema(deleteClubImageSchema)
-	.action(async ({ ctx }) => {
-		await prisma.club.update({
-			where: {
-				id: ctx.club.id,
-			},
-			data: {
-				logo: null,
-			},
-		});
-
-		await deleteS3File(`club/${ctx.club.id}/logo`);
-		revalidateLocalizedPaths(`/dashboard/club/information?club=${ctx.club.id}`);
-
-		return { success: true };
+export const deleteClubImage = safeActionClient.schema(deleteClubImageSchema).action(async ({ ctx }) => {
+	await prisma.club.update({
+		where: {
+			id: ctx.club.id,
+		},
+		data: {
+			logo: null,
+		},
 	});
 
-export const disconnectInstagram = safeActionClient
-	.schema(disconnectInstagramSchema)
-	.action(async ({ ctx }) => {
-		await prisma.club.update({
-			where: {
-				id: ctx.club.id,
-			},
-			data: {
-				instagramUsername: null,
-				instagramAccessToken: null,
-				instagramRefreshToken: null,
-				instagramTokenExpiry: null,
-				instagramProfilePictureUrl: null,
-				instagramConnected: false,
-			},
-		});
+	await deleteS3File(`club/${ctx.club.id}/logo`);
+	revalidateLocalizedPaths(`/dashboard/club/information?club=${ctx.club.id}`);
 
-		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`);
-		if (!ctx.club.isPrivate) {
-			revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
-			revalidateLocalizedPaths("/clubs");
-			revalidateLocalizedPaths("/search");
-		}
+	return { success: true };
+});
 
-		return { success: true };
+export const disconnectInstagram = safeActionClient.schema(disconnectInstagramSchema).action(async ({ ctx }) => {
+	await prisma.club.update({
+		where: {
+			id: ctx.club.id,
+		},
+		data: {
+			instagramUsername: null,
+			instagramAccessToken: null,
+			instagramRefreshToken: null,
+			instagramTokenExpiry: null,
+			instagramProfilePictureUrl: null,
+			instagramConnected: false,
+		},
 	});
 
-export const disconnectInstagramAccount = safeActionClient
-	.schema(disconnectInstagramSchema)
-	.action(async ({ ctx }) => {
-		try {
-			const success = await disconnectInstagramAPI(ctx.club.id);
+	revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`);
+	if (!ctx.club.isPrivate) {
+		revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
+		revalidateLocalizedPaths("/clubs");
+		revalidateLocalizedPaths("/search");
+	}
 
-			if (!success) {
-				return {
-					success: false,
-					error: "Došlo je do greške prilikom odspajanja Instagram računa",
-				};
-			}
+	return { success: true };
+});
 
-			revalidateLocalizedPaths(
-				`/dashboard/${ctx.club.id}/club/information`,
-				"page",
-			);
-			if (!ctx.club.isPrivate) {
-				revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
-				revalidateLocalizedPaths("/clubs");
-				revalidateLocalizedPaths("/search");
-			}
+export const disconnectInstagramAccount = safeActionClient.schema(disconnectInstagramSchema).action(async ({ ctx }) => {
+	try {
+		const success = await disconnectInstagramAPI(ctx.club.id);
 
-			return { success: true };
-		} catch (error) {
+		if (!success) {
 			return {
 				success: false,
 				error: "Došlo je do greške prilikom odspajanja Instagram računa",
 			};
 		}
-	});
 
-export const deleteClub = safeActionClient
-	.schema(deleteClubSchema)
-	.action(async ({ ctx }) => {
-		const [, , locale] = await Promise.all([
-			prisma.club.delete({
-				where: {
-					id: ctx.club.id,
-				},
-			}),
-			deleteClubImage({
-				clubId: ctx.club.id,
-			}),
-			getLocale(),
-		]);
-
-		const remaining = await prisma.club.count({
-			where: {
-				members: {
-					some: {
-						userId: ctx.user.id,
-					},
-				},
-			},
-		});
-
-		revalidateTag("managed-clubs");
-		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}`, "layout");
+		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`, "page");
 		if (!ctx.club.isPrivate) {
 			revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
 			revalidateLocalizedPaths("/clubs");
 			revalidateLocalizedPaths("/search");
 		}
-		return redirect({
-			href: remaining > 0 ? "/dashboard?autoSelectFirst=true" : "/",
-			locale,
-		});
+
+		return { success: true };
+	} catch (error) {
+		return {
+			success: false,
+			error: "Došlo je do greške prilikom odspajanja Instagram računa",
+		};
+	}
+});
+
+export const deleteClub = safeActionClient.schema(deleteClubSchema).action(async ({ ctx }) => {
+	const [, , locale] = await Promise.all([
+		prisma.club.delete({
+			where: {
+				id: ctx.club.id,
+			},
+		}),
+		deleteClubImage({
+			clubId: ctx.club.id,
+		}),
+		getLocale(),
+	]);
+
+	const remaining = await prisma.club.count({
+		where: {
+			members: {
+				some: {
+					userId: ctx.user.id,
+				},
+			},
+		},
 	});
+
+	revalidateTag("managed-clubs");
+	revalidateLocalizedPaths(`/dashboard/${ctx.club.id}`, "layout");
+	if (!ctx.club.isPrivate) {
+		revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
+		revalidateLocalizedPaths("/clubs");
+		revalidateLocalizedPaths("/search");
+	}
+	return redirect({
+		href: remaining > 0 ? "/dashboard?autoSelectFirst=true" : "/",
+		locale,
+	});
+});

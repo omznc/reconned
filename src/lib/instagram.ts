@@ -91,23 +91,17 @@ export async function getInstagramAuthUrl(clubId: string): Promise<string> {
 /**
  * Exchange Facebook authorization code for a short-lived access token
  */
-export async function exchangeCodeForToken(
-	code: string,
-): Promise<FacebookAuthResponse> {
+export async function exchangeCodeForToken(code: string): Promise<FacebookAuthResponse> {
 	const redirectUri = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/instagram/callback`;
 
 	const response = await fetch(
-		`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${
-			env.FACEBOOK_APP_ID
-		}&client_secret=${
+		`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${env.FACEBOOK_APP_ID}&client_secret=${
 			env.FACEBOOK_APP_SECRET
 		}&redirect_uri=${encodeURIComponent(redirectUri)}&code=${code}`,
 	);
 
 	if (!response.ok) {
-		throw new Error(
-			`Failed to exchange code for token: ${await response.text()}`,
-		);
+		throw new Error(`Failed to exchange code for token: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -116,17 +110,13 @@ export async function exchangeCodeForToken(
 /**
  * Exchange a short-lived user token for a long-lived user token
  */
-export async function exchangeForLongLivedToken(
-	shortLivedToken: string,
-): Promise<FacebookLongLivedTokenResponse> {
+export async function exchangeForLongLivedToken(shortLivedToken: string): Promise<FacebookLongLivedTokenResponse> {
 	const response = await fetch(
 		`https://graph.facebook.com/v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${env.FACEBOOK_APP_ID}&client_secret=${env.FACEBOOK_APP_SECRET}&fb_exchange_token=${shortLivedToken}`,
 	);
 
 	if (!response.ok) {
-		throw new Error(
-			`Failed to exchange for long-lived token: ${await response.text()}`,
-		);
+		throw new Error(`Failed to exchange for long-lived token: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -137,10 +127,7 @@ export async function exchangeForLongLivedToken(
  * This token never expires and is tied to the app, not the user
  * Requires the business to have set up system users in Business Manager
  */
-export async function getSystemUserToken(
-	businessId: string,
-	systemUserId: string,
-): Promise<SystemUserTokenResponse> {
+export async function getSystemUserToken(businessId: string, systemUserId: string): Promise<SystemUserTokenResponse> {
 	// This requires additional setup in Facebook Business Manager
 	// The business needs to create a system user and assign it to the app
 	const response = await fetch(
@@ -148,9 +135,7 @@ export async function getSystemUserToken(
 	);
 
 	if (!response.ok) {
-		throw new Error(
-			`Failed to get system user token: ${await response.text()}`,
-		);
+		throw new Error(`Failed to get system user token: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -159,9 +144,7 @@ export async function getSystemUserToken(
 /**
  * Debug a Facebook token to check its validity and expiration
  */
-export async function debugToken(
-	accessToken: string,
-): Promise<FacebookDebugTokenResponse> {
+export async function debugToken(accessToken: string): Promise<FacebookDebugTokenResponse> {
 	const appAccessToken = `${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`;
 
 	const response = await fetch(
@@ -183,12 +166,8 @@ export async function debugToken(
 /**
  * Get Facebook pages associated with a user
  */
-export async function getUserPages(
-	accessToken: string,
-): Promise<FacebookPageResponse> {
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/me/accounts?access_token=${accessToken}`,
-	);
+export async function getUserPages(accessToken: string): Promise<FacebookPageResponse> {
+	const response = await fetch(`https://graph.facebook.com/v19.0/me/accounts?access_token=${accessToken}`);
 
 	if (!response.ok) {
 		throw new Error(`Failed to get user pages: ${await response.text()}`);
@@ -293,10 +272,7 @@ export async function getInstagramMedia(
  * 2. Get page access token with the long-lived user token
  * 3. This page access token is essentially non-expiring
  */
-export async function getNonExpiringPageAccessToken(
-	userAccessToken: string,
-	pageId: string,
-): Promise<string> {
+export async function getNonExpiringPageAccessToken(userAccessToken: string, pageId: string): Promise<string> {
 	// When we already have pageId and accessToken from page selection
 	if (pageId) {
 		// Try to directly exchange the access token
@@ -309,11 +285,7 @@ export async function getNonExpiringPageAccessToken(
 		const debugData = await debugResponse.json();
 
 		// If token has page scopes, we can use it directly
-		if (
-			debugResponse.ok &&
-			debugData?.data?.type === "PAGE" &&
-			debugData?.data?.is_valid
-		) {
+		if (debugResponse.ok && debugData?.data?.type === "PAGE" && debugData?.data?.is_valid) {
 			return userAccessToken;
 		}
 
@@ -323,9 +295,7 @@ export async function getNonExpiringPageAccessToken(
 		);
 
 		if (!response.ok) {
-			throw new Error(
-				`Failed to get page access token: ${await response.text()}`,
-			);
+			throw new Error(`Failed to get page access token: ${await response.text()}`);
 		}
 
 		const data = await response.json();
@@ -335,8 +305,7 @@ export async function getNonExpiringPageAccessToken(
 	}
 
 	// Step 1: Get long-lived user access token
-	const longLivedTokenResponse =
-		await exchangeForLongLivedToken(userAccessToken);
+	const longLivedTokenResponse = await exchangeForLongLivedToken(userAccessToken);
 
 	// Step 2: Get pages with the long-lived token
 	const pagesResponse = await getUserPages(longLivedTokenResponse.access_token);
@@ -397,8 +366,7 @@ export async function checkAndRefreshToken(
 		// For normal tokens, check expiration
 		const shouldRefreshToken =
 			!club.instagramTokenExpiry ||
-			new Date(club.instagramTokenExpiry) <
-				new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+			new Date(club.instagramTokenExpiry) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
 		if (shouldRefreshToken && club.facebookPageId) {
 			// Try to get a non-expiring token

@@ -21,11 +21,6 @@ export default async function Page(props: {
 	]);
 
 	return (
-		<RulesForm
-			key={JSON.stringify(searchParams)}
-			rules={rules}
-			clubId={params.clubId}
-			editingRule={editingRule}
-		/>
+		<RulesForm key={JSON.stringify(searchParams)} rules={rules} clubId={params.clubId} editingRule={editingRule} />
 	);
 }

@@ -7,28 +7,9 @@ import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import debounce from "lodash/debounce";
 import type * as z from "zod";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -47,9 +28,7 @@ type Member = {
 };
 
 async function searchMembers(clubId: string, query: string) {
-	const response = await fetch(
-		`/api/club/${clubId}/members?query=${encodeURIComponent(query)}&role=USER`,
-	);
+	const response = await fetch(`/api/club/${clubId}/members?query=${encodeURIComponent(query)}&role=USER`);
 	if (!response.ok) {
 		throw new Error("Neuspjela pretraga članova");
 	}
@@ -114,10 +93,7 @@ export function AddManagerForm() {
 
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4 max-w-3xl w-full"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl w-full">
 				<div>
 					<h3 className="text-lg font-semibold">{t("promote.title")}</h3>
 				</div>
@@ -139,8 +115,7 @@ export function AddManagerForm() {
 											)}
 										>
 											{field.value
-												? members.find((member) => member.id === field.value)
-														?.user.name
+												? members.find((member) => member.id === field.value)?.user.name
 												: t("promote.member.placeholder")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -159,13 +134,9 @@ export function AddManagerForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>
-													{t("promote.member.searchEmpty")}
-												</CommandEmpty>
+												<CommandEmpty>{t("promote.member.searchEmpty")}</CommandEmpty>
 											) : members.length === 0 ? (
-												<CommandEmpty>
-													{t("promote.member.noResults")}
-												</CommandEmpty>
+												<CommandEmpty>{t("promote.member.noResults")}</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{members.map((member) => (
@@ -203,17 +174,12 @@ export function AddManagerForm() {
 									</Command>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>
-								{t("promote.member.description")}
-							</FormDescription>
+							<FormDescription>{t("promote.member.description")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<Button
-					type="submit"
-					disabled={form.formState.isSubmitting || !form.formState.isDirty}
-				>
+				<Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
 					{t("promote.submit")}
 				</Button>
 			</form>

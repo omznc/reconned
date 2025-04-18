@@ -29,10 +29,7 @@ type MembershipWithRelations = Prisma.ClubMembershipGetPayload<{
 	};
 }>;
 
-async function notifyMember(
-	membership: MembershipWithRelations,
-	isExpired: boolean,
-) {
+async function notifyMember(membership: MembershipWithRelations, isExpired: boolean) {
 	try {
 		const user = membership.user;
 		const club = membership.club;
@@ -64,10 +61,7 @@ async function notifyMember(
 	}
 }
 
-async function notifyClubOwner(
-	membership: MembershipWithRelations,
-	isExpired: boolean,
-) {
+async function notifyClubOwner(membership: MembershipWithRelations, isExpired: boolean) {
 	try {
 		const user = membership.user;
 		const club = membership.club;
@@ -115,10 +109,7 @@ async function notifyClubOwner(
 	}
 }
 
-async function processNotifications(
-	membership: MembershipWithRelations,
-	isExpired: boolean,
-) {
+async function processNotifications(membership: MembershipWithRelations, isExpired: boolean) {
 	const [memberNotified, ownerNotified] = await Promise.all([
 		notifyMember(membership, isExpired),
 		notifyClubOwner(membership, isExpired),
@@ -202,9 +193,7 @@ export async function GET(request: Request) {
 
 		// Process expiring memberships in parallel
 		const expiringResults = await Promise.all(
-			expiringMemberships.map((membership) =>
-				processNotifications(membership, false),
-			),
+			expiringMemberships.map((membership) => processNotifications(membership, false)),
 		);
 
 		const expiringNotifications = expiringResults.reduce(
@@ -222,9 +211,7 @@ export async function GET(request: Request) {
 
 		// Process expired memberships in parallel
 		const expiredResults = await Promise.all(
-			expiredMemberships.map((membership) =>
-				processNotifications(membership, true),
-			),
+			expiredMemberships.map((membership) => processNotifications(membership, true)),
 		);
 
 		const expiredNotifications = expiredResults.reduce(
@@ -251,9 +238,6 @@ export async function GET(request: Request) {
 			},
 		});
 	} catch (error) {
-		return NextResponse.json(
-			{ error: "Membership reminder failed" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Membership reminder failed" }, { status: 500 });
 	}
 }
