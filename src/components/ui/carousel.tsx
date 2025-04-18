@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -98,7 +99,7 @@ const Carousel = React.forwardRef<
       [scrollPrev, scrollNext]
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (!api || !setApi) {
         return;
       }
@@ -106,7 +107,7 @@ const Carousel = React.forwardRef<
       setApi(api);
     }, [api, setApi]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (!api) {
         return;
       }

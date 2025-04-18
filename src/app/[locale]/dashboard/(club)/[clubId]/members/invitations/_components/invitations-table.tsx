@@ -127,18 +127,6 @@ export function InvitationsTable({
 					sortable: true,
 				},
 				{
-					key: "inviteCode",
-					header: t("code"),
-					cellConfig: {
-						variant: "custom",
-						component: (value) => (
-							<code className="bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono">
-								{value}
-							</code>
-						),
-					},
-				},
-				{
 					key: "actions",
 					header: t("actions"),
 					cellConfig: {
