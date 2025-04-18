@@ -31,17 +31,8 @@ import { useTranslations } from "next-intl";
 import type { Club } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { User } from "better-auth";
-import {
-	Credenza,
-	CredenzaContent,
-	CredenzaTitle,
-	CredenzaTrigger,
-} from "@/components/ui/credenza";
-import {
-	getAppNavigationItems,
-	flattenNavigationItems,
-	getClubFlatItems,
-} from "@/components/sidebar/navigation-items";
+import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
+import { getAppNavigationItems, flattenNavigationItems, getClubFlatItems } from "@/components/sidebar/navigation-items";
 import type { NavItem } from "@/components/sidebar/types";
 
 interface CommandMenuProps {
@@ -196,9 +187,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 		<Credenza open={open} onOpenChange={setOpen}>
 			<CredenzaTrigger className="hidden">{null}</CredenzaTrigger>
 			<CredenzaContent className="p-0 overflow-hidden">
-				<CredenzaTitle className="sr-only">
-					{t("searchPlaceholder")}
-				</CredenzaTitle>
+				<CredenzaTitle className="sr-only">{t("searchPlaceholder")}</CredenzaTitle>
 				<Command>
 					<CommandInput
 						ref={inputRef}
@@ -222,9 +211,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 											{item.icon && <item.icon className="h-4 w-4" />}
 											<span>{getDisplayTitle(item)}</span>
 										</div>
-										{item.shortcut && (
-											<CommandShortcut>{item.shortcut}</CommandShortcut>
-										)}
+										{item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>}
 									</CommandItem>
 								))}
 							</CommandGroup>
@@ -298,19 +285,13 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 							>
 								<div className="flex h-7 w-7 items-center justify-center">
 									<Avatar className="h-7 w-7">
-										{user?.image && (
-											<AvatarImage src={user.image} alt={user?.name || ""} />
-										)}
-										<AvatarFallback>
-											{user?.name?.charAt(0).toUpperCase() || "U"}
-										</AvatarFallback>
+										{user?.image && <AvatarImage src={user.image} alt={user?.name || ""} />}
+										<AvatarFallback>{user?.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
 									</Avatar>
 								</div>
 								<div className="flex flex-col">
 									<span className="font-medium">{user?.name}</span>
-									<span className="text-xs text-muted-foreground">
-										{user?.email}
-									</span>
+									<span className="text-xs text-muted-foreground">{user?.email}</span>
 								</div>
 							</CommandItem>
 							<CommandItem
@@ -335,9 +316,7 @@ interface CommandMenuContextType {
 	toggleOpen: () => void;
 }
 
-const CommandMenuContext = createContext<CommandMenuContextType | undefined>(
-	undefined,
-);
+const CommandMenuContext = createContext<CommandMenuContextType | undefined>(undefined);
 
 export function CommandMenuProvider({
 	children,
@@ -375,11 +354,7 @@ export function CommandMenuProvider({
 		[open, toggleOpen],
 	);
 
-	return (
-		<CommandMenuContext.Provider value={value}>
-			{children}
-		</CommandMenuContext.Provider>
-	);
+	return <CommandMenuContext.Provider value={value}>{children}</CommandMenuContext.Provider>;
 }
 
 export function useCommandMenu() {

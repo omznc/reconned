@@ -11,17 +11,10 @@ type FontContextType = {
 
 const FontContext = createContext<FontContextType | undefined>(undefined);
 
-export function FontProvider({
-	initial,
-	children,
-}: { initial: "mono" | "sans"; children: ReactNode }) {
+export function FontProvider({ initial, children }: { initial: "mono" | "sans"; children: ReactNode }) {
 	const [font, setFont] = useState<FontType>(initial);
 
-	return (
-		<FontContext.Provider value={{ font, setFont }}>
-			{children}
-		</FontContext.Provider>
-	);
+	return <FontContext.Provider value={{ font, setFont }}>{children}</FontContext.Provider>;
 }
 
 export function useFont() {

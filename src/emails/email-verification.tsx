@@ -1,16 +1,4 @@
-import {
-	Body,
-	Button,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Img,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
 import { env } from "@/lib/env";
 import { emailStyles } from "@/emails/styles";
 import { getTranslations } from "next-intl/server";
@@ -20,10 +8,7 @@ interface EmailVerificationProps {
 	userName?: string;
 }
 
-export const EmailVerification = async ({
-	verificationUrl,
-	userName,
-}: EmailVerificationProps) => {
+export const EmailVerification = async ({ verificationUrl, userName }: EmailVerificationProps) => {
 	const t = await getTranslations("emails.emailVerification");
 	return (
 		<Html>

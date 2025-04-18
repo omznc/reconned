@@ -5,10 +5,7 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET(
-	request: Request,
-	{ params }: { params: Promise<{ clubId: string }> },
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ clubId: string }> }) {
 	const session = isAuthenticated();
 	if (!session) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -27,9 +24,24 @@ export async function GET(
 				user: query
 					? {
 							OR: [
-								{ name: { contains: query, mode: "insensitive" } },
-								{ email: { contains: query, mode: "insensitive" } },
-								{ callsign: { contains: query, mode: "insensitive" } },
+								{
+									name: {
+										contains: query,
+										mode: "insensitive",
+									},
+								},
+								{
+									email: {
+										contains: query,
+										mode: "insensitive",
+									},
+								},
+								{
+									callsign: {
+										contains: query,
+										mode: "insensitive",
+									},
+								},
 							],
 						}
 					: undefined,
@@ -49,9 +61,6 @@ export async function GET(
 
 		return NextResponse.json(members);
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Neuspjela pretraga članova kluba" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Neuspjela pretraga članova kluba" }, { status: 500 });
 	}
 }

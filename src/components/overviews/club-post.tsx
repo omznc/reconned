@@ -46,17 +46,13 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					</Button>
 				)}
 			</div>
-			<div
-				ref={ref}
-				className={cn(
-					"relative",
-					!isExpanded && "max-h-[500px] overflow-hidden",
-				)}
-			>
+			<div ref={ref} className={cn("relative", !isExpanded && "max-h-[500px] overflow-hidden")}>
 				<div
 					className="prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 p-4"
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: I have to, it's an editor
-					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+					dangerouslySetInnerHTML={{
+						__html: DOMPurify.sanitize(post.content),
+					}}
 				/>
 				{post.images?.length > 0 && post.images[0] && (
 					<div className="relative w-full">
@@ -65,10 +61,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 							alt={`${post.title} - Slika`}
 							width={800}
 							height={400}
-							className={cn(
-								"rounded-md object-cover w-full",
-								!isExpanded && "max-h-[400px]",
-							)}
+							className={cn("rounded-md object-cover w-full", !isExpanded && "max-h-[400px]")}
 						/>
 					</div>
 				)}

@@ -53,8 +53,7 @@ export const deleteRegistration = safeActionClient
 export const submitEventApplication = safeActionClient
 	.schema(eventApplicationSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const { type, invitedUsers, invitedUsersNotOnApp, paymentMethod, eventId } =
-			parsedInput;
+		const { type, invitedUsers, invitedUsersNotOnApp, paymentMethod, eventId } = parsedInput;
 
 		// Validation checks
 		const event = await prisma.event.findUniqueOrThrow({
@@ -127,7 +126,9 @@ export const submitEventApplication = safeActionClient
 						paymentMethod,
 						createdById: ctx.user.id,
 						invitedUsers: {
-							connect: invitedUsers.map((user) => ({ id: user.id })),
+							connect: invitedUsers.map((user) => ({
+								id: user.id,
+							})),
 						},
 						invitedUsersNotOnApp: {
 							create: invitedUsersNotOnApp.map((user) => ({

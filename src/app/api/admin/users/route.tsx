@@ -34,9 +34,6 @@ export async function GET(request: Request) {
 
 		return NextResponse.json(users);
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Neuspjela pretraga korisnika" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Neuspjela pretraga korisnika" }, { status: 500 });
 	}
 }

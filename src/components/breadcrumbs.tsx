@@ -12,12 +12,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Fragment, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Building2Icon, CalendarFoldIcon } from "lucide-react";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 
@@ -103,10 +98,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 				<TooltipProvider>
 					<div className="flex items-center gap-2">
 						<SidebarTrigger className="-ml-1" />
-						<Separator
-							orientation="vertical"
-							className="hidden md:flex mr-2 h-4"
-						/>
+						<Separator orientation="vertical" className="hidden md:flex mr-2 h-4" />
 						<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
 							<BreadcrumbList>
 								{sections.map((section, index) => {
@@ -122,9 +114,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 												</BreadcrumbLink>
 											</BreadcrumbItem>
 											{index < sections.length - 1 && (
-												<BreadcrumbSeparator
-													key={`breadcrumb-separator-${sectionKey}`}
-												/>
+												<BreadcrumbSeparator key={`breadcrumb-separator-${sectionKey}`} />
 											)}
 										</Fragment>
 									);

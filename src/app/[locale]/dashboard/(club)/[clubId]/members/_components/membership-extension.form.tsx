@@ -15,20 +15,8 @@ import {
 	CredenzaTrigger,
 	CredenzaFooter,
 } from "@/components/ui/credenza";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	Form,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { CalendarClock } from "lucide-react";
 import type { ClubMembership } from "@prisma/client";
 import { toast } from "sonner";
@@ -51,11 +39,7 @@ interface MembershipExtensionFormProps {
 	variant?: "button" | "icon";
 }
 
-export function MembershipExtensionForm({
-	clubId,
-	membership,
-	variant = "button",
-}: MembershipExtensionFormProps) {
+export function MembershipExtensionForm({ clubId, membership, variant = "button" }: MembershipExtensionFormProps) {
 	const t = useTranslations("components.membershipExtension");
 	const locale = useLocale();
 	const [isOpen, setIsOpen] = useState(false);
@@ -112,7 +96,9 @@ export function MembershipExtensionForm({
 				<CredenzaHeader>
 					<CredenzaTitle>{t("extendMembershipTitle")}</CredenzaTitle>
 					<p className="text-sm text-muted-foreground">
-						{t("extendMembershipDescription", { user: membership.user.name })}
+						{t("extendMembershipDescription", {
+							user: membership.user.name,
+						})}
 					</p>
 				</CredenzaHeader>
 				<CredenzaBody>
@@ -120,9 +106,7 @@ export function MembershipExtensionForm({
 						<div className="grid gap-2">
 							<div className="font-medium">{t("currentStatus")}</div>
 							<div className="text-sm">
-								<Badge variant={membershipStatus.variant}>
-									{membershipStatus.label}
-								</Badge>
+								<Badge variant={membershipStatus.variant}>{membershipStatus.label}</Badge>
 							</div>
 						</div>
 
@@ -169,20 +153,14 @@ export function MembershipExtensionForm({
 						)}
 
 						<Form {...form}>
-							<form
-								onSubmit={form.handleSubmit(onSubmit)}
-								className="space-y-6"
-							>
+							<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 								<FormField
 									control={form.control}
 									name="duration"
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel>{t("extensionDuration")}</FormLabel>
-											<Select
-												onValueChange={field.onChange}
-												defaultValue={field.value}
-											>
+											<Select onValueChange={field.onChange} defaultValue={field.value}>
 												<SelectTrigger>
 													<SelectValue placeholder={t("selectDuration")} />
 												</SelectTrigger>
@@ -199,11 +177,7 @@ export function MembershipExtensionForm({
 								/>
 
 								<CredenzaFooter>
-									<Button
-										type="button"
-										variant="outline"
-										onClick={() => setIsOpen(false)}
-									>
+									<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
 										{t("cancel")}
 									</Button>
 									<Button type="submit" disabled={isLoading}>

@@ -3,32 +3,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import {
-	AlertCircle,
-	ArrowLeft,
-	Info,
-	Loader,
-	ShieldAlert,
-	Verified,
-} from "lucide-react";
+import { AlertCircle, ArrowLeft, Info, Loader, ShieldAlert, Verified } from "lucide-react";
 import Image from "next/image";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
 
 interface FacebookPage {
@@ -85,15 +66,13 @@ export default function InstagramPageSelection() {
 				const data = await response.json();
 
 				// Check eligibility of pages by detecting which ones have Instagram business accounts
-				const pagesWithEligibilityInfo = data.pages.map(
-					(page: FacebookPage) => {
-						const hasInstagramAccount = !!page.instagram_business_account;
-						return {
-							...page,
-							has_instagram_business_account: hasInstagramAccount,
-						};
-					},
-				);
+				const pagesWithEligibilityInfo = data.pages.map((page: FacebookPage) => {
+					const hasInstagramAccount = !!page.instagram_business_account;
+					return {
+						...page,
+						has_instagram_business_account: hasInstagramAccount,
+					};
+				});
 
 				const eligiblePageIds = pagesWithEligibilityInfo
 					.filter((page: FacebookPage) => page.has_instagram_business_account)
@@ -137,9 +116,7 @@ export default function InstagramPageSelection() {
 			// Redirect to the callback route with the selected page ID and its page-specific access token
 			window.location.href = `/api/club/instagram/callback?pageId=${selectedPageId}&accessToken=${encodeURIComponent(selectedPage.access_token)}&state=${params.clubId}`;
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : t("instagramConnectionFailed"),
-			);
+			setError(err instanceof Error ? err.message : t("instagramConnectionFailed"));
 			setIsConnecting(false);
 		}
 	};
@@ -153,9 +130,7 @@ export default function InstagramPageSelection() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[400px]">
 				<Loader className="h-8 w-8 animate-spin text-primary mb-4" />
-				<p className="text-lg text-muted-foreground">
-					{t("instagramLoadingPages")}
-				</p>
+				<p className="text-lg text-muted-foreground">{t("instagramLoadingPages")}</p>
 			</div>
 		);
 	}
@@ -219,12 +194,8 @@ export default function InstagramPageSelection() {
 							<div
 								key={page.id}
 								className={`border rounded-md p-4 flex items-center gap-4 transition-colors ${
-									isEligible
-										? "hover:bg-accent/50 cursor-pointer"
-										: "opacity-75 bg-muted"
-								} ${
-									selectedPageId === page.id ? "border-primary bg-accent" : ""
-								}`}
+									isEligible ? "hover:bg-accent/50 cursor-pointer" : "opacity-75 bg-muted"
+								} ${selectedPageId === page.id ? "border-primary bg-accent" : ""}`}
 								onClick={() => isEligible && handleSelectPage(page.id)}
 							>
 								<div className="flex items-center gap-3 flex-1">
@@ -245,9 +216,7 @@ export default function InstagramPageSelection() {
 									<div className="flex-1">
 										<div className="font-medium">{page.name}</div>
 										<div className="text-sm text-muted-foreground">
-											{page.category ||
-												page.category_list?.[0]?.name ||
-												"Facebook Page"}
+											{page.category || page.category_list?.[0]?.name || "Facebook Page"}
 										</div>
 									</div>
 
@@ -278,11 +247,7 @@ export default function InstagramPageSelection() {
 				</div>
 			</CardContent>
 			<CardFooter className="flex justify-between">
-				<Button
-					variant="outline"
-					onClick={handleCancel}
-					disabled={isConnecting}
-				>
+				<Button variant="outline" onClick={handleCancel} disabled={isConnecting}>
 					{t("cancel")}
 				</Button>
 				<Button

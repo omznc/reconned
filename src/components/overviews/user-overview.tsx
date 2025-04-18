@@ -30,14 +30,9 @@ export async function UserOverview({ user }: UserOverviewProps) {
 		getPageViews(`/users/${user.id}`),
 		getPageViews(`/users/${user.slug}`),
 	]);
-	const visitors =
-		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
-	const futureEvents = user.eventRegistration.filter(
-		(reg) => reg.event.dateStart > new Date() && !reg.attended,
-	);
-	const pastEvents = user.eventRegistration.filter(
-		(reg) => reg.attended || reg.event.dateStart <= new Date(),
-	);
+	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const futureEvents = user.eventRegistration.filter((reg) => reg.event.dateStart > new Date() && !reg.attended);
+	const pastEvents = user.eventRegistration.filter((reg) => reg.attended || reg.event.dateStart <= new Date());
 
 	// Get current user to check if they're viewing their own profile
 	const currentUser = await isAuthenticated();
@@ -67,9 +62,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							{user.name} {user.callsign && `(${user.callsign})`}
 						</h1>
 					</div>
-					<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">
-						{user.bio}
-					</p>
+					<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">{user.bio}</p>
 				</div>
 			</div>
 			{/* New Additional User Information Card */}
@@ -91,22 +84,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			</Card> */}
 			<div className="flex flex-wrap gap-2">
 				{shouldShowStats && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{t("views", { count: visitors })}
-					</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
 				)}
 				{user.clubMembership.length === 0 && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{t("freelancer")}
-					</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">{t("freelancer")}</Badge>
 				)}
 				{user.website && (
-					<Link
-						href={user.website}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="md:grow-0 grow"
-					>
+					<Link href={user.website} target="_blank" rel="noopener noreferrer" className="md:grow-0 grow">
 						<Badge className="flex items-center gap-1 hover:cursor-pointer">
 							<Globe size={16} />
 							{user.website}
@@ -120,14 +104,10 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</Badge>
 				)}
 				{user.phone && !user.isPrivatePhone && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{user.phone}
-					</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">{user.phone}</Badge>
 				)}
 				{user.email && !user.isPrivateEmail && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{user.email}
-					</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">{user.email}</Badge>
 				)}
 			</div>
 			<div className="grid gap-4 md:grid-cols-2">
@@ -141,10 +121,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 						) : (
 							<ul className="space-y-4">
 								{user.clubMembership.map((membership) => (
-									<li
-										key={membership.club.id}
-										className="flex items-center gap-3"
-									>
+									<li key={membership.club.id} className="flex items-center gap-3">
 										{membership.club.logo ? (
 											<Image
 												src={membership.club.logo}
@@ -160,10 +137,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 												</span>
 											</div>
 										)}
-										<Link
-											href={`/clubs/${membership.club.id}`}
-											className="hover:underline"
-										>
+										<Link href={`/clubs/${membership.club.id}`} className="hover:underline">
 											{membership.club.name}
 										</Link>
 									</li>
@@ -179,17 +153,12 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</CardHeader>
 					<CardContent>
 						{futureEvents.length === 0 ? (
-							<p className="text-muted-foreground">
-								{t("upcomingEvents.noEvents")}
-							</p>
+							<p className="text-muted-foreground">{t("upcomingEvents.noEvents")}</p>
 						) : (
 							<ul className="space-y-2">
 								{futureEvents.map((reg) => (
 									<li key={reg.event.id}>
-										<Link
-											href={`/events/${reg.event.id}`}
-											className="hover:underline"
-										>
+										<Link href={`/events/${reg.event.id}`} className="hover:underline">
 											{reg.event.name}
 										</Link>
 										<span className="text-muted-foreground ml-2">
@@ -208,17 +177,12 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</CardHeader>
 					<CardContent>
 						{pastEvents.length === 0 ? (
-							<p className="text-muted-foreground">
-								{t("pastEvents.noEvents")}
-							</p>
+							<p className="text-muted-foreground">{t("pastEvents.noEvents")}</p>
 						) : (
 							<ul className="space-y-2">
 								{pastEvents.map((reg) => (
 									<li key={reg.event.id}>
-										<Link
-											href={`/events/${reg.event.id}`}
-											className="hover:underline"
-										>
+										<Link href={`/events/${reg.event.id}`} className="hover:underline">
 											{reg.event.name}
 										</Link>
 										<span className="text-muted-foreground ml-2">

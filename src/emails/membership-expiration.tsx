@@ -1,16 +1,4 @@
-import {
-	Body,
-	Button,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Img,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
 import { env } from "@/lib/env";
 import { emailStyles } from "@/emails/styles";
 import { getTranslations } from "next-intl/server";
@@ -40,9 +28,7 @@ export const MembershipExpiration = async ({
 		<Html>
 			<Head />
 			<Preview>
-				{isExpired
-					? t("expiredTitle", { clubName })
-					: t("expiringTitle", { clubName, days: daysUntilExpiry })}
+				{isExpired ? t("expiredTitle", { clubName }) : t("expiringTitle", { clubName, days: daysUntilExpiry })}
 			</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
@@ -54,13 +40,14 @@ export const MembershipExpiration = async ({
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>
-						{isExpired ? t("expiredHeading") : t("expiringHeading")}
-					</Heading>
+					<Heading style={emailStyles.h1}>{isExpired ? t("expiredHeading") : t("expiringHeading")}</Heading>
 					<Text style={emailStyles.text}>{t("hello", { name: userName })}</Text>
 					<Text style={emailStyles.text}>
 						{isExpired
-							? t("expiredMessage", { clubName, date: expiryDate })
+							? t("expiredMessage", {
+									clubName,
+									date: expiryDate,
+								})
 							: t("expiringMessage", {
 									clubName,
 									date: expiryDate,

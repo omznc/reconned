@@ -10,9 +10,7 @@ export default async function Home() {
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
-						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
-							{t("title")}
-						</h1>
+						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">{t("title")}</h1>
 						<p className="text-xl text-text/80 mb-8">
 							{t.rich("subtitle", {
 								omar: () => (

@@ -26,19 +26,13 @@ export async function GET(req: NextRequest) {
 	});
 
 	if (!membership) {
-		return NextResponse.json(
-			{ error: "Unauthorized to manage this club" },
-			{ status: 403 },
-		);
+		return NextResponse.json({ error: "Unauthorized to manage this club" }, { status: 403 });
 	}
 
 	try {
 		const authUrl = await getInstagramAuthUrl(clubId);
 		return NextResponse.json({ url: authUrl });
 	} catch (error) {
-		return NextResponse.json(
-			{ error: "Failed to generate Instagram authorization URL" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Failed to generate Instagram authorization URL" }, { status: 500 });
 	}
 }

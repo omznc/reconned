@@ -28,11 +28,7 @@ type TFunction = (key: string, values?: Record<string, unknown>) => string;
 /**
  * Get application-wide navigation items
  */
-export function getAppNavigationItems(
-	t: TFunction,
-	isAdmin: boolean,
-	pendingInvites: number,
-): NavItem[] {
+export function getAppNavigationItems(t: TFunction, isAdmin: boolean, pendingInvites: number): NavItem[] {
 	const items: NavItem[] = [
 		{
 			title: t("home"),
@@ -115,11 +111,7 @@ export function getAppNavigationItems(
 /**
  * Get club-specific navigation items
  */
-export function getClubNavigationItems(
-	t: TFunction,
-	clubId: string,
-	isManager: boolean,
-): NavItem[] {
+export function getClubNavigationItems(t: TFunction, clubId: string, isManager: boolean): NavItem[] {
 	const items: NavItem[] = [
 		{
 			title: t("club"),
@@ -265,11 +257,7 @@ export function flattenNavigationItems(items: NavItem[]): NavItem[] {
 /**
  * Helper function to extract all club navigation items as a flat list
  */
-export function getClubFlatItems(
-	t: TFunction,
-	clubId: string,
-	isManager: boolean,
-): NavItem[] {
+export function getClubFlatItems(t: TFunction, clubId: string, isManager: boolean): NavItem[] {
 	const clubItems = getClubNavigationItems(t, clubId, isManager);
 	return flattenNavigationItems(clubItems);
 }

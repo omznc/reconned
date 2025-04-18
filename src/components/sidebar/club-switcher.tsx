@@ -9,11 +9,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { Club } from "@prisma/client";
 import Image from "next/image";
@@ -33,10 +29,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	const { clubId } = useCurrentClub();
 	const t = useTranslations("components.sidebar");
 
-	const activeClub = useMemo(
-		() => clubs.find((club) => club.id === params.clubId),
-		[clubs, params.clubId, clubId],
-	);
+	const activeClub = useMemo(() => clubs.find((club) => club.id === params.clubId), [clubs, params.clubId, clubId]);
 
 	const selectedClub = clubs.find((club) => club.id === clubId);
 
@@ -106,23 +99,15 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 									</div>
 									{clubId ? (
 										<div className="grid flex-1 text-left text-sm leading-tight">
-											<span className="truncate font-semibold">
-												{selectedClub?.name}
-											</span>
+											<span className="truncate font-semibold">{selectedClub?.name}</span>
 											<span className="truncate text-xs fade-in">
-												{user?.managedClubs?.includes(clubId)
-													? t("manager")
-													: t("member")}
+												{user?.managedClubs?.includes(clubId) ? t("manager") : t("member")}
 											</span>
 										</div>
 									) : (
 										<div className="grid flex-1 text-left text-sm leading-tight">
-											<span className="truncate fade-in font-semibold">
-												{t("clubs")}
-											</span>
-											<span className="truncate fade-in text-xs">
-												{t("selectClub")}
-											</span>
+											<span className="truncate fade-in font-semibold">{t("clubs")}</span>
+											<span className="truncate fade-in text-xs">{t("selectClub")}</span>
 										</div>
 									)}
 								</>
@@ -132,12 +117,8 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 										<Square className="size-4" />
 									</div>
 									<div className="grid flex-1 text-left text-sm leading-tight">
-										<span className="truncate fade-in font-semibold">
-											{t("clubs")}
-										</span>
-										<span className="truncate fade-in text-xs">
-											{t("selectClub")}
-										</span>
+										<span className="truncate fade-in font-semibold">{t("clubs")}</span>
+										<span className="truncate fade-in text-xs">{t("selectClub")}</span>
 									</div>
 								</>
 							)}
@@ -150,9 +131,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						side="bottom"
 						sideOffset={4}
 					>
-						<DropdownMenuLabel className="text-xs text-muted-foreground">
-							{t("clubs")}
-						</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-xs text-muted-foreground">{t("clubs")}</DropdownMenuLabel>
 						{clubs.map((club, index) => (
 							<DropdownMenuItem
 								key={club.id}
@@ -185,9 +164,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 								<div className="flex size-6 items-center justify-center rounded-md border bg-background">
 									<Plus className="size-4" />
 								</div>
-								<div className="font-medium text-muted-foreground">
-									{t("addClub")}
-								</div>
+								<div className="font-medium text-muted-foreground">{t("addClub")}</div>
 							</DropdownMenuItem>
 						</Link>
 					</DropdownMenuContent>

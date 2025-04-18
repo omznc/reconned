@@ -54,10 +54,7 @@ function getAllPossiblePaths(path: string): string[] {
  * Fetch aggregate analytics for a specific page path.
  * Combines data from legacy path and all localized paths.
  */
-export async function getPageViews(
-	path: string,
-	period: TimePeriod = "30d",
-): Promise<AggregateResponse> {
+export async function getPageViews(path: string, period: TimePeriod = "30d"): Promise<AggregateResponse> {
 	const paths = getAllPossiblePaths(path);
 
 	const results = await Promise.all(
@@ -109,10 +106,8 @@ export async function getPageViews(
 
 		// Weight metrics by visitor count
 		if (result.results.visitors.value > 0) {
-			weightedBounceRate +=
-				result.results.bounce_rate * result.results.visitors.value;
-			weightedVisitDuration +=
-				result.results.visit_duration * result.results.visitors.value;
+			weightedBounceRate += result.results.bounce_rate * result.results.visitors.value;
+			weightedVisitDuration += result.results.visit_duration * result.results.visitors.value;
 		}
 	}
 
@@ -132,10 +127,7 @@ export async function getPageViews(
  * Fetch historical timeseries data for analytics
  * Combines data from legacy path and all localized paths
  */
-export async function getHistoricalPageViews(
-	path: string,
-	period: TimePeriod = "30d",
-): Promise<TimeseriesResponse> {
+export async function getHistoricalPageViews(path: string, period: TimePeriod = "30d"): Promise<TimeseriesResponse> {
 	const paths = getAllPossiblePaths(path);
 
 	const results = await Promise.all(
@@ -192,30 +184,21 @@ export async function getHistoricalPageViews(
 /**
  * Get analytics for a user's profile page
  */
-export async function getUserAnalytics(
-	userId: string,
-	period: TimePeriod = "30d",
-) {
+export async function getUserAnalytics(userId: string, period: TimePeriod = "30d") {
 	return getPageViews(`/users/${userId}`, period);
 }
 
 /**
  * Get analytics for a club's page
  */
-export async function getClubAnalytics(
-	clubId: string,
-	period: TimePeriod = "30d",
-) {
+export async function getClubAnalytics(clubId: string, period: TimePeriod = "30d") {
 	return getPageViews(`/clubs/${clubId}`, period);
 }
 
 /**
  * Get analytics for an event page
  */
-export async function getEventAnalytics(
-	eventId: string,
-	period: TimePeriod = "30d",
-) {
+export async function getEventAnalytics(eventId: string, period: TimePeriod = "30d") {
 	return getPageViews(`/events/${eventId}`, period);
 }
 
@@ -234,11 +217,7 @@ export async function getEntityHistoricalAnalytics(
  * Fetch top pages matching a path pattern
  * Combines data from legacy and localized paths
  */
-async function getTopPages(
-	pathPattern: string,
-	limit: number,
-	period: TimePeriod = "30d",
-): Promise<PagesResponse> {
+async function getTopPages(pathPattern: string, limit: number, period: TimePeriod = "30d"): Promise<PagesResponse> {
 	// Generate all possible path patterns
 	const patterns = getAllPossiblePaths(pathPattern);
 	const allResults: Array<{
@@ -253,9 +232,7 @@ async function getTopPages(
 	for (const pattern of patterns) {
 		const url = `${env.PLAUSIBLE_HOST}/api/v1/stats/pages?site_id=${
 			env.PLAUSIBLE_SITE_ID
-		}&period=${period}&filters=event:page=~${encodeURIComponent(
-			pattern,
-		)}&limit=${limit * 2}`; // Fetch more results to account for potential duplicates
+		}&period=${period}&filters=event:page=~${encodeURIComponent(pattern)}&limit=${limit * 2}`; // Fetch more results to account for potential duplicates
 
 		const response = await fetch(url, {
 			headers: {

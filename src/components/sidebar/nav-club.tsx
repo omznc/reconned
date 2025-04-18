@@ -1,18 +1,10 @@
 "use client";
 
-import {
-	SidebarGroup,
-	SidebarGroupLabel,
-	SidebarMenu,
-	useSidebar,
-} from "@/components/ui/sidebar";
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "@/i18n/navigation";
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { User } from "better-auth";
-import {
-	renderCollapsedItem,
-	renderExpandedItem,
-} from "@/components/sidebar/utils";
+import { renderCollapsedItem, renderExpandedItem } from "@/components/sidebar/utils";
 import { useTranslations } from "next-intl";
 import { getClubNavigationItems } from "@/components/sidebar/navigation-items";
 
@@ -40,8 +32,7 @@ export function NavClub({ user }: NavClubProps) {
 				{items.map((item) =>
 					sidebarOpen || isMobile
 						? renderExpandedItem(item, path, {
-								hasAccess: (subItem) =>
-									!subItem.protected || (subItem.protected && isManager),
+								hasAccess: (subItem) => !subItem.protected || (subItem.protected && isManager),
 							})
 						: renderCollapsedItem(item, path),
 				)}

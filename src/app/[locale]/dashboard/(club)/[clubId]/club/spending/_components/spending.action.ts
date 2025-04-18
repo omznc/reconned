@@ -11,22 +11,20 @@ import { getS3FileUploadUrl, deleteS3File } from "@/lib/storage";
 import { randomUUID } from "node:crypto";
 import { after } from "next/server";
 
-export const createPurchase = safeActionClient
-	.schema(purchaseFormSchema)
-	.action(async ({ parsedInput }) => {
-		if (parsedInput.receiptUrls && parsedInput.receiptUrls.length > 3) {
-			return {
-				serverError: "Maksimalno 3 računa po stavci",
-			};
-		}
+export const createPurchase = safeActionClient.schema(purchaseFormSchema).action(async ({ parsedInput }) => {
+	if (parsedInput.receiptUrls && parsedInput.receiptUrls.length > 3) {
+		return {
+			serverError: "Maksimalno 3 računa po stavci",
+		};
+	}
 
-		const purchase = await prisma.clubPurchase.create({
-			data: {
-				...parsedInput,
-			},
-		});
-		return { purchase };
+	const purchase = await prisma.clubPurchase.create({
+		data: {
+			...parsedInput,
+		},
 	});
+	return { purchase };
+});
 
 export const updatePurchase = safeActionClient
 	.schema(purchaseFormSchema.extend({ id: z.string() }))
@@ -96,9 +94,7 @@ export const deleteReceipt = safeActionClient
 			throw new Error("Purchase not found");
 		}
 
-		const newUrls = purchase.receiptUrls.filter(
-			(url) => url !== parsedInput.receiptUrl,
-		);
+		const newUrls = purchase.receiptUrls.filter((url) => url !== parsedInput.receiptUrl);
 
 		await prisma.clubPurchase.update({
 			where: { id: parsedInput.purchaseId },

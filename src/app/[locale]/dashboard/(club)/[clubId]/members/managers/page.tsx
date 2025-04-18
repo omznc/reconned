@@ -23,10 +23,7 @@ export default async function Page(props: PageProps) {
 	const t = await getTranslations("dashboard.club.members.managers");
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const user = await isAuthenticated();
 
@@ -60,9 +57,27 @@ export default async function Page(props: PageProps) {
 		...(search
 			? {
 					OR: [
-						{ user: { name: { contains: search, mode: "insensitive" } } },
-						{ user: { email: { contains: search, mode: "insensitive" } } },
-						{ user: { callsign: { contains: search, mode: "insensitive" } } },
+						{
+							user: {
+								name: { contains: search, mode: "insensitive" },
+							},
+						},
+						{
+							user: {
+								email: {
+									contains: search,
+									mode: "insensitive",
+								},
+							},
+						},
+						{
+							user: {
+								callsign: {
+									contains: search,
+									mode: "insensitive",
+								},
+							},
+						},
 					],
 				}
 			: {}),
@@ -106,11 +121,7 @@ export default async function Page(props: PageProps) {
 		<div className="space-y-8">
 			<div>
 				<h2 className="text-2xl font-bold mb-4">{t("title")}</h2>
-				<ManagersTable
-					managers={managers}
-					totalManagers={totalManagers}
-					pageSize={pageSize}
-				/>
+				<ManagersTable managers={managers} totalManagers={totalManagers} pageSize={pageSize} />
 			</div>
 			<AddManagerForm />
 		</div>

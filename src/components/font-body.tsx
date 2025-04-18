@@ -9,11 +9,7 @@ interface FontBodyProps {
 	geistSansVariable: string;
 }
 
-export function FontBody({
-	children,
-	geistMonoVariable,
-	geistSansVariable,
-}: FontBodyProps) {
+export function FontBody({ children, geistMonoVariable, geistSansVariable }: FontBodyProps) {
 	const { font } = useFont();
 	const [mounted, setMounted] = useState(false);
 
@@ -22,11 +18,7 @@ export function FontBody({
 	}, []);
 
 	// During SSR and initial render, always use sans
-	const fontVariable = mounted
-		? font === "mono"
-			? geistMonoVariable
-			: geistSansVariable
-		: geistSansVariable;
+	const fontVariable = mounted ? (font === "mono" ? geistMonoVariable : geistSansVariable) : geistSansVariable;
 
 	return (
 		<body

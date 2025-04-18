@@ -1,8 +1,7 @@
 export const emailStyles = {
 	main: {
 		backgroundColor: "#ffffff",
-		fontFamily:
-			'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+		fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 	},
 
 	container: {

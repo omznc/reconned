@@ -20,11 +20,7 @@ interface ImageCropDialogProps {
 	onCrop: (file: File) => void;
 }
 
-export function ImageCropDialog({
-	file,
-	onClose,
-	onCrop,
-}: ImageCropDialogProps) {
+export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps) {
 	const [crop, setCrop] = useState<Crop>({
 		unit: "%",
 		width: 90, // slightly smaller than 100 to show edges
@@ -115,12 +111,7 @@ export function ImageCropDialog({
 				</DialogHeader>
 				<div className="my-4 flex justify-center">
 					<div className="max-h-[500px] w-auto">
-						<ReactCrop
-							crop={crop}
-							onChange={(c) => setCrop(c)}
-							aspect={1}
-							className="max-h-[500px] w-auto"
-						>
+						<ReactCrop crop={crop} onChange={(c) => setCrop(c)} aspect={1} className="max-h-[500px] w-auto">
 							<img
 								src={URL.createObjectURL(file)}
 								alt="Crop"

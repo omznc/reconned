@@ -35,9 +35,7 @@ export async function GET(req: NextRequest) {
 	const accessToken = searchParams.get("accessToken");
 
 	if (error) {
-		return redirect(
-			`/${locale}/dashboard/${state}/club/information?instagramError=${error}#instagram`,
-		);
+		return redirect(`/${locale}/dashboard/${state}/club/information?instagramError=${error}#instagram`);
 	}
 
 	if (!((code && state) || selectedPageId)) {
@@ -49,12 +47,7 @@ export async function GET(req: NextRequest) {
 	try {
 		// Handle the case when user has selected a page
 		if (selectedPageId && accessToken && state) {
-			return await handlePageSelection(
-				selectedPageId,
-				accessToken,
-				state,
-				locale,
-			);
+			return await handlePageSelection(selectedPageId, accessToken, state, locale);
 		}
 
 		if (!(code && state)) {
@@ -65,13 +58,9 @@ export async function GET(req: NextRequest) {
 
 		const shortLivedTokenResponse = await exchangeCodeForToken(code);
 
-		const longLivedTokenResponse = await exchangeForLongLivedToken(
-			shortLivedTokenResponse.access_token,
-		);
+		const longLivedTokenResponse = await exchangeForLongLivedToken(shortLivedTokenResponse.access_token);
 
-		const pagesResponse = await getUserPages(
-			longLivedTokenResponse.access_token,
-		);
+		const pagesResponse = await getUserPages(longLivedTokenResponse.access_token);
 
 		if (!pagesResponse.data || pagesResponse.data.length === 0) {
 			return redirect(
@@ -87,12 +76,7 @@ export async function GET(req: NextRequest) {
 				);
 			}
 
-			return await handlePageSelection(
-				page.id,
-				longLivedTokenResponse.access_token,
-				state,
-				locale,
-			);
+			return await handlePageSelection(page.id, longLivedTokenResponse.access_token, state, locale);
 		}
 
 		// Multiple pages available - store them temporarily and redirect to page selection
@@ -107,9 +91,7 @@ export async function GET(req: NextRequest) {
 		});
 
 		// Redirect to the page selection screen
-		return redirect(
-			`/${locale}/dashboard/${state}/club/information/instagram?sessionId=${tempData.id}`,
-		);
+		return redirect(`/${locale}/dashboard/${state}/club/information/instagram?sessionId=${tempData.id}`);
 	} catch (error) {
 		// If the error is NEXT_REDIRECT, it should be re-thrown to be handled by Next.js
 		if (error instanceof Error && error.message === "NEXT_REDIRECT") {
@@ -122,17 +104,9 @@ export async function GET(req: NextRequest) {
 }
 
 // Helper function to process a page selection
-async function handlePageSelection(
-	pageId: string,
-	accessToken: string,
-	clubId: string,
-	locale: string,
-) {
+async function handlePageSelection(pageId: string, accessToken: string, clubId: string, locale: string) {
 	try {
-		const nonExpiringToken = await getNonExpiringPageAccessToken(
-			accessToken,
-			pageId,
-		);
+		const nonExpiringToken = await getNonExpiringPageAccessToken(accessToken, pageId);
 
 		try {
 			// First check if the Instagram business account exists on the page
@@ -149,10 +123,7 @@ async function handlePageSelection(
 				);
 			}
 
-			const igBusinessResponse = await getInstagramBusinessAccount(
-				pageId,
-				nonExpiringToken,
-			);
+			const igBusinessResponse = await getInstagramBusinessAccount(pageId, nonExpiringToken);
 
 			if (!igBusinessResponse?.instagram_business_account?.id) {
 				return redirect(
@@ -161,21 +132,16 @@ async function handlePageSelection(
 			}
 
 			const tokenInfo = await debugToken(nonExpiringToken);
-			const isPermanentToken =
-				!tokenInfo.data.expires_at || tokenInfo.data.expires_at === 0;
+			const isPermanentToken = !tokenInfo.data.expires_at || tokenInfo.data.expires_at === 0;
 
 			await prisma.club.update({
 				where: { id: clubId },
 				data: {
-					instagramUsername:
-						igBusinessResponse.instagram_business_account.username,
-					instagramProfilePictureUrl:
-						igBusinessResponse.instagram_business_account.profile_picture_url,
+					instagramUsername: igBusinessResponse.instagram_business_account.username,
+					instagramProfilePictureUrl: igBusinessResponse.instagram_business_account.profile_picture_url,
 					instagramAccessToken: nonExpiringToken,
 					instagramConnected: true,
-					instagramTokenExpiry: isPermanentToken
-						? null
-						: new Date((tokenInfo.data.expires_at ?? 0) * 1000),
+					instagramTokenExpiry: isPermanentToken ? null : new Date((tokenInfo.data.expires_at ?? 0) * 1000),
 					instagramBusinessId: igBusinessResponse.instagram_business_account.id,
 					facebookPageId: pageId,
 					instagramTokenType: isPermanentToken ? "PERMANENT" : "TEMPORARY",
@@ -186,9 +152,7 @@ async function handlePageSelection(
 				where: { clubId },
 			});
 
-			return redirect(
-				`/${locale}/dashboard/${clubId}/club/information?instagramSuccess=true#instagram`,
-			);
+			return redirect(`/${locale}/dashboard/${clubId}/club/information?instagramSuccess=true#instagram`);
 		} catch (error) {
 			// If the error is NEXT_REDIRECT, it should be re-thrown to be handled by Next.js
 			if (error instanceof Error && error.message === "NEXT_REDIRECT") {
@@ -207,14 +171,9 @@ async function handlePageSelection(
 					errorMessage.includes("instagram_business_account")
 				) {
 					errorCode = ERROR_CODES.PERSONAL_ACCOUNT;
-				} else if (
-					errorMessage.includes("Could not find an Instagram Business Account")
-				) {
+				} else if (errorMessage.includes("Could not find an Instagram Business Account")) {
 					errorCode = ERROR_CODES.NO_INSTAGRAM_BUSINESS_ACCOUNT;
-				} else if (
-					errorMessage.includes("Page with ID") &&
-					errorMessage.includes("not found")
-				) {
+				} else if (errorMessage.includes("Page with ID") && errorMessage.includes("not found")) {
 					errorCode = ERROR_CODES.PAGE_NOT_FOUND;
 				}
 			}

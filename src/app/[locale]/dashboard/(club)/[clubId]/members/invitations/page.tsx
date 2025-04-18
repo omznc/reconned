@@ -43,9 +43,7 @@ export default async function Page(props: PageProps) {
 
 	const page = Math.max(1, Number(searchParams.page ?? 1));
 	const pageSize =
-		searchParams.perPage === "25" ||
-		searchParams.perPage === "50" ||
-		searchParams.perPage === "100"
+		searchParams.perPage === "25" || searchParams.perPage === "50" || searchParams.perPage === "100"
 			? Number(searchParams.perPage)
 			: 25;
 
@@ -54,10 +52,18 @@ export default async function Page(props: PageProps) {
 		...(searchParams.search
 			? {
 					OR: [
-						{ email: { contains: searchParams.search, mode: "insensitive" } },
+						{
+							email: {
+								contains: searchParams.search,
+								mode: "insensitive",
+							},
+						},
 						{
 							user: {
-								name: { contains: searchParams.search, mode: "insensitive" },
+								name: {
+									contains: searchParams.search,
+									mode: "insensitive",
+								},
 							},
 						},
 					],
@@ -107,10 +113,7 @@ export default async function Page(props: PageProps) {
 		<>
 			<InvitationsForm />
 			<hr />
-			<InvitationsTable
-				invites={formattedInvites}
-				totalPages={Math.ceil(invitesCount / pageSize)}
-			/>
+			<InvitationsTable invites={formattedInvites} totalPages={Math.ceil(invitesCount / pageSize)} />
 		</>
 	);
 }

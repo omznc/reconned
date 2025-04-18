@@ -15,13 +15,9 @@ interface PageProps {
 }
 
 export default async function UsersPage({ searchParams }: PageProps) {
-	const { search, sortBy, sortOrder, page, userId, perPage } =
-		await searchParams;
+	const { search, sortBy, sortOrder, page, userId, perPage } = await searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	// Fetch selected user separately if userId is present
 	const selectedUser = userId
@@ -58,7 +54,9 @@ export default async function UsersPage({ searchParams }: PageProps) {
 				...(sortBy === "name" && { name: sortOrder ?? "asc" }),
 				...(sortBy === "email" && { email: sortOrder ?? "asc" }),
 				...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
-				...(sortBy === "createdAt" && { createdAt: sortOrder ?? "asc" }),
+				...(sortBy === "createdAt" && {
+					createdAt: sortOrder ?? "asc",
+				}),
 			}
 		: { createdAt: "desc" };
 

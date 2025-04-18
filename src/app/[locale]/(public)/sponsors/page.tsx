@@ -33,9 +33,7 @@ export default function SponsorsPage() {
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
-						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
-							{t("title")}
-						</h1>
+						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">{t("title")}</h1>
 						<p className="text-xl text-text/80 mb-8">{t("description")}</p>
 					</div>
 				</div>
@@ -46,12 +44,7 @@ export default function SponsorsPage() {
 					<h2 className="text-3xl font-bold mb-8">{t("currentSponsors")}</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 						{sponsors.map((sponsor) => (
-							<Link
-								target="_blank"
-								key={sponsor.name}
-								href={sponsor.website}
-								className="h-full group"
-							>
+							<Link target="_blank" key={sponsor.name} href={sponsor.website} className="h-full group">
 								<Card className="relative h-full flex flex-col justify-between group-hover:border-red-500 border transition-all">
 									<ArrowUpRight className="absolute top-4 right-4 w-6 h-6 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" />
 									<CardHeader className="flex flex-col items-center">
@@ -80,11 +73,7 @@ export default function SponsorsPage() {
 								</Card>
 							</Link>
 						))}
-						<Link
-							target="_blank"
-							href={"mailto:mail@reconned.com"}
-							className="h-full group"
-						>
+						<Link target="_blank" href={"mailto:mail@reconned.com"} className="h-full group">
 							<Card className="relative h-full flex flex-col justify-between group-hover:border-red-500 border transition-all">
 								<MailCheckIcon className="absolute top-4 right-4 w-6 h-6 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" />
 								<CardHeader className="flex flex-col items-center">

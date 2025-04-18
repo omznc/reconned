@@ -13,11 +13,7 @@ interface ClubInstagramProps {
 	limit?: number;
 }
 
-export function ClubInstagram({
-	photos,
-	username,
-	limit = 7,
-}: ClubInstagramProps) {
+export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProps) {
 	const t = useTranslations("components.instagramGallery");
 	const locale = useLocale();
 
@@ -34,10 +30,7 @@ export function ClubInstagram({
 	const hasMorePhotos = photos.length > limit;
 
 	const renderMedia = (photo: InstagramMedia) => {
-		const imageUrl =
-			photo.media_type === "VIDEO"
-				? photo.thumbnail_url || photo.media_url
-				: photo.media_url;
+		const imageUrl = photo.media_type === "VIDEO" ? photo.thumbnail_url || photo.media_url : photo.media_url;
 
 		return (
 			<a

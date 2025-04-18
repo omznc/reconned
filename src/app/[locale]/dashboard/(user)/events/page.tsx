@@ -19,10 +19,7 @@ export default async function Page(props: PageProps) {
 	const user = await isAuthenticated();
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 	const t = await getTranslations("dashboard.events");
 
 	if (!user) {
@@ -43,7 +40,12 @@ export default async function Page(props: PageProps) {
 			? {
 					OR: [
 						{ name: { contains: search, mode: "insensitive" } },
-						{ description: { contains: search, mode: "insensitive" } },
+						{
+							description: {
+								contains: search,
+								mode: "insensitive",
+							},
+						},
 						{ location: { contains: search, mode: "insensitive" } },
 					],
 				}
@@ -82,11 +84,7 @@ export default async function Page(props: PageProps) {
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">{t("title")}</h3>
 			</div>
-			<EventsTable
-				events={events}
-				totalEvents={totalEvents}
-				pageSize={pageSize}
-			/>
+			<EventsTable events={events} totalEvents={totalEvents} pageSize={pageSize} />
 		</>
 	);
 }

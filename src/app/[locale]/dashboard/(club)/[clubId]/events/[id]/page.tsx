@@ -57,12 +57,7 @@ export default async function Page(props: PageProps) {
 		<>
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">{t("event")}</h3>
-				<Button
-					disabled={disabledAttendence}
-					variant="default"
-					size="sm"
-					asChild={!disabledAttendence}
-				>
+				<Button disabled={disabledAttendence} variant="default" size="sm" asChild={!disabledAttendence}>
 					<Link
 						className="flex items-center gap-2"
 						href={`/dashboard/${params.clubId}/events/${params.id}/attendance`}

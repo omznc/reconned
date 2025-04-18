@@ -1,11 +1,6 @@
 "use client";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import {
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
@@ -15,20 +10,11 @@ import { useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-	TurnstileWidget,
-	type TurnstileWidgetRef,
-} from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [token, _] = useQueryState("token");
@@ -134,9 +120,7 @@ export default function LoginPage() {
 							name="confirmPassword"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="confirmPassword">
-										{t("confirmPassword")}
-									</Label>
+									<Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
 									<FormControl>
 										<Input {...field} id="confirmPassword" type="password" />
 									</FormControl>
@@ -145,9 +129,7 @@ export default function LoginPage() {
 							)}
 						/>
 
-						{isError && (
-							<p className="text-red-500 -mb-2">{t("invalidData")}</p>
-						)}
+						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
 
 						<TurnstileWidget
 							ref={turnstileRef}
