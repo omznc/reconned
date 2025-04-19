@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { ClubsSheet } from "./_components/clubs.sheet";
 import { ClubsTable } from "./_components/clubs.table";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -14,7 +17,7 @@ interface PageProps {
 	}>;
 }
 
-export default async function ClubsPage({ searchParams }: PageProps) {
+export async function ClubsPageFetcher({ searchParams }: PageProps) {
 	const { search, sortBy, sortOrder, page, clubId, perPage } =
 		await searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
@@ -54,11 +57,27 @@ export default async function ClubsPage({ searchParams }: PageProps) {
 
 	return (
 		<>
-			<div>
-				<h3 className="text-lg font-semibold">Svi klubovi</h3>
-			</div>
 			<ClubsSheet selectedClub={selectedClub ?? undefined} />
 			<ClubsTable clubs={clubs} totalClubs={totalClubs} pageSize={pageSize} />
+		</>
+	);
+}
+
+export default async function ClubsPage({ searchParams }: PageProps) {
+	const t = await getTranslations("dashboard.admin.clubs");
+	const params = await searchParams;
+
+	return (
+		<>
+			<div>
+				<h3 className="text-lg font-semibold">{t("allClubs")}</h3>
+			</div>
+			<Suspense
+				key={JSON.stringify(params)}
+				fallback={<GenericDataTableSkeleton />}
+			>
+				<ClubsPageFetcher searchParams={searchParams} />
+			</Suspense>
 		</>
 	);
 }
