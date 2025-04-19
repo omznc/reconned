@@ -5,6 +5,8 @@ import type { Prisma } from "@prisma/client";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { ErrorPage } from "@/components/error-page";
 import { getTranslations } from "next-intl/server";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { Suspense } from "react";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -17,12 +19,7 @@ interface PageProps {
 	}>;
 }
 
-export default async function SpendingPage(props: PageProps) {
-	const t = await getTranslations("dashboard.club.spending");
-
-	if (!FEATURE_FLAGS.CLUBS_SPENDING) {
-		return <ErrorPage title={t("title")} />;
-	}
+export async function SpendingPageFetcher(props: PageProps) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 
@@ -60,17 +57,35 @@ export default async function SpendingPage(props: PageProps) {
 	const totalPurchases = await prisma.clubPurchase.count({ where });
 
 	return (
+		<PurchasesTable
+			purchases={purchases}
+			totalPurchases={totalPurchases}
+			pageSize={pageSize}
+		/>
+	);
+}
+
+export default async function SpendingPage(props: PageProps) {
+	const t = await getTranslations("dashboard.club.spending");
+	const searchParams = await props.searchParams;
+
+	if (!FEATURE_FLAGS.CLUBS_SPENDING) {
+		return <ErrorPage title={t("title")} />;
+	}
+
+	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">{t("title")}</h3>
 				<AddPurchaseModal />
 			</div>
 
-			<PurchasesTable
-				purchases={purchases}
-				totalPurchases={totalPurchases}
-				pageSize={pageSize}
-			/>
+			<Suspense
+				key={JSON.stringify(searchParams)}
+				fallback={<GenericDataTableSkeleton />}
+			>
+				<SpendingPageFetcher {...props} />
+			</Suspense>
 		</div>
 	);
 }

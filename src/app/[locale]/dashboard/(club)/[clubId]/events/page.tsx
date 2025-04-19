@@ -7,6 +7,8 @@ import { notFound } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -19,7 +21,7 @@ interface PageProps {
 	}>;
 }
 
-export default async function Page(props: PageProps) {
+export async function EventsPageFetcher(props: PageProps) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
@@ -27,8 +29,6 @@ export default async function Page(props: PageProps) {
 		perPage === "25" || perPage === "50" || perPage === "100"
 			? Number(perPage)
 			: 25;
-
-	const t = await getTranslations("dashboard.club.events");
 
 	const user = await isAuthenticated();
 	if (!user) {
@@ -78,6 +78,24 @@ export default async function Page(props: PageProps) {
 	const totalEvents = await prisma.event.count({ where });
 
 	return (
+		<EventsTable
+			events={events}
+			totalEvents={totalEvents}
+			clubId={clubId}
+			pageSize={pageSize}
+			userIsManager={
+				user.managedClubs.includes(clubId) || Boolean(user.role === "admin")
+			}
+		/>
+	);
+}
+
+export default async function Page(props: PageProps) {
+	const t = await getTranslations("dashboard.club.events");
+	const { clubId } = await props.params;
+	const searchParams = await props.searchParams;
+
+	return (
 		<>
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">{t("allEvents")}</h3>
@@ -88,15 +106,12 @@ export default async function Page(props: PageProps) {
 					</Link>
 				</Button>
 			</div>
-			<EventsTable
-				events={events}
-				totalEvents={totalEvents}
-				clubId={clubId}
-				pageSize={pageSize}
-				userIsManager={
-					user.managedClubs.includes(clubId) || Boolean(user.role === "admin")
-				}
-			/>
+			<Suspense
+				key={JSON.stringify(searchParams)}
+				fallback={<GenericDataTableSkeleton />}
+			>
+				<EventsPageFetcher {...props} />
+			</Suspense>
 		</>
 	);
 }

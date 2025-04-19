@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import { isAuthenticated } from "@/lib/auth";
+import { Suspense } from "react";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -16,7 +18,7 @@ interface PageProps {
 	}>;
 }
 
-export default async function MembersPage(props: PageProps) {
+export async function MembersPageFetcher(props: PageProps) {
 	const [params, searchParams] = await Promise.all([
 		props.params,
 		props.searchParams,
@@ -30,10 +32,7 @@ export default async function MembersPage(props: PageProps) {
 			? Number(perPage)
 			: 25;
 
-	const [t, user] = await Promise.all([
-		getTranslations("dashboard.club.members"),
-		isAuthenticated(),
-	]);
+	const user = await isAuthenticated();
 
 	const where = {
 		clubId: clubId,
@@ -100,16 +99,33 @@ export default async function MembersPage(props: PageProps) {
 	const totalMembers = await prisma.clubMembership.count({ where });
 
 	return (
+		<MembersTable
+			members={formattedMembers}
+			totalMembers={totalMembers}
+			pageSize={pageSize}
+			currentUserId={user?.id}
+		/>
+	);
+}
+
+export default async function MembersPage(props: PageProps) {
+	const t = await getTranslations("dashboard.club.members");
+	const [params, searchParams] = await Promise.all([
+		props.params,
+		props.searchParams,
+	]);
+
+	return (
 		<>
 			<div>
 				<h3 className="text-lg font-semibold">{t("allMembers")}</h3>
 			</div>
-			<MembersTable
-				members={formattedMembers}
-				totalMembers={totalMembers}
-				pageSize={pageSize}
-				currentUserId={user?.id}
-			/>
+			<Suspense
+				key={JSON.stringify(searchParams)}
+				fallback={<GenericDataTableSkeleton />}
+			>
+				<MembersPageFetcher {...props} />
+			</Suspense>
 		</>
 	);
 }

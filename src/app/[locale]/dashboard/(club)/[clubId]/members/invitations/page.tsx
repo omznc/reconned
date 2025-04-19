@@ -4,6 +4,9 @@ import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { InviteStatus, Prisma } from "@prisma/client";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	params: Promise<{
@@ -14,7 +17,7 @@ interface PageProps {
 	}>;
 }
 
-export default async function Page(props: PageProps) {
+export async function InvitationsPageFetcher(props: PageProps) {
 	const params = await props.params;
 	const searchParams = await props.searchParams;
 	const user = await isAuthenticated();
@@ -104,13 +107,28 @@ export default async function Page(props: PageProps) {
 	}));
 
 	return (
+		<InvitationsTable
+			invites={formattedInvites}
+			totalPages={Math.ceil(invitesCount / pageSize)}
+		/>
+	);
+}
+
+export default async function Page(props: PageProps) {
+	const t = await getTranslations("dashboard.club.members.invitations");
+	const searchParams = await props.searchParams;
+
+	return (
 		<>
+			<h3 className="text-lg font-semibold mb-4">{t("title")}</h3>
 			<InvitationsForm />
 			<hr />
-			<InvitationsTable
-				invites={formattedInvites}
-				totalPages={Math.ceil(invitesCount / pageSize)}
-			/>
+			<Suspense
+				key={JSON.stringify(searchParams)}
+				fallback={<GenericDataTableSkeleton />}
+			>
+				<InvitationsPageFetcher {...props} />
+			</Suspense>
 		</>
 	);
 }

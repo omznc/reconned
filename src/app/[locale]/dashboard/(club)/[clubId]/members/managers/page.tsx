@@ -6,6 +6,8 @@ import { ManagersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/
 import { Role } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { Suspense } from "react";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -18,9 +20,8 @@ interface PageProps {
 	}>;
 }
 
-export default async function Page(props: PageProps) {
+export async function ManagersPageFetcher(props: PageProps) {
 	const params = await props.params;
-	const t = await getTranslations("dashboard.club.members.managers");
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize =
@@ -103,14 +104,28 @@ export default async function Page(props: PageProps) {
 	const totalManagers = await prisma.clubMembership.count({ where });
 
 	return (
+		<ManagersTable
+			managers={managers}
+			totalManagers={totalManagers}
+			pageSize={pageSize}
+		/>
+	);
+}
+
+export default async function Page(props: PageProps) {
+	const t = await getTranslations("dashboard.club.members.managers");
+	const searchParams = await props.searchParams;
+
+	return (
 		<div className="space-y-8">
 			<div>
 				<h2 className="text-2xl font-bold mb-4">{t("title")}</h2>
-				<ManagersTable
-					managers={managers}
-					totalManagers={totalManagers}
-					pageSize={pageSize}
-				/>
+				<Suspense
+					key={JSON.stringify(searchParams)}
+					fallback={<GenericDataTableSkeleton />}
+				>
+					<ManagersPageFetcher {...props} />
+				</Suspense>
 			</div>
 			<AddManagerForm />
 		</div>

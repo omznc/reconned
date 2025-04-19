@@ -503,3 +503,86 @@ export function GenericDataTable<T>({
 		</div>
 	);
 }
+
+export function GenericDataTableSkeleton({
+	columns = 5,
+	rows = 10,
+}: { columns?: number; rows?: number }) {
+	return (
+		<div className="space-y-4 w-full fade-in-up">
+			{/* Controls */}
+			<div className="flex flex-col gap-4 md:flex-row md:items-center">
+				{/* Search Input */}
+				<div className="w-full md:w-[300px] relative">
+					<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+					<div className="h-10 px-4 min-w-[80px] rounded-md border bg-background flex items-center justify-center">
+						<div className="h-4 w-[90%] ml-8 bg-muted-foreground/20 rounded-sm animate-pulse" />
+					</div>
+				</div>
+
+				<div className="h-10 px-4 min-w-[80px] rounded-md border bg-background flex items-center justify-center">
+					<div className="h-4 w-16 bg-muted-foreground/20 rounded-sm animate-pulse" />
+				</div>
+
+				{/* Page info */}
+				<div className="ml-auto text-sm">
+					<div className="h-4 w-20 bg-muted-foreground/20 rounded-sm animate-pulse" />
+				</div>
+			</div>
+
+			{/* Desktop Table */}
+			<div className="rounded-md border hidden md:block">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							{Array.from({ length: columns }, (_, idx) => (
+								<TableHead key={idx}>
+									<div className="h-4 w-24 bg-muted-foreground/20 rounded-sm animate-pulse" />
+								</TableHead>
+							))}
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{Array.from({ length: rows }, (_, idx) => (
+							<TableRow key={idx}>
+								{Array.from({ length: columns }, (_, idx) => (
+									<TableCell key={idx}>
+										<div className="h-4 w-full bg-muted-foreground/20 rounded-sm animate-pulse" />
+									</TableCell>
+								))}
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</div>
+
+			{/* Mobile Cards */}
+			<div className="flex justify-center items-center py-8 md:hidden">
+				<div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+			</div>
+
+			{/* Pagination with Per Page Selector */}
+			<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+				<div className="flex gap-2 w-full sm:w-auto items-center justify-start">
+					{/* Per page selector */}
+					<div className="h-10 w-[70px] rounded-md border bg-background px-3 py-2 flex items-center justify-between">
+						<div className="h-4 w-8 bg-muted-foreground/20 rounded-sm animate-pulse" />
+					</div>
+					<span className="text-sm text-muted-foreground/50 w-16">
+						<div className="h-4 w-full bg-muted-foreground/20 rounded-sm animate-pulse" />
+					</span>
+				</div>
+
+				{/* Pagination controls */}
+				<div className="flex items-center justify-center w-full sm:w-auto gap-2">
+					<div className="h-10 px-4 min-w-[80px] rounded-md border bg-background flex items-center justify-center">
+						<div className="h-4 w-16 bg-muted-foreground/20 rounded-sm animate-pulse" />
+					</div>
+					<div className="h-10 px-4 min-w-[80px] rounded-md border bg-background flex items-center justify-center">
+						<div className="h-4 w-16 bg-muted-foreground/20 rounded-sm animate-pulse" />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
