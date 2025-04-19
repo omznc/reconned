@@ -25,42 +25,42 @@ export async function UsersPageFetcher(props: PageProps) {
 	// Fetch selected user separately if userId is present
 	const selectedUser = userId
 		? await prisma.user.findUnique({
-			where: { id: userId },
-			include: {
-				clubMembership: {
-					include: {
-						club: {
-							select: {
-								name: true,
+				where: { id: userId },
+				include: {
+					clubMembership: {
+						include: {
+							club: {
+								select: {
+									name: true,
+								},
 							},
 						},
 					},
 				},
-			},
-		})
+			})
 		: null;
 
 	const where = {
 		...(search
 			? {
-				OR: [
-					{ name: { contains: search, mode: "insensitive" } },
-					{ email: { contains: search, mode: "insensitive" } },
-					{ callsign: { contains: search, mode: "insensitive" } },
-				],
-			}
+					OR: [
+						{ name: { contains: search, mode: "insensitive" } },
+						{ email: { contains: search, mode: "insensitive" } },
+						{ callsign: { contains: search, mode: "insensitive" } },
+					],
+				}
 			: {}),
 	} satisfies Prisma.UserWhereInput;
 
 	const orderBy: Prisma.UserOrderByWithRelationInput = sortBy
 		? {
-			...(sortBy === "name" && { name: sortOrder ?? "asc" }),
-			...(sortBy === "email" && { email: sortOrder ?? "asc" }),
-			...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
-			...(sortBy === "createdAt" && {
-				createdAt: sortOrder ?? "asc",
-			}),
-		}
+				...(sortBy === "name" && { name: sortOrder ?? "asc" }),
+				...(sortBy === "email" && { email: sortOrder ?? "asc" }),
+				...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
+				...(sortBy === "createdAt" && {
+					createdAt: sortOrder ?? "asc",
+				}),
+			}
 		: { createdAt: "desc" };
 
 	const users = await prisma.user.findMany({
@@ -98,10 +98,7 @@ export default async function UsersPage(props: PageProps) {
 			<div>
 				<h3 className="text-lg font-semibold">Svi članovi</h3>
 			</div>
-			<Suspense
-				key={JSON.stringify(searchParams)}
-				fallback={<GenericDataTableSkeleton />}
-			>
+			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<UsersPageFetcher {...props} />
 			</Suspense>
 		</>

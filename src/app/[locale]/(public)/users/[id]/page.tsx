@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { UserOverview } from "@/components/overviews/user-overview";
 import type { Metadata } from "next";
 import { env } from "@/lib/env";
-import NotFoundTemporary from "@/app/not-found";
+import NotFoundTemporary from "@/app/[locale]/not-found";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {

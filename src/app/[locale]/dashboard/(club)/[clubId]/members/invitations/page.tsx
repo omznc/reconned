@@ -54,35 +54,35 @@ export async function InvitationsPageFetcher(props: PageProps) {
 		clubId: params.clubId,
 		...(searchParams.search
 			? {
-				OR: [
-					{
-						email: {
-							contains: searchParams.search,
-							mode: "insensitive",
-						},
-					},
-					{
-						user: {
-							name: {
+					OR: [
+						{
+							email: {
 								contains: searchParams.search,
 								mode: "insensitive",
 							},
 						},
-					},
-				],
-			}
+						{
+							user: {
+								name: {
+									contains: searchParams.search,
+									mode: "insensitive",
+								},
+							},
+						},
+					],
+				}
 			: {}),
 		...(searchParams.status && searchParams.status !== "all"
 			? {
-				status: searchParams.status as InviteStatus,
-			}
+					status: searchParams.status as InviteStatus,
+				}
 			: {}),
 	};
 
 	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
 		? {
-			[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
-		}
+				[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
+			}
 		: { createdAt: "desc" };
 
 	const [invitesCount, invites] = await Promise.all([
@@ -112,12 +112,7 @@ export async function InvitationsPageFetcher(props: PageProps) {
 		userName: invite.user?.name ?? "",
 	}));
 
-	return (
-		<InvitationsTable
-			invites={formattedInvites}
-			totalPages={Math.ceil(invitesCount / pageSize)}
-		/>
-	);
+	return <InvitationsTable invites={formattedInvites} totalPages={Math.ceil(invitesCount / pageSize)} />;
 }
 
 export default async function Page(props: PageProps) {
@@ -129,10 +124,7 @@ export default async function Page(props: PageProps) {
 			<h3 className="text-lg font-semibold mb-4">{t("title")}</h3>
 			<InvitationsForm />
 			<hr />
-			<Suspense
-				key={JSON.stringify(searchParams)}
-				fallback={<GenericDataTableSkeleton />}
-			>
+			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<InvitationsPageFetcher {...props} />
 			</Suspense>
 		</>

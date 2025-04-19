@@ -21,10 +21,7 @@ export async function EventsPageFetcher(props: PageProps) {
 	const user = await isAuthenticated();
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	if (!user) {
 		return notFound();
@@ -42,24 +39,24 @@ export async function EventsPageFetcher(props: PageProps) {
 		},
 		...(search
 			? {
-				OR: [
-					{ name: { contains: search, mode: "insensitive" } },
-					{
-						description: {
-							contains: search,
-							mode: "insensitive",
+					OR: [
+						{ name: { contains: search, mode: "insensitive" } },
+						{
+							description: {
+								contains: search,
+								mode: "insensitive",
+							},
 						},
-					},
-					{ location: { contains: search, mode: "insensitive" } },
-				],
-			}
+						{ location: { contains: search, mode: "insensitive" } },
+					],
+				}
 			: {}),
 	} satisfies Prisma.EventWhereInput;
 
 	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
 		? {
-			[sortBy]: sortOrder ?? "asc",
-		}
+				[sortBy]: sortOrder ?? "asc",
+			}
 		: { dateStart: "desc" };
 
 	const events = await prisma.event.findMany({
@@ -83,13 +80,7 @@ export async function EventsPageFetcher(props: PageProps) {
 
 	const totalEvents = await prisma.event.count({ where });
 
-	return (
-		<EventsTable
-			events={events}
-			totalEvents={totalEvents}
-			pageSize={pageSize}
-		/>
-	);
+	return <EventsTable events={events} totalEvents={totalEvents} pageSize={pageSize} />;
 }
 
 export default async function Page(props: PageProps) {
@@ -101,10 +92,7 @@ export default async function Page(props: PageProps) {
 			<div className="flex items-center justify-between">
 				<h3 className="text-lg font-semibold">{t("title")}</h3>
 			</div>
-			<Suspense
-				key={JSON.stringify(searchParams)}
-				fallback={<GenericDataTableSkeleton />}
-			>
+			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<EventsPageFetcher {...props} />
 			</Suspense>
 		</>

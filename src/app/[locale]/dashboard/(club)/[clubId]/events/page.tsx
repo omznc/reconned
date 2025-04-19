@@ -11,7 +11,7 @@ import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 
 interface PageProps {
-	params: Promise<{ clubId: string; }>;
+	params: Promise<{ clubId: string }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -43,24 +43,24 @@ export async function EventsPageFetcher(props: PageProps) {
 		},
 		...(search
 			? {
-				OR: [
-					{ name: { contains: search, mode: "insensitive" } },
-					{
-						description: {
-							contains: search,
-							mode: "insensitive",
+					OR: [
+						{ name: { contains: search, mode: "insensitive" } },
+						{
+							description: {
+								contains: search,
+								mode: "insensitive",
+							},
 						},
-					},
-					{ location: { contains: search, mode: "insensitive" } },
-				],
-			}
+						{ location: { contains: search, mode: "insensitive" } },
+					],
+				}
 			: {}),
 	} satisfies Prisma.EventWhereInput;
 
 	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
 		? {
-			[sortBy]: sortOrder ?? "asc",
-		}
+				[sortBy]: sortOrder ?? "asc",
+			}
 		: { dateStart: "desc" };
 
 	const events = await prisma.event.findMany({
@@ -85,9 +85,7 @@ export async function EventsPageFetcher(props: PageProps) {
 			totalEvents={totalEvents}
 			clubId={clubId}
 			pageSize={pageSize}
-			userIsManager={
-				user.managedClubs.includes(clubId) || Boolean(user.role === "admin")
-			}
+			userIsManager={user.managedClubs.includes(clubId) || Boolean(user.role === "admin")}
 		/>
 	);
 }
@@ -108,10 +106,7 @@ export default async function Page(props: PageProps) {
 					</Link>
 				</Button>
 			</div>
-			<Suspense
-				key={JSON.stringify(searchParams)}
-				fallback={<GenericDataTableSkeleton />}
-			>
+			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<EventsPageFetcher {...props} />
 			</Suspense>
 		</>

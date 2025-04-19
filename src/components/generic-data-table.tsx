@@ -458,12 +458,9 @@ export function GenericDataTable<T>({
 	);
 }
 
-export function GenericDataTableSkeleton({
-	columns = 5,
-	rows = 10,
-}: { columns?: number; rows?: number }) {
+export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number }) {
 	return (
-		<div className="space-y-4 w-full fade-in-up">
+		<div className="space-y-4 w-full fade-in">
 			{/* Controls */}
 			<div className="flex flex-col gap-4 md:flex-row md:items-center">
 				{/* Search Input */}

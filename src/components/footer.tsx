@@ -6,12 +6,14 @@ import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-
 // Removed QuickLinkIcon import and added required lucide icons.
 import { Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, BarChart2 } from "lucide-react";
 import { BadgeNew } from "@/components/badge-new";
+import Image from "next/image";
+import FooterImage from "@public/footer.webp";
 
 export function Footer() {
 	const t = useTranslations("components.footer");
 
 	return (
-		<footer className="w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
+		<footer className="relative w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
 			<div className="container z-10 mx-auto px-4 py-8">
 				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 					<div>
@@ -136,6 +138,14 @@ export function Footer() {
 					)}
 				</div>
 			</div>
+			<Image
+				priority={false}
+				loading="lazy"
+				src={FooterImage}
+				alt="Footer image of a person looking up at his laptop while it's flying away."
+				draggable={false}
+				className="transition-all opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none"
+			/>
 		</footer>
 	);
 }

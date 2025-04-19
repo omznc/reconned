@@ -4,7 +4,7 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import NotFoundTemporary from "@/app/not-found";
+import NotFoundTemporary from "@/app/[locale]/not-found";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {

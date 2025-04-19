@@ -4,7 +4,7 @@ import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
 import type { Metadata } from "next";
 import { env } from "@/lib/env";
-import NotFoundTemporary from "@/app/not-found";
+import NotFoundTemporary from "@/app/[locale]/not-found";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {

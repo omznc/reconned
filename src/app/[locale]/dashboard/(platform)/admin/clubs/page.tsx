@@ -18,28 +18,27 @@ interface PageProps {
 }
 
 export async function ClubsPageFetcher({ searchParams }: PageProps) {
-	const { search, sortBy, sortOrder, page, clubId, perPage } =
-		await searchParams;
+	const { search, sortBy, sortOrder, page, clubId, perPage } = await searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const where = search
 		? {
-			OR: [
-				{
-					name: {
-						contains: search,
-						mode: "insensitive" as const,
+				OR: [
+					{
+						name: {
+							contains: search,
+							mode: "insensitive" as const,
+						},
 					},
-				},
-				{
-					location: {
-						contains: search,
-						mode: "insensitive" as const,
+					{
+						location: {
+							contains: search,
+							mode: "insensitive" as const,
+						},
 					},
-				},
-			],
-		}
+				],
+			}
 		: {};
 
 	const orderBy: Prisma.ClubOrderByWithRelationInput = sortBy
@@ -58,8 +57,8 @@ export async function ClubsPageFetcher({ searchParams }: PageProps) {
 	// Fetch selected club separately if clubId is present
 	const selectedClub = clubId
 		? await prisma.club.findUnique({
-			where: { id: clubId },
-		})
+				where: { id: clubId },
+			})
 		: null;
 
 	return (
@@ -79,10 +78,7 @@ export default async function ClubsPage({ searchParams }: PageProps) {
 			<div>
 				<h3 className="text-lg font-semibold">{t("allClubs")}</h3>
 			</div>
-			<Suspense
-				key={JSON.stringify(params)}
-				fallback={<GenericDataTableSkeleton />}
-			>
+			<Suspense key={JSON.stringify(params)} fallback={<GenericDataTableSkeleton />}>
 				<ClubsPageFetcher searchParams={searchParams} />
 			</Suspense>
 		</>

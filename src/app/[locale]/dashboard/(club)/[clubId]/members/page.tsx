@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 
 interface PageProps {
-	params: Promise<{ clubId: string; }>;
+	params: Promise<{ clubId: string }>;
 	searchParams: Promise<{
 		search?: string;
 		role?: string;
@@ -19,10 +19,7 @@ interface PageProps {
 }
 
 export async function MembersPageFetcher(props: PageProps) {
-	const [params, searchParams] = await Promise.all([
-		props.params,
-		props.searchParams,
-	]);
+	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
 
 	const { clubId } = params;
 	const { search, role, sortBy, sortOrder, page, perPage } = searchParams;
@@ -36,48 +33,48 @@ export async function MembersPageFetcher(props: PageProps) {
 		...(role && role !== "all" ? { role: role as Role } : {}),
 		...(search
 			? {
-				OR: [
-					{
-						user: {
-							name: { contains: search, mode: "insensitive" },
-						},
-					},
-					{
-						user: {
-							email: {
-								contains: search,
-								mode: "insensitive",
+					OR: [
+						{
+							user: {
+								name: { contains: search, mode: "insensitive" },
 							},
 						},
-					},
-					{
-						user: {
-							callsign: {
-								contains: search,
-								mode: "insensitive",
+						{
+							user: {
+								email: {
+									contains: search,
+									mode: "insensitive",
+								},
 							},
 						},
-					},
-				],
-			}
+						{
+							user: {
+								callsign: {
+									contains: search,
+									mode: "insensitive",
+								},
+							},
+						},
+					],
+				}
 			: {}),
 	} satisfies Prisma.ClubMembershipWhereInput;
 
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
-			...(sortBy === "userName" && {
-				user: { name: sortOrder ?? "asc" },
-			}),
-			...(sortBy === "userCallsign" && {
-				user: { callsign: sortOrder ?? "asc" },
-			}),
-			...(sortBy === "createdAt" && {
-				createdAt: sortOrder ?? "asc",
-			}),
-			...(sortBy === "role" && {
-				role: sortOrder ?? "asc",
-			}),
-		}
+				...(sortBy === "userName" && {
+					user: { name: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "userCallsign" && {
+					user: { callsign: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "createdAt" && {
+					createdAt: sortOrder ?? "asc",
+				}),
+				...(sortBy === "role" && {
+					role: sortOrder ?? "asc",
+				}),
+			}
 		: { createdAt: "desc" };
 
 	const members = await prisma.clubMembership.findMany({
@@ -125,20 +122,14 @@ export async function MembersPageFetcher(props: PageProps) {
 
 export default async function MembersPage(props: PageProps) {
 	const t = await getTranslations("dashboard.club.members");
-	const [params, searchParams] = await Promise.all([
-		props.params,
-		props.searchParams,
-	]);
+	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
 
 	return (
 		<>
 			<div>
 				<h3 className="text-lg font-semibold">{t("allMembers")}</h3>
 			</div>
-			<Suspense
-				key={JSON.stringify(searchParams)}
-				fallback={<GenericDataTableSkeleton />}
-			>
+			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<MembersPageFetcher {...props} />
 			</Suspense>
 		</>
