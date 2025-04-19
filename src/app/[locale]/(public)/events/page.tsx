@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardDescription,
-	CardContent,
-	CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { format, formatDistanceToNow } from "date-fns";
 import { bs } from "date-fns/locale";
@@ -62,9 +55,7 @@ export default async function Page() {
 			<h1 className="text-xl font-bold">Nadolazeći susreti</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{upcomingEvents.length === 0 && (
-					<div className="text-muted-foreground">
-						Trenutno nema nadolazećih susreta.
-					</div>
+					<div className="text-muted-foreground">Trenutno nema nadolazećih susreta.</div>
 				)}
 				{upcomingEvents.map((event) => (
 					<Card key={event.id} className="flex flex-col">
@@ -79,17 +70,14 @@ export default async function Page() {
 								/>
 							)}
 							<CardTitle className="mt-4 px-6">{event.name}</CardTitle>
-							<CardDescription className="px-6 pb-6">
-								{event.description}
-							</CardDescription>
+							<CardDescription className="px-6 pb-6">{event.description}</CardDescription>
 						</CardHeader>
 						<CardContent className="grow flex-col flex gap-1">
 							<div className="flex items-center">
 								<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
 								<span>
 									{format(event.dateStart, "MMM d, yyyy")}
-									{event.dateEnd &&
-										` - ${format(event.dateEnd, "MMM d, yyyy")}`}
+									{event.dateEnd && ` - ${format(event.dateEnd, "MMM d, yyyy")}`}
 								</span>
 							</div>
 							<div className="flex items-center">
@@ -106,28 +94,14 @@ export default async function Page() {
 							</div>
 							<div className="flex flex-wrap gap-2 my-4">
 								<Badge className="grow justify-center">
-									{event.allowFreelancers
-										? "Dozvoljeni freelanceri"
-										: "Samo klubovi"}
+									{event.allowFreelancers ? "Dozvoljeni freelanceri" : "Samo klubovi"}
 								</Badge>
-								{event.hasBreakfast && (
-									<Badge className="grow justify-center">Doručak</Badge>
-								)}
-								{event.hasLunch && (
-									<Badge className="flex-growjustify-center ">Ručak</Badge>
-								)}
-								{event.hasDinner && (
-									<Badge className="grow justify-center ">Večera</Badge>
-								)}
-								{event.hasSnacks && (
-									<Badge className="grow justify-center">Grickalice</Badge>
-								)}
-								{event.hasDrinks && (
-									<Badge className="grow justify-center">Pića</Badge>
-								)}
-								{event.hasPrizes && (
-									<Badge className="grow justify-center ">Nagrade</Badge>
-								)}
+								{event.hasBreakfast && <Badge className="grow justify-center">Doručak</Badge>}
+								{event.hasLunch && <Badge className="flex-growjustify-center ">Ručak</Badge>}
+								{event.hasDinner && <Badge className="grow justify-center ">Večera</Badge>}
+								{event.hasSnacks && <Badge className="grow justify-center">Grickalice</Badge>}
+								{event.hasDrinks && <Badge className="grow justify-center">Pića</Badge>}
+								{event.hasPrizes && <Badge className="grow justify-center ">Nagrade</Badge>}
 							</div>
 						</CardContent>
 						<CardFooter className="flex justify-between items-center">

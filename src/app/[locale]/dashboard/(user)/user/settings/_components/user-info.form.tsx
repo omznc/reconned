@@ -1,19 +1,6 @@
 "use client";
-import {
-	FileInput,
-	FileUploader,
-	FileUploaderContent,
-	FileUploaderItem,
-} from "@/components/ui/file-upload";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Switch } from "@/components/ui/switch";
@@ -35,11 +22,7 @@ import {
 } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {
-	HoverCard,
-	HoverCardTrigger,
-	HoverCardContent,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { SlugInput } from "@/components/slug/slug-input";
 import { ImageCropDialog } from "@/app/[locale]/dashboard/(user)/user/settings/_components/image-crop-dialog";
@@ -132,10 +115,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4 max-w-3xl"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl">
 				<div>
 					<h3 className="text-lg font-semibold">{t("title")}</h3>
 				</div>
@@ -145,8 +125,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("name")}* ({form.watch("name")?.length}/
-								{userInfoShema.shape.name.maxLength})
+								{t("name")}* ({form.watch("name")?.length}/{userInfoShema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="Veis" type="text" {...field} />
@@ -210,8 +189,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("bio")} ({form.watch("bio")?.length}/
-								{userInfoShema.shape.bio.maxLength})
+								{t("bio")} ({form.watch("bio")?.length}/{userInfoShema.shape.bio.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Textarea
@@ -250,12 +228,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								/>
 							</div>
 							<FormControl>
-								<Input
-									disabled={true}
-									placeholder="me@gmail.com"
-									type="email"
-									{...field}
-								/>
+								<Input disabled={true} placeholder="me@gmail.com" type="email" {...field} />
 							</FormControl>
 							<FormDescription>Email</FormDescription>
 							<FormMessage />
@@ -275,15 +248,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 										{field.value ? t("private") : t("public")}
 									</span>
 								</div>
-								<FormDescription>
-									{t("privateProfileDescription")}
-								</FormDescription>
+								<FormDescription>{t("privateProfileDescription")}</FormDescription>
 							</div>
 							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
+								<Switch checked={field.value} onCheckedChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -301,15 +269,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 										{field.value ? t("private") : t("public")}
 									</span>
 								</div>
-								<FormDescription>
-									{t("privateStatsDescription")}
-								</FormDescription>
+								<FormDescription>{t("privateStatsDescription")}</FormDescription>
 							</div>
 							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
+								<Switch checked={field.value} onCheckedChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -422,12 +385,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							</Button>
 						</HoverCardTrigger>
 						<HoverCardContent className="size-full mb-8">
-							<Image
-								src={props.user.image}
-								alt="Club logo"
-								width={200}
-								height={200}
-							/>
+							<Image src={props.user.image} alt="Club logo" width={200} height={200} />
 						</HoverCardContent>
 					</HoverCard>
 				)}
@@ -460,11 +418,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 								/>
 							</div>
 							<FormControl>
-								<PhoneInput
-									defaultCountry="BA"
-									placeholder="061 123 456"
-									{...field}
-								/>
+								<PhoneInput defaultCountry="BA" placeholder="061 123 456" {...field} />
 							</FormControl>
 							<FormDescription>{t("phone")}</FormDescription>
 							<FormMessage />
@@ -486,10 +440,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-				<LoaderSubmitButton
-					isLoading={isLoading}
-					disabled={!isSlugValid && !!form.watch("slug")}
-				>
+				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
 					{t("save")}
 				</LoaderSubmitButton>
 			</form>

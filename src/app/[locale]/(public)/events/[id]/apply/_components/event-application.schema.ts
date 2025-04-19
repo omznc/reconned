@@ -3,10 +3,7 @@ import { z } from "zod";
 export const userSchema = z.object({
 	fullName: z.string().min(1, { message: "Ime je obavezno" }),
 	userId: z.string().optional(),
-	email: z
-		.string()
-		.min(1, { message: "Email je obavezan" })
-		.email({ message: "Email mora biti validan" }),
+	email: z.string().min(1, { message: "Email je obavezan" }).email({ message: "Email mora biti validan" }),
 	image: z.string().nullable().optional(),
 	callsign: z.string().nullable().optional(),
 	clubMembership: z

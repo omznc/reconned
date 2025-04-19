@@ -16,10 +16,7 @@ export async function GET(request: Request) {
 	const ignoreCurrentUser = searchParams.get("ignoreCurrentUser") === "true";
 
 	if (!query) {
-		return NextResponse.json(
-			{ error: "Query parameter is required" },
-			{ status: 400 },
-		);
+		return NextResponse.json({ error: "Query parameter is required" }, { status: 400 });
 	}
 
 	try {
@@ -72,9 +69,7 @@ export async function GET(request: Request) {
 					clubMembership: {
 						some: {
 							clubId: {
-								in: currentUser.clubMembership.map(
-									(membership) => membership.clubId,
-								),
+								in: currentUser.clubMembership.map((membership) => membership.clubId),
 							},
 						},
 					},
@@ -113,9 +108,6 @@ export async function GET(request: Request) {
 
 		return NextResponse.json(users);
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Failed to search users" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Failed to search users" }, { status: 500 });
 	}
 }

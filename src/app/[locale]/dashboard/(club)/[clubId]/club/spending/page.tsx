@@ -9,7 +9,7 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
 
 interface PageProps {
-	params: Promise<{ clubId: string }>;
+	params: Promise<{ clubId: string; }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -24,27 +24,29 @@ export async function SpendingPageFetcher(props: PageProps) {
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const where = {
 		clubId,
 		...(search
 			? {
-					OR: [
-						{ title: { contains: search, mode: "insensitive" } },
-						{ description: { contains: search, mode: "insensitive" } },
-					],
-				}
+				OR: [
+					{ title: { contains: search, mode: "insensitive" } },
+					{
+						description: {
+							contains: search,
+							mode: "insensitive",
+						},
+					},
+				],
+			}
 			: {}),
 	} satisfies Prisma.ClubPurchaseWhereInput;
 
 	const orderBy: Prisma.ClubPurchaseOrderByWithRelationInput = sortBy
 		? {
-				[sortBy]: sortOrder ?? "asc",
-			}
+			[sortBy]: sortOrder ?? "asc",
+		}
 		: { createdAt: "desc" };
 
 	const purchases = await prisma.clubPurchase.findMany({

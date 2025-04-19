@@ -1,14 +1,7 @@
 import { passwordChangeSchema } from "@/app/[locale]/dashboard/(user)/user/security/_components/password.schema";
 import { authClient } from "@auth/client";
 import { Button } from "@components/ui/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 import { Input } from "@components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockIcon } from "lucide-react";
@@ -32,9 +25,7 @@ export function PasswordChangeForm({
 		},
 	});
 
-	const onChangePasswordSubmit = async (
-		values: z.infer<typeof passwordChangeSchema>,
-	) => {
+	const onChangePasswordSubmit = async (values: z.infer<typeof passwordChangeSchema>) => {
 		setIsLoading(true);
 		try {
 			await authClient.changePassword(
@@ -66,10 +57,7 @@ export function PasswordChangeForm({
 
 	return (
 		<Form {...changePasswordForm}>
-			<form
-				onSubmit={changePasswordForm.handleSubmit(onChangePasswordSubmit)}
-				className="space-y-4 w-full"
-			>
+			<form onSubmit={changePasswordForm.handleSubmit(onChangePasswordSubmit)} className="space-y-4 w-full">
 				<div>
 					<h3 className="text-lg font-semibold">{t("title")}</h3>
 				</div>

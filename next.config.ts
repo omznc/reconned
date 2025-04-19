@@ -74,8 +74,7 @@ const nextConfig = {
 			},
 			{
 				source: `/:locale(${localesString})/stats`,
-				destination:
-					"https://scout.reconned.com/share/reconned.com?auth=Z_HrtmMkcNRQ1zcVm4iky",
+				destination: "https://scout.reconned.com/share/reconned.com?auth=Z_HrtmMkcNRQ1zcVm4iky",
 				permanent: true,
 			},
 		];

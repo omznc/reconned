@@ -9,14 +9,7 @@ import {
 	CredenzaTitle,
 	CredenzaTrigger,
 } from "@/components/ui/credenza";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,9 +41,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeletingReceipt, setIsDeletingReceipt] = useState(false);
 	const [isUploadingFiles, setIsUploadingFiles] = useState(false);
-	const [uploadProgress, setUploadProgress] = useState<FileUploadProgress[]>(
-		[],
-	);
+	const [uploadProgress, setUploadProgress] = useState<FileUploadProgress[]>([]);
 	const MAX_RETRIES = 3;
 	const form = useForm<EditPurchaseFormValues>({
 		resolver: zodResolver(editPurchaseFormSchema),
@@ -68,10 +59,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 	const remainingFileSlots = 3 - existingReceiptsCount - files.length;
 	const canAddMoreFiles = remainingFileSlots > 0;
 
-	const uploadFile = async (
-		file: File,
-		retryCount = 0,
-	): Promise<string | null> => {
+	const uploadFile = async (file: File, retryCount = 0): Promise<string | null> => {
 		try {
 			const resp = await getPurchaseReceiptUploadUrl({
 				file: {
@@ -102,9 +90,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 			return resp.data.cdnUrl;
 		} catch (error) {
 			if (retryCount < MAX_RETRIES && (error as any).message.includes("503")) {
-				await new Promise((resolve) =>
-					setTimeout(resolve, 1000 * (retryCount + 1)),
-				);
+				await new Promise((resolve) => setTimeout(resolve, 1000 * (retryCount + 1)));
 				return uploadFile(file, retryCount + 1);
 			}
 			throw error;
@@ -115,8 +101,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 		setIsLoading(true);
 		try {
 			if (files.length > 0) {
-				const totalReceiptsCount =
-					(data.receiptUrls?.length || 0) + files.length;
+				const totalReceiptsCount = (data.receiptUrls?.length || 0) + files.length;
 				if (totalReceiptsCount > 3) {
 					toast.error(t("details.receiptsMaxCount"));
 					return;
@@ -237,9 +222,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 												type="number"
 												step="0.01"
 												{...field}
-												onChange={(e) =>
-													field.onChange(Number.parseFloat(e.target.value))
-												}
+												onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
 											/>
 										</FormControl>
 										<FormMessage />
@@ -416,11 +399,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 									</FormItem>
 								)}
 							/> */}
-							<Button
-								type="submit"
-								className="w-full mb-2"
-								disabled={isLoading || isUploadingFiles}
-							>
+							<Button type="submit" className="w-full mb-2" disabled={isLoading || isUploadingFiles}>
 								{isUploadingFiles ? (
 									<>
 										<Loader className="mr-2 h-4 w-4 animate-spin" />

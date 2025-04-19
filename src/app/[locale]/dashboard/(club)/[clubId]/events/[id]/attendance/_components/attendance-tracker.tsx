@@ -5,11 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Eye, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { Event, EventRegistration, User } from "@prisma/client";
@@ -34,9 +30,9 @@ interface AttendanceTrackerProps {
 export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const [search, setSearch] = useState("");
 	const [isLoading, setIsLoading] = useState<string | null>(null);
-	const [optimisticRegistrations, setOptimisticRegistrations] = useState<
-		Record<string, ExtendedEventRegistration>
-	>({});
+	const [optimisticRegistrations, setOptimisticRegistrations] = useState<Record<string, ExtendedEventRegistration>>(
+		{},
+	);
 	const t = useTranslations("dashboard.club.events.attendenceTracking");
 
 	const registrations = event.eventRegistration.map((reg) => ({
@@ -63,9 +59,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const attendees = filteredRegistrations.filter((r) => r.attended);
 	const notAttending = filteredRegistrations.filter((r) => !r.attended);
 
-	async function handleToggleAttendance(
-		registration: ExtendedEventRegistration,
-	) {
+	async function handleToggleAttendance(registration: ExtendedEventRegistration) {
 		try {
 			setIsLoading(registration.id);
 			// Store complete registration data in optimistic state
@@ -95,9 +89,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 		}
 	}
 
-	function RegistrationCard({
-		registration,
-	}: { registration: ExtendedEventRegistration }) {
+	function RegistrationCard({ registration }: { registration: ExtendedEventRegistration }) {
 		return (
 			<Card>
 				<CardContent className="p-4 flex justify-between items-center">
@@ -112,8 +104,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 						</Avatar>
 						<div className="flex flex-col gap-1">
 							<p className="font-semibold">{registration.createdBy.name}</p>
-							{(registration.invitedUsers.length > 0 ||
-								registration.invitedUsersNotOnApp.length > 0) && (
+							{(registration.invitedUsers.length > 0 || registration.invitedUsersNotOnApp.length > 0) && (
 								<HoverCard openDelay={100}>
 									<HoverCardTrigger asChild>
 										<p className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
@@ -164,11 +155,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 						onClick={() => handleToggleAttendance(registration)}
 						disabled={isLoading === registration.id}
 					>
-						{registration.attended ? (
-							<X className="h-4 w-4" />
-						) : (
-							<Check className="h-4 w-4" />
-						)}
+						{registration.attended ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
 					</Button>
 				</CardContent>
 			</Card>
@@ -177,21 +164,14 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 
 	return (
 		<div className="space-y-4 w-full max-w-3xl">
-			<Input
-				placeholder={t("search")}
-				value={search}
-				onChange={(e) => setSearch(e.target.value)}
-			/>
+			<Input placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />
 			<div className="grid md:grid-cols-2 gap-4">
 				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">
 						{t("registered")} ({notAttending.length})
 					</h2>
 					{notAttending.map((registration) => (
-						<RegistrationCard
-							key={registration.id}
-							registration={registration}
-						/>
+						<RegistrationCard key={registration.id} registration={registration} />
 					))}
 				</div>
 				<div className="space-y-4 w-fit">
@@ -199,10 +179,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 						{t("attending")} ({attendees.length})
 					</h2>
 					{attendees.map((registration) => (
-						<RegistrationCard
-							key={registration.id}
-							registration={registration}
-						/>
+						<RegistrationCard key={registration.id} registration={registration} />
 					))}
 				</div>
 			</div>

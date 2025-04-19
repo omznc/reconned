@@ -30,10 +30,7 @@ export function MembersTable(props: MembersTableProps) {
 	const t = useTranslations("dashboard.club.members.membersTable");
 	const locale = useLocale();
 
-	const handleRemove = async (
-		member: ClubMembership & { userName: string },
-		clubId: string,
-	) => {
+	const handleRemove = async (member: ClubMembership & { userName: string }, clubId: string) => {
 		if (member.role === "CLUB_OWNER") {
 			return;
 		}
@@ -179,11 +176,7 @@ export function MembersTable(props: MembersTableProps) {
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
-							<span>
-								{row.startDate
-									? row.startDate.toLocaleDateString(locale)
-									: t("notSet")}
-							</span>
+							<span>{row.startDate ? row.startDate.toLocaleDateString(locale) : t("notSet")}</span>
 						),
 					},
 				},
@@ -194,11 +187,7 @@ export function MembersTable(props: MembersTableProps) {
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
-							<span>
-								{row.endDate
-									? row.endDate.toLocaleDateString(locale)
-									: t("unlimited")}
-							</span>
+							<span>{row.endDate ? row.endDate.toLocaleDateString(locale) : t("unlimited")}</span>
 						),
 					},
 				},
@@ -210,10 +199,7 @@ export function MembersTable(props: MembersTableProps) {
 						component: (_, row) => (
 							<div className="flex gap-2">
 								<Button asChild variant="secondary" size="sm">
-									<Link
-										href={`/users/${row.userSlug ?? row.userId}`}
-										target="_blank"
-									>
+									<Link href={`/users/${row.userSlug ?? row.userId}`} target="_blank">
 										{t("profile")}
 									</Link>
 								</Button>
@@ -228,27 +214,25 @@ export function MembersTable(props: MembersTableProps) {
 									}}
 									variant="button"
 								/>
-								{props.currentUserId === row.userId &&
-									row.role !== "CLUB_OWNER" && (
-										<LeaveClubButton
-											clubId={row.clubId}
-											isClubOwner={false}
+								{props.currentUserId === row.userId && row.role !== "CLUB_OWNER" && (
+									<LeaveClubButton
+										clubId={row.clubId}
+										isClubOwner={false}
+										variant="destructive"
+										size="sm"
+									/>
+								)}
+								{row.role !== "CLUB_OWNER" && props.currentUserId !== row.userId && (
+									<div className="flex justify-end">
+										<Button
 											variant="destructive"
 											size="sm"
-										/>
-									)}
-								{row.role !== "CLUB_OWNER" &&
-									props.currentUserId !== row.userId && (
-										<div className="flex justify-end">
-											<Button
-												variant="destructive"
-												size="sm"
-												onClick={() => handleRemove(row, row.clubId)}
-											>
-												{t("removeMember")}
-											</Button>
-										</div>
-									)}
+											onClick={() => handleRemove(row, row.clubId)}
+										>
+											{t("removeMember")}
+										</Button>
+									</div>
+								)}
 							</div>
 						),
 					},

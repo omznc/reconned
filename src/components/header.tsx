@@ -34,21 +34,14 @@ export function Header({
 				<Logo className="w-full h-auto max-h-[80px] md:w-fit md:h-full p-2 md:p-0" />
 			</Link>
 			{path !== "/" && (
-				<Button
-					asChild
-					variant="ghost"
-					className="w-full hover:bg-transparent md:-mr-12"
-				>
+				<Button asChild variant="ghost" className="w-full hover:bg-transparent md:-mr-12">
 					<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 						<ArrowLeft className="w-6 h-6" />
 						{t("backToHome")}
 					</Link>
 				</Button>
 			)}
-			<div
-				className="flex gap-2 md:w-fit w-full"
-				suppressHydrationWarning={true}
-			>
+			<div className="flex gap-2 md:w-fit w-full" suppressHydrationWarning={true}>
 				<LanguageSwitcher />
 				{user ? (
 					<>
@@ -102,11 +95,7 @@ export function Header({
 					</>
 				) : (
 					<Button asChild={true} suppressHydrationWarning={true}>
-						<Link
-							className="w-full md:w-fit"
-							suppressHydrationWarning={true}
-							href="/login"
-						>
+						<Link className="w-full md:w-fit" suppressHydrationWarning={true} href="/login">
 							{t("login")}
 						</Link>
 					</Button>

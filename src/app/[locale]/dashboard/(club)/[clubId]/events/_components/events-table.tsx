@@ -19,13 +19,7 @@ interface EventsTableProps {
 	userIsManager: boolean;
 }
 
-export function EventsTable({
-	events,
-	totalEvents,
-	clubId,
-	pageSize,
-	userIsManager,
-}: EventsTableProps) {
+export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManager }: EventsTableProps) {
 	const t = useTranslations("dashboard.club.events");
 	return (
 		<GenericDataTable
@@ -102,9 +96,7 @@ export function EventsTable({
 												</Link>
 											</Button>
 											<Button variant={"outline"} asChild>
-												<Link
-													href={`/dashboard/${clubId}/events/create?id=${item.id}`}
-												>
+												<Link href={`/dashboard/${clubId}/events/create?id=${item.id}`}>
 													<Pen className="size-4 mr-2" />
 													{t("edit")}
 												</Link>

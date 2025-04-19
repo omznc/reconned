@@ -10,7 +10,7 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
 
 interface PageProps {
-	params: Promise<{ clubId: string }>;
+	params: Promise<{ clubId: string; }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -24,10 +24,7 @@ export async function ManagersPageFetcher(props: PageProps) {
 	const params = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const user = await isAuthenticated();
 
@@ -60,27 +57,45 @@ export async function ManagersPageFetcher(props: PageProps) {
 		},
 		...(search
 			? {
-					OR: [
-						{ user: { name: { contains: search, mode: "insensitive" } } },
-						{ user: { email: { contains: search, mode: "insensitive" } } },
-						{ user: { callsign: { contains: search, mode: "insensitive" } } },
-					],
-				}
+				OR: [
+					{
+						user: {
+							name: { contains: search, mode: "insensitive" },
+						},
+					},
+					{
+						user: {
+							email: {
+								contains: search,
+								mode: "insensitive",
+							},
+						},
+					},
+					{
+						user: {
+							callsign: {
+								contains: search,
+								mode: "insensitive",
+							},
+						},
+					},
+				],
+			}
 			: {}),
 	} satisfies Prisma.ClubMembershipWhereInput;
 
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
-				...(sortBy === "user.name" && {
-					user: { name: sortOrder ?? "asc" },
-				}),
-				...(sortBy === "user.email" && {
-					user: { email: sortOrder ?? "asc" },
-				}),
-				...(sortBy === "createdAt" && {
-					createdAt: sortOrder ?? "asc",
-				}),
-			}
+			...(sortBy === "user.name" && {
+				user: { name: sortOrder ?? "asc" },
+			}),
+			...(sortBy === "user.email" && {
+				user: { email: sortOrder ?? "asc" },
+			}),
+			...(sortBy === "createdAt" && {
+				createdAt: sortOrder ?? "asc",
+			}),
+		}
 		: { createdAt: "desc" };
 
 	const managers = await prisma.clubMembership.findMany({

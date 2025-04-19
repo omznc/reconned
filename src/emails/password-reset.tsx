@@ -1,16 +1,4 @@
-import {
-	Body,
-	Button,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Img,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
 import { env } from "@/lib/env";
 import { emailStyles } from "@/emails/styles";
 
@@ -41,8 +29,7 @@ export const PasswordReset = ({ resetUrl, userName }: PasswordResetProps) => {
 						<Text style={emailStyles.text}>Pozdrav,</Text>
 					)}
 					<Text style={emailStyles.text}>
-						Molimo vas da kliknete na dugme ispod kako biste resetovali vašu
-						lozinku.
+						Molimo vas da kliknete na dugme ispod kako biste resetovali vašu lozinku.
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={resetUrl}>
@@ -50,9 +37,7 @@ export const PasswordReset = ({ resetUrl, userName }: PasswordResetProps) => {
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>
-						Ako niste očekivali ovaj email, molimo vas da ga zanemarite.
-					</Text>
+					<Text style={emailStyles.footer}>Ako niste očekivali ovaj email, molimo vas da ga zanemarite.</Text>
 				</Container>
 			</Body>
 		</Html>

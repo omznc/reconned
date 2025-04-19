@@ -2,12 +2,7 @@
 
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import {
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
@@ -21,20 +16,11 @@ import { Key } from "lucide-react";
 import type { SuccessContext } from "better-auth/react";
 import { BadgeSoon } from "@/components/badge-soon";
 import { useTranslations } from "next-intl";
-import {
-	TurnstileWidget,
-	type TurnstileWidgetRef,
-} from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -215,9 +201,7 @@ export default function LoginPage() {
 											className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 											disabled={isLoading || isForgotPasswordLoading}
 										>
-											{isForgotPasswordLoading
-												? t("loading")
-												: t("forgotPassword")}
+											{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
 										</Button>
 									</div>
 									<FormControl>
@@ -233,9 +217,7 @@ export default function LoginPage() {
 							)}
 						/>
 
-						{isError && (
-							<p className="text-red-500 -mb-2">{t("invalidData")}</p>
-						)}
+						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
 
 						<TurnstileWidget
 							ref={turnstileRef}
@@ -248,11 +230,7 @@ export default function LoginPage() {
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							disabled={
-								isForgotPasswordLoading ||
-								!turnstileToken ||
-								!form.formState.isValid
-							}
+							disabled={isForgotPasswordLoading || !turnstileToken || !form.formState.isValid}
 							className="w-full plausible-event-name=login-button-click"
 						>
 							{t("login")}
@@ -296,11 +274,7 @@ export default function LoginPage() {
 				<div className="mt-4 text-center text-sm">
 					{t("noAccountQuestion")}{" "}
 					<Link
-						href={
-							redirectTo
-								? `/register?redirectTo=${encodeURIComponent(redirectTo)}`
-								: "/register"
-						}
+						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
 						className="underline"
 					>
 						{t("register")}

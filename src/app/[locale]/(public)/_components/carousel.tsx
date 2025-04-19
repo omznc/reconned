@@ -1,11 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-} from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { format } from "date-fns";
 import { Link } from "@/i18n/navigation";
 import Autoplay from "embla-carousel-autoplay";
@@ -64,9 +60,7 @@ export function EventsCarousel(props: CarouselProps) {
 									className="cursor-pointer w-1/2 transition-all"
 								>
 									{user ? (
-										<Link href={`/events/${event.id}?register=true`}>
-											Prijavi se na susret
-										</Link>
+										<Link href={`/events/${event.id}?register=true`}>Prijavi se na susret</Link>
 									) : (
 										<Link suppressHydrationWarning={true} href="/login">
 											Uloguj se

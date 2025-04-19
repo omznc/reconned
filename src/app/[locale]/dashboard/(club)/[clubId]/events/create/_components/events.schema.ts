@@ -83,14 +83,11 @@ export const createEventFormSchema = z
 	)
 	.refine(
 		(data) => {
-			const hourBeforeEvent = new Date(
-				data.dateStart.getTime() - 60 * 60 * 1000,
-			);
+			const hourBeforeEvent = new Date(data.dateStart.getTime() - 60 * 60 * 1000);
 			return data.dateRegistrationsClose < hourBeforeEvent;
 		},
 		{
-			message:
-				"Prijave se moraju zatvoriti najmanje 1 sat prije početka susreta",
+			message: "Prijave se moraju zatvoriti najmanje 1 sat prije početka susreta",
 			path: ["dateRegistrationsClose"],
 		},
 	)
@@ -102,8 +99,7 @@ export const createEventFormSchema = z
 			return data.dateRegistrationsOpen < data.dateRegistrationsClose;
 		},
 		{
-			message:
-				"Datum otvaranja prijava mora biti prije datuma zatvaranja prijava",
+			message: "Datum otvaranja prijava mora biti prije datuma zatvaranja prijava",
 			path: ["dateRegistrationsOpen"],
 		},
 	)

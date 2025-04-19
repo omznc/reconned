@@ -2,21 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
@@ -36,9 +23,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 // Dot notation path type
 type DotNotation<T extends object> = {
-	[K in keyof T & (string | number)]: T[K] extends object
-		? `${K}` | `${K}.${DotNotation<T[K]>}`
-		: `${K}`;
+	[K in keyof T & (string | number)]: T[K] extends object ? `${K}` | `${K}.${DotNotation<T[K]>}` : `${K}`;
 }[keyof T & (string | number)];
 
 // Column key type that supports both dot notation and arbitrary strings
@@ -77,10 +62,7 @@ interface GenericTableProps<T> {
 }
 
 // Helper function to get nested value
-const getNestedValue = <T extends Record<string, any>>(
-	obj: T,
-	path: string,
-): any => {
+const getNestedValue = <T extends Record<string, any>>(obj: T, path: string): any => {
 	if (!path) {
 		return undefined;
 	}
@@ -120,10 +102,7 @@ const renderCell = <T extends Record<string, any>>(
 		}
 	}
 
-	if (
-		value instanceof Date ||
-		(typeof value === "string" && Date.parse(value))
-	) {
+	if (value instanceof Date || (typeof value === "string" && Date.parse(value))) {
 		const dateLocale = currentLocale === "bs" ? bs : enUS;
 		return format(new Date(value), tableConfig?.dateFormat || "PPP", {
 			locale: dateLocale,
@@ -131,10 +110,7 @@ const renderCell = <T extends Record<string, any>>(
 	}
 
 	if (config?.variant === "badge") {
-		const badgeClass =
-			config.badgeVariants?.[value] ??
-			config.badgeVariants?.default ??
-			"bg-primary/10";
+		const badgeClass = config.badgeVariants?.[value] ?? config.badgeVariants?.default ?? "bg-primary/10";
 		return (
 			<span className={`px-2 py-1 text-xs ${badgeClass}`}>
 				{config.valueMap?.[value] ?? config.valueMap?.default ?? value}
@@ -286,9 +262,7 @@ export function GenericDataTable<T>({
 
 	const hasActiveFilters = () => {
 		return (
-			Boolean(search) ||
-			Boolean(sortBy) ||
-			Object.values(filterValues).some((value) => value && value !== "all")
+			Boolean(search) || Boolean(sortBy) || Object.values(filterValues).some((value) => value && value !== "all")
 		);
 	};
 
@@ -309,7 +283,9 @@ export function GenericDataTable<T>({
 							variant="ghost"
 							onClick={() =>
 								// biome-ignore lint/suspicious/noExplicitAny: Don't care
-								handleSearchChange({ target: { value: "" } } as any)
+								handleSearchChange({
+									target: { value: "" },
+								} as any)
 							}
 							className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent"
 						>
@@ -333,9 +309,7 @@ export function GenericDataTable<T>({
 									event?.preventDefault();
 								}}
 							>
-								{typeof column.header === "string"
-									? column.header
-									: column.key.toString()}
+								{typeof column.header === "string" ? column.header : column.key.toString()}
 							</DropdownMenuCheckboxItem>
 						))}
 					</DropdownMenuContent>
@@ -361,15 +335,9 @@ export function GenericDataTable<T>({
 				))}
 
 				{hasActiveFilters() && (
-					<Button
-						variant="default"
-						onClick={resetAll}
-						className="h-9 px-2 lg:px-3"
-					>
+					<Button variant="default" onClick={resetAll} className="h-9 px-2 lg:px-3">
 						<X className="h-4 w-4" />
-						<span className="ml-2 md:hidden inline lg:inline">
-							{t("filters.clear")}
-						</span>
+						<span className="ml-2 md:hidden inline lg:inline">{t("filters.clear")}</span>
 					</Button>
 				)}
 
@@ -406,10 +374,7 @@ export function GenericDataTable<T>({
 					<TableBody>
 						{data.length === 0 ? (
 							<TableRow>
-								<TableCell
-									colSpan={columns.length}
-									className="text-center h-24"
-								>
+								<TableCell colSpan={columns.length} className="text-center h-24">
 									{t("noData")}
 								</TableCell>
 							</TableRow>
@@ -417,9 +382,7 @@ export function GenericDataTable<T>({
 							data.map((item, idx) => (
 								<TableRow key={`${idx}-${item}`}>
 									{columns
-										.filter((column) =>
-											visibleColumns.has(column.key.toString()),
-										)
+										.filter((column) => visibleColumns.has(column.key.toString()))
 										.map((column) => (
 											<TableCell key={String(column.key)}>
 												{/* @ts-expect-error */}
@@ -436,22 +399,15 @@ export function GenericDataTable<T>({
 			{/* Mobile Cards */}
 			<div className="space-y-4 md:hidden">
 				{data.length === 0 ? (
-					<div className="text-center py-8 text-muted-foreground">
-						{t("noData")}
-					</div>
+					<div className="text-center py-8 text-muted-foreground">{t("noData")}</div>
 				) : (
 					data.map((item, idx) => (
-						<div
-							key={`${idx}-${item}`}
-							className="rounded-lg border p-4 overflow-x-auto space-y-2"
-						>
+						<div key={`${idx}-${item}`} className="rounded-lg border p-4 overflow-x-auto space-y-2">
 							{columns
 								.filter((column) => visibleColumns.has(column.key.toString()))
 								.map((column) => (
 									<div key={String(column.key)} className="flex flex-col">
-										<span className="text-sm text-muted-foreground">
-											{column.header}
-										</span>
+										<span className="text-sm text-muted-foreground">{column.header}</span>
 										<span className="font-medium">
 											{/* @ts-expect-error I know, I know */}
 											{renderCell(item, column, tableConfig, locale)}
@@ -476,9 +432,7 @@ export function GenericDataTable<T>({
 							<SelectItem value="100">100</SelectItem>
 						</SelectContent>
 					</Select>
-					<span className="text-sm text-muted-foreground">
-						{t("navigation.perPage")}
-					</span>
+					<span className="text-sm text-muted-foreground">{t("navigation.perPage")}</span>
 				</div>
 
 				<div className="flex items-center justify-center w-full sm:w-auto gap-2">

@@ -9,14 +9,7 @@ import {
 	CredenzaTitle,
 	CredenzaTrigger,
 } from "@/components/ui/credenza";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,15 +51,10 @@ export function AddPurchaseModal() {
 	const [files, setFiles] = useState<File[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isUploadingFiles, setIsUploadingFiles] = useState(false);
-	const [uploadProgress, setUploadProgress] = useState<FileUploadProgress[]>(
-		[],
-	);
+	const [uploadProgress, setUploadProgress] = useState<FileUploadProgress[]>([]);
 	const MAX_RETRIES = 3;
 
-	const uploadFile = async (
-		file: File,
-		retryCount = 0,
-	): Promise<string | null> => {
+	const uploadFile = async (file: File, retryCount = 0): Promise<string | null> => {
 		try {
 			const resp = await getPurchaseReceiptUploadUrl({
 				file: {
@@ -97,9 +85,7 @@ export function AddPurchaseModal() {
 			return resp.data.cdnUrl;
 		} catch (error) {
 			if (retryCount < MAX_RETRIES && (error as any).message.includes("503")) {
-				await new Promise((resolve) =>
-					setTimeout(resolve, 1000 * (retryCount + 1)),
-				);
+				await new Promise((resolve) => setTimeout(resolve, 1000 * (retryCount + 1)));
 				return uploadFile(file, retryCount + 1);
 			}
 			throw error;
@@ -124,9 +110,7 @@ export function AddPurchaseModal() {
 				for (const [index, file] of files.entries()) {
 					try {
 						setUploadProgress((prev) =>
-							prev.map((p, i) =>
-								i === index ? { ...p, status: "uploading" } : p,
-							),
+							prev.map((p, i) => (i === index ? { ...p, status: "uploading" } : p)),
 						);
 
 						const cdnUrl = await uploadFile(file);
@@ -134,14 +118,18 @@ export function AddPurchaseModal() {
 							uploadedUrls.push(cdnUrl);
 							setUploadProgress((prev) =>
 								prev.map((p, i) =>
-									i === index ? { ...p, progress: 100, status: "success" } : p,
+									i === index
+										? {
+												...p,
+												progress: 100,
+												status: "success",
+											}
+										: p,
 								),
 							);
 						}
 					} catch (error) {
-						setUploadProgress((prev) =>
-							prev.map((p, i) => (i === index ? { ...p, status: "error" } : p)),
-						);
+						setUploadProgress((prev) => prev.map((p, i) => (i === index ? { ...p, status: "error" } : p)));
 						toast.error(`${t("errorReceipt")} ${file.name}`);
 						throw error;
 					}
@@ -204,10 +192,7 @@ export function AddPurchaseModal() {
 									<FormItem>
 										<FormLabel>{t("details.description")}</FormLabel>
 										<FormControl>
-											<Textarea
-												placeholder={t("details.description")}
-												{...field}
-											/>
+											<Textarea placeholder={t("details.description")} {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -225,9 +210,7 @@ export function AddPurchaseModal() {
 												step="0.01"
 												placeholder="0.00"
 												{...field}
-												onChange={(e) =>
-													field.onChange(Number.parseFloat(e.target.value))
-												}
+												onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
 											/>
 										</FormControl>
 										<FormMessage />
@@ -344,10 +327,7 @@ export function AddPurchaseModal() {
 									</FormItem>
 								)}
 							/> */}
-							<LoaderSubmitButton
-								isLoading={isLoading || isUploadingFiles}
-								className="w-full"
-							>
+							<LoaderSubmitButton isLoading={isLoading || isUploadingFiles} className="w-full">
 								{isUploadingFiles
 									? `${t("uploadingFiles")} (${uploadProgress.reduce((acc, curr) => acc + curr.progress, 0) / files.length}%)`
 									: isLoading

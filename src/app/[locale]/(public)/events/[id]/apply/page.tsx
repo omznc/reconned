@@ -15,19 +15,13 @@ interface EventApplicationPageProps {
 	}>;
 }
 
-export default async function EventApplicationPage(
-	props: EventApplicationPageProps,
-) {
+export default async function EventApplicationPage(props: EventApplicationPageProps) {
 	const t = await getTranslations("dashboard.club.events");
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
 		return <ErrorPage title={t("attendenceTracking.unavailable")} />;
 	}
 
-	const [locale, user, params] = await Promise.all([
-		getLocale(),
-		isAuthenticated(),
-		props.params,
-	]);
+	const [locale, user, params] = await Promise.all([getLocale(), isAuthenticated(), props.params]);
 	if (!user) {
 		return redirect({
 			href: `/login?redirectTo=${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${params.id}/apply`,
@@ -140,9 +134,7 @@ export default async function EventApplicationPage(
 	return (
 		<div className="container mx-auto max-w-[1200px] py-8">
 			<h1 className="text-3xl font-bold mb-8">
-				{existingApplication
-					? "Promjena prijave na susret: "
-					: "Prijava na susret: "}
+				{existingApplication ? "Promjena prijave na susret: " : "Prijava na susret: "}
 				{event.name}
 			</h1>
 			<EventApplicationForm

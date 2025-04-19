@@ -40,12 +40,9 @@ export const auth = betterAuth({
 			await sendEmail({
 				to: user.email,
 				subject: "Resetujte svoju lozinku",
-				html: await render(
-					<PasswordReset userName={user.name} resetUrl={url} />,
-					{
-						pretty: true,
-					},
-				),
+				html: await render(<PasswordReset userName={user.name} resetUrl={url} />, {
+					pretty: true,
+				}),
 			});
 		},
 	},

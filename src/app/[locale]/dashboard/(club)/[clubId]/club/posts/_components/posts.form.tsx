@@ -9,14 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { toast } from "sonner";
 import type { Post } from "@prisma/client";
-import {
-	Form,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormControl,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { postSchema } from "./posts.schema";
 import { savePost, deletePost } from "./posts.action";
 import { useQueryState } from "nuqs";
@@ -34,9 +27,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const [postId, setPostId] = useQueryState("postId");
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
-	const [editorContent, setEditorContent] = useState<string>(
-		editingPost?.content ?? "",
-	);
+	const [editorContent, setEditorContent] = useState<string>(editingPost?.content ?? "");
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.posts");
 
@@ -110,15 +101,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	return (
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-semibold">
-					{editingPost ? t("editing") : t("creating")}
-				</h1>
+				<h1 className="text-2xl font-semibold">{editingPost ? t("editing") : t("creating")}</h1>
 				{editingPost && (
-					<Button
-						variant="destructive"
-						onClick={handleDelete}
-						disabled={isLoading}
-					>
+					<Button variant="destructive" onClick={handleDelete} disabled={isLoading}>
 						{t("delete.confirm")}
 					</Button>
 				)}
@@ -146,11 +131,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 							<FormItem>
 								<FormLabel>{t("content")}</FormLabel>
 								<FormControl>
-									<Editor
-										editable
-										initialValue={editorContent}
-										onChange={handleEditorChange}
-									/>
+									<Editor editable initialValue={editorContent} onChange={handleEditorChange} />
 								</FormControl>
 							</FormItem>
 						)}
@@ -178,10 +159,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 							<FormItem>
 								<FormLabel>{t("public")}</FormLabel>
 								<FormControl>
-									<Switch
-										checked={field.value}
-										onCheckedChange={field.onChange}
-									/>
+									<Switch checked={field.value} onCheckedChange={field.onChange} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

@@ -1,16 +1,4 @@
-import {
-	Body,
-	Button,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Img,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
 import { emailStyles } from "@/emails/styles";
 import { getTranslations } from "next-intl/server";
 
@@ -44,12 +32,7 @@ export const ClubInvitationEmail = async ({
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
-						<Img
-							src={clubLogo}
-							alt="Logo Kluba"
-							width="100"
-							style={emailStyles.logo}
-						/>
+						<Img src={clubLogo} alt="Logo Kluba" width="100" style={emailStyles.logo} />
 						<Heading style={emailStyles.clubName}>
 							{clubName} - {clubLocation}
 						</Heading>

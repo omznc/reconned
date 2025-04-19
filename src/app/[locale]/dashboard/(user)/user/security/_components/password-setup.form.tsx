@@ -1,14 +1,7 @@
 import { setupPasswordAction } from "@/app/[locale]/dashboard/(user)/user/security/_components/password.action";
 import { setupPasswordSchema } from "@/app/[locale]/dashboard/(user)/user/security/_components/password.schema";
 import { Button } from "@components/ui/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 import { Input } from "@components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockIcon } from "lucide-react";
@@ -33,9 +26,7 @@ export function SetupPasswordForm({
 		},
 	});
 
-	const onSetupPasswordSubmit = async (
-		values: z.infer<typeof setupPasswordSchema>,
-	) => {
+	const onSetupPasswordSubmit = async (values: z.infer<typeof setupPasswordSchema>) => {
 		setIsLoading(true);
 		try {
 			const response = await setupPasswordAction({
@@ -58,10 +49,7 @@ export function SetupPasswordForm({
 
 	return (
 		<Form {...setupPasswordForm}>
-			<form
-				onSubmit={setupPasswordForm.handleSubmit(onSetupPasswordSubmit)}
-				className="space-y-4 w-full"
-			>
+			<form onSubmit={setupPasswordForm.handleSubmit(onSetupPasswordSubmit)} className="space-y-4 w-full">
 				<div>
 					<h3 className="text-lg font-semibold">{t("title")}</h3>
 				</div>

@@ -1,20 +1,7 @@
 "use client";
 
-import {
-	Area,
-	AreaChart,
-	Bar,
-	BarChart,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-} from "recharts";
-import {
-	type ChartConfig,
-	ChartContainer,
-	ChartTooltipContent,
-	ChartTooltip,
-} from "@/components/ui/chart";
+import { Area, AreaChart, Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
+import { type ChartConfig, ChartContainer, ChartTooltipContent, ChartTooltip } from "@/components/ui/chart";
 import { useCallback, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -36,15 +23,8 @@ type StatsChartsProps = {
 	registrationData: Array<{ name: string; registrations: number }>;
 };
 
-export function StatsCharts({
-	memberData,
-	roleData,
-	eventData,
-	registrationData,
-}: StatsChartsProps) {
-	const [fullscreenChart, setFullscreenChart] = useState<ChartData | null>(
-		null,
-	);
+export function StatsCharts({ memberData, roleData, eventData, registrationData }: StatsChartsProps) {
+	const [fullscreenChart, setFullscreenChart] = useState<ChartData | null>(null);
 	const t = useTranslations("dashboard.club.stats");
 
 	const chartConfig = {
@@ -123,12 +103,7 @@ export function StatsCharts({
 						}}
 					/>
 					<YAxis className="text-xs" />
-					<Bar
-						dataKey="count"
-						name={t("members")}
-						fill="var(--color-roles)"
-						radius={4}
-					/>
+					<Bar dataKey="count" name={t("members")} fill="var(--color-roles)" radius={4} />
 					<ChartTooltip content={CustomTooltip} />
 				</BarChart>
 			),
@@ -141,12 +116,7 @@ export function StatsCharts({
 					<CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
 					<XAxis dataKey="month" className="text-xs" />
 					<YAxis className="text-xs" />
-					<Bar
-						dataKey="count"
-						name={t("numberOfEvents")}
-						fill="var(--color-events)"
-						radius={4}
-					/>
+					<Bar dataKey="count" name={t("numberOfEvents")} fill="var(--color-events)" radius={4} />
 					<ChartTooltip content={CustomTooltip} />
 				</BarChart>
 			),
@@ -186,11 +156,7 @@ export function StatsCharts({
 					>
 						<div className="flex justify-between items-center mb-4">
 							<h3 className="text-lg font-semibold">{chart.title}</h3>
-							<Button
-								variant="ghost"
-								size="icon"
-								onClick={() => setFullscreenChart(chart)}
-							>
+							<Button variant="ghost" size="icon" onClick={() => setFullscreenChart(chart)}>
 								<Maximize2 className="h-4 w-4" />
 							</Button>
 						</div>
@@ -199,18 +165,12 @@ export function StatsCharts({
 				))}
 			</div>
 
-			<Dialog
-				open={!!fullscreenChart}
-				onOpenChange={() => setFullscreenChart(null)}
-			>
+			<Dialog open={!!fullscreenChart} onOpenChange={() => setFullscreenChart(null)}>
 				<DialogContent className="max-w-(--breakpoint-xl) w-[90vw] h-[90vh]">
 					{fullscreenChart && (
 						<>
 							<DialogTitle>{fullscreenChart.title}</DialogTitle>
-							<ChartContainer
-								config={chartConfig}
-								className="p-4 w-full h-full"
-							>
+							<ChartContainer config={chartConfig} className="p-4 w-full h-full">
 								{/* @ts-expect-error */}
 								{fullscreenChart.renderChart(fullscreenChart.data)}
 							</ChartContainer>
