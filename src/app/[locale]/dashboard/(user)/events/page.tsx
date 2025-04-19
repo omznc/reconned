@@ -42,19 +42,24 @@ export async function EventsPageFetcher(props: PageProps) {
 		},
 		...(search
 			? {
-					OR: [
-						{ name: { contains: search, mode: "insensitive" } },
-						{ description: { contains: search, mode: "insensitive" } },
-						{ location: { contains: search, mode: "insensitive" } },
-					],
-				}
+				OR: [
+					{ name: { contains: search, mode: "insensitive" } },
+					{
+						description: {
+							contains: search,
+							mode: "insensitive",
+						},
+					},
+					{ location: { contains: search, mode: "insensitive" } },
+				],
+			}
 			: {}),
 	} satisfies Prisma.EventWhereInput;
 
 	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
 		? {
-				[sortBy]: sortOrder ?? "asc",
-			}
+			[sortBy]: sortOrder ?? "asc",
+		}
 		: { dateStart: "desc" };
 
 	const events = await prisma.event.findMany({

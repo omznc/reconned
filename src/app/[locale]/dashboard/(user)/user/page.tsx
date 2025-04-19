@@ -46,21 +46,14 @@ export default async function Page() {
 				</div>
 				<div className="flex gap-1 flex-col md:flex-row">
 					<Button variant="outline" asChild={true}>
-						<Link
-							className="flex items-center gap-1"
-							href={"/dashboard/user/settings"}
-						>
+						<Link className="flex items-center gap-1" href={"/dashboard/user/settings"}>
 							<Pencil size={16} />
 							{t("edit")}
 						</Link>
 					</Button>
 					{!userFromDb.isPrivate && (
 						<Button variant="outline" asChild={true}>
-							<Link
-								target="_blank"
-								className="flex items-center gap-1"
-								href={`/users/${user.id}`}
-							>
+							<Link target="_blank" className="flex items-center gap-1" href={`/users/${user.id}`}>
 								<Eye size={16} />
 								{t("view")}
 							</Link>

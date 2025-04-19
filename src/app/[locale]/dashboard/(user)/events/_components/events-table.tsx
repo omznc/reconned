@@ -33,11 +33,7 @@ interface EventsTableProps {
 	pageSize: number;
 }
 
-export function EventsTable({
-	events,
-	totalEvents,
-	pageSize,
-}: EventsTableProps) {
+export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps) {
 	const t = useTranslations("dashboard.events");
 
 	return (
@@ -73,15 +69,8 @@ export function EventsTable({
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => {
-							const { label, className } = getEventStatus(
-								row.dateStart,
-								row.dateEnd,
-							);
-							return (
-								<Badge className={`pointer-events-none ${className}`}>
-									{label}
-								</Badge>
-							);
+							const { label, className } = getEventStatus(row.dateStart, row.dateEnd);
+							return <Badge className={`pointer-events-none ${className}`}>{label}</Badge>;
 						},
 					},
 				},

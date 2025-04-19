@@ -11,7 +11,7 @@ import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 
 interface PageProps {
-	params: Promise<{ clubId: string }>;
+	params: Promise<{ clubId: string; }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -25,10 +25,7 @@ export async function EventsPageFetcher(props: PageProps) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const user = await isAuthenticated();
 	if (!user) {
@@ -46,19 +43,24 @@ export async function EventsPageFetcher(props: PageProps) {
 		},
 		...(search
 			? {
-					OR: [
-						{ name: { contains: search, mode: "insensitive" } },
-						{ description: { contains: search, mode: "insensitive" } },
-						{ location: { contains: search, mode: "insensitive" } },
-					],
-				}
+				OR: [
+					{ name: { contains: search, mode: "insensitive" } },
+					{
+						description: {
+							contains: search,
+							mode: "insensitive",
+						},
+					},
+					{ location: { contains: search, mode: "insensitive" } },
+				],
+			}
 			: {}),
 	} satisfies Prisma.EventWhereInput;
 
 	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
 		? {
-				[sortBy]: sortOrder ?? "asc",
-			}
+			[sortBy]: sortOrder ?? "asc",
+		}
 		: { dateStart: "desc" };
 
 	const events = await prisma.event.findMany({

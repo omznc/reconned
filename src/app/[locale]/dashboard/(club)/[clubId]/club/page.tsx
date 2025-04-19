@@ -48,12 +48,5 @@ export default async function Page(props: PageProps) {
 
 	const isManager = user.managedClubs.includes(club.id);
 
-	return (
-		<ClubOverview
-			club={club}
-			isManager={isManager}
-			isMember={true}
-			currentUserMembership={userMembership}
-		/>
-	);
+	return <ClubOverview club={club} isManager={isManager} isMember={true} currentUserMembership={userMembership} />;
 }

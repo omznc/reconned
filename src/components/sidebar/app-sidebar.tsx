@@ -47,12 +47,7 @@ function SearchButton({ isMac }: { isMac: boolean }) {
 	}
 
 	return (
-		<Button
-			variant="outline"
-			size="sm"
-			className="w-full h-8 gap-2 text-xs justify-between"
-			onClick={toggleOpen}
-		>
+		<Button variant="outline" size="sm" className="w-full h-8 gap-2 text-xs justify-between" onClick={toggleOpen}>
 			<div className="flex items-center gap-2">
 				<Search className="h-3.5 w-3.5" />
 				<span>{t("searchPlaceholder")}</span>
@@ -105,9 +100,7 @@ export function AppSidebar(props: AppSidebarProps) {
 		}
 	}, [params.clubId, setClubId]);
 
-	const invites = props.inviteRequestsCount.filter(
-		(invite) => invite.id === clubId,
-	)[0];
+	const invites = props.inviteRequestsCount.filter((invite) => invite.id === clubId)[0];
 
 	return (
 		<Sidebar collapsible="icon" variant="floating">
@@ -116,21 +109,17 @@ export function AppSidebar(props: AppSidebarProps) {
 				<SearchButton isMac={isMac} />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavApp
-					isAdmin={props.user.role === "admin"}
-					pendingInvites={props.invitesCount}
-				/>
+				<NavApp isAdmin={props.user.role === "admin"} pendingInvites={props.invitesCount} />
 				<NavClub user={props.user} />
 			</SidebarContent>
 			<SidebarFooter>
 				{props.invitesCount > 0 &&
 					(sidebar.open ? (
-						<Link
-							href="/dashboard/user/invites"
-							className="px-3 py-2 border bg-red-500/10"
-						>
+						<Link href="/dashboard/user/invites" className="px-3 py-2 border bg-red-500/10">
 							<p className="text-xs text-muted-foreground">
-								{t("pendingInvitesMessage", { count: props.invitesCount })}
+								{t("pendingInvitesMessage", {
+									count: props.invitesCount,
+								})}
 							</p>
 						</Link>
 					) : (
@@ -148,7 +137,9 @@ export function AppSidebar(props: AppSidebarProps) {
 							className="px-3 py-2 border bg-red-500/10"
 						>
 							<p className="text-xs text-muted-foreground">
-								{t("inviteRequestsMessage", { count: invites?.count ?? 0 })}
+								{t("inviteRequestsMessage", {
+									count: invites?.count ?? 0,
+								})}
 							</p>
 						</Link>
 					) : (
@@ -164,9 +155,7 @@ export function AppSidebar(props: AppSidebarProps) {
 						<SidebarMenuItem>
 							{sidebar.open ? (
 								<div className="px-3 py-2 border bg-background/20">
-									<p className="text-xs text-muted-foreground">
-										{t("betaMessage")}
-									</p>
+									<p className="text-xs text-muted-foreground">{t("betaMessage")}</p>
 								</div>
 							) : (
 								<div className="px-1 py-2 border bg-background/20 flex flex-col items-center">

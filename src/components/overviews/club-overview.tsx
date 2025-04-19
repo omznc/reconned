@@ -21,19 +21,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
 import { getTranslations } from "next-intl/server";
-import {
-	AdminIcon,
-	ClubManagerIcon,
-	ClubOwnerIcon,
-	VerifiedClubIcon,
-} from "@/components/icons";
+import { AdminIcon, ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { LeaveClubButton } from "@/components/leave-club-button";
-import {
-	checkAndRefreshToken,
-	getInstagramMedia,
-	type InstagramMedia,
-} from "@/lib/instagram";
+import { checkAndRefreshToken, getInstagramMedia, type InstagramMedia } from "@/lib/instagram";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
 
@@ -52,9 +43,7 @@ interface ClubOverviewProps {
 	currentUserMembership?: ClubMembership | null;
 }
 
-async function fetchInstagramPhotos(
-	clubId: string,
-): Promise<{ photos: InstagramMedia[]; username: string | null }> {
+async function fetchInstagramPhotos(clubId: string): Promise<{ photos: InstagramMedia[]; username: string | null }> {
 	try {
 		// Check token validity and refresh if needed
 		const { token, igBusinessId } = await checkAndRefreshToken(clubId);
@@ -74,12 +63,7 @@ async function fetchInstagramPhotos(
 	}
 }
 
-export async function ClubOverview({
-	club,
-	isManager,
-	isMember,
-	currentUserMembership,
-}: ClubOverviewProps) {
+export async function ClubOverview({ club, isManager, isMember, currentUserMembership }: ClubOverviewProps) {
 	const [analyticsId, analyticsSlug, t, instagramData] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
@@ -91,8 +75,7 @@ export async function ClubOverview({
 					username: club.instagramUsername || null,
 				}),
 	]);
-	const visitors =
-		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const posts = club.posts.sort((a, b) => {
 		if (a.createdAt < b.createdAt) {
 			return 1;
@@ -154,11 +137,7 @@ export async function ClubOverview({
 						</Button>
 					)}
 					{isMember && !isClubOwner && (
-						<LeaveClubButton
-							clubId={club.id}
-							isClubOwner={isClubOwner ?? false}
-							variant="destructive"
-						/>
+						<LeaveClubButton clubId={club.id} isClubOwner={isClubOwner ?? false} variant="destructive" />
 					)}
 				</div>
 			</div>
@@ -201,12 +180,7 @@ export async function ClubOverview({
 					</Badge>
 				)}
 				{club.website && (
-					<Link
-						href={club.website}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="md:grow-0 grow"
-					>
+					<Link href={club.website} target="_blank" rel="noopener noreferrer" className="md:grow-0 grow">
 						<Badge className="flex items-center gap-1 hover:cursor-pointer">
 							<Globe className="w-4 h-4" />
 							{club.website}
@@ -214,25 +188,18 @@ export async function ClubOverview({
 					</Link>
 				)}
 				{shouldShowStats && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{t("views", { count: visitors })}
-					</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
 				)}
 			</div>
 			<ReviewsOverview type="club" typeId={club.id} />
 			<div
-				className={cn(
-					"grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none",
-					{
-						"md:grid-cols-3": (club.members?.length ?? 0) > 0,
-					},
-				)}
+				className={cn("grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none", {
+					"md:grid-cols-3": (club.members?.length ?? 0) > 0,
+				})}
 			>
 				<div className="space-y-4 md:col-span-2">
 					<div className="flex h-10 items-center justify-between">
-						<h2 className="text-xl font-semibold flex items-center gap-2">
-							{t("posts")}
-						</h2>
+						<h2 className="text-xl font-semibold flex items-center gap-2">{t("posts")}</h2>
 						{isManager && (
 							<Button asChild size="sm">
 								<Link href={`/dashboard/${club.id}/club/posts`}>
@@ -247,21 +214,14 @@ export async function ClubOverview({
 					) : (
 						<div className="space-y-4">
 							{posts?.map((post) => (
-								<ClubPost
-									key={post.id}
-									post={post}
-									clubId={club.id}
-									isManager={isManager}
-								/>
+								<ClubPost key={post.id} post={post} clubId={club.id} isManager={isManager} />
 							))}
 						</div>
 					)}
 				</div>
 				{(club.members?.length ?? 0) > 0 && (
 					<div className="space-y-4">
-						<h2 className="text-xl h-10 font-semibold items-center flex">
-							{t("members")}
-						</h2>
+						<h2 className="text-xl h-10 font-semibold items-center flex">{t("members")}</h2>
 						<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
 							{club.members
 								?.sort((a, b) => {
@@ -308,9 +268,7 @@ export async function ClubOverview({
 												{membership.role === "CLUB_OWNER" && <ClubOwnerIcon />}
 												{membership.role === "MANAGER" && <ClubManagerIcon />}
 											</h3>
-											<p className="text-muted-foreground -mt-2">
-												{membership.user.callsign}
-											</p>
+											<p className="text-muted-foreground -mt-2">{membership.user.callsign}</p>
 										</div>
 									</Link>
 								))}
@@ -324,9 +282,7 @@ export async function ClubOverview({
 						<div className="flex flex-col gap-2">
 							<div className="flex gap-2 items-center">
 								<SiInstagram className="h-5 w-5 text-primary" />
-								<h2 className="text-xl font-semibold">
-									{t("instagramGallery")}
-								</h2>
+								<h2 className="text-xl font-semibold">{t("instagramGallery")}</h2>
 							</div>
 							<p>{t("instagramGalleryDescription")}</p>
 						</div>
@@ -349,9 +305,7 @@ export async function ClubOverview({
 					<div className="p-4">
 						<ClubInstagram
 							photos={instagramData.photos}
-							username={
-								instagramData.username || club.instagramUsername || undefined
-							}
+							username={instagramData.username || club.instagramUsername || undefined}
 						/>
 					</div>
 				</div>

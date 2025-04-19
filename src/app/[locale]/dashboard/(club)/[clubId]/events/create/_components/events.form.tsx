@@ -1,20 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,56 +20,29 @@ import {
 import { createEventFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-	DateTimePicker,
-	initHourFormat,
-} from "@/components/ui/date-time-picker";
-import {
-	FileInput,
-	FileUploader,
-	FileUploaderContent,
-	FileUploaderItem,
-} from "@/components/ui/file-upload";
+import { DateTimePicker, initHourFormat } from "@/components/ui/date-time-picker";
+import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
 import { Switch } from "@/components/ui/switch";
 import type { ClubRule, Event } from "@prisma/client";
 import { bs } from "date-fns/locale";
-import {
-	ArrowUpRight,
-	Calendar as CalendarIcon,
-	CloudUpload,
-	Eye,
-	Loader,
-	Trash,
-} from "lucide-react";
+import { ArrowUpRight, Calendar as CalendarIcon, CloudUpload, Eye, Loader, Trash } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import {
-	HoverCard,
-	HoverCardTrigger,
-	HoverCardContent,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { AnimatedNumber } from "@/components/animated-number";
-import {
-	Sheet,
-	SheetContent,
-	SheetHeader,
-	SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SlugInput } from "@/components/slug/slug-input";
 import { useTranslations } from "next-intl";
 
-export const MapComponent = dynamic(
-	() => import("@/components/map-component").then((mod) => mod.MapComponent),
-	{
-		ssr: false,
-	},
-);
+export const MapComponent = dynamic(() => import("@/components/map-component").then((mod) => mod.MapComponent), {
+	ssr: false,
+});
 
 interface CreateEventFormProps {
 	event: Event | null;
@@ -108,9 +69,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		dateEnd: Date;
 	}) {
 		// Add validation check
-		if (
-			!(dateRegistrationsOpen && dateRegistrationsClose && dateStart && dateEnd)
-		) {
+		if (!(dateRegistrationsOpen && dateRegistrationsClose && dateStart && dateEnd)) {
 			return null;
 		}
 
@@ -119,8 +78,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		const regOpenDiff = dateRegistrationsOpen.getTime() - now.getTime();
 		const regCloseDiff = dateRegistrationsClose.getTime() - now.getTime();
 		const startDiff = dateStart.getTime() - now.getTime();
-		const eventDuration =
-			(dateEnd.getTime() - dateStart.getTime()) / (1000 * 60 * 60);
+		const eventDuration = (dateEnd.getTime() - dateStart.getTime()) / (1000 * 60 * 60);
 
 		const parts = [] as ReactNode[];
 
@@ -160,9 +118,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			</span>,
 		);
 
-		return (
-			<p className="text-sm text-muted-foreground min-h-[50px]">{parts}</p>
-		);
+		return <p className="text-sm text-muted-foreground min-h-[50px]">{parts}</p>;
 	}
 
 	const dropZoneConfig = {
@@ -199,8 +155,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			dateStart: props.event?.dateStart || startDate,
 			dateEnd: props.event?.dateEnd || endDate,
 			dateRegistrationsOpen: props.event?.dateRegistrationsOpen || new Date(),
-			dateRegistrationsClose:
-				props.event?.dateRegistrationsClose || registrationCloseDate,
+			dateRegistrationsClose: props.event?.dateRegistrationsClose || registrationCloseDate,
 			image: props.event?.image || "",
 			isPrivate: props.event?.isPrivate,
 			allowFreelancers: props.event?.allowFreelancers,
@@ -234,9 +189,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				newEndDate.setDate(newEndDate.getDate() + 1);
 
 				const newRegistrationCloseDate = new Date(startDate);
-				newRegistrationCloseDate.setHours(
-					newRegistrationCloseDate.getHours() - 2,
-				);
+				newRegistrationCloseDate.setHours(newRegistrationCloseDate.getHours() - 2);
 
 				form.setValue("dateEnd", newEndDate, { shouldValidate: true });
 				form.setValue("dateRegistrationsClose", newRegistrationCloseDate, {
@@ -334,11 +287,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								}}
 							>
 								<Trash className="size-4" />
-								{isLoading ? (
-									<Loader className="animate-spin size-4" />
-								) : (
-									t("delete.confirm")
-								)}
+								{isLoading ? <Loader className="animate-spin size-4" /> : t("delete.confirm")}
 							</Button>
 							<Button variant="outline" asChild={true}>
 								<Link
@@ -377,11 +326,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						<FormItem>
 							<FormLabel>{t("description")}</FormLabel>
 							<FormControl>
-								<Textarea
-									placeholder={t("descriptionPlaceholder")}
-									className="min-h-32"
-									{...field}
-								/>
+								<Textarea placeholder={t("descriptionPlaceholder")} className="min-h-32" {...field} />
 							</FormControl>
 							<FormDescription>{t("descriptionDescription")}</FormDescription>
 							<FormMessage />
@@ -499,12 +444,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							</Button>
 						</HoverCardTrigger>
 						<HoverCardContent className="size-full mb-8">
-							<Image
-								src={props.event.image}
-								alt="Club logo"
-								width={200}
-								height={200}
-							/>
+							<Image src={props.event.image} alt="Club logo" width={200} height={200} />
 						</HoverCardContent>
 					</HoverCard>
 				)}
@@ -575,10 +515,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											</FormControl>
 										</PopoverTrigger>
 										<PopoverContent className="w-auto p-0" align="start">
-											<DateTimePicker
-												value={field.value}
-												onChange={field.onChange}
-											/>
+											<DateTimePicker value={field.value} onChange={field.onChange} />
 										</PopoverContent>
 									</Popover>
 									<FormDescription>{t("startDescription")}</FormDescription>
@@ -617,10 +554,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											</FormControl>
 										</PopoverTrigger>
 										<PopoverContent className="w-auto p-0" align="start">
-											<DateTimePicker
-												value={field.value}
-												onChange={field.onChange}
-											/>
+											<DateTimePicker value={field.value} onChange={field.onChange} />
 										</PopoverContent>
 									</Popover>
 									<FormDescription>{t("endDescription")}</FormDescription>
@@ -661,15 +595,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											</FormControl>
 										</PopoverTrigger>
 										<PopoverContent className="w-auto p-0" align="start">
-											<DateTimePicker
-												value={field.value}
-												onChange={field.onChange}
-											/>
+											<DateTimePicker value={field.value} onChange={field.onChange} />
 										</PopoverContent>
 									</Popover>
-									<FormDescription>
-										{t("registrationStartDescription")}
-									</FormDescription>
+									<FormDescription>{t("registrationStartDescription")}</FormDescription>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -705,15 +634,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											</FormControl>
 										</PopoverTrigger>
 										<PopoverContent className="w-auto p-0" align="start">
-											<DateTimePicker
-												value={field.value}
-												onChange={field.onChange}
-											/>
+											<DateTimePicker value={field.value} onChange={field.onChange} />
 										</PopoverContent>
 									</Popover>
-									<FormDescription>
-										{t("registrationEndDescription")}
-									</FormDescription>
+									<FormDescription>{t("registrationEndDescription")}</FormDescription>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -735,10 +659,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								<FormDescription>{t("privateDescription")}</FormDescription>
 							</div>
 							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
+								<Switch checked={field.value} onCheckedChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -754,10 +675,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								<FormDescription>{t("freelancersDescription")}</FormDescription>
 							</div>
 							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
+								<Switch checked={field.value} onCheckedChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -778,10 +696,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										<FormLabel>{t("breakfast")}</FormLabel>
 									</div>
 									<FormControl>
-										<Switch
-											checked={field.value}
-											onCheckedChange={field.onChange}
-										/>
+										<Switch checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -798,10 +713,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										<FormLabel>{t("lunch")}</FormLabel>
 									</div>
 									<FormControl>
-										<Switch
-											checked={field.value}
-											onCheckedChange={field.onChange}
-										/>
+										<Switch checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -820,10 +732,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										<FormLabel>{t("dinner")}</FormLabel>
 									</div>
 									<FormControl>
-										<Switch
-											checked={field.value}
-											onCheckedChange={field.onChange}
-										/>
+										<Switch checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -840,10 +749,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										<FormLabel>{t("snacks")}</FormLabel>
 									</div>
 									<FormControl>
-										<Switch
-											checked={field.value}
-											onCheckedChange={field.onChange}
-										/>
+										<Switch checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -862,10 +768,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										<FormLabel>{t("drinks")}</FormLabel>
 									</div>
 									<FormControl>
-										<Switch
-											checked={field.value}
-											onCheckedChange={field.onChange}
-										/>
+										<Switch checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -882,10 +785,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										<FormLabel>{t("prizes")}</FormLabel>
 									</div>
 									<FormControl>
-										<Switch
-											checked={field.value}
-											onCheckedChange={field.onChange}
-										/>
+										<Switch checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
 								</FormItem>
 							)}
@@ -952,16 +852,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					control={form.control}
 					name="ruleIds"
 					render={({ field }) => {
-						const [selectedRule, setSelectedRule] = useState<ClubRule | null>(
-							null,
-						);
+						const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 
 						return (
 							<FormItem>
 								<FormLabel>{t("rules")}</FormLabel>
-								<FormDescription>
-									Odaberite pravila koja će važiti za ovaj susret.
-								</FormDescription>
+								<FormDescription>Odaberite pravila koja će važiti za ovaj susret.</FormDescription>
 								<FormControl>
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 										{/* TODO: Hot reload rules when they're added. */}
@@ -995,15 +891,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<div className="grid gap-1.5">
 														<Label htmlFor={rule.id}>{rule.name}</Label>
 														{rule.description && (
-															<p className="text-sm line-clamp-1">
-																{rule.description}
-															</p>
+															<p className="text-sm line-clamp-1">{rule.description}</p>
 														)}
 														<p className="text-sm text-muted-foreground">
-															{differenceInDays(
-																new Date(rule.createdAt),
-																new Date(),
-															) === 0
+															{differenceInDays(new Date(rule.createdAt), new Date()) ===
+															0
 																? t("changedToday")
 																: t("changedAgo", {
 																		time: differenceInDays(
@@ -1028,10 +920,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								</FormControl>
 								<FormMessage />
 
-								<Sheet
-									open={!!selectedRule}
-									onOpenChange={() => setSelectedRule(null)}
-								>
+								<Sheet open={!!selectedRule} onOpenChange={() => setSelectedRule(null)}>
 									<SheetContent
 										side="right"
 										className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col"
@@ -1075,10 +964,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					/>
 				</div>
 
-				<LoaderSubmitButton
-					isLoading={isLoading}
-					disabled={!isSlugValid && !!form.watch("slug")}
-				>
+				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
 					{props.event ? t("save") : t("create")}
 				</LoaderSubmitButton>
 			</form>

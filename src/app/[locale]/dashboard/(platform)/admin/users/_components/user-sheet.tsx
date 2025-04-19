@@ -34,9 +34,7 @@ export function UserSheet({ user }: Props) {
 			<CredenzaContent>
 				<CredenzaHeader>
 					<CredenzaTitle>{user?.name ?? "Ne postoji"}</CredenzaTitle>
-					<CredenzaDescription>
-						{user?.email ?? "Korisnik ne postoji"}
-					</CredenzaDescription>
+					<CredenzaDescription>{user?.email ?? "Korisnik ne postoji"}</CredenzaDescription>
 				</CredenzaHeader>
 				{!user && (
 					<div className="mt-4 space-y-4">
@@ -50,8 +48,7 @@ export function UserSheet({ user }: Props) {
 							<div className="grid gap-2 text-sm">
 								{user.callsign && (
 									<div>
-										<span className="text-muted-foreground">Pozivni znak:</span>{" "}
-										{user.callsign}
+										<span className="text-muted-foreground">Pozivni znak:</span> {user.callsign}
 									</div>
 								)}
 								<div>
@@ -61,9 +58,7 @@ export function UserSheet({ user }: Props) {
 								{user.banned && (
 									<span className="text-red-600">
 										Banovan do{" "}
-										{user.banExpires
-											? format(new Date(user.banExpires), "d. MMMM yyyy.")
-											: "N/A"}
+										{user.banExpires ? format(new Date(user.banExpires), "d. MMMM yyyy.") : "N/A"}
 									</span>
 								)}
 							</div>

@@ -2,21 +2,9 @@ import { BadgeSoon } from "@/components/badge-soon";
 import { env } from "@/lib/env";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import {
-	SiDiscord,
-	SiFacebook,
-	SiGithub,
-	SiInstagram,
-} from "@icons-pack/react-simple-icons";
+import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
 // Removed QuickLinkIcon import and added required lucide icons.
-import {
-	Calendar,
-	LayoutDashboard,
-	MapIcon,
-	Search,
-	ShieldQuestion,
-	BarChart2,
-} from "lucide-react";
+import { Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, BarChart2 } from "lucide-react";
 import { BadgeNew } from "@/components/badge-new";
 
 export function Footer() {
@@ -34,46 +22,31 @@ export function Footer() {
 						<h3 className="font-bold mb-4">{t("quickLinks.title")}</h3>
 						<ul className="space-y-2 text-sm">
 							<li>
-								<Link
-									href="/about"
-									className="flex items-center hover:text-red-500 transition-all"
-								>
+								<Link href="/about" className="flex items-center hover:text-red-500 transition-all">
 									<ShieldQuestion className="w-5 h-5 mr-2" />
 									{t("quickLinks.about")} 👀
 								</Link>
 							</li>
 							<li>
-								<Link
-									href="/events"
-									className="flex items-center hover:text-red-500 transition-all"
-								>
+								<Link href="/events" className="flex items-center hover:text-red-500 transition-all">
 									<Calendar className="w-5 h-5 mr-2" />
 									{t("quickLinks.events")}
 								</Link>
 							</li>
 							<li>
-								<Link
-									href="/dashboard"
-									className="flex items-center hover:text-red-500 transition-all"
-								>
+								<Link href="/dashboard" className="flex items-center hover:text-red-500 transition-all">
 									<LayoutDashboard className="w-5 h-5 mr-2" />
 									{t("quickLinks.dashboard")}
 								</Link>
 							</li>
 							<li>
-								<Link
-									href="/map"
-									className="flex items-center hover:text-red-500 transition-all"
-								>
+								<Link href="/map" className="flex items-center hover:text-red-500 transition-all">
 									<MapIcon className="w-5 h-5 mr-2" />
 									{t("quickLinks.map")}
 								</Link>
 							</li>
 							<li>
-								<Link
-									href="/search"
-									className="flex items-center hover:text-red-500 transition-all"
-								>
+								<Link href="/search" className="flex items-center hover:text-red-500 transition-all">
 									<Search className="w-5 h-5 mr-2" />
 									{t("quickLinks.search")}
 								</Link>
@@ -118,10 +91,7 @@ export function Footer() {
 								<span>Github</span>
 								<BadgeNew className="-mb-0.5" />
 							</Link>
-							<Link
-								href="#"
-								className="hover:text-red-500 transition-all flex items-center gap-2"
-							>
+							<Link href="#" className="hover:text-red-500 transition-all flex items-center gap-2">
 								<SiFacebook className="size-4" />
 								<span>Facebook</span>
 								<BadgeSoon className="-mb-0.5" />
@@ -154,10 +124,7 @@ export function Footer() {
 				</div>
 				<div className="mt-8 pt-8 border-t border-border/10 text-center text-sm ">
 					<p>{t("copyright", { year: new Date().getFullYear() })}</p>
-					<Link
-						href="/sponsors"
-						className="text-red-500 font-bold mt-2 hover:text-red-400"
-					>
+					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
 						{t("sponsors")}
 					</Link>
 					{env.NEXT_PUBLIC_SOURCE_COMMIT && (

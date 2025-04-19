@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	forwardRef,
-	useEffect,
-	useImperativeHandle,
-	useRef,
-	useState,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { env } from "@/lib/env";
@@ -23,10 +17,7 @@ interface TurnstileWidgetProps {
 // Track script loading state globally across component instances
 let isTurnstileScriptLoaded = false;
 
-export const TurnstileWidget = forwardRef<
-	TurnstileWidgetRef,
-	TurnstileWidgetProps
->(function TurnstileWidget(
+export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetProps>(function TurnstileWidget(
 	{ onVerify, sitekey = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY },
 	ref,
 ) {
@@ -36,9 +27,7 @@ export const TurnstileWidget = forwardRef<
 	const pathname = usePathname();
 
 	// Create a unique ID for this instance
-	const instanceId = useRef(
-		`turnstile-${Math.random().toString(36).substring(2, 9)}`,
-	);
+	const instanceId = useRef(`turnstile-${Math.random().toString(36).substring(2, 9)}`);
 
 	// Function to render the widget
 	const renderWidget = () => {

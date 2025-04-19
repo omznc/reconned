@@ -8,41 +8,14 @@ import {
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { Button } from "@/components/ui/button";
-import {
-	FileInput,
-	FileUploader,
-	FileUploaderContent,
-	FileUploaderItem,
-} from "@/components/ui/file-upload";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Check, ChevronsUpDown } from "lucide-react";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-} from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,14 +23,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@prisma/client";
 import { format } from "date-fns";
-import {
-	AlertCircle,
-	ArrowUpRight,
-	Calendar as CalendarIcon,
-	CheckCircle,
-	Loader,
-	Trash,
-} from "lucide-react";
+import { AlertCircle, ArrowUpRight, Calendar as CalendarIcon, CheckCircle, Loader, Trash } from "lucide-react";
 import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -81,12 +47,9 @@ import { useHash } from "@/hooks/use-hash";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 
 // Dynamically import map to avoid SSR issues
-const MapSelector = dynamic(
-	() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap),
-	{
-		ssr: false,
-	},
-);
+const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
+	ssr: false,
+});
 
 interface ClubInfoFormProps {
 	club?: Club | null;
@@ -102,13 +65,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [open, setOpen] = useState(false);
 	const [isConnectingInstagram, setIsConnectingInstagram] = useState(false);
-	const [isDisconnectingInstagram, setIsDisconnectingInstagram] =
-		useState(false);
+	const [isDisconnectingInstagram, setIsDisconnectingInstagram] = useState(false);
 	const [instagramSuccess, setInstagramSuccess] = useState(false);
 	const [instagramError, setInstagramError] = useState<string | null>(null);
-	const [instagramErrorMessage, setInstagramErrorMessage] = useState<
-		string | null
-	>(null);
+	const [instagramErrorMessage, setInstagramErrorMessage] = useState<string | null>(null);
 	const router = useRouter();
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.info");
@@ -341,10 +301,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4 max-w-3xl"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl">
 				{props.club && (
 					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
@@ -377,11 +334,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								>
 									<Trash className="size-4" />
 
-									{isLoading ? (
-										<Loader className="animate-spin size-4" />
-									) : (
-										t("clubDelete.confirm")
-									)}
+									{isLoading ? <Loader className="animate-spin size-4" /> : t("clubDelete.confirm")}
 								</Button>
 							)}
 						</div>
@@ -396,8 +349,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("name")}* ({form.watch("name")?.length}/
-								{clubInfoSchema.shape.name.maxLength})
+								{t("name")}* ({form.watch("name")?.length}/{clubInfoSchema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="Veis" type="text" {...field} />
@@ -427,9 +379,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											)}
 										>
 											{field.value
-												? props.countries.find(
-														(country) => country.id === field.value,
-													)?.name
+												? props.countries.find((country) => country.id === field.value)?.name
 												: t("pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -452,9 +402,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 													<Check
 														className={cn(
 															"mr-2 h-4 w-4",
-															country.id === field.value
-																? "opacity-100"
-																: "opacity-0",
+															country.id === field.value ? "opacity-100" : "opacity-0",
 														)}
 													/>
 													{country.emoji} {country.name}
@@ -587,21 +535,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 												!field.value && "text-muted-foreground",
 											)}
 										>
-											{field.value ? (
-												format(field.value, "PPP")
-											) : (
-												<span>{t("chooseDate")}</span>
-											)}
+											{field.value ? format(field.value, "PPP") : <span>{t("chooseDate")}</span>}
 											<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 										</Button>
 									</FormControl>
 								</PopoverTrigger>
 								<PopoverContent className="w-auto p-0" align="start">
-									<DateTimePicker
-										value={field.value}
-										onChange={field.onChange}
-										granularity="day"
-									/>
+									<DateTimePicker value={field.value} onChange={field.onChange} granularity="day" />
 								</PopoverContent>
 							</Popover>
 							<FormDescription>{t("foundedDateDescription")}</FormDescription>
@@ -620,10 +560,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								<FormDescription>{t("isAlliedDescription")}</FormDescription>
 							</div>
 							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
+								<Switch checked={field.value} onCheckedChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -639,10 +576,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								<FormDescription>{t("privateDescription")}</FormDescription>
 							</div>
 							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
+								<Switch checked={field.value} onCheckedChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -655,15 +589,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
 								<FormLabel>{t("privateStats")}</FormLabel>
-								<FormDescription>
-									{t("privateStatsDescription")}
-								</FormDescription>
+								<FormDescription>{t("privateStatsDescription")}</FormDescription>
 							</div>
 							<FormControl>
-								<Switch
-									checked={field.value}
-									onCheckedChange={field.onChange}
-								/>
+								<Switch checked={field.value} onCheckedChange={field.onChange} />
 							</FormControl>
 						</FormItem>
 					)}
@@ -759,20 +688,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							>
 								<Trash className="size-4" />
 
-								{isDeletingImage ? (
-									<Loader className="size-5 animate-spin" />
-								) : (
-									t("logoDelete.confirm")
-								)}
+								{isDeletingImage ? <Loader className="size-5 animate-spin" /> : t("logoDelete.confirm")}
 							</Button>
 						</HoverCardTrigger>
 						<HoverCardContent className="size-full mb-8">
-							<Image
-								src={props.club.logo}
-								alt="Club logo"
-								width={200}
-								height={200}
-							/>
+							<Image src={props.club.logo} alt="Club logo" width={200} height={200} />
 						</HoverCardContent>
 					</HoverCard>
 				)}
@@ -788,11 +708,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem className="flex flex-col items-start">
 							<FormLabel>{t("phone")}</FormLabel>
 							<FormControl className="w-full">
-								<PhoneInput
-									placeholder="063 000 000"
-									{...field}
-									defaultCountry="BA"
-								/>
+								<PhoneInput placeholder="063 000 000" {...field} defaultCountry="BA" />
 							</FormControl>
 							<FormDescription>{t("phoneDescription")}</FormDescription>
 							<FormMessage />
@@ -807,11 +723,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem>
 							<FormLabel>E-mail</FormLabel>
 							<FormControl>
-								<Input
-									placeholder="airsoft@mojklub.com"
-									type="email"
-									{...field}
-								/>
+								<Input placeholder="airsoft@mojklub.com" type="email" {...field} />
 							</FormControl>
 							<FormDescription>{t("emailDescription")}</FormDescription>
 							<FormMessage />
@@ -895,43 +807,34 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								<AlertCircle className="h-4 w-4" />
 								<AlertTitle>{t("instagramError.title")}</AlertTitle>
 								<AlertDescription>
-									{instagramErrorMessage ||
-										t(getInstagramErrorTranslationKey(instagramError))}
+									{instagramErrorMessage || t(getInstagramErrorTranslationKey(instagramError))}
 								</AlertDescription>
 							</Alert>
 						)}
 
-						{props.club?.instagramConnected &&
-							props.club?.instagramUsername && (
-								<div className="text-sm inline-flex items-center gap-1">
-									<p className="text-muted-foreground">
-										{t("instagramConnectedMessage")}
-									</p>
-									<Link
-										href={`https://instagram.com/${props.club.instagramUsername}`}
-										target="_blank"
-										className="text-blue-500 hover:underline flex items-center gap-1"
-									>
-										@{props.club.instagramUsername}
-										<ArrowUpRight className="h-3 w-3" />
-									</Link>
-								</div>
-							)}
+						{props.club?.instagramConnected && props.club?.instagramUsername && (
+							<div className="text-sm inline-flex items-center gap-1">
+								<p className="text-muted-foreground">{t("instagramConnectedMessage")}</p>
+								<Link
+									href={`https://instagram.com/${props.club.instagramUsername}`}
+									target="_blank"
+									className="text-blue-500 hover:underline flex items-center gap-1"
+								>
+									@{props.club.instagramUsername}
+									<ArrowUpRight className="h-3 w-3" />
+								</Link>
+							</div>
+						)}
 
 						{!props.club?.instagramConnected && (
 							<div className="text-sm">
-								<p className="text-muted-foreground">
-									{t("instagramDescription")}
-								</p>
+								<p className="text-muted-foreground">{t("instagramDescription")}</p>
 							</div>
 						)}
 					</div>
 				)}
 
-				<LoaderSubmitButton
-					isLoading={isLoading}
-					disabled={!isSlugValid && !!form.watch("slug")}
-				>
+				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
 					{props.club ? t("save") : t("create")}
 				</LoaderSubmitButton>
 			</form>

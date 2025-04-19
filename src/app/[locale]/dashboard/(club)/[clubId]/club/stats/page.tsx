@@ -42,9 +42,7 @@ async function getClubStats(clubId: string) {
 	});
 
 	// Modified events per month query to use a CTE for all months
-	const eventsPerMonth = await prisma.$queryRaw<
-		Array<{ month: Date; count: number }>
-	>`
+	const eventsPerMonth = await prisma.$queryRaw<Array<{ month: Date; count: number }>>`
 		WITH RECURSIVE months AS (
 			SELECT DATE_TRUNC('month', NOW() - INTERVAL '11 months')::date as month
 			UNION ALL

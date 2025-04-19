@@ -163,9 +163,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 				<TabsContent value="clubs" className="grid gap-4">
 					{clubs.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">
-							Nema pronađenih klubova
-						</div>
+						<div className="text-center text-muted-foreground py-12">Nema pronađenih klubova</div>
 					) : (
 						clubs
 							.sort((a, b) => b._count.members - a._count.members)
@@ -189,9 +187,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 				<TabsContent value="users" className="grid gap-4">
 					{users.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">
-							Nema pronađenih korisnika
-						</div>
+						<div className="text-center text-muted-foreground py-12">Nema pronađenih korisnika</div>
 					) : (
 						users
 							.sort((a, b) => {
@@ -218,9 +214,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									badges={
 										user.clubMembership.length === 0
 											? ["Freelancer"]
-											: user.clubMembership.map(
-													(membership) => membership.club.name,
-												)
+											: user.clubMembership.map((membership) => membership.club.name)
 									}
 									meta={user.location || undefined}
 									type="user"
@@ -231,9 +225,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 				<TabsContent value="events" className="grid gap-4">
 					{events.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">
-							Nema pronađenih susreta
-						</div>
+						<div className="text-center text-muted-foreground py-12">Nema pronađenih susreta</div>
 					) : (
 						events
 							.sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime())
@@ -267,22 +259,14 @@ export default async function SearchPage(props: Props) {
 		<div className="container max-w-4xl py-8 space-y-8 px-4">
 			<div>
 				<h1 className="text-4xl font-bold mb-2">Pretraga</h1>
-				<p className="text-muted-foreground">
-					Pronađi klubove, korisnike i susrete na jednom mjestu
-				</p>
+				<p className="text-muted-foreground">Pronađi klubove, korisnike i susrete na jednom mjestu</p>
 			</div>
 
 			<div className="w-full">
 				<Search />
 			</div>
 
-			<Suspense
-				fallback={
-					<div className="text-center text-muted-foreground py-12">
-						Učitavanje rezultata...
-					</div>
-				}
-			>
+			<Suspense fallback={<div className="text-center text-muted-foreground py-12">Učitavanje rezultata...</div>}>
 				<SearchResults query={q} tab={tab} />
 			</Suspense>
 		</div>

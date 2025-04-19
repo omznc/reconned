@@ -2,8 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const API_BASE =
-	"https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/json/";
+const API_BASE = "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/json/";
 
 async function fetchData(endpoint: string) {
 	const response = await fetch(`${API_BASE}${endpoint}.json`);

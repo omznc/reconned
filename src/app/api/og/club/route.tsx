@@ -23,12 +23,8 @@ export async function GET(request: Request) {
 			<div tw="flex flex-row items-start">
 				{logo && <img src={logo} tw="w-48 rounded-xl" alt={name ?? ""} />}
 				<div tw="flex flex-col flex-1 ml-8">
-					<div tw="flex text-6xl font-bold tracking-tight">
-						{name ?? "Airsoft klub"}
-					</div>
-					<div tw="flex text-2xl mt-2 text-zinc-200">
-						{description?.slice(0, 400) ?? ""}
-					</div>
+					<div tw="flex text-6xl font-bold tracking-tight">{name ?? "Airsoft klub"}</div>
+					<div tw="flex text-2xl mt-2 text-zinc-200">{description?.slice(0, 400) ?? ""}</div>
 				</div>
 			</div>
 			<img tw="w-[400px]" src={logoUrl} alt="Reconned" />

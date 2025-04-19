@@ -18,11 +18,7 @@ import {
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { BadgeNew } from "@/components/badge-new";
 
 interface AdditionalProps {
@@ -36,10 +32,7 @@ export const renderCollapsedItem = (item: NavItem, path: string) => (
 				<DropdownMenuTrigger asChild>
 					<SidebarMenuButton
 						tooltip={item.title}
-						isActive={
-							item.url === path ||
-							item.items?.some((subItem) => subItem.url === path)
-						}
+						isActive={item.url === path || item.items?.some((subItem) => subItem.url === path)}
 					>
 						{item.icon && <item.icon />}
 					</SidebarMenuButton>
@@ -62,30 +55,18 @@ export const renderCollapsedItem = (item: NavItem, path: string) => (
 				</DropdownMenuContent>
 			</DropdownMenu>
 		) : (
-			<SidebarMenuButton
-				isActive={item.url === path}
-				tooltip={item.title}
-				asChild
-			>
+			<SidebarMenuButton isActive={item.url === path} tooltip={item.title} asChild>
 				<Link href={item.url}>{item.icon && <item.icon />}</Link>
 			</SidebarMenuButton>
 		)}
 	</SidebarMenuItem>
 );
 
-export const renderExpandedItem = (
-	item: NavItem,
-	path: string,
-	additionalProps: AdditionalProps = {},
-) => {
+export const renderExpandedItem = (item: NavItem, path: string, additionalProps: AdditionalProps = {}) => {
 	if (!item.items?.length) {
 		return (
 			<SidebarMenuItem key={item.title}>
-				<SidebarMenuButton
-					isActive={item.url === path}
-					tooltip={item.title}
-					asChild={true}
-				>
+				<SidebarMenuButton isActive={item.url === path} tooltip={item.title} asChild={true}>
 					<Link href={item.url}>
 						{item.icon && <item.icon />}
 						<span>{item.title}</span>
@@ -107,10 +88,7 @@ export const renderExpandedItem = (
 			<SidebarMenuItem>
 				<CollapsibleTrigger asChild={true}>
 					<SidebarMenuButton
-						isActive={
-							item.url === path ||
-							item.items?.some((subItem) => subItem.url === path)
-						}
+						isActive={item.url === path || item.items?.some((subItem) => subItem.url === path)}
 						tooltip={item.title}
 					>
 						{item.icon && <item.icon />}
@@ -123,15 +101,11 @@ export const renderExpandedItem = (
 						{item.items
 							.filter(
 								(subItem) =>
-									!subItem.protected ||
-									(subItem.protected && additionalProps.hasAccess?.(subItem)),
+									!subItem.protected || (subItem.protected && additionalProps.hasAccess?.(subItem)),
 							)
 							.map((subItem) => (
 								<SidebarMenuSubItem key={subItem.title}>
-									<SidebarMenuSubButton
-										isActive={subItem.url === path}
-										asChild={true}
-									>
+									<SidebarMenuSubButton isActive={subItem.url === path} asChild={true}>
 										<Link href={subItem.url}>
 											{subItem.icon && <subItem.icon />}
 											<span>{subItem.title}</span>

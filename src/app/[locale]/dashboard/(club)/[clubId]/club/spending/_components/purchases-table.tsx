@@ -33,7 +33,11 @@ export function PurchasesTable(props: PurchasesTableProps) {
 			<GenericDataTable
 				data={props.purchases}
 				columns={[
-					{ key: "title", header: t("details.title"), sortable: true },
+					{
+						key: "title",
+						header: t("details.title"),
+						sortable: true,
+					},
 					{
 						key: "description",
 						header: t("details.description"),

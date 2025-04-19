@@ -2,10 +2,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { CurrentClubProvider } from "@/components/current-club-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import {
-	CommandMenu,
-	CommandMenuProvider,
-} from "@/components/sidebar/command-menu";
+import { CommandMenu, CommandMenuProvider } from "@/components/sidebar/command-menu";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "@/i18n/navigation";

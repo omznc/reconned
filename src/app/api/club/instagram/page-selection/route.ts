@@ -10,10 +10,7 @@ export async function GET(req: NextRequest) {
 	const clubId = searchParams.get("clubId");
 
 	if (!(sessionId && clubId)) {
-		return NextResponse.json(
-			{ error: "Missing sessionId or clubId" },
-			{ status: 400 },
-		);
+		return NextResponse.json({ error: "Missing sessionId or clubId" }, { status: 400 });
 	}
 
 	// Validate session and permissions
@@ -32,10 +29,7 @@ export async function GET(req: NextRequest) {
 		});
 
 		if (!tempData) {
-			return NextResponse.json(
-				{ error: "Session not found or expired" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Session not found or expired" }, { status: 404 });
 		}
 
 		// Parse the pages data
@@ -55,17 +49,13 @@ export async function GET(req: NextRequest) {
 				}) => {
 					try {
 						// Try to get Instagram business account for this page
-						const instagramResponse = await getInstagramBusinessAccount(
-							page.id,
-							page.access_token,
-						);
+						const instagramResponse = await getInstagramBusinessAccount(page.id, page.access_token);
 
 						// If successful, add the Instagram business account info to the page object
 						if (instagramResponse?.instagram_business_account?.id) {
 							return {
 								...page,
-								instagram_business_account:
-									instagramResponse.instagram_business_account,
+								instagram_business_account: instagramResponse.instagram_business_account,
 							};
 						}
 
@@ -84,9 +74,6 @@ export async function GET(req: NextRequest) {
 			pages: pagesWithInstagramInfo,
 		});
 	} catch (error) {
-		return NextResponse.json(
-			{ error: "Failed to retrieve Facebook pages" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Failed to retrieve Facebook pages" }, { status: 500 });
 	}
 }

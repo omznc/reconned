@@ -46,9 +46,7 @@ export async function InvitationsPageFetcher(props: PageProps) {
 
 	const page = Math.max(1, Number(searchParams.page ?? 1));
 	const pageSize =
-		searchParams.perPage === "25" ||
-		searchParams.perPage === "50" ||
-		searchParams.perPage === "100"
+		searchParams.perPage === "25" || searchParams.perPage === "50" || searchParams.perPage === "100"
 			? Number(searchParams.perPage)
 			: 25;
 
@@ -56,27 +54,35 @@ export async function InvitationsPageFetcher(props: PageProps) {
 		clubId: params.clubId,
 		...(searchParams.search
 			? {
-					OR: [
-						{ email: { contains: searchParams.search, mode: "insensitive" } },
-						{
-							user: {
-								name: { contains: searchParams.search, mode: "insensitive" },
+				OR: [
+					{
+						email: {
+							contains: searchParams.search,
+							mode: "insensitive",
+						},
+					},
+					{
+						user: {
+							name: {
+								contains: searchParams.search,
+								mode: "insensitive",
 							},
 						},
-					],
-				}
+					},
+				],
+			}
 			: {}),
 		...(searchParams.status && searchParams.status !== "all"
 			? {
-					status: searchParams.status as InviteStatus,
-				}
+				status: searchParams.status as InviteStatus,
+			}
 			: {}),
 	};
 
 	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
 		? {
-				[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
-			}
+			[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
+		}
 		: { createdAt: "desc" };
 
 	const [invitesCount, invites] = await Promise.all([

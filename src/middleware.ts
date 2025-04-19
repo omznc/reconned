@@ -11,20 +11,15 @@ const handleI18nRouting = createMiddleware(routing);
 export default async function authMiddleware(request: NextRequest) {
 	const resp = handleI18nRouting(request);
 	if (request.nextUrl.pathname.includes("/dashboard")) {
-		const resp = await fetch(
-			`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/auth/get-session`,
-			{
-				headers: await headers(),
-			},
-		);
+		const resp = await fetch(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/auth/get-session`, {
+			headers: await headers(),
+		});
 
 		const session = await resp.text();
 
 		if (!session) {
 			const locationHeader = resp.headers.get("Location");
-			const locale = locationHeader
-				? new URL(locationHeader).pathname.split("/")[1]
-				: await getLocale();
+			const locale = locationHeader ? new URL(locationHeader).pathname.split("/")[1] : await getLocale();
 
 			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 		}

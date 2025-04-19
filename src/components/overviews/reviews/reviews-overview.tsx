@@ -76,9 +76,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 	const title = t(`types.${type}`);
 
 	const averageRating =
-		reviews.length > 0
-			? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
-			: 0;
+		reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
 
 	return (
 		<Card>
@@ -92,15 +90,11 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 							<Star
 								key={star}
 								className={`h-6 w-6 ${
-									star <= averageRating
-										? "fill-yellow-400 text-yellow-400"
-										: "fill-muted text-muted"
+									star <= averageRating ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"
 								}`}
 							/>
 						))}
-						<span className="ml-2 text-sm text-muted-foreground">
-							({reviews.length})
-						</span>
+						<span className="ml-2 text-sm text-muted-foreground">({reviews.length})</span>
 					</div>
 
 					{reviews.length > 0 ? (
@@ -126,8 +120,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 											{review.content.length > 50 ? "(...)" : ""}
 										</p>
 										<p className="text-xs text-muted-foreground">
-											{review.author.name} •{" "}
-											{format(review.createdAt, "dd.MM.yyyy")}
+											{review.author.name} • {format(review.createdAt, "dd.MM.yyyy")}
 										</p>
 									</div>
 								))}

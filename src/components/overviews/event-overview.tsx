@@ -33,14 +33,12 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 		getPageViews(`/events/${event.id}`),
 		getPageViews(`/events/${event.slug}`),
 	]);
-	const visitors =
-		analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();
 		return (
-			isAfter(now, new Date(event.dateRegistrationsOpen)) &&
-			isBefore(now, new Date(event.dateRegistrationsClose))
+			isAfter(now, new Date(event.dateRegistrationsOpen)) && isBefore(now, new Date(event.dateRegistrationsClose))
 		);
 	};
 
@@ -88,18 +86,12 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-2 h-fit w-full md:w-fit">
 							{user && canApplyToEvent(event) ? (
 								<Link href={`/events/${event.id}/apply`}>
-									<Button
-										variant="outline"
-										size="sm"
-										className="w-full md:w-auto"
-									>
+									<Button variant="outline" size="sm" className="w-full md:w-auto">
 										{t("apply")} <BadgeSoon className="ml-2" />
 									</Button>
 								</Link>
 							) : user ? (
-								<p className="text-sm text-muted-foreground">
-									{t("registrationsClosed")}
-								</p>
+								<p className="text-sm text-muted-foreground">{t("registrationsClosed")}</p>
 							) : null}
 							<AddEventToCalendarButton event={event} />
 						</div>
@@ -112,7 +104,9 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					<div className="flex flex-wrap -mt-2">
 						<Badge className="flex h-fit items-center gap-1">
 							<UserIcon className="size-4" />
-							{t("registeredCount", { count: event._count?.eventRegistration })}
+							{t("registeredCount", {
+								count: event._count?.eventRegistration,
+							})}
 						</Badge>
 						<Badge className="flex h-fit items-center gap-1">
 							{event.isPrivate ? (
@@ -150,19 +144,18 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							</LoadChildOnClick>
 						</div>
 					)}
-					{event.mapData &&
-						JSON.stringify(event.mapData) !== `{"pois":[],"areas":[]}` && (
-							<div className="size-full flex flex-col gap-2">
-								<h2 className="text-xl font-semibold">{t("map")}</h2>
-								<LoadChildOnClick title={t("showEventMap")}>
-									<MapComponent
-										// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-										defaultMapData={event.mapData as any}
-										readOnly={true}
-									/>
-								</LoadChildOnClick>
-							</div>
-						)}
+					{event.mapData && JSON.stringify(event.mapData) !== `{"pois":[],"areas":[]}` && (
+						<div className="size-full flex flex-col gap-2">
+							<h2 className="text-xl font-semibold">{t("map")}</h2>
+							<LoadChildOnClick title={t("showEventMap")}>
+								<MapComponent
+									// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+									defaultMapData={event.mapData as any}
+									readOnly={true}
+								/>
+							</LoadChildOnClick>
+						</div>
+					)}
 					<ReviewsOverview type="event" typeId={event.id} />
 				</div>
 			</div>

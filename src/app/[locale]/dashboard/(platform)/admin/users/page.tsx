@@ -20,48 +20,47 @@ export async function UsersPageFetcher(props: PageProps) {
 	const searchParams = await props.searchParams;
 	const { search, sortBy, sortOrder, page, userId, perPage } = searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
-	const pageSize =
-		perPage === "25" || perPage === "50" || perPage === "100"
-			? Number(perPage)
-			: 25;
+	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	// Fetch selected user separately if userId is present
 	const selectedUser = userId
 		? await prisma.user.findUnique({
-				where: { id: userId },
-				include: {
-					clubMembership: {
-						include: {
-							club: {
-								select: {
-									name: true,
-								},
+			where: { id: userId },
+			include: {
+				clubMembership: {
+					include: {
+						club: {
+							select: {
+								name: true,
 							},
 						},
 					},
 				},
-			})
+			},
+		})
 		: null;
 
 	const where = {
 		...(search
 			? {
-					OR: [
-						{ name: { contains: search, mode: "insensitive" } },
-						{ email: { contains: search, mode: "insensitive" } },
-						{ callsign: { contains: search, mode: "insensitive" } },
-					],
-				}
+				OR: [
+					{ name: { contains: search, mode: "insensitive" } },
+					{ email: { contains: search, mode: "insensitive" } },
+					{ callsign: { contains: search, mode: "insensitive" } },
+				],
+			}
 			: {}),
 	} satisfies Prisma.UserWhereInput;
 
 	const orderBy: Prisma.UserOrderByWithRelationInput = sortBy
 		? {
-				...(sortBy === "name" && { name: sortOrder ?? "asc" }),
-				...(sortBy === "email" && { email: sortOrder ?? "asc" }),
-				...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
-				...(sortBy === "createdAt" && { createdAt: sortOrder ?? "asc" }),
-			}
+			...(sortBy === "name" && { name: sortOrder ?? "asc" }),
+			...(sortBy === "email" && { email: sortOrder ?? "asc" }),
+			...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
+			...(sortBy === "createdAt" && {
+				createdAt: sortOrder ?? "asc",
+			}),
+		}
 		: { createdAt: "desc" };
 
 	const users = await prisma.user.findMany({

@@ -36,11 +36,7 @@ img[data-uploading="true"]::after {
 	left: 0;
 	width: 100%;
 	height: 2px;
-	background: linear-gradient(
-		90deg,
-		hsl(var(--primary)) var(--progress, 0%),
-		transparent 0
-	);
+	background: linear-gradient(90deg, hsl(var(--primary)) var(--progress, 0%), transparent 0);
 	animation: progress 2s linear infinite;
 }
 
