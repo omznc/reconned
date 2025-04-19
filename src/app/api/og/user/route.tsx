@@ -11,7 +11,8 @@ export async function GET(request: Request) {
 	const avatar = searchParams.get("avatar");
 
 	if (
-		avatar && (() => {
+		avatar &&
+		(() => {
 			try {
 				const parsedUrl = new URL(avatar);
 				const allowedHosts = [new URL(env.NEXT_PUBLIC_CDN_URL).host, "lh3.googleusercontent.com"];

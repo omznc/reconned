@@ -30,7 +30,8 @@
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
 			"@auth/client": ["./src/lib/auth-client"],
-			"@auth/server": ["./src/lib/auth"]
+			"@auth/server": ["./src/lib/auth"],
+			"@public/*": ["./public/*"]
 		},
 		"incremental": true,
 

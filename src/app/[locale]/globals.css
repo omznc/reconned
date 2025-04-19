@@ -234,6 +234,39 @@
 	animation: fade-in-up 0.3s ease-out;
 }
 
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.fade-in {
+	animation: fade-in 0.3s ease-out;
+}
+
 .leaflet-popup-content-wrapper {
 	border-radius: 0px !important;
+}
+
+@keyframes animate-aim {
+	0%,
+	100% {
+		transform: translate(0, 0) rotate(0deg);
+	}
+	25% {
+		transform: translate(-5px, 2px) rotate(-1deg);
+	}
+	50% {
+		transform: translate(-3px, -2px) rotate(0.5deg);
+	}
+	75% {
+		transform: translate(-4px, 1px) rotate(-0.5deg);
+	}
+}
+
+.animate-aim {
+	animation: animate-aim 5s ease-out infinite alternate;
 }

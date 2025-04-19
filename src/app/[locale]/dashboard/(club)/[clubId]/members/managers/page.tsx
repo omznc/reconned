@@ -10,7 +10,7 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
 
 interface PageProps {
-	params: Promise<{ clubId: string; }>;
+	params: Promise<{ clubId: string }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -57,45 +57,45 @@ export async function ManagersPageFetcher(props: PageProps) {
 		},
 		...(search
 			? {
-				OR: [
-					{
-						user: {
-							name: { contains: search, mode: "insensitive" },
-						},
-					},
-					{
-						user: {
-							email: {
-								contains: search,
-								mode: "insensitive",
+					OR: [
+						{
+							user: {
+								name: { contains: search, mode: "insensitive" },
 							},
 						},
-					},
-					{
-						user: {
-							callsign: {
-								contains: search,
-								mode: "insensitive",
+						{
+							user: {
+								email: {
+									contains: search,
+									mode: "insensitive",
+								},
 							},
 						},
-					},
-				],
-			}
+						{
+							user: {
+								callsign: {
+									contains: search,
+									mode: "insensitive",
+								},
+							},
+						},
+					],
+				}
 			: {}),
 	} satisfies Prisma.ClubMembershipWhereInput;
 
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
-			...(sortBy === "user.name" && {
-				user: { name: sortOrder ?? "asc" },
-			}),
-			...(sortBy === "user.email" && {
-				user: { email: sortOrder ?? "asc" },
-			}),
-			...(sortBy === "createdAt" && {
-				createdAt: sortOrder ?? "asc",
-			}),
-		}
+				...(sortBy === "user.name" && {
+					user: { name: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "user.email" && {
+					user: { email: sortOrder ?? "asc" },
+				}),
+				...(sortBy === "createdAt" && {
+					createdAt: sortOrder ?? "asc",
+				}),
+			}
 		: { createdAt: "desc" };
 
 	const managers = await prisma.clubMembership.findMany({
@@ -118,13 +118,7 @@ export async function ManagersPageFetcher(props: PageProps) {
 
 	const totalManagers = await prisma.clubMembership.count({ where });
 
-	return (
-		<ManagersTable
-			managers={managers}
-			totalManagers={totalManagers}
-			pageSize={pageSize}
-		/>
-	);
+	return <ManagersTable managers={managers} totalManagers={totalManagers} pageSize={pageSize} />;
 }
 
 export default async function Page(props: PageProps) {
@@ -135,10 +129,7 @@ export default async function Page(props: PageProps) {
 		<div className="space-y-8">
 			<div>
 				<h2 className="text-2xl font-bold mb-4">{t("title")}</h2>
-				<Suspense
-					key={JSON.stringify(searchParams)}
-					fallback={<GenericDataTableSkeleton />}
-				>
+				<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 					<ManagersPageFetcher {...props} />
 				</Suspense>
 			</div>

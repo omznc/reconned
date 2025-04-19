@@ -6,7 +6,6 @@ import Image from "next/image";
 import { ErrorPage } from "@/components/error-page";
 import { Role } from "@prisma/client";
 import { Square } from "lucide-react";
-// Import getTranslations for async component
 import { getLocale, getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
@@ -81,7 +80,6 @@ export default async function DashboardPage() {
 	return (
 		<div className="container py-6 space-y-6">
 			<h1 className="text-2xl font-bold">{t("welcome", { name: user.name })}</h1>
-
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<div className="p-4 border rounded-lg bg-sidebar">
 					<div className="text-sm text-muted-foreground">{t("statistics.events")}</div>

@@ -84,7 +84,15 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 			);
 		}
 
-		return t(`translations.${section}`) || section;
+		try {
+			const resp = t(`translations.${section}`);
+			if (resp.startsWith("components.breadcrumbs.translations.")) {
+				return "👀";
+			}
+			return resp;
+		} catch {
+			return section;
+		}
 	};
 
 	return (

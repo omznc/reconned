@@ -9,7 +9,7 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
 
 interface PageProps {
-	params: Promise<{ clubId: string; }>;
+	params: Promise<{ clubId: string }>;
 	searchParams: Promise<{
 		search?: string;
 		sortBy?: string;
@@ -30,23 +30,23 @@ export async function SpendingPageFetcher(props: PageProps) {
 		clubId,
 		...(search
 			? {
-				OR: [
-					{ title: { contains: search, mode: "insensitive" } },
-					{
-						description: {
-							contains: search,
-							mode: "insensitive",
+					OR: [
+						{ title: { contains: search, mode: "insensitive" } },
+						{
+							description: {
+								contains: search,
+								mode: "insensitive",
+							},
 						},
-					},
-				],
-			}
+					],
+				}
 			: {}),
 	} satisfies Prisma.ClubPurchaseWhereInput;
 
 	const orderBy: Prisma.ClubPurchaseOrderByWithRelationInput = sortBy
 		? {
-			[sortBy]: sortOrder ?? "asc",
-		}
+				[sortBy]: sortOrder ?? "asc",
+			}
 		: { createdAt: "desc" };
 
 	const purchases = await prisma.clubPurchase.findMany({
@@ -58,13 +58,7 @@ export async function SpendingPageFetcher(props: PageProps) {
 
 	const totalPurchases = await prisma.clubPurchase.count({ where });
 
-	return (
-		<PurchasesTable
-			purchases={purchases}
-			totalPurchases={totalPurchases}
-			pageSize={pageSize}
-		/>
-	);
+	return <PurchasesTable purchases={purchases} totalPurchases={totalPurchases} pageSize={pageSize} />;
 }
 
 export default async function SpendingPage(props: PageProps) {
@@ -82,10 +76,7 @@ export default async function SpendingPage(props: PageProps) {
 				<AddPurchaseModal />
 			</div>
 
-			<Suspense
-				key={JSON.stringify(searchParams)}
-				fallback={<GenericDataTableSkeleton />}
-			>
+			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<SpendingPageFetcher {...props} />
 			</Suspense>
 		</div>
