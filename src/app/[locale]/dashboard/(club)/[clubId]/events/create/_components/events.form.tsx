@@ -187,6 +187,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	});
 
 	useEffect(() => {
+		// If editing form, ignore the saved data
+		if (props.event?.id) {
+			sessionStorage.removeItem("createEventForm");
+			return;
+		}
 		const savedFormData = sessionStorage.getItem("createEventForm");
 		if (savedFormData) {
 			try {
