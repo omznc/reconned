@@ -9,7 +9,7 @@ import { SiGithub } from "@icons-pack/react-simple-icons";
 import { remark } from "remark";
 import remarkHtml from "remark-html";
 import remarkGfm from "remark-gfm";
-import Peeking from '@public/peeking.webp';
+import Peeking from "@public/peeking.webp";
 import Image from "next/image";
 
 import "./markdown.css";
@@ -119,7 +119,6 @@ export default async function ChangelogPage() {
 				/>
 				<h2 className="text-2xl font-bold mb-6">{t("latestRelease")}</h2>
 				<Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">
-
 					<CardHeader className="bg-primary/5">
 						<CardTitle className="text-2xl flex items-center gap-2">
 							{latestRelease.name ||
