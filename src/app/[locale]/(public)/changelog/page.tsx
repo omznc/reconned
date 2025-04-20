@@ -115,7 +115,7 @@ export default async function ChangelogPage() {
 					src={Peeking}
 					alt="An airsoft player peeking from behind a wall"
 					draggable={false}
-					className="z-10 absolute right-0 -top-13 lg:-top-27 transition-all w-full max-w-[200px] lg:max-w-[300px] dark:invert"
+					className="z-10 absolute -right-5 md:-right-0 -top-11 lg:-top-27 transition-all w-full max-w-[180px] lg:max-w-[300px] dark:invert"
 				/>
 				<h2 className="text-2xl font-bold mb-6">{t("latestRelease")}</h2>
 				<Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">

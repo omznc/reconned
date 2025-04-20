@@ -80,7 +80,7 @@
 				"events": "Events",
 				"clubs": "Clubs",
 				"members": "Players",
-				"dashboard": "Application",
+				"dashboard": "Dashboard",
 				"sponsors": "Sponsors"
 			},
 			"upcomingEventsTitle": "Upcoming events",
@@ -174,7 +174,9 @@
 			"title": "Clubs",
 			"metadata": {
 				"description": "Airsoft club"
-			}
+			},
+			"member": "member",
+			"members": "members"
 		},
 		"users": {
 			"title": "Players",
@@ -356,6 +358,20 @@
 			"title": "Changes",
 			"version": "Version {version}",
 			"viewOnGithub": "View on GitHub"
+		},
+		"search": {
+			"placeholder": "Something...",
+			"clubs": "Clubs",
+			"users": "Players",
+			"events": "Events",
+			"noResults": "Nothing was found matching that search",
+			"private": "Private",
+			"public": "Public",
+			"title": "Search",
+			"description": "Find clubs, players, and events - all in one place",
+			"loading": "Just a moment...",
+			"member": "member",
+			"members": "members"
 		}
 	},
 	"dashboard": {
@@ -446,7 +462,8 @@
 				"linkTaken": "The selected link is busy",
 				"cropPhotoTitle": "Crop the image",
 				"cropPhotoDescription": "Select the part of the image you want to save",
-				"cancel": "Cancel"
+				"cancel": "Cancel",
+				"bioPlaceholder": "Something about me is that..."
 			},
 			"security": {}
 		},
@@ -653,7 +670,8 @@
 					"authFailed": "Authorization failed. Please try again.",
 					"pageNotFound": "Facebook Page not found.",
 					"personalAccount": "The Instagram account connected to the selected Facebook page is not a Business account. You need to use an Instagram Business account to connect."
-				}
+				},
+				"descriptionPlaceholder": "This is a cool description"
 			},
 			"posts": {
 				"successEdited": "Post successfully modified",
@@ -1016,7 +1034,7 @@
 			"betaMessage": "Beta version - Changes and errors are possible.",
 			"githubMessage": "We're open-source! Click here and help us become better.",
 			"home": "Homepage",
-			"dashboard": "Application",
+			"dashboard": "Dashboard",
 			"help": "Help",
 			"user": "User",
 			"overview": "Overview",
@@ -1066,7 +1084,7 @@
 			"quickLinks": {
 				"title": "Quick links",
 				"events": "Events",
-				"dashboard": "Application",
+				"dashboard": "Dashboard",
 				"map": "Map",
 				"search": "Search",
 				"about": "About us",
@@ -1102,7 +1120,7 @@
 		},
 		"header": {
 			"backToHome": "Back to homepage",
-			"dashboard": "Application",
+			"dashboard": "Dashboard",
 			"login": "Login",
 			"logout": "Sign out",
 			"personalization": "Personalization"
@@ -1268,7 +1286,7 @@
 			"currentClub": "Current club",
 			"currentEvent": "Current event",
 			"translations": {
-				"dashboard": "Application",
+				"dashboard": "Dashboard",
 				"club": "Club",
 				"clubs": "Clubs",
 				"events": "Events",
