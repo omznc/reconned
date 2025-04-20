@@ -189,7 +189,7 @@ function LogDetailCredenza({
 					</CredenzaDescription>
 				</CredenzaHeader>
 
-				<div className="mt-4 space-y-4">
+				<div className="mt-4 space-y-4 p-4 md:p-0">
 					<div>
 						<h3 className="text-sm font-medium">{t("actionType")}</h3>
 						<p className="mt-1 font-mono text-sm">{log.actionType}</p>
