@@ -2,7 +2,6 @@
 
 import { GenericDataTable } from "@/components/generic-data-table";
 import { useLocale, useTranslations } from "next-intl";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

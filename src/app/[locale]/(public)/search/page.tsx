@@ -2,7 +2,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { prisma } from "@/lib/prisma";
 import { Users, Shield, Calendar } from "lucide-react";
 import { Suspense } from "react";
-import { format } from "date-fns";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { Search } from "@/app/[locale]/(public)/search/_components/search";
 import { TooltipProvider } from "@/components/ui/tooltip";
