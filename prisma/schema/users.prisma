@@ -43,8 +43,9 @@ model User {
   twofactors   TwoFactor[]
   achievements Achievement[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  ClubAuditLog ClubAuditLog[]
 
   @@index([id, slug])
   @@index([email])

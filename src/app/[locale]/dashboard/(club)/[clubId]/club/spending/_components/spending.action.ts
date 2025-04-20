@@ -10,6 +10,7 @@ import { z } from "zod";
 import { getS3FileUploadUrl, deleteS3File } from "@/lib/storage";
 import { randomUUID } from "node:crypto";
 import { after } from "next/server";
+import { logClubAudit } from "@/lib/audit-logger";
 
 export const createPurchase = safeActionClient.schema(purchaseFormSchema).action(async ({ parsedInput }) => {
 	if (parsedInput.receiptUrls && parsedInput.receiptUrls.length > 3) {
@@ -17,6 +18,17 @@ export const createPurchase = safeActionClient.schema(purchaseFormSchema).action
 			serverError: "Maksimalno 3 računa po stavci",
 		};
 	}
+
+	logClubAudit({
+		clubId: parsedInput.clubId,
+		actionType: "SPENDING_CREATE",
+		actionData: {
+			title: parsedInput.title,
+			description: parsedInput.description,
+			amount: parsedInput.amount,
+			receiptUrls: parsedInput.receiptUrls,
+		},
+	});
 
 	const purchase = await prisma.clubPurchase.create({
 		data: {
@@ -44,6 +56,19 @@ export const updatePurchase = safeActionClient
 				receiptUrls: parsedInput.receiptUrls,
 			},
 		});
+
+		logClubAudit({
+			clubId: purchase.clubId,
+			actionType: "SPENDING_UPDATE",
+			actionData: {
+				id: purchase.id,
+				title: parsedInput.title,
+				description: parsedInput.description,
+				amount: parsedInput.amount,
+				receiptUrls: parsedInput.receiptUrls,
+			},
+		});
+
 		return { data: { purchase } };
 	});
 
@@ -57,6 +82,14 @@ export const deletePurchase = safeActionClient
 		after(async () => {
 			const keys = purchase.receiptUrls.map((url) => url.split(".com/")[1]);
 			await Promise.all(keys.map((key) => deleteS3File(key!)));
+		});
+
+		logClubAudit({
+			clubId: parsedInput.clubId,
+			actionType: "SPENDING_DELETE",
+			actionData: {
+				id: purchase.id,
+			},
 		});
 
 		return { success: true };

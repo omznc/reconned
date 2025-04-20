@@ -8,6 +8,7 @@ import {
 	demoteFromManagerSchema,
 	promoteToManagerSchema,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
+import { logClubAudit } from "@/lib/audit-logger";
 
 export const promoteToManager = safeActionClient.schema(promoteToManagerSchema).action(async ({ parsedInput, ctx }) => {
 	try {
@@ -46,6 +47,19 @@ export const promoteToManager = safeActionClient.schema(promoteToManagerSchema).
 						email: true,
 					},
 				},
+			},
+		});
+
+		// Log the audit event
+		logClubAudit({
+			clubId: ctx.club.id,
+			actionType: "MEMBER_PROMOTE",
+			actionData: {
+				memberId: parsedInput.memberId,
+				memberName: targetMembership.user.name,
+				memberEmail: targetMembership.user.email,
+				fromRole: targetMembership.role,
+				toRole: Role.MANAGER,
 			},
 		});
 
@@ -110,6 +124,19 @@ export const demoteFromManager = safeActionClient
 							email: true,
 						},
 					},
+				},
+			});
+
+			// Log the audit event
+			logClubAudit({
+				clubId: ctx.club.id,
+				actionType: "MEMBER_DEMOTE",
+				actionData: {
+					memberId: parsedInput.memberId,
+					memberName: targetMembership.user.name,
+					memberEmail: targetMembership.user.email,
+					fromRole: targetMembership.role,
+					toRole: Role.USER,
 				},
 			});
 

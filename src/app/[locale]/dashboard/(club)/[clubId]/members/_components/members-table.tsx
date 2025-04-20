@@ -78,11 +78,11 @@ export function MembersTable(props: MembersTableProps) {
 		}
 
 		if (membership.endDate) {
-			// Check if membership expires within 30 days
-			const thirtyDaysFromNow = new Date();
-			thirtyDaysFromNow.setDate(today.getDate() + 30);
+			// Check if membership expires within 7 days
+			const sevenDaysFromNow = new Date();
+			sevenDaysFromNow.setDate(today.getDate() + 7);
 
-			if (new Date(membership.endDate) < thirtyDaysFromNow) {
+			if (new Date(membership.endDate) < sevenDaysFromNow) {
 				return {
 					label: t("membershipStatus.expiringSoon"),
 					variant: "secondary",
@@ -176,7 +176,15 @@ export function MembersTable(props: MembersTableProps) {
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
-							<span>{row.startDate ? row.startDate.toLocaleDateString(locale) : t("notSet")}</span>
+							<span>
+								{row.startDate
+									? row.startDate.toLocaleDateString(locale, {
+											day: "2-digit",
+											month: "long",
+											year: "numeric",
+										})
+									: t("notSet")}
+							</span>
 						),
 					},
 				},
@@ -187,7 +195,15 @@ export function MembersTable(props: MembersTableProps) {
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => (
-							<span>{row.endDate ? row.endDate.toLocaleDateString(locale) : t("unlimited")}</span>
+							<span>
+								{row.endDate
+									? row.endDate.toLocaleDateString(locale, {
+											day: "2-digit",
+											month: "long",
+											year: "numeric",
+										})
+									: t("unlimited")}
+							</span>
 						),
 					},
 				},
