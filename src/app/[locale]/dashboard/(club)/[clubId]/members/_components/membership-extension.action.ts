@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { addMonths } from "date-fns";
 import { membershipExtensionSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
+import { logClubAudit } from "@/lib/audit-logger";
 
 export const extendMembership = safeActionClient
 	.schema(membershipExtensionSchema)
@@ -48,10 +49,27 @@ export const extendMembership = safeActionClient
 					endDate: newEndDate,
 					startDate: membership.startDate || today, // Ensure startDate is set
 				},
+				include: {
+					user: true,
+				},
 			});
 
 			// Revalidate path to update UI
 			revalidateLocalizedPaths(`/dashboard/${clubId}/members`);
+
+			logClubAudit({
+				clubId,
+				actionType: "MEMBERSHIP_EXTENSION",
+				actionData: {
+					memberId,
+					memberName: updatedMembership.user.name,
+					memberEmail: updatedMembership.user.email,
+					memberRole: updatedMembership.role,
+					userId: updatedMembership.user.id,
+					duration: durationMonths,
+					newEndDate: updatedMembership.endDate?.toISOString() ?? "-",
+				},
+			});
 
 			return {
 				success: true,

@@ -21,6 +21,7 @@ import {
 	Shield,
 	User,
 	Bell,
+	History,
 } from "lucide-react";
 
 type TFunction = (key: string, values?: Record<string, unknown>) => string;
@@ -154,6 +155,13 @@ export function getClubNavigationItems(t: TFunction, clubId: string, isManager: 
 				url: `/dashboard/${clubId}/club/stats`,
 				icon: ChartBar,
 				protected: true,
+			},
+			{
+				title: t("auditLogs"),
+				url: `/dashboard/${clubId}/club/audit`,
+				icon: History,
+				protected: true,
+				isNew: true,
 			},
 		);
 	}

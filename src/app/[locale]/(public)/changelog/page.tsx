@@ -6,6 +6,28 @@ import { ExternalLink, AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import { remark } from "remark";
+import remarkHtml from "remark-html";
+import remarkGfm from "remark-gfm";
+import Peeking from "@public/peeking.webp";
+import Image from "next/image";
+
+import "./markdown.css";
+
+// Helper function to format GitHub release body markdown
+async function formatReleaseBody(body: string): Promise<string> {
+	if (!body) {
+		return "";
+	}
+
+	// Use remark to parse markdown with GFM support (tables, images, etc)
+	const processedContent = await remark()
+		.use(remarkGfm) // Support GitHub Flavored Markdown
+		.use(remarkHtml, { sanitize: false }) // Convert to HTML
+		.process(body);
+
+	return String(processedContent.value);
+}
 
 // Generate metadata for the page
 export async function generateMetadata(): Promise<Metadata> {
@@ -68,6 +90,16 @@ export default async function ChangelogPage() {
 		return notFound();
 	}
 
+	const content = await formatReleaseBody(latestRelease.body);
+
+	// Pre-process all release bodies to avoid awaiting inside the render function
+	const previousReleasesContent = await Promise.all(
+		previousReleases.map(async (release) => ({
+			...release,
+			formattedBody: await formatReleaseBody(release.body),
+		})),
+	);
+
 	return (
 		<div className="container mx-auto py-12 px-4 md:px-6">
 			<div className="text-center mb-12">
@@ -76,9 +108,17 @@ export default async function ChangelogPage() {
 			</div>
 
 			{/* Latest Release */}
-			<div className="mb-16">
+			<div className="relative mb-16">
+				<Image
+					priority={true}
+					loading="eager"
+					src={Peeking}
+					alt="An airsoft player peeking from behind a wall"
+					draggable={false}
+					className="z-10 absolute right-0 -top-13 lg:-top-27 transition-all w-full max-w-[200px] lg:max-w-[300px] dark:invert"
+				/>
 				<h2 className="text-2xl font-bold mb-6">{t("latestRelease")}</h2>
-				<Card className="overflow-hidden border-2 border-primary/20 shadow-lg">
+				<Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">
 					<CardHeader className="bg-primary/5">
 						<CardTitle className="text-2xl flex items-center gap-2">
 							{latestRelease.name ||
@@ -97,12 +137,11 @@ export default async function ChangelogPage() {
 						</div>
 					</CardHeader>
 					<CardContent className="pt-6">
-						<div className="prose prose-sm dark:prose-invert max-w-none">
-							{/* The GitHub release body can contain markdown, we'll display it as-is */}
+						<div className="markdown-content">
 							{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
 							<div
 								dangerouslySetInnerHTML={{
-									__html: formatReleaseBody(latestRelease.body),
+									__html: content,
 								}}
 							/>
 						</div>
@@ -125,11 +164,11 @@ export default async function ChangelogPage() {
 			</div>
 
 			{/* Previous Releases */}
-			{previousReleases.length > 0 && (
+			{previousReleasesContent.length > 0 && (
 				<div>
 					<h2 className="text-2xl font-bold mb-6">{t("previousReleases")}</h2>
 					<div className="space-y-6">
-						{previousReleases.map((release) => (
+						{previousReleasesContent.map((release) => (
 							<Card key={release.id} className="overflow-hidden">
 								<CardHeader>
 									<CardTitle className="text-xl">
@@ -149,12 +188,11 @@ export default async function ChangelogPage() {
 									</div>
 								</CardHeader>
 								<CardContent>
-									<div className="prose prose-sm dark:prose-invert max-w-none">
-										{/* The GitHub release body can contain markdown, we'll display it as-is */}
+									<div className="markdown-content">
 										{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
 										<div
 											dangerouslySetInnerHTML={{
-												__html: formatReleaseBody(release.body),
+												__html: release.formattedBody,
 											}}
 										/>
 									</div>
@@ -180,15 +218,4 @@ export default async function ChangelogPage() {
 			)}
 		</div>
 	);
-}
-
-function formatReleaseBody(body: string): string {
-	if (!body) {
-		return "";
-	}
-
-	// TODO: Add more formatting or use a parser
-	const html = body.replace(/\n/g, "<br>");
-
-	return html;
 }

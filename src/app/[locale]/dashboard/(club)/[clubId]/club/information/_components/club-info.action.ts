@@ -15,6 +15,7 @@ import { redirect } from "@/i18n/navigation";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { getLocale } from "next-intl/server";
 import { disconnectInstagramAPI } from "@/lib/instagram";
+import { logClubAudit } from "@/lib/audit-logger";
 
 export const saveClubInformation = safeActionClient.schema(clubInfoSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
@@ -27,6 +28,9 @@ export const saveClubInformation = safeActionClient.schema(clubInfoSchema).actio
 			throw new Error("Izabrani link je već zauzet.");
 		}
 	}
+
+	const isCreate = !ctx.club?.id;
+	const actionType = isCreate ? "CLUB_CREATE" : "CLUB_UPDATE";
 
 	const club = await prisma.club.upsert({
 		where: {
@@ -74,6 +78,16 @@ export const saveClubInformation = safeActionClient.schema(clubInfoSchema).actio
 		},
 	});
 
+	logClubAudit({
+		clubId: club.id,
+		actionType,
+		actionData: {
+			...parsedInput,
+			dateFounded: parsedInput.dateFounded.toISOString(),
+			logo: !!parsedInput.logo,
+		},
+	});
+
 	revalidateTag("managed-clubs");
 	revalidateLocalizedPaths(`/dashboard/${club.id}`, "layout");
 	if (!club?.isPrivate) {
@@ -110,6 +124,16 @@ export const deleteClubImage = safeActionClient.schema(deleteClubImageSchema).ac
 	});
 
 	await deleteS3File(`club/${ctx.club.id}/logo`);
+
+	// Log the audit event
+	logClubAudit({
+		clubId: ctx.club.id,
+		actionType: "CLUB_UPDATE",
+		actionData: {
+			logoRemoved: true,
+		},
+	});
+
 	revalidateLocalizedPaths(`/dashboard/club/information?club=${ctx.club.id}`);
 
 	return { success: true };
@@ -127,6 +151,15 @@ export const disconnectInstagram = safeActionClient.schema(disconnectInstagramSc
 			instagramTokenExpiry: null,
 			instagramProfilePictureUrl: null,
 			instagramConnected: false,
+		},
+	});
+
+	// Log the audit event
+	logClubAudit({
+		clubId: ctx.club.id,
+		actionType: "INSTAGRAM_DISCONNECT",
+		actionData: {
+			disconnectedBy: "manual",
 		},
 	});
 
@@ -151,6 +184,16 @@ export const disconnectInstagramAccount = safeActionClient.schema(disconnectInst
 			};
 		}
 
+		// Log the audit event
+		logClubAudit({
+			clubId: ctx.club.id,
+			actionType: "INSTAGRAM_DISCONNECT",
+			actionData: {
+				disconnectedBy: "api",
+				success: true,
+			},
+		});
+
 		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`, "page");
 		if (!ctx.club.isPrivate) {
 			revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
@@ -160,6 +203,17 @@ export const disconnectInstagramAccount = safeActionClient.schema(disconnectInst
 
 		return { success: true };
 	} catch (error) {
+		// Log the audit event even if there's an error
+		logClubAudit({
+			clubId: ctx.club.id,
+			actionType: "INSTAGRAM_DISCONNECT",
+			actionData: {
+				disconnectedBy: "api",
+				success: false,
+				error: error instanceof Error ? error.message : "Unknown error",
+			},
+		});
+
 		return {
 			success: false,
 			error: "Došlo je do greške prilikom odspajanja Instagram računa",
@@ -168,6 +222,17 @@ export const disconnectInstagramAccount = safeActionClient.schema(disconnectInst
 });
 
 export const deleteClub = safeActionClient.schema(deleteClubSchema).action(async ({ ctx }) => {
+	// Log the audit event before deletion
+	logClubAudit({
+		clubId: ctx.club.id,
+		actionType: "CLUB_DELETE",
+		actionData: {
+			clubId: ctx.club.id,
+			clubName: ctx.club.name,
+			clubSlug: ctx.club.slug,
+		},
+	});
+
 	const [, , locale] = await Promise.all([
 		prisma.club.delete({
 			where: {

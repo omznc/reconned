@@ -1,0 +1,26 @@
+// Audit logs for tracking club actions
+model ClubAuditLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  // Who performed the action
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Which club was affected
+  clubId String
+  club   Club   @relation(fields: [clubId], references: [id])
+
+  // What was done
+  actionType String // e.g., "CLUB_CREATE", "MEMBER_INVITE", "MEMBER_REMOVE"
+  actionData Json // Details about the action
+
+  // Optional metadata
+  ipAddress String? // IP address of the user
+  userAgent String? // User agent info
+
+  @@index([clubId])
+  @@index([userId])
+  @@index([actionType])
+  @@index([createdAt])
+}

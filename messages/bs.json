@@ -733,6 +733,55 @@
 				"manager": "Menadžer",
 				"owner": "Vlasnik"
 			},
+			"audit": {
+				"pageTitle": "Zapis akcija",
+				"pageDescription": "Pregled svih akcija izvršenih u ovom klubu.",
+				"search": "Pretraži zapis...",
+				"filterByAction": "Filtriraj po akciji",
+				"allActions": "Sve akcije",
+				"detailsTitle": "Detalji zapisa",
+				"viewDetails": "Pogledaj detalje",
+				"actionType": "Tip akcije",
+				"userInfo": "Korisnik",
+				"ipAddress": "IP adresa",
+				"userAgent": "Korisnički agent",
+				"actionData": "Podaci akcije",
+				"columns": {
+					"date": "Datum",
+					"action": "Akcija",
+					"user": "Korisnik",
+					"ipAddress": "IP adresa",
+					"actions": "Akcije"
+				},
+				"actionTypes": {
+					"clubCreate": "Kreiranje kluba",
+					"clubUpdate": "Ažuriranje kluba",
+					"clubDelete": "Brisanje kluba",
+					"memberInvite": "Poziv člana",
+					"memberRemove": "Uklanjanje člana",
+					"memberPromote": "Unapređenje člana",
+					"memberDemote": "Democija člana",
+					"memberJoin": "Pridruživanje člana",
+					"memberLeave": "Napuštanje klana",
+					"clubBan": "Zabrana kluba",
+					"clubUnban": "Ukidanje zabrane",
+					"spendingCreate": "Dodavanje troška",
+					"spendingUpdate": "Ažuriranje troška",
+					"spendingDelete": "Brisanje troška",
+					"postCreate": "Kreiranje objave",
+					"postUpdate": "Ažuriranje objave",
+					"postDelete": "Brisanje objave",
+					"instagramConnect": "Povezivanje Instagrama",
+					"instagramDisconnect": "Odspajanje Instagrama",
+					"eventCreate": "Kreiranje susreta",
+					"eventUpdate": "Ažuriranje susreta",
+					"eventDelete": "Brisanje susreta",
+					"clubRuleUpdate": "Ažuriranje pravila kluba",
+					"clubRuleCreate": "Kreiranje pravila kluba",
+					"clubRuleDelete": "Brisanje pravila kluba",
+					"membershipExtension": "Produženje članstva"
+				}
+			},
 			"events": {
 				"search": "Pretraži susrete...",
 				"name": "Naziv",
@@ -1006,7 +1055,8 @@
 			"account": "Račun",
 			"profile": "Profil",
 			"userSettings": "Postavke korisnika",
-			"shiftHint": "Možete koristiti shift + strelice gore i dolje za mijenjanje klubova."
+			"shiftHint": "Možete koristiti shift + strelice gore i dolje za mijenjanje klubova.",
+			"auditLogs": "Zapis"
 		},
 		"footer": {
 			"about": {
@@ -1251,7 +1301,8 @@
 				"add-club": "Dodaj klub",
 				"invites": "Pozivnice",
 				"users": "Korisnici",
-				"instagram": "Instagram"
+				"instagram": "Instagram",
+				"audit": "Zapis"
 			}
 		},
 		"icons": {
