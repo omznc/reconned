@@ -174,7 +174,9 @@
 			"title": "Klubovi",
 			"metadata": {
 				"description": "Airsoft klub"
-			}
+			},
+			"member": "član",
+			"members": "članova"
 		},
 		"users": {
 			"title": "Igrači",
@@ -356,6 +358,20 @@
 			"back": "Nazad",
 			"errorLoading": "Greška pri učitavanju podataka o verzijama",
 			"viewOnGithub": "Pogledajte na GitHub-u"
+		},
+		"search": {
+			"clubs": "Klubovi",
+			"description": "Pronađi klubove, korisnike i susrete na jednom mjestu",
+			"events": "Susreti",
+			"loading": "Samo momenat...",
+			"noResults": "Nismo našli ništa za tu pretragu",
+			"placeholder": "Nešto...",
+			"private": "Privatno",
+			"public": "Javno",
+			"title": "Pretraga",
+			"users": "Igrači",
+			"member": "član",
+			"members": "članova"
 		}
 	},
 	"dashboard": {
@@ -653,7 +669,8 @@
 					"pageNotFound": "Facebook Page nije pronađena.",
 					"personalAccount": "Instagram račun povezan sa odabranom Facebook stranicom nije Business račun. Potrebno je koristiti Instagram Business račun za povezivanje."
 				},
-				"cancel": "Odustani"
+				"cancel": "Odustani",
+				"descriptionPlaceholder": "Ovo je kul opis"
 			},
 			"posts": {
 				"successEdited": "Objava uspješno izmjenjena",

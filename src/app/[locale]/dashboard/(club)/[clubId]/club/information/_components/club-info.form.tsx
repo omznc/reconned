@@ -508,7 +508,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder="Besplatni ćevapi vikendom..."
+									placeholder={t("descriptionPlaceholder")}
 									className="resize-none"
 									{...field}
 								/>
@@ -723,7 +723,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem>
 							<FormLabel>E-mail</FormLabel>
 							<FormControl>
-								<Input placeholder="airsoft@mojklub.com" type="email" {...field} />
+								<Input placeholder="airsoft@club.com" type="email" {...field} />
 							</FormControl>
 							<FormDescription>{t("emailDescription")}</FormDescription>
 							<FormMessage />

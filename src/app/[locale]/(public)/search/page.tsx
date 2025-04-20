@@ -7,6 +7,7 @@ import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/sea
 import { Search } from "@/app/[locale]/(public)/search/_components/search";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
+import { getLocale, getTranslations } from "next-intl/server";
 
 interface Props {
 	searchParams: Promise<{
@@ -126,6 +127,8 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 			take: 25,
 		}),
 	]);
+	const t = await getTranslations("public.search");
+	const locale = await getLocale();
 
 	// Determine the first non-empty tab
 	const defaultTab =
@@ -149,21 +152,21 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 				<TabsList className="grid w-full grid-cols-3 mb-8">
 					<TabsTrigger value="clubs" className="text-xs flex gap-2">
 						<Shield className="h-4 w-4 hidden md:block" />
-						Klubovi ({clubs.length})
+						{t("clubs")} ({clubs.length})
 					</TabsTrigger>
 					<TabsTrigger value="users" className="text-xs flex gap-2">
 						<Users className="h-4 w-4 hidden md:block" />
-						Korisnici ({users.length})
+						{t("users")} ({users.length})
 					</TabsTrigger>
 					<TabsTrigger value="events" className="text-xs flex gap-2">
 						<Calendar className="h-4 w-4 hidden md:block" />
-						Susreti ({events.length})
+						{t("events")} ({events.length})
 					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="clubs" className="grid gap-4">
 					{clubs.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">Nema pronađenih klubova</div>
+						<div className="text-center text-muted-foreground py-12">{t("noResults")}</div>
 					) : (
 						clubs
 							.sort((a, b) => b._count.members - a._count.members)
@@ -178,7 +181,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									}
 									description={club.description}
 									href={`/clubs/${club.slug ?? club.id}`}
-									meta={`${club._count.members} članova`}
+									meta={`${club._count.members} ${
+										club._count.members === 1 ? t("member") : t("members")
+									}`}
 									type="club"
 								/>
 							))
@@ -187,7 +192,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 				<TabsContent value="users" className="grid gap-4">
 					{users.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">Nema pronađenih korisnika</div>
+						<div className="text-center text-muted-foreground py-12">{t("noResults")}</div>
 					) : (
 						users
 							.sort((a, b) => {
@@ -225,7 +230,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 				<TabsContent value="events" className="grid gap-4">
 					{events.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">Nema pronađenih susreta</div>
+						<div className="text-center text-muted-foreground py-12">{t("noResults")}</div>
 					) : (
 						events
 							.sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime())
@@ -238,8 +243,12 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									href={`/events/${event.slug ?? event.id}`}
 									badges={[
 										event.club.name,
-										event.isPrivate ? "Privatno" : "Javno",
-										format(event.dateStart, "dd.MM.yyyy"),
+										event.isPrivate ? t("private") : t("public"),
+										event.dateStart.toLocaleDateString(locale, {
+											year: "numeric",
+											month: "long",
+											day: "numeric",
+										}),
 									]}
 									meta={event.location || undefined}
 									type="event"
@@ -254,19 +263,20 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 export default async function SearchPage(props: Props) {
 	const { q, tab } = await props.searchParams;
+	const t = await getTranslations("public.search");
 
 	return (
 		<div className="container max-w-4xl py-8 space-y-8 px-4">
 			<div>
-				<h1 className="text-4xl font-bold mb-2">Pretraga</h1>
-				<p className="text-muted-foreground">Pronađi klubove, korisnike i susrete na jednom mjestu</p>
+				<h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
+				<p className="text-muted-foreground">{t("description")}</p>
 			</div>
 
 			<div className="w-full">
 				<Search />
 			</div>
 
-			<Suspense fallback={<div className="text-center text-muted-foreground py-12">Učitavanje rezultata...</div>}>
+			<Suspense fallback={<div className="text-center text-muted-foreground py-12">{t("loading")}</div>}>
 				<SearchResults query={q} tab={tab} />
 			</Suspense>
 		</div>
