@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -35,8 +36,6 @@ import {
 	RotateCcw,
 	Settings,
 	Trash,
-	Utensils,
-	Users,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -338,7 +337,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				)}
 
 				{/* Basic Information Section */}
-				<Card>
+				<Card className="bg-sidebar">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-4">
 							<span>{t("general")}</span>
@@ -531,7 +530,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				</Card>
 
 				{/* Timing Section */}
-				<Card>
+				<Card className="bg-sidebar">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-4">
 							<CalendarIcon className="size-5" /> {t("time")}
@@ -733,7 +732,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				</Card>
 
 				{/* Location Section */}
-				<Card>
+				<Card className="bg-sidebar">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-4">
 							<MapPin className="size-5" /> {t("location")}

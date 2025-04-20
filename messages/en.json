@@ -463,7 +463,14 @@
 				"cropPhotoTitle": "Crop the image",
 				"cropPhotoDescription": "Select the part of the image you want to save",
 				"cancel": "Cancel",
-				"bioPlaceholder": "Something about me is that..."
+				"bioPlaceholder": "Something about me is that...",
+				"requiredSection": "Required",
+				"profileDescription": "Some information about you",
+				"additionalInformation": "Additional information",
+				"optional": "Optional",
+				"contactDescription": "This is how people can reach you",
+				"privacySettings": "Privacy",
+				"privacyDescription": "Show or hide your information"
 			},
 			"security": {}
 		},
@@ -781,7 +788,7 @@
 					"registrationsOpenIn": "Registrations open for <number></number> day/s",
 					"registrationsOpen": "Registrations are open",
 					"registrationsClosed": "Registrations are closed",
-					"eventStartsIn": ", the event starts for <number></number> day/s",
+					"eventStartsIn": ", the event starts in <number></number> day/s",
 					"eventStarted": ", the event has already started",
 					"eventDuration": ", lasts <number></number> hour/s.",
 					"error": "An error occurred while saving data",

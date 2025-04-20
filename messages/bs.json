@@ -463,7 +463,14 @@
 				"cropPhotoTitle": "Izreži sliku",
 				"cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
 				"cancel": "Otkaži",
-				"bioPlaceholder": "Nešto o meni je to da..."
+				"bioPlaceholder": "Nešto o meni je to da...",
+				"requiredSection": "Obavezno",
+				"profileDescription": "Osnovne informacije o vama",
+				"additionalInformation": "Dodatne, neobavezne informacije",
+				"optional": "Neobavezno",
+				"contactDescription": "Ovako vas ljudi mogu kontaktirati",
+				"privacySettings": "Privatnost",
+				"privacyDescription": "Pokažite ili sakrijte informacije"
 			},
 			"security": {}
 		},
