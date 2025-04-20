@@ -58,7 +58,7 @@ export default async function Page(props: {
 						}
 						description={club.description}
 						href={`/clubs/${club.slug ?? club.id}`}
-						badges={[`${club.member_count} ${club.member_count === 1 ? "član" : "članova"}`]}
+						badges={[`${club.member_count} ${club.member_count === 1 ? t("member") : t("members")}`]}
 						meta={club.location || undefined}
 					/>
 				))}

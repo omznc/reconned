@@ -1,6 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -12,6 +13,7 @@ export function Search() {
 		defaultValue: "",
 	});
 	const [input, setInput] = useState(query);
+	const t = useTranslations("public.search");
 
 	const handleSearch = useDebouncedCallback((value: string) => {
 		setQuery(value);
@@ -24,7 +26,7 @@ export function Search() {
 				setInput(e.target.value);
 				handleSearch(e.target.value);
 			}}
-			placeholder="Pretraži..."
+			placeholder={t("placeholder")}
 		/>
 	);
 }
