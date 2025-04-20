@@ -462,7 +462,8 @@
 				"linkTaken": "Izabrani link je zauzet",
 				"cropPhotoTitle": "Izreži sliku",
 				"cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
-				"cancel": "Otkaži"
+				"cancel": "Otkaži",
+				"bioPlaceholder": "Nešto o meni je to da..."
 			},
 			"security": {}
 		},

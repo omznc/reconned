@@ -193,7 +193,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder="Igram airsoft već 5 godina..."
+									placeholder={t("bioPlaceholder")}
 									className="h-[144px] min-h-[144px] max-h-[144px]"
 									{...field}
 								/>

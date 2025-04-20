@@ -462,7 +462,8 @@
 				"linkTaken": "The selected link is busy",
 				"cropPhotoTitle": "Crop the image",
 				"cropPhotoDescription": "Select the part of the image you want to save",
-				"cancel": "Cancel"
+				"cancel": "Cancel",
+				"bioPlaceholder": "Something about me is that..."
 			},
 			"security": {}
 		},
