@@ -463,7 +463,14 @@
 				"cropPhotoTitle": "Izreži sliku",
 				"cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
 				"cancel": "Otkaži",
-				"bioPlaceholder": "Nešto o meni je to da..."
+				"bioPlaceholder": "Nešto o meni je to da...",
+				"requiredSection": "Obavezno",
+				"profileDescription": "Osnovne informacije o vama",
+				"additionalInformation": "Dodatne, neobavezne informacije",
+				"optional": "Neobavezno",
+				"contactDescription": "Ovako vas ljudi mogu kontaktirati",
+				"privacySettings": "Privatnost",
+				"privacyDescription": "Pokažite ili sakrijte informacije"
 			},
 			"security": {}
 		},
@@ -898,7 +905,19 @@
 					"noDescription": "Nema opisa",
 					"map": "Mapa",
 					"save": "Spasi promjene",
-					"create": "Kreiraj susret"
+					"create": "Kreiraj susret",
+					"eventDates": "Datumi susreta",
+					"advancedSettings": "Napredne postavke",
+					"basicInformationDescription": "Osnovne informacije koje su nam potrebne za kreiranje vašeg susreta",
+					"mapDescription": "Ovdje možete urediti mapu vaše igre. Dodajte tačke od interesa, prepreke, i druge važne detalje.",
+					"mapEditor": "Editor mape",
+					"registrationPeriod": "Period registracije",
+					"requiredSection": "Obavezno",
+					"additionalInformation": "Dodatne informacije",
+					"optional": "Nije obavezno",
+					"partiallyRequired": "Parcijalno-obavezno",
+					"additionalLocationInfo": "Dodatne informacije o lokaciji",
+					"reset": "Resetuj"
 				},
 				"allEvents": "Svi susreti",
 				"createEvent": "Kreirajte susret",
