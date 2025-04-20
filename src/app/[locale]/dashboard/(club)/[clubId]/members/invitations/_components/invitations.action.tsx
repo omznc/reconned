@@ -11,6 +11,7 @@ import { sendEmail } from "@/lib/mail";
 import { safeActionClient } from "@/lib/safe-action";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { render } from "@react-email/components";
+import { logClubAudit } from "@/lib/audit-logger";
 
 export const sendInvitation = safeActionClient.schema(sendInvitationSchema).action(async ({ parsedInput, ctx }) => {
 	try {
@@ -85,6 +86,18 @@ export const sendInvitation = safeActionClient.schema(sendInvitationSchema).acti
 			),
 		});
 
+		logClubAudit({
+			clubId: ctx.club.id,
+			actionType: "MEMBER_INVITE",
+			actionData: {
+				inviteId: invite.id,
+				inviteCode: invite.inviteCode,
+				email: invite.email,
+				userName: parsedInput.userName,
+				existingUserId: existingUser?.id,
+			},
+		});
+
 		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/members/invitations`);
 
 		return {
@@ -128,6 +141,16 @@ export const revokeInvitation = safeActionClient.schema(revokeInvitationSchema).
 			},
 			data: {
 				status: "REVOKED",
+			},
+		});
+
+		logClubAudit({
+			clubId: ctx.club.id,
+			actionType: "MEMBER_INVITE",
+			actionData: {
+				inviteId: parsedInput.inviteId,
+				action: "revoke",
+				email: invite.email,
 			},
 		});
 

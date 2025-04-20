@@ -12,6 +12,7 @@ import { getS3FileUploadUrl } from "@/lib/storage";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
+import { logClubAudit } from "@/lib/audit-logger";
 
 export const createEvent = safeActionClient.schema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
@@ -74,6 +75,36 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 		revalidateLocalizedPaths(`/events/${parsedInput.eventId}`);
 	}
 
+	logClubAudit({
+		clubId: ctx.club.id,
+		actionType: parsedInput.eventId ? "EVENT_UPDATE" : "EVENT_CREATE",
+		actionData: {
+			id: parsedInput.eventId,
+			name: parsedInput.name,
+			description: parsedInput.description,
+			costPerPerson: parsedInput.costPerPerson,
+			location: parsedInput.location,
+			googleMapsLink: parsedInput.googleMapsLink,
+			dateStart: parsedInput.dateStart.toISOString(),
+			dateEnd: parsedInput.dateEnd.toISOString(),
+			dateRegistrationsOpen: parsedInput.dateRegistrationsOpen.toISOString(),
+			dateRegistrationsClose: parsedInput.dateRegistrationsClose.toISOString(),
+			image: parsedInput.image,
+			isPrivate: parsedInput.isPrivate,
+			allowFreelancers: parsedInput.allowFreelancers,
+			hasBreakfast: parsedInput.hasBreakfast,
+			hasLunch: parsedInput.hasLunch,
+			hasDinner: parsedInput.hasDinner,
+			hasSnacks: parsedInput.hasSnacks,
+			hasDrinks: parsedInput.hasDrinks,
+			hasPrizes: parsedInput.hasPrizes,
+			slug: parsedInput.slug,
+			rules: parsedInput.ruleIds,
+			mapData: parsedInput.mapData,
+		},
+		userId: ctx.user.id,
+	});
+
 	// create or update event
 	return await prisma.event.upsert({
 		where: { id: parsedInput.eventId, clubId: ctx.club.id },
@@ -114,6 +145,16 @@ export const deleteEventImage = safeActionClient.schema(deleteEventImageSchema).
 			image: null,
 		},
 	});
+
+	logClubAudit({
+		clubId: ctx.club.id,
+		actionType: "EVENT_UPDATE",
+		actionData: {
+			id: parsedInput.eventId,
+			note: "Event image deleted",
+		},
+		userId: ctx.user.id,
+	});
 });
 
 export const deleteEvent = safeActionClient.schema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
@@ -152,6 +193,17 @@ export const deleteEvent = safeActionClient.schema(deleteEventSchema).action(asy
 		revalidateLocalizedPaths(`${locale}/events/${parsedInput.eventId}`, "layout");
 		revalidateLocalizedPaths(`${locale}/`);
 	}
+
+	logClubAudit({
+		clubId: ctx.club.id,
+		actionType: "EVENT_DELETE",
+		actionData: {
+			id: parsedInput.eventId,
+			name: event.name,
+			description: event.description,
+		},
+		userId: ctx.user.id,
+	});
 
 	return redirect({
 		href: `/dashboard/${ctx.club.id}/events/`,

@@ -6,8 +6,9 @@ import { leaveClubSchema, removeMemberSchema } from "./members.schema";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
+import { logClubAudit } from "@/lib/audit-logger";
 
-export const removeMember = safeActionClient.schema(removeMemberSchema).action(async ({ parsedInput }) => {
+export const removeMember = safeActionClient.schema(removeMemberSchema).action(async ({ parsedInput, ctx }) => {
 	try {
 		const membership = await prisma.clubMembership.findFirst({
 			where: {
@@ -20,7 +21,9 @@ export const removeMember = safeActionClient.schema(removeMemberSchema).action(a
 			include: {
 				user: {
 					select: {
+						id: true,
 						name: true,
+						email: true,
 					},
 				},
 			},
@@ -33,7 +36,19 @@ export const removeMember = safeActionClient.schema(removeMemberSchema).action(a
 		await prisma.clubMembership.delete({
 			where: {
 				id: parsedInput.memberId,
-				clubId: parsedInput.clubId,
+			},
+		});
+
+		logClubAudit({
+			clubId: parsedInput.clubId,
+			actionType: "MEMBER_REMOVE",
+			actionData: {
+				memberId: parsedInput.memberId,
+				memberName: membership.user.name,
+				memberEmail: membership.user.email,
+				memberRole: membership.role,
+				userId: membership.user.id,
+				removedBy: "manager",
 			},
 		});
 
@@ -78,6 +93,16 @@ export const leaveClub = safeActionClient.schema(leaveClubSchema).action(async (
 				"Vlasnik kluba ne može napustiti klub. Morate prvo prenijeti vlasništvo ili obrisati klub.",
 			);
 		}
+
+		logClubAudit({
+			clubId: parsedInput.clubId,
+			actionType: "MEMBER_LEAVE",
+			actionData: {
+				memberId: membership.id,
+				memberRole: membership.role,
+				userId: ctx.user.id,
+			},
+		});
 
 		// Delete the membership
 		await prisma.clubMembership.delete({

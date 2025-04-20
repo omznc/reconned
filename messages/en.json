@@ -959,6 +959,55 @@
 						"submit": "Promote"
 					}
 				}
+			},
+			"audit": {
+				"pageTitle": "Audit Log",
+				"pageDescription": "View all actions performed in this club.",
+				"search": "Search audit logs...",
+				"filterByAction": "Filter by action",
+				"allActions": "All actions",
+				"detailsTitle": "Log details",
+				"viewDetails": "View details",
+				"actionType": "Action type",
+				"userInfo": "User",
+				"ipAddress": "IP address",
+				"userAgent": "User agent",
+				"actionData": "Action data",
+				"columns": {
+					"date": "Date",
+					"action": "Action",
+					"user": "User",
+					"ipAddress": "IP address",
+					"actions": "Actions"
+				},
+				"actionTypes": {
+					"clubCreate": "Club creation",
+					"clubUpdate": "Club update",
+					"clubDelete": "Club deletion",
+					"memberInvite": "Member invite",
+					"memberRemove": "Member removal",
+					"memberPromote": "Member promotion",
+					"memberDemote": "Member demotion",
+					"memberJoin": "Member join",
+					"memberLeave": "Member leave",
+					"clubBan": "Club ban",
+					"clubUnban": "Club unban",
+					"spendingCreate": "Spending creation",
+					"spendingUpdate": "Spending update",
+					"spendingDelete": "Spending deletion",
+					"postCreate": "Post creation",
+					"postUpdate": "Post update",
+					"postDelete": "Post deletion",
+					"instagramConnect": "Instagram connection",
+					"instagramDisconnect": "Instagram disconnection",
+					"eventCreate": "Event creation",
+					"eventUpdate": "Event update",
+					"eventDelete": "Event deletion",
+					"clubRuleUpdate": "Club rule update",
+					"clubRuleCreate": "Club rule creation",
+					"clubRuleDelete": "Club rule deletion",
+					"membershipExtension": "Membership extension"
+				}
 			}
 		}
 	},
@@ -993,6 +1042,7 @@
 			"calendar": "Calendar",
 			"rules": "Rules",
 			"admin": "Administration",
+			"auditLogs": "Audit Log",
 			"users": "Users",
 			"emails": "Emails",
 			"personalization": "Personalization",
@@ -1240,6 +1290,7 @@
 				"posts": "New post",
 				"spending": "Spending",
 				"add-club": "Add club",
+				"audit": "Audit",
 				"invites": "Invitations",
 				"users": "Users",
 				"instagram": "Instagram"

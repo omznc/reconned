@@ -1,31 +1,31 @@
 model Club {
-  id           String    @id @default(ulid())
-  name         String
-  location     String?
-  latitude     Float?
-  longitude    Float?
-  description  String?
-  dateFounded  DateTime?
-  slug         String?   @unique
-  isAllied     Boolean   @default(false)
-  isPrivate    Boolean   @default(false)
-  isPrivateStats Boolean  @default(false)
-  logo         String?
-  contactPhone String?
-  contactEmail String?
-  verified     Boolean   @default(false)
-  website      String?
+  id             String    @id @default(ulid())
+  name           String
+  location       String?
+  latitude       Float?
+  longitude      Float?
+  description    String?
+  dateFounded    DateTime?
+  slug           String?   @unique
+  isAllied       Boolean   @default(false)
+  isPrivate      Boolean   @default(false)
+  isPrivateStats Boolean   @default(false)
+  logo           String?
+  contactPhone   String?
+  contactEmail   String?
+  verified       Boolean   @default(false)
+  website        String?
 
   // Instagram integration fields
-  instagramUsername        String?
+  instagramUsername          String?
   instagramProfilePictureUrl String?
-  instagramAccessToken     String?
-  instagramTokenExpiry     DateTime?
-  instagramRefreshToken    String?
-  instagramConnected       Boolean   @default(false)
-  instagramBusinessId      String?   // Instagram Business Account ID
-  facebookPageId           String?   // Connected Facebook Page ID
-  instagramTokenType       String?   // Type of token (e.g., "PERMANENT", "TEMPORARY")
+  instagramAccessToken       String?
+  instagramTokenExpiry       DateTime?
+  instagramRefreshToken      String?
+  instagramConnected         Boolean   @default(false)
+  instagramBusinessId        String? // Instagram Business Account ID
+  facebookPageId             String? // Connected Facebook Page ID
+  instagramTokenType         String? // Type of token (e.g., "PERMANENT", "TEMPORARY")
 
   events      Event[]
   rules       ClubRule[]
@@ -41,8 +41,9 @@ model Club {
   banReason  String?
   banExpires DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  ClubAuditLog ClubAuditLog[]
 
   @@index([id, slug])
 }
@@ -109,12 +110,12 @@ model ClubInvite {
 
 // Temporary storage for Instagram page selection process
 model InstagramPageSelection {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   clubId      String
-  accessToken String    @db.Text
-  pages       String    @db.Text  // JSON string of pages
+  accessToken String   @db.Text
+  pages       String   @db.Text // JSON string of pages
   expiresAt   DateTime
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
 
   @@index([clubId])
 }

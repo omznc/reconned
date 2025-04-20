@@ -1,0 +1,185 @@
+.markdown-content {
+	/* Headings */
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-weight: 600;
+		line-height: 1.25;
+		margin-top: 1.5rem;
+		margin-bottom: 1rem;
+	}
+
+	h1 {
+		font-size: 1.5rem;
+		border-bottom: 1px solid var(--color-border);
+		padding-bottom: 0.5rem;
+	}
+
+	h2 {
+		font-size: 1.25rem;
+		border-bottom: 1px solid var(--color-border);
+		padding-bottom: 0.5rem;
+	}
+
+	h3 {
+		font-size: 1.125rem;
+	}
+
+	/* Links */
+	a {
+		color: hsl(var(--primary));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	/* Lists */
+	ul,
+	ol {
+		padding-left: 1.5rem;
+		margin: 1rem 0;
+	}
+
+	ul {
+		list-style-type: disc;
+	}
+
+	ol {
+		list-style-type: decimal;
+	}
+
+	li {
+		margin-bottom: 0.25rem;
+	}
+
+	li > ul,
+	li > ol {
+		margin: 0.25rem 0 0.5rem;
+	}
+
+	/* Code blocks */
+	pre {
+		background-color: hsl(var(--muted));
+		border-radius: var(--radius-sm);
+		padding: 1rem;
+		overflow-x: auto;
+		margin: 1rem 0;
+	}
+
+	code {
+		font-family: monospace;
+		background-color: hsl(var(--muted));
+		padding: 0.2em 0.4em;
+		border-radius: var(--radius-sm);
+		font-size: 0.875em;
+	}
+
+	pre code {
+		padding: 0;
+		background-color: transparent;
+	}
+
+	/* Blockquotes */
+	blockquote {
+		border-left: 4px solid hsl(var(--primary));
+		padding-left: 1rem;
+		margin: 1rem 0;
+		color: hsl(var(--muted-foreground));
+	}
+
+	/* Images */
+	img {
+		max-width: 100%;
+		height: auto;
+		border-radius: var(--radius-md);
+		margin: 1rem 0;
+	}
+
+	/* Tables */
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 1rem 0;
+	}
+
+	thead {
+		background-color: hsl(var(--muted));
+	}
+
+	th,
+	td {
+		border: 1px solid var(--color-border);
+		padding: 0.5rem;
+		text-align: left;
+	}
+
+	/* Horizontal rule */
+	hr {
+		border: 0;
+		border-top: 1px solid var(--color-border);
+		margin: 1.5rem 0;
+	}
+
+	/* Paragraph */
+	p {
+		margin-bottom: 1rem;
+		line-height: 1.6;
+	}
+
+	/* Checkboxes (task lists) */
+	input[type="checkbox"] {
+		margin-right: 0.5rem;
+	}
+
+	/* GitHub specific styles */
+	.task-list-item {
+		list-style-type: none;
+		display: flex;
+		align-items: center;
+		margin-left: -1.5rem;
+	}
+
+	.task-list-item-checkbox {
+		margin-right: 0.5rem;
+	}
+
+	/* For emoji support */
+	.emoji {
+		font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	}
+
+	/* Diff blocks */
+	.diff-addition {
+		background-color: rgba(46, 160, 67, 0.15);
+		border-radius: var(--radius-sm);
+		padding: 0.1em 0.2em;
+	}
+
+	.diff-deletion {
+		background-color: rgba(248, 81, 73, 0.15);
+		border-radius: var(--radius-sm);
+		padding: 0.1em 0.2em;
+	}
+}
+
+.dark .markdown-content {
+	/* Dark mode adjustments */
+	pre,
+	code {
+		background-color: hsl(var(--muted));
+	}
+
+	blockquote {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.diff-addition {
+		background-color: rgba(46, 160, 67, 0.3);
+	}
+
+	.diff-deletion {
+		background-color: rgba(248, 81, 73, 0.3);
+	}
+}

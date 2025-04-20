@@ -96,6 +96,13 @@ export async function GET(request: Request) {
 					banExpires: null,
 				},
 			}),
+
+			// Delete audit logs older than a year
+			prisma.clubAuditLog.deleteMany({
+				where: {
+					createdAt: { lt: subMonths(now, 12) },
+				},
+			}),
 		]);
 
 		return NextResponse.json({
@@ -104,6 +111,8 @@ export async function GET(request: Request) {
 			deletedEventInvites: results[2].count,
 			unbannedUsers: results[3].count,
 			unbannedClubs: results[4].count,
+			expiredClubBans: results[5].count,
+			deletedAuditLogs: results[6].count,
 		});
 	} catch (error) {
 		return NextResponse.json({ error: "Čišćenje nije uspjelo" }, { status: 500 });

@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
-import { ArrowUpDown, Search, X } from "lucide-react";
+import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, Search, X } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
 import { useState, useCallback, useEffect } from "react";
@@ -144,16 +144,37 @@ export function GenericDataTable<T>({
 	const [sortOrder, setSortOrder] = useQueryState("sortOrder", {
 		shallow: false,
 	});
-	const [filterValues, setFilterValues] = useState<Record<string, string>>({});
-	const [inputValue, setInputValue] = useState(search ?? "");
-	// TODO: Add loader
-	const [isLoading, setIsLoading] = useState(false);
+	const [inputValue, setInputValue] = useState(search || "");
 	const router = useRouter();
 	const [hiddenColumns, setHiddenColumns] = useQueryState("hiddenColumns", {
-		shallow: false,
+		shallow: true,
 		parse: (value) => new Set(value?.split(",") ?? []),
 		serialize: (value) => Array.from(value).join(","),
 	});
+
+	// Initialize filter values from URL
+	const [filterValues, setFilterValues] = useState<Record<string, string>>(() => {
+		if (!filters || typeof window === "undefined") {
+			return {};
+		}
+
+		const searchParams = new URLSearchParams(window.location.search);
+		const initialFilterValues: Record<string, string> = {};
+
+		for (const filter of filters) {
+			const value = searchParams.get(filter.key);
+			if (value) {
+				initialFilterValues[filter.key] = value;
+			}
+		}
+
+		return initialFilterValues;
+	});
+
+	// Update input value when search param changes
+	useEffect(() => {
+		setInputValue(search || "");
+	}, [search]);
 
 	// Initialize visibleColumns from URL or defaults
 	const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
@@ -177,6 +198,14 @@ export function GenericDataTable<T>({
 	);
 
 	const toggleColumn = async (columnKey: string) => {
+		const isSortedColumn = sortBy === columnKey;
+
+		// If we're hiding a sorted column, clear the sort
+		if (visibleColumns.has(columnKey) && isSortedColumn) {
+			await setSortBy(null);
+			await setSortOrder(null);
+		}
+
 		setVisibleColumns((prev) => {
 			const next = new Set(prev);
 			if (next.has(columnKey)) {
@@ -208,9 +237,7 @@ export function GenericDataTable<T>({
 	};
 
 	const debouncedSearch = useDebouncedCallback(async (value: string) => {
-		setIsLoading(true);
 		await setSearch(value || null);
-		setIsLoading(false);
 	}, 500);
 
 	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -234,30 +261,9 @@ export function GenericDataTable<T>({
 	};
 
 	const handlePerPageChange = async (value: string) => {
-		setIsLoading(true);
 		await setPerPage(value);
 		// Reset to page 1 when changing items per page
 		await setPage("1");
-		setIsLoading(false);
-	};
-
-	const resetAll = async () => {
-		setIsLoading(true);
-		await setSearch(null);
-		await setSortBy(null);
-		await setSortOrder(null);
-		await setPage("1");
-		await setPerPage("25");
-		await setHiddenColumns(null);
-		setFilterValues({});
-		setInputValue("");
-		setVisibleColumns(new Set(columns.map((col) => col.key.toString())));
-		// Clear all query parameters
-		const url = new URL(window.location.href);
-		url.search = "";
-		router.push(url.toString());
-
-		setIsLoading(false);
 	};
 
 	const hasActiveFilters = () => {
@@ -282,10 +288,9 @@ export function GenericDataTable<T>({
 						<Button
 							variant="ghost"
 							onClick={() =>
-								// biome-ignore lint/suspicious/noExplicitAny: Don't care
 								handleSearchChange({
 									target: { value: "" },
-								} as any)
+								} as ChangeEvent<HTMLInputElement>)
 							}
 							className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent"
 						>
@@ -310,6 +315,12 @@ export function GenericDataTable<T>({
 								}}
 							>
 								{typeof column.header === "string" ? column.header : column.key.toString()}
+								{sortBy === column.key.toString() &&
+									(sortOrder === "asc" ? (
+										<ArrowUpAZ className="ml-2 h-4 w-4 inline" />
+									) : (
+										<ArrowDownZA className="ml-2 h-4 w-4 inline" />
+									))}
 							</DropdownMenuCheckboxItem>
 						))}
 					</DropdownMenuContent>
@@ -335,7 +346,7 @@ export function GenericDataTable<T>({
 				))}
 
 				{hasActiveFilters() && (
-					<Button variant="default" onClick={resetAll} className="h-9 px-2 lg:px-3">
+					<Button variant="default" onClick={() => router.push("?")} className="h-9 px-2 lg:px-3">
 						<X className="h-4 w-4" />
 						<span className="ml-2 md:hidden inline lg:inline">{t("filters.clear")}</span>
 					</Button>
@@ -354,7 +365,10 @@ export function GenericDataTable<T>({
 							{columns
 								.filter((column) => visibleColumns.has(column.key.toString()))
 								.map((column) => (
-									<TableHead key={column.key.toString()}>
+									<TableHead
+										key={column.key.toString()}
+										className={sortBy === column.key.toString() ? "bg-sidebar border-x" : ""}
+									>
 										{column.sortable ? (
 											<Button
 												variant="ghost"
@@ -362,7 +376,15 @@ export function GenericDataTable<T>({
 												className="-ml-4 h-8 hover:bg-transparent"
 											>
 												{column.header}
-												<ArrowUpDown className="ml-2 h-4 w-4" />
+												{sortBy === column.key.toString() ? (
+													sortOrder === "asc" ? (
+														<ArrowUpAZ className="ml-2 h-4 w-4" />
+													) : (
+														<ArrowDownZA className="ml-2 h-4 w-4" />
+													)
+												) : (
+													<ArrowDownUp className="ml-2 h-4 w-4" />
+												)}
 											</Button>
 										) : (
 											column.header
@@ -384,7 +406,12 @@ export function GenericDataTable<T>({
 									{columns
 										.filter((column) => visibleColumns.has(column.key.toString()))
 										.map((column) => (
-											<TableCell key={String(column.key)}>
+											<TableCell
+												key={String(column.key)}
+												className={
+													sortBy === column.key.toString() ? "bg-sidebar border-x" : ""
+												}
+											>
 												{/* @ts-expect-error */}
 												{renderCell(item, column, tableConfig, locale)}
 											</TableCell>
