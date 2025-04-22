@@ -48,13 +48,13 @@ interface ClubsMapProps {
 	interactive?: boolean;
 }
 
-function LocationMarker({ position, logo }: { position: [number, number]; logo?: string | null }) {
+function LocationMarker({ position, logo }: { position: [number, number]; logo?: string | null; }) {
 	return position ? <Marker position={position} icon={createClubIcon(logo, 32)} /> : null;
 }
 
-function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
+function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void; }) {
 	useMapEvents({
-		click: (e) => {
+		click: (e: any) => {
 			if (onLocationSelect) {
 				onLocationSelect(e.latlng.lat, e.latlng.lng);
 			}
@@ -105,7 +105,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 				className="h-full w-full z-0"
 			>
 				<TileLayer
-					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
 
