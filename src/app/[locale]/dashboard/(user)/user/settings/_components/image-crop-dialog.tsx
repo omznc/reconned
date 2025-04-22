@@ -112,6 +112,7 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 				<div className="my-4 flex justify-center">
 					<div className="max-h-[500px] w-auto">
 						<ReactCrop crop={crop} onChange={(c) => setCrop(c)} aspect={1} className="max-h-[500px] w-auto">
+							{/** biome-ignore lint/nursery/noImgElement: Local image */}
 							<img
 								src={URL.createObjectURL(file)}
 								alt="Crop"

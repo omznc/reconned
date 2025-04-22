@@ -87,24 +87,26 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 	);
 }
 
-export default function RootLayout({
-	children,
-}: Readonly<{
-	children: ReactNode;
-}>) {
-	return <LayoutContent>{children}</LayoutContent>;
-}
-
 export async function generateMetadata(): Promise<Metadata> {
 	const t = await getTranslations("public.layout.metadata");
 	return {
 		title: t("title"),
 		description: t("description"),
 		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
-		keywords: t("keywords").split(", "),
+		keywords: t("keywords")
+			.split(", ")
+			.map((keyword) => keyword.trim()),
 	};
 }
 
 export function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
+}
+
+export default function RootLayout({
+	children,
+}: Readonly<{
+	children: ReactNode;
+}>) {
+	return <LayoutContent>{children}</LayoutContent>;
 }

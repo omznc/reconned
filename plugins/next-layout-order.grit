@@ -1,0 +1,19 @@
+sequential {
+  // 1) generateStaticParams before default export
+  `function $fn1($args1) { $body1 } $any* export default $_;` where {
+    $fn1 <: `generateStaticParams`,
+    register_diagnostic(
+      span    = $fn1,
+      message = "Move generateStaticParams after the default export"
+    )
+  },
+
+  // 2) generateMetadata before default export
+  `function $fn2($args2) { $body2 } $any* export default $_;` where {
+    $fn2 <: `generateMetadata`,
+    register_diagnostic(
+      span    = $fn2,
+      message = "Move generateMetadata after the default export"
+    )
+  }
+}

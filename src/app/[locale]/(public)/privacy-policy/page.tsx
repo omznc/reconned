@@ -1,13 +1,12 @@
-"use client";
-
 import { Link } from "@/i18n/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 
 const lastUpdated = new Date("2025-04-13");
 
-export default function PrivacyPolicyPage() {
-	const t = useTranslations("public.privacy");
-	const locale = useLocale();
+export default async function PrivacyPolicyPage() {
+	const t = await getTranslations("public.terms");
+	const locale = await getLocale();
 
 	return (
 		<div className="container mx-auto py-12 px-4 max-w-4xl">
@@ -127,4 +126,16 @@ export default function PrivacyPolicyPage() {
 			</div>
 		</div>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("privacy.metadata.title"),
+		description: t("privacy.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

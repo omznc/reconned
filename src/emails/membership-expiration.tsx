@@ -66,5 +66,3 @@ export const MembershipExpiration = async ({
 		</Html>
 	);
 };
-
-export default MembershipExpiration;

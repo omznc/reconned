@@ -22,11 +22,7 @@ const maxFileSize: number = env.NEXT_PUBLIC_MAX_FILE_SIZE
 /**
  * DOES NOT CHECK FOR AUTHENTICATION
  */
-export const getS3FileUploadUrl = async (props: {
-	type: string;
-	size: number;
-	key: string;
-}) => {
+export const getS3FileUploadUrl = async (props: { type: string; size: number; key: string }) => {
 	const { type, size, key } = props;
 	if (!(type && size)) {
 		throw new Error("File type and size are required");

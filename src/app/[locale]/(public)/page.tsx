@@ -33,6 +33,8 @@ import { Button } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import HomeImage from "@public/home.webp";
+import type { Metadata } from "next";
+
 interface PageProps {
 	searchParams: Promise<{
 		month?: string;
@@ -365,4 +367,16 @@ export default async function Home({ searchParams }: PageProps) {
 			</div>
 		</>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("home.metadata.title"),
+		description: t("home.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

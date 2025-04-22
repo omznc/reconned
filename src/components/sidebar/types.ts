@@ -22,9 +22,3 @@ export interface NavSubItem {
 	isSoon?: boolean;
 	isNew?: boolean;
 }
-
-export interface NavSectionProps {
-	title: string;
-	items: NavItem[];
-	filter?: (item: NavItem) => boolean;
-}

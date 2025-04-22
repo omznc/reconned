@@ -69,19 +69,17 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 			>
 				<div className="relative flex select-none flex-col gap-3">
 					{clubId ? (
-						<>
-							{canEdit && (
-								<Button asChild={true}>
-									<Link
-										className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit"
-										href={`/dashboard/${clubId}/events/create?id=${event.id}`}
-									>
-										<Pencil className="size-4" />
-										{t("editEvent")}
-									</Link>
-								</Button>
-							)}
-						</>
+						canEdit && (
+							<Button asChild={true}>
+								<Link
+									className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit"
+									href={`/dashboard/${clubId}/events/create?id=${event.id}`}
+								>
+									<Pencil className="size-4" />
+									{t("editEvent")}
+								</Link>
+							</Button>
+						)
 					) : (
 						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-2 h-fit w-full md:w-fit">
 							{user && canApplyToEvent(event) ? (
