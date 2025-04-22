@@ -37,9 +37,11 @@ export function LanguageSwitcher() {
 				{VALID_LOCALES.map((localeOption) => (
 					<DropdownMenuItem
 						key={localeOption}
-						onClick={() =>
-							localeOption !== locale ? router.replace(path, { locale: localeOption }) : null
-						}
+						onClick={async () => {
+							if (localeOption !== locale) {
+								await router.replace(path, { locale: localeOption });
+							}
+						}}
 						className={locale === localeOption ? "bg-accent" : ""}
 					>
 						<div className="flex items-center gap-2">

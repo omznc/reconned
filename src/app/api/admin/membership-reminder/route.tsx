@@ -1,7 +1,7 @@
 "use server";
 
-import MembershipExpiration from "@/emails/membership-expiration";
-import MembershipExpirationOwner from "@/emails/membership-expiration-owner";
+import { MembershipExpiration } from "@/emails/membership-expiration";
+import { MembershipExpirationOwner } from "@/emails/membership-expiration-owner";
 import { env } from "@/lib/env";
 import { sendEmail } from "@/lib/mail";
 import { prisma } from "@/lib/prisma";

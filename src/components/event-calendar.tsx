@@ -215,13 +215,13 @@ export function EventCalendar(props: EventCalendarProps) {
 	return (
 		<div className="flex flex-col h-full w-full text-foreground">
 			<header className="flex py-4 items-center justify-between border-b">
-				<h1 className="text-2xl font-bold">
+				<h2 className="text-2xl font-bold">
 					{t(
 						// @ts-ignore This will always be untyped, sadly, but hey there's only 12 months anyways.
 						`months.${format(currentDate, "MMM", { locale: enUS }).toLowerCase()}`,
 					)}{" "}
 					{format(currentDate, "yyyy")}
-				</h1>
+				</h2>
 				<div className="flex items-center gap-2">
 					<Button
 						variant={isSameMonth(new Date(), currentDate) ? "outline" : "default"}

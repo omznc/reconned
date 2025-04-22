@@ -46,7 +46,7 @@ interface CellConfig<T> {
 interface Filter {
 	key: string;
 	label: string;
-	options: { label: string; value: string }[];
+	options: { label: string; value: string; }[];
 }
 
 interface GenericTableProps<T> {
@@ -60,19 +60,18 @@ interface GenericTableProps<T> {
 		locale?: "bs" | "en";
 	};
 }
-
 // Helper function to get nested value
-const getNestedValue = <T extends Record<string, any>>(obj: T, path: string): any => {
+const getNestedValue = <T extends object>(obj: T, path: string): unknown => {
 	if (!path) {
 		return undefined;
 	}
 
 	try {
-		return path.split(".").reduce((acc, part) => {
+		return path.split(".").reduce((acc: unknown, part) => {
 			if (acc === null || acc === undefined) {
 				return undefined;
 			}
-			return acc[part];
+			return acc as { [key: string]: unknown; }[typeof part];
 		}, obj);
 	} catch {
 		return undefined;
@@ -110,15 +109,15 @@ const renderCell = <T extends Record<string, any>>(
 	}
 
 	if (config?.variant === "badge") {
-		const badgeClass = config.badgeVariants?.[value] ?? config.badgeVariants?.default ?? "bg-primary/10";
+		const badgeClass = config.badgeVariants?.[String(value)] ?? config.badgeVariants?.default ?? "bg-primary/10";
 		return (
 			<span className={`px-2 py-1 text-xs ${badgeClass}`}>
-				{config.valueMap?.[value] ?? config.valueMap?.default ?? value}
+				{config.valueMap?.[String(value)] ?? config.valueMap?.default ?? String(value)}
 			</span>
 		);
 	}
 
-	return config?.valueMap?.[value] || value;
+	return config?.valueMap?.[String(value)] || value;
 };
 
 export function GenericDataTable<T>({
@@ -485,7 +484,7 @@ export function GenericDataTable<T>({
 	);
 }
 
-export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number }) {
+export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number; }) {
 	return (
 		<div className="space-y-4 w-full fade-in">
 			{/* Controls */}

@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/logos/logo";
 import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 export default async function Home() {
 	const t = await getTranslations("public.about");
@@ -63,4 +64,16 @@ export default async function Home() {
 			</div>
 		</>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("about.metadata.title"),
+		description: t("about.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

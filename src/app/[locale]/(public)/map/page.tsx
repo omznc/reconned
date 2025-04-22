@@ -1,11 +1,7 @@
 import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-	title: "Mapa airsoft klubova - RECONNED",
-	description: "Mapa airsoft klubova na ovoj platformi",
-};
+import { getTranslations } from "next-intl/server";
 
 export default async function MapPage() {
 	const clubs = await prisma.club.findMany({
@@ -37,4 +33,16 @@ export default async function MapPage() {
 			<ClubsMapWrapper clubs={transformedClubs} />
 		</div>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("map.metadata.title"),
+		description: t("map.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

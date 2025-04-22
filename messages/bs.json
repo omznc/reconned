@@ -62,12 +62,11 @@
 		"notFound": {
 			"title": "Izgubili ste se",
 			"message": "Stranica nije pronađena",
-			"backHome": "Vrati se na početnu stranicu"
-		},
-		"offline": {
-			"title": "Niste konektovani",
-			"message": "Provjerite internet konekciju i pokušajte ponovo.",
-			"returnHome": "Povratak na početnu"
+			"backHome": "Vrati se na početnu stranicu",
+			"metadata": {
+				"title": "404 - Stranica nije pronađena - RECONNED",
+				"description": "Stranica nije pronađena"
+			}
 		},
 		"home": {
 			"hero": {
@@ -98,6 +97,10 @@
 				"privateEvent": "Ovo je privatni susret, ali ste vi u klubu {clubName}.",
 				"starts": "Počinje",
 				"view": "Pogledaj"
+			},
+			"metadata": {
+				"title": "RECONNED - Airsoft klubovi, susreti, i igrači",
+				"description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
 			}
 		},
 		"sponsors": {
@@ -109,6 +112,10 @@
 			"cta": {
 				"title": "Vi",
 				"description": "Ovo mjesto može biti vaše"
+			},
+			"metadata": {
+				"title": "Sponzori - RECONNED",
+				"description": "Naši trenutni sponzori i partneri. Hvala vam na podršci."
 			}
 		},
 		"about": {
@@ -127,6 +134,10 @@
 				"title": "Kako pomoći?",
 				"description": "Ako ste zainteresovani za pomoć u razvoju platforme, slobodno nas kontaktirajte. Pomoć u obliku marketinga, programiranja, te općenito sponsorstva je uvijek dobrodošla.",
 				"sponsors": "Pogledajte listu sponzora."
+			},
+			"metadata": {
+				"title": "O nama - RECONNED",
+				"description": "O nama, našoj platformi, i kako možete pomoći. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
 			}
 		},
 		"auth": {
@@ -168,12 +179,17 @@
 			"invalidEmail": "Nevažeći email",
 			"passwordRequired": "Vaša lozinka je obavezna",
 			"passwordTooShort": "Ta lozinka je prekratka",
-			"nameRequired": "Vaše ime je obavezno"
+			"nameRequired": "Vaše ime je obavezno",
+			"metadata": {
+				"title": "Autentikacija - RECONNED",
+				"description": "Prijava, registracija, i resetovanje lozinke. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+			}
 		},
 		"clubs": {
 			"title": "Klubovi",
 			"metadata": {
-				"description": "Airsoft klub"
+				"title": "Airsoft klubovi - RECONNED",
+				"description": "Lista svih airsoft klubova na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
 			},
 			"member": "član",
 			"members": "članova"
@@ -181,12 +197,14 @@
 		"users": {
 			"title": "Igrači",
 			"metadata": {
-				"description": "Airsoft igrač"
+				"title": "Igrači - RECONNED",
+				"description": "Lista svih airsoft igrača na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
 			}
 		},
 		"events": {
 			"metadata": {
-				"description": "Airsoft susret"
+				"title": "Airsoft susreti - RECONNED",
+				"description": "Lista svih airsoft susreta na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
 			}
 		},
 		"layout": {
@@ -269,6 +287,10 @@
 			"contact": {
 				"title": "Kontaktirajte nas",
 				"description": "Ako imate pitanja o ovoj Politici privatnosti ili o našim praksama vezanim za privatnost, molimo vas da nas kontaktirate putem email adrese: <email></email>."
+			},
+			"metadata": {
+				"title": "Politika privatnosti - RECONNED",
+				"description": "Politika privatnosti platforme RECONNED. Kako štitimo vašu privatnost i koje podatke prikupljamo."
 			}
 		},
 		"terms": {
@@ -346,6 +368,10 @@
 			"contact": {
 				"title": "Kontaktirajte nas",
 				"description": "Ako imate pitanja o ovim Uslovima korištenja, molimo vas da nas kontaktirate putem email adrese: <email></email>."
+			},
+			"metadata": {
+				"title": "Uslovi korištenja - RECONNED",
+				"description": "Uslovi korištenja platforme RECONNED. Kako koristiti našu platformu i šta očekivati."
 			}
 		},
 		"changelog": {
@@ -357,7 +383,11 @@
 			"published": "Objavljeno {date}",
 			"back": "Nazad",
 			"errorLoading": "Greška pri učitavanju podataka o verzijama",
-			"viewOnGithub": "Pogledajte na GitHub-u"
+			"viewOnGithub": "Pogledajte na GitHub-u",
+			"metadata": {
+				"title": "Promjene - RECONNED",
+				"description": "Lista izmjena na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+			}
 		},
 		"search": {
 			"clubs": "Klubovi",
@@ -371,7 +401,17 @@
 			"title": "Pretraga",
 			"users": "Igrači",
 			"member": "član",
-			"members": "članova"
+			"members": "članova",
+			"metadata": {
+				"title": "Pretraga za {query} - RECONNED",
+				"description": "Rezultati pretrage za {query}. Pretražujte klubove, igrače i susrete na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+			}
+		},
+		"map": {
+			"metadata": {
+				"title": "Mapa klubova - RECONNED",
+				"description": "Pronađite gdje se nalaze airsoft klubovi. Istražite i pronađite zajednice u vašoj blizini. Prva univerzalna platforma za airsoft klubove, susrete, i igrače."
+			}
 		}
 	},
 	"dashboard": {

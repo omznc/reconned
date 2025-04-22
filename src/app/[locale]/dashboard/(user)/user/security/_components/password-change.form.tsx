@@ -14,7 +14,10 @@ import type { z } from "zod";
 export function PasswordChangeForm({
 	isLoading,
 	setIsLoading,
-}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>> }) {
+}: {
+	isLoading: boolean;
+	setIsLoading: Dispatch<SetStateAction<boolean>>;
+}) {
 	const t = useTranslations("dashboard.security.passwordChange");
 	const changePasswordForm = useForm<z.infer<typeof passwordChangeSchema>>({
 		resolver: zodResolver(passwordChangeSchema),

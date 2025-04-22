@@ -194,15 +194,18 @@ export const auth = betterAuth({
 							},
 						}),
 					});
-					const locale = await getLocale();
-					await prisma.user.update({
-						where: {
-							id: user.id,
-						},
-						data: {
-							language: locale,
-						},
-					});
+					if (env.NTFY_ENDPOINT) {
+						await fetch(env.NTFY_ENDPOINT, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify({
+								title: "New user signed up",
+								message: `User ${user.name} (${user.email}) signed up.`,
+							}),
+						});
+					}
 				},
 			},
 		},

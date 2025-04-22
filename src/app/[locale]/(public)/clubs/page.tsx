@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { VerifiedClubIcon } from "@/components/icons";
+import type { Metadata } from "next";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -17,9 +18,7 @@ type ClubSearch = {
 	member_count: number;
 };
 
-export default async function Page(props: {
-	searchParams: Promise<{ page?: string }>;
-}) {
+export default async function Page(props: { searchParams: Promise<{ page?: string }> }) {
 	const searchParams = await props.searchParams;
 	const t = await getTranslations("public.clubs");
 	const page = Number(searchParams.page) || 1;
@@ -66,4 +65,16 @@ export default async function Page(props: {
 			<Pagination totalItems={total} itemsPerPage={ITEMS_PER_PAGE} />
 		</div>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("clubs.metadata.title"),
+		description: t("clubs.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

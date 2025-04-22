@@ -1,20 +1,19 @@
-"use client";
-
 import { Link } from "@/i18n/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 
 const lastUpdated = new Date("2025-04-13");
 
-export default function TermsOfUsePage() {
-	const t = useTranslations("public.terms");
-	const locale = useLocale();
+export default async function TermsOfUsePage() {
+	const t = await getTranslations("public.terms");
+	const locale = await getLocale();
 
 	return (
 		<div className="container mx-auto py-12 px-4 max-w-4xl">
 			<h1 className="text-3xl font-bold mb-8">{t("title")}</h1>
 
 			<div className="prose dark:prose-invert max-w-none">
-				<p className="text-lg mb-6">
+				<p className="text-lg mb-6" suppressHydrationWarning>
 					{t("lastUpdated", {
 						date: lastUpdated.toLocaleDateString(locale),
 					})}
@@ -123,4 +122,16 @@ export default function TermsOfUsePage() {
 			</div>
 		</div>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("terms.metadata.title"),
+		description: t("terms.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

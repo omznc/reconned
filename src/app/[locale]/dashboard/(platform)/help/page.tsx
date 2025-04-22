@@ -59,15 +59,7 @@ export default function Page() {
 	);
 }
 
-function HelpItem({
-	title,
-	children,
-	id,
-}: {
-	title: string;
-	children: ReactNode;
-	id: string;
-}) {
+function HelpItem({ title, children, id }: { title: string; children: ReactNode; id: string }) {
 	const hash = useHash();
 
 	return (

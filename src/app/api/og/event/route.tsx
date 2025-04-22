@@ -27,8 +27,10 @@ export async function GET(request: Request) {
 					<div tw="text-2xl mt-8 text-zinc-200">{description?.slice(0, 100) ?? ""}</div>
 					{date && <div tw="mt-6 text-xl text-zinc-400">{date}</div>}
 				</div>
+				{/** biome-ignore lint/nursery/noImgElement: OG generation */}
 				{image && <img src={image} tw="w-[200px]" alt={title ?? ""} />}
 			</div>
+			{/** biome-ignore lint/nursery/noImgElement: OG generation */}
 			<img tw="w-[400px]" src={logoUrl} alt="Reconned" />
 		</div>,
 		{

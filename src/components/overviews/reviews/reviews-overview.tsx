@@ -6,6 +6,7 @@ import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-ove
 import { format } from "date-fns";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { getTranslations } from "next-intl/server";
+import type { Review, User } from "@prisma/client";
 
 interface ReviewsOverviewProps {
 	type: "club" | "event" | "user";
@@ -19,7 +20,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 		return;
 	}
 	// Fetch reviews based on type
-	let reviews;
+	let reviews: (Review & { author: Pick<User, "name" | "image">; })[] = [];
 	switch (type) {
 		case "club": {
 			const club = await prisma.review.findMany({
@@ -89,9 +90,8 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 						{[1, 2, 3, 4, 5].map((star) => (
 							<Star
 								key={star}
-								className={`h-6 w-6 ${
-									star <= averageRating ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"
-								}`}
+								className={`h-6 w-6 ${star <= averageRating ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"
+									}`}
 							/>
 						))}
 						<span className="ml-2 text-sm text-muted-foreground">({reviews.length})</span>
@@ -107,11 +107,10 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 											{[1, 2, 3, 4, 5].map((star) => (
 												<Star
 													key={star}
-													className={`h-4 w-4 ${
-														star <= review.rating
+													className={`h-4 w-4 ${star <= review.rating
 															? "fill-yellow-400 text-yellow-400"
 															: "fill-muted text-muted"
-													}`}
+														}`}
 												/>
 											))}
 										</div>

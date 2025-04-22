@@ -1,24 +1,49 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-	"organizeImports": {
-		"enabled": true
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"all": true,
-			"correctness": {
-				"useExhaustiveDependencies": "off",
-				"noUndeclaredDependencies": "off"
+			"style": {
+				"noDefaultExport": "off",
+				"noImplicitBoolean": "off",
+				"useNamingConvention": "off",
+				"useLiteralEnumMembers": "error",
+				"noCommaOperator": "error",
+				"useNodejsImportProtocol": "error",
+				"useAsConstAssertion": "error",
+				"useNumericLiterals": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useConst": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"useExponentiationOperator": "error",
+				"useTemplate": "error",
+				"noParameterAssign": "error",
+				"noNonNullAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"noArguments": "error",
+				"useImportType": "error",
+				"useExportType": "error",
+				"noUselessElse": "error",
+				"useShorthandFunctionType": "error"
 			},
 			"a11y": {
 				"useKeyWithMouseEvents": "off",
 				"useKeyWithClickEvents": "off"
 			},
-			"style": {
-				"noDefaultExport": "off",
-				"noImplicitBoolean": "off",
-				"useNamingConvention": "off"
+			"correctness": {
+				"useExhaustiveDependencies": "off",
+				"noUndeclaredDependencies": "off"
 			},
 			"suspicious": {
 				"noReactSpecificProps": "off"
@@ -37,6 +62,14 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"ignore": ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**", "**/src/components/ui/**"]
+		"includes": [
+			"**",
+			"!**/node_modules/**",
+			"!**/dist/**",
+			"!**/build/**",
+			"!**/.next/**",
+			"!**/src/components/ui/**",
+			"!**/.unlighthouse/**"
+		]
 	}
 }

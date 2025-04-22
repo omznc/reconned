@@ -59,15 +59,14 @@
 		}
 	},
 	"public": {
-		"offline": {
-			"title": "You are offline",
-			"message": "Please check your internet connection and try again.",
-			"returnHome": "Return to homepage"
-		},
 		"notFound": {
 			"title": "You are lost",
 			"message": "Page not found",
-			"backHome": "Return to homepage"
+			"backHome": "Return to homepage",
+			"metadata": {
+				"title": "404 - Page not found - RECONNED",
+				"description": "The page you are looking for does not exist."
+			}
 		},
 		"home": {
 			"hero": {
@@ -98,6 +97,10 @@
 				"privateEvent": "This is a private event, but you are in the {clubName} club.",
 				"starts": "Starts",
 				"view": "View"
+			},
+			"metadata": {
+				"title": "RECONNED - Airsoft clubs, events, and players",
+				"description": "The first universal platform for airsoft clubs, events, and players."
 			}
 		},
 		"sponsors": {
@@ -109,6 +112,10 @@
 			"cta": {
 				"title": "You",
 				"description": "This place can be yours"
+			},
+			"becomeSponsor": {
+				"title": "Sponsors - RECONNED",
+				"description": "Our current sponsors and partners. Thank you for your support!"
 			}
 		},
 		"about": {
@@ -127,6 +134,10 @@
 				"title": "How to help?",
 				"description": "If you are interested in helping with the development of the platform, please feel free to contact us. Help in the form of marketing, programming, and general sponsorship is always welcome.",
 				"sponsors": "See the list of sponsors."
+			},
+			"metadata": {
+				"title": "About us - RECONNED",
+				"description": "About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players."
 			}
 		},
 		"auth": {
@@ -168,12 +179,17 @@
 			"invalidEmail": "Invalid email",
 			"passwordRequired": "Your password is required",
 			"passwordTooShort": "That password is too short",
-			"nameRequired": "Your name is required"
+			"nameRequired": "Your name is required",
+			"metadata": {
+				"title": "Authentication - RECONNED",
+				"description": "Login, register, and reset your password. The first universal platform for airsoft clubs, events, and players."
+			}
 		},
 		"clubs": {
 			"title": "Clubs",
 			"metadata": {
-				"description": "Airsoft club"
+				"title": "Airsoft clubs - RECONNED",
+				"description": "The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players."
 			},
 			"member": "member",
 			"members": "members"
@@ -181,12 +197,14 @@
 		"users": {
 			"title": "Players",
 			"metadata": {
-				"description": "Airsoft player"
+				"title": "Airsoft players - RECONNED",
+				"description": "The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players."
 			}
 		},
 		"events": {
 			"metadata": {
-				"description": "Airsoft event"
+				"title": "Airsoft events - RECONNED",
+				"description": "The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players."
 			}
 		},
 		"layout": {
@@ -269,6 +287,10 @@
 			"contact": {
 				"title": "Contact Us",
 				"description": "If you have any questions about this Privacy Policy or our privacy practices, please contact us at <email></email>."
+			},
+			"metadata": {
+				"title": "Privacy Policy - RECONNED",
+				"description": "Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players."
 			}
 		},
 		"terms": {
@@ -346,6 +368,10 @@
 			"contact": {
 				"title": "Contact Us",
 				"description": "If you have any questions about these Terms of Use, please contact us at <email></email>."
+			},
+			"metadata": {
+				"title": "Terms of Use - RECONNED",
+				"description": "Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
 			}
 		},
 		"changelog": {
@@ -357,7 +383,11 @@
 			"previousReleases": "Previous versions",
 			"title": "Changes",
 			"version": "Version {version}",
-			"viewOnGithub": "View on GitHub"
+			"viewOnGithub": "View on GitHub",
+			"metadata": {
+				"title": "Changelog - RECONNED",
+				"description": "The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
+			}
 		},
 		"search": {
 			"placeholder": "Something...",
@@ -371,7 +401,17 @@
 			"description": "Find clubs, players, and events - all in one place",
 			"loading": "Just a moment...",
 			"member": "member",
-			"members": "members"
+			"members": "members",
+			"metadata": {
+				"title": "Search for {query} - RECONNED",
+				"description": "Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
+			}
+		},
+		"map": {
+			"metadata": {
+				"title": "Club Map - RECONNED",
+				"description": "Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players."
+			}
 		}
 	},
 	"dashboard": {

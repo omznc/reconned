@@ -3,12 +3,14 @@ import { CreateAccountEmail } from "@/emails/create-account";
 import { EmailVerification } from "@/emails/email-verification";
 import { PasswordReset } from "@/emails/password-reset";
 import { RateEventEmail } from "@/emails/rate-event";
-import { EmailSheet } from "./_components/email-sheet";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Mail } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { render } from "@react-email/components";
 import { cn } from "@/lib/utils";
+import { EmailSheet } from "@/app/[locale]/dashboard/(platform)/admin/emails/_components/email-sheet";
+import { MembershipExpiration } from "@/emails/membership-expiration";
+import { MembershipExpirationOwner } from "@/emails/membership-expiration-owner";
 
 const SAMPLE_CLUB = {
 	name: "Moj airsoft klub",
@@ -77,6 +79,37 @@ const emails = [
 			playerName: "John Doe",
 			clubLogo: SAMPLE_CLUB.logo,
 			clubName: SAMPLE_CLUB.name,
+		},
+	},
+	{
+		id: "membership-expiration",
+		name: "Istek članstva",
+		description: "Email koji se šalje kada članstvo istekne",
+		preview: MembershipExpiration,
+		sampleData: {
+			userName: "John Doe",
+			clubName: SAMPLE_CLUB.name,
+			clubLogo: SAMPLE_CLUB.logo,
+			expiryDate: "30.04.2024",
+			daysUntilExpiry: 7,
+			renewUrl: "#",
+			isExpired: false,
+		},
+	},
+	{
+		id: "membership-expiration-owner",
+		name: "Istek članstva (vlasnik kluba)",
+		description: "Email koji se šalje kada članstvo istekne",
+		preview: MembershipExpirationOwner,
+		sampleData: {
+			ownerName: "John Doe",
+			clubName: SAMPLE_CLUB.name,
+			clubLogo: SAMPLE_CLUB.logo,
+			memberName: "Jane Doe",
+			expiryDate: "30.04.2024",
+			daysUntilExpiry: 7,
+			membersUrl: "#",
+			isExpired: false,
 		},
 	},
 ];

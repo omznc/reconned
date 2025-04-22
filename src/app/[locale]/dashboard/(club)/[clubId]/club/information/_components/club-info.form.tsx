@@ -638,6 +638,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 													key={file.name}
 													index={i}
 												>
+													{/** biome-ignore lint/nursery/noImgElement: Local image */}
 													<img
 														src={URL.createObjectURL(file)}
 														alt={file.name}

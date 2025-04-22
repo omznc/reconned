@@ -6,7 +6,7 @@ import { after } from "next/server";
 import { captureException } from "@sentry/nextjs";
 import type { JsonValue } from "@prisma/client/runtime/client";
 
-export type ClubActionType =
+type ClubActionType =
 	| "CLUB_CREATE"
 	| "CLUB_UPDATE"
 	| "CLUB_DELETE"

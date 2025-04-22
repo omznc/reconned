@@ -15,7 +15,10 @@ import type { z } from "zod";
 export function SetupPasswordForm({
 	isLoading,
 	setIsLoading,
-}: { isLoading: boolean; setIsLoading: Dispatch<SetStateAction<boolean>> }) {
+}: {
+	isLoading: boolean;
+	setIsLoading: Dispatch<SetStateAction<boolean>>;
+}) {
 	const router = useRouter();
 	const t = useTranslations("dashboard.security.passwordSetup");
 

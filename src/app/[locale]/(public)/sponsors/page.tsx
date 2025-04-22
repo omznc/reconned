@@ -3,6 +3,8 @@ import { ArrowUpRight, MailCheckIcon } from "lucide-react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 const sponsors = [
 	{
@@ -118,4 +120,16 @@ export default function SponsorsPage() {
 			</div>
 		</>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("sponsors.metadata.title"),
+		description: t("sponsors.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

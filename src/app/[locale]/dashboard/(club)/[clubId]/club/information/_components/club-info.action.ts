@@ -16,6 +16,7 @@ import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { getLocale } from "next-intl/server";
 import { disconnectInstagramAPI } from "@/lib/instagram";
 import { logClubAudit } from "@/lib/audit-logger";
+import { env } from "@/lib/env";
 
 export const saveClubInformation = safeActionClient.schema(clubInfoSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
@@ -88,6 +89,19 @@ export const saveClubInformation = safeActionClient.schema(clubInfoSchema).actio
 		},
 	});
 
+	if (actionType === "CLUB_CREATE" && env.NTFY_ENDPOINT) {
+		await fetch(env.NTFY_ENDPOINT, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: "New club created",
+				message: `Club ${parsedInput.name} has been created.`,
+			}),
+		});
+	}
+
 	revalidateTag("managed-clubs");
 	revalidateLocalizedPaths(`/dashboard/${club.id}`, "layout");
 	if (!club?.isPrivate) {
@@ -135,40 +149,6 @@ export const deleteClubImage = safeActionClient.schema(deleteClubImageSchema).ac
 	});
 
 	revalidateLocalizedPaths(`/dashboard/club/information?club=${ctx.club.id}`);
-
-	return { success: true };
-});
-
-export const disconnectInstagram = safeActionClient.schema(disconnectInstagramSchema).action(async ({ ctx }) => {
-	await prisma.club.update({
-		where: {
-			id: ctx.club.id,
-		},
-		data: {
-			instagramUsername: null,
-			instagramAccessToken: null,
-			instagramRefreshToken: null,
-			instagramTokenExpiry: null,
-			instagramProfilePictureUrl: null,
-			instagramConnected: false,
-		},
-	});
-
-	// Log the audit event
-	logClubAudit({
-		clubId: ctx.club.id,
-		actionType: "INSTAGRAM_DISCONNECT",
-		actionData: {
-			disconnectedBy: "manual",
-		},
-	});
-
-	revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`);
-	if (!ctx.club.isPrivate) {
-		revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
-		revalidateLocalizedPaths("/clubs");
-		revalidateLocalizedPaths("/search");
-	}
 
 	return { success: true };
 });

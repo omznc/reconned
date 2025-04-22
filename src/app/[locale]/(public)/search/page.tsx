@@ -7,6 +7,7 @@ import { Search } from "@/app/[locale]/(public)/search/_components/search";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
 import { getLocale, getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 interface Props {
 	searchParams: Promise<{
@@ -280,4 +281,21 @@ export default async function SearchPage(props: Props) {
 			</Suspense>
 		</div>
 	);
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+	const { q } = await props.searchParams;
+	const t = await getTranslations("public");
+
+	return {
+		title: t("search.metadata.title", {
+			query: q,
+		}),
+		description: t("search.metadata.description", {
+			query: q,
+		}),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

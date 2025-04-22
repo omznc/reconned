@@ -159,13 +159,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 	);
 }
 
-function LogDetailCredenza({
-	log,
-	onClose,
-}: {
-	log: AuditLog | null;
-	onClose: () => void;
-}) {
+function LogDetailCredenza({ log, onClose }: { log: AuditLog | null; onClose: () => void }) {
 	const t = useTranslations("dashboard.club.audit");
 	const locale = useLocale();
 
