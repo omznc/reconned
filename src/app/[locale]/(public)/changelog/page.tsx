@@ -29,16 +29,6 @@ async function formatReleaseBody(body: string): Promise<string> {
 	return String(processedContent.value);
 }
 
-// Generate metadata for the page
-export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public.changelog");
-
-	return {
-		title: t("title"),
-		description: t("description"),
-	};
-}
-
 // Main changelog page
 export default async function ChangelogPage() {
 	const t = await getTranslations("public.changelog");
@@ -218,4 +208,16 @@ export default async function ChangelogPage() {
 			)}
 		</div>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("changelog.metadata.title"),
+		description: t("changelog.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

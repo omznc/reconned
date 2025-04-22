@@ -76,5 +76,3 @@ export const MembershipExpirationOwner = async ({
 		</Html>
 	);
 };
-
-export default MembershipExpirationOwner;

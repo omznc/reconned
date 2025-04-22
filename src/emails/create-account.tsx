@@ -46,5 +46,3 @@ export const CreateAccountEmail = async ({
 		</Html>
 	);
 };
-
-export default CreateAccountEmail;

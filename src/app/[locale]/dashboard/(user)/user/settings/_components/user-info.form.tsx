@@ -319,6 +319,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 															key={file.name}
 															index={i}
 														>
+															{/** biome-ignore lint/nursery/noImgElement: We're using object images here */}
 															<img
 																src={URL.createObjectURL(file)}
 																alt={file.name}

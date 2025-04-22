@@ -8,6 +8,8 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { isAuthenticated } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 export default async function Page() {
 	const user = await isAuthenticated();
@@ -131,4 +133,16 @@ export default async function Page() {
 			</div>
 		</div>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("events.metadata.title"),
+		description: t("events.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

@@ -121,6 +121,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.6,
 			alternates: generateAlternates("/register"),
 		},
+		{
+			url: getCanonicalUrl("/changelog"),
+			lastModified: new Date(),
+			changeFrequency: "weekly",
+			priority: 0.6,
+			alternates: generateAlternates("/changelog"),
+		},
+		{
+			url: getCanonicalUrl("/map"),
+			lastModified: new Date(),
+			changeFrequency: "daily",
+			priority: 0.8,
+			alternates: generateAlternates("/map"),
+		},
+		{
+			url: getCanonicalUrl("/privacy-policy"),
+			lastModified: new Date(),
+			changeFrequency: "monthly",
+			priority: 0.5,
+			alternates: generateAlternates("/privacy-policy"),
+		},
+		{
+			url: getCanonicalUrl("/terms-of-use"),
+			lastModified: new Date(),
+			changeFrequency: "monthly",
+			priority: 0.5,
+			alternates: generateAlternates("/terms-of-use"),
+		},
+		{
+			url: getCanonicalUrl("/support-us"),
+			lastModified: new Date(),
+			changeFrequency: "monthly",
+			priority: 0.2,
+			alternates: generateAlternates("/support-us"),
+		},
 	];
 
 	// Generate dynamic routes with language alternates

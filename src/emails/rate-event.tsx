@@ -49,5 +49,3 @@ export const RateEventEmail = async ({
 		</Html>
 	);
 };
-
-export default RateEventEmail;

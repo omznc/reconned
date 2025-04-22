@@ -4,7 +4,7 @@ import type { Club } from "@prisma/client";
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 
-export const unsafeActionClient = createSafeActionClient();
+const unsafeActionClient = createSafeActionClient();
 
 const clubIdSchema = z.object({
 	clubId: z.string(),

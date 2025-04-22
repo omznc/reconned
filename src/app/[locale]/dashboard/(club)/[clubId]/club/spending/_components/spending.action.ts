@@ -110,35 +110,35 @@ export const getPurchaseReceiptUploadUrl = safeActionClient
 		return resp;
 	});
 
-export const deleteReceipt = safeActionClient
-	.schema(
-		z.object({
-			purchaseId: z.string(),
-			receiptUrl: z.string(),
-		}),
-	)
-	.action(async ({ parsedInput }) => {
-		const purchase = await prisma.clubPurchase.findUnique({
-			where: { id: parsedInput.purchaseId },
-			select: { receiptUrls: true },
-		});
+// const deleteReceipt = safeActionClient
+// 	.schema(
+// 		z.object({
+// 			purchaseId: z.string(),
+// 			receiptUrl: z.string(),
+// 		}),
+// 	)
+// 	.action(async ({ parsedInput }) => {
+// 		const purchase = await prisma.clubPurchase.findUnique({
+// 			where: { id: parsedInput.purchaseId },
+// 			select: { receiptUrls: true },
+// 		});
 
-		if (!purchase) {
-			throw new Error("Purchase not found");
-		}
+// 		if (!purchase) {
+// 			throw new Error("Purchase not found");
+// 		}
 
-		const newUrls = purchase.receiptUrls.filter((url) => url !== parsedInput.receiptUrl);
+// 		const newUrls = purchase.receiptUrls.filter((url) => url !== parsedInput.receiptUrl);
 
-		await prisma.clubPurchase.update({
-			where: { id: parsedInput.purchaseId },
-			data: { receiptUrls: newUrls },
-		});
+// 		await prisma.clubPurchase.update({
+// 			where: { id: parsedInput.purchaseId },
+// 			data: { receiptUrls: newUrls },
+// 		});
 
-		// Extract the key from the URL and delete from S3
-		const key = parsedInput.receiptUrl.split(".com/")[1];
-		if (key) {
-			await deleteS3File(key);
-		}
+// 		// Extract the key from the URL and delete from S3
+// 		const key = parsedInput.receiptUrl.split(".com/")[1];
+// 		if (key) {
+// 			await deleteS3File(key);
+// 		}
 
-		return { success: true };
-	});
+// 		return { success: true };
+// 	});

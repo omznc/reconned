@@ -318,11 +318,7 @@ interface CommandMenuContextType {
 
 const CommandMenuContext = createContext<CommandMenuContextType | undefined>(undefined);
 
-export function CommandMenuProvider({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export function CommandMenuProvider({ children }: { children: ReactNode }) {
 	const [open, setOpen] = useState(false);
 
 	const toggleOpen = useCallback(() => {

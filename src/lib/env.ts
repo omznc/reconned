@@ -18,7 +18,7 @@ export const env = createEnv({
 		ONESIGNAL_API_KEY: z.string().min(1),
 		ADMIN_WEBHOOK_TOKEN: z.string().min(1),
 		TURNSTILE_SECRET_KEY: z.string().min(1),
-		// Facebook Graph API credentials (for Instagram integration)
+		NTFY_ENDPOINT: z.string().url().optional(),
 		FACEBOOK_APP_ID: z.string().min(1),
 		FACEBOOK_APP_SECRET: z.string().min(1),
 		// POLAR_ACCESS_TOKEN: z.string().min(1), This is a surprise tool that will help us later

@@ -3,6 +3,19 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import Error404 from "@public/errors/404.webp";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("notFound.metadata.title"),
+		description: t("notFound.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
+}
 
 export default async function NotFound() {
 	const t = await getTranslations("public.notFound");

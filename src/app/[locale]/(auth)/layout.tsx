@@ -1,29 +1,21 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
 import { House } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import background from "./background-blur.webp";
 import backgroundLight from "./background-blur-light.webp";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import { AnimationWrapper } from "@/app/[locale]/(auth)/_components/animation-wrapper";
 
-const variants = {
-	hidden: { x: -700, y: 0, filter: "blur(5px)" },
-	enter: { x: 0, y: 0, filter: "blur(0px)" },
-	exit: { x: 700, y: 0, filter: "blur(5px)" },
-};
-
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	const path = usePathname();
-	const t = useTranslations("public.auth");
+	const t = await getTranslations("public.auth");
 
 	return (
 		<>
@@ -50,19 +42,20 @@ export default function RootLayout({
 						</Link>
 					</Button>
 				</div>
-				<AnimatePresence initial={false} mode="wait">
-					<motion.div
-						key={path}
-						variants={variants}
-						initial="hidden"
-						animate="enter"
-						exit="exit"
-						transition={{ type: "tween", duration: 0.2 }}
-					>
-						{children}
-					</motion.div>
-				</AnimatePresence>
+				<AnimationWrapper>{children}</AnimationWrapper>
 			</Card>
 		</>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const t = await getTranslations("public");
+
+	return {
+		title: t("auth.metadata.title"),
+		description: t("auth.metadata.description"),
+		keywords: t("layout.metadata.keywords")
+			.split(",")
+			.map((keyword) => keyword.trim()),
+	};
 }

@@ -37,7 +37,6 @@ import {
 	Settings,
 	Trash,
 } from "lucide-react";
-import dynamic from "next/dynamic";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -53,10 +52,6 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-export const MapComponent = dynamic(() => import("@/components/map-component").then((mod) => mod.MapComponent), {
-	ssr: false,
-});
-
 interface CreateEventFormProps {
 	event: Event | null;
 	rules: ClubRule[];
@@ -65,6 +60,7 @@ interface CreateEventFormProps {
 export default function CreateEventForm(props: CreateEventFormProps) {
 	const [files, setFiles] = useState<File[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
+	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
@@ -943,8 +939,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									control={form.control}
 									name="ruleIds"
 									render={({ field }) => {
-										const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
-
 										return (
 											<FormItem>
 												<FormDescription>{t("rulesDescription")}</FormDescription>

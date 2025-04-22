@@ -1,5 +1,6 @@
 "use server";
 
+import { logClubAudit } from "@/lib/audit-logger";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
@@ -14,20 +15,13 @@ export interface InstagramMedia {
 	username: string;
 }
 
-export interface FacebookAuthResponse {
+interface FacebookAuthResponse {
 	access_token: string;
 	token_type: string;
 	expires_in: number;
 }
 
-export interface InstagramUserProfile {
-	id: string;
-	username: string;
-	name?: string;
-	profile_picture_url?: string;
-}
-
-export interface InstagramMediaResponse {
+interface InstagramMediaResponse {
 	data: InstagramMedia[];
 	paging?: {
 		cursors: {
@@ -38,7 +32,7 @@ export interface InstagramMediaResponse {
 	};
 }
 
-export interface FacebookPageResponse {
+interface FacebookPageResponse {
 	data: Array<{
 		id: string;
 		name: string;
@@ -46,13 +40,13 @@ export interface FacebookPageResponse {
 	}>;
 }
 
-export interface FacebookLongLivedTokenResponse {
+interface FacebookLongLivedTokenResponse {
 	access_token: string;
 	token_type: string;
 	expires_in: number; // Typically ~5,184,000 seconds (60 days)
 }
 
-export interface FacebookDebugTokenResponse {
+interface FacebookDebugTokenResponse {
 	data: {
 		app_id: string;
 		type: string;
@@ -63,11 +57,6 @@ export interface FacebookDebugTokenResponse {
 		scopes: string[];
 		user_id: string;
 	};
-}
-
-export interface SystemUserTokenResponse {
-	access_token: string;
-	token_type: string;
 }
 
 /**
@@ -117,25 +106,6 @@ export async function exchangeForLongLivedToken(shortLivedToken: string): Promis
 
 	if (!response.ok) {
 		throw new Error(`Failed to exchange for long-lived token: ${await response.text()}`);
-	}
-
-	return await response.json();
-}
-
-/**
- * Get a system user access token for a business
- * This token never expires and is tied to the app, not the user
- * Requires the business to have set up system users in Business Manager
- */
-export async function getSystemUserToken(businessId: string, systemUserId: string): Promise<SystemUserTokenResponse> {
-	// This requires additional setup in Facebook Business Manager
-	// The business needs to create a system user and assign it to the app
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/${businessId}/access_token?client_id=${env.FACEBOOK_APP_ID}&client_secret=${env.FACEBOOK_APP_SECRET}&system_user_id=${systemUserId}`,
-	);
-
-	if (!response.ok) {
-		throw new Error(`Failed to get system user token: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -222,24 +192,6 @@ export async function getInstagramBusinessAccount(
 	}
 
 	return undefined;
-}
-
-/**
- * Get Instagram user profile information using the Graph API
- */
-export async function getInstagramUserProfile(
-	igBusinessId: string,
-	accessToken: string,
-): Promise<InstagramUserProfile> {
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/${igBusinessId}?fields=id,username,name&access_token=${accessToken}`,
-	);
-
-	if (!response.ok) {
-		throw new Error(`Failed to get user profile: ${await response.text()}`);
-	}
-
-	return await response.json();
 }
 
 /**
@@ -440,8 +392,23 @@ export async function disconnectInstagramAPI(clubId: string): Promise<boolean> {
 			},
 		});
 
+		logClubAudit({
+			clubId,
+			actionType: "INSTAGRAM_DISCONNECT",
+			actionData: {
+				success: true,
+			},
+		});
+
 		return true;
 	} catch (error) {
+		logClubAudit({
+			clubId,
+			actionType: "INSTAGRAM_DISCONNECT",
+			actionData: {
+				success: true,
+			},
+		});
 		return false;
 	}
 }
