@@ -66,6 +66,8 @@ export default async function Home() {
 	);
 }
 
+export const revalidate = 86_400; // 1 day
+
 export async function generateMetadata(): Promise<Metadata> {
 	const t = await getTranslations("public");
 

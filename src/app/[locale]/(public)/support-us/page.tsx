@@ -1,6 +1,8 @@
 import { Button } from "@components/ui/button";
 import { Link } from "@/i18n/navigation";
 
+export const revalidate = 86_400; // 1 day
+
 export default function Page() {
 	return (
 		<div className="flex flex-col gap-4">

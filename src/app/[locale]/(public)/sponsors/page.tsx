@@ -27,6 +27,8 @@ const sponsors = [
 	website: string;
 }[];
 
+export const revalidate = 86_400; // 1 day
+
 export default function SponsorsPage() {
 	const t = useTranslations("public.sponsors");
 

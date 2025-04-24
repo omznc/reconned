@@ -116,7 +116,7 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 								{club.name} {club.verified && <VerifiedClubIcon />}
 							</h1>
 						</div>
-						<p className="text-accent-foreground/80">{club.description}</p>
+						<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">{club.description}</p>
 					</div>
 				</div>
 				<div className="flex flex-col md:flex-row gap-2">

@@ -41,6 +41,8 @@ interface PageProps {
 	}>;
 }
 
+export const revalidate = 3600; // 1 hour
+
 export default async function Home({ searchParams }: PageProps) {
 	const user = await isAuthenticated();
 	const { month } = await searchParams;

@@ -29,6 +29,8 @@ async function formatReleaseBody(body: string): Promise<string> {
 	return String(processedContent.value);
 }
 
+export const revalidate = 3600; // 1 hour
+
 // Main changelog page
 export default async function ChangelogPage() {
 	const t = await getTranslations("public.changelog");
