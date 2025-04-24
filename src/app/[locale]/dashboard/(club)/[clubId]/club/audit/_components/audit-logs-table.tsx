@@ -82,7 +82,6 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 			value,
 		})),
 	];
-
 	return (
 		<>
 			<GenericDataTable
@@ -110,7 +109,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
-							component: (value) => (
+							component: (value, row) => (
 								<Badge variant="secondary" className="font-mono">
 									{getActionTypeLabel(value)}
 								</Badge>
@@ -154,12 +153,18 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 				]}
 			/>
 
-			<LogDetailCredenza log={selectedLog} onClose={() => setSelectedLog(null)} />
+			<LogDetailCredenza actionTypeMap={actionTypeMap} log={selectedLog} onClose={() => setSelectedLog(null)} />
 		</>
 	);
 }
 
-function LogDetailCredenza({ log, onClose }: { log: AuditLog | null; onClose: () => void; }) {
+interface LogDetailCredenzaProps {
+	actionTypeMap: Record<string, string>;
+	log: AuditLog | null;
+	onClose: () => void;
+}
+
+function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaProps) {
 	const t = useTranslations("dashboard.club.audit");
 	const locale = useLocale();
 
@@ -185,7 +190,7 @@ function LogDetailCredenza({ log, onClose }: { log: AuditLog | null; onClose: ()
 				<div className="mt-4 space-y-4 p-4 md:p-0">
 					<div>
 						<h3 className="text-sm font-medium">{t("actionType")}</h3>
-						<p className="mt-1 font-mono text-sm">{log.actionType}</p>
+						<p className="mt-1 font-mono text-sm">{actionTypeMap[log.actionType] || log.actionType}</p>
 					</div>
 
 					<div>
