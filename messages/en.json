@@ -113,7 +113,7 @@
 				"title": "You",
 				"description": "This place can be yours"
 			},
-			"becomeSponsor": {
+			"metadata": {
 				"title": "Sponsors - RECONNED",
 				"description": "Our current sponsors and partners. Thank you for your support!"
 			}
