@@ -39,7 +39,7 @@ export const removeMember = safeActionClient.schema(removeMemberSchema).action(a
 			},
 		});
 
-		logClubAudit({
+		await logClubAudit({
 			clubId: parsedInput.clubId,
 			actionType: "MEMBER_REMOVE",
 			actionData: {
@@ -94,7 +94,7 @@ export const leaveClub = safeActionClient.schema(leaveClubSchema).action(async (
 			);
 		}
 
-		logClubAudit({
+		await logClubAudit({
 			clubId: parsedInput.clubId,
 			actionType: "MEMBER_LEAVE",
 			actionData: {
@@ -115,7 +115,7 @@ export const leaveClub = safeActionClient.schema(leaveClubSchema).action(async (
 
 		// Redirect to dashboard
 		return redirect({
-			href: "/dashboard?autoSelectFirst=true",
+			href: "/dashboard",
 			locale,
 		});
 	} catch (error) {

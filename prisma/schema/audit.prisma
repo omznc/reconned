@@ -4,12 +4,12 @@ model ClubAuditLog {
   createdAt DateTime @default(now())
 
   // Who performed the action
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   // Which club was affected
   clubId String
-  club   Club   @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
   // What was done
   actionType String // e.g., "CLUB_CREATE", "MEMBER_INVITE", "MEMBER_REMOVE"

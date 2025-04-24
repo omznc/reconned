@@ -57,7 +57,7 @@ export const extendMembership = safeActionClient
 			// Revalidate path to update UI
 			revalidateLocalizedPaths(`/dashboard/${clubId}/members`);
 
-			logClubAudit({
+			await logClubAudit({
 				clubId,
 				actionType: "MEMBERSHIP_EXTENSION",
 				actionData: {

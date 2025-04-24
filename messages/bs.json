@@ -1133,7 +1133,8 @@
 			"profile": "Profil",
 			"userSettings": "Postavke korisnika",
 			"shiftHint": "Možete koristiti shift + strelice gore i dolje za mijenjanje klubova.",
-			"auditLogs": "Zapis"
+			"auditLogs": "Zapis",
+			"createClub": "Dodaj klub"
 		},
 		"footer": {
 			"about": {

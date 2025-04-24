@@ -19,7 +19,7 @@ export const createPurchase = safeActionClient.schema(purchaseFormSchema).action
 		};
 	}
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: parsedInput.clubId,
 		actionType: "SPENDING_CREATE",
 		actionData: {
@@ -57,7 +57,7 @@ export const updatePurchase = safeActionClient
 			},
 		});
 
-		logClubAudit({
+		await logClubAudit({
 			clubId: purchase.clubId,
 			actionType: "SPENDING_UPDATE",
 			actionData: {
@@ -84,7 +84,7 @@ export const deletePurchase = safeActionClient
 			await Promise.all(keys.map((key) => deleteS3File(key!)));
 		});
 
-		logClubAudit({
+		await logClubAudit({
 			clubId: parsedInput.clubId,
 			actionType: "SPENDING_DELETE",
 			actionData: {

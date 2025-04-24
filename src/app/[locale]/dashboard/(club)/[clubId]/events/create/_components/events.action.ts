@@ -75,7 +75,7 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 		revalidateLocalizedPaths(`/events/${parsedInput.eventId}`);
 	}
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: ctx.club.id,
 		actionType: parsedInput.eventId ? "EVENT_UPDATE" : "EVENT_CREATE",
 		actionData: {
@@ -102,7 +102,6 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 			rules: parsedInput.ruleIds,
 			mapData: parsedInput.mapData,
 		},
-		userId: ctx.user.id,
 	});
 
 	// create or update event
@@ -146,14 +145,13 @@ export const deleteEventImage = safeActionClient.schema(deleteEventImageSchema).
 		},
 	});
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: ctx.club.id,
 		actionType: "EVENT_UPDATE",
 		actionData: {
 			id: parsedInput.eventId,
 			note: "Event image deleted",
 		},
-		userId: ctx.user.id,
 	});
 });
 
@@ -194,7 +192,7 @@ export const deleteEvent = safeActionClient.schema(deleteEventSchema).action(asy
 		revalidateLocalizedPaths(`${locale}/`);
 	}
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: ctx.club.id,
 		actionType: "EVENT_DELETE",
 		actionData: {
@@ -202,7 +200,6 @@ export const deleteEvent = safeActionClient.schema(deleteEventSchema).action(asy
 			name: event.name,
 			description: event.description,
 		},
-		userId: ctx.user.id,
 	});
 
 	return redirect({

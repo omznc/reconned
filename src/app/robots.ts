@@ -7,8 +7,9 @@ export default function robots(): MetadataRoute.Robots {
 	return {
 		rules: {
 			userAgent: "*",
-			...(isBeta ? { disallow: "/" } : { allow: "/", disallow: "/api/" }),
+			allow: isBeta ? undefined : "/",
+			disallow: isBeta ? "/" : "/api/",
 		},
-		sitemap: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sitemap.xml`,
+		sitemap: isBeta ? undefined : `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sitemap.xml`,
 	};
 }

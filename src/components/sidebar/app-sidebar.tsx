@@ -16,19 +16,19 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import type { Club } from "@prisma/client";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { User } from "better-auth";
 import { useLocale, useTranslations } from "next-intl";
 import { env } from "@/lib/env";
-import { Link, redirect, usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { MailPlus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCommandMenu } from "@/components/sidebar/command-menu";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined };
+	user: User & { managedClubs: string[]; role?: string | null | undefined; };
 	invitesCount: number;
 	inviteRequestsCount: {
 		id: string;
@@ -37,7 +37,7 @@ interface AppSidebarProps {
 }
 
 // Component properly using the useCommandMenu hook within the provider context
-function SearchButton({ isMac }: { isMac: boolean }) {
+function SearchButton({ isMac }: { isMac: boolean; }) {
 	const { toggleOpen } = useCommandMenu();
 	const t = useTranslations("components.sidebar");
 	const sidebar = useSidebar();
@@ -61,10 +61,9 @@ function SearchButton({ isMac }: { isMac: boolean }) {
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();;
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
-	const searchParams = useSearchParams();
 	const locale = useLocale();
 	const t = useTranslations("components.sidebar");
 	const [isMac, setIsMac] = useState(false);
@@ -75,18 +74,6 @@ export function AppSidebar(props: AppSidebarProps) {
 		// Detect if user is on macOS
 		setIsMac(window.navigator.userAgent.indexOf("Mac") !== -1);
 	}, []);
-
-	useEffect(() => {
-		if (searchParams.get("autoSelectFirst") && !params.clubId) {
-			const firstClub = props.clubs[0];
-			if (firstClub) {
-				return redirect({
-					href: `/dashboard/${firstClub.id}`,
-					locale,
-				});
-			}
-		}
-	}, [params.clubId, props.clubs, searchParams]);
 
 	useEffect(() => {
 		if (sidebar.isMobile) {
@@ -174,3 +161,4 @@ export function AppSidebar(props: AppSidebarProps) {
 		</Sidebar>
 	);
 }
+

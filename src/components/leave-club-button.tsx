@@ -46,7 +46,7 @@ export function LeaveClubButton({
 
 		try {
 			await leaveClub({ clubId });
-			router.push("/dashboard?autoSelectFirst=true");
+			router.push("/dashboard");
 		} catch (error) {
 			toast.error(error instanceof Error ? error.message : t("error"));
 		}

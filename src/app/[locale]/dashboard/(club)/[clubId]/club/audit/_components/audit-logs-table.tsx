@@ -20,11 +20,11 @@ type AuditLog = {
 	createdAt: Date;
 	actionType: string;
 	actionData: JsonValue;
-	user?: {
+	user: {
 		id: string;
 		name: string;
 		email: string;
-	};
+	} | null;
 	ipAddress: string | null;
 	userAgent: string | null;
 };
@@ -159,7 +159,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 	);
 }
 
-function LogDetailCredenza({ log, onClose }: { log: AuditLog | null; onClose: () => void }) {
+function LogDetailCredenza({ log, onClose }: { log: AuditLog | null; onClose: () => void; }) {
 	const t = useTranslations("dashboard.club.audit");
 	const locale = useLocale();
 

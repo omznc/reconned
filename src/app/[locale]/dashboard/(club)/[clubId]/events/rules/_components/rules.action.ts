@@ -31,7 +31,7 @@ export const saveRule = safeActionClient.schema(ruleSchema).action(async ({ pars
 
 		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/events/rules`);
 
-		logClubAudit({
+		await logClubAudit({
 			clubId: ctx.club.id,
 			actionType: parsedInput.id ? "CLUB_RULE_UPDATE" : "CLUB_RULE_CREATE",
 			actionData: {
@@ -55,7 +55,7 @@ export const deleteRule = safeActionClient.schema(deleteRuleSchema).action(async
 		},
 	});
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: ctx.club.id,
 		actionType: "CLUB_RULE_DELETE",
 		actionData: {

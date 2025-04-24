@@ -1,5 +1,3 @@
-// Since we have a root `not-found.tsx` page, a layout file
-
 import { env } from "@/lib/env";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
