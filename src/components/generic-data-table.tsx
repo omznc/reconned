@@ -60,18 +60,19 @@ interface GenericTableProps<T> {
 		locale?: "bs" | "en";
 	};
 }
+
 // Helper function to get nested value
-const getNestedValue = <T extends object>(obj: T, path: string): unknown => {
+const getNestedValue = <T extends Record<string, any>>(obj: T, path: string): any => {
 	if (!path) {
 		return undefined;
 	}
 
 	try {
-		return path.split(".").reduce((acc: unknown, part) => {
+		return path.split(".").reduce((acc, part) => {
 			if (acc === null || acc === undefined) {
 				return undefined;
 			}
-			return acc as { [key: string]: unknown }[typeof part];
+			return acc[part];
 		}, obj);
 	} catch {
 		return undefined;
@@ -109,15 +110,15 @@ const renderCell = <T extends Record<string, any>>(
 	}
 
 	if (config?.variant === "badge") {
-		const badgeClass = config.badgeVariants?.[String(value)] ?? config.badgeVariants?.default ?? "bg-primary/10";
+		const badgeClass = config.badgeVariants?.[value] ?? config.badgeVariants?.default ?? "bg-primary/10";
 		return (
 			<span className={`px-2 py-1 text-xs ${badgeClass}`}>
-				{config.valueMap?.[String(value)] ?? config.valueMap?.default ?? String(value)}
+				{config.valueMap?.[value] ?? config.valueMap?.default ?? value}
 			</span>
 		);
 	}
 
-	return config?.valueMap?.[String(value)] || value;
+	return config?.valueMap?.[value] || value;
 };
 
 export function GenericDataTable<T>({

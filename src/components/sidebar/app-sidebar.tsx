@@ -28,7 +28,7 @@ import { useCommandMenu } from "@/components/sidebar/command-menu";
 
 interface AppSidebarProps {
 	clubs: Club[];
-	user: User & { managedClubs: string[]; role?: string | null | undefined; };
+	user: User & { managedClubs: string[]; role?: string | null | undefined };
 	invitesCount: number;
 	inviteRequestsCount: {
 		id: string;
@@ -37,7 +37,7 @@ interface AppSidebarProps {
 }
 
 // Component properly using the useCommandMenu hook within the provider context
-function SearchButton({ isMac }: { isMac: boolean; }) {
+function SearchButton({ isMac }: { isMac: boolean }) {
 	const { toggleOpen } = useCommandMenu();
 	const t = useTranslations("components.sidebar");
 	const sidebar = useSidebar();
@@ -61,7 +61,7 @@ function SearchButton({ isMac }: { isMac: boolean; }) {
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string; }>();;
+	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
 	const locale = useLocale();
@@ -161,4 +161,3 @@ export function AppSidebar(props: AppSidebarProps) {
 		</Sidebar>
 	);
 }
-

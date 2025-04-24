@@ -21,12 +21,12 @@ import { Button } from "@/components/ui/button";
 
 interface ClubSwitcherProps {
 	clubs: Club[];
-	user: { managedClubs: string[]; };
+	user: { managedClubs: string[] };
 }
 
 export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	const router = useRouter();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const t = useTranslations("components.sidebar");
 
@@ -83,16 +83,12 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	if (clubs.length === 0) {
 		return (
 			<Link href="/dashboard/add-club" className="w-full">
-				<Button
-					variant="default"
-					className="w-full"
-				>
+				<Button variant="default" className="w-full">
 					{t("createClub")}
 				</Button>
 			</Link>
 		);
 	}
-
 
 	return (
 		<SidebarMenu>
@@ -177,12 +173,11 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 								{club.name}
 							</DropdownMenuItem>
 						))}
-						{
-							clubs.length > 1 && (
-								<DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-									{t("shiftHint")}
-								</DropdownMenuLabel>
-							)}
+						{clubs.length > 1 && (
+							<DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+								{t("shiftHint")}
+							</DropdownMenuLabel>
+						)}
 						<DropdownMenuSeparator />
 						<Link href="/dashboard/add-club">
 							<DropdownMenuItem className="gap-2 p-2">
