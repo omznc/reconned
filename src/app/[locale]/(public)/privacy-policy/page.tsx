@@ -4,6 +4,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 const lastUpdated = new Date("2025-04-13");
 
+export const revalidate = 86_400; // 1 day
+
 export default async function PrivacyPolicyPage() {
 	const t = await getTranslations("public.privacy");
 	const locale = await getLocale();
