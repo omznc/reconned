@@ -1133,7 +1133,8 @@
 			"account": "Account",
 			"profile": "Profile",
 			"userSettings": "User Settings",
-			"shiftHint": "You can use shift + up and down keys to move between clubs."
+			"shiftHint": "You can use shift + up and down keys to move between clubs.",
+			"createClub": "Add a Club"
 		},
 		"footer": {
 			"about": {

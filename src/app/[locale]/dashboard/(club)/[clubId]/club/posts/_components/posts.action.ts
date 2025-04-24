@@ -30,7 +30,7 @@ export const savePost = safeActionClient.schema(postSchema).action(async ({ pars
 				},
 			});
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: ctx.club.id,
 		actionType: post.id ? "POST_UPDATE" : "POST_CREATE",
 		actionData: {
@@ -40,7 +40,6 @@ export const savePost = safeActionClient.schema(postSchema).action(async ({ pars
 			isPublic: parsedInput.isPublic,
 			// images: parsedInput.images || [],
 		},
-		userId: ctx.user.id,
 	});
 
 	revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club`);
@@ -56,13 +55,12 @@ export const deletePost = safeActionClient.schema(deletePostSchema).action(async
 		},
 	});
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: ctx.club.id,
 		actionType: "POST_DELETE",
 		actionData: {
 			id: parsedInput.postId,
 		},
-		userId: ctx.user.id,
 	});
 
 	revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club`);

@@ -51,7 +51,7 @@ export const promoteToManager = safeActionClient.schema(promoteToManagerSchema).
 		});
 
 		// Log the audit event
-		logClubAudit({
+		await logClubAudit({
 			clubId: ctx.club.id,
 			actionType: "MEMBER_PROMOTE",
 			actionData: {
@@ -128,7 +128,7 @@ export const demoteFromManager = safeActionClient
 			});
 
 			// Log the audit event
-			logClubAudit({
+			await logClubAudit({
 				clubId: ctx.club.id,
 				actionType: "MEMBER_DEMOTE",
 				actionData: {

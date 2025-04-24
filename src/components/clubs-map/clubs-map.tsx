@@ -48,11 +48,11 @@ interface ClubsMapProps {
 	interactive?: boolean;
 }
 
-function LocationMarker({ position, logo }: { position: [number, number]; logo?: string | null; }) {
+function LocationMarker({ position, logo }: { position: [number, number]; logo?: string | null }) {
 	return position ? <Marker position={position} icon={createClubIcon(logo, 32)} /> : null;
 }
 
-function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void; }) {
+function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
 	useMapEvents({
 		click: (e: any) => {
 			if (onLocationSelect) {

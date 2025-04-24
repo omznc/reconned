@@ -79,7 +79,7 @@ export const saveClubInformation = safeActionClient.schema(clubInfoSchema).actio
 		},
 	});
 
-	logClubAudit({
+	await logClubAudit({
 		clubId: club.id,
 		actionType,
 		actionData: {
@@ -140,7 +140,7 @@ export const deleteClubImage = safeActionClient.schema(deleteClubImageSchema).ac
 	await deleteS3File(`club/${ctx.club.id}/logo`);
 
 	// Log the audit event
-	logClubAudit({
+	await logClubAudit({
 		clubId: ctx.club.id,
 		actionType: "CLUB_UPDATE",
 		actionData: {
@@ -165,7 +165,7 @@ export const disconnectInstagramAccount = safeActionClient.schema(disconnectInst
 		}
 
 		// Log the audit event
-		logClubAudit({
+		await logClubAudit({
 			clubId: ctx.club.id,
 			actionType: "INSTAGRAM_DISCONNECT",
 			actionData: {
@@ -184,7 +184,7 @@ export const disconnectInstagramAccount = safeActionClient.schema(disconnectInst
 		return { success: true };
 	} catch (error) {
 		// Log the audit event even if there's an error
-		logClubAudit({
+		await logClubAudit({
 			clubId: ctx.club.id,
 			actionType: "INSTAGRAM_DISCONNECT",
 			actionData: {
@@ -202,17 +202,6 @@ export const disconnectInstagramAccount = safeActionClient.schema(disconnectInst
 });
 
 export const deleteClub = safeActionClient.schema(deleteClubSchema).action(async ({ ctx }) => {
-	// Log the audit event before deletion
-	logClubAudit({
-		clubId: ctx.club.id,
-		actionType: "CLUB_DELETE",
-		actionData: {
-			clubId: ctx.club.id,
-			clubName: ctx.club.name,
-			clubSlug: ctx.club.slug,
-		},
-	});
-
 	const [, , locale] = await Promise.all([
 		prisma.club.delete({
 			where: {
@@ -243,7 +232,7 @@ export const deleteClub = safeActionClient.schema(deleteClubSchema).action(async
 		revalidateLocalizedPaths("/search");
 	}
 	return redirect({
-		href: remaining > 0 ? "/dashboard?autoSelectFirst=true" : "/",
+		href: remaining > 0 ? "/dashboard" : "/",
 		locale,
 	});
 });

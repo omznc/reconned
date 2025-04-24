@@ -19,7 +19,7 @@ import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 import { authClient } from "@/lib/auth-client";
 
-export function Header({ user }: { user: User | null }) {
+export function Header({ user }: { user: User | null; }) {
 	const t = useTranslations("components.header");
 	const path = usePathname();
 	const router = useRouter();
@@ -43,7 +43,7 @@ export function Header({ user }: { user: User | null }) {
 					<>
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
-							<Link href="/dashboard?autoSelectFirst=true" className="w-full">
+							<Link href="/dashboard" className="w-full">
 								{t("dashboard")}
 							</Link>
 						</Button>

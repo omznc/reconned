@@ -13,25 +13,33 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui
 import { useCurrentClub } from "@/components/current-club-provider";
 import type { Club } from "@prisma/client";
 import Image from "next/image";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 
 interface ClubSwitcherProps {
 	clubs: Club[];
-	user: { managedClubs: string[] };
+	user: { managedClubs: string[]; };
 }
 
 export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	const router = useRouter();
-	const params = useParams<{ clubId: string }>();
-	const { clubId } = useCurrentClub();
+	const params = useParams<{ clubId: string; }>();
+	const { clubId, setClubId } = useCurrentClub();
 	const t = useTranslations("components.sidebar");
 
 	const activeClub = useMemo(() => clubs.find((club) => club.id === params.clubId), [clubs, params.clubId, clubId]);
 
 	const selectedClub = clubs.find((club) => club.id === clubId);
+
+	// Auto-select first club if no club is selected and clubs exist
+	useEffect(() => {
+		if (!params.clubId && clubs.length > 0 && clubs[0]?.id) {
+			setClubId?.(clubs[0].id);
+		}
+	}, [params.clubId, clubs, router]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -71,6 +79,20 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 		const newUrl = currentFullUrl.replace(clubId, club.id);
 		router.push(newUrl);
 	};
+
+	if (clubs.length === 0) {
+		return (
+			<Link href="/dashboard/add-club" className="w-full">
+				<Button
+					variant="default"
+					className="w-full"
+				>
+					{t("createClub")}
+				</Button>
+			</Link>
+		);
+	}
+
 
 	return (
 		<SidebarMenu>
@@ -155,9 +177,12 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 								{club.name}
 							</DropdownMenuItem>
 						))}
-						<DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-							{t("shiftHint")}
-						</DropdownMenuLabel>
+						{
+							clubs.length > 1 && (
+								<DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+									{t("shiftHint")}
+								</DropdownMenuLabel>
+							)}
 						<DropdownMenuSeparator />
 						<Link href="/dashboard/add-club">
 							<DropdownMenuItem className="gap-2 p-2">

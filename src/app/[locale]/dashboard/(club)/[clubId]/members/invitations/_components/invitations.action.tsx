@@ -86,7 +86,7 @@ export const sendInvitation = safeActionClient.schema(sendInvitationSchema).acti
 			),
 		});
 
-		logClubAudit({
+		await logClubAudit({
 			clubId: ctx.club.id,
 			actionType: "MEMBER_INVITE",
 			actionData: {
@@ -144,7 +144,7 @@ export const revokeInvitation = safeActionClient.schema(revokeInvitationSchema).
 			},
 		});
 
-		logClubAudit({
+		await logClubAudit({
 			clubId: ctx.club.id,
 			actionType: "MEMBER_INVITE",
 			actionData: {

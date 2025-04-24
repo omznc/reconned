@@ -392,7 +392,7 @@ export async function disconnectInstagramAPI(clubId: string): Promise<boolean> {
 			},
 		});
 
-		logClubAudit({
+		await logClubAudit({
 			clubId,
 			actionType: "INSTAGRAM_DISCONNECT",
 			actionData: {
@@ -402,7 +402,7 @@ export async function disconnectInstagramAPI(clubId: string): Promise<boolean> {
 
 		return true;
 	} catch (error) {
-		logClubAudit({
+		await logClubAudit({
 			clubId,
 			actionType: "INSTAGRAM_DISCONNECT",
 			actionData: {
