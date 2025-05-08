@@ -9,6 +9,13 @@ import { Role } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, UserMinus } from "lucide-react";
 
 type Manager = {
 	id: string;
@@ -31,7 +38,7 @@ interface ManagersTableProps {
 
 export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTableProps) {
 	const confirm = useConfirm();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams<{ clubId: string; }>();
 
 	const handleDemote = async (manager: Manager) => {
 		const confirmed = await confirm({
@@ -42,7 +49,9 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 			actionButtonVariant: "destructive",
 		});
 
-		if (!confirmed) return;
+		if (!confirmed) {
+			return;
+		}
 
 		const response = await demoteFromManager({
 			memberId: manager.id,
@@ -103,22 +112,29 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 					header: "Akcije",
 					cellConfig: {
 						variant: "custom",
-						component: (_, row) => (
-							<div
-								className={cn("flex justify-end", {
-									"cursor-not-allowed": row.role === Role.CLUB_OWNER,
-								})}
-							>
-								<Button
-									variant="destructive"
-									size="sm"
-									disabled={row.role === Role.CLUB_OWNER}
-									onClick={() => handleDemote(row)}
-								>
-									{row.role === Role.CLUB_OWNER ? "Vlasnik kluba" : "Demotuj"}
-								</Button>
-							</div>
-						),
+						component: (_, row) => {
+							const isOwner = row.role === Role.CLUB_OWNER;
+							return (
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button variant="ghost" className="h-8 w-8 p-0">
+											<span className="sr-only">Otvori meni</span>
+											<MoreHorizontal className="h-4 w-4" />
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										<DropdownMenuItem
+											onClick={() => handleDemote(row)}
+											disabled={isOwner}
+											className={!isOwner ? "text-destructive focus:text-destructive" : ""}
+										>
+											<UserMinus className="size-4 mr-2" />
+											{isOwner ? "Vlasnik kluba" : "Demotuj"}
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							);
+						},
 					},
 				},
 			]}

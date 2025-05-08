@@ -7,19 +7,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
-import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, Search, X } from "lucide-react";
+import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import type { ChangeEvent, ReactNode } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
+	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLocale, useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 // Dot notation path type
 type DotNotation<T extends object> = {
@@ -41,12 +43,13 @@ interface CellConfig<T> {
 	badgeVariants?: Record<string, string>;
 	valueMap?: Record<string, string>;
 	component?: ReactNode | ((value: any, row: T) => ReactNode);
+	components?: ReactNode[] | ((row: T) => ReactNode[]); // New property for action menus
 }
 
 interface Filter {
 	key: string;
 	label: string;
-	options: { label: string; value: string }[];
+	options: { label: string; value: string; }[];
 }
 
 interface GenericTableProps<T> {
@@ -85,8 +88,38 @@ const renderCell = <T extends Record<string, any>>(
 	column: Column<T>,
 	tableConfig?: GenericTableProps<T>["tableConfig"],
 	currentLocale?: string,
+	isMobile?: boolean,
 ) => {
 	const config = column.cellConfig;
+	const isActionsColumn = column.key.toString() === "actions";
+	// Get translation for "actions"
+	const t = useTranslations("components.table");
+
+	// Handle actions column with components array
+	if (isActionsColumn && config?.variant === "custom" && config.components) {
+		const actionItems = typeof config.components === "function"
+			? config.components(item)
+			: config.components;
+
+		// Always use dropdown menu structure, but with different styling for mobile
+		return (
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button
+						variant="ghost"
+						size="sm"
+						className={isMobile ? "w-full justify-center" : ""}
+					>
+						<MoreHorizontal className="size-4" />
+						{isMobile && <span className="ml-2">{t("actions", { fallback: "Actions" })}</span>}
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end">
+					{actionItems}
+				</DropdownMenuContent>
+			</DropdownMenu>
+		);
+	}
 
 	if (config?.variant === "custom" && config.component) {
 		return typeof config.component === "function"
@@ -186,6 +219,16 @@ export function GenericDataTable<T>({
 		}
 		return allColumns;
 	});
+
+	// Check if the last visible column is "actions"
+	const visibleColumnsArray = useMemo(() => {
+		return columns.filter(column => visibleColumns.has(column.key.toString()));
+	}, [columns, visibleColumns]);
+
+	const hasActionsAsLastColumn = useMemo(() => {
+		const lastColumn = visibleColumnsArray[visibleColumnsArray.length - 1];
+		return lastColumn && lastColumn.key.toString() === "actions";
+	}, [visibleColumnsArray]);
 
 	// Sync visibleColumns with URL whenever it changes
 	const updateHiddenColumns = useCallback(
@@ -359,68 +402,76 @@ export function GenericDataTable<T>({
 
 			{/* Desktop Table */}
 			<div className="rounded-md border hidden md:block">
-				<Table>
-					<TableHeader>
-						<TableRow>
-							{columns
-								.filter((column) => visibleColumns.has(column.key.toString()))
-								.map((column) => (
-									<TableHead
-										key={column.key.toString()}
-										className={sortBy === column.key.toString() ? "bg-sidebar border-x" : ""}
-									>
-										{column.sortable ? (
-											<Button
-												variant="ghost"
-												onClick={() => handleSort(column.key.toString())}
-												className="-ml-4 h-8 hover:bg-transparent"
-											>
-												{column.header}
-												{sortBy === column.key.toString() ? (
-													sortOrder === "asc" ? (
-														<ArrowUpAZ className="ml-2 h-4 w-4" />
-													) : (
-														<ArrowDownZA className="ml-2 h-4 w-4" />
-													)
-												) : (
-													<ArrowDownUp className="ml-2 h-4 w-4" />
-												)}
-											</Button>
-										) : (
-											column.header
-										)}
-									</TableHead>
-								))}
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{data.length === 0 ? (
+				<div className={hasActionsAsLastColumn ? "overflow-x-auto" : ""}>
+					<Table>
+						<TableHeader>
 							<TableRow>
-								<TableCell colSpan={columns.length} className="text-center h-24">
-									{t("noData")}
-								</TableCell>
+								{visibleColumnsArray.map((column, index) => {
+									const isActionsColumn = column.key.toString() === "actions" && index === visibleColumnsArray.length - 1;
+									return (
+										<TableHead
+											key={column.key.toString()}
+											className={cn({
+												"bg-sidebar border-x": sortBy === column.key.toString(),
+												"sticky right-0 bg-background text-center": isActionsColumn
+											})}
+										>
+											{column.sortable ? (
+												<Button
+													variant="ghost"
+													onClick={() => handleSort(column.key.toString())}
+													className="-ml-4 h-8 hover:bg-transparent"
+												>
+													{column.header}
+													{sortBy === column.key.toString() ? (
+														sortOrder === "asc" ? (
+															<ArrowUpAZ className="ml-2 h-4 w-4" />
+														) : (
+															<ArrowDownZA className="ml-2 h-4 w-4" />
+														)
+													) : (
+														<ArrowDownUp className="ml-2 h-4 w-4" />
+													)}
+												</Button>
+											) : (
+												column.header
+											)}
+										</TableHead>
+									);
+								})}
 							</TableRow>
-						) : (
-							data.map((item, idx) => (
-								<TableRow key={`${idx}-${item}`}>
-									{columns
-										.filter((column) => visibleColumns.has(column.key.toString()))
-										.map((column) => (
-											<TableCell
-												key={String(column.key)}
-												className={
-													sortBy === column.key.toString() ? "bg-sidebar border-x" : ""
-												}
-											>
-												{/* @ts-expect-error */}
-												{renderCell(item, column, tableConfig, locale)}
-											</TableCell>
-										))}
+						</TableHeader>
+						<TableBody>
+							{data.length === 0 ? (
+								<TableRow>
+									<TableCell colSpan={visibleColumnsArray.length} className="text-center h-24">
+										{t("noData")}
+									</TableCell>
 								</TableRow>
-							))
-						)}
-					</TableBody>
-				</Table>
+							) : (
+								data.map((item, idx) => (
+									<TableRow key={`${idx}-${item}`}>
+										{visibleColumnsArray.map((column, colIndex) => {
+											const isActionsColumn = column.key.toString() === "actions" && colIndex === visibleColumnsArray.length - 1;
+											return (
+												<TableCell
+													key={String(column.key)}
+													className={cn({
+														"bg-sidebar border-x": sortBy === column.key.toString(),
+														"sticky right-0 bg-background text-center": isActionsColumn
+													})}
+												>
+													{/* @ts-expect-error */}
+													{renderCell(item, column, tableConfig, locale)}
+												</TableCell>
+											);
+										})}
+									</TableRow>
+								))
+							)}
+						</TableBody>
+					</Table>
+				</div>
 			</div>
 
 			{/* Mobile Cards */}
@@ -429,16 +480,28 @@ export function GenericDataTable<T>({
 					<div className="text-center py-8 text-muted-foreground">{t("noData")}</div>
 				) : (
 					data.map((item, idx) => (
-						<div key={`${idx}-${item}`} className="rounded-lg border p-4 overflow-x-auto space-y-2">
+						<div key={`${idx}-${item}`} className="rounded-lg border bg-card shadow-sm p-4 space-y-3">
 							{columns
-								.filter((column) => visibleColumns.has(column.key.toString()))
+								.filter((column) => visibleColumns.has(column.key.toString()) && column.key.toString() !== "actions")
 								.map((column) => (
-									<div key={String(column.key)} className="flex flex-col">
-										<span className="text-sm text-muted-foreground">{column.header}</span>
-										<span className="font-medium">
+									<div key={String(column.key)} className="grid grid-cols-3 gap-2 items-center">
+										<span className="text-sm font-medium text-muted-foreground truncate">{column.header}</span>
+										<span className="col-span-2 font-medium">
 											{/* @ts-expect-error I know, I know */}
-											{renderCell(item, column, tableConfig, locale)}
+											{renderCell(item, column, tableConfig, locale, true)}
 										</span>
+									</div>
+								))}
+
+							{/* Render actions separately at the bottom */}
+							{columns
+								.filter((column) => visibleColumns.has(column.key.toString()) && column.key.toString() === "actions")
+								.map((column) => (
+									<div key={String(column.key)} className="mt-3 pt-3 border-t border-border">
+										<div className="flex justify-center items-center">
+											{/* @ts-expect-error I know, I know */}
+											{renderCell(item, column, tableConfig, locale, true)}
+										</div>
 									</div>
 								))}
 						</div>
@@ -485,7 +548,7 @@ export function GenericDataTable<T>({
 	);
 }
 
-export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number }) {
+export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number; }) {
 	return (
 		<div className="space-y-4 w-full fade-in">
 			{/* Controls */}

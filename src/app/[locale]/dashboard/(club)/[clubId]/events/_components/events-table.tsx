@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import type { Event } from "@prisma/client";
 import { Eye, Pen, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface EventsTableProps {
 	events: (Event & {
@@ -69,49 +70,51 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 					sortable: true,
 				},
 				{
-					key: "visit",
+					key: "actions",
 					header: t("actions"),
 					cellConfig: {
 						variant: "custom",
-						component: (_, item) => {
+						components: (item) => {
 							const disabledAttendence =
 								!userIsManager ||
 								new Date() < new Date(item.dateRegistrationsClose) ||
 								new Date() > new Date(item.dateEnd);
-							return (
-								<div className="flex gap-2">
-									{userIsManager && (
-										<>
-											<Button
-												variant={"outline"}
-												disabled={disabledAttendence}
-												asChild={!disabledAttendence}
-											>
-												<Link
-													className="flex items-center gap-2"
-													href={`/dashboard/${clubId}/events/${item.id}/attendance`}
-												>
-													<Users className="size-4" />
-													{t("attendence")}
-												</Link>
-											</Button>
-											<Button variant={"outline"} asChild>
-												<Link href={`/dashboard/${clubId}/events/create?id=${item.id}`}>
-													<Pen className="size-4 mr-2" />
-													{t("edit")}
-												</Link>
-											</Button>
-										</>
-									)}
 
-									<Button asChild>
-										<Link href={`/dashboard/${clubId}/events/${item.id}`}>
-											<Eye className="size-4 mr-2" />
-											{t("view")}
-										</Link>
-									</Button>
-								</div>
+							const items = [];
+
+							// Attendance action - only for managers and when enabled
+							items.push(
+								<DropdownMenuItem key="attendance" asChild disabled={disabledAttendence}>
+									<Link href={`/dashboard/${clubId}/events/${item.id}/attendance`}>
+										<Users className="size-4 mr-2" />
+										{t("attendence")}
+									</Link>
+								</DropdownMenuItem>
 							);
+
+							// Edit action - only for managers
+							if (userIsManager) {
+								items.push(
+									<DropdownMenuItem key="edit" asChild>
+										<Link href={`/dashboard/${clubId}/events/create?id=${item.id}`}>
+											<Pen className="size-4 mr-2" />
+											{t("edit")}
+										</Link>
+									</DropdownMenuItem>
+								);
+							}
+
+							// View action - for everyone
+							items.push(
+								<DropdownMenuItem key="view" asChild>
+									<Link href={`/dashboard/${clubId}/events/${item.id}`}>
+										<Eye className="size-4 mr-2" />
+										{t("view")}
+									</Link>
+								</DropdownMenuItem>
+							);
+
+							return items;
 						},
 					},
 				},

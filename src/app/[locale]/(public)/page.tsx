@@ -53,24 +53,24 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
+			OR: [
+				{
+					isPrivate: false,
+				},
+				{
+					club: {
+						members: {
+							some: {
+								userId: user?.id,
 							},
 						},
 					},
-				],
-			}
+				},
+			],
+		}
 		: {
-				isPrivate: false,
-			};
+			isPrivate: false,
+		};
 
 	const events = await prisma.event.findMany({
 		where: {
@@ -125,9 +125,7 @@ export default async function Home({ searchParams }: PageProps) {
 							src={HomeImage}
 							alt="Homepage drawing of a person aiming an ak-47 to the left"
 							draggable={false}
-							className="
-							animate-aim
-							absolute opacity-0 lg:opacity-100 transition-all -right-110 -bottom-10 w-full max-w-[400px] dark:invert"
+							className="absolute opacity-0 lg:opacity-100 transition-all -right-110 bottom-0 w-full max-w-[400px] dark:invert"
 						/>
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
 							{t.rich("hero.title", {

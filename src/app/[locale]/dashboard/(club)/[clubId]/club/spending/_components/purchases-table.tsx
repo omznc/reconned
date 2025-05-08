@@ -1,7 +1,7 @@
 "use client";
 
 import { GenericDataTable } from "@/components/generic-data-table";
-import { Trash2 } from "lucide-react";
+import { Trash2, MoreHorizontal, Edit } from "lucide-react";
 import { deletePurchase } from "./spending.action";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
@@ -12,6 +12,7 @@ import type { ClubPurchase } from "@prisma/client";
 import { useState } from "react";
 import { FilePreviewModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/file-preview-modal";
 import { useTranslations } from "next-intl";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface PurchasesTableProps {
 	purchases: ClubPurchase[];
@@ -64,33 +65,6 @@ export function PurchasesTable(props: PurchasesTableProps) {
 								}).format(new Date(value)),
 						},
 					},
-					// {
-					// 	key: "receiptUrls",
-					// 	header: t("details.receipts"),
-					// 	sortable: false,
-					// 	cellConfig: {
-					// 		variant: "custom",
-					// 		component: (value: string[], row) => (
-					// 			<div className="flex gap-2" key={JSON.stringify(row)}>
-					// 				{value?.map((url, index) => {
-					// 					const fileName = `${t("receipt.title")} ${index + 1}`;
-
-					// 					return (
-					// 						<Button
-					// 							key={url}
-					// 							variant="outline"
-					// 							size="sm"
-					// 							onClick={() => setSelectedFile({ url, name: fileName })}
-					// 						>
-					// 							<FileText className="h-4 w-4 mr-2" />
-					// 							{fileName}
-					// 						</Button>
-					// 					);
-					// 				})}
-					// 			</div>
-					// 		),
-					// 	},
-					// },
 					{
 						key: "actions",
 						header: t("details.actions"),
@@ -98,41 +72,54 @@ export function PurchasesTable(props: PurchasesTableProps) {
 						cellConfig: {
 							variant: "custom",
 							component: (_, row) => (
-								<div className="flex gap-2">
-									<EditPurchaseModal key={JSON.stringify(row)} purchase={row} />
-									<Button
-										variant="ghost"
-										type="button"
-										size="icon"
-										onClick={async () => {
-											const confirmed = await confirm({
-												title: t("deleteConfirm.title"),
-												body: t("deleteConfirm.body"),
-												actionButton: t("deleteConfirm.action"),
-												actionButtonVariant: "destructive",
-												cancelButton: t("deleteConfirm.cancel"),
-											});
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button variant="ghost" size="sm">
+											<MoreHorizontal className="size-4" />
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										<DropdownMenuItem onSelect={(e) => {
+											e.preventDefault();
+											document.getElementById(`edit-purchase-${row.id}`)?.click();
+										}}>
+											<Edit className="size-4 mr-2" />
+											{t("edit")}
+										</DropdownMenuItem>
+										<DropdownMenuItem
+											className="text-destructive focus:text-destructive"
+											onSelect={async (e) => {
+												e.preventDefault();
+												const confirmed = await confirm({
+													title: t("deleteConfirm.title"),
+													body: t("deleteConfirm.body"),
+													actionButton: t("deleteConfirm.action"),
+													actionButtonVariant: "destructive",
+													cancelButton: t("deleteConfirm.cancel"),
+												});
 
-											if (!confirmed) {
-												return;
-											}
-
-											return deletePurchase({
-												id: row.id,
-												clubId: row.clubId,
-											}).then((result) => {
-												if (result?.data) {
-													toast.success(t("successDelete"));
-													router.refresh();
-												} else {
-													toast.error(t("errorDelete"));
+												if (!confirmed) {
+													return;
 												}
-											});
-										}}
-									>
-										<Trash2 className="h-4 w-4" />
-									</Button>
-								</div>
+
+												return deletePurchase({
+													id: row.id,
+													clubId: row.clubId,
+												}).then((result) => {
+													if (result?.data) {
+														toast.success(t("successDelete"));
+														router.refresh();
+													} else {
+														toast.error(t("errorDelete"));
+													}
+												});
+											}}
+										>
+											<Trash2 className="size-4 mr-2" />
+											{t("delete")}
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
 							),
 						},
 					},
@@ -140,6 +127,12 @@ export function PurchasesTable(props: PurchasesTableProps) {
 				totalPages={Math.ceil(props.totalPurchases / props.pageSize)}
 				searchPlaceholder={t("search")}
 			/>
+
+			<div className="hidden">
+				{props.purchases.map((purchase) => (
+					<EditPurchaseModal key={purchase.id} purchase={purchase} />
+				))}
+			</div>
 
 			{selectedFile && (
 				<FilePreviewModal

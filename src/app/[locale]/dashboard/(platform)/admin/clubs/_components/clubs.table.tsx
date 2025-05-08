@@ -6,6 +6,8 @@ import type { Club } from "@prisma/client";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { ExternalLink, Settings } from "lucide-react";
 
 interface ClubsTableProps {
 	clubs: Club[];
@@ -77,18 +79,20 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 					header: "Akcije",
 					cellConfig: {
 						variant: "custom",
-						component: (_, club) => (
-							<div className="flex gap-2">
-								<Button asChild variant="secondary" size="sm">
-									<Link href={`/clubs/${club.slug ?? club.id}`} target="_blank">
-										Profil
-									</Link>
-								</Button>
-								<Button asChild size="sm">
-									<Link href={getActionUrl(club.id)}>Akcije</Link>
-								</Button>
-							</div>
-						),
+						components: (club) => [
+							<DropdownMenuItem key="profile" asChild>
+								<Link href={`/clubs/${club.slug ?? club.id}`} target="_blank">
+									<ExternalLink className="size-4 mr-2" />
+									Profil
+								</Link>
+							</DropdownMenuItem>,
+							<DropdownMenuItem key="actions" asChild>
+								<Link href={getActionUrl(club.id)}>
+									<Settings className="size-4 mr-2" />
+									Akcije
+								</Link>
+							</DropdownMenuItem>
+						],
 					},
 				},
 			]}

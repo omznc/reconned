@@ -4,9 +4,15 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { Event } from "@prisma/client";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ExternalLink, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 function getEventStatus(dateStart: Date, dateEnd: Date) {
 	const now = new Date();
@@ -80,18 +86,30 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 					sortable: true,
 				},
 				{
-					key: "visit",
+					key: "actions",
 					header: t("actions"),
 					cellConfig: {
 						variant: "custom",
-						component: (_, item) => (
-							<Button asChild>
-								<Link href={`/events/${item.id}`} target="_blank">
-									Posjeti
-									<ArrowUpRight className="size-4 ml-2" />
-								</Link>
-							</Button>
-						),
+						component: (_, item) => {
+							return (
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button variant="ghost" className="h-8 w-8 p-0">
+											<span className="sr-only">Otvori meni</span>
+											<MoreHorizontal className="h-4 w-4" />
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										<DropdownMenuItem asChild>
+											<Link href={`/events/${item.id}`} target="_blank">
+												<ExternalLink className="size-4 mr-2" />
+												Posjeti
+											</Link>
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							);
+						},
 					},
 				},
 			]}

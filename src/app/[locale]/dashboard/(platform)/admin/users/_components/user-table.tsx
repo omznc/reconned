@@ -6,6 +6,8 @@ import type { ClubMembership, User } from "@prisma/client";
 import { Link } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSearchParams } from "next/navigation";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { UserCircle, Settings } from "lucide-react";
 
 interface UserTableProps {
 	users: (User & {
@@ -92,18 +94,20 @@ export function UserTable(props: UserTableProps) {
 					header: "Akcije",
 					cellConfig: {
 						variant: "custom",
-						component: (_, user) => (
-							<div className="flex gap-2">
-								<Button asChild variant="secondary" size="sm">
-									<Link href={`/users/${user.slug ?? user.id}`} target="_blank">
-										Profil
-									</Link>
-								</Button>
-								<Button asChild size="sm">
-									<Link href={getActionUrl(user.id)}>Akcije</Link>
-								</Button>
-							</div>
-						),
+						components: (user) => [
+							<DropdownMenuItem key="profile" asChild>
+								<Link href={`/users/${user.slug ?? user.id}`} target="_blank">
+									<UserCircle className="size-4 mr-2" />
+									Profil
+								</Link>
+							</DropdownMenuItem>,
+							<DropdownMenuItem key="actions" asChild>
+								<Link href={getActionUrl(user.id)}>
+									<Settings className="size-4 mr-2" />
+									Akcije
+								</Link>
+							</DropdownMenuItem>
+						],
 					},
 				},
 			]}

@@ -12,8 +12,9 @@ import {
 	CredenzaDescription,
 } from "@/components/ui/credenza";
 import { useState } from "react";
-import { Code } from "lucide-react";
+import { Code, MoreHorizontal } from "lucide-react";
 import type { JsonValue } from "@prisma/client/runtime/client";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type AuditLog = {
 	id: string;
@@ -136,10 +137,19 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 						cellConfig: {
 							variant: "custom",
 							component: (_, log) => (
-								<Button size="sm" variant="outline" onClick={() => setSelectedLog(log)}>
-									<Code className="h-4 w-4 mr-1" />
-									{t("viewDetails")}
-								</Button>
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button variant="ghost" size="sm">
+											<MoreHorizontal className="size-4" />
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										<DropdownMenuItem onClick={() => setSelectedLog(log)}>
+											<Code className="size-4 mr-2" />
+											{t("viewDetails")}
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
 							),
 						},
 					},

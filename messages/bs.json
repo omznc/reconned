@@ -1,1429 +1,1433 @@
 {
-	"emails": {
-		"emailVerification": {
-			"title": "Verifikujte vašu email adresu",
-			"hello": "Zdravo,",
-			"helloUser": "Zdravo {name},",
-			"message": "Molimo vas da kliknete na dugme ispod kako biste verifikovali vašu email adresu.",
-			"action": "Verifikuj email",
-			"footer": "Ako niste tražili verifikaciju, ignorišite ovaj email."
-		},
-		"airsoftInvitation": {
-			"title": "Pozvani ste da se pridružite klubu {clubName}!",
-			"invitation": "Pozivnica",
-			"hello": "Zdravo,",
-			"helloUser": "Zdravo {name},",
-			"message": "Pozvani ste da se pridružite klubu {clubName}. Radujemo se što ćemo vas vidjeti na terenu!",
-			"action": "Prihvati Poziv",
-			"footer": "Ako niste očekivali ovu pozivnicu, molimo vas da zanemarite ovaj email."
-		},
-		"createAccount": {
-			"title": "Pozvani ste na airsoft susret! Kreirajte račun da biste se pridružili.",
-			"invitationTitle": "Pozvani ste na airsoft susret!",
-			"message": "Pozvani ste da se pridružite susretu {eventName} koji će se održati {eventDate}. Da biste potvrdili vaše učešće, potrebno je da kreirate račun na našoj platformi.",
-			"clubMessage": "Vaš račun će automatski biti povezan sa klubom {clubName} i moći ćete odmah pristupiti detaljima susreta.",
-			"action": "Kreiraj Račun",
-			"emailLinked": "Ovaj link je povezan sa email adresom: {email}",
-			"footer": "Ako niste očekivali ovaj poziv, molimo vas da zanemarite ovaj email."
-		},
-		"rateEvent": {
-			"title": "Ocjenite vaše iskustvo na susretu {eventName}!",
-			"heading": "Kako vam je bilo na susretu?",
-			"hello": "Pozdrav,",
-			"helloUser": "Pozdrav {name},",
-			"message": "Hvala vam što ste prisustvovali susretu {eventName} održanom {date}. Vaše mišljenje nam je važno i pomoći će nam da unaprijedimo buduće susrete.",
-			"action": "Ocijeni Susret",
-			"footer": "{clubName} - Hvala vam na vašem učešću!"
-		},
-		"membershipExpiration": {
-			"expiredTitle": "Vaše članstvo u klubu {clubName} je isteklo",
-			"expiringTitle": "Vaše članstvo u klubu {clubName} ističe za {days} dana",
-			"expiredHeading": "Članstvo Isteklo",
-			"expiringHeading": "Članstvo Uskoro Ističe",
-			"hello": "Pozdrav {name},",
-			"expiredMessage": "Vaše članstvo u klubu {clubName} je isteklo dana {date}. Ako želite nastaviti biti član kluba, molimo vas da obnovite članstvo.",
-			"expiringMessage": "Vaše članstvo u klubu {clubName} ističe dana {date} (za {days} dana). Da biste osigurali kontinuirano članstvo, razmislite o obnovi prije datuma isteka.",
-			"action": "Obnovi Članstvo",
-			"footer": "Ako više ne želite biti član kluba {clubName}, možete zanemariti ovaj email."
-		},
-		"membershipExpirationOwner": {
-			"expiredTitle": "Članstvo korisnika {memberName} u klubu {clubName} je isteklo",
-			"expiringTitle": "Članstvo korisnika {memberName} u klubu {clubName} ističe za {days} dana",
-			"expiredHeading": "Članstvo Člana Isteklo",
-			"expiringHeading": "Članstvo Člana Uskoro Ističe",
-			"hello": "Pozdrav {name},",
-			"expiredMessage": "Članstvo korisnika {memberName} u vašem klubu {clubName} je isteklo dana {date}.",
-			"expiringMessage": "Članstvo korisnika {memberName} u vašem klubu {clubName} ističe dana {date} (za {days} dana).",
-			"action": "Upravljaj Članovima",
-			"footer": "Ovo je automatska obavijest koja vam pomaže da upravljate članstvima u klubu."
-		}
-	},
-	"public": {
-		"notFound": {
-			"title": "Izgubili ste se",
-			"message": "Stranica nije pronađena",
-			"backHome": "Vrati se na početnu stranicu",
-			"metadata": {
-				"title": "404 - Stranica nije pronađena - RECONNED",
-				"description": "Stranica nije pronađena"
-			}
-		},
-		"home": {
-			"hero": {
-				"button": "Pogledajte listu izmjena",
-				"title": "Samo Airsoft,<br></br> ali bolje.",
-				"description": "Pridružite se najnaprednijoj airsoft zajednici. Pronađite susrete, povežite se s igračima i unaprijedite svoju igru.",
-				"search": "Pretraži sve",
-				"map": "Prikaži mapu",
-				"about": "Saznaj više",
-				"events": "Susreti",
-				"clubs": "Klubovi",
-				"members": "Igrači",
-				"dashboard": "Aplikacija",
-				"sponsors": "Sponzori"
-			},
-			"upcomingEventsTitle": "Nadolazeći susreti",
-			"upcomingEventsSubtitle": "Vidimo se na terenu",
-			"upcomingEventsNone": "Nema nadolazećih susreta",
-			"eventCard": {
-				"canFreelance": "Dozvoljeni freelanceri",
-				"cannotFreelance": "Samo za članove",
-				"breakfast": "Doručak",
-				"lunch": "Ručak",
-				"dinner": "Večera",
-				"snacks": "Užina",
-				"drinks": "Piće",
-				"prizes": "Nagrade",
-				"privateEvent": "Ovo je privatni susret, ali ste vi u klubu {clubName}.",
-				"starts": "Počinje",
-				"view": "Pogledaj"
-			},
-			"metadata": {
-				"title": "RECONNED - Airsoft klubovi, susreti, i igrači",
-				"description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
-		},
-		"sponsors": {
-			"title": "Sponzori i partneri",
-			"description": "Realistično je reći da ovaj sajt ne bi postojao bez angažmana i podrške svih koje možete naći ispod. Hvala.",
-			"currentSponsors": "Naši trenutni sponzori",
-			"contactUs": "Kontaktirajte Nas",
-			"contactDescription": "Želite pomoći ili imate pitanja? Slobodno nas kontaktirajte na",
-			"cta": {
-				"title": "Vi",
-				"description": "Ovo mjesto može biti vaše"
-			},
-			"metadata": {
-				"title": "Sponzori - RECONNED",
-				"description": "Naši trenutni sponzori i partneri. Hvala vam na podršci."
-			}
-		},
-		"about": {
-			"title": "Ko smo mi?",
-			"subtitle": "Ovaj projekt je započet od strane 2 programera iz Bosne i Hercegovine (<omar></omar> i <safet></safet>) jer smo željeli nešto bolje od Facebooka, Vibera, i ostalog. Airsoft zajednice su dosta nove i neorganizovane, i želimo da to promijenimo - totalno transparentno, totalno javno.",
-			"platform": {
-				"title": "O platformi",
-				"description": "Krajnji cilj <logo></logo> platforme je unifikacija airsoft zajednice prvobitno u Bosni i Hercegovini, a i šire. Naša platforma omogućava klubovima da se predstave, organizuju susrete, i pronađu nove članove. Igračima omogućava da pronađu klubove, susrete, i igrače, sve na jednom mjestu."
-			},
-			"sustainability": {
-				"title": "Održivost",
-				"description": "Cilj nije, i nikada neće biti čista zarada. Svaki dio platforme je open-source, a samim tim i dostupan svima. Trenutno kompletno lično finansiramo razvoj platforme, ali ćemo dati klubovima i individuama šansu da pomognu u razvoju i održavanju, uz neke pogodnosti.",
-				"emphasis": "Glavne funkcionalnosti će uvijek biti besplatne za korištenje."
-			},
-			"help": {
-				"title": "Kako pomoći?",
-				"description": "Ako ste zainteresovani za pomoć u razvoju platforme, slobodno nas kontaktirajte. Pomoć u obliku marketinga, programiranja, te općenito sponsorstva je uvijek dobrodošla.",
-				"sponsors": "Pogledajte listu sponzora."
-			},
-			"metadata": {
-				"title": "O nama - RECONNED",
-				"description": "O nama, našoj platformi, i kako možete pomoći. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
-		},
-		"auth": {
-			"haveAccountQuestion": "Već imate račun?",
-			"noAccountQuestion": "Nemate račun?",
-			"home": "Početna",
-			"login": "Prijava",
-			"loginDescription": "Upišite svoj email i lozinku kako bi ste se pridružili svijetu airsofta.",
-			"unverified": "Vaš email nije potvrđen. Molimo provjerite vaš inbox.",
-			"verifyEmail": "Potvrdite svoj email",
-			"password": "Lozinka",
-			"forgotPassword": "Zaboravili ste lozinku?",
-			"forgotPasswordNoEmail": "Unesite email kako bi ste dobili link za resetovanje lozinke.",
-			"forgotPasswordWrongEmail": "Email nije ispravan.",
-			"forgotPasswordSuccess": "Link za resetovanje lozinke je poslan na vaš email.",
-			"loading": "Samo momenat...",
-			"invalidData": "Uneseni podaci nisu ispravni.",
-			"invalidDataOrUserExists": "Uneseni podaci nisu ispravni ili korisnik već postoji.",
-			"register": "Registracija",
-			"registerDescription": "Napravite svoj račun i pridružite se airsoft zajednici.",
-			"registerDescriptionTooltipTitle": "Registrirate klub?",
-			"registerDescriptionTooltipDescription": "Ako želite dodati svoj klub, registrirajte se kao vi. Nakon prijave ćete moći dodati klub i biti ćete njegov vlasnik.",
-			"registerSuccess": "Uspješno ste se registrovali. Provjerite vaš email kako bi ste potvrdili račun.",
-			"name": "Ime",
-			"emailAutofilled": "Email je automatski popunjen",
-			"remove": "Ukloni",
-			"resetPassword": "Resetuj lozinku",
-			"resetPasswordDescription": "Upišite novu šifru kako bi ste pristupili svom računu.",
-			"resetPasswordSuccess": "Lozinka uspješno resetovana. Sada se možete prijaviti.",
-			"resetPasswordError": "Došlo je do greške prilikom resetovanja lozinke. Molimo pokušajte ponovo.",
-			"confirmPassword": "Potvrdi lozinku",
-			"twoFactor": "Dvofaktorska autentikacija",
-			"twoFactorDescription": "Upišite kod iz vaše aplikacije ili iskoristite rezervni kod.",
-			"twoFactorError": "Uneseni kod nije ispravan.",
-			"code": "Kod",
-			"verify": "Potvrdi",
-			"rememberDevice": "Zapamti ovaj uređaj",
-			"captchaError": "Problem pri Captcha provjeri",
-			"invalidEmail": "Nevažeći email",
-			"passwordRequired": "Vaša lozinka je obavezna",
-			"passwordTooShort": "Ta lozinka je prekratka",
-			"nameRequired": "Vaše ime je obavezno",
-			"metadata": {
-				"title": "Autentikacija - RECONNED",
-				"description": "Prijava, registracija, i resetovanje lozinke. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
-		},
-		"clubs": {
-			"title": "Klubovi",
-			"metadata": {
-				"title": "Airsoft klubovi - RECONNED",
-				"description": "Lista svih airsoft klubova na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			},
-			"member": "član",
-			"members": "članova"
-		},
-		"users": {
-			"title": "Igrači",
-			"metadata": {
-				"title": "Igrači - RECONNED",
-				"description": "Lista svih airsoft igrača na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
-		},
-		"events": {
-			"metadata": {
-				"title": "Airsoft susreti - RECONNED",
-				"description": "Lista svih airsoft susreta na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
-		},
-		"layout": {
-			"metadata": {
-				"description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
-				"title": "RECONNED - Airsoft klubovi, susreti, i igrači",
-				"keywords": "airsoft Bosna, airsoft BiH, airsoft oružje, airsoft replike, airsoft oprema, airsoft klubovi BiH, airsoft shop BiH, airsoft trgovina, airsoft puške, airsoft pištolji, airsoft metci, airsoft kuglice, airsoft maska, airsoft odjeća, airsoft uniforme, airsoft BiH forum, airsoft susreti BiH, airsoft pravila, airsoft taktike, airsoft igrači BiH, najbolji airsoft BiH, kupovina airsoft BiH, prodaja airsoft BiH, airsoft timovi BiH, airsoft lokacije BiH, airsoft teren BiH"
-			}
-		},
-		"privacy": {
-			"title": "Politika privatnosti",
-			"lastUpdated": "Zadnje ažurirano: {date}",
-			"viewTerms": "Pogledajte naše Uslove korištenja",
-			"introduction": {
-				"title": "Uvod",
-				"description": "RECONNED (\"mi\", \"naš\", ili \"nas\") se obavezuje štititi vašu privatnost. Ova Politika privatnosti objašnjava koje podatke prikupljamo, kako ih koristimo i kako ih štitimo kada koristite našu platformu za airsoft zajednicu."
-			},
-			"dataCollection": {
-				"title": "Podaci koje prikupljamo",
-				"description": "Prikupljamo različite vrste podataka kako bismo vam pružili i unaprijedili našu uslugu. Evo koje podatke prikupljamo:",
-				"personalInfo": "Lični podaci: ime, email adresa, profilna slika, biografija, lokacija, web stranica, broj telefona, callsign, i podešavanja opreme.",
-				"accountInfo": "Informacije o računu: podaci o sesiji (IP adrese, korisnički agenti), podaci o autentikaciji (lozinke, passkeys, dvofaktorska autentikacija).",
-				"clubInfo": "Podaci o klubovima: naziv, lokacija, opis, datum osnivanja, logo, kontakt informacije, pravila, itd.",
-				"eventInfo": "Podaci o susretima: naziv, opis, lokacije, datumi, cijene, pravila, registracije učesnika, itd.",
-				"socialInfo": "Društveni podaci: recenzije, objave, postignuća, i druge interakcije između korisnika.",
-				"usageInfo": "Podaci o korištenju: kako koristite našu platformu, koje stranice posjećujete, i kako komunicirate s našim interfejsom.",
-				"deviceInfo": "Informacije o uređaju: tip uređaja, operativni sistem, verzija pretraživača, i postavke jezika."
-			},
-			"dataUse": {
-				"title": "Kako koristimo vaše podatke",
-				"description": "Koristimo prikupljene podatke za različite svrhe, uključujući:",
-				"provideService": "Da pružimo, održavamo i unapređujemo našu platformu, uključujući povezivanje airsoft klubova, igrača i susreta.",
-				"improveService": "Da analiziramo kako koristite našu platformu i unapredimo korisničko iskustvo.",
-				"communicate": "Da komuniciramo s vama, odgovaramo na vaše upite, i šaljemo obavještenja o našoj usluzi.",
-				"security": "Da zaštitimo naše korisnike i platformu od prevara, zloupotreba i drugih štetnih aktivnosti."
-			},
-			"dataSecurity": {
-				"title": "Sigurnost podataka",
-				"description": "Primjenjujemo sigurnosne mjere za zaštitu vaših ličnih podataka od neovlaštenog pristupa, izmjene, otkrivanja ili uništavanja. Ovo uključuje šifrovanje osjetljivih podataka, sigurne servere i redovne sigurnosne preglede."
-			},
-			"dataSharing": {
-				"title": "Dijeljenje informacija",
-				"description": "Ne prodajemo vaše lične podatke trećim stranama. Međutim, možemo dijeliti podatke u sljedećim situacijama:",
-				"clubMembers": "S drugim članovima kluba (ako ste član kluba, određene informacije mogu biti vidljive drugim članovima).",
-				"eventParticipants": "S učesnicima susreta (ako ste registrovani za susret, određene informacije mogu biti vidljive drugim učesnicima).",
-				"serviceProviders": "S pružaocima usluga koji nam pomažu u radu platforme (npr. hosting).",
-				"legal": "Kada se to zahtijeva zakonom ili u slučaju zaštite naših prava."
-			},
-			"cookies": {
-				"title": "Kolačići i tehnologije praćenja",
-				"description": "Koristimo kolačiće i slične tehnologije praćenja da prikupimo i pohranimo određene podatke kada koristite našu platformu. Ovo nam pomaže da poboljšamo vaše iskustvo, analiziramo korištenje platforme, i prilagodimo sadržaj vašim interesima."
-			},
-			"userRights": {
-				"title": "Vaša prava vezana za podatke",
-				"description": "U zavisnosti od vaše lokacije, možete imati određena prava vezana za vaše lične podatke, uključujući:",
-				"access": "Pravo na pristup podacima koje imamo o vama.",
-				"rectification": "Pravo na ispravku netačnih ili nepotpunih podataka.",
-				"deletion": "Pravo na brisanje vaših podataka u određenim okolnostima.",
-				"restriction": "Pravo na ograničenje obrade vaših podataka.",
-				"objection": "Pravo na prigovor na obradu vaših podataka.",
-				"portability": "Pravo na prenosivost podataka (dobijanje kopije podataka u strukturiranom formatu)."
-			},
-			"thirdPartyServices": {
-				"title": "Usluge trećih strana",
-				"description": "Naša platforma koristi nekoliko usluga trećih strana koje mogu prikupljati podatke o vama. Ove usluge uključuju:",
-				"auth": "Usluge autentikacije (npr. Google prijava) za jednostavno prijavljivanje.",
-				"storage": "Usluge skladištenja za pohranu podataka i medijskih fajlova.",
-				"maps": "Usluge mapiranja za prikaz lokacija klubova i susreta.",
-				"analytics": "Analitičke usluge za praćenje korištenja platforme.",
-				"instagram": "Integracija s Instagramom za klubove koji žele prikazati svoje Instagram objave na profilu kluba."
-			},
-			"childrenPrivacy": {
-				"title": "Privatnost djece",
-				"description": "Naša platforma nije namijenjena za korištenje od strane osoba mlađih od 17 godina. Ne prikupljamo svjesno lične podatke od djece mlađe od 17 godina. Ako otkrijemo da smo prikupili lične podatke od djeteta, preduzet ćemo korake za brisanje tih podataka."
-			},
-			"changes": {
-				"title": "Promjene u politici privatnosti",
-				"description": "Možemo povremeno ažurirati našu Politiku privatnosti. Obavijestit ćemo vas o značajnim promjenama objavom na našoj web stranici ili direktnom komunikacijom. Savjetujemo vam da periodično pregledavate ovu Politiku privatnosti kako biste bili informisani o tome kako štitimo vaše podatke."
-			},
-			"contact": {
-				"title": "Kontaktirajte nas",
-				"description": "Ako imate pitanja o ovoj Politici privatnosti ili o našim praksama vezanim za privatnost, molimo vas da nas kontaktirate putem email adrese: <email></email>."
-			},
-			"metadata": {
-				"title": "Politika privatnosti - RECONNED",
-				"description": "Politika privatnosti platforme RECONNED. Kako štitimo vašu privatnost i koje podatke prikupljamo."
-			}
-		},
-		"terms": {
-			"title": "Uslovi korištenja",
-			"lastUpdated": "Zadnje ažurirano: {date}",
-			"viewPrivacy": "Pogledajte našu Politiku privatnosti",
-			"introduction": {
-				"title": "Uvod",
-				"description": "Dobrodošli na RECONNED, platformu koja povezuje airsoft entuzijaste, klubove i susrete. Korištenjem naše web stranice i usluga, pristajete na poštovanje ovih Uslova korištenja. Molimo vas da ih pažljivo pročitate."
-			},
-			"acceptance": {
-				"title": "Prihvatanje uslova",
-				"description": "Pristupom ili korištenjem RECONNED platforme, pristajete da budete pravno vezani ovim Uslovima korištenja. Ako se ne slažete s bilo kojim dijelom ovih uslova, molimo vas da ne koristite našu platformu."
-			},
-			"eligibility": {
-				"title": "Pravo korištenja",
-				"description": "Da biste koristili našu platformu, morate imati najmanje 17 godina. Korištenjem platforme, potvrđujete da imate najmanje 17 godina i da niste osoba kojoj je zabranjeno primanje naših usluga prema zakonima Bosne i Hercegovine ili drugih primjenjivih jurisdikcija."
-			},
-			"userAccounts": {
-				"title": "Korisnički računi",
-				"description": "Za pristup određenim funkcijama naše platforme, morat ćete stvoriti korisnički račun. Kada to učinite, odgovorni ste za:",
-				"accuracy": "Održavanje tačnosti i ažurnosti vaših informacija.",
-				"security": "Čuvanje sigurnosti vašeg računa i lozinke.",
-				"responsibility": "Sve aktivnosti koje se odvijaju pod vašim računom.",
-				"termination": "Razumijevanje da možemo suspendovati ili zatvoriti vaš račun ako prekršite ove uslove."
-			},
-			"content": {
-				"title": "Korisnički sadržaj i ponašanje",
-				"description": "Naša platforma vam omogućava da objavljujete sadržaj, uključujući tekstove, slike i druge materijale.",
-				"userContent": {
-					"title": "Vaš sadržaj",
-					"description": "Zadržavate vlasništvo nad sadržajem koji objavljujete na platformi, ali nam dajete neekskluzivnu, besplatnu licencu za korištenje, prikazivanje i distribuciju tog sadržaja u vezi s našim uslugama."
-				},
-				"prohibited": {
-					"title": "Zabranjene aktivnosti",
-					"description": "Na RECONNED platformi zabranjeno je sljedeće ponašanje:",
-					"illegal": "Objavljivanje ili promovisanje ilegalnih aktivnosti.",
-					"harmful": "Objavljivanje sadržaja koji je štetan, prijeteći, uvredljiv, ili uznemiravajući.",
-					"impersonation": "Lažno predstavljanje kao drugi korisnik ili entitet.",
-					"spam": "Slanje neželjenih poruka ili spamovanje platforme.",
-					"infringement": "Kršenje autorskih prava ili drugih prava intelektualnog vlasništva."
-				}
-			},
-			"intellectualProperty": {
-				"title": "Intelektualno vlasništvo",
-				"description": "RECONNED i njegov sadržaj, funkcionalnosti i izgled su zaštićeni zakonima o autorskim pravima, zaštitnim znakovima i drugim zakonima o intelektualnom vlasništvu.",
-				"ownership": "Svi zaštitni znakovi, logotipi, nazivi proizvoda i usluga prikazani na platformi su vlasništvo RECONNED-a ili njihovih odgovarajućih vlasnika.",
-				"license": "Dajemo vam ograničenu, neekskluzivnu, neprenosivu licencu za pristup i korištenje platforme za lične, nekomercionalne svrhe.",
-				"feedback": "Ako nam pošaljete povratne informacije ili prijedloge, možemo ih koristiti bez ikakve obaveze prema vama."
-			},
-			"thirdParty": {
-				"title": "Linkovi na treće strane",
-				"description": "Naša platforma može sadržavati linkove na web stranice trećih strana koje nisu u našem vlasništvu niti pod našom kontrolom. Nismo odgovorni za sadržaj, politike privatnosti ili prakse bilo kojih web stranica trećih strana."
-			},
-			"disclaimer": {
-				"title": "Odricanje od odgovornosti",
-				"description": "RECONNED platforma se pruža \"kako jest\" i \"kako je dostupna\", bez bilo kakvih garancija, bilo izričitih ili impliciranih. Ne garantujemo da će platforma uvijek biti dostupna, sigurna, bez grešaka ili da će ispuniti vaše specifične zahtjeve."
-			},
-			"limitation": {
-				"title": "Ograničenje odgovornosti",
-				"description": "U mjeri dopuštenoj zakonom, RECONNED i njegovi osnivači, službenici, direktori, zaposlenici i agenti neće biti odgovorni za bilo kakvu indirektnu, slučajnu, posebnu, posljedičnu ili kaznenu štetu koja proizlazi iz ili je povezana s vašim korištenjem platforme."
-			},
-			"changes": {
-				"title": "Promjene uslova",
-				"description": "Zadržavamo pravo da u bilo kojem trenutku izmijenimo ili zamijenimo ove Uslove korištenja. Ako napravimo materijalne promjene, nastojaćemo vas obavijestiti prije nego što nove odredbe stupe na snagu. Nastavkom korištenja platforme nakon što promjene stupe na snagu, pristajete na ažurirane uslove."
-			},
-			"termination": {
-				"title": "Raskid",
-				"description": "Možemo, po vlastitom nahođenju, modificirati, suspendovati ili ukinuti vaš pristup platformi iz bilo kojeg razloga, uključujući kršenje ovih Uslova korištenja, bez prethodne najave."
-			},
-			"governing": {
-				"title": "Mjerodavno pravo",
-				"description": "Ovi Uslovi korištenja regulisani su i tumačeni u skladu sa zakonima Bosne i Hercegovine, bez obzira na odredbe o sukobu zakona."
-			},
-			"contact": {
-				"title": "Kontaktirajte nas",
-				"description": "Ako imate pitanja o ovim Uslovima korištenja, molimo vas da nas kontaktirate putem email adrese: <email></email>."
-			},
-			"metadata": {
-				"title": "Uslovi korištenja - RECONNED",
-				"description": "Uslovi korištenja platforme RECONNED. Kako koristiti našu platformu i šta očekivati."
-			}
-		},
-		"changelog": {
-			"title": "Promjene",
-			"description": "Lista izmjena na platformi (samo na engleskom)",
-			"latestRelease": "Zadnja verzija",
-			"previousReleases": "Prethodne verzije",
-			"version": "Verzija {version}",
-			"published": "Objavljeno {date}",
-			"back": "Nazad",
-			"errorLoading": "Greška pri učitavanju podataka o verzijama",
-			"viewOnGithub": "Pogledajte na GitHub-u",
-			"metadata": {
-				"title": "Promjene - RECONNED",
-				"description": "Lista izmjena na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
-		},
-		"search": {
-			"clubs": "Klubovi",
-			"description": "Pronađi klubove, korisnike i susrete na jednom mjestu",
-			"events": "Susreti",
-			"loading": "Samo momenat...",
-			"noResults": "Nismo našli ništa za tu pretragu",
-			"placeholder": "Nešto...",
-			"private": "Privatno",
-			"public": "Javno",
-			"title": "Pretraga",
-			"users": "Igrači",
-			"member": "član",
-			"members": "članova",
-			"metadata": {
-				"title": "Pretraga za {query} - RECONNED",
-				"description": "Rezultati pretrage za {query}. Pretražujte klubove, igrače i susrete na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
-		},
-		"map": {
-			"metadata": {
-				"title": "Mapa klubova - RECONNED",
-				"description": "Pronađite gdje se nalaze airsoft klubovi. Istražite i pronađite zajednice u vašoj blizini. Prva univerzalna platforma za airsoft klubove, susrete, i igrače."
-			}
-		}
-	},
-	"dashboard": {
-		"root": {
-			"welcome": "Dobrodošli, {name}",
-			"myClubs": "Moji klubovi",
-			"recentEvents": "Nedavni susreti",
-			"statistics": {
-				"events": "Susreti",
-				"clubs": "Klubovi",
-				"writtenReviews": "Napisane recenzije",
-				"receivedReviews": "Primljene recenzije"
-			},
-			"error": "Došlo je do greške",
-			"loading": "Učitavanje...",
-			"nextEvent": "Sljedeći susret",
-			"latestReview": "Najnovija recenzija"
-		},
-		"help": {
-			"title": "Pomoć",
-			"googleMaps": {
-				"title": "Kako dodati Google Maps link na susret",
-				"steps": {
-					"step1": "Otvorite Google Maps i pronađite željenu lokaciju",
-					"step2": "Kliknite na dugme \"Share\" (Podijeli)",
-					"step3": "U dijalogu za dijeljenje, odaberite tab \"Embed a map\" (Ugradi mapu)",
-					"step4": "Kopirajte čitav link",
-					"step5": "Zalijepite kopirani link u polje za Google Maps na formi za kreiranje susreta"
-				}
-			},
-			"deleteClub": {
-				"title": "Kako izbrisati klub",
-				"description": "Da biste izbrisali klub, pratite ove korake:",
-				"steps": {
-					"step1": "U sidebar-u izaberite klub koji želite izbrisati",
-					"step2": "Kliknite na \"Klub\" u meniju",
-					"step3": "Kliknite na \"Informacije\" u podmeniju",
-					"step4": "Na stranici sa informacijama kluba, pronađite i kliknite na \"Obriši klub\" dugme u gornjem desnom uglu"
-				},
-				"notes": "Napomena: Brisanje kluba je trajna akcija i ne može se poništiti. Svi susreti i članstva vezana za klub će također biti izbrisana."
-			}
-		},
-		"user": {
-			"overview": {
-				"alertTitle": "Vaš račun",
-				"alertDescription": "Ovdje možete vidjeti svoj profil",
-				"edit": "Izmjeni profil",
-				"view": "Pogledaj profil"
-			},
-			"invites": {
-				"title": "Pozivnice",
-				"noInvites": "Nemate pozivnica",
-				"approve": "Prihvati",
-				"dismiss": "Odbaci",
-				"viewClub": "Pogledaj klub"
-			},
-			"settings": {
-				"title": "Općento",
-				"imageUploadError": "Došlo je do greške prilikom uploada slike",
-				"profileUpdated": "Podataci o korisniku su spašeni",
-				"profileUpdateError": "Došlo je do greške prilikom spašavanja podataka",
-				"name": "Vaše ime",
-				"callsign": "Callsign/Pozivni znak",
-				"location": "Lokacija",
-				"locationDescription": "Grad ili mjesto gdje se nalazite",
-				"bio": "O vama",
-				"bioDescription": "Ovo je vaša prilika da se istaknete u nekoliko recenica",
-				"public": "Prikazano javno",
-				"private": "Sakriveno",
-				"privateProfile": "Privatni profil",
-				"privateProfileDescription": "Sakrijte profil od javnog pristupa. Preporučujemo da ostavite profil javnim.",
-				"privateStats": "Privatna statistika",
-				"privateStatsDescription": "Samo vi možete vidjeti koliko pregleda ima vaš profil",
-				"profilePhoto": "Profilna slika",
-				"profilePhotoDescription": "Preporučujemo da postavite profilnu sliku.",
-				"fileUpload": "Povucite ili kliknite za upload slike",
-				"fileUploadFormats": "Podržani formati:",
-				"deleteProfilePhoto": {
-					"title": "Jeste li sigurni?",
-					"body": "Da li ste sigurni da želite obrisati profilnu sliku?",
-					"confirm": "Obriši profilnu sliku",
-					"cancel": "Ne, vrati se"
-				},
-				"contact": "Kontakt",
-				"phone": "Broj telefona",
-				"website": "Web stranica",
-				"save": "Spasi promjene",
-				"linkTaken": "Izabrani link je zauzet",
-				"cropPhotoTitle": "Izreži sliku",
-				"cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
-				"cancel": "Otkaži",
-				"bioPlaceholder": "Nešto o meni je to da...",
-				"requiredSection": "Obavezno",
-				"profileDescription": "Osnovne informacije o vama",
-				"additionalInformation": "Dodatne, neobavezne informacije",
-				"optional": "Neobavezno",
-				"contactDescription": "Ovako vas ljudi mogu kontaktirati",
-				"privacySettings": "Privatnost",
-				"privacyDescription": "Pokažite ili sakrijte informacije"
-			},
-			"security": {}
-		},
-		"security": {
-			"passwordChange": {
-				"error": "Došlo je do greške prilikom promjene lozinke. Molimo pokušajte ponovo.",
-				"success": "Lozinka uspješno promjenjena",
-				"title": "Promjeni lozinku",
-				"currentPassword": "Trenutna lozinka",
-				"newPassword": "Nova lozinka",
-				"confirmPassword": "Potvrdi novu lozinku",
-				"changePassword": "Promjeni lozinku",
-				"loading": "Samo momenat..."
-			},
-			"passwordSetup": {
-				"error": "Došlo je do greške prilikom postavljanja lozinke. Molimo pokušajte ponovo.",
-				"success": "Lozinka uspješno postavljena",
-				"title": "Postavi lozinku",
-				"newPassword": "Nova lozinka",
-				"setupPassword": "Postavi lozinku",
-				"loading": "Samo momenat..."
-			},
-			"securitySettings": {
-				"createdAt": "Kreiran {date}",
-				"addNewPasskey": "Dodaj novi Passkey",
-				"addNewPasskeyDescription": "Dodajte novi passkey za brže i sigurnije prijavljivanje na vaš račun.",
-				"add": "Dodaj",
-				"twoFactor": "Dvofaktorska autentikacija",
-				"twoFactorUnavailable": "Dvofaktorska autentikacija nije dostupna",
-				"twoFactorUnavailableDescription": "Da biste koristili 2-faktorsku autentikaciju, morate prvo postaviti lozinku.",
-				"twoFactorDisable": "Onemogući 2-faktorsku autentikaciju",
-				"twoFactorDisableDescription": "Ukoliko isključite 2-faktorsku autentikaciju, bićete u mogućnosti da se prijavite na vaš nalog bez potvrde putem aplikacije.",
-				"disable": "Onemogući",
-				"twoFactorDisablePrompt": {
-					"title": "Onemogućiti 2-faktorsku autentikaciju?",
-					"body": "Da li ste sigurni da želite onemogućiti 2-faktorsku autentikaciju? Ovo će ukloniti sve postavke i podatke vezane za 2-faktorsku autentikaciju.",
-					"confirm": "Onemogući",
-					"cancel": "Ne, vrati se",
-					"invalidPassword": "Unesite ispravnu lozinku"
-				},
-				"backupCodes": "Rezervni kodovi",
-				"download": "Preuzmi",
-				"regenerate": "Regeneriši kodove",
-				"regenerateDescription": "Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na sigurno mjesto.",
-				"regenerateSuccess": "Kodovi uspješno regenerisani",
-				"regenerateError": "Došlo je do greške prilikom regenerisanja kodova",
-				"twoFactorEnable": "Omogući 2-faktorsku autentikaciju",
-				"twoFactorEnableDescription": "Omogućite 2-faktorsku autentikaciju za dodatnu sigurnost vašeg računa.",
-				"twoFactorEnablePrompt": {
-					"title": "Omogućiti 2-faktorsku autentikaciju?",
-					"body": "Da li ste sigurni da želite omogućiti 2-faktorsku autentikaciju? Ako jeste, upišite svoju lozinku.",
-					"confirm": "Omogući",
-					"cancel": "Ne, vrati se"
-				},
-				"twoFactorConfirmPrompt": {
-					"scanQr": "Skenirajte QR kod sa vašom aplikacijom za 2-faktorsku autentikaciju.",
-					"enterCode": "Ako ne možete skenirati QR kod, unesite ovaj kod:",
-					"verifyCode": "Potvrdite 6-cifreni kod koji ste dobili od aplikacije",
-					"invalidCode": "Unesite ispravan 6-cifreni kod",
-					"confirm": "Potvrdi"
-				},
-				"activeSessions": "Aktivne sesije",
-				"activeSessionsDescription": "Ovdje možete vidjeti sve aktivne sesije na vašem računu. Ako primjetite nešto sumnjivo, odjavite se sa svih uređaja.",
-				"logoutAll": "Odjavi se sa svih uređaja, osim ovog",
-				"logoutAllAction": "Odjavi se",
-				"logoutAllSuccess": "Odjavljeni ste sa svih ostalih uređaja",
-				"logoutAllError": "Došlo je do greške prilikom odjavljivanja sa ostalih uređaja.",
-				"logoutSingleSuccess": "Odjavljeni ste sa ovog uređaja",
-				"logoutSingleError": "Došlo je do greške prilikom odjavljivanja sa ovog uređaja.",
-				"currentSession": "Trenutna sesija",
-				"sessionLastUsed": "Posljednji put korištena {date}"
-			}
-		},
-		"events": {
-			"title": "Moji susreti",
-			"search": "Pretraži susrete...",
-			"name": "Naziv",
-			"location": "Lokacija",
-			"dateStart": "Početak",
-			"dateRegistrationsClose": "Zatvaranje prijava",
-			"status": "Status",
-			"clubName": "Klub",
-			"actions": "Akcije"
-		},
-		"addClub": {
-			"addClub": "Dodaj klub",
-			"createClub": "Kreiraj novi klub",
-			"createClubDescription": "Ova opcija je za vas ako želite napraviti novi klub, čiji ćete biti jedini vlasnik.",
-			"joinClub": "Pridruži se klubu",
-			"joinClubDescription": "Vaš klub je već na ovom sajtu? Možete zatražiti pozivnicu, ili prihvatiti već dobijenu.",
-			"requestAccess": "Zatraži pristup klubu",
-			"requestAccessDescription": "Odaberite klub kojem želite pristupiti",
-			"selectClub": "Odaberi klub",
-			"selectClubPlaceholder": "Odaberi klub...",
-			"sendRequest": "Pošalji zahtjev",
-			"requestSent": "Zahtjev uspješno poslan",
-			"requestFailed": "Greška pri slanju zahtjeva",
-			"searchFailed": "Greška pri pretrazi klubova",
-			"searchClubs": "Pretraži klubove...",
-			"enterTwoChars": "Unesite najmanje dva slova",
-			"noClubsFound": "Nema pronađenih klubova"
-		},
-		"club": {
-			"info": {
-				"photoUploadError": "Došlo je do greške prilikom uploada slike",
-				"clubCreationError": "Došlo je do greške prilikom kreiranja kluba",
-				"clubCreationSuccess": "Klub uspješno kreiran",
-				"clubSaved": "Podaci o klubu su spašeni",
-				"error": "Došlo je do greške",
-				"clubEditTitle": "Mijenjate podatke o klubu",
-				"clubEditDescription": "Promjene će biti vidljive odmah nakon što ih sačuvate.",
-				"clubDelete": {
-					"title": "Jeste li sigurni?",
-					"body": "Ako obrišete klub, nećete ga moći vratiti nazad.",
-					"confirm": "Obriši klub",
-					"cancel": "Ne, vrati se"
-				},
-				"general": "Općenito",
-				"name": "Naziv kluba",
-				"nameDescription": "Naziv kluba će biti prikazan svuda na sajtu, ako je klub javan.",
-				"country": "Država",
-				"countryDescription": "Država u kojoj se klub nalazi",
-				"noResults": "Nema rezultata",
-				"pickCountry": "Odaberite državu",
-				"searchCountry": "Pretraži države...",
-				"city": "Grad",
-				"cityDescription": "Grad u kojem se klub nalazi",
-				"exactLocation": "Tačna lokacija",
-				"exactLocationDescription": "Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <link></link>",
-				"exactLocationLink": "mapi airsoft klubova",
-				"reset": "Resetuj",
-				"description": "Opis",
-				"descriptionDescription": "Opišite svoj klub u nekoliko rečenica",
-				"foundedDate": "Datum osnivanja",
-				"foundedDateDescription": "Kada je klub osnovan?",
-				"chooseDate": "Odaberite datum",
-				"isAllied": "U savezu ASK FBIH",
-				"isAlliedDescription": "Ako ste dio saveza airsoft klubova u FBIH, odaberite ovu opciju. Provjeriti ćemo vaš status.",
-				"private": "Privatni klub",
-				"privateDescription": "Privatni klubovi su vidljivi samo članovima kluba. Javni klubovi su vidljivi svima, te će biti prikazani na mapi. Preporučujemo da ovo ostavite isključeno.",
-				"privateStats": "Privatna statistika",
-				"privateStatsDescription": "Samo članovi kluba mogu vidjeti koliko pregleda ima klub",
-				"logo": "Logo",
-				"logoDescription": "Dodajte logo kluba. Preporučujemo da koristite kvadratnu sliku sa providnom pozadinom.",
-				"fileUpload": "Povucite ili kliknite za upload slike",
-				"fileUploadFormats": "Podržani formati:",
-				"logoDelete": {
-					"title": "Jeste li sigurni?",
-					"body": "Da li ste sigurni da želite obrisati logo kluba?",
-					"confirm": "Obriši logo",
-					"cancel": "Ne, vrati se"
-				},
-				"contact": "Kontakt",
-				"phone": "Broj telefona",
-				"phoneDescription": "Broj telefona kluba, javno prikazan na profilu.",
-				"emailDescription": "Email adresa kluba, javno prikazana na profilu.",
-				"save": "Spasi promjene",
-				"website": "Web stranica",
-				"create": "Kreiraj klub",
-				"socialMedia": "Društvene mreže",
-				"instagramConnection": "Instagram povezivanje",
-				"instagramDescription": "Povežite svoj Instagram račun da biste prikazali fotografije kluba na profilu kluba.",
-				"instagramConnect": "Poveži Instagram",
-				"instagramConnecting": "Povezivanje...",
-				"instagramConnectSuccess": "Instagram račun je uspješno povezan",
-				"instagramConnectError": "Došlo je do greške prilikom povezivanja Instagram računa",
-				"instagramConnectedMessage": "Vaš klub je povezan sa Instagram računom",
-				"instagramDisconnecting": "Odspajanje...",
-				"instagramDisconnectSuccess": "Instagram račun je uspješno odspojen",
-				"instagramDisconnectError": "Došlo je do greške prilikom odspajanja Instagram računa",
-				"instagramDisconnect": {
-					"title": "Odspojitvanje Instagram računa",
-					"body": "Da li ste sigurni da želite odspojiti Instagram račun? Nakon odspajanja, fotografije se više neće prikazivati na profilu kluba.",
-					"action": "Odspoji Instagram",
-					"confirm": "Da, odspoji",
-					"cancel": "Ne, vrati se"
-				},
-				"instagramRedirecting": "Preusmjeravanje na Instagram za autorizaciju...",
-				"instagramSelectPageTitle": "Odaberite Facebook stranicu",
-				"instagramSelectPageDescription": "Odaberite Facebook stranicu koja je povezana s Instagram Business računom koji želite povezati s vašim klubom.",
-				"instagramNoPages": "Nije pronađena niti jedna Facebook stranica",
-				"instagramNoPageDescription": "Nisu pronađene Facebook stranice povezane s vašim računom. Prvo kreirajte Facebook stranicu i povežite je s Instagram Business računom.",
-				"instagramConnected": "Instagram povezan",
-				"instagramNotConnected": "Instagram nije povezan",
-				"instagramLoadingPages": "Učitavanje stranica...",
-				"backToClub": "Natrag na klub",
-				"instagramSelectPage": "Molimo odaberite stranicu",
-				"instagramEligible": "Dostupno",
-				"instagramIneligible": "Nije dostupno",
-				"instagramIneligibleTooltip": "Ova Facebook stranica nije povezana sa Instagram Business računom. Za povezivanje, prvo povežite Instagram Business račun s ovom Facebook stranicom.",
-				"instagramSessionMissing": "Nedostaje sesija za odabir stranice",
-				"instagramPagesFetchFailed": "Neuspješno učitavanje Facebook stranica",
-				"instagramSelectedPageNotFound": "Odabrana stranica nije pronađena",
-				"instagramConnectionFailed": "Neuspjelo povezivanje Instagram računa",
-				"instagramNoEligiblePages": "Nijedna od vaših Facebook stranica nije povezana sa Instagram Business računom. Prvo povežite Instagram Business račun s vašom Facebook stranicom.",
-				"instagramError": {
-					"title": "Problem s povezivanjem Instagram računa",
-					"connectionFailed": "Problem prilikom povezivanja sa Instagram računom. Molimo pokušajte ponovo.",
-					"noFacebookPages": "Nismo pronašli nijedan Facebook Page povezan sa vašim računom.",
-					"noInstagramAccount": "Nismo pronašli Instagram Business račun povezan sa odabranom Facebook stranicom.",
-					"notConnected": "Instagram račun nije povezan sa vašim Facebook stranicom.",
-					"missingParams": "Nedostaju parametri za povezivanje sa Instagram API-jem.",
-					"authFailed": "Autorizacija nije uspjela. Molimo pokušajte ponovo.",
-					"pageNotFound": "Facebook Page nije pronađena.",
-					"personalAccount": "Instagram račun povezan sa odabranom Facebook stranicom nije Business račun. Potrebno je koristiti Instagram Business račun za povezivanje."
-				},
-				"cancel": "Odustani",
-				"descriptionPlaceholder": "Ovo je kul opis"
-			},
-			"posts": {
-				"successEdited": "Objava uspješno izmjenjena",
-				"successCreated": "Objava uspješno kreirana",
-				"error": "Došlo je do greške",
-				"delete": {
-					"title": "Jeste li sigurni?",
-					"body": "Ako obrišete objavu, nećete je moći vratiti nazad.",
-					"confirm": "Obriši objavu",
-					"cancel": "Ne, vrati se",
-					"success": "Objava uspješno obrisana",
-					"error": "Došlo je do greške prilikom brisanja objave"
-				},
-				"editing": "Izmjena objave",
-				"creating": "Nova objava",
-				"title": "Naslov",
-				"content": "Sadržaj",
-				"public": "Javna objava",
-				"saveNewPost": "Spasi objavu",
-				"saveEditPost": "Spasi izmjene"
-			},
-			"spending": {
-				"title": "Troškovi",
-				"newItem": "Nova stavka",
-				"edit": "Izmjena troška",
-				"details": {
-					"title": "Naslov",
-					"description": "Opis",
-					"amount": "Iznos (KM)",
-					"receipts": "Računi",
-					"receiptsLimit": "Dostigli ste limit",
-					"receiptsMaxCount": "Maksimalno 3 računa po stavci",
-					"receiptUploadInfo": "Kliknite da dodate fajl ili ga samo prevucite ovdje",
-					"receiptFormats": "Podržani formati: JPG, JPEG, PNG, PDF",
-					"actions": "Akcije"
-				},
-				"receipt": {
-					"title": "Račun",
-					"pdfDocument": "PDF Dokument",
-					"download": "Preuzmi"
-				},
-				"date": "Datum",
-				"save": "Spasi",
-				"saving": "Spašavanje...",
-				"saveChanges": "Spasi izmjene",
-				"uploadingFiles": "Otpremanje fajlova",
-				"error": "Greška prilikom spašavanja podataka o trošku",
-				"errorDelete": "Greška prilikom brisanja stavke troška",
-				"errorReceipt": "Greška prilikom otpremanja računa",
-				"success": "Trošak uspješno dodan",
-				"successEdit": "Trošak uspješno izmjenjen",
-				"successDelete": "Trošak uspješno obrisan",
-				"deleteConfirm": {
-					"title": "Brisanje stavke troška",
-					"body": "Da li ste sigurni da želite obrisati ovu stavku troška? Ova akcija se ne može poništiti.",
-					"action": "Obriši",
-					"cancel": "Otkaži"
-				},
-				"deleteReceiptConfirm": {
-					"title": "Jeste li sigurni?",
-					"body": "Ako obrišete ovaj račun, nećete ga moći vratiti.",
-					"action": "Obriši račun",
-					"cancel": "Ne, vrati se"
-				},
-				"search": "Pretraži troškove..."
-			},
-			"stats": {
-				"members": "Broj članova",
-				"registrations": "Broj prijava",
-				"roles": "Uloge",
-				"events": "Susreti po mjesecima",
-				"numberOfEvents": "Broj susreta",
-				"numberOfRegistrations": "Broj prijava",
-				"userGrowth": "Rast članova",
-				"roleDistribution": "Distribucija uloga",
-				"member": "Član",
-				"manager": "Menadžer",
-				"owner": "Vlasnik"
-			},
-			"audit": {
-				"pageTitle": "Zapis akcija",
-				"pageDescription": "Pregled svih akcija izvršenih u ovom klubu.",
-				"search": "Pretraži zapis...",
-				"filterByAction": "Filtriraj po akciji",
-				"allActions": "Sve akcije",
-				"detailsTitle": "Detalji zapisa",
-				"viewDetails": "Pogledaj detalje",
-				"actionType": "Tip akcije",
-				"userInfo": "Korisnik",
-				"ipAddress": "IP adresa",
-				"userAgent": "Korisnički agent",
-				"actionData": "Podaci akcije",
-				"columns": {
-					"date": "Datum",
-					"action": "Akcija",
-					"user": "Korisnik",
-					"ipAddress": "IP adresa",
-					"actions": "Akcije"
-				},
-				"actionTypes": {
-					"clubCreate": "Kreiranje kluba",
-					"clubUpdate": "Ažuriranje kluba",
-					"clubDelete": "Brisanje kluba",
-					"memberInvite": "Poziv člana",
-					"memberRemove": "Uklanjanje člana",
-					"memberPromote": "Unapređenje člana",
-					"memberDemote": "Democija člana",
-					"memberJoin": "Pridruživanje člana",
-					"memberLeave": "Napuštanje klana",
-					"clubBan": "Zabrana kluba",
-					"clubUnban": "Ukidanje zabrane",
-					"spendingCreate": "Dodavanje troška",
-					"spendingUpdate": "Ažuriranje troška",
-					"spendingDelete": "Brisanje troška",
-					"postCreate": "Kreiranje objave",
-					"postUpdate": "Ažuriranje objave",
-					"postDelete": "Brisanje objave",
-					"instagramConnect": "Povezivanje Instagrama",
-					"instagramDisconnect": "Odspajanje Instagrama",
-					"eventCreate": "Kreiranje susreta",
-					"eventUpdate": "Ažuriranje susreta",
-					"eventDelete": "Brisanje susreta",
-					"clubRuleUpdate": "Ažuriranje pravila kluba",
-					"clubRuleCreate": "Kreiranje pravila kluba",
-					"clubRuleDelete": "Brisanje pravila kluba",
-					"membershipExtension": "Produženje članstva"
-				}
-			},
-			"events": {
-				"search": "Pretraži susrete...",
-				"name": "Naziv",
-				"location": "Lokacija",
-				"dateStart": "Početak",
-				"dateRegistrationsClose": "Zatvaranje prijava",
-				"type": "Tip",
-				"private": "Privatni",
-				"public": "Javni",
-				"registrations": "Prijave",
-				"actions": "Akcije",
-				"attendence": "Prisustvo",
-				"edit": "Izmjeni",
-				"view": "Pogledaj",
-				"event": "Susret",
-				"attendenceTracking": {
-					"search": "Pretraži učesnike...",
-					"error": "Došlo je do greške prilikom spašavanja prisustva",
-					"others": "+ {count} drugih",
-					"registered": "Prijavljeni",
-					"attending": "Prisutni",
-					"registrationNotClosed": "Prijave su idalje otvorene",
-					"eventEnded": "Susret je završen",
-					"backToEvent": "Nazad na susret",
-					"unavailable": "Ova funkcionalnost nije dostupna"
-				},
-				"create": {
-					"registrationsOpenIn": "Registracije se otvaraju za <number></number> dan/a",
-					"registrationsOpen": "Registracije su otvorene",
-					"registrationsClosed": "Registracije su zatvorene",
-					"eventStartsIn": ", susret počinje za <number></number> dan/a",
-					"eventStarted": ", susret je već počeo",
-					"eventDuration": ", traje <number></number> sati/a.",
-					"error": "Došlo je do greške prilikom spašavanja podataka",
-					"photoUploadError": "Došlo je do greške prilikom uploada slike",
-					"success": "Podataci o susretu su sačuvani",
-					"editingTitle": "Izmjena susreta",
-					"editingDescription": "Ovaj susret je već kreiran, trenutno ga uređujete.",
-					"delete": {
-						"title": "Jeste li sigurni?",
-						"body": "Ako obrišete susret, nećete ga moći vratiti nazad.",
-						"confirm": "Obriši susret",
-						"cancel": "Ne, vrati se"
-					},
-					"view": "Pogledaj susret",
-					"general": "Općenito",
-					"name": "Naziv susreta",
-					"nameDescription": "Naziv susreta će biti prikazan svuda na sajtu",
-					"description": "Opis",
-					"descriptionDescription": "Opis susreta. Ovo može biti priča, briefing, ili bilo šta što ne spada u druge kategorije.",
-					"descriptionPlaceholder": "Ponesite pribor za jelo...",
-					"photo": "Slika",
-					"photoDescription": "Dodajte sliku susreta. Preporučujemo da koristite sliku sa 16:9 odnosom stranica.",
-					"fileUpload": "Povucite ili kliknite za upload slike",
-					"fileUploadFormats": "Podržani formati:",
-					"deletePhoto": {
-						"title": "Jeste li sigurni?",
-						"body": "Da li ste sigurni da želite obrisati sliku susreta?",
-						"confirm": "Obriši sliku",
-						"cancel": "Ne, vrati se"
-					},
-					"price": "Kotizacija/cijena",
-					"priceDescription": "Koliko košta učešće na susretu? Ako je besplatno, stavite 0.",
-					"time": "Vrijeme",
-					"start": "Početak",
-					"startDescription": "Kada susret počinje?",
-					"end": "Kraj",
-					"endDescription": "Kada susret završava?",
-					"registrationStart": "Početak prijava",
-					"registrationStartDescription": "Kada se otvaraju prijave za susret?",
-					"registrationEnd": "Kraj prijava",
-					"registrationEndDescription": "Kada se zatvaraju prijave za susret?",
-					"selectDate": "Odaberite datum",
-					"visibility": "Vidljivost",
-					"private": "Privatni",
-					"privateDescription": "Privatni susreti su vidljivi samo članovima kluba.",
-					"freelancers": "Freelanceri dozvoljeni",
-					"freelancersDescription": "Da li dozvoljavate igračima koji nisu članovi nekog kluba da se prijave na susret?",
-					"organization": "Organizacija",
-					"breakfast": "Doručak",
-					"lunch": "Ručak",
-					"dinner": "Večera",
-					"snacks": "Užina",
-					"drinks": "Piće",
-					"prizes": "Nagrade",
-					"location": "Lokacija",
-					"locationDescription": "Gdje se susret održava?",
-					"googleMapsDescription": "Možete dodati Google Maps embed link. Ta će se mapa moći prikazati na stranici vašeg susreta.",
-					"googleMapsLink": "Gdje to naći?",
-					"rules": "Pravila",
-					"rulesDescription": "Odaberite pravila koja će važiti za ovaj susret.",
-					"noRules": "Ovaj klub nema pravila.",
-					"createRule": "Dodaj pravila",
-					"changedToday": "Promijenjeno danas",
-					"changedAgo": "Promijenjeno prije {time} dan/a",
-					"noDescription": "Nema opisa",
-					"map": "Mapa",
-					"save": "Spasi promjene",
-					"create": "Kreiraj susret",
-					"eventDates": "Datumi susreta",
-					"advancedSettings": "Napredne postavke",
-					"basicInformationDescription": "Osnovne informacije koje su nam potrebne za kreiranje vašeg susreta",
-					"mapDescription": "Ovdje možete urediti mapu vaše igre. Dodajte tačke od interesa, prepreke, i druge važne detalje.",
-					"mapEditor": "Editor mape",
-					"registrationPeriod": "Period registracije",
-					"requiredSection": "Obavezno",
-					"additionalInformation": "Dodatne informacije",
-					"optional": "Nije obavezno",
-					"partiallyRequired": "Parcijalno-obavezno",
-					"additionalLocationInfo": "Dodatne informacije o lokaciji",
-					"reset": "Resetuj"
-				},
-				"allEvents": "Svi susreti",
-				"createEvent": "Kreirajte susret",
-				"rules": {
-					"rule": {
-						"cancel": "Odustani",
-						"content": "Sadržaj",
-						"create": "Novi pravilnik",
-						"created": "Pravilnik je stvoren",
-						"delete": {
-							"action": "Izbriši",
-							"body": "Jeste li sigurni da želite izbrisati ovaj pravilnik?",
-							"cancel": "Odustani",
-							"success": "Pravilnik je izbrisan",
-							"title": "Izbriši pravilnik"
-						},
-						"description": "Opis (neobavezno)",
-						"descriptionPlaceholder": "Ovaj se pravilnik koristi samo za ...",
-						"error": "Došlo je do problema prilikom spašavanja tog pravilnika.",
-						"name": "Naziv pravilnika",
-						"namePlaceholder": "Moj pravilnik",
-						"noDescription": "Ovaj pravilnik nema opis",
-						"save": "Spremi pravilnik",
-						"updated": "Pravilnik je ažuriran."
-					},
-					"rules": {
-						"empty": "Nemate pravilnika.",
-						"title": "Postojeći pravilnici"
-					}
-				}
-			},
-			"members": {
-				"allMembers": "Svi članovi",
-				"membersTable": {
-					"remove": {
-						"title": "Jeste li sigurni?",
-						"body": "Da li ste sigurni da želite ukloniti {name} iz kluba?",
-						"confirm": "Ukloni",
-						"cancel": "Ne, vrati se",
-						"success": "Član uspješno uklonjen",
-						"error": "Došlo je do greške prilikom uklanjanja člana"
-					},
-					"searchPlaceholder": "Pretraži članove...",
-					"name": "Ime",
-					"callsign": "Callsign",
-					"role": "Uloga",
-					"allRoles": "Sve uloge",
-					"owner": "Vlasnik",
-					"manager": "Menadžer",
-					"member": "Član",
-					"joinedDate": "Datum pridruživanja",
-					"actions": "Akcije",
-					"profile": "Profil",
-					"removeMember": "Ukloni",
-					"membershipStatus": {
-						"title": "Status",
-						"unlimited": "Neograničeno",
-						"expired": "Isteklo",
-						"expiringSoon": "Uskoro ističe",
-						"active": "Aktivno"
-					},
-					"startDate": "Datum pridruživanja",
-					"endDate": "Datum isteka",
-					"notSet": "Nije postavljeno",
-					"unlimited": "Neograničeno"
-				},
-				"invitations": {
-					"table": {
-						"revoke": {
-							"title": "Jeste li sigurni?",
-							"body": "Da li ste sigurni da želite povući pozivnicu za pristup klubu?",
-							"confirm": "Povuci",
-							"cancel": "Ne, vrati se",
-							"success": "Pozivnica uspješno povučena",
-							"error": "Došlo je do greške prilikom povlačenja pozivnice"
-						},
-						"searchPlaceholder": "Pretraži pozivnice...",
-						"user": "Korisnik",
-						"status": "Status",
-						"pending": "Na čekanju",
-						"accepted": "Prihvaćeno",
-						"rejected": "Odbijeno",
-						"expired": "Isteklo",
-						"revoked": "Povučeno",
-						"requested": "Zahtjev",
-						"created": "Datum slanja",
-						"expires": "Ističe",
-						"code": "Kod",
-						"actions": "Akcije",
-						"inactive": "Neaktivno",
-						"all": "Svi statusi"
-					},
-					"approve": "Prihvati",
-					"dismiss": "Odbaci",
-					"searchError": "Neuspjela pretraga korisnika. Molimo pokušajte ponovo.",
-					"send": "Pošalji pozivnicu",
-					"sendError": "Došlo je do greške prilikom slanja pozivnice. Molimo pokušajte ponovo.",
-					"sendSuccess": "Pozivnica uspješno poslana",
-					"title": "Pozovi korisnika u klub",
-					"description": "Pozivnice će isteći nakon 7 dana, a biti će obrisane nakon 3 mjeseca.",
-					"user": "Korisnik",
-					"searchPlaceholder": "Pretraži korisnike...",
-					"minimumChars": "Unesite najmanje 2 slova",
-					"noResults": "Nema rezultata",
-					"chooseUserDescription": "Ako je korisnik već na platformi, možete ga pronaći ovdje.",
-					"emailDescription": "Ako ne možete pronaći korisnika, ili već znate njihov email, unesite ga ovdje."
-				},
-				"managers": {
-					"promote": {
-						"error": "Došlo je do problema prilikom promocije tog korisnika, pokušajte ponovo.",
-						"member": {
-							"description": "Odaberite člana kojeg želite da bude menadžer.",
-							"label": "Član kluba",
-							"noResults": "Nismo mogli da nađemo nikoga",
-							"placeholder": "Odaberite člana ...",
-							"search": "Članovi pretraživanja ...",
-							"searchEmpty": "Unesite najmanje 2 znaka"
-						},
-						"submit": "Dodaj",
-						"success": "Uspješno promoviran u menadžer",
-						"title": "Dodajte novog menadžera"
-					},
-					"search": {
-						"error": "Došlo je do problema sa pretraživanjem, pokušajte ponovo."
-					},
-					"title": "Menadžeri"
-				}
-			}
-		}
-	},
-	"components": {
-		"sidebar": {
-			"betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",
-			"githubMessage": "Sada smo open-source! Kliknite i pomozite nam da postanemo bolji!",
-			"home": "Početna",
-			"dashboard": "Aplikacija",
-			"help": "Pomoć",
-			"user": "Korisnik",
-			"overview": "Pregled",
-			"settings": "Postavke",
-			"security": "Sigurnost",
-			"myEvents": "Moji susreti",
-			"club": "Klub",
-			"clubs": "Klubovi",
-			"selectClub": "Odaberite klub",
-			"addClub": "Dodaj klub",
-			"myClub": "Moj klub",
-			"manager": "Menadžer",
-			"member": "Član",
-			"info": "Informacije",
-			"stats": "Statistike",
-			"spending": "Troškovi",
-			"newPost": "Nova objava",
-			"members": "Članovi",
-			"invitations": "Pozivnice",
-			"managers": "Menadžeri",
-			"events": "Susreti",
-			"newEvent": "Novi susret",
-			"calendar": "Kalendar",
-			"rules": "Pravila",
-			"admin": "Administracija",
-			"users": "Korisnici",
-			"emails": "Emailovi",
-			"personalization": "Personalizacija",
-			"logout": "Odjava",
-			"pendingInvitesMessage": "Imate {count} neodgovoren/ih pozivnicu/a",
-			"inviteRequestsMessage": "Klub ima {count} neodgovoren/ih zahtjev/a za pristup",
-			"invites": "Pozivnice",
-			"searchPlaceholder": "Pretraži...",
-			"noResults": "Nema rezultata.",
-			"navigation": "Navigacija",
-			"account": "Račun",
-			"profile": "Profil",
-			"userSettings": "Postavke korisnika",
-			"shiftHint": "Možete koristiti shift + strelice gore i dolje za mijenjanje klubova.",
-			"auditLogs": "Zapis",
-			"createClub": "Dodaj klub"
-		},
-		"footer": {
-			"about": {
-				"title": "O nama",
-				"description": "RECONNED je nova platforma za airsoft entuzijaste. Otkrijte klubove, susrete, i igrače, širom svijeta. Vodite svoj klub, organizujte susrete, i pronađite nove prilike."
-			},
-			"quickLinks": {
-				"title": "Brzi linkovi",
-				"events": "Susreti",
-				"dashboard": "Aplikacija",
-				"map": "Mapa",
-				"search": "Pretraga",
-				"about": "O nama",
-				"stats": "Statistike"
-			},
-			"community": {
-				"title": "Zajednica"
-			},
-			"support": {
-				"title": "Podrška",
-				"contact": "Kontakt",
-				"faq": "Česta pitanja",
-				"privacy": "Privatnost",
-				"terms": "Uslovi korištenja",
-				"changelog": "Izmjene"
-			},
-			"copyright": "© {year} RECONNED. Sva prava zadržana.",
-			"sponsors": "Pogledajte naše sponzore i partnere",
-			"version": "Verzija {commit}"
-		},
-		"table": {
-			"showColumns": "Prikaži kolone",
-			"noData": "Nema pronađenih podataka",
-			"navigation": {
-				"page": "Stranica {page} od {total}",
-				"previous": "Nazad",
-				"next": "Naprijed",
-				"perPage": "po stranici"
-			},
-			"filters": {
-				"clear": "Ukloni"
-			}
-		},
-		"header": {
-			"backToHome": "Nazad na početnu",
-			"dashboard": "Aplikacija",
-			"login": "Prijava",
-			"logout": "Odjava",
-			"personalization": "Personalizacija"
-		},
-		"themeSwitcher": {
-			"toggle": "Promijeni temu"
-		},
-		"fontSwitcher": {
-			"toggle": "Promijeni font"
-		},
-		"languageSwitcher": {
-			"select": "Odaberite jezik"
-		},
-		"clubsMap": {
-			"viewProfile": "Pogledaj profil"
-		},
-		"calendar": {
-			"today": "Danas",
-			"alreadyToday": "Već je danas",
-			"goToToday": "Idi na trenutni mjesec",
-			"days": {
-				"mon": "Pon",
-				"tue": "Uto",
-				"wed": "Sri",
-				"thu": "Čet",
-				"fri": "Pet",
-				"sat": "Sub",
-				"sun": "Ned"
-			},
-			"months": {
-				"jan": "Januar",
-				"feb": "Februar",
-				"mar": "Mart",
-				"apr": "April",
-				"may": "Maj",
-				"jun": "Juni",
-				"jul": "Juli",
-				"aug": "August",
-				"sep": "Septembar",
-				"oct": "Oktobar",
-				"nov": "Novembar",
-				"dec": "Decembar"
-			},
-			"eventDetails": {
-				"start": "Početak",
-				"end": "Kraj",
-				"location": "Lokacija",
-				"cost": "Cijena",
-				"apply": "Prijavi se",
-				"registrationsClosed": "Prijave za ovaj susret trenutno nisu otvorene"
-			}
-		},
-		"error": {
-			"backToHome": "Povratak na početnu stranicu"
-		},
-		"addToCalendar": {
-			"addToCalendar": "Dodaj u kalendar",
-			"features": {
-				"breakfast": "Doručak",
-				"lunch": "Ručak",
-				"dinner": "Večera",
-				"snacks": "Užina",
-				"drinks": "Piće",
-				"prizes": "Nagrade"
-			},
-			"sections": {
-				"other": "Ostalo",
-				"rules": "Pravila",
-				"gear": "Oprema",
-				"private": "Ovo je privatni susret samo za članove kluba.",
-				"freelancers": "Freelanceri su dobrodošli da se registruju za ovaj susret."
-			}
-		},
-		"badge": {
-			"soon": "Uskoro",
-			"new": "Novo"
-		},
-		"slug": {
-			"label": "Specijalni link",
-			"slugPlaceholder": "moj-link",
-			"description": "Kratki link koji ćete moći podjeliti.",
-			"placeholder": "moj-link",
-			"available": "Link je dostupan.",
-			"taken": "Link je nedostupan!",
-			"errors": {
-				"notAuthenticated": "Niste prijavljeni",
-				"unknownType": "Nepoznat tip"
-			}
-		},
-		"userOverview": {
-			"views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
-			"freelancer": "Slobodni igrač",
-			"tabs": {
-				"memberships": "Članstva",
-				"events": "Susreti",
-				"reviews": "Recenzije"
-			},
-			"clubs": {
-				"title": "Klubovi",
-				"noClubs": "Korisnik nije član nijednog kluba"
-			},
-			"upcomingEvents": {
-				"title": "Nadolazeći susreti",
-				"noEvents": "Nema nadolazećih susreta"
-			},
-			"pastEvents": {
-				"title": "Prošli susreti",
-				"noEvents": "Nema prošlih susreta"
-			},
-			"attended": "Prisustvovao"
-		},
-		"reviews": {
-			"title": "Ocjene",
-			"latestReviews": "Najnovije ocjene",
-			"noReviews": "Nema ocjena",
-			"showAll": "Prikaži sve ocjene",
-			"allReviews": "Sve ocjene za {type}",
-			"types": {
-				"club": "klub",
-				"event": "susret",
-				"user": "korisnik"
-			}
-		},
-		"post": {
-			"published": "Objavljeno {date}",
-			"readMore": "Pročitaj više",
-			"showLess": "Prikaži manje"
-		},
-		"eventOverview": {
-			"editEvent": "Izmjeni susret",
-			"apply": "Prijava",
-			"registrationsClosed": "Prijave zatvorene",
-			"registeredCount": "{count} prijavljenih",
-			"privateEvent": "Privatni susret",
-			"publicEvent": "Javni susret",
-			"views": "{count} pregled/a",
-			"location": "Lokacija",
-			"showLocation": "Prikaži lokaciju",
-			"map": "Mapa",
-			"showEventMap": "Prikaži mapu susreta"
-		},
-		"clubOverview": {
-			"views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
-			"map": "Mapa",
-			"edit": "Uredi",
-			"private": "Privatni klub",
-			"public": "Javni klub",
-			"allied": "Saveznički klub",
-			"instagramGallery": "Instagram galerija",
-			"instagramGalleryDescription": "Najnovije objave sa Instagrama",
-			"tabs": {
-				"posts": "Objave",
-				"members": "Članovi",
-				"reviews": "Recenzije"
-			},
-			"posts": "Objave kluba",
-			"createPost": "Nova objava",
-			"noPosts": "Nema objava",
-			"members": "Članovi",
-			"noMembers": "Ovaj klub trenutno nema članova"
-		},
-		"leaveClubButton": {
-			"title": "Napuštanje kluba",
-			"body": "Jeste li sigurni da želite napustiti ovaj klub? \nTrebat će vam pozivnica da se ponovo pridružite.",
-			"confirm": "Napusti klub",
-			"cancel": "Ne, vrati se",
-			"error": "Došlo je do greške prilikom napuštanja kluba",
-			"action": "Napusti klub",
-			"ownerError": "Vlasnik kluba ne može napustiti klub. Morate prvo prenijeti vlasništvo ili obrisati klub."
-		},
-		"breadcrumbs": {
-			"currentClub": "Trenutni klub",
-			"currentEvent": "Trenutni susret",
-			"translations": {
-				"dashboard": "Aplikacija",
-				"club": "Klub",
-				"clubs": "Klubovi",
-				"events": "Susreti",
-				"information": "Informacije",
-				"create": "Kreiraj",
-				"stats": "Statistike",
-				"members": "Članovi",
-				"settings": "Postavke",
-				"calendar": "Kalendar",
-				"invitations": "Pozivnice",
-				"security": "Sigurnost",
-				"user": "Korisnik",
-				"help": "Pomoć",
-				"managers": "Menadžeri",
-				"rules": "Pravila",
-				"attendance": "Prisustvo",
-				"admin": "Administracija",
-				"emails": "Emailovi",
-				"posts": "Nova objava",
-				"spending": "Potrošnja",
-				"add-club": "Dodaj klub",
-				"invites": "Pozivnice",
-				"users": "Korisnici",
-				"instagram": "Instagram",
-				"audit": "Zapis"
-			}
-		},
-		"icons": {
-			"clubOwner": "Vlasnik kluba",
-			"clubManager": "Menadžer kluba",
-			"administrator": "Administrator",
-			"verifiedClub": "Verificiran klub"
-		},
-		"membershipExtension": {
-			"extendMembership": "Produži",
-			"extendMembershipTitle": "Produži članstvo",
-			"extendMembershipDescription": "Produžite članstvo za korisnika {user}",
-			"currentStatus": "Trenutni status",
-			"startDate": "Datum početka",
-			"endDate": "Datum isteka",
-			"extensionDuration": "Trajanje produženja",
-			"selectDuration": "Odaberite trajanje",
-			"oneMonth": "1 mjesec",
-			"threeMonths": "3 mjeseca",
-			"sixMonths": "6 mjeseci",
-			"oneYear": "1 godina",
-			"cancel": "Otkaži",
-			"extend": "Produži",
-			"extending": "Produžavanje...",
-			"success": "Članstvo uspješno produženo",
-			"error": "Greška",
-			"failedToExtend": "Došlo je do greške prilikom produženja članstva",
-			"active": "Aktivno",
-			"expired": "Isteklo",
-			"expiringSoon": "Istječe uskoro",
-			"unlimited": "Bez kraja"
-		},
-		"instagramGallery": {
-			"noPhotos": "Nema fotografija za prikaz",
-			"viewMore": "Pogledaj više na Instagramu",
-			"error": "Greška pri učitavanju fotografija"
-		}
-	},
-	"imgur": {
-		"error": {
-			"overCapacity": "Imgur je trenutno preopterećen. Molimo pokušajte ponovo kasnije.",
-			"rateLimit": "Previše pokušaja. Molimo sačekajte nekoliko minuta.",
-			"generic": "Greška pri otpremanju slike."
-		}
-	}
+  "emails": {
+    "emailVerification": {
+      "title": "Verifikujte vašu email adresu",
+      "hello": "Zdravo,",
+      "helloUser": "Zdravo {name},",
+      "message": "Molimo vas da kliknete na dugme ispod kako biste verifikovali vašu email adresu.",
+      "action": "Verifikuj email",
+      "footer": "Ako niste tražili verifikaciju, ignorišite ovaj email."
+    },
+    "airsoftInvitation": {
+      "title": "Pozvani ste da se pridružite klubu {clubName}!",
+      "invitation": "Pozivnica",
+      "hello": "Zdravo,",
+      "helloUser": "Zdravo {name},",
+      "message": "Pozvani ste da se pridružite klubu {clubName}. Radujemo se što ćemo vas vidjeti na terenu!",
+      "action": "Prihvati Poziv",
+      "footer": "Ako niste očekivali ovu pozivnicu, molimo vas da zanemarite ovaj email."
+    },
+    "createAccount": {
+      "title": "Pozvani ste na airsoft susret! Kreirajte račun da biste se pridružili.",
+      "invitationTitle": "Pozvani ste na airsoft susret!",
+      "message": "Pozvani ste da se pridružite susretu {eventName} koji će se održati {eventDate}. Da biste potvrdili vaše učešće, potrebno je da kreirate račun na našoj platformi.",
+      "clubMessage": "Vaš račun će automatski biti povezan sa klubom {clubName} i moći ćete odmah pristupiti detaljima susreta.",
+      "action": "Kreiraj Račun",
+      "emailLinked": "Ovaj link je povezan sa email adresom: {email}",
+      "footer": "Ako niste očekivali ovaj poziv, molimo vas da zanemarite ovaj email."
+    },
+    "rateEvent": {
+      "title": "Ocjenite vaše iskustvo na susretu {eventName}!",
+      "heading": "Kako vam je bilo na susretu?",
+      "hello": "Pozdrav,",
+      "helloUser": "Pozdrav {name},",
+      "message": "Hvala vam što ste prisustvovali susretu {eventName} održanom {date}. Vaše mišljenje nam je važno i pomoći će nam da unaprijedimo buduće susrete.",
+      "action": "Ocijeni Susret",
+      "footer": "{clubName} - Hvala vam na vašem učešću!"
+    },
+    "membershipExpiration": {
+      "expiredTitle": "Vaše članstvo u klubu {clubName} je isteklo",
+      "expiringTitle": "Vaše članstvo u klubu {clubName} ističe za {days} dana",
+      "expiredHeading": "Članstvo Isteklo",
+      "expiringHeading": "Članstvo Uskoro Ističe",
+      "hello": "Pozdrav {name},",
+      "expiredMessage": "Vaše članstvo u klubu {clubName} je isteklo dana {date}. Ako želite nastaviti biti član kluba, molimo vas da obnovite članstvo.",
+      "expiringMessage": "Vaše članstvo u klubu {clubName} ističe dana {date} (za {days} dana). Da biste osigurali kontinuirano članstvo, razmislite o obnovi prije datuma isteka.",
+      "action": "Obnovi Članstvo",
+      "footer": "Ako više ne želite biti član kluba {clubName}, možete zanemariti ovaj email."
+    },
+    "membershipExpirationOwner": {
+      "expiredTitle": "Članstvo korisnika {memberName} u klubu {clubName} je isteklo",
+      "expiringTitle": "Članstvo korisnika {memberName} u klubu {clubName} ističe za {days} dana",
+      "expiredHeading": "Članstvo Člana Isteklo",
+      "expiringHeading": "Članstvo Člana Uskoro Ističe",
+      "hello": "Pozdrav {name},",
+      "expiredMessage": "Članstvo korisnika {memberName} u vašem klubu {clubName} je isteklo dana {date}.",
+      "expiringMessage": "Članstvo korisnika {memberName} u vašem klubu {clubName} ističe dana {date} (za {days} dana).",
+      "action": "Upravljaj Članovima",
+      "footer": "Ovo je automatska obavijest koja vam pomaže da upravljate članstvima u klubu."
+    }
+  },
+  "public": {
+    "notFound": {
+      "title": "Izgubili ste se",
+      "message": "Stranica nije pronađena",
+      "backHome": "Vrati se na početnu stranicu",
+      "metadata": {
+        "title": "404 - Stranica nije pronađena - RECONNED",
+        "description": "Stranica nije pronađena"
+      }
+    },
+    "home": {
+      "hero": {
+        "button": "Pogledajte listu izmjena",
+        "title": "Samo Airsoft,<br></br> ali bolje.",
+        "description": "Pridružite se najnaprednijoj airsoft zajednici. Pronađite susrete, povežite se s igračima i unaprijedite svoju igru.",
+        "search": "Pretraži sve",
+        "map": "Prikaži mapu",
+        "about": "Saznaj više",
+        "events": "Susreti",
+        "clubs": "Klubovi",
+        "members": "Igrači",
+        "dashboard": "Aplikacija",
+        "sponsors": "Sponzori"
+      },
+      "upcomingEventsTitle": "Nadolazeći susreti",
+      "upcomingEventsSubtitle": "Vidimo se na terenu",
+      "upcomingEventsNone": "Nema nadolazećih susreta",
+      "eventCard": {
+        "canFreelance": "Dozvoljeni freelanceri",
+        "cannotFreelance": "Samo za članove",
+        "breakfast": "Doručak",
+        "lunch": "Ručak",
+        "dinner": "Večera",
+        "snacks": "Užina",
+        "drinks": "Piće",
+        "prizes": "Nagrade",
+        "privateEvent": "Ovo je privatni susret, ali ste vi u klubu {clubName}.",
+        "starts": "Počinje",
+        "view": "Pogledaj"
+      },
+      "metadata": {
+        "title": "RECONNED - Airsoft klubovi, susreti, i igrači",
+        "description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      }
+    },
+    "sponsors": {
+      "title": "Sponzori i partneri",
+      "description": "Realistično je reći da ovaj sajt ne bi postojao bez angažmana i podrške svih koje možete naći ispod. Hvala.",
+      "currentSponsors": "Naši trenutni sponzori",
+      "contactUs": "Kontaktirajte Nas",
+      "contactDescription": "Želite pomoći ili imate pitanja? Slobodno nas kontaktirajte na",
+      "cta": {
+        "title": "Vi",
+        "description": "Ovo mjesto može biti vaše"
+      },
+      "metadata": {
+        "title": "Sponzori - RECONNED",
+        "description": "Naši trenutni sponzori i partneri. Hvala vam na podršci."
+      }
+    },
+    "about": {
+      "title": "Ko smo mi?",
+      "subtitle": "Ovaj projekt je započet od strane 2 programera iz Bosne i Hercegovine (<omar></omar> i <safet></safet>) jer smo željeli nešto bolje od Facebooka, Vibera, i ostalog. Airsoft zajednice su dosta nove i neorganizovane, i želimo da to promijenimo - totalno transparentno, totalno javno.",
+      "platform": {
+        "title": "O platformi",
+        "description": "Krajnji cilj <logo></logo> platforme je unifikacija airsoft zajednice prvobitno u Bosni i Hercegovini, a i šire. Naša platforma omogućava klubovima da se predstave, organizuju susrete, i pronađu nove članove. Igračima omogućava da pronađu klubove, susrete, i igrače, sve na jednom mjestu."
+      },
+      "sustainability": {
+        "title": "Održivost",
+        "description": "Cilj nije, i nikada neće biti čista zarada. Svaki dio platforme je open-source, a samim tim i dostupan svima. Trenutno kompletno lično finansiramo razvoj platforme, ali ćemo dati klubovima i individuama šansu da pomognu u razvoju i održavanju, uz neke pogodnosti.",
+        "emphasis": "Glavne funkcionalnosti će uvijek biti besplatne za korištenje."
+      },
+      "help": {
+        "title": "Kako pomoći?",
+        "description": "Ako ste zainteresovani za pomoć u razvoju platforme, slobodno nas kontaktirajte. Pomoć u obliku marketinga, programiranja, te općenito sponsorstva je uvijek dobrodošla.",
+        "sponsors": "Pogledajte listu sponzora."
+      },
+      "metadata": {
+        "title": "O nama - RECONNED",
+        "description": "O nama, našoj platformi, i kako možete pomoći. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      }
+    },
+    "auth": {
+      "haveAccountQuestion": "Već imate račun?",
+      "noAccountQuestion": "Nemate račun?",
+      "home": "Početna",
+      "login": "Prijava",
+      "loginDescription": "Upišite svoj email i lozinku kako bi ste se pridružili svijetu airsofta.",
+      "unverified": "Vaš email nije potvrđen. Molimo provjerite vaš inbox.",
+      "verifyEmail": "Potvrdite svoj email",
+      "password": "Lozinka",
+      "forgotPassword": "Zaboravili ste lozinku?",
+      "forgotPasswordNoEmail": "Unesite email kako bi ste dobili link za resetovanje lozinke.",
+      "forgotPasswordWrongEmail": "Email nije ispravan.",
+      "forgotPasswordSuccess": "Link za resetovanje lozinke je poslan na vaš email.",
+      "loading": "Samo momenat...",
+      "invalidData": "Uneseni podaci nisu ispravni.",
+      "invalidDataOrUserExists": "Uneseni podaci nisu ispravni ili korisnik već postoji.",
+      "register": "Registracija",
+      "registerDescription": "Napravite svoj račun i pridružite se airsoft zajednici.",
+      "registerDescriptionTooltipTitle": "Registrirate klub?",
+      "registerDescriptionTooltipDescription": "Ako želite dodati svoj klub, registrirajte se kao vi. Nakon prijave ćete moći dodati klub i biti ćete njegov vlasnik.",
+      "registerSuccess": "Uspješno ste se registrovali. Provjerite vaš email kako bi ste potvrdili račun.",
+      "name": "Ime",
+      "emailAutofilled": "Email je automatski popunjen",
+      "remove": "Ukloni",
+      "resetPassword": "Resetuj lozinku",
+      "resetPasswordDescription": "Upišite novu šifru kako bi ste pristupili svom računu.",
+      "resetPasswordSuccess": "Lozinka uspješno resetovana. Sada se možete prijaviti.",
+      "resetPasswordError": "Došlo je do greške prilikom resetovanja lozinke. Molimo pokušajte ponovo.",
+      "confirmPassword": "Potvrdi lozinku",
+      "twoFactor": "Dvofaktorska autentikacija",
+      "twoFactorDescription": "Upišite kod iz vaše aplikacije ili iskoristite rezervni kod.",
+      "twoFactorError": "Uneseni kod nije ispravan.",
+      "code": "Kod",
+      "verify": "Potvrdi",
+      "rememberDevice": "Zapamti ovaj uređaj",
+      "captchaError": "Problem pri Captcha provjeri",
+      "invalidEmail": "Nevažeći email",
+      "passwordRequired": "Vaša lozinka je obavezna",
+      "passwordTooShort": "Ta lozinka je prekratka",
+      "nameRequired": "Vaše ime je obavezno",
+      "metadata": {
+        "title": "Autentikacija - RECONNED",
+        "description": "Prijava, registracija, i resetovanje lozinke. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      }
+    },
+    "clubs": {
+      "title": "Klubovi",
+      "metadata": {
+        "title": "Airsoft klubovi - RECONNED",
+        "description": "Lista svih airsoft klubova na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      },
+      "member": "član",
+      "members": "članova"
+    },
+    "users": {
+      "title": "Igrači",
+      "metadata": {
+        "title": "Igrači - RECONNED",
+        "description": "Lista svih airsoft igrača na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      }
+    },
+    "events": {
+      "metadata": {
+        "title": "Airsoft susreti - RECONNED",
+        "description": "Lista svih airsoft susreta na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      }
+    },
+    "layout": {
+      "metadata": {
+        "description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
+        "title": "RECONNED - Airsoft klubovi, susreti, i igrači",
+        "keywords": "airsoft Bosna, airsoft BiH, airsoft oružje, airsoft replike, airsoft oprema, airsoft klubovi BiH, airsoft shop BiH, airsoft trgovina, airsoft puške, airsoft pištolji, airsoft metci, airsoft kuglice, airsoft maska, airsoft odjeća, airsoft uniforme, airsoft BiH forum, airsoft susreti BiH, airsoft pravila, airsoft taktike, airsoft igrači BiH, najbolji airsoft BiH, kupovina airsoft BiH, prodaja airsoft BiH, airsoft timovi BiH, airsoft lokacije BiH, airsoft teren BiH"
+      }
+    },
+    "privacy": {
+      "title": "Politika privatnosti",
+      "lastUpdated": "Zadnje ažurirano: {date}",
+      "viewTerms": "Pogledajte naše Uslove korištenja",
+      "introduction": {
+        "title": "Uvod",
+        "description": "RECONNED (\"mi\", \"naš\", ili \"nas\") se obavezuje štititi vašu privatnost. Ova Politika privatnosti objašnjava koje podatke prikupljamo, kako ih koristimo i kako ih štitimo kada koristite našu platformu za airsoft zajednicu."
+      },
+      "dataCollection": {
+        "title": "Podaci koje prikupljamo",
+        "description": "Prikupljamo različite vrste podataka kako bismo vam pružili i unaprijedili našu uslugu. Evo koje podatke prikupljamo:",
+        "personalInfo": "Lični podaci: ime, email adresa, profilna slika, biografija, lokacija, web stranica, broj telefona, callsign, i podešavanja opreme.",
+        "accountInfo": "Informacije o računu: podaci o sesiji (IP adrese, korisnički agenti), podaci o autentikaciji (lozinke, passkeys, dvofaktorska autentikacija).",
+        "clubInfo": "Podaci o klubovima: naziv, lokacija, opis, datum osnivanja, logo, kontakt informacije, pravila, itd.",
+        "eventInfo": "Podaci o susretima: naziv, opis, lokacije, datumi, cijene, pravila, registracije učesnika, itd.",
+        "socialInfo": "Društveni podaci: recenzije, objave, postignuća, i druge interakcije između korisnika.",
+        "usageInfo": "Podaci o korištenju: kako koristite našu platformu, koje stranice posjećujete, i kako komunicirate s našim interfejsom.",
+        "deviceInfo": "Informacije o uređaju: tip uređaja, operativni sistem, verzija pretraživača, i postavke jezika."
+      },
+      "dataUse": {
+        "title": "Kako koristimo vaše podatke",
+        "description": "Koristimo prikupljene podatke za različite svrhe, uključujući:",
+        "provideService": "Da pružimo, održavamo i unapređujemo našu platformu, uključujući povezivanje airsoft klubova, igrača i susreta.",
+        "improveService": "Da analiziramo kako koristite našu platformu i unapredimo korisničko iskustvo.",
+        "communicate": "Da komuniciramo s vama, odgovaramo na vaše upite, i šaljemo obavještenja o našoj usluzi.",
+        "security": "Da zaštitimo naše korisnike i platformu od prevara, zloupotreba i drugih štetnih aktivnosti."
+      },
+      "dataSecurity": {
+        "title": "Sigurnost podataka",
+        "description": "Primjenjujemo sigurnosne mjere za zaštitu vaših ličnih podataka od neovlaštenog pristupa, izmjene, otkrivanja ili uništavanja. Ovo uključuje šifrovanje osjetljivih podataka, sigurne servere i redovne sigurnosne preglede."
+      },
+      "dataSharing": {
+        "title": "Dijeljenje informacija",
+        "description": "Ne prodajemo vaše lične podatke trećim stranama. Međutim, možemo dijeliti podatke u sljedećim situacijama:",
+        "clubMembers": "S drugim članovima kluba (ako ste član kluba, određene informacije mogu biti vidljive drugim članovima).",
+        "eventParticipants": "S učesnicima susreta (ako ste registrovani za susret, određene informacije mogu biti vidljive drugim učesnicima).",
+        "serviceProviders": "S pružaocima usluga koji nam pomažu u radu platforme (npr. hosting).",
+        "legal": "Kada se to zahtijeva zakonom ili u slučaju zaštite naših prava."
+      },
+      "cookies": {
+        "title": "Kolačići i tehnologije praćenja",
+        "description": "Koristimo kolačiće i slične tehnologije praćenja da prikupimo i pohranimo određene podatke kada koristite našu platformu. Ovo nam pomaže da poboljšamo vaše iskustvo, analiziramo korištenje platforme, i prilagodimo sadržaj vašim interesima."
+      },
+      "userRights": {
+        "title": "Vaša prava vezana za podatke",
+        "description": "U zavisnosti od vaše lokacije, možete imati određena prava vezana za vaše lične podatke, uključujući:",
+        "access": "Pravo na pristup podacima koje imamo o vama.",
+        "rectification": "Pravo na ispravku netačnih ili nepotpunih podataka.",
+        "deletion": "Pravo na brisanje vaših podataka u određenim okolnostima.",
+        "restriction": "Pravo na ograničenje obrade vaših podataka.",
+        "objection": "Pravo na prigovor na obradu vaših podataka.",
+        "portability": "Pravo na prenosivost podataka (dobijanje kopije podataka u strukturiranom formatu)."
+      },
+      "thirdPartyServices": {
+        "title": "Usluge trećih strana",
+        "description": "Naša platforma koristi nekoliko usluga trećih strana koje mogu prikupljati podatke o vama. Ove usluge uključuju:",
+        "auth": "Usluge autentikacije (npr. Google prijava) za jednostavno prijavljivanje.",
+        "storage": "Usluge skladištenja za pohranu podataka i medijskih fajlova.",
+        "maps": "Usluge mapiranja za prikaz lokacija klubova i susreta.",
+        "analytics": "Analitičke usluge za praćenje korištenja platforme.",
+        "instagram": "Integracija s Instagramom za klubove koji žele prikazati svoje Instagram objave na profilu kluba."
+      },
+      "childrenPrivacy": {
+        "title": "Privatnost djece",
+        "description": "Naša platforma nije namijenjena za korištenje od strane osoba mlađih od 17 godina. Ne prikupljamo svjesno lične podatke od djece mlađe od 17 godina. Ako otkrijemo da smo prikupili lične podatke od djeteta, preduzet ćemo korake za brisanje tih podataka."
+      },
+      "changes": {
+        "title": "Promjene u politici privatnosti",
+        "description": "Možemo povremeno ažurirati našu Politiku privatnosti. Obavijestit ćemo vas o značajnim promjenama objavom na našoj web stranici ili direktnom komunikacijom. Savjetujemo vam da periodično pregledavate ovu Politiku privatnosti kako biste bili informisani o tome kako štitimo vaše podatke."
+      },
+      "contact": {
+        "title": "Kontaktirajte nas",
+        "description": "Ako imate pitanja o ovoj Politici privatnosti ili o našim praksama vezanim za privatnost, molimo vas da nas kontaktirate putem email adrese: <email></email>."
+      },
+      "metadata": {
+        "title": "Politika privatnosti - RECONNED",
+        "description": "Politika privatnosti platforme RECONNED. Kako štitimo vašu privatnost i koje podatke prikupljamo."
+      }
+    },
+    "terms": {
+      "title": "Uslovi korištenja",
+      "lastUpdated": "Zadnje ažurirano: {date}",
+      "viewPrivacy": "Pogledajte našu Politiku privatnosti",
+      "introduction": {
+        "title": "Uvod",
+        "description": "Dobrodošli na RECONNED, platformu koja povezuje airsoft entuzijaste, klubove i susrete. Korištenjem naše web stranice i usluga, pristajete na poštovanje ovih Uslova korištenja. Molimo vas da ih pažljivo pročitate."
+      },
+      "acceptance": {
+        "title": "Prihvatanje uslova",
+        "description": "Pristupom ili korištenjem RECONNED platforme, pristajete da budete pravno vezani ovim Uslovima korištenja. Ako se ne slažete s bilo kojim dijelom ovih uslova, molimo vas da ne koristite našu platformu."
+      },
+      "eligibility": {
+        "title": "Pravo korištenja",
+        "description": "Da biste koristili našu platformu, morate imati najmanje 17 godina. Korištenjem platforme, potvrđujete da imate najmanje 17 godina i da niste osoba kojoj je zabranjeno primanje naših usluga prema zakonima Bosne i Hercegovine ili drugih primjenjivih jurisdikcija."
+      },
+      "userAccounts": {
+        "title": "Korisnički računi",
+        "description": "Za pristup određenim funkcijama naše platforme, morat ćete stvoriti korisnički račun. Kada to učinite, odgovorni ste za:",
+        "accuracy": "Održavanje tačnosti i ažurnosti vaših informacija.",
+        "security": "Čuvanje sigurnosti vašeg računa i lozinke.",
+        "responsibility": "Sve aktivnosti koje se odvijaju pod vašim računom.",
+        "termination": "Razumijevanje da možemo suspendovati ili zatvoriti vaš račun ako prekršite ove uslove."
+      },
+      "content": {
+        "title": "Korisnički sadržaj i ponašanje",
+        "description": "Naša platforma vam omogućava da objavljujete sadržaj, uključujući tekstove, slike i druge materijale.",
+        "userContent": {
+          "title": "Vaš sadržaj",
+          "description": "Zadržavate vlasništvo nad sadržajem koji objavljujete na platformi, ali nam dajete neekskluzivnu, besplatnu licencu za korištenje, prikazivanje i distribuciju tog sadržaja u vezi s našim uslugama."
+        },
+        "prohibited": {
+          "title": "Zabranjene aktivnosti",
+          "description": "Na RECONNED platformi zabranjeno je sljedeće ponašanje:",
+          "illegal": "Objavljivanje ili promovisanje ilegalnih aktivnosti.",
+          "harmful": "Objavljivanje sadržaja koji je štetan, prijeteći, uvredljiv, ili uznemiravajući.",
+          "impersonation": "Lažno predstavljanje kao drugi korisnik ili entitet.",
+          "spam": "Slanje neželjenih poruka ili spamovanje platforme.",
+          "infringement": "Kršenje autorskih prava ili drugih prava intelektualnog vlasništva."
+        }
+      },
+      "intellectualProperty": {
+        "title": "Intelektualno vlasništvo",
+        "description": "RECONNED i njegov sadržaj, funkcionalnosti i izgled su zaštićeni zakonima o autorskim pravima, zaštitnim znakovima i drugim zakonima o intelektualnom vlasništvu.",
+        "ownership": "Svi zaštitni znakovi, logotipi, nazivi proizvoda i usluga prikazani na platformi su vlasništvo RECONNED-a ili njihovih odgovarajućih vlasnika.",
+        "license": "Dajemo vam ograničenu, neekskluzivnu, neprenosivu licencu za pristup i korištenje platforme za lične, nekomercionalne svrhe.",
+        "feedback": "Ako nam pošaljete povratne informacije ili prijedloge, možemo ih koristiti bez ikakve obaveze prema vama."
+      },
+      "thirdParty": {
+        "title": "Linkovi na treće strane",
+        "description": "Naša platforma može sadržavati linkove na web stranice trećih strana koje nisu u našem vlasništvu niti pod našom kontrolom. Nismo odgovorni za sadržaj, politike privatnosti ili prakse bilo kojih web stranica trećih strana."
+      },
+      "disclaimer": {
+        "title": "Odricanje od odgovornosti",
+        "description": "RECONNED platforma se pruža \"kako jest\" i \"kako je dostupna\", bez bilo kakvih garancija, bilo izričitih ili impliciranih. Ne garantujemo da će platforma uvijek biti dostupna, sigurna, bez grešaka ili da će ispuniti vaše specifične zahtjeve."
+      },
+      "limitation": {
+        "title": "Ograničenje odgovornosti",
+        "description": "U mjeri dopuštenoj zakonom, RECONNED i njegovi osnivači, službenici, direktori, zaposlenici i agenti neće biti odgovorni za bilo kakvu indirektnu, slučajnu, posebnu, posljedičnu ili kaznenu štetu koja proizlazi iz ili je povezana s vašim korištenjem platforme."
+      },
+      "changes": {
+        "title": "Promjene uslova",
+        "description": "Zadržavamo pravo da u bilo kojem trenutku izmijenimo ili zamijenimo ove Uslove korištenja. Ako napravimo materijalne promjene, nastojaćemo vas obavijestiti prije nego što nove odredbe stupe na snagu. Nastavkom korištenja platforme nakon što promjene stupe na snagu, pristajete na ažurirane uslove."
+      },
+      "termination": {
+        "title": "Raskid",
+        "description": "Možemo, po vlastitom nahođenju, modificirati, suspendovati ili ukinuti vaš pristup platformi iz bilo kojeg razloga, uključujući kršenje ovih Uslova korištenja, bez prethodne najave."
+      },
+      "governing": {
+        "title": "Mjerodavno pravo",
+        "description": "Ovi Uslovi korištenja regulisani su i tumačeni u skladu sa zakonima Bosne i Hercegovine, bez obzira na odredbe o sukobu zakona."
+      },
+      "contact": {
+        "title": "Kontaktirajte nas",
+        "description": "Ako imate pitanja o ovim Uslovima korištenja, molimo vas da nas kontaktirate putem email adrese: <email></email>."
+      },
+      "metadata": {
+        "title": "Uslovi korištenja - RECONNED",
+        "description": "Uslovi korištenja platforme RECONNED. Kako koristiti našu platformu i šta očekivati."
+      }
+    },
+    "changelog": {
+      "title": "Promjene",
+      "description": "Lista izmjena na platformi (samo na engleskom)",
+      "latestRelease": "Zadnja verzija",
+      "previousReleases": "Prethodne verzije",
+      "version": "Verzija {version}",
+      "published": "Objavljeno {date}",
+      "back": "Nazad",
+      "errorLoading": "Greška pri učitavanju podataka o verzijama",
+      "viewOnGithub": "Pogledajte na GitHub-u",
+      "metadata": {
+        "title": "Promjene - RECONNED",
+        "description": "Lista izmjena na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      }
+    },
+    "search": {
+      "clubs": "Klubovi",
+      "description": "Pronađi klubove, korisnike i susrete na jednom mjestu",
+      "events": "Susreti",
+      "loading": "Samo momenat...",
+      "noResults": "Nismo našli ništa za tu pretragu",
+      "placeholder": "Nešto...",
+      "private": "Privatno",
+      "public": "Javno",
+      "title": "Pretraga",
+      "users": "Igrači",
+      "member": "član",
+      "members": "članova",
+      "metadata": {
+        "title": "Pretraga za {query} - RECONNED",
+        "description": "Rezultati pretrage za {query}. Pretražujte klubove, igrače i susrete na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+      }
+    },
+    "map": {
+      "metadata": {
+        "title": "Mapa klubova - RECONNED",
+        "description": "Pronađite gdje se nalaze airsoft klubovi. Istražite i pronađite zajednice u vašoj blizini. Prva univerzalna platforma za airsoft klubove, susrete, i igrače."
+      }
+    }
+  },
+  "dashboard": {
+    "root": {
+      "welcome": "Dobrodošli, {name}",
+      "myClubs": "Moji klubovi",
+      "recentEvents": "Nedavni susreti",
+      "statistics": {
+        "events": "Susreti",
+        "clubs": "Klubovi",
+        "writtenReviews": "Napisane recenzije",
+        "receivedReviews": "Primljene recenzije"
+      },
+      "error": "Došlo je do greške",
+      "loading": "Učitavanje...",
+      "nextEvent": "Sljedeći susret",
+      "latestReview": "Najnovija recenzija"
+    },
+    "help": {
+      "title": "Pomoć",
+      "googleMaps": {
+        "title": "Kako dodati Google Maps link na susret",
+        "steps": {
+          "step1": "Otvorite Google Maps i pronađite željenu lokaciju",
+          "step2": "Kliknite na dugme \"Share\" (Podijeli)",
+          "step3": "U dijalogu za dijeljenje, odaberite tab \"Embed a map\" (Ugradi mapu)",
+          "step4": "Kopirajte čitav link",
+          "step5": "Zalijepite kopirani link u polje za Google Maps na formi za kreiranje susreta"
+        }
+      },
+      "deleteClub": {
+        "title": "Kako izbrisati klub",
+        "description": "Da biste izbrisali klub, pratite ove korake:",
+        "steps": {
+          "step1": "U sidebar-u izaberite klub koji želite izbrisati",
+          "step2": "Kliknite na \"Klub\" u meniju",
+          "step3": "Kliknite na \"Informacije\" u podmeniju",
+          "step4": "Na stranici sa informacijama kluba, pronađite i kliknite na \"Obriši klub\" dugme u gornjem desnom uglu"
+        },
+        "notes": "Napomena: Brisanje kluba je trajna akcija i ne može se poništiti. Svi susreti i članstva vezana za klub će također biti izbrisana."
+      }
+    },
+    "user": {
+      "overview": {
+        "alertTitle": "Vaš račun",
+        "alertDescription": "Ovdje možete vidjeti svoj profil",
+        "edit": "Izmjeni profil",
+        "view": "Pogledaj profil"
+      },
+      "invites": {
+        "title": "Pozivnice",
+        "noInvites": "Nemate pozivnica",
+        "approve": "Prihvati",
+        "dismiss": "Odbaci",
+        "viewClub": "Pogledaj klub"
+      },
+      "settings": {
+        "title": "Općento",
+        "imageUploadError": "Došlo je do greške prilikom uploada slike",
+        "profileUpdated": "Podataci o korisniku su spašeni",
+        "profileUpdateError": "Došlo je do greške prilikom spašavanja podataka",
+        "name": "Vaše ime",
+        "callsign": "Callsign/Pozivni znak",
+        "location": "Lokacija",
+        "locationDescription": "Grad ili mjesto gdje se nalazite",
+        "bio": "O vama",
+        "bioDescription": "Ovo je vaša prilika da se istaknete u nekoliko recenica",
+        "public": "Prikazano javno",
+        "private": "Sakriveno",
+        "privateProfile": "Privatni profil",
+        "privateProfileDescription": "Sakrijte profil od javnog pristupa. Preporučujemo da ostavite profil javnim.",
+        "privateStats": "Privatna statistika",
+        "privateStatsDescription": "Samo vi možete vidjeti koliko pregleda ima vaš profil",
+        "profilePhoto": "Profilna slika",
+        "profilePhotoDescription": "Preporučujemo da postavite profilnu sliku.",
+        "fileUpload": "Povucite ili kliknite za upload slike",
+        "fileUploadFormats": "Podržani formati:",
+        "deleteProfilePhoto": {
+          "title": "Jeste li sigurni?",
+          "body": "Da li ste sigurni da želite obrisati profilnu sliku?",
+          "confirm": "Obriši profilnu sliku",
+          "cancel": "Ne, vrati se"
+        },
+        "contact": "Kontakt",
+        "phone": "Broj telefona",
+        "website": "Web stranica",
+        "save": "Spasi promjene",
+        "linkTaken": "Izabrani link je zauzet",
+        "cropPhotoTitle": "Izreži sliku",
+        "cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
+        "cancel": "Otkaži",
+        "bioPlaceholder": "Nešto o meni je to da...",
+        "requiredSection": "Obavezno",
+        "profileDescription": "Osnovne informacije o vama",
+        "additionalInformation": "Dodatne, neobavezne informacije",
+        "optional": "Neobavezno",
+        "contactDescription": "Ovako vas ljudi mogu kontaktirati",
+        "privacySettings": "Privatnost",
+        "privacyDescription": "Pokažite ili sakrijte informacije"
+      },
+      "security": {}
+    },
+    "security": {
+      "passwordChange": {
+        "error": "Došlo je do greške prilikom promjene lozinke. Molimo pokušajte ponovo.",
+        "success": "Lozinka uspješno promjenjena",
+        "title": "Promjeni lozinku",
+        "currentPassword": "Trenutna lozinka",
+        "newPassword": "Nova lozinka",
+        "confirmPassword": "Potvrdi novu lozinku",
+        "changePassword": "Promjeni lozinku",
+        "loading": "Samo momenat..."
+      },
+      "passwordSetup": {
+        "error": "Došlo je do greške prilikom postavljanja lozinke. Molimo pokušajte ponovo.",
+        "success": "Lozinka uspješno postavljena",
+        "title": "Postavi lozinku",
+        "newPassword": "Nova lozinka",
+        "setupPassword": "Postavi lozinku",
+        "loading": "Samo momenat..."
+      },
+      "securitySettings": {
+        "createdAt": "Kreiran {date}",
+        "addNewPasskey": "Dodaj novi Passkey",
+        "addNewPasskeyDescription": "Dodajte novi passkey za brže i sigurnije prijavljivanje na vaš račun.",
+        "add": "Dodaj",
+        "twoFactor": "Dvofaktorska autentikacija",
+        "twoFactorUnavailable": "Dvofaktorska autentikacija nije dostupna",
+        "twoFactorUnavailableDescription": "Da biste koristili 2-faktorsku autentikaciju, morate prvo postaviti lozinku.",
+        "twoFactorDisable": "Onemogući 2-faktorsku autentikaciju",
+        "twoFactorDisableDescription": "Ukoliko isključite 2-faktorsku autentikaciju, bićete u mogućnosti da se prijavite na vaš nalog bez potvrde putem aplikacije.",
+        "disable": "Onemogući",
+        "twoFactorDisablePrompt": {
+          "title": "Onemogućiti 2-faktorsku autentikaciju?",
+          "body": "Da li ste sigurni da želite onemogućiti 2-faktorsku autentikaciju? Ovo će ukloniti sve postavke i podatke vezane za 2-faktorsku autentikaciju.",
+          "confirm": "Onemogući",
+          "cancel": "Ne, vrati se",
+          "invalidPassword": "Unesite ispravnu lozinku"
+        },
+        "backupCodes": "Rezervni kodovi",
+        "download": "Preuzmi",
+        "regenerate": "Regeneriši kodove",
+        "regenerateDescription": "Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na sigurno mjesto.",
+        "regenerateSuccess": "Kodovi uspješno regenerisani",
+        "regenerateError": "Došlo je do greške prilikom regenerisanja kodova",
+        "twoFactorEnable": "Omogući 2-faktorsku autentikaciju",
+        "twoFactorEnableDescription": "Omogućite 2-faktorsku autentikaciju za dodatnu sigurnost vašeg računa.",
+        "twoFactorEnablePrompt": {
+          "title": "Omogućiti 2-faktorsku autentikaciju?",
+          "body": "Da li ste sigurni da želite omogućiti 2-faktorsku autentikaciju? Ako jeste, upišite svoju lozinku.",
+          "confirm": "Omogući",
+          "cancel": "Ne, vrati se"
+        },
+        "twoFactorConfirmPrompt": {
+          "scanQr": "Skenirajte QR kod sa vašom aplikacijom za 2-faktorsku autentikaciju.",
+          "enterCode": "Ako ne možete skenirati QR kod, unesite ovaj kod:",
+          "verifyCode": "Potvrdite 6-cifreni kod koji ste dobili od aplikacije",
+          "invalidCode": "Unesite ispravan 6-cifreni kod",
+          "confirm": "Potvrdi"
+        },
+        "activeSessions": "Aktivne sesije",
+        "activeSessionsDescription": "Ovdje možete vidjeti sve aktivne sesije na vašem računu. Ako primjetite nešto sumnjivo, odjavite se sa svih uređaja.",
+        "logoutAll": "Odjavi se sa svih uređaja, osim ovog",
+        "logoutAllAction": "Odjavi se",
+        "logoutAllSuccess": "Odjavljeni ste sa svih ostalih uređaja",
+        "logoutAllError": "Došlo je do greške prilikom odjavljivanja sa ostalih uređaja.",
+        "logoutSingleSuccess": "Odjavljeni ste sa ovog uređaja",
+        "logoutSingleError": "Došlo je do greške prilikom odjavljivanja sa ovog uređaja.",
+        "currentSession": "Trenutna sesija",
+        "sessionLastUsed": "Posljednji put korištena {date}"
+      }
+    },
+    "events": {
+      "title": "Moji susreti",
+      "search": "Pretraži susrete...",
+      "name": "Naziv",
+      "location": "Lokacija",
+      "dateStart": "Početak",
+      "dateRegistrationsClose": "Zatvaranje prijava",
+      "status": "Status",
+      "clubName": "Klub",
+      "actions": "Akcije"
+    },
+    "addClub": {
+      "addClub": "Dodaj klub",
+      "createClub": "Kreiraj novi klub",
+      "createClubDescription": "Ova opcija je za vas ako želite napraviti novi klub, čiji ćete biti jedini vlasnik.",
+      "joinClub": "Pridruži se klubu",
+      "joinClubDescription": "Vaš klub je već na ovom sajtu? Možete zatražiti pozivnicu, ili prihvatiti već dobijenu.",
+      "requestAccess": "Zatraži pristup klubu",
+      "requestAccessDescription": "Odaberite klub kojem želite pristupiti",
+      "selectClub": "Odaberi klub",
+      "selectClubPlaceholder": "Odaberi klub...",
+      "sendRequest": "Pošalji zahtjev",
+      "requestSent": "Zahtjev uspješno poslan",
+      "requestFailed": "Greška pri slanju zahtjeva",
+      "searchFailed": "Greška pri pretrazi klubova",
+      "searchClubs": "Pretraži klubove...",
+      "enterTwoChars": "Unesite najmanje dva slova",
+      "noClubsFound": "Nema pronađenih klubova",
+      "or": "ili"
+    },
+    "club": {
+      "info": {
+        "photoUploadError": "Došlo je do greške prilikom uploada slike",
+        "clubCreationError": "Došlo je do greške prilikom kreiranja kluba",
+        "clubCreationSuccess": "Klub uspješno kreiran",
+        "clubSaved": "Podaci o klubu su spašeni",
+        "error": "Došlo je do greške",
+        "clubEditTitle": "Mijenjate podatke o klubu",
+        "clubEditDescription": "Promjene će biti vidljive odmah nakon što ih sačuvate.",
+        "clubDelete": {
+          "title": "Jeste li sigurni?",
+          "body": "Ako obrišete klub, nećete ga moći vratiti nazad.",
+          "confirm": "Obriši klub",
+          "cancel": "Ne, vrati se"
+        },
+        "general": "Općenito",
+        "name": "Naziv kluba",
+        "nameDescription": "Naziv kluba će biti prikazan svuda na sajtu, ako je klub javan.",
+        "country": "Država",
+        "countryDescription": "Država u kojoj se klub nalazi",
+        "noResults": "Nema rezultata",
+        "pickCountry": "Odaberite državu",
+        "searchCountry": "Pretraži države...",
+        "city": "Grad",
+        "cityDescription": "Grad u kojem se klub nalazi",
+        "exactLocation": "Tačna lokacija",
+        "exactLocationDescription": "Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <link></link>",
+        "exactLocationLink": "mapi airsoft klubova",
+        "reset": "Resetuj",
+        "description": "Opis",
+        "descriptionDescription": "Opišite svoj klub u nekoliko rečenica",
+        "foundedDate": "Datum osnivanja",
+        "foundedDateDescription": "Kada je klub osnovan?",
+        "chooseDate": "Odaberite datum",
+        "isAllied": "U savezu ASK FBIH",
+        "isAlliedDescription": "Ako ste dio saveza airsoft klubova u FBIH, odaberite ovu opciju. Provjeriti ćemo vaš status.",
+        "private": "Privatni klub",
+        "privateDescription": "Privatni klubovi su vidljivi samo članovima kluba. Javni klubovi su vidljivi svima, te će biti prikazani na mapi. Preporučujemo da ovo ostavite isključeno.",
+        "privateStats": "Privatna statistika",
+        "privateStatsDescription": "Samo članovi kluba mogu vidjeti koliko pregleda ima klub",
+        "logo": "Logo",
+        "logoDescription": "Dodajte logo kluba. Preporučujemo da koristite kvadratnu sliku sa providnom pozadinom.",
+        "fileUpload": "Povucite ili kliknite za upload slike",
+        "fileUploadFormats": "Podržani formati:",
+        "logoDelete": {
+          "title": "Jeste li sigurni?",
+          "body": "Da li ste sigurni da želite obrisati logo kluba?",
+          "confirm": "Obriši logo",
+          "cancel": "Ne, vrati se"
+        },
+        "contact": "Kontakt",
+        "phone": "Broj telefona",
+        "phoneDescription": "Broj telefona kluba, javno prikazan na profilu.",
+        "emailDescription": "Email adresa kluba, javno prikazana na profilu.",
+        "save": "Spasi promjene",
+        "website": "Web stranica",
+        "create": "Kreiraj klub",
+        "socialMedia": "Društvene mreže",
+        "instagramConnection": "Instagram povezivanje",
+        "instagramDescription": "Povežite svoj Instagram račun da biste prikazali fotografije kluba na profilu kluba.",
+        "instagramConnect": "Poveži Instagram",
+        "instagramConnecting": "Povezivanje...",
+        "instagramConnectSuccess": "Instagram račun je uspješno povezan",
+        "instagramConnectError": "Došlo je do greške prilikom povezivanja Instagram računa",
+        "instagramConnectedMessage": "Vaš klub je povezan sa Instagram računom",
+        "instagramDisconnecting": "Odspajanje...",
+        "instagramDisconnectSuccess": "Instagram račun je uspješno odspojen",
+        "instagramDisconnectError": "Došlo je do greške prilikom odspajanja Instagram računa",
+        "instagramDisconnect": {
+          "title": "Odspojitvanje Instagram računa",
+          "body": "Da li ste sigurni da želite odspojiti Instagram račun? Nakon odspajanja, fotografije se više neće prikazivati na profilu kluba.",
+          "action": "Odspoji Instagram",
+          "confirm": "Da, odspoji",
+          "cancel": "Ne, vrati se"
+        },
+        "instagramRedirecting": "Preusmjeravanje na Instagram za autorizaciju...",
+        "instagramSelectPageTitle": "Odaberite Facebook stranicu",
+        "instagramSelectPageDescription": "Odaberite Facebook stranicu koja je povezana s Instagram Business računom koji želite povezati s vašim klubom.",
+        "instagramNoPages": "Nije pronađena niti jedna Facebook stranica",
+        "instagramNoPageDescription": "Nisu pronađene Facebook stranice povezane s vašim računom. Prvo kreirajte Facebook stranicu i povežite je s Instagram Business računom.",
+        "instagramConnected": "Instagram povezan",
+        "instagramNotConnected": "Instagram nije povezan",
+        "instagramLoadingPages": "Učitavanje stranica...",
+        "backToClub": "Natrag na klub",
+        "instagramSelectPage": "Molimo odaberite stranicu",
+        "instagramEligible": "Dostupno",
+        "instagramIneligible": "Nije dostupno",
+        "instagramIneligibleTooltip": "Ova Facebook stranica nije povezana sa Instagram Business računom. Za povezivanje, prvo povežite Instagram Business račun s ovom Facebook stranicom.",
+        "instagramSessionMissing": "Nedostaje sesija za odabir stranice",
+        "instagramPagesFetchFailed": "Neuspješno učitavanje Facebook stranica",
+        "instagramSelectedPageNotFound": "Odabrana stranica nije pronađena",
+        "instagramConnectionFailed": "Neuspjelo povezivanje Instagram računa",
+        "instagramNoEligiblePages": "Nijedna od vaših Facebook stranica nije povezana sa Instagram Business računom. Prvo povežite Instagram Business račun s vašom Facebook stranicom.",
+        "instagramError": {
+          "title": "Problem s povezivanjem Instagram računa",
+          "connectionFailed": "Problem prilikom povezivanja sa Instagram računom. Molimo pokušajte ponovo.",
+          "noFacebookPages": "Nismo pronašli nijedan Facebook Page povezan sa vašim računom.",
+          "noInstagramAccount": "Nismo pronašli Instagram Business račun povezan sa odabranom Facebook stranicom.",
+          "notConnected": "Instagram račun nije povezan sa vašim Facebook stranicom.",
+          "missingParams": "Nedostaju parametri za povezivanje sa Instagram API-jem.",
+          "authFailed": "Autorizacija nije uspjela. Molimo pokušajte ponovo.",
+          "pageNotFound": "Facebook Page nije pronađena.",
+          "personalAccount": "Instagram račun povezan sa odabranom Facebook stranicom nije Business račun. Potrebno je koristiti Instagram Business račun za povezivanje."
+        },
+        "cancel": "Odustani",
+        "descriptionPlaceholder": "Ovo je kul opis"
+      },
+      "posts": {
+        "successEdited": "Objava uspješno izmjenjena",
+        "successCreated": "Objava uspješno kreirana",
+        "error": "Došlo je do greške",
+        "delete": {
+          "title": "Jeste li sigurni?",
+          "body": "Ako obrišete objavu, nećete je moći vratiti nazad.",
+          "confirm": "Obriši objavu",
+          "cancel": "Ne, vrati se",
+          "success": "Objava uspješno obrisana",
+          "error": "Došlo je do greške prilikom brisanja objave"
+        },
+        "editing": "Izmjena objave",
+        "creating": "Nova objava",
+        "title": "Naslov",
+        "content": "Sadržaj",
+        "public": "Javna objava",
+        "saveNewPost": "Spasi objavu",
+        "saveEditPost": "Spasi izmjene"
+      },
+      "spending": {
+        "title": "Troškovi",
+        "newItem": "Nova stavka",
+        "edit": "Izmjena",
+        "details": {
+          "title": "Naslov",
+          "description": "Opis",
+          "amount": "Iznos (KM)",
+          "receipts": "Računi",
+          "receiptsLimit": "Dostigli ste limit",
+          "receiptsMaxCount": "Maksimalno 3 računa po stavci",
+          "receiptUploadInfo": "Kliknite da dodate fajl ili ga samo prevucite ovdje",
+          "receiptFormats": "Podržani formati: JPG, JPEG, PNG, PDF",
+          "actions": "Akcije"
+        },
+        "receipt": {
+          "title": "Račun",
+          "pdfDocument": "PDF Dokument",
+          "download": "Preuzmi"
+        },
+        "date": "Datum",
+        "save": "Spasi",
+        "saving": "Spašavanje...",
+        "saveChanges": "Spasi izmjene",
+        "uploadingFiles": "Otpremanje fajlova",
+        "error": "Greška prilikom spašavanja podataka o trošku",
+        "errorDelete": "Greška prilikom brisanja stavke troška",
+        "errorReceipt": "Greška prilikom otpremanja računa",
+        "success": "Trošak uspješno dodan",
+        "successEdit": "Trošak uspješno izmjenjen",
+        "successDelete": "Trošak uspješno obrisan",
+        "deleteConfirm": {
+          "title": "Brisanje stavke troška",
+          "body": "Da li ste sigurni da želite obrisati ovu stavku troška? Ova akcija se ne može poništiti.",
+          "action": "Obriši",
+          "cancel": "Otkaži"
+        },
+        "deleteReceiptConfirm": {
+          "title": "Jeste li sigurni?",
+          "body": "Ako obrišete ovaj račun, nećete ga moći vratiti.",
+          "action": "Obriši račun",
+          "cancel": "Ne, vrati se"
+        },
+        "search": "Pretraži troškove...",
+        "delete": "Obriši"
+      },
+      "stats": {
+        "members": "Broj članova",
+        "registrations": "Broj prijava",
+        "roles": "Uloge",
+        "events": "Susreti po mjesecima",
+        "numberOfEvents": "Broj susreta",
+        "numberOfRegistrations": "Broj prijava",
+        "userGrowth": "Rast članova",
+        "roleDistribution": "Distribucija uloga",
+        "member": "Član",
+        "manager": "Menadžer",
+        "owner": "Vlasnik"
+      },
+      "audit": {
+        "pageTitle": "Zapis akcija",
+        "pageDescription": "Pregled svih akcija izvršenih u ovom klubu.",
+        "search": "Pretraži zapis...",
+        "filterByAction": "Filtriraj po akciji",
+        "allActions": "Sve akcije",
+        "detailsTitle": "Detalji zapisa",
+        "viewDetails": "Pogledaj detalje",
+        "actionType": "Tip akcije",
+        "userInfo": "Korisnik",
+        "ipAddress": "IP adresa",
+        "userAgent": "Korisnički agent",
+        "actionData": "Podaci akcije",
+        "columns": {
+          "date": "Datum",
+          "action": "Akcija",
+          "user": "Korisnik",
+          "ipAddress": "IP adresa",
+          "actions": "Akcije"
+        },
+        "actionTypes": {
+          "clubCreate": "Kreiranje kluba",
+          "clubUpdate": "Ažuriranje kluba",
+          "clubDelete": "Brisanje kluba",
+          "memberInvite": "Poziv člana",
+          "memberRemove": "Uklanjanje člana",
+          "memberPromote": "Unapređenje člana",
+          "memberDemote": "Democija člana",
+          "memberJoin": "Pridruživanje člana",
+          "memberLeave": "Napuštanje klana",
+          "clubBan": "Zabrana kluba",
+          "clubUnban": "Ukidanje zabrane",
+          "spendingCreate": "Dodavanje troška",
+          "spendingUpdate": "Ažuriranje troška",
+          "spendingDelete": "Brisanje troška",
+          "postCreate": "Kreiranje objave",
+          "postUpdate": "Ažuriranje objave",
+          "postDelete": "Brisanje objave",
+          "instagramConnect": "Povezivanje Instagrama",
+          "instagramDisconnect": "Odspajanje Instagrama",
+          "eventCreate": "Kreiranje susreta",
+          "eventUpdate": "Ažuriranje susreta",
+          "eventDelete": "Brisanje susreta",
+          "clubRuleUpdate": "Ažuriranje pravila kluba",
+          "clubRuleCreate": "Kreiranje pravila kluba",
+          "clubRuleDelete": "Brisanje pravila kluba",
+          "membershipExtension": "Produženje članstva"
+        }
+      },
+      "events": {
+        "search": "Pretraži susrete...",
+        "name": "Naziv",
+        "location": "Lokacija",
+        "dateStart": "Početak",
+        "dateRegistrationsClose": "Zatvaranje prijava",
+        "type": "Tip",
+        "private": "Privatni",
+        "public": "Javni",
+        "registrations": "Prijave",
+        "actions": "Akcije",
+        "attendence": "Prisustvo",
+        "edit": "Izmjeni",
+        "view": "Pogledaj",
+        "event": "Susret",
+        "attendenceTracking": {
+          "search": "Pretraži učesnike...",
+          "error": "Došlo je do greške prilikom spašavanja prisustva",
+          "others": "+ {count} drugih",
+          "registered": "Prijavljeni",
+          "attending": "Prisutni",
+          "registrationNotClosed": "Prijave su idalje otvorene",
+          "eventEnded": "Susret je završen",
+          "backToEvent": "Nazad na susret",
+          "unavailable": "Ova funkcionalnost nije dostupna"
+        },
+        "create": {
+          "registrationsOpenIn": "Registracije se otvaraju za <number></number> dan/a",
+          "registrationsOpen": "Registracije su otvorene",
+          "registrationsClosed": "Registracije su zatvorene",
+          "eventStartsIn": ", susret počinje za <number></number> dan/a",
+          "eventStarted": ", susret je već počeo",
+          "eventDuration": ", traje <number></number> sati/a.",
+          "error": "Došlo je do greške prilikom spašavanja podataka",
+          "photoUploadError": "Došlo je do greške prilikom uploada slike",
+          "success": "Podataci o susretu su sačuvani",
+          "editingTitle": "Izmjena susreta",
+          "editingDescription": "Ovaj susret je već kreiran, trenutno ga uređujete.",
+          "delete": {
+            "title": "Jeste li sigurni?",
+            "body": "Ako obrišete susret, nećete ga moći vratiti nazad.",
+            "confirm": "Obriši susret",
+            "cancel": "Ne, vrati se"
+          },
+          "view": "Pogledaj susret",
+          "general": "Općenito",
+          "name": "Naziv susreta",
+          "nameDescription": "Naziv susreta će biti prikazan svuda na sajtu",
+          "description": "Opis",
+          "descriptionDescription": "Opis susreta. Ovo može biti priča, briefing, ili bilo šta što ne spada u druge kategorije.",
+          "descriptionPlaceholder": "Ponesite pribor za jelo...",
+          "photo": "Slika",
+          "photoDescription": "Dodajte sliku susreta. Preporučujemo da koristite sliku sa 16:9 odnosom stranica.",
+          "fileUpload": "Povucite ili kliknite za upload slike",
+          "fileUploadFormats": "Podržani formati:",
+          "deletePhoto": {
+            "title": "Jeste li sigurni?",
+            "body": "Da li ste sigurni da želite obrisati sliku susreta?",
+            "confirm": "Obriši sliku",
+            "cancel": "Ne, vrati se"
+          },
+          "price": "Kotizacija/cijena",
+          "priceDescription": "Koliko košta učešće na susretu? Ako je besplatno, stavite 0.",
+          "time": "Vrijeme",
+          "start": "Početak",
+          "startDescription": "Kada susret počinje?",
+          "end": "Kraj",
+          "endDescription": "Kada susret završava?",
+          "registrationStart": "Početak prijava",
+          "registrationStartDescription": "Kada se otvaraju prijave za susret?",
+          "registrationEnd": "Kraj prijava",
+          "registrationEndDescription": "Kada se zatvaraju prijave za susret?",
+          "selectDate": "Odaberite datum",
+          "visibility": "Vidljivost",
+          "private": "Privatni",
+          "privateDescription": "Privatni susreti su vidljivi samo članovima kluba.",
+          "freelancers": "Freelanceri dozvoljeni",
+          "freelancersDescription": "Da li dozvoljavate igračima koji nisu članovi nekog kluba da se prijave na susret?",
+          "organization": "Organizacija",
+          "breakfast": "Doručak",
+          "lunch": "Ručak",
+          "dinner": "Večera",
+          "snacks": "Užina",
+          "drinks": "Piće",
+          "prizes": "Nagrade",
+          "location": "Lokacija",
+          "locationDescription": "Gdje se susret održava?",
+          "googleMapsDescription": "Možete dodati Google Maps embed link. Ta će se mapa moći prikazati na stranici vašeg susreta.",
+          "googleMapsLink": "Gdje to naći?",
+          "rules": "Pravila",
+          "rulesDescription": "Odaberite pravila koja će važiti za ovaj susret.",
+          "noRules": "Ovaj klub nema pravila.",
+          "createRule": "Dodaj pravila",
+          "changedToday": "Promijenjeno danas",
+          "changedAgo": "Promijenjeno prije {time} dan/a",
+          "noDescription": "Nema opisa",
+          "map": "Mapa",
+          "save": "Spasi promjene",
+          "create": "Kreiraj susret",
+          "eventDates": "Datumi susreta",
+          "advancedSettings": "Napredne postavke",
+          "basicInformationDescription": "Osnovne informacije koje su nam potrebne za kreiranje vašeg susreta",
+          "mapDescription": "Ovdje možete urediti mapu vaše igre. Dodajte tačke od interesa, prepreke, i druge važne detalje.",
+          "mapEditor": "Editor mape",
+          "registrationPeriod": "Period registracije",
+          "requiredSection": "Obavezno",
+          "additionalInformation": "Dodatne informacije",
+          "optional": "Nije obavezno",
+          "partiallyRequired": "Parcijalno-obavezno",
+          "additionalLocationInfo": "Dodatne informacije o lokaciji",
+          "reset": "Resetuj"
+        },
+        "allEvents": "Svi susreti",
+        "createEvent": "Kreirajte susret",
+        "rules": {
+          "rule": {
+            "cancel": "Odustani",
+            "content": "Sadržaj",
+            "create": "Novi pravilnik",
+            "created": "Pravilnik je stvoren",
+            "delete": {
+              "action": "Izbriši",
+              "body": "Jeste li sigurni da želite izbrisati ovaj pravilnik?",
+              "cancel": "Odustani",
+              "success": "Pravilnik je izbrisan",
+              "title": "Izbriši pravilnik"
+            },
+            "description": "Opis (neobavezno)",
+            "descriptionPlaceholder": "Ovaj se pravilnik koristi samo za ...",
+            "error": "Došlo je do problema prilikom spašavanja tog pravilnika.",
+            "name": "Naziv pravilnika",
+            "namePlaceholder": "Moj pravilnik",
+            "noDescription": "Ovaj pravilnik nema opis",
+            "save": "Spremi pravilnik",
+            "updated": "Pravilnik je ažuriran."
+          },
+          "rules": {
+            "empty": "Nemate pravilnika.",
+            "title": "Postojeći pravilnici"
+          }
+        }
+      },
+      "members": {
+        "allMembers": "Svi članovi",
+        "membersTable": {
+          "remove": {
+            "title": "Jeste li sigurni?",
+            "body": "Da li ste sigurni da želite ukloniti {name} iz kluba?",
+            "confirm": "Ukloni",
+            "cancel": "Ne, vrati se",
+            "success": "Član uspješno uklonjen",
+            "error": "Došlo je do greške prilikom uklanjanja člana"
+          },
+          "searchPlaceholder": "Pretraži članove...",
+          "name": "Ime",
+          "callsign": "Callsign",
+          "role": "Uloga",
+          "allRoles": "Sve uloge",
+          "owner": "Vlasnik",
+          "manager": "Menadžer",
+          "member": "Član",
+          "joinedDate": "Datum pridruživanja",
+          "actions": "Akcije",
+          "profile": "Profil",
+          "removeMember": "Ukloni",
+          "membershipStatus": {
+            "title": "Status",
+            "unlimited": "Neograničeno",
+            "expired": "Isteklo",
+            "expiringSoon": "Uskoro ističe",
+            "active": "Aktivno"
+          },
+          "startDate": "Datum pridruživanja",
+          "endDate": "Datum isteka",
+          "notSet": "Nije postavljeno",
+          "unlimited": "Neograničeno",
+          "extendMembership": "Produži"
+        },
+        "invitations": {
+          "table": {
+            "revoke": {
+              "title": "Jeste li sigurni?",
+              "body": "Da li ste sigurni da želite povući pozivnicu za pristup klubu?",
+              "confirm": "Povuci",
+              "cancel": "Ne, vrati se",
+              "success": "Pozivnica uspješno povučena",
+              "error": "Došlo je do greške prilikom povlačenja pozivnice"
+            },
+            "searchPlaceholder": "Pretraži pozivnice...",
+            "user": "Korisnik",
+            "status": "Status",
+            "pending": "Na čekanju",
+            "accepted": "Prihvaćeno",
+            "rejected": "Odbijeno",
+            "expired": "Isteklo",
+            "revoked": "Povučeno",
+            "requested": "Zahtjev",
+            "created": "Datum slanja",
+            "expires": "Ističe",
+            "code": "Kod",
+            "actions": "Akcije",
+            "inactive": "Neaktivno",
+            "all": "Svi statusi"
+          },
+          "approve": "Prihvati",
+          "dismiss": "Odbaci",
+          "searchError": "Neuspjela pretraga korisnika. Molimo pokušajte ponovo.",
+          "send": "Pošalji pozivnicu",
+          "sendError": "Došlo je do greške prilikom slanja pozivnice. Molimo pokušajte ponovo.",
+          "sendSuccess": "Pozivnica uspješno poslana",
+          "title": "Pozovi korisnika u klub",
+          "description": "Pozivnice će isteći nakon 7 dana, a biti će obrisane nakon 3 mjeseca.",
+          "user": "Korisnik",
+          "searchPlaceholder": "Pretraži korisnike...",
+          "minimumChars": "Unesite najmanje 2 slova",
+          "noResults": "Nema rezultata",
+          "chooseUserDescription": "Ako je korisnik već na platformi, možete ga pronaći ovdje.",
+          "emailDescription": "Ako ne možete pronaći korisnika, ili već znate njihov email, unesite ga ovdje."
+        },
+        "managers": {
+          "promote": {
+            "error": "Došlo je do problema prilikom promocije tog korisnika, pokušajte ponovo.",
+            "member": {
+              "description": "Odaberite člana kojeg želite da bude menadžer.",
+              "label": "Član kluba",
+              "noResults": "Nismo mogli da nađemo nikoga",
+              "placeholder": "Odaberite člana ...",
+              "search": "Članovi pretraživanja ...",
+              "searchEmpty": "Unesite najmanje 2 znaka"
+            },
+            "submit": "Dodaj",
+            "success": "Uspješno promoviran u menadžer",
+            "title": "Dodajte novog menadžera"
+          },
+          "search": {
+            "error": "Došlo je do problema sa pretraživanjem, pokušajte ponovo."
+          },
+          "title": "Menadžeri"
+        }
+      }
+    }
+  },
+  "components": {
+    "sidebar": {
+      "betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",
+      "githubMessage": "Sada smo open-source! Kliknite i pomozite nam da postanemo bolji!",
+      "home": "Početna",
+      "dashboard": "Aplikacija",
+      "help": "Pomoć",
+      "user": "Korisnik",
+      "overview": "Pregled",
+      "settings": "Postavke",
+      "security": "Sigurnost",
+      "myEvents": "Moji susreti",
+      "club": "Klub",
+      "clubs": "Klubovi",
+      "selectClub": "Odaberite klub",
+      "addClub": "Dodaj klub",
+      "myClub": "Moj klub",
+      "manager": "Menadžer",
+      "member": "Član",
+      "info": "Informacije",
+      "stats": "Statistike",
+      "spending": "Troškovi",
+      "newPost": "Nova objava",
+      "members": "Članovi",
+      "invitations": "Pozivnice",
+      "managers": "Menadžeri",
+      "events": "Susreti",
+      "newEvent": "Novi susret",
+      "calendar": "Kalendar",
+      "rules": "Pravila",
+      "admin": "Administracija",
+      "users": "Korisnici",
+      "emails": "Emailovi",
+      "personalization": "Personalizacija",
+      "logout": "Odjava",
+      "pendingInvitesMessage": "Imate {count} neodgovoren/ih pozivnicu/a",
+      "inviteRequestsMessage": "Klub ima {count} neodgovoren/ih zahtjev/a za pristup",
+      "invites": "Pozivnice",
+      "searchPlaceholder": "Pretraži...",
+      "noResults": "Nema rezultata.",
+      "navigation": "Navigacija",
+      "account": "Račun",
+      "profile": "Profil",
+      "userSettings": "Postavke korisnika",
+      "shiftHint": "Možete koristiti shift + strelice gore i dolje za mijenjanje klubova.",
+      "auditLogs": "Zapis",
+      "createClub": "Dodaj klub"
+    },
+    "footer": {
+      "about": {
+        "title": "O nama",
+        "description": "RECONNED je nova platforma za airsoft entuzijaste. Otkrijte klubove, susrete, i igrače, širom svijeta. Vodite svoj klub, organizujte susrete, i pronađite nove prilike."
+      },
+      "quickLinks": {
+        "title": "Brzi linkovi",
+        "events": "Susreti",
+        "dashboard": "Aplikacija",
+        "map": "Mapa",
+        "search": "Pretraga",
+        "about": "O nama",
+        "stats": "Statistike"
+      },
+      "community": {
+        "title": "Zajednica"
+      },
+      "support": {
+        "title": "Podrška",
+        "contact": "Kontakt",
+        "faq": "Česta pitanja",
+        "privacy": "Privatnost",
+        "terms": "Uslovi korištenja",
+        "changelog": "Izmjene"
+      },
+      "copyright": "© {year} RECONNED. Sva prava zadržana.",
+      "sponsors": "Pogledajte naše sponzore i partnere",
+      "version": "Verzija {commit}"
+    },
+    "table": {
+      "showColumns": "Prikaži kolone",
+      "noData": "Nema pronađenih podataka",
+      "navigation": {
+        "page": "Stranica {page} od {total}",
+        "previous": "Nazad",
+        "next": "Naprijed",
+        "perPage": "po stranici"
+      },
+      "filters": {
+        "clear": "Ukloni"
+      },
+      "actions": "Akcije"
+    },
+    "header": {
+      "backToHome": "Nazad na početnu",
+      "dashboard": "Aplikacija",
+      "login": "Prijava",
+      "logout": "Odjava",
+      "personalization": "Personalizacija"
+    },
+    "themeSwitcher": {
+      "toggle": "Promijeni temu"
+    },
+    "fontSwitcher": {
+      "toggle": "Promijeni font"
+    },
+    "languageSwitcher": {
+      "select": "Odaberite jezik"
+    },
+    "clubsMap": {
+      "viewProfile": "Pogledaj profil"
+    },
+    "calendar": {
+      "today": "Danas",
+      "alreadyToday": "Već je danas",
+      "goToToday": "Idi na trenutni mjesec",
+      "days": {
+        "mon": "Pon",
+        "tue": "Uto",
+        "wed": "Sri",
+        "thu": "Čet",
+        "fri": "Pet",
+        "sat": "Sub",
+        "sun": "Ned"
+      },
+      "months": {
+        "jan": "Januar",
+        "feb": "Februar",
+        "mar": "Mart",
+        "apr": "April",
+        "may": "Maj",
+        "jun": "Juni",
+        "jul": "Juli",
+        "aug": "August",
+        "sep": "Septembar",
+        "oct": "Oktobar",
+        "nov": "Novembar",
+        "dec": "Decembar"
+      },
+      "eventDetails": {
+        "start": "Početak",
+        "end": "Kraj",
+        "location": "Lokacija",
+        "cost": "Cijena",
+        "apply": "Prijavi se",
+        "registrationsClosed": "Prijave za ovaj susret trenutno nisu otvorene"
+      }
+    },
+    "error": {
+      "backToHome": "Povratak na početnu stranicu"
+    },
+    "addToCalendar": {
+      "addToCalendar": "Dodaj u kalendar",
+      "features": {
+        "breakfast": "Doručak",
+        "lunch": "Ručak",
+        "dinner": "Večera",
+        "snacks": "Užina",
+        "drinks": "Piće",
+        "prizes": "Nagrade"
+      },
+      "sections": {
+        "other": "Ostalo",
+        "rules": "Pravila",
+        "gear": "Oprema",
+        "private": "Ovo je privatni susret samo za članove kluba.",
+        "freelancers": "Freelanceri su dobrodošli da se registruju za ovaj susret."
+      }
+    },
+    "badge": {
+      "soon": "Uskoro",
+      "new": "Novo"
+    },
+    "slug": {
+      "label": "Specijalni link",
+      "slugPlaceholder": "moj-link",
+      "description": "Kratki link koji ćete moći podjeliti.",
+      "placeholder": "moj-link",
+      "available": "Link je dostupan.",
+      "taken": "Link je nedostupan!",
+      "errors": {
+        "notAuthenticated": "Niste prijavljeni",
+        "unknownType": "Nepoznat tip"
+      }
+    },
+    "userOverview": {
+      "views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
+      "freelancer": "Slobodni igrač",
+      "tabs": {
+        "memberships": "Članstva",
+        "events": "Susreti",
+        "reviews": "Recenzije"
+      },
+      "clubs": {
+        "title": "Klubovi",
+        "noClubs": "Korisnik nije član nijednog kluba"
+      },
+      "upcomingEvents": {
+        "title": "Nadolazeći susreti",
+        "noEvents": "Nema nadolazećih susreta"
+      },
+      "pastEvents": {
+        "title": "Prošli susreti",
+        "noEvents": "Nema prošlih susreta"
+      },
+      "attended": "Prisustvovao"
+    },
+    "reviews": {
+      "title": "Ocjene",
+      "latestReviews": "Najnovije ocjene",
+      "noReviews": "Nema ocjena",
+      "showAll": "Prikaži sve ocjene",
+      "allReviews": "Sve ocjene za {type}",
+      "types": {
+        "club": "klub",
+        "event": "susret",
+        "user": "korisnik"
+      }
+    },
+    "post": {
+      "published": "Objavljeno {date}",
+      "readMore": "Pročitaj više",
+      "showLess": "Prikaži manje"
+    },
+    "eventOverview": {
+      "editEvent": "Izmjeni susret",
+      "apply": "Prijava",
+      "registrationsClosed": "Prijave zatvorene",
+      "registeredCount": "{count} prijavljenih",
+      "privateEvent": "Privatni susret",
+      "publicEvent": "Javni susret",
+      "views": "{count} pregled/a",
+      "location": "Lokacija",
+      "showLocation": "Prikaži lokaciju",
+      "map": "Mapa",
+      "showEventMap": "Prikaži mapu susreta"
+    },
+    "clubOverview": {
+      "views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
+      "map": "Mapa",
+      "edit": "Uredi",
+      "private": "Privatni klub",
+      "public": "Javni klub",
+      "allied": "Saveznički klub",
+      "instagramGallery": "Instagram galerija",
+      "instagramGalleryDescription": "Najnovije objave sa Instagrama",
+      "tabs": {
+        "posts": "Objave",
+        "members": "Članovi",
+        "reviews": "Recenzije"
+      },
+      "posts": "Objave kluba",
+      "createPost": "Nova objava",
+      "noPosts": "Nema objava",
+      "members": "Članovi",
+      "noMembers": "Ovaj klub trenutno nema članova"
+    },
+    "leaveClubButton": {
+      "title": "Napuštanje kluba",
+      "body": "Jeste li sigurni da želite napustiti ovaj klub? \nTrebat će vam pozivnica da se ponovo pridružite.",
+      "confirm": "Napusti klub",
+      "cancel": "Ne, vrati se",
+      "error": "Došlo je do greške prilikom napuštanja kluba",
+      "action": "Napusti klub",
+      "ownerError": "Vlasnik kluba ne može napustiti klub. Morate prvo prenijeti vlasništvo ili obrisati klub."
+    },
+    "breadcrumbs": {
+      "currentClub": "Trenutni klub",
+      "currentEvent": "Trenutni susret",
+      "translations": {
+        "dashboard": "Aplikacija",
+        "club": "Klub",
+        "clubs": "Klubovi",
+        "events": "Susreti",
+        "information": "Informacije",
+        "create": "Kreiraj",
+        "stats": "Statistike",
+        "members": "Članovi",
+        "settings": "Postavke",
+        "calendar": "Kalendar",
+        "invitations": "Pozivnice",
+        "security": "Sigurnost",
+        "user": "Korisnik",
+        "help": "Pomoć",
+        "managers": "Menadžeri",
+        "rules": "Pravila",
+        "attendance": "Prisustvo",
+        "admin": "Administracija",
+        "emails": "Emailovi",
+        "posts": "Nova objava",
+        "spending": "Potrošnja",
+        "add-club": "Dodaj klub",
+        "invites": "Pozivnice",
+        "users": "Korisnici",
+        "instagram": "Instagram",
+        "audit": "Zapis"
+      }
+    },
+    "icons": {
+      "clubOwner": "Vlasnik kluba",
+      "clubManager": "Menadžer kluba",
+      "administrator": "Administrator",
+      "verifiedClub": "Verificiran klub"
+    },
+    "membershipExtension": {
+      "extendMembership": "Produži",
+      "extendMembershipTitle": "Produži članstvo",
+      "extendMembershipDescription": "Produžite članstvo za korisnika {user}",
+      "currentStatus": "Trenutni status",
+      "startDate": "Datum početka",
+      "endDate": "Datum isteka",
+      "extensionDuration": "Trajanje produženja",
+      "selectDuration": "Odaberite trajanje",
+      "oneMonth": "1 mjesec",
+      "threeMonths": "3 mjeseca",
+      "sixMonths": "6 mjeseci",
+      "oneYear": "1 godina",
+      "cancel": "Otkaži",
+      "extend": "Produži",
+      "extending": "Produžavanje...",
+      "success": "Članstvo uspješno produženo",
+      "error": "Greška",
+      "failedToExtend": "Došlo je do greške prilikom produženja članstva",
+      "active": "Aktivno",
+      "expired": "Isteklo",
+      "expiringSoon": "Istječe uskoro",
+      "unlimited": "Bez kraja"
+    },
+    "instagramGallery": {
+      "noPhotos": "Nema fotografija za prikaz",
+      "viewMore": "Pogledaj više na Instagramu",
+      "error": "Greška pri učitavanju fotografija"
+    }
+  },
+  "imgur": {
+    "error": {
+      "overCapacity": "Imgur je trenutno preopterećen. Molimo pokušajte ponovo kasnije.",
+      "rateLimit": "Previše pokušaja. Molimo sačekajte nekoliko minuta.",
+      "generic": "Greška pri otpremanju slike."
+    }
+  }
 }

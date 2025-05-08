@@ -8,11 +8,14 @@ import { useRouter } from "@/i18n/navigation";
 import { LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ButtonProps } from "@/components/ui/button";
+import type { ReactNode } from "react";
 
 interface LeaveClubButtonProps extends Omit<ButtonProps, "onClick"> {
 	clubId: string;
 	isClubOwner?: boolean;
 	size?: "default" | "sm" | "lg" | "icon";
+	renderAsMenuItem?: boolean;
+	icon?: ReactNode;
 }
 
 export function LeaveClubButton({
@@ -20,6 +23,8 @@ export function LeaveClubButton({
 	isClubOwner = false,
 	size = "default",
 	variant = "outline",
+	renderAsMenuItem = false,
+	icon,
 	...props
 }: LeaveClubButtonProps) {
 	const confirm = useConfirm();
@@ -52,6 +57,21 @@ export function LeaveClubButton({
 		}
 	};
 
+	if (renderAsMenuItem) {
+		return (
+			<button
+				type="button"
+				onClick={handleLeaveClub}
+				disabled={isClubOwner}
+				className={`flex items-center w-full text-left ${isClubOwner ? 'opacity-50 pointer-events-none' : 'cursor-pointer'} text-destructive`}
+				title={isClubOwner ? t("ownerError") : undefined}
+			>
+				{icon || <LogOut className="size-4 mr-2" />}
+				{t("action")}
+			</button>
+		);
+	}
+
 	return (
 		<Button
 			variant={variant}
@@ -61,7 +81,7 @@ export function LeaveClubButton({
 			size={size}
 			{...props}
 		>
-			<LogOut className="h-4 w-4 mr-2" />
+			{icon || <LogOut className="h-4 w-4 mr-2" />}
 			{t("action")}
 		</Button>
 	);

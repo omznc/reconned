@@ -11,6 +11,8 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useQueryState } from "nuqs";
 import { ClubInviteActions } from "./club-invite-actions";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Ban } from "lucide-react";
 
 interface FormattedInvite {
 	id: string;
@@ -128,28 +130,22 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 					header: t("actions"),
 					cellConfig: {
 						variant: "custom",
-						component: (_, row) => (
-							<>
-								{row.status === "REQUESTED" ? (
-									<ClubInviteActions invite={row} />
-								) : (
-									<div
-										className={cn("flex justify-end", {
-											"cursor-not-allowed": row.status !== "PENDING",
-										})}
-									>
-										<Button
-											variant="destructive"
-											size="sm"
-											disabled={row.status !== "PENDING"}
-											onClick={() => handleRevoke(row, row.club.id)}
-										>
-											{row.status === "PENDING" ? t("revoke.confirm") : t("inactive")}
-										</Button>
-									</div>
-								)}
-							</>
-						),
+						components: (row) => {
+							if (row.status === "REQUESTED") {
+								return [<ClubInviteActions key="invite-actions" invite={row} />];
+							}
+							return [
+								<DropdownMenuItem
+									key="revoke"
+									onClick={() => handleRevoke(row, row.club.id)}
+									disabled={row.status !== "PENDING"}
+									className={row.status === "PENDING" ? "text-destructive focus:text-destructive" : ""}
+								>
+									<Ban className="size-4 mr-2" />
+									{row.status === "PENDING" ? t("revoke.confirm") : t("inactive")}
+								</DropdownMenuItem>
+							];
+						},
 					},
 				},
 			]}
