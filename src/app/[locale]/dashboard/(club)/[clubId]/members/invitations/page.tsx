@@ -54,35 +54,35 @@ export async function InvitationsPageFetcher(props: PageProps) {
 		clubId: params.clubId,
 		...(searchParams.search
 			? {
-					OR: [
-						{
-							email: {
+				OR: [
+					{
+						email: {
+							contains: searchParams.search,
+							mode: "insensitive",
+						},
+					},
+					{
+						user: {
+							name: {
 								contains: searchParams.search,
 								mode: "insensitive",
 							},
 						},
-						{
-							user: {
-								name: {
-									contains: searchParams.search,
-									mode: "insensitive",
-								},
-							},
-						},
-					],
-				}
+					},
+				],
+			}
 			: {}),
 		...(searchParams.status && searchParams.status !== "all"
 			? {
-					status: searchParams.status as InviteStatus,
-				}
+				status: searchParams.status as InviteStatus,
+			}
 			: {}),
 	};
 
 	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
 		? {
-				[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
-			}
+			[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
+		}
 		: { createdAt: "desc" };
 
 	const [invitesCount, invites] = await Promise.all([
@@ -116,12 +116,10 @@ export async function InvitationsPageFetcher(props: PageProps) {
 }
 
 export default async function Page(props: PageProps) {
-	const t = await getTranslations("dashboard.club.members.invitations");
 	const searchParams = await props.searchParams;
 
 	return (
 		<>
-			<h3 className="text-lg font-semibold mb-4">{t("title")}</h3>
 			<InvitationsForm />
 			<hr />
 			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>

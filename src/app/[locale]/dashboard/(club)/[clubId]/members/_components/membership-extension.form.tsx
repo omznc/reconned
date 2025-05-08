@@ -27,6 +27,7 @@ import {
 import { format, formatDistanceToNow } from "date-fns";
 import { enUS, bs } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
+import type { ReactNode } from "react";
 
 interface MembershipExtensionFormProps {
 	clubId: string;
@@ -36,14 +37,34 @@ interface MembershipExtensionFormProps {
 			image?: string | null;
 		};
 	};
-	variant?: "button" | "icon";
+	variant?: "button" | "icon" | "menuItem";
+	icon?: ReactNode;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
 }
 
-export function MembershipExtensionForm({ clubId, membership, variant = "button" }: MembershipExtensionFormProps) {
+export function MembershipExtensionForm({
+	clubId,
+	membership,
+	variant = "button",
+	icon,
+	open,
+	onOpenChange
+}: MembershipExtensionFormProps) {
 	const t = useTranslations("components.membershipExtension");
 	const locale = useLocale();
-	const [isOpen, setIsOpen] = useState(false);
+	const [isLocalOpen, setIsLocalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+
+	// Use the controlled state if provided, otherwise use local state
+	const isOpen = open !== undefined ? open : isLocalOpen;
+	const setIsOpen = (value: boolean) => {
+		if (onOpenChange) {
+			onOpenChange(value);
+		} else {
+			setIsLocalOpen(value);
+		}
+	};
 
 	const dateFnsLocale = locale === "en" ? enUS : bs;
 
@@ -79,19 +100,40 @@ export function MembershipExtensionForm({ clubId, membership, variant = "button"
 
 	const membershipStatus = getMembershipStatus(membership, t);
 
+	// Create a trigger element based on the variant
+	const renderTrigger = () => {
+		if (variant === "button") {
+			return (
+				<Button variant="outline" size="sm">
+					<CalendarClock className="mr-2 h-4 w-4" /> {t("extendMembership")}
+				</Button>
+			);
+		} if (variant === "icon") {
+			return (
+				<Button variant="ghost" size="sm">
+					<CalendarClock className="h-4 w-4" />
+				</Button>
+			);
+		} if (variant === "menuItem") {
+			return (
+				<button type="button" className="flex items-center w-full text-left">
+					{icon || <CalendarClock className="size-4 mr-2" />}
+					{t("extendMembership")}
+				</button>
+			);
+		}
+
+		return null;
+	};
+
 	return (
 		<Credenza open={isOpen} onOpenChange={setIsOpen}>
-			<CredenzaTrigger asChild>
-				{variant === "button" ? (
-					<Button variant="outline" size="sm">
-						<CalendarClock className="mr-2 h-4 w-4" /> {t("extendMembership")}
-					</Button>
-				) : (
-					<Button variant="ghost" size="sm">
-						<CalendarClock className="h-4 w-4" />
-					</Button>
-				)}
-			</CredenzaTrigger>
+			{/* Only render the trigger if we're not using controlled open state from parent */}
+			{open === undefined && (
+				<CredenzaTrigger asChild>
+					{renderTrigger()}
+				</CredenzaTrigger>
+			)}
 			<CredenzaContent>
 				<CredenzaHeader>
 					<CredenzaTitle>{t("extendMembershipTitle")}</CredenzaTitle>

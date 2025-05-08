@@ -1,1429 +1,1433 @@
 {
-	"emails": {
-		"emailVerification": {
-			"title": "Verify your email address",
-			"hello": "Hello,",
-			"helloUser": "Hi {name},",
-			"message": "Please click the button below to verify your email address.",
-			"action": "Verify email",
-			"footer": "If you did not request verification, please ignore this email."
-		},
-		"airsoftInvitation": {
-			"title": "You are invited to join the {clubName} club!",
-			"invitation": "Invitation card",
-			"hello": "Hello,",
-			"helloUser": "Hi {name},",
-			"message": "You are invited to join the {clubName} club. ",
-			"action": "Accept invite",
-			"footer": "If you did not expect this invitation, please ignore this email."
-		},
-		"createAccount": {
-			"title": "You are invited to an airsoft event! ",
-			"invitationTitle": "You are invited to an airsoft event!",
-			"message": "You are invited to join the {eventName} event that will take place on {eventDate}. ",
-			"clubMessage": "Your account will automatically be linked to club {clubName} and you will be able to access match details immediately.",
-			"action": "Create Account",
-			"emailLinked": "This link is associated with the email address: {email}",
-			"footer": "If you were not expecting this invitation, please ignore this email."
-		},
-		"rateEvent": {
-			"title": "Rate your experience at {eventName}!",
-			"heading": "How was your event?",
-			"hello": "Greetings,",
-			"helloUser": "Hello {name},",
-			"message": "Thank you for attending the {eventName} event held on {date}. ",
-			"action": "Rate the event",
-			"footer": "{clubName} - Thank you for your participation!"
-		},
-		"membershipExpiration": {
-			"expiredTitle": "Your membership in {clubName} has expired",
-			"expiringTitle": "Your membership in {clubName} expires in {days} days",
-			"expiredHeading": "Membership Expired",
-			"expiringHeading": "Membership Expiring Soon",
-			"hello": "Hello {name},",
-			"expiredMessage": "Your membership in the {clubName} club has expired on {date}. If you wish to continue being a club member, please renew your membership.",
-			"expiringMessage": "Your membership in the {clubName} club will expire on {date} (in {days} days). To ensure continuous membership, please consider renewing before the expiry date.",
-			"action": "Renew Membership",
-			"footer": "If you no longer wish to be a member of {clubName}, you can ignore this email."
-		},
-		"membershipExpirationOwner": {
-			"expiredTitle": "{memberName}'s membership in {clubName} has expired",
-			"expiringTitle": "{memberName}'s membership in {clubName} expires in {days} days",
-			"expiredHeading": "Member's Subscription Expired",
-			"expiringHeading": "Member's Subscription Expiring Soon",
-			"hello": "Hello {name},",
-			"expiredMessage": "The membership of {memberName} in your {clubName} club has expired on {date}.",
-			"expiringMessage": "The membership of {memberName} in your {clubName} club will expire on {date} (in {days} days).",
-			"action": "Manage Members",
-			"footer": "This is an automated notification to help you manage your club memberships."
-		}
-	},
-	"public": {
-		"notFound": {
-			"title": "You are lost",
-			"message": "Page not found",
-			"backHome": "Return to homepage",
-			"metadata": {
-				"title": "404 - Page not found - RECONNED",
-				"description": "The page you are looking for does not exist."
-			}
-		},
-		"home": {
-			"hero": {
-				"button": "View the changelog",
-				"title": "Just Airsoft,<br></br> but better.",
-				"description": "Join the most advanced airsoft community. Find matches, connect with players and improve your game.",
-				"search": "Search all",
-				"map": "Show map",
-				"about": "Find out more",
-				"events": "Events",
-				"clubs": "Clubs",
-				"members": "Players",
-				"dashboard": "Dashboard",
-				"sponsors": "Sponsors"
-			},
-			"upcomingEventsTitle": "Upcoming events",
-			"upcomingEventsSubtitle": "See you on the field",
-			"upcomingEventsNone": "There are no upcoming matches",
-			"eventCard": {
-				"canFreelance": "Freelancers allowed",
-				"cannotFreelance": "For members only",
-				"breakfast": "Breakfast",
-				"lunch": "Lunch",
-				"dinner": "Dinner",
-				"snacks": "Snacks",
-				"drinks": "Drinks",
-				"prizes": "Awards",
-				"privateEvent": "This is a private event, but you are in the {clubName} club.",
-				"starts": "Starts",
-				"view": "View"
-			},
-			"metadata": {
-				"title": "RECONNED - Airsoft clubs, events, and players",
-				"description": "The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"sponsors": {
-			"title": "Sponsors and partners",
-			"description": "It is realistic to say that this site would not exist without the engagement and support of everyone you can find below. Thank you.",
-			"currentSponsors": "Our current sponsors",
-			"contactUs": "Contact Us",
-			"contactDescription": "Want to help or have questions? ",
-			"cta": {
-				"title": "You",
-				"description": "This place can be yours"
-			},
-			"metadata": {
-				"title": "Sponsors - RECONNED",
-				"description": "Our current sponsors and partners. Thank you for your support!"
-			}
-		},
-		"about": {
-			"title": "Who are we?",
-			"subtitle": "This project was started by 2 developers from Bosnia and Herzegovina (<omar></omar> and <safet></safet>) because we wanted something better than Facebook, Viber, and others. Airsoft communities are quite new and unorganized, and we want to change that - totally transparent, totally public.",
-			"platform": {
-				"title": "About the platform",
-				"description": "The ultimate goal of the <logo></logo> platform is the unification of the airsoft community, initially in Bosnia and Herzegovina, and beyond. Our platform allows clubs to present themselves, organize events, and find new members. It enables players to find clubs, events, and other players, all in one place."
-			},
-			"sustainability": {
-				"title": "Sustainability",
-				"description": "The goal is not, and never will be pure profit. Every part of the platform is open-source, and thus available to everyone. Currently, we are completely self-funding the platform's development, but we will give clubs and individuals a chance to help with development and maintenance, with some benefits.",
-				"emphasis": "Core functionalities will always be free to use."
-			},
-			"help": {
-				"title": "How to help?",
-				"description": "If you are interested in helping with the development of the platform, please feel free to contact us. Help in the form of marketing, programming, and general sponsorship is always welcome.",
-				"sponsors": "See the list of sponsors."
-			},
-			"metadata": {
-				"title": "About us - RECONNED",
-				"description": "About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"auth": {
-			"haveAccountQuestion": "Already have an account?",
-			"noAccountQuestion": "Don't have an account?",
-			"home": "Homepage",
-			"login": "Login",
-			"loginDescription": "Enter your email and password to join the world of airsoft.",
-			"unverified": "Your email has not been verified. ",
-			"verifyEmail": "Confirm your email",
-			"password": "Password",
-			"forgotPassword": "Forgot your password?",
-			"forgotPasswordNoEmail": "Enter your email to receive a password reset link.",
-			"forgotPasswordWrongEmail": "The email is not valid.",
-			"forgotPasswordSuccess": "A password reset link has been sent to your email.",
-			"loading": "Just a moment...",
-			"invalidData": "The data entered is incorrect.",
-			"invalidDataOrUserExists": "The entered data is incorrect or the user already exists.",
-			"register": "Register",
-			"registerDescription": "Create your account and join the airsoft community.",
-			"registerDescriptionTooltipTitle": "Registering a club?",
-			"registerDescriptionTooltipDescription": "If you want to add your club, register as yourself. After logging in, you will be able to add a club and be its owner.",
-			"registerSuccess": "You have successfully registered. Check your email to verify it.",
-			"name": "Name",
-			"emailAutofilled": "The email has been filled in automatically",
-			"remove": "Remove",
-			"resetPassword": "Reset password",
-			"resetPasswordDescription": "Enter a new password to access your account.",
-			"resetPasswordSuccess": "Password successfully reset. ",
-			"resetPasswordError": "An error occurred while resetting the password. ",
-			"confirmPassword": "Confirm password",
-			"twoFactor": "Two-factor authentication",
-			"twoFactorDescription": "Enter the code from your app or use the backup code.",
-			"twoFactorError": "The code entered is not valid.",
-			"code": "Code",
-			"verify": "Confirm",
-			"rememberDevice": "Remember this device",
-			"captchaError": "Captcha error",
-			"invalidEmail": "Invalid email",
-			"passwordRequired": "Your password is required",
-			"passwordTooShort": "That password is too short",
-			"nameRequired": "Your name is required",
-			"metadata": {
-				"title": "Authentication - RECONNED",
-				"description": "Login, register, and reset your password. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"clubs": {
-			"title": "Clubs",
-			"metadata": {
-				"title": "Airsoft clubs - RECONNED",
-				"description": "The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players."
-			},
-			"member": "member",
-			"members": "members"
-		},
-		"users": {
-			"title": "Players",
-			"metadata": {
-				"title": "Airsoft players - RECONNED",
-				"description": "The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"events": {
-			"metadata": {
-				"title": "Airsoft events - RECONNED",
-				"description": "The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"layout": {
-			"metadata": {
-				"description": "The first universal platform for airsoft clubs, events, and players.",
-				"title": "RECONNED - Airsoft clubs, events, and players",
-				"keywords": "airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH"
-			}
-		},
-		"privacy": {
-			"title": "Privacy Policy",
-			"lastUpdated": "Last updated: {date}",
-			"viewTerms": "View our Terms of Use",
-			"introduction": {
-				"title": "Introduction",
-				"description": "RECONNED (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains what information we collect, how we use it, and how we safeguard it when you use our airsoft community platform."
-			},
-			"dataCollection": {
-				"title": "Information We Collect",
-				"description": "We collect various types of information to provide and improve our service. Here's what we collect:",
-				"personalInfo": "Personal information: name, email address, profile picture, bio, location, website, phone number, callsign, and gear settings.",
-				"accountInfo": "Account information: session data (IP addresses, user agents), authentication data (passwords, passkeys, two-factor authentication).",
-				"clubInfo": "Club information: name, location, description, founding date, logo, contact information, rules, etc.",
-				"eventInfo": "Event information: name, description, locations, dates, prices, rules, participant registrations, etc.",
-				"socialInfo": "Social information: reviews, posts, achievements, and other interactions between users.",
-				"usageInfo": "Usage information: how you use our platform, which pages you visit, and how you interact with our interface.",
-				"deviceInfo": "Device information: device type, operating system, browser version, and language settings."
-			},
-			"dataUse": {
-				"title": "How We Use Your Information",
-				"description": "We use the collected information for various purposes, including:",
-				"provideService": "To provide, maintain, and improve our platform, including connecting airsoft clubs, players, and events.",
-				"improveService": "To analyze how you use our platform and enhance user experience.",
-				"communicate": "To communicate with you, respond to your inquiries, and send notifications about our service.",
-				"security": "To protect our users and platform from fraud, abuse, and other harmful activities."
-			},
-			"dataSecurity": {
-				"title": "Data Security",
-				"description": "We implement security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. This includes encryption of sensitive data, secure servers, and regular security reviews."
-			},
-			"dataSharing": {
-				"title": "Information Sharing",
-				"description": "We don't sell your personal information to third parties. However, we may share information in the following situations:",
-				"clubMembers": "With other club members (if you're a member of a club, certain information may be visible to other members).",
-				"eventParticipants": "With event participants (if you're registered for an event, certain information may be visible to other participants).",
-				"serviceProviders": "With service providers who help us operate the platform (e.g., hosting).",
-				"legal": "When required by law or to protect our rights."
-			},
-			"cookies": {
-				"title": "Cookies and Tracking Technologies",
-				"description": "We use cookies and similar tracking technologies to collect and store certain information when you use our platform. This helps us improve your experience, analyze platform usage, and tailor content to your interests."
-			},
-			"userRights": {
-				"title": "Your Data Rights",
-				"description": "Depending on your location, you may have certain rights regarding your personal information, including:",
-				"access": "The right to access the information we have about you.",
-				"rectification": "The right to correct inaccurate or incomplete information.",
-				"deletion": "The right to delete your information in certain circumstances.",
-				"restriction": "The right to restrict the processing of your information.",
-				"objection": "The right to object to the processing of your information.",
-				"portability": "The right to data portability (obtaining a copy of your data in a structured format)."
-			},
-			"thirdPartyServices": {
-				"title": "Third-Party Services",
-				"description": "Our platform uses several third-party services that may collect information about you. These services include:",
-				"auth": "Authentication services (e.g., Google login) for easy sign-in.",
-				"storage": "Storage services for storing data and media files.",
-				"maps": "Mapping services for displaying club and event locations.",
-				"analytics": "Analytics services for tracking platform usage.",
-				"instagram": "Integration with Instagram for clubs that want to display their Instagram posts on their club profile."
-			},
-			"childrenPrivacy": {
-				"title": "Children's Privacy",
-				"description": "Our platform is not intended for use by individuals under the age of 17. We do not knowingly collect personal information from children under 17. If we discover that we have collected personal information from a child, we will take steps to delete that information."
-			},
-			"changes": {
-				"title": "Changes to This Privacy Policy",
-				"description": "We may update our Privacy Policy from time to time. We will notify you of significant changes by posting a notification on our website or through direct communication. We encourage you to periodically review this Privacy Policy to stay informed about how we are protecting your information."
-			},
-			"contact": {
-				"title": "Contact Us",
-				"description": "If you have any questions about this Privacy Policy or our privacy practices, please contact us at <email></email>."
-			},
-			"metadata": {
-				"title": "Privacy Policy - RECONNED",
-				"description": "Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"terms": {
-			"title": "Terms of Use",
-			"lastUpdated": "Last updated: {date}",
-			"viewPrivacy": "View our Privacy Policy",
-			"introduction": {
-				"title": "Introduction",
-				"description": "Welcome to RECONNED, a platform that connects airsoft enthusiasts, clubs, and events. By using our website and services, you agree to comply with these Terms of Use. Please read them carefully."
-			},
-			"acceptance": {
-				"title": "Acceptance of Terms",
-				"description": "By accessing or using the RECONNED platform, you agree to be legally bound by these Terms of Use. If you do not agree to any part of these terms, please do not use our platform."
-			},
-			"eligibility": {
-				"title": "Eligibility",
-				"description": "To use our platform, you must be at least 17 years old. By using the platform, you confirm that you are at least 17 years old and that you are not a person barred from receiving our services under the laws of Bosnia and Herzegovina or other applicable jurisdictions."
-			},
-			"userAccounts": {
-				"title": "User Accounts",
-				"description": "To access certain features of our platform, you will need to create a user account. When you do, you are responsible for:",
-				"accuracy": "Maintaining the accuracy and currency of your information.",
-				"security": "Keeping your account and password secure.",
-				"responsibility": "All activities that occur under your account.",
-				"termination": "Understanding that we may suspend or terminate your account if you violate these terms."
-			},
-			"content": {
-				"title": "User Content and Conduct",
-				"description": "Our platform allows you to post content, including text, images, and other materials.",
-				"userContent": {
-					"title": "Your Content",
-					"description": "You retain ownership of the content you post on the platform, but grant us a non-exclusive, royalty-free license to use, display, and distribute that content in connection with our services."
-				},
-				"prohibited": {
-					"title": "Prohibited Activities",
-					"description": "The following behaviors are prohibited on the RECONNED platform:",
-					"illegal": "Posting or promoting illegal activities.",
-					"harmful": "Posting content that is harmful, threatening, offensive, or harassing.",
-					"impersonation": "Impersonating another user or entity.",
-					"spam": "Sending unwanted messages or spamming the platform.",
-					"infringement": "Violating copyright or other intellectual property rights."
-				}
-			},
-			"intellectualProperty": {
-				"title": "Intellectual Property",
-				"description": "RECONNED and its content, features, and appearance are protected by copyright, trademark, and other intellectual property laws.",
-				"ownership": "All trademarks, logos, product and service names displayed on the platform are the property of RECONNED or their respective owners.",
-				"license": "We grant you a limited, non-exclusive, non-transferable license to access and use the platform for personal, non-commercial purposes.",
-				"feedback": "If you provide us with feedback or suggestions, we may use them without any obligation to you."
-			},
-			"thirdParty": {
-				"title": "Third-Party Links",
-				"description": "Our platform may contain links to third-party websites that are not owned or controlled by us. We are not responsible for the content, privacy policies, or practices of any third-party websites."
-			},
-			"disclaimer": {
-				"title": "Disclaimer of Warranties",
-				"description": "The RECONNED platform is provided \"as is\" and \"as available\", without any warranties, either express or implied. We do not guarantee that the platform will always be available, secure, error-free, or meet your specific requirements."
-			},
-			"limitation": {
-				"title": "Limitation of Liability",
-				"description": "To the extent permitted by law, RECONNED and its founders, officers, directors, employees, and agents will not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the platform."
-			},
-			"changes": {
-				"title": "Changes to Terms",
-				"description": "We reserve the right to modify or replace these Terms of Use at any time. If we make material changes, we will endeavor to notify you before the new terms take effect. By continuing to use the platform after the changes take effect, you agree to the updated terms."
-			},
-			"termination": {
-				"title": "Termination",
-				"description": "We may, in our sole discretion, modify, suspend, or terminate your access to the platform for any reason, including violation of these Terms of Use, without prior notice."
-			},
-			"governing": {
-				"title": "Governing Law",
-				"description": "These Terms of Use are governed by and construed in accordance with the laws of Bosnia and Herzegovina, regardless of conflict of law provisions."
-			},
-			"contact": {
-				"title": "Contact Us",
-				"description": "If you have any questions about these Terms of Use, please contact us at <email></email>."
-			},
-			"metadata": {
-				"title": "Terms of Use - RECONNED",
-				"description": "Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"changelog": {
-			"back": "Back",
-			"errorLoading": "There's been a problem while trying to get the changelog",
-			"description": "The RECONNED changelog",
-			"latestRelease": "Latest version",
-			"published": "Posted {date}",
-			"previousReleases": "Previous versions",
-			"title": "Changes",
-			"version": "Version {version}",
-			"viewOnGithub": "View on GitHub",
-			"metadata": {
-				"title": "Changelog - RECONNED",
-				"description": "The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"search": {
-			"placeholder": "Something...",
-			"clubs": "Clubs",
-			"users": "Players",
-			"events": "Events",
-			"noResults": "Nothing was found matching that search",
-			"private": "Private",
-			"public": "Public",
-			"title": "Search",
-			"description": "Find clubs, players, and events - all in one place",
-			"loading": "Just a moment...",
-			"member": "member",
-			"members": "members",
-			"metadata": {
-				"title": "Search for {query} - RECONNED",
-				"description": "Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
-			}
-		},
-		"map": {
-			"metadata": {
-				"title": "Club Map - RECONNED",
-				"description": "Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players."
-			}
-		}
-	},
-	"dashboard": {
-		"root": {
-			"welcome": "Welcome, {name}",
-			"myClubs": "My clubs",
-			"recentEvents": "Recent events",
-			"statistics": {
-				"events": "Events",
-				"clubs": "Clubs",
-				"writtenReviews": "Written reviews",
-				"receivedReviews": "Reviews received"
-			},
-			"error": "An error occurred",
-			"loading": "Loading...",
-			"nextEvent": "Next event",
-			"latestReview": "Latest review"
-		},
-		"help": {
-			"title": "Help",
-			"googleMaps": {
-				"title": "How to add a Google Maps link to an event",
-				"steps": {
-					"step1": "Open Google Maps and find the desired location",
-					"step2": "Click the \"Share\" button",
-					"step3": "In the share dialog, select the \"Embed a map\" tab",
-					"step4": "Copy the entire link",
-					"step5": "Paste the copied link into the Google Maps field on the event creation form"
-				}
-			},
-			"deleteClub": {
-				"title": "How to delete a club",
-				"description": "To delete a club, follow these steps:",
-				"steps": {
-					"step1": "Select the club you want to delete from the sidebar",
-					"step2": "Click on \"Club\" in the menu",
-					"step3": "Click on \"Information\" in the submenu",
-					"step4": "On the club information page, find and click the \"Delete the club\" button in the top right corner"
-				},
-				"notes": "Note: Deleting a club is a permanent action and cannot be undone. All events and memberships related to the club will also be deleted."
-			}
-		},
-		"user": {
-			"overview": {
-				"alertTitle": "Your account",
-				"alertDescription": "You can see your profile here",
-				"edit": "Edit profile",
-				"view": "View profile"
-			},
-			"invites": {
-				"title": "Invitations",
-				"noInvites": "You have no invitations",
-				"approve": "Accept",
-				"dismiss": "Dismiss",
-				"viewClub": "View club"
-			},
-			"settings": {
-				"title": "General",
-				"imageUploadError": "An error occurred while uploading the image",
-				"profileUpdated": "User data has been saved",
-				"profileUpdateError": "An error occurred while saving data",
-				"name": "Your name",
-				"callsign": "Callsign",
-				"location": "Location",
-				"locationDescription": "The city or town where you are located",
-				"bio": "About you",
-				"bioDescription": "This is your chance to stand out in a few sentences",
-				"public": "Displayed publicly",
-				"private": "Hidden",
-				"privateProfile": "Private profile",
-				"privateProfileDescription": "Hide profile from public access. ",
-				"privateStats": "Private Statistics",
-				"privateStatsDescription": "Only you can see how many views your profile has",
-				"profilePhoto": "Profile picture",
-				"profilePhotoDescription": "We recommend that you upload a profile picture.",
-				"fileUpload": "Drag or click to upload image",
-				"fileUploadFormats": "Supported formats:",
-				"deleteProfilePhoto": {
-					"title": "Are you sure?",
-					"body": "Are you sure you want to delete your profile picture?",
-					"confirm": "Delete profile picture",
-					"cancel": "No, come back"
-				},
-				"contact": "Contact",
-				"phone": "Phone number",
-				"website": "Website",
-				"save": "Save changes",
-				"linkTaken": "The selected link is busy",
-				"cropPhotoTitle": "Crop the image",
-				"cropPhotoDescription": "Select the part of the image you want to save",
-				"cancel": "Cancel",
-				"bioPlaceholder": "Something about me is that...",
-				"requiredSection": "Required",
-				"profileDescription": "Some information about you",
-				"additionalInformation": "Additional information",
-				"optional": "Optional",
-				"contactDescription": "This is how people can reach you",
-				"privacySettings": "Privacy",
-				"privacyDescription": "Show or hide your information"
-			},
-			"security": {}
-		},
-		"security": {
-			"passwordChange": {
-				"error": "An error occurred while changing your password. ",
-				"success": "Password successfully changed",
-				"title": "Change password",
-				"currentPassword": "Current password",
-				"newPassword": "New password",
-				"confirmPassword": "Confirm new password",
-				"changePassword": "Change password",
-				"loading": "Just a moment..."
-			},
-			"passwordSetup": {
-				"error": "An error occurred while setting your password. ",
-				"success": "Password successfully set",
-				"title": "Set a password",
-				"newPassword": "New password",
-				"setupPassword": "Set a password",
-				"loading": "Just a moment..."
-			},
-			"securitySettings": {
-				"createdAt": "Created on {date}",
-				"addNewPasskey": "Add a new Passkey",
-				"addNewPasskeyDescription": "Add a new passkey for faster and more secure login to your account.",
-				"add": "Add",
-				"twoFactor": "Two-factor authentication",
-				"twoFactorUnavailable": "Two-factor authentication is not available",
-				"twoFactorUnavailableDescription": "To use 2-factor authentication, you must first set a password.",
-				"twoFactorDisable": "Disable 2-factor authentication",
-				"twoFactorDisableDescription": "If you turn off 2-factor authentication, you will be able to log into your account without confirmation through the application.",
-				"disable": "Disable",
-				"twoFactorDisablePrompt": {
-					"title": "Disable 2-factor authentication?",
-					"body": "Are you sure you want to disable 2-factor authentication? ",
-					"confirm": "Disable",
-					"cancel": "No, come back",
-					"invalidPassword": "Please enter the correct password"
-				},
-				"backupCodes": "Backup codes",
-				"download": "Download",
-				"regenerate": "Regenerate codes",
-				"regenerateDescription": "These are your backup codes for 2-factor authentication. ",
-				"regenerateSuccess": "Codes successfully regenerated",
-				"regenerateError": "An error occurred while regenerating the codes",
-				"twoFactorEnable": "Enable 2-factor authentication",
-				"twoFactorEnableDescription": "Enable 2-factor authentication for extra security of your account.",
-				"twoFactorEnablePrompt": {
-					"title": "Enable 2-factor authentication?",
-					"body": "Are you sure you want to enable 2-factor authentication? ",
-					"confirm": "Enable",
-					"cancel": "No, come back"
-				},
-				"twoFactorConfirmPrompt": {
-					"scanQr": "Scan the QR code with your app for 2-factor authentication.",
-					"enterCode": "If you can't scan the QR code, enter this code:",
-					"verifyCode": "Confirm the 6-digit code you received from the app",
-					"invalidCode": "Please enter a valid 6-digit code",
-					"confirm": "Confirm"
-				},
-				"activeSessions": "Active sessions",
-				"activeSessionsDescription": "Here you can see all active sessions on your account. ",
-				"logoutAll": "Sign out of all devices except this one",
-				"logoutAllAction": "Sign out",
-				"logoutAllSuccess": "You are signed out of all other devices",
-				"logoutAllError": "An error occurred while signing out from other devices.",
-				"logoutSingleSuccess": "You are signed out of this device",
-				"logoutSingleError": "An error occurred while logging out of this device.",
-				"currentSession": "Current session",
-				"sessionLastUsed": "Last used on {date}"
-			}
-		},
-		"events": {
-			"title": "My events",
-			"search": "Search events...",
-			"name": "Name",
-			"location": "Location",
-			"dateStart": "Start",
-			"dateRegistrationsClose": "Closing applications",
-			"status": "Status",
-			"clubName": "Club",
-			"actions": "Actions"
-		},
-		"addClub": {
-			"addClub": "Add club",
-			"createClub": "Create new club",
-			"createClubDescription": "This option is for you if you want to create a new club, of which you will be the sole owner.",
-			"joinClub": "Join club",
-			"joinClubDescription": "Your club is already on this site? You can request an invitation, or accept one you've already received.",
-			"requestAccess": "Request club access",
-			"requestAccessDescription": "Select the club you want to join",
-			"selectClub": "Select club",
-			"selectClubPlaceholder": "Select club...",
-			"sendRequest": "Send request",
-			"requestSent": "Request sent successfully",
-			"requestFailed": "Error sending request",
-			"searchFailed": "Error searching clubs",
-			"searchClubs": "Search clubs...",
-			"enterTwoChars": "Enter at least two characters",
-			"noClubsFound": "No clubs found"
-		},
-		"club": {
-			"info": {
-				"photoUploadError": "An error occurred while uploading the image",
-				"clubCreationError": "An error occurred while creating the club",
-				"clubCreationSuccess": "Club successfully created",
-				"clubSaved": "Club information has been saved",
-				"error": "An error occurred",
-				"clubEditTitle": "You are changing your club information",
-				"clubEditDescription": "Changes will be visible immediately after you save them.",
-				"clubDelete": {
-					"title": "Are you sure?",
-					"body": "If you delete a club, you won't be able to get it back.",
-					"confirm": "Delete the club",
-					"cancel": "No, come back"
-				},
-				"general": "General",
-				"name": "Club name",
-				"nameDescription": "The name of the club will be displayed everywhere on the site, if the club is public.",
-				"country": "Country",
-				"countryDescription": "The country where the club is located",
-				"noResults": "No results",
-				"pickCountry": "Select a country",
-				"searchCountry": "Search countries...",
-				"city": "City",
-				"cityDescription": "The city where the club is located",
-				"exactLocation": "Exact location",
-				"exactLocationDescription": "Click on the map to mark the exact location of your club. If your club is public, you'll be able to see it on the <link></link>",
-				"exactLocationLink": "airsoft clubs map",
-				"reset": "Reset",
-				"description": "Description",
-				"descriptionDescription": "Describe your club in a few sentences",
-				"foundedDate": "Date of establishment",
-				"foundedDateDescription": "When was the club founded?",
-				"chooseDate": "Select a date",
-				"isAllied": "In the ASK FBIH alliance",
-				"isAlliedDescription": "If you are part of the SAKFBIH, select this option. Will be verified.",
-				"private": "Private club",
-				"privateDescription": "Private clubs are only visible to club members. ",
-				"privateStats": "Private Statistics",
-				"privateStatsDescription": "Only club members can see how many views the club has",
-				"logo": "Logo",
-				"logoDescription": "Add a club logo. ",
-				"fileUpload": "Drag or click to upload image",
-				"fileUploadFormats": "Supported formats:",
-				"logoDelete": {
-					"title": "Are you sure?",
-					"body": "Are you sure you want to delete the club logo?",
-					"confirm": "Clear logo",
-					"cancel": "No, come back"
-				},
-				"contact": "Contact",
-				"phone": "Phone number",
-				"phoneDescription": "The club's phone number, publicly displayed on the profile.",
-				"emailDescription": "Email address of the club, publicly displayed on the profile.",
-				"website": "Website",
-				"save": "Save changes",
-				"create": "Create a club",
-				"cancel": "Cancel",
-				"backToClub": "Back to club",
-				"socialMedia": "Social Media",
-				"instagramConnection": "Instagram Connection",
-				"instagramDescription": "Connect your Instagram account to display club photos on the club profile.",
-				"instagramConnect": "Connect Instagram",
-				"instagramConnecting": "Connecting...",
-				"instagramConnectSuccess": "Instagram account successfully connected",
-				"instagramConnectError": "An error occurred while connecting Instagram account",
-				"instagramConnectedMessage": "Your club is connected to an Instagram account",
-				"instagramDisconnecting": "Disconnecting...",
-				"instagramDisconnectSuccess": "Instagram account successfully disconnected",
-				"instagramDisconnectError": "An error occurred while disconnecting Instagram account",
-				"instagramDisconnect": {
-					"title": "Disconnect Instagram Account",
-					"body": "Are you sure you want to disconnect the Instagram account? After disconnecting, photos will no longer be displayed on the club profile.",
-					"action": "Disconnect Instagram",
-					"confirm": "Yes, disconnect",
-					"cancel": "No, go back"
-				},
-				"instagramRedirecting": "Redirecting to Instagram for authorization...",
-				"instagramSelectPageTitle": "Select Facebook Page",
-				"instagramSelectPageDescription": "Select the Facebook page that is connected to the Instagram Business account you want to connect to your club.",
-				"instagramNoPages": "No Facebook pages found",
-				"instagramNoPageDescription": "No Facebook pages connected to your account found. First create a Facebook page and connect it to an Instagram Business account.",
-				"instagramConnected": "Instagram connected",
-				"instagramNotConnected": "Instagram not connected",
-				"instagramLoadingPages": "Loading pages...",
-				"instagramSelectPage": "Please select a page",
-				"instagramEligible": "Available",
-				"instagramIneligible": "Not available",
-				"instagramIneligibleTooltip": "This Facebook page is not connected to an Instagram Business account. To connect, first link an Instagram Business account to this Facebook page.",
-				"instagramSessionMissing": "Missing session for page selection",
-				"instagramPagesFetchFailed": "Failed to load Facebook pages",
-				"instagramSelectedPageNotFound": "Selected page not found",
-				"instagramConnectionFailed": "Failed to connect Instagram account",
-				"instagramNoEligiblePages": "None of your Facebook pages are connected to an Instagram Business account. First connect an Instagram Business account to your Facebook page.",
-				"instagramError": {
-					"title": "Problem connecting Instagram account",
-					"connectionFailed": "Problem connecting to Instagram account. Please try again.",
-					"noFacebookPages": "We couldn't find any Facebook Pages connected to your account.",
-					"noInstagramAccount": "We couldn't find an Instagram Business account connected to the selected Facebook page.",
-					"notConnected": "Instagram account is not connected to your Facebook page.",
-					"missingParams": "Missing parameters for connecting to Instagram API.",
-					"authFailed": "Authorization failed. Please try again.",
-					"pageNotFound": "Facebook Page not found.",
-					"personalAccount": "The Instagram account connected to the selected Facebook page is not a Business account. You need to use an Instagram Business account to connect."
-				},
-				"descriptionPlaceholder": "This is a cool description"
-			},
-			"posts": {
-				"successEdited": "Post successfully modified",
-				"successCreated": "Post successfully created",
-				"error": "An error occurred",
-				"delete": {
-					"title": "Are you sure?",
-					"body": "If you delete a post, you won't be able to get it back.",
-					"confirm": "Delete the post",
-					"cancel": "No, come back",
-					"success": "Post successfully deleted",
-					"error": "An error occurred while deleting the post"
-				},
-				"editing": "Editing a post",
-				"creating": "New post",
-				"title": "Title",
-				"content": "Content",
-				"public": "Public announcement",
-				"saveNewPost": "Save the post",
-				"saveEditPost": "Save changes"
-			},
-			"spending": {
-				"title": "Spending",
-				"newItem": "New item",
-				"edit": "Edit spending",
-				"details": {
-					"title": "Title",
-					"description": "Description",
-					"amount": "Amount (KM)",
-					"receipts": "Receipts",
-					"receiptsLimit": "You've reached the limit",
-					"receiptsMaxCount": "Maximum 3 receipts per item",
-					"receiptUploadInfo": "Click to add a file or just drop it here",
-					"receiptFormats": "Supported formats: JPG, JPEG, PNG, PDF",
-					"actions": "Actions"
-				},
-				"receipt": {
-					"title": "Receipt",
-					"pdfDocument": "PDF Document",
-					"download": "Download"
-				},
-				"date": "Date",
-				"save": "Save",
-				"saving": "Saving...",
-				"saveChanges": "Save changes",
-				"uploadingFiles": "Uploading files",
-				"error": "Error while saving expense data",
-				"errorDelete": "Error while deleting expense item",
-				"errorReceipt": "Error uploading receipt",
-				"success": "Expense successfully added",
-				"successEdit": "Expense successfully modified",
-				"successDelete": "Expense successfully deleted",
-				"deleteConfirm": {
-					"title": "Delete expense item",
-					"body": "Are you sure you want to delete this expense item? This action cannot be undone.",
-					"action": "Delete",
-					"cancel": "Cancel"
-				},
-				"deleteReceiptConfirm": {
-					"title": "Are you sure?",
-					"body": "If you delete this receipt, you won't be able to recover it.",
-					"action": "Delete receipt",
-					"cancel": "No, go back"
-				},
-				"search": "Search expenses..."
-			},
-			"stats": {
-				"members": "Number of members",
-				"registrations": "Number of applications",
-				"roles": "Roles",
-				"events": "Events by month",
-				"numberOfEvents": "Number of events",
-				"numberOfRegistrations": "Number of applications",
-				"userGrowth": "Membership growth",
-				"roleDistribution": "Role distribution",
-				"member": "Member",
-				"manager": "Manager",
-				"owner": "The owner"
-			},
-			"events": {
-				"search": "Search events...",
-				"name": "Name",
-				"location": "Location",
-				"dateStart": "Start",
-				"dateRegistrationsClose": "Closing applications",
-				"type": "The guy",
-				"private": "Private",
-				"public": "Public",
-				"registrations": "Applications",
-				"actions": "Actions",
-				"attendence": "Presence",
-				"edit": "Edit",
-				"view": "View",
-				"event": "Event",
-				"attendenceTracking": {
-					"search": "Search participants...",
-					"error": "An error occurred while saving presence",
-					"others": "+ {count} others",
-					"registered": "Registered",
-					"attending": "Present",
-					"registrationNotClosed": "Applications are still open",
-					"eventEnded": "The event is over",
-					"backToEvent": "Back to the event",
-					"unavailable": "This functionality is not available"
-				},
-				"create": {
-					"registrationsOpenIn": "Registrations open for <number></number> day/s",
-					"registrationsOpen": "Registrations are open",
-					"registrationsClosed": "Registrations are closed",
-					"eventStartsIn": ", the event starts in <number></number> day/s",
-					"eventStarted": ", the event has already started",
-					"eventDuration": ", lasts <number></number> hour/s.",
-					"error": "An error occurred while saving data",
-					"photoUploadError": "An error occurred while uploading the image",
-					"success": "Data about the event is saved",
-					"editingTitle": "Change of event",
-					"editingDescription": "This event has already been created, you are currently editing it.",
-					"delete": {
-						"title": "Are you sure?",
-						"body": "If you delete an event, you won't be able to get it back.",
-						"confirm": "Delete event",
-						"cancel": "No, come back"
-					},
-					"view": "View",
-					"general": "General",
-					"name": "Name of the event",
-					"nameDescription": "The name of the event will be displayed everywhere on the site",
-					"description": "Description",
-					"descriptionDescription": "Description of the event. ",
-					"descriptionPlaceholder": "Bring cutlery...",
-					"photo": "Image",
-					"photoDescription": "Add a photo of the event. ",
-					"fileUpload": "Drag or click to upload image",
-					"fileUploadFormats": "Supported formats:",
-					"deletePhoto": {
-						"title": "Are you sure?",
-						"body": "Are you sure you want to delete the event image?",
-						"confirm": "Delete image",
-						"cancel": "No, come back"
-					},
-					"price": "Registration fee/price",
-					"priceDescription": "How much does it cost to participate in the event? ",
-					"time": "Time",
-					"start": "Start",
-					"startDescription": "When does the event start?",
-					"end": "End",
-					"endDescription": "When does the event end?",
-					"registrationStart": "Start of applications",
-					"registrationStartDescription": "When do meetup registrations open?",
-					"registrationEnd": "End of applications",
-					"registrationEndDescription": "When do the registrations for the event close?",
-					"selectDate": "Select a date",
-					"visibility": "Visibility",
-					"private": "Private",
-					"privateDescription": "Private events are visible only to club members.",
-					"freelancers": "Freelancers allowed",
-					"freelancersDescription": "Do you allow players who are not members of a club to register for a match?",
-					"organization": "Organization",
-					"breakfast": "Breakfast",
-					"lunch": "Lunch",
-					"dinner": "Dinner",
-					"snacks": "Snacks",
-					"drinks": "Drinks",
-					"prizes": "Awards",
-					"location": "Location",
-					"locationDescription": "Where is the event taking place?",
-					"googleMapsDescription": "You can add a Google Maps embed link. ",
-					"googleMapsLink": "Where to find it?",
-					"rules": "Rules",
-					"rulesDescription": "Select the rules that will apply to this event.",
-					"noRules": "This club has no rules.",
-					"createRule": "Add rules",
-					"changedToday": "Changed today",
-					"changedAgo": "Changed {time} day/s ago",
-					"noDescription": "No description",
-					"map": "Map",
-					"save": "Save changes",
-					"create": "Create an event",
-					"requiredSection": "Required",
-					"basicInformationDescription": "The basic information we need to create your event",
-					"registrationPeriod": "Registration period",
-					"advancedSettings": "Advanced settings",
-					"mapEditor": "Map editor",
-					"mapDescription": "This is where you can edit your game map. Add points of interest, obstacles, and other important details.",
-					"eventDates": "Event dates",
-					"additionalInformation": "Additional information",
-					"optional": "Optional",
-					"partiallyRequired": "Partially required",
-					"additionalLocationInfo": "Additional location info",
-					"reset": "Reset"
-				},
-				"allEvents": "All events",
-				"createEvent": "Create an event",
-				"rules": {
-					"rule": {
-						"updated": "The rulebook has been updated.",
-						"created": "The rulebook has been created",
-						"error": "There's been a problem while saving that rule.",
-						"name": "Rulebook name",
-						"namePlaceholder": "My rulebook",
-						"description": "Description (optional)",
-						"descriptionPlaceholder": "This rulebook is used only for...",
-						"content": "Content",
-						"save": "Save rulebook",
-						"create": "Create rule",
-						"cancel": "Cancel",
-						"delete": {
-							"title": "Delete rule",
-							"body": "Are you sure you want to delete this rulebook?",
-							"action": "Delete",
-							"cancel": "Cancel",
-							"success": "Rulebook has been deleted"
-						},
-						"noDescription": "This rulebook has no description"
-					},
-					"rules": {
-						"title": "Existing rulebooks",
-						"empty": "You have no rulebooks."
-					}
-				}
-			},
-			"members": {
-				"allMembers": "All members",
-				"membersTable": {
-					"remove": {
-						"title": "Are you sure?",
-						"body": "Are you sure you want to remove {name} from the club?",
-						"confirm": "Remove",
-						"cancel": "No, go back",
-						"success": "Member successfully removed",
-						"error": "An error occurred while removing the member"
-					},
-					"searchPlaceholder": "Search members...",
-					"name": "Name",
-					"callsign": "Callsign",
-					"role": "Role",
-					"allRoles": "All roles",
-					"owner": "Owner",
-					"manager": "Manager",
-					"member": "Member",
-					"joinedDate": "Join date",
-					"actions": "Actions",
-					"profile": "Profile",
-					"removeMember": "Remove",
-					"membershipStatus": {
-						"title": "Status",
-						"unlimited": "Unlimited",
-						"expired": "Expired",
-						"expiringSoon": "Expiring soon",
-						"active": "Active"
-					},
-					"startDate": "Join date",
-					"endDate": "Expiry date",
-					"notSet": "Not set",
-					"unlimited": "Unlimited"
-				},
-				"invitations": {
-					"table": {
-						"revoke": {
-							"title": "Are you sure?",
-							"body": "Are you sure you want to revoke the club access invitation?",
-							"confirm": "Revoke",
-							"cancel": "No, go back",
-							"success": "Invitation successfully revoked",
-							"error": "An error occurred while revoking the invitation"
-						},
-						"searchPlaceholder": "Search invitations...",
-						"user": "User",
-						"status": "Status",
-						"pending": "Pending",
-						"accepted": "Accepted",
-						"rejected": "Rejected",
-						"expired": "Expired",
-						"revoked": "Revoked",
-						"requested": "Requested",
-						"created": "Date sent",
-						"expires": "Expires",
-						"code": "Code",
-						"actions": "Actions",
-						"inactive": "Inactive",
-						"all": "All"
-					},
-					"approve": "Accept",
-					"dismiss": "Dismiss",
-					"searchError": "Failed to search users. Please try again.",
-					"send": "Send invitation",
-					"sendError": "An error occurred while sending the invitation. Please try again.",
-					"sendSuccess": "Invitation sent successfully",
-					"title": "Invite user to club",
-					"description": "Invitations will expire after 7 days, and will be deleted after 3 months.",
-					"user": "User",
-					"searchPlaceholder": "Search users...",
-					"minimumChars": "Enter at least 2 characters",
-					"noResults": "No results",
-					"chooseUserDescription": "If the user is already on the platform, you can find them here.",
-					"emailDescription": "If you can't find the user, or already know their email, enter it here."
-				},
-				"managers": {
-					"title": "Managers",
-					"search": {
-						"error": "There's been a problem with the search, try again."
-					},
-					"promote": {
-						"error": "There's been a problem while promoting that user, try again.",
-						"success": "Successfully promoted to manager",
-						"title": "Add a new manager",
-						"member": {
-							"label": "Club member",
-							"placeholder": "Select a member...",
-							"search": "Search members...",
-							"searchEmpty": "Please enter at least 2 characters",
-							"noResults": "We couldn't find anyone",
-							"description": "Choose the member you'd like to promote to manager."
-						},
-						"submit": "Promote"
-					}
-				}
-			},
-			"audit": {
-				"pageTitle": "Audit Log",
-				"pageDescription": "View all actions performed in this club.",
-				"search": "Search audit logs...",
-				"filterByAction": "Filter by action",
-				"allActions": "All actions",
-				"detailsTitle": "Log details",
-				"viewDetails": "View details",
-				"actionType": "Action type",
-				"userInfo": "User",
-				"ipAddress": "IP address",
-				"userAgent": "User agent",
-				"actionData": "Action data",
-				"columns": {
-					"date": "Date",
-					"action": "Action",
-					"user": "User",
-					"ipAddress": "IP address",
-					"actions": "Actions"
-				},
-				"actionTypes": {
-					"clubCreate": "Club creation",
-					"clubUpdate": "Club update",
-					"clubDelete": "Club deletion",
-					"memberInvite": "Member invite",
-					"memberRemove": "Member removal",
-					"memberPromote": "Member promotion",
-					"memberDemote": "Member demotion",
-					"memberJoin": "Member join",
-					"memberLeave": "Member leave",
-					"clubBan": "Club ban",
-					"clubUnban": "Club unban",
-					"spendingCreate": "Spending creation",
-					"spendingUpdate": "Spending update",
-					"spendingDelete": "Spending deletion",
-					"postCreate": "Post creation",
-					"postUpdate": "Post update",
-					"postDelete": "Post deletion",
-					"instagramConnect": "Instagram connection",
-					"instagramDisconnect": "Instagram disconnection",
-					"eventCreate": "Event creation",
-					"eventUpdate": "Event update",
-					"eventDelete": "Event deletion",
-					"clubRuleUpdate": "Club rule update",
-					"clubRuleCreate": "Club rule creation",
-					"clubRuleDelete": "Club rule deletion",
-					"membershipExtension": "Membership extension"
-				}
-			}
-		}
-	},
-	"components": {
-		"sidebar": {
-			"betaMessage": "Beta version - Changes and errors are possible.",
-			"githubMessage": "We're open-source! Click here and help us become better.",
-			"home": "Homepage",
-			"dashboard": "Dashboard",
-			"help": "Help",
-			"user": "User",
-			"overview": "Overview",
-			"settings": "Settings",
-			"security": "Security",
-			"myEvents": "My events",
-			"club": "Club",
-			"clubs": "Clubs",
-			"selectClub": "Select a club",
-			"addClub": "Add a club",
-			"myClub": "My club",
-			"manager": "Manager",
-			"member": "Member",
-			"info": "Information",
-			"stats": "Statistics",
-			"spending": "Expenses",
-			"newPost": "New post",
-			"members": "Members",
-			"invitations": "Invitations",
-			"managers": "Managers",
-			"events": "Events",
-			"newEvent": "Create an event",
-			"calendar": "Calendar",
-			"rules": "Rules",
-			"admin": "Administration",
-			"auditLogs": "Audit Log",
-			"users": "Users",
-			"emails": "Emails",
-			"personalization": "Personalization",
-			"logout": "Sign out",
-			"pendingInvitesMessage": "You have {count} pending invitation/s",
-			"inviteRequestsMessage": "Your club has {count} pending join request/s",
-			"invites": "Invitations",
-			"searchPlaceholder": "Search...",
-			"noResults": "No results found.",
-			"navigation": "Navigation",
-			"account": "Account",
-			"profile": "Profile",
-			"userSettings": "User Settings",
-			"shiftHint": "You can use shift + up and down keys to move between clubs.",
-			"createClub": "Add a Club"
-		},
-		"footer": {
-			"about": {
-				"title": "About us",
-				"description": "RECONNED is a new platform for airsoft enthusiasts. Discover clubs, events, and players across the world. Manage your club, organize events, and find new opportunities."
-			},
-			"quickLinks": {
-				"title": "Quick links",
-				"events": "Events",
-				"dashboard": "Dashboard",
-				"map": "Map",
-				"search": "Search",
-				"about": "About us",
-				"stats": "Statistics"
-			},
-			"community": {
-				"title": "Community"
-			},
-			"support": {
-				"title": "Support",
-				"contact": "Contact",
-				"faq": "FAQ",
-				"privacy": "Privacy",
-				"terms": "Terms of Use",
-				"changelog": "Changelog"
-			},
-			"copyright": "© {year} RECONNED. ",
-			"sponsors": "Check out our sponsors and partners",
-			"version": "Version {commit}"
-		},
-		"table": {
-			"showColumns": "Show columns",
-			"noData": "No data found",
-			"navigation": {
-				"page": "Page {page} of {total}",
-				"previous": "Back",
-				"next": "Forward",
-				"perPage": "per page"
-			},
-			"filters": {
-				"clear": "Remove"
-			}
-		},
-		"header": {
-			"backToHome": "Back to homepage",
-			"dashboard": "Dashboard",
-			"login": "Login",
-			"logout": "Sign out",
-			"personalization": "Personalization"
-		},
-		"themeSwitcher": {
-			"toggle": "Change theme"
-		},
-		"fontSwitcher": {
-			"toggle": "Change font"
-		},
-		"languageSwitcher": {
-			"select": "Choose a language"
-		},
-		"clubsMap": {
-			"viewProfile": "View profile"
-		},
-		"calendar": {
-			"today": "Today",
-			"alreadyToday": "It's already today",
-			"goToToday": "Go to today",
-			"days": {
-				"mon": "Mon",
-				"tue": "Tue",
-				"wed": "Wed",
-				"thu": "Thu",
-				"fri": "Fri",
-				"sat": "Sat",
-				"sun": "Sun"
-			},
-			"months": {
-				"jan": "January",
-				"feb": "February",
-				"mar": "March",
-				"apr": "April",
-				"may": "May",
-				"jun": "June",
-				"jul": "July",
-				"aug": "August",
-				"sep": "September",
-				"oct": "October",
-				"nov": "November",
-				"dec": "December"
-			},
-			"eventDetails": {
-				"start": "Start",
-				"end": "End",
-				"location": "Location",
-				"cost": "Price",
-				"apply": "Log in",
-				"registrationsClosed": "Registrations for this event are currently not open"
-			}
-		},
-		"error": {
-			"backToHome": "Return to homepage"
-		},
-		"addToCalendar": {
-			"addToCalendar": "Add to calendar",
-			"features": {
-				"breakfast": "Breakfast",
-				"lunch": "Lunch",
-				"dinner": "Dinner",
-				"snacks": "Snacks",
-				"drinks": "Drinks",
-				"prizes": "Awards"
-			},
-			"sections": {
-				"other": "The rest",
-				"rules": "Rules",
-				"gear": "Equipment",
-				"private": "This is a private event for club members only.",
-				"freelancers": "Freelancers are welcome to register for this meetup."
-			}
-		},
-		"badge": {
-			"soon": "Soon",
-			"new": "New"
-		},
-		"slug": {
-			"label": "Special link",
-			"slugPlaceholder": "my-link",
-			"description": "A short link that you will be able to share.",
-			"placeholder": "my-link",
-			"available": "The link is available.",
-			"taken": "The link is unavailable!",
-			"errors": {
-				"notAuthenticated": "You are not logged in",
-				"unknownType": "Unknown type"
-			}
-		},
-		"userOverview": {
-			"views": "{count} view/s",
-			"freelancer": "Freelancer",
-			"clubs": {
-				"title": "Clubs",
-				"noClubs": "Not a member of any club"
-			},
-			"upcomingEvents": {
-				"title": "Upcoming events",
-				"noEvents": "There are no upcoming matches"
-			},
-			"pastEvents": {
-				"title": "Previous events",
-				"noEvents": "No previous events"
-			},
-			"tabs": {
-				"events": "Events",
-				"reviews": "Reviews",
-				"memberships": "Memberships"
-			},
-			"attended": "Attended"
-		},
-		"reviews": {
-			"title": "Ratings",
-			"latestReviews": "Latest ratings",
-			"noReviews": "There are no ratings",
-			"showAll": "Show all ratings",
-			"allReviews": "All ratings for {type}",
-			"types": {
-				"club": "club",
-				"event": "event",
-				"user": "the user"
-			}
-		},
-		"post": {
-			"published": "Posted on {date}",
-			"readMore": "Read more",
-			"showLess": "Show less"
-		},
-		"eventOverview": {
-			"editEvent": "Edit event",
-			"apply": "Login",
-			"registrationsClosed": "Applications closed",
-			"registeredCount": "{count} registered",
-			"privateEvent": "Private event",
-			"publicEvent": "Public event",
-			"views": "{count} view/s",
-			"location": "Location",
-			"showLocation": "Show location",
-			"map": "Map",
-			"showEventMap": "Show match map"
-		},
-		"clubOverview": {
-			"views": "{count} view/s",
-			"map": "Map",
-			"edit": "Edit club",
-			"members": "Members",
-			"private": "Private club",
-			"public": "Public club",
-			"posts": "Announcements",
-			"createPost": "New post",
-			"noPosts": "There are no posts",
-			"allied": "Allied with ASK FBIH",
-			"instagramGallery": "Instagram photos",
-			"instagramGalleryDescription": "View our latest posts on Instagram",
-			"noMembers": "This club has no members",
-			"tabs": {
-				"members": "Mmebers",
-				"reviews": "Reviews",
-				"posts": "Posts"
-			}
-		},
-		"breadcrumbs": {
-			"currentClub": "Current club",
-			"currentEvent": "Current event",
-			"translations": {
-				"dashboard": "Dashboard",
-				"club": "Club",
-				"clubs": "Clubs",
-				"events": "Events",
-				"information": "Information",
-				"create": "Create",
-				"stats": "Statistics",
-				"members": "Members",
-				"settings": "Settings",
-				"calendar": "Calendar",
-				"invitations": "Invitations",
-				"security": "Security",
-				"user": "User",
-				"help": "Help",
-				"managers": "Managers",
-				"rules": "Rules",
-				"attendance": "Attendance",
-				"admin": "Administration",
-				"emails": "Emails",
-				"posts": "New post",
-				"spending": "Spending",
-				"add-club": "Add club",
-				"audit": "Audit",
-				"invites": "Invitations",
-				"users": "Users",
-				"instagram": "Instagram"
-			}
-		},
-		"icons": {
-			"clubOwner": "Club owner",
-			"clubManager": "Club manager",
-			"administrator": "Administrator",
-			"verifiedClub": "Verified club"
-		},
-		"leaveClubButton": {
-			"title": "Leave club",
-			"body": "Are you sure you'd like to leave this club? You'll need an invite to join it again.",
-			"confirm": "Leave club",
-			"cancel": "No, cancel",
-			"error": "There was an error while trying to leave the club",
-			"action": "Leave club",
-			"ownerError": "Club owners cannot leave the club. You must first transfer ownership or delete the club."
-		},
-		"membershipExtension": {
-			"extendMembership": "Extend",
-			"extendMembershipTitle": "Extend membership",
-			"extendMembershipDescription": "Extend membership for user {user}",
-			"currentStatus": "Current status",
-			"startDate": "Start date",
-			"endDate": "End date",
-			"extensionDuration": "Extension duration",
-			"selectDuration": "Select duration",
-			"oneMonth": "1 month",
-			"threeMonths": "3 months",
-			"sixMonths": "6 months",
-			"oneYear": "1 year",
-			"cancel": "Cancel",
-			"extend": "Extend",
-			"extending": "Extending...",
-			"success": "Membership successfully extended",
-			"error": "Error",
-			"failedToExtend": "There was an error while extending the membership",
-			"active": "Active",
-			"expired": "Expired",
-			"expiringSoon": "Expires soon",
-			"unlimited": "Unlimited"
-		},
-		"instagramGallery": {
-			"error": "There's been a problem contacting Instagram",
-			"noPhotos": "Nothing to show here",
-			"viewMore": "View more on Instagram"
-		}
-	},
-	"imgur": {
-		"error": {
-			"overCapacity": "Imgur is currently over capacity. Please try again later.",
-			"rateLimit": "Too many attempts. Please wait a few minutes.",
-			"generic": "Error uploading image."
-		}
-	}
+  "emails": {
+    "emailVerification": {
+      "title": "Verify your email address",
+      "hello": "Hello,",
+      "helloUser": "Hi {name},",
+      "message": "Please click the button below to verify your email address.",
+      "action": "Verify email",
+      "footer": "If you did not request verification, please ignore this email."
+    },
+    "airsoftInvitation": {
+      "title": "You are invited to join the {clubName} club!",
+      "invitation": "Invitation card",
+      "hello": "Hello,",
+      "helloUser": "Hi {name},",
+      "message": "You are invited to join the {clubName} club. ",
+      "action": "Accept invite",
+      "footer": "If you did not expect this invitation, please ignore this email."
+    },
+    "createAccount": {
+      "title": "You are invited to an airsoft event! ",
+      "invitationTitle": "You are invited to an airsoft event!",
+      "message": "You are invited to join the {eventName} event that will take place on {eventDate}. ",
+      "clubMessage": "Your account will automatically be linked to club {clubName} and you will be able to access match details immediately.",
+      "action": "Create Account",
+      "emailLinked": "This link is associated with the email address: {email}",
+      "footer": "If you were not expecting this invitation, please ignore this email."
+    },
+    "rateEvent": {
+      "title": "Rate your experience at {eventName}!",
+      "heading": "How was your event?",
+      "hello": "Greetings,",
+      "helloUser": "Hello {name},",
+      "message": "Thank you for attending the {eventName} event held on {date}. ",
+      "action": "Rate the event",
+      "footer": "{clubName} - Thank you for your participation!"
+    },
+    "membershipExpiration": {
+      "expiredTitle": "Your membership in {clubName} has expired",
+      "expiringTitle": "Your membership in {clubName} expires in {days} days",
+      "expiredHeading": "Membership Expired",
+      "expiringHeading": "Membership Expiring Soon",
+      "hello": "Hello {name},",
+      "expiredMessage": "Your membership in the {clubName} club has expired on {date}. If you wish to continue being a club member, please renew your membership.",
+      "expiringMessage": "Your membership in the {clubName} club will expire on {date} (in {days} days). To ensure continuous membership, please consider renewing before the expiry date.",
+      "action": "Renew Membership",
+      "footer": "If you no longer wish to be a member of {clubName}, you can ignore this email."
+    },
+    "membershipExpirationOwner": {
+      "expiredTitle": "{memberName}'s membership in {clubName} has expired",
+      "expiringTitle": "{memberName}'s membership in {clubName} expires in {days} days",
+      "expiredHeading": "Member's Subscription Expired",
+      "expiringHeading": "Member's Subscription Expiring Soon",
+      "hello": "Hello {name},",
+      "expiredMessage": "The membership of {memberName} in your {clubName} club has expired on {date}.",
+      "expiringMessage": "The membership of {memberName} in your {clubName} club will expire on {date} (in {days} days).",
+      "action": "Manage Members",
+      "footer": "This is an automated notification to help you manage your club memberships."
+    }
+  },
+  "public": {
+    "notFound": {
+      "title": "You are lost",
+      "message": "Page not found",
+      "backHome": "Return to homepage",
+      "metadata": {
+        "title": "404 - Page not found - RECONNED",
+        "description": "The page you are looking for does not exist."
+      }
+    },
+    "home": {
+      "hero": {
+        "button": "View the changelog",
+        "title": "Just Airsoft,<br></br> but better.",
+        "description": "Join the most advanced airsoft community. Find matches, connect with players and improve your game.",
+        "search": "Search all",
+        "map": "Show map",
+        "about": "Find out more",
+        "events": "Events",
+        "clubs": "Clubs",
+        "members": "Players",
+        "dashboard": "Dashboard",
+        "sponsors": "Sponsors"
+      },
+      "upcomingEventsTitle": "Upcoming events",
+      "upcomingEventsSubtitle": "See you on the field",
+      "upcomingEventsNone": "There are no upcoming matches",
+      "eventCard": {
+        "canFreelance": "Freelancers allowed",
+        "cannotFreelance": "For members only",
+        "breakfast": "Breakfast",
+        "lunch": "Lunch",
+        "dinner": "Dinner",
+        "snacks": "Snacks",
+        "drinks": "Drinks",
+        "prizes": "Awards",
+        "privateEvent": "This is a private event, but you are in the {clubName} club.",
+        "starts": "Starts",
+        "view": "View"
+      },
+      "metadata": {
+        "title": "RECONNED - Airsoft clubs, events, and players",
+        "description": "The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "sponsors": {
+      "title": "Sponsors and partners",
+      "description": "It is realistic to say that this site would not exist without the engagement and support of everyone you can find below. Thank you.",
+      "currentSponsors": "Our current sponsors",
+      "contactUs": "Contact Us",
+      "contactDescription": "Want to help or have questions? ",
+      "cta": {
+        "title": "You",
+        "description": "This place can be yours"
+      },
+      "metadata": {
+        "title": "Sponsors - RECONNED",
+        "description": "Our current sponsors and partners. Thank you for your support!"
+      }
+    },
+    "about": {
+      "title": "Who are we?",
+      "subtitle": "This project was started by 2 developers from Bosnia and Herzegovina (<omar></omar> and <safet></safet>) because we wanted something better than Facebook, Viber, and others. Airsoft communities are quite new and unorganized, and we want to change that - totally transparent, totally public.",
+      "platform": {
+        "title": "About the platform",
+        "description": "The ultimate goal of the <logo></logo> platform is the unification of the airsoft community, initially in Bosnia and Herzegovina, and beyond. Our platform allows clubs to present themselves, organize events, and find new members. It enables players to find clubs, events, and other players, all in one place."
+      },
+      "sustainability": {
+        "title": "Sustainability",
+        "description": "The goal is not, and never will be pure profit. Every part of the platform is open-source, and thus available to everyone. Currently, we are completely self-funding the platform's development, but we will give clubs and individuals a chance to help with development and maintenance, with some benefits.",
+        "emphasis": "Core functionalities will always be free to use."
+      },
+      "help": {
+        "title": "How to help?",
+        "description": "If you are interested in helping with the development of the platform, please feel free to contact us. Help in the form of marketing, programming, and general sponsorship is always welcome.",
+        "sponsors": "See the list of sponsors."
+      },
+      "metadata": {
+        "title": "About us - RECONNED",
+        "description": "About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "auth": {
+      "haveAccountQuestion": "Already have an account?",
+      "noAccountQuestion": "Don't have an account?",
+      "home": "Homepage",
+      "login": "Login",
+      "loginDescription": "Enter your email and password to join the world of airsoft.",
+      "unverified": "Your email has not been verified. ",
+      "verifyEmail": "Confirm your email",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?",
+      "forgotPasswordNoEmail": "Enter your email to receive a password reset link.",
+      "forgotPasswordWrongEmail": "The email is not valid.",
+      "forgotPasswordSuccess": "A password reset link has been sent to your email.",
+      "loading": "Just a moment...",
+      "invalidData": "The data entered is incorrect.",
+      "invalidDataOrUserExists": "The entered data is incorrect or the user already exists.",
+      "register": "Register",
+      "registerDescription": "Create your account and join the airsoft community.",
+      "registerDescriptionTooltipTitle": "Registering a club?",
+      "registerDescriptionTooltipDescription": "If you want to add your club, register as yourself. After logging in, you will be able to add a club and be its owner.",
+      "registerSuccess": "You have successfully registered. Check your email to verify it.",
+      "name": "Name",
+      "emailAutofilled": "The email has been filled in automatically",
+      "remove": "Remove",
+      "resetPassword": "Reset password",
+      "resetPasswordDescription": "Enter a new password to access your account.",
+      "resetPasswordSuccess": "Password successfully reset. ",
+      "resetPasswordError": "An error occurred while resetting the password. ",
+      "confirmPassword": "Confirm password",
+      "twoFactor": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your app or use the backup code.",
+      "twoFactorError": "The code entered is not valid.",
+      "code": "Code",
+      "verify": "Confirm",
+      "rememberDevice": "Remember this device",
+      "captchaError": "Captcha error",
+      "invalidEmail": "Invalid email",
+      "passwordRequired": "Your password is required",
+      "passwordTooShort": "That password is too short",
+      "nameRequired": "Your name is required",
+      "metadata": {
+        "title": "Authentication - RECONNED",
+        "description": "Login, register, and reset your password. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "clubs": {
+      "title": "Clubs",
+      "metadata": {
+        "title": "Airsoft clubs - RECONNED",
+        "description": "The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players."
+      },
+      "member": "member",
+      "members": "members"
+    },
+    "users": {
+      "title": "Players",
+      "metadata": {
+        "title": "Airsoft players - RECONNED",
+        "description": "The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "events": {
+      "metadata": {
+        "title": "Airsoft events - RECONNED",
+        "description": "The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "layout": {
+      "metadata": {
+        "description": "The first universal platform for airsoft clubs, events, and players.",
+        "title": "RECONNED - Airsoft clubs, events, and players",
+        "keywords": "airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: {date}",
+      "viewTerms": "View our Terms of Use",
+      "introduction": {
+        "title": "Introduction",
+        "description": "RECONNED (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains what information we collect, how we use it, and how we safeguard it when you use our airsoft community platform."
+      },
+      "dataCollection": {
+        "title": "Information We Collect",
+        "description": "We collect various types of information to provide and improve our service. Here's what we collect:",
+        "personalInfo": "Personal information: name, email address, profile picture, bio, location, website, phone number, callsign, and gear settings.",
+        "accountInfo": "Account information: session data (IP addresses, user agents), authentication data (passwords, passkeys, two-factor authentication).",
+        "clubInfo": "Club information: name, location, description, founding date, logo, contact information, rules, etc.",
+        "eventInfo": "Event information: name, description, locations, dates, prices, rules, participant registrations, etc.",
+        "socialInfo": "Social information: reviews, posts, achievements, and other interactions between users.",
+        "usageInfo": "Usage information: how you use our platform, which pages you visit, and how you interact with our interface.",
+        "deviceInfo": "Device information: device type, operating system, browser version, and language settings."
+      },
+      "dataUse": {
+        "title": "How We Use Your Information",
+        "description": "We use the collected information for various purposes, including:",
+        "provideService": "To provide, maintain, and improve our platform, including connecting airsoft clubs, players, and events.",
+        "improveService": "To analyze how you use our platform and enhance user experience.",
+        "communicate": "To communicate with you, respond to your inquiries, and send notifications about our service.",
+        "security": "To protect our users and platform from fraud, abuse, and other harmful activities."
+      },
+      "dataSecurity": {
+        "title": "Data Security",
+        "description": "We implement security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. This includes encryption of sensitive data, secure servers, and regular security reviews."
+      },
+      "dataSharing": {
+        "title": "Information Sharing",
+        "description": "We don't sell your personal information to third parties. However, we may share information in the following situations:",
+        "clubMembers": "With other club members (if you're a member of a club, certain information may be visible to other members).",
+        "eventParticipants": "With event participants (if you're registered for an event, certain information may be visible to other participants).",
+        "serviceProviders": "With service providers who help us operate the platform (e.g., hosting).",
+        "legal": "When required by law or to protect our rights."
+      },
+      "cookies": {
+        "title": "Cookies and Tracking Technologies",
+        "description": "We use cookies and similar tracking technologies to collect and store certain information when you use our platform. This helps us improve your experience, analyze platform usage, and tailor content to your interests."
+      },
+      "userRights": {
+        "title": "Your Data Rights",
+        "description": "Depending on your location, you may have certain rights regarding your personal information, including:",
+        "access": "The right to access the information we have about you.",
+        "rectification": "The right to correct inaccurate or incomplete information.",
+        "deletion": "The right to delete your information in certain circumstances.",
+        "restriction": "The right to restrict the processing of your information.",
+        "objection": "The right to object to the processing of your information.",
+        "portability": "The right to data portability (obtaining a copy of your data in a structured format)."
+      },
+      "thirdPartyServices": {
+        "title": "Third-Party Services",
+        "description": "Our platform uses several third-party services that may collect information about you. These services include:",
+        "auth": "Authentication services (e.g., Google login) for easy sign-in.",
+        "storage": "Storage services for storing data and media files.",
+        "maps": "Mapping services for displaying club and event locations.",
+        "analytics": "Analytics services for tracking platform usage.",
+        "instagram": "Integration with Instagram for clubs that want to display their Instagram posts on their club profile."
+      },
+      "childrenPrivacy": {
+        "title": "Children's Privacy",
+        "description": "Our platform is not intended for use by individuals under the age of 17. We do not knowingly collect personal information from children under 17. If we discover that we have collected personal information from a child, we will take steps to delete that information."
+      },
+      "changes": {
+        "title": "Changes to This Privacy Policy",
+        "description": "We may update our Privacy Policy from time to time. We will notify you of significant changes by posting a notification on our website or through direct communication. We encourage you to periodically review this Privacy Policy to stay informed about how we are protecting your information."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "If you have any questions about this Privacy Policy or our privacy practices, please contact us at <email></email>."
+      },
+      "metadata": {
+        "title": "Privacy Policy - RECONNED",
+        "description": "Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "lastUpdated": "Last updated: {date}",
+      "viewPrivacy": "View our Privacy Policy",
+      "introduction": {
+        "title": "Introduction",
+        "description": "Welcome to RECONNED, a platform that connects airsoft enthusiasts, clubs, and events. By using our website and services, you agree to comply with these Terms of Use. Please read them carefully."
+      },
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "description": "By accessing or using the RECONNED platform, you agree to be legally bound by these Terms of Use. If you do not agree to any part of these terms, please do not use our platform."
+      },
+      "eligibility": {
+        "title": "Eligibility",
+        "description": "To use our platform, you must be at least 17 years old. By using the platform, you confirm that you are at least 17 years old and that you are not a person barred from receiving our services under the laws of Bosnia and Herzegovina or other applicable jurisdictions."
+      },
+      "userAccounts": {
+        "title": "User Accounts",
+        "description": "To access certain features of our platform, you will need to create a user account. When you do, you are responsible for:",
+        "accuracy": "Maintaining the accuracy and currency of your information.",
+        "security": "Keeping your account and password secure.",
+        "responsibility": "All activities that occur under your account.",
+        "termination": "Understanding that we may suspend or terminate your account if you violate these terms."
+      },
+      "content": {
+        "title": "User Content and Conduct",
+        "description": "Our platform allows you to post content, including text, images, and other materials.",
+        "userContent": {
+          "title": "Your Content",
+          "description": "You retain ownership of the content you post on the platform, but grant us a non-exclusive, royalty-free license to use, display, and distribute that content in connection with our services."
+        },
+        "prohibited": {
+          "title": "Prohibited Activities",
+          "description": "The following behaviors are prohibited on the RECONNED platform:",
+          "illegal": "Posting or promoting illegal activities.",
+          "harmful": "Posting content that is harmful, threatening, offensive, or harassing.",
+          "impersonation": "Impersonating another user or entity.",
+          "spam": "Sending unwanted messages or spamming the platform.",
+          "infringement": "Violating copyright or other intellectual property rights."
+        }
+      },
+      "intellectualProperty": {
+        "title": "Intellectual Property",
+        "description": "RECONNED and its content, features, and appearance are protected by copyright, trademark, and other intellectual property laws.",
+        "ownership": "All trademarks, logos, product and service names displayed on the platform are the property of RECONNED or their respective owners.",
+        "license": "We grant you a limited, non-exclusive, non-transferable license to access and use the platform for personal, non-commercial purposes.",
+        "feedback": "If you provide us with feedback or suggestions, we may use them without any obligation to you."
+      },
+      "thirdParty": {
+        "title": "Third-Party Links",
+        "description": "Our platform may contain links to third-party websites that are not owned or controlled by us. We are not responsible for the content, privacy policies, or practices of any third-party websites."
+      },
+      "disclaimer": {
+        "title": "Disclaimer of Warranties",
+        "description": "The RECONNED platform is provided \"as is\" and \"as available\", without any warranties, either express or implied. We do not guarantee that the platform will always be available, secure, error-free, or meet your specific requirements."
+      },
+      "limitation": {
+        "title": "Limitation of Liability",
+        "description": "To the extent permitted by law, RECONNED and its founders, officers, directors, employees, and agents will not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the platform."
+      },
+      "changes": {
+        "title": "Changes to Terms",
+        "description": "We reserve the right to modify or replace these Terms of Use at any time. If we make material changes, we will endeavor to notify you before the new terms take effect. By continuing to use the platform after the changes take effect, you agree to the updated terms."
+      },
+      "termination": {
+        "title": "Termination",
+        "description": "We may, in our sole discretion, modify, suspend, or terminate your access to the platform for any reason, including violation of these Terms of Use, without prior notice."
+      },
+      "governing": {
+        "title": "Governing Law",
+        "description": "These Terms of Use are governed by and construed in accordance with the laws of Bosnia and Herzegovina, regardless of conflict of law provisions."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "If you have any questions about these Terms of Use, please contact us at <email></email>."
+      },
+      "metadata": {
+        "title": "Terms of Use - RECONNED",
+        "description": "Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "changelog": {
+      "back": "Back",
+      "errorLoading": "There's been a problem while trying to get the changelog",
+      "description": "The RECONNED changelog",
+      "latestRelease": "Latest version",
+      "published": "Posted {date}",
+      "previousReleases": "Previous versions",
+      "title": "Changes",
+      "version": "Version {version}",
+      "viewOnGithub": "View on GitHub",
+      "metadata": {
+        "title": "Changelog - RECONNED",
+        "description": "The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "search": {
+      "placeholder": "Something...",
+      "clubs": "Clubs",
+      "users": "Players",
+      "events": "Events",
+      "noResults": "Nothing was found matching that search",
+      "private": "Private",
+      "public": "Public",
+      "title": "Search",
+      "description": "Find clubs, players, and events - all in one place",
+      "loading": "Just a moment...",
+      "member": "member",
+      "members": "members",
+      "metadata": {
+        "title": "Search for {query} - RECONNED",
+        "description": "Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
+      }
+    },
+    "map": {
+      "metadata": {
+        "title": "Club Map - RECONNED",
+        "description": "Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players."
+      }
+    }
+  },
+  "dashboard": {
+    "root": {
+      "welcome": "Welcome, {name}",
+      "myClubs": "My clubs",
+      "recentEvents": "Recent events",
+      "statistics": {
+        "events": "Events",
+        "clubs": "Clubs",
+        "writtenReviews": "Written reviews",
+        "receivedReviews": "Reviews received"
+      },
+      "error": "An error occurred",
+      "loading": "Loading...",
+      "nextEvent": "Next event",
+      "latestReview": "Latest review"
+    },
+    "help": {
+      "title": "Help",
+      "googleMaps": {
+        "title": "How to add a Google Maps link to an event",
+        "steps": {
+          "step1": "Open Google Maps and find the desired location",
+          "step2": "Click the \"Share\" button",
+          "step3": "In the share dialog, select the \"Embed a map\" tab",
+          "step4": "Copy the entire link",
+          "step5": "Paste the copied link into the Google Maps field on the event creation form"
+        }
+      },
+      "deleteClub": {
+        "title": "How to delete a club",
+        "description": "To delete a club, follow these steps:",
+        "steps": {
+          "step1": "Select the club you want to delete from the sidebar",
+          "step2": "Click on \"Club\" in the menu",
+          "step3": "Click on \"Information\" in the submenu",
+          "step4": "On the club information page, find and click the \"Delete the club\" button in the top right corner"
+        },
+        "notes": "Note: Deleting a club is a permanent action and cannot be undone. All events and memberships related to the club will also be deleted."
+      }
+    },
+    "user": {
+      "overview": {
+        "alertTitle": "Your account",
+        "alertDescription": "You can see your profile here",
+        "edit": "Edit profile",
+        "view": "View profile"
+      },
+      "invites": {
+        "title": "Invitations",
+        "noInvites": "You have no invitations",
+        "approve": "Accept",
+        "dismiss": "Dismiss",
+        "viewClub": "View club"
+      },
+      "settings": {
+        "title": "General",
+        "imageUploadError": "An error occurred while uploading the image",
+        "profileUpdated": "User data has been saved",
+        "profileUpdateError": "An error occurred while saving data",
+        "name": "Your name",
+        "callsign": "Callsign",
+        "location": "Location",
+        "locationDescription": "The city or town where you are located",
+        "bio": "About you",
+        "bioDescription": "This is your chance to stand out in a few sentences",
+        "public": "Displayed publicly",
+        "private": "Hidden",
+        "privateProfile": "Private profile",
+        "privateProfileDescription": "Hide profile from public access. ",
+        "privateStats": "Private Statistics",
+        "privateStatsDescription": "Only you can see how many views your profile has",
+        "profilePhoto": "Profile picture",
+        "profilePhotoDescription": "We recommend that you upload a profile picture.",
+        "fileUpload": "Drag or click to upload image",
+        "fileUploadFormats": "Supported formats:",
+        "deleteProfilePhoto": {
+          "title": "Are you sure?",
+          "body": "Are you sure you want to delete your profile picture?",
+          "confirm": "Delete profile picture",
+          "cancel": "No, come back"
+        },
+        "contact": "Contact",
+        "phone": "Phone number",
+        "website": "Website",
+        "save": "Save changes",
+        "linkTaken": "The selected link is busy",
+        "cropPhotoTitle": "Crop the image",
+        "cropPhotoDescription": "Select the part of the image you want to save",
+        "cancel": "Cancel",
+        "bioPlaceholder": "Something about me is that...",
+        "requiredSection": "Required",
+        "profileDescription": "Some information about you",
+        "additionalInformation": "Additional information",
+        "optional": "Optional",
+        "contactDescription": "This is how people can reach you",
+        "privacySettings": "Privacy",
+        "privacyDescription": "Show or hide your information"
+      },
+      "security": {}
+    },
+    "security": {
+      "passwordChange": {
+        "error": "An error occurred while changing your password. ",
+        "success": "Password successfully changed",
+        "title": "Change password",
+        "currentPassword": "Current password",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm new password",
+        "changePassword": "Change password",
+        "loading": "Just a moment..."
+      },
+      "passwordSetup": {
+        "error": "An error occurred while setting your password. ",
+        "success": "Password successfully set",
+        "title": "Set a password",
+        "newPassword": "New password",
+        "setupPassword": "Set a password",
+        "loading": "Just a moment..."
+      },
+      "securitySettings": {
+        "createdAt": "Created on {date}",
+        "addNewPasskey": "Add a new Passkey",
+        "addNewPasskeyDescription": "Add a new passkey for faster and more secure login to your account.",
+        "add": "Add",
+        "twoFactor": "Two-factor authentication",
+        "twoFactorUnavailable": "Two-factor authentication is not available",
+        "twoFactorUnavailableDescription": "To use 2-factor authentication, you must first set a password.",
+        "twoFactorDisable": "Disable 2-factor authentication",
+        "twoFactorDisableDescription": "If you turn off 2-factor authentication, you will be able to log into your account without confirmation through the application.",
+        "disable": "Disable",
+        "twoFactorDisablePrompt": {
+          "title": "Disable 2-factor authentication?",
+          "body": "Are you sure you want to disable 2-factor authentication? ",
+          "confirm": "Disable",
+          "cancel": "No, come back",
+          "invalidPassword": "Please enter the correct password"
+        },
+        "backupCodes": "Backup codes",
+        "download": "Download",
+        "regenerate": "Regenerate codes",
+        "regenerateDescription": "These are your backup codes for 2-factor authentication. ",
+        "regenerateSuccess": "Codes successfully regenerated",
+        "regenerateError": "An error occurred while regenerating the codes",
+        "twoFactorEnable": "Enable 2-factor authentication",
+        "twoFactorEnableDescription": "Enable 2-factor authentication for extra security of your account.",
+        "twoFactorEnablePrompt": {
+          "title": "Enable 2-factor authentication?",
+          "body": "Are you sure you want to enable 2-factor authentication? ",
+          "confirm": "Enable",
+          "cancel": "No, come back"
+        },
+        "twoFactorConfirmPrompt": {
+          "scanQr": "Scan the QR code with your app for 2-factor authentication.",
+          "enterCode": "If you can't scan the QR code, enter this code:",
+          "verifyCode": "Confirm the 6-digit code you received from the app",
+          "invalidCode": "Please enter a valid 6-digit code",
+          "confirm": "Confirm"
+        },
+        "activeSessions": "Active sessions",
+        "activeSessionsDescription": "Here you can see all active sessions on your account. ",
+        "logoutAll": "Sign out of all devices except this one",
+        "logoutAllAction": "Sign out",
+        "logoutAllSuccess": "You are signed out of all other devices",
+        "logoutAllError": "An error occurred while signing out from other devices.",
+        "logoutSingleSuccess": "You are signed out of this device",
+        "logoutSingleError": "An error occurred while logging out of this device.",
+        "currentSession": "Current session",
+        "sessionLastUsed": "Last used on {date}"
+      }
+    },
+    "events": {
+      "title": "My events",
+      "search": "Search events...",
+      "name": "Name",
+      "location": "Location",
+      "dateStart": "Start",
+      "dateRegistrationsClose": "Closing applications",
+      "status": "Status",
+      "clubName": "Club",
+      "actions": "Actions"
+    },
+    "addClub": {
+      "addClub": "Add club",
+      "createClub": "Create new club",
+      "createClubDescription": "This option is for you if you want to create a new club, of which you will be the sole owner.",
+      "joinClub": "Join club",
+      "joinClubDescription": "Your club is already on this site? You can request an invitation, or accept one you've already received.",
+      "requestAccess": "Request club access",
+      "requestAccessDescription": "Select the club you want to join",
+      "selectClub": "Select club",
+      "selectClubPlaceholder": "Select club...",
+      "sendRequest": "Send request",
+      "requestSent": "Request sent successfully",
+      "requestFailed": "Error sending request",
+      "searchFailed": "Error searching clubs",
+      "searchClubs": "Search clubs...",
+      "enterTwoChars": "Enter at least two characters",
+      "noClubsFound": "No clubs found",
+      "or": "or"
+    },
+    "club": {
+      "info": {
+        "photoUploadError": "An error occurred while uploading the image",
+        "clubCreationError": "An error occurred while creating the club",
+        "clubCreationSuccess": "Club successfully created",
+        "clubSaved": "Club information has been saved",
+        "error": "An error occurred",
+        "clubEditTitle": "You are changing your club information",
+        "clubEditDescription": "Changes will be visible immediately after you save them.",
+        "clubDelete": {
+          "title": "Are you sure?",
+          "body": "If you delete a club, you won't be able to get it back.",
+          "confirm": "Delete the club",
+          "cancel": "No, come back"
+        },
+        "general": "General",
+        "name": "Club name",
+        "nameDescription": "The name of the club will be displayed everywhere on the site, if the club is public.",
+        "country": "Country",
+        "countryDescription": "The country where the club is located",
+        "noResults": "No results",
+        "pickCountry": "Select a country",
+        "searchCountry": "Search countries...",
+        "city": "City",
+        "cityDescription": "The city where the club is located",
+        "exactLocation": "Exact location",
+        "exactLocationDescription": "Click on the map to mark the exact location of your club. If your club is public, you'll be able to see it on the <link></link>",
+        "exactLocationLink": "airsoft clubs map",
+        "reset": "Reset",
+        "description": "Description",
+        "descriptionDescription": "Describe your club in a few sentences",
+        "foundedDate": "Date of establishment",
+        "foundedDateDescription": "When was the club founded?",
+        "chooseDate": "Select a date",
+        "isAllied": "In the ASK FBIH alliance",
+        "isAlliedDescription": "If you are part of the SAKFBIH, select this option. Will be verified.",
+        "private": "Private club",
+        "privateDescription": "Private clubs are only visible to club members. ",
+        "privateStats": "Private Statistics",
+        "privateStatsDescription": "Only club members can see how many views the club has",
+        "logo": "Logo",
+        "logoDescription": "Add a club logo. ",
+        "fileUpload": "Drag or click to upload image",
+        "fileUploadFormats": "Supported formats:",
+        "logoDelete": {
+          "title": "Are you sure?",
+          "body": "Are you sure you want to delete the club logo?",
+          "confirm": "Clear logo",
+          "cancel": "No, come back"
+        },
+        "contact": "Contact",
+        "phone": "Phone number",
+        "phoneDescription": "The club's phone number, publicly displayed on the profile.",
+        "emailDescription": "Email address of the club, publicly displayed on the profile.",
+        "website": "Website",
+        "save": "Save changes",
+        "create": "Create a club",
+        "cancel": "Cancel",
+        "backToClub": "Back to club",
+        "socialMedia": "Social Media",
+        "instagramConnection": "Instagram Connection",
+        "instagramDescription": "Connect your Instagram account to display club photos on the club profile.",
+        "instagramConnect": "Connect Instagram",
+        "instagramConnecting": "Connecting...",
+        "instagramConnectSuccess": "Instagram account successfully connected",
+        "instagramConnectError": "An error occurred while connecting Instagram account",
+        "instagramConnectedMessage": "Your club is connected to an Instagram account",
+        "instagramDisconnecting": "Disconnecting...",
+        "instagramDisconnectSuccess": "Instagram account successfully disconnected",
+        "instagramDisconnectError": "An error occurred while disconnecting Instagram account",
+        "instagramDisconnect": {
+          "title": "Disconnect Instagram Account",
+          "body": "Are you sure you want to disconnect the Instagram account? After disconnecting, photos will no longer be displayed on the club profile.",
+          "action": "Disconnect Instagram",
+          "confirm": "Yes, disconnect",
+          "cancel": "No, go back"
+        },
+        "instagramRedirecting": "Redirecting to Instagram for authorization...",
+        "instagramSelectPageTitle": "Select Facebook Page",
+        "instagramSelectPageDescription": "Select the Facebook page that is connected to the Instagram Business account you want to connect to your club.",
+        "instagramNoPages": "No Facebook pages found",
+        "instagramNoPageDescription": "No Facebook pages connected to your account found. First create a Facebook page and connect it to an Instagram Business account.",
+        "instagramConnected": "Instagram connected",
+        "instagramNotConnected": "Instagram not connected",
+        "instagramLoadingPages": "Loading pages...",
+        "instagramSelectPage": "Please select a page",
+        "instagramEligible": "Available",
+        "instagramIneligible": "Not available",
+        "instagramIneligibleTooltip": "This Facebook page is not connected to an Instagram Business account. To connect, first link an Instagram Business account to this Facebook page.",
+        "instagramSessionMissing": "Missing session for page selection",
+        "instagramPagesFetchFailed": "Failed to load Facebook pages",
+        "instagramSelectedPageNotFound": "Selected page not found",
+        "instagramConnectionFailed": "Failed to connect Instagram account",
+        "instagramNoEligiblePages": "None of your Facebook pages are connected to an Instagram Business account. First connect an Instagram Business account to your Facebook page.",
+        "instagramError": {
+          "title": "Problem connecting Instagram account",
+          "connectionFailed": "Problem connecting to Instagram account. Please try again.",
+          "noFacebookPages": "We couldn't find any Facebook Pages connected to your account.",
+          "noInstagramAccount": "We couldn't find an Instagram Business account connected to the selected Facebook page.",
+          "notConnected": "Instagram account is not connected to your Facebook page.",
+          "missingParams": "Missing parameters for connecting to Instagram API.",
+          "authFailed": "Authorization failed. Please try again.",
+          "pageNotFound": "Facebook Page not found.",
+          "personalAccount": "The Instagram account connected to the selected Facebook page is not a Business account. You need to use an Instagram Business account to connect."
+        },
+        "descriptionPlaceholder": "This is a cool description"
+      },
+      "posts": {
+        "successEdited": "Post successfully modified",
+        "successCreated": "Post successfully created",
+        "error": "An error occurred",
+        "delete": {
+          "title": "Are you sure?",
+          "body": "If you delete a post, you won't be able to get it back.",
+          "confirm": "Delete the post",
+          "cancel": "No, come back",
+          "success": "Post successfully deleted",
+          "error": "An error occurred while deleting the post"
+        },
+        "editing": "Editing a post",
+        "creating": "New post",
+        "title": "Title",
+        "content": "Content",
+        "public": "Public announcement",
+        "saveNewPost": "Save the post",
+        "saveEditPost": "Save changes"
+      },
+      "spending": {
+        "title": "Spending",
+        "newItem": "New item",
+        "edit": "Edit",
+        "details": {
+          "title": "Title",
+          "description": "Description",
+          "amount": "Amount (KM)",
+          "receipts": "Receipts",
+          "receiptsLimit": "You've reached the limit",
+          "receiptsMaxCount": "Maximum 3 receipts per item",
+          "receiptUploadInfo": "Click to add a file or just drop it here",
+          "receiptFormats": "Supported formats: JPG, JPEG, PNG, PDF",
+          "actions": "Actions"
+        },
+        "receipt": {
+          "title": "Receipt",
+          "pdfDocument": "PDF Document",
+          "download": "Download"
+        },
+        "date": "Date",
+        "save": "Save",
+        "saving": "Saving...",
+        "saveChanges": "Save changes",
+        "uploadingFiles": "Uploading files",
+        "error": "Error while saving expense data",
+        "errorDelete": "Error while deleting expense item",
+        "errorReceipt": "Error uploading receipt",
+        "success": "Expense successfully added",
+        "successEdit": "Expense successfully modified",
+        "successDelete": "Expense successfully deleted",
+        "deleteConfirm": {
+          "title": "Delete expense item",
+          "body": "Are you sure you want to delete this expense item? This action cannot be undone.",
+          "action": "Delete",
+          "cancel": "Cancel"
+        },
+        "deleteReceiptConfirm": {
+          "title": "Are you sure?",
+          "body": "If you delete this receipt, you won't be able to recover it.",
+          "action": "Delete receipt",
+          "cancel": "No, go back"
+        },
+        "search": "Search expenses...",
+        "delete": "Delete"
+      },
+      "stats": {
+        "members": "Number of members",
+        "registrations": "Number of applications",
+        "roles": "Roles",
+        "events": "Events by month",
+        "numberOfEvents": "Number of events",
+        "numberOfRegistrations": "Number of applications",
+        "userGrowth": "Membership growth",
+        "roleDistribution": "Role distribution",
+        "member": "Member",
+        "manager": "Manager",
+        "owner": "The owner"
+      },
+      "events": {
+        "search": "Search events...",
+        "name": "Name",
+        "location": "Location",
+        "dateStart": "Start",
+        "dateRegistrationsClose": "Closing applications",
+        "type": "The guy",
+        "private": "Private",
+        "public": "Public",
+        "registrations": "Applications",
+        "actions": "Actions",
+        "attendence": "Presence",
+        "edit": "Edit",
+        "view": "View",
+        "event": "Event",
+        "attendenceTracking": {
+          "search": "Search participants...",
+          "error": "An error occurred while saving presence",
+          "others": "+ {count} others",
+          "registered": "Registered",
+          "attending": "Present",
+          "registrationNotClosed": "Applications are still open",
+          "eventEnded": "The event is over",
+          "backToEvent": "Back to the event",
+          "unavailable": "This functionality is not available"
+        },
+        "create": {
+          "registrationsOpenIn": "Registrations open for <number></number> day/s",
+          "registrationsOpen": "Registrations are open",
+          "registrationsClosed": "Registrations are closed",
+          "eventStartsIn": ", the event starts in <number></number> day/s",
+          "eventStarted": ", the event has already started",
+          "eventDuration": ", lasts <number></number> hour/s.",
+          "error": "An error occurred while saving data",
+          "photoUploadError": "An error occurred while uploading the image",
+          "success": "Data about the event is saved",
+          "editingTitle": "Change of event",
+          "editingDescription": "This event has already been created, you are currently editing it.",
+          "delete": {
+            "title": "Are you sure?",
+            "body": "If you delete an event, you won't be able to get it back.",
+            "confirm": "Delete event",
+            "cancel": "No, come back"
+          },
+          "view": "View",
+          "general": "General",
+          "name": "Name of the event",
+          "nameDescription": "The name of the event will be displayed everywhere on the site",
+          "description": "Description",
+          "descriptionDescription": "Description of the event. ",
+          "descriptionPlaceholder": "Bring cutlery...",
+          "photo": "Image",
+          "photoDescription": "Add a photo of the event. ",
+          "fileUpload": "Drag or click to upload image",
+          "fileUploadFormats": "Supported formats:",
+          "deletePhoto": {
+            "title": "Are you sure?",
+            "body": "Are you sure you want to delete the event image?",
+            "confirm": "Delete image",
+            "cancel": "No, come back"
+          },
+          "price": "Registration fee/price",
+          "priceDescription": "How much does it cost to participate in the event? ",
+          "time": "Time",
+          "start": "Start",
+          "startDescription": "When does the event start?",
+          "end": "End",
+          "endDescription": "When does the event end?",
+          "registrationStart": "Start of applications",
+          "registrationStartDescription": "When do meetup registrations open?",
+          "registrationEnd": "End of applications",
+          "registrationEndDescription": "When do the registrations for the event close?",
+          "selectDate": "Select a date",
+          "visibility": "Visibility",
+          "private": "Private",
+          "privateDescription": "Private events are visible only to club members.",
+          "freelancers": "Freelancers allowed",
+          "freelancersDescription": "Do you allow players who are not members of a club to register for a match?",
+          "organization": "Organization",
+          "breakfast": "Breakfast",
+          "lunch": "Lunch",
+          "dinner": "Dinner",
+          "snacks": "Snacks",
+          "drinks": "Drinks",
+          "prizes": "Awards",
+          "location": "Location",
+          "locationDescription": "Where is the event taking place?",
+          "googleMapsDescription": "You can add a Google Maps embed link. ",
+          "googleMapsLink": "Where to find it?",
+          "rules": "Rules",
+          "rulesDescription": "Select the rules that will apply to this event.",
+          "noRules": "This club has no rules.",
+          "createRule": "Add rules",
+          "changedToday": "Changed today",
+          "changedAgo": "Changed {time} day/s ago",
+          "noDescription": "No description",
+          "map": "Map",
+          "save": "Save changes",
+          "create": "Create an event",
+          "requiredSection": "Required",
+          "basicInformationDescription": "The basic information we need to create your event",
+          "registrationPeriod": "Registration period",
+          "advancedSettings": "Advanced settings",
+          "mapEditor": "Map editor",
+          "mapDescription": "This is where you can edit your game map. Add points of interest, obstacles, and other important details.",
+          "eventDates": "Event dates",
+          "additionalInformation": "Additional information",
+          "optional": "Optional",
+          "partiallyRequired": "Partially required",
+          "additionalLocationInfo": "Additional location info",
+          "reset": "Reset"
+        },
+        "allEvents": "All events",
+        "createEvent": "Create an event",
+        "rules": {
+          "rule": {
+            "updated": "The rulebook has been updated.",
+            "created": "The rulebook has been created",
+            "error": "There's been a problem while saving that rule.",
+            "name": "Rulebook name",
+            "namePlaceholder": "My rulebook",
+            "description": "Description (optional)",
+            "descriptionPlaceholder": "This rulebook is used only for...",
+            "content": "Content",
+            "save": "Save rulebook",
+            "create": "Create rule",
+            "cancel": "Cancel",
+            "delete": {
+              "title": "Delete rule",
+              "body": "Are you sure you want to delete this rulebook?",
+              "action": "Delete",
+              "cancel": "Cancel",
+              "success": "Rulebook has been deleted"
+            },
+            "noDescription": "This rulebook has no description"
+          },
+          "rules": {
+            "title": "Existing rulebooks",
+            "empty": "You have no rulebooks."
+          }
+        }
+      },
+      "members": {
+        "allMembers": "All members",
+        "membersTable": {
+          "remove": {
+            "title": "Are you sure?",
+            "body": "Are you sure you want to remove {name} from the club?",
+            "confirm": "Remove",
+            "cancel": "No, go back",
+            "success": "Member successfully removed",
+            "error": "An error occurred while removing the member"
+          },
+          "searchPlaceholder": "Search members...",
+          "name": "Name",
+          "callsign": "Callsign",
+          "role": "Role",
+          "allRoles": "All roles",
+          "owner": "Owner",
+          "manager": "Manager",
+          "member": "Member",
+          "joinedDate": "Join date",
+          "actions": "Actions",
+          "profile": "Profile",
+          "removeMember": "Remove",
+          "membershipStatus": {
+            "title": "Status",
+            "unlimited": "Unlimited",
+            "expired": "Expired",
+            "expiringSoon": "Expiring soon",
+            "active": "Active"
+          },
+          "startDate": "Join date",
+          "endDate": "Expiry date",
+          "notSet": "Not set",
+          "unlimited": "Unlimited",
+          "extendMembership": "Extend"
+        },
+        "invitations": {
+          "table": {
+            "revoke": {
+              "title": "Are you sure?",
+              "body": "Are you sure you want to revoke the club access invitation?",
+              "confirm": "Revoke",
+              "cancel": "No, go back",
+              "success": "Invitation successfully revoked",
+              "error": "An error occurred while revoking the invitation"
+            },
+            "searchPlaceholder": "Search invitations...",
+            "user": "User",
+            "status": "Status",
+            "pending": "Pending",
+            "accepted": "Accepted",
+            "rejected": "Rejected",
+            "expired": "Expired",
+            "revoked": "Revoked",
+            "requested": "Requested",
+            "created": "Date sent",
+            "expires": "Expires",
+            "code": "Code",
+            "actions": "Actions",
+            "inactive": "Inactive",
+            "all": "All"
+          },
+          "approve": "Accept",
+          "dismiss": "Dismiss",
+          "searchError": "Failed to search users. Please try again.",
+          "send": "Send invitation",
+          "sendError": "An error occurred while sending the invitation. Please try again.",
+          "sendSuccess": "Invitation sent successfully",
+          "title": "Invite user to club",
+          "description": "Invitations will expire after 7 days, and will be deleted after 3 months.",
+          "user": "User",
+          "searchPlaceholder": "Search users...",
+          "minimumChars": "Enter at least 2 characters",
+          "noResults": "No results",
+          "chooseUserDescription": "If the user is already on the platform, you can find them here.",
+          "emailDescription": "If you can't find the user, or already know their email, enter it here."
+        },
+        "managers": {
+          "title": "Managers",
+          "search": {
+            "error": "There's been a problem with the search, try again."
+          },
+          "promote": {
+            "error": "There's been a problem while promoting that user, try again.",
+            "success": "Successfully promoted to manager",
+            "title": "Add a new manager",
+            "member": {
+              "label": "Club member",
+              "placeholder": "Select a member...",
+              "search": "Search members...",
+              "searchEmpty": "Please enter at least 2 characters",
+              "noResults": "We couldn't find anyone",
+              "description": "Choose the member you'd like to promote to manager."
+            },
+            "submit": "Promote"
+          }
+        }
+      },
+      "audit": {
+        "pageTitle": "Audit Log",
+        "pageDescription": "View all actions performed in this club.",
+        "search": "Search audit logs...",
+        "filterByAction": "Filter by action",
+        "allActions": "All actions",
+        "detailsTitle": "Log details",
+        "viewDetails": "View details",
+        "actionType": "Action type",
+        "userInfo": "User",
+        "ipAddress": "IP address",
+        "userAgent": "User agent",
+        "actionData": "Action data",
+        "columns": {
+          "date": "Date",
+          "action": "Action",
+          "user": "User",
+          "ipAddress": "IP address",
+          "actions": "Actions"
+        },
+        "actionTypes": {
+          "clubCreate": "Club creation",
+          "clubUpdate": "Club update",
+          "clubDelete": "Club deletion",
+          "memberInvite": "Member invite",
+          "memberRemove": "Member removal",
+          "memberPromote": "Member promotion",
+          "memberDemote": "Member demotion",
+          "memberJoin": "Member join",
+          "memberLeave": "Member leave",
+          "clubBan": "Club ban",
+          "clubUnban": "Club unban",
+          "spendingCreate": "Spending creation",
+          "spendingUpdate": "Spending update",
+          "spendingDelete": "Spending deletion",
+          "postCreate": "Post creation",
+          "postUpdate": "Post update",
+          "postDelete": "Post deletion",
+          "instagramConnect": "Instagram connection",
+          "instagramDisconnect": "Instagram disconnection",
+          "eventCreate": "Event creation",
+          "eventUpdate": "Event update",
+          "eventDelete": "Event deletion",
+          "clubRuleUpdate": "Club rule update",
+          "clubRuleCreate": "Club rule creation",
+          "clubRuleDelete": "Club rule deletion",
+          "membershipExtension": "Membership extension"
+        }
+      }
+    }
+  },
+  "components": {
+    "sidebar": {
+      "betaMessage": "Beta version - Changes and errors are possible.",
+      "githubMessage": "We're open-source! Click here and help us become better.",
+      "home": "Homepage",
+      "dashboard": "Dashboard",
+      "help": "Help",
+      "user": "User",
+      "overview": "Overview",
+      "settings": "Settings",
+      "security": "Security",
+      "myEvents": "My events",
+      "club": "Club",
+      "clubs": "Clubs",
+      "selectClub": "Select a club",
+      "addClub": "Add a club",
+      "myClub": "My club",
+      "manager": "Manager",
+      "member": "Member",
+      "info": "Information",
+      "stats": "Statistics",
+      "spending": "Expenses",
+      "newPost": "New post",
+      "members": "Members",
+      "invitations": "Invitations",
+      "managers": "Managers",
+      "events": "Events",
+      "newEvent": "Create an event",
+      "calendar": "Calendar",
+      "rules": "Rules",
+      "admin": "Administration",
+      "auditLogs": "Audit Log",
+      "users": "Users",
+      "emails": "Emails",
+      "personalization": "Personalization",
+      "logout": "Sign out",
+      "pendingInvitesMessage": "You have {count} pending invitation/s",
+      "inviteRequestsMessage": "Your club has {count} pending join request/s",
+      "invites": "Invitations",
+      "searchPlaceholder": "Search...",
+      "noResults": "No results found.",
+      "navigation": "Navigation",
+      "account": "Account",
+      "profile": "Profile",
+      "userSettings": "User Settings",
+      "shiftHint": "You can use shift + up and down keys to move between clubs.",
+      "createClub": "Add a Club"
+    },
+    "footer": {
+      "about": {
+        "title": "About us",
+        "description": "RECONNED is a new platform for airsoft enthusiasts. Discover clubs, events, and players across the world. Manage your club, organize events, and find new opportunities."
+      },
+      "quickLinks": {
+        "title": "Quick links",
+        "events": "Events",
+        "dashboard": "Dashboard",
+        "map": "Map",
+        "search": "Search",
+        "about": "About us",
+        "stats": "Statistics"
+      },
+      "community": {
+        "title": "Community"
+      },
+      "support": {
+        "title": "Support",
+        "contact": "Contact",
+        "faq": "FAQ",
+        "privacy": "Privacy",
+        "terms": "Terms of Use",
+        "changelog": "Changelog"
+      },
+      "copyright": "© {year} RECONNED. ",
+      "sponsors": "Check out our sponsors and partners",
+      "version": "Version {commit}"
+    },
+    "table": {
+      "showColumns": "Show columns",
+      "noData": "No data found",
+      "navigation": {
+        "page": "Page {page} of {total}",
+        "previous": "Previous",
+        "next": "Next",
+        "perPage": "per page"
+      },
+      "filters": {
+        "clear": "Clear filters"
+      },
+      "actions": "Actions"
+    },
+    "header": {
+      "backToHome": "Back to homepage",
+      "dashboard": "Dashboard",
+      "login": "Login",
+      "logout": "Sign out",
+      "personalization": "Personalization"
+    },
+    "themeSwitcher": {
+      "toggle": "Change theme"
+    },
+    "fontSwitcher": {
+      "toggle": "Change font"
+    },
+    "languageSwitcher": {
+      "select": "Choose a language"
+    },
+    "clubsMap": {
+      "viewProfile": "View profile"
+    },
+    "calendar": {
+      "today": "Today",
+      "alreadyToday": "It's already today",
+      "goToToday": "Go to today",
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "months": {
+        "jan": "January",
+        "feb": "February",
+        "mar": "March",
+        "apr": "April",
+        "may": "May",
+        "jun": "June",
+        "jul": "July",
+        "aug": "August",
+        "sep": "September",
+        "oct": "October",
+        "nov": "November",
+        "dec": "December"
+      },
+      "eventDetails": {
+        "start": "Start",
+        "end": "End",
+        "location": "Location",
+        "cost": "Price",
+        "apply": "Log in",
+        "registrationsClosed": "Registrations for this event are currently not open"
+      }
+    },
+    "error": {
+      "backToHome": "Return to homepage"
+    },
+    "addToCalendar": {
+      "addToCalendar": "Add to calendar",
+      "features": {
+        "breakfast": "Breakfast",
+        "lunch": "Lunch",
+        "dinner": "Dinner",
+        "snacks": "Snacks",
+        "drinks": "Drinks",
+        "prizes": "Awards"
+      },
+      "sections": {
+        "other": "The rest",
+        "rules": "Rules",
+        "gear": "Equipment",
+        "private": "This is a private event for club members only.",
+        "freelancers": "Freelancers are welcome to register for this meetup."
+      }
+    },
+    "badge": {
+      "soon": "Soon",
+      "new": "New"
+    },
+    "slug": {
+      "label": "Special link",
+      "slugPlaceholder": "my-link",
+      "description": "A short link that you will be able to share.",
+      "placeholder": "my-link",
+      "available": "The link is available.",
+      "taken": "The link is unavailable!",
+      "errors": {
+        "notAuthenticated": "You are not logged in",
+        "unknownType": "Unknown type"
+      }
+    },
+    "userOverview": {
+      "views": "{count} view/s",
+      "freelancer": "Freelancer",
+      "clubs": {
+        "title": "Clubs",
+        "noClubs": "Not a member of any club"
+      },
+      "upcomingEvents": {
+        "title": "Upcoming events",
+        "noEvents": "There are no upcoming matches"
+      },
+      "pastEvents": {
+        "title": "Previous events",
+        "noEvents": "No previous events"
+      },
+      "tabs": {
+        "events": "Events",
+        "reviews": "Reviews",
+        "memberships": "Memberships"
+      },
+      "attended": "Attended"
+    },
+    "reviews": {
+      "title": "Ratings",
+      "latestReviews": "Latest ratings",
+      "noReviews": "There are no ratings",
+      "showAll": "Show all ratings",
+      "allReviews": "All ratings for {type}",
+      "types": {
+        "club": "club",
+        "event": "event",
+        "user": "the user"
+      }
+    },
+    "post": {
+      "published": "Posted on {date}",
+      "readMore": "Read more",
+      "showLess": "Show less"
+    },
+    "eventOverview": {
+      "editEvent": "Edit event",
+      "apply": "Login",
+      "registrationsClosed": "Applications closed",
+      "registeredCount": "{count} registered",
+      "privateEvent": "Private event",
+      "publicEvent": "Public event",
+      "views": "{count} view/s",
+      "location": "Location",
+      "showLocation": "Show location",
+      "map": "Map",
+      "showEventMap": "Show match map"
+    },
+    "clubOverview": {
+      "views": "{count} view/s",
+      "map": "Map",
+      "edit": "Edit club",
+      "members": "Members",
+      "private": "Private club",
+      "public": "Public club",
+      "posts": "Announcements",
+      "createPost": "New post",
+      "noPosts": "There are no posts",
+      "allied": "Allied with ASK FBIH",
+      "instagramGallery": "Instagram photos",
+      "instagramGalleryDescription": "View our latest posts on Instagram",
+      "noMembers": "This club has no members",
+      "tabs": {
+        "members": "Mmebers",
+        "reviews": "Reviews",
+        "posts": "Posts"
+      }
+    },
+    "breadcrumbs": {
+      "currentClub": "Current club",
+      "currentEvent": "Current event",
+      "translations": {
+        "dashboard": "Dashboard",
+        "club": "Club",
+        "clubs": "Clubs",
+        "events": "Events",
+        "information": "Information",
+        "create": "Create",
+        "stats": "Statistics",
+        "members": "Members",
+        "settings": "Settings",
+        "calendar": "Calendar",
+        "invitations": "Invitations",
+        "security": "Security",
+        "user": "User",
+        "help": "Help",
+        "managers": "Managers",
+        "rules": "Rules",
+        "attendance": "Attendance",
+        "admin": "Administration",
+        "emails": "Emails",
+        "posts": "New post",
+        "spending": "Spending",
+        "add-club": "Add club",
+        "audit": "Audit",
+        "invites": "Invitations",
+        "users": "Users",
+        "instagram": "Instagram"
+      }
+    },
+    "icons": {
+      "clubOwner": "Club owner",
+      "clubManager": "Club manager",
+      "administrator": "Administrator",
+      "verifiedClub": "Verified club"
+    },
+    "leaveClubButton": {
+      "title": "Leave club",
+      "body": "Are you sure you'd like to leave this club? You'll need an invite to join it again.",
+      "confirm": "Leave club",
+      "cancel": "No, cancel",
+      "error": "There was an error while trying to leave the club",
+      "action": "Leave club",
+      "ownerError": "Club owners cannot leave the club. You must first transfer ownership or delete the club."
+    },
+    "membershipExtension": {
+      "extendMembership": "Extend",
+      "extendMembershipTitle": "Extend membership",
+      "extendMembershipDescription": "Extend membership for user {user}",
+      "currentStatus": "Current status",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "extensionDuration": "Extension duration",
+      "selectDuration": "Select duration",
+      "oneMonth": "1 month",
+      "threeMonths": "3 months",
+      "sixMonths": "6 months",
+      "oneYear": "1 year",
+      "cancel": "Cancel",
+      "extend": "Extend",
+      "extending": "Extending...",
+      "success": "Membership successfully extended",
+      "error": "Error",
+      "failedToExtend": "There was an error while extending the membership",
+      "active": "Active",
+      "expired": "Expired",
+      "expiringSoon": "Expires soon",
+      "unlimited": "Unlimited"
+    },
+    "instagramGallery": {
+      "error": "There's been a problem contacting Instagram",
+      "noPhotos": "Nothing to show here",
+      "viewMore": "View more on Instagram"
+    }
+  },
+  "imgur": {
+    "error": {
+      "overCapacity": "Imgur is currently over capacity. Please try again later.",
+      "rateLimit": "Too many attempts. Please wait a few minutes.",
+      "generic": "Error uploading image."
+    }
+  }
 }
