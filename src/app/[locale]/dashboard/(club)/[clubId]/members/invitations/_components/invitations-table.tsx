@@ -139,11 +139,13 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 									key="revoke"
 									onClick={() => handleRevoke(row, row.club.id)}
 									disabled={row.status !== "PENDING"}
-									className={row.status === "PENDING" ? "text-destructive focus:text-destructive" : ""}
+									className={
+										row.status === "PENDING" ? "text-destructive focus:text-destructive" : ""
+									}
 								>
 									<Ban className="size-4 mr-2" />
 									{row.status === "PENDING" ? t("revoke.confirm") : t("inactive")}
-								</DropdownMenuItem>
+								</DropdownMenuItem>,
 							];
 						},
 					},

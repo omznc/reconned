@@ -13,7 +13,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuTrigger
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, UserMinus } from "lucide-react";
 
@@ -38,7 +38,7 @@ interface ManagersTableProps {
 
 export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTableProps) {
 	const confirm = useConfirm();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 
 	const handleDemote = async (manager: Manager) => {
 		const confirmed = await confirm({

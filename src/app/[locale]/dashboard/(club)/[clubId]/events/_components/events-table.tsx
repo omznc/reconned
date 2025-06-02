@@ -89,7 +89,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 										<Users className="size-4 mr-2" />
 										{t("attendence")}
 									</Link>
-								</DropdownMenuItem>
+								</DropdownMenuItem>,
 							);
 
 							// Edit action - only for managers
@@ -100,7 +100,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 											<Pen className="size-4 mr-2" />
 											{t("edit")}
 										</Link>
-									</DropdownMenuItem>
+									</DropdownMenuItem>,
 								);
 							}
 
@@ -111,7 +111,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 										<Eye className="size-4 mr-2" />
 										{t("view")}
 									</Link>
-								</DropdownMenuItem>
+								</DropdownMenuItem>,
 							);
 
 							return items;

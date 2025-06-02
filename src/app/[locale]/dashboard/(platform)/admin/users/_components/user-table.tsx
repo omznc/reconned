@@ -106,7 +106,7 @@ export function UserTable(props: UserTableProps) {
 									<Settings className="size-4 mr-2" />
 									Akcije
 								</Link>
-							</DropdownMenuItem>
+							</DropdownMenuItem>,
 						],
 					},
 				},

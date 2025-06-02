@@ -11,7 +11,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuTrigger
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 function getEventStatus(dateStart: Date, dateEnd: Date) {

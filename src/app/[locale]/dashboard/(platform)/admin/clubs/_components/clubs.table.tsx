@@ -91,7 +91,7 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 									<Settings className="size-4 mr-2" />
 									Akcije
 								</Link>
-							</DropdownMenuItem>
+							</DropdownMenuItem>,
 						],
 					},
 				},
