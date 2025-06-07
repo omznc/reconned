@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Event, EventRegistration, User } from "@prisma/client";
+import type { Event, EventRegistration, User } from "@generated/client";
 import { toggleAttendance } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance.action";
 import { useTranslations } from "next-intl";
 

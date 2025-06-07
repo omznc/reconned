@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { updatePurchase, getPurchaseReceiptUploadUrl } from "./spending.action";
 import type { EditPurchaseFormValues } from "./spending.schema";
 import { editPurchaseFormSchema } from "./spending.schema";
-import type { ClubPurchase } from "@prisma/client";
+import type { ClubPurchase } from "@generated/client";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { useTranslations } from "next-intl";
 

@@ -236,7 +236,7 @@ export default function LoginPage() {
 							{t("login")}
 						</LoaderSubmitButton>
 
-						<div className="flex items-center gap-2">
+						<div className="flex max-w-full items-center gap-2">
 							<Button
 								variant="outline"
 								className="w-full"
@@ -263,11 +263,7 @@ export default function LoginPage() {
 								<Key className="w-4 h-4 inline-block" /> Passkey
 								<BadgeSoon />
 							</Button>
-							<GoogleLoginButton
-								turnstileToken={turnstileToken}
-								isLoading={isLoading}
-								redirectTo={redirectTo}
-							/>
+							<GoogleLoginButton redirectTo={redirectTo} />
 						</div>
 					</form>
 				</Form>

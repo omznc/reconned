@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { toast } from "sonner";
-import type { ClubRule } from "@prisma/client";
+import type { ClubRule } from "@generated/client";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/credenza";
 import { format } from "date-fns";
 import { useRouter } from "@/i18n/navigation";
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import { ClubActions } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club-table-actions";
 
 interface ClubsSheetProps {

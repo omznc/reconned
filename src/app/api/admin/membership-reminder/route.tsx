@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { format, addDays, startOfDay, endOfDay } from "date-fns";
 import { render } from "@react-email/components";
 import { NextResponse } from "next/server";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@generated/client";
 
 type MembershipWithRelations = Prisma.ClubMembershipGetPayload<{
 	include: {

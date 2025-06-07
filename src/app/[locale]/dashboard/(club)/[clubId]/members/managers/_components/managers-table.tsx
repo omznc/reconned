@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { demoteFromManager } from "./manager.action";
-import { Role } from "@prisma/client";
+import { Role } from "@generated/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
@@ -13,7 +13,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuTrigger
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, UserMinus } from "lucide-react";
 
@@ -38,7 +38,7 @@ interface ManagersTableProps {
 
 export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTableProps) {
 	const confirm = useConfirm();
-	const params = useParams<{ clubId: string; }>();
+	const params = useParams<{ clubId: string }>();
 
 	const handleDemote = async (manager: Manager) => {
 		const confirmed = await confirm({

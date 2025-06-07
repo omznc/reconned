@@ -3,7 +3,7 @@ import { InvitationsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/membe
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import type { InviteStatus, Prisma } from "@prisma/client";
+import type { InviteStatus, Prisma } from "@generated/client";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
@@ -54,35 +54,35 @@ export async function InvitationsPageFetcher(props: PageProps) {
 		clubId: params.clubId,
 		...(searchParams.search
 			? {
-				OR: [
-					{
-						email: {
-							contains: searchParams.search,
-							mode: "insensitive",
-						},
-					},
-					{
-						user: {
-							name: {
+					OR: [
+						{
+							email: {
 								contains: searchParams.search,
 								mode: "insensitive",
 							},
 						},
-					},
-				],
-			}
+						{
+							user: {
+								name: {
+									contains: searchParams.search,
+									mode: "insensitive",
+								},
+							},
+						},
+					],
+				}
 			: {}),
 		...(searchParams.status && searchParams.status !== "all"
 			? {
-				status: searchParams.status as InviteStatus,
-			}
+					status: searchParams.status as InviteStatus,
+				}
 			: {}),
 	};
 
 	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
 		? {
-			[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
-		}
+				[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
+			}
 		: { createdAt: "desc" };
 
 	const [invitesCount, invites] = await Promise.all([

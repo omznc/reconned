@@ -21,7 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import { format } from "date-fns";
 import { AlertCircle, ArrowUpRight, Calendar as CalendarIcon, CheckCircle, Loader, Trash } from "lucide-react";
 import { CloudUpload } from "lucide-react";

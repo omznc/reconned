@@ -8,11 +8,16 @@ import { useRouter } from "@/i18n/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { EditPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/edit-purchase-modal";
 import { Button } from "@/components/ui/button";
-import type { ClubPurchase } from "@prisma/client";
+import type { ClubPurchase } from "@generated/client";
 import { useState } from "react";
 import { FilePreviewModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/file-preview-modal";
 import { useTranslations } from "next-intl";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface PurchasesTableProps {
 	purchases: ClubPurchase[];
@@ -79,10 +84,12 @@ export function PurchasesTable(props: PurchasesTableProps) {
 										</Button>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end">
-										<DropdownMenuItem onSelect={(e) => {
-											e.preventDefault();
-											document.getElementById(`edit-purchase-${row.id}`)?.click();
-										}}>
+										<DropdownMenuItem
+											onSelect={(e) => {
+												e.preventDefault();
+												document.getElementById(`edit-purchase-${row.id}`)?.click();
+											}}
+										>
 											<Edit className="size-4 mr-2" />
 											{t("edit")}
 										</DropdownMenuItem>

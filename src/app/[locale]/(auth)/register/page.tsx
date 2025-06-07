@@ -220,7 +220,7 @@ export default function RegisterPage() {
 						>
 							{t("register")}
 						</LoaderSubmitButton>
-						<GoogleLoginButton isLoading={isLoading} />
+						<GoogleLoginButton />
 					</form>
 				</Form>
 				<div className="mt-4 text-center text-sm">

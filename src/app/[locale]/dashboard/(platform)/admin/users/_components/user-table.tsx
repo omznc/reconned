@@ -2,7 +2,7 @@
 
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
-import type { ClubMembership, User } from "@prisma/client";
+import type { ClubMembership, User } from "@generated/client";
 import { Link } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSearchParams } from "next/navigation";
@@ -106,7 +106,7 @@ export function UserTable(props: UserTableProps) {
 									<Settings className="size-4 mr-2" />
 									Akcije
 								</Link>
-							</DropdownMenuItem>
+							</DropdownMenuItem>,
 						],
 					},
 				},

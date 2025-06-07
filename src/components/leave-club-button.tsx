@@ -63,7 +63,7 @@ export function LeaveClubButton({
 				type="button"
 				onClick={handleLeaveClub}
 				disabled={isClubOwner}
-				className={`flex items-center w-full text-left ${isClubOwner ? 'opacity-50 pointer-events-none' : 'cursor-pointer'} text-destructive`}
+				className={`flex items-center w-full text-left ${isClubOwner ? "opacity-50 pointer-events-none" : "cursor-pointer"} text-destructive`}
 				title={isClubOwner ? t("ownerError") : undefined}
 			>
 				{icon || <LogOut className="size-4 mr-2" />}

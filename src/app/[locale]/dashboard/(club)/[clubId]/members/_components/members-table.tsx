@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { LeaveClubButton } from "@/components/leave-club-button";
-import type { ClubMembership } from "@prisma/client";
+import type { ClubMembership } from "@generated/client";
 import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
@@ -31,12 +31,15 @@ export function MembersTable(props: MembersTableProps) {
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.members.membersTable");
 	const locale = useLocale();
-	const [membershipToExtend, setMembershipToExtend] = useState<ClubMembership & {
-		userName: string;
-		userAvatar: string | null;
-	} | null>(null);
+	const [membershipToExtend, setMembershipToExtend] = useState<
+		| (ClubMembership & {
+				userName: string;
+				userAvatar: string | null;
+		  })
+		| null
+	>(null);
 
-	const handleRemove = async (member: ClubMembership & { userName: string; }, clubId: string) => {
+	const handleRemove = async (member: ClubMembership & { userName: string }, clubId: string) => {
 		if (member.role === "CLUB_OWNER") {
 			return;
 		}
@@ -186,10 +189,10 @@ export function MembersTable(props: MembersTableProps) {
 								<span>
 									{row.startDate
 										? row.startDate.toLocaleDateString(locale, {
-											day: "2-digit",
-											month: "long",
-											year: "numeric",
-										})
+												day: "2-digit",
+												month: "long",
+												year: "numeric",
+											})
 										: t("notSet")}
 								</span>
 							),
@@ -205,10 +208,10 @@ export function MembersTable(props: MembersTableProps) {
 								<span>
 									{row.endDate
 										? row.endDate.toLocaleDateString(locale, {
-											day: "2-digit",
-											month: "long",
-											year: "numeric",
-										})
+												day: "2-digit",
+												month: "long",
+												year: "numeric",
+											})
 										: t("unlimited")}
 								</span>
 							),
@@ -232,7 +235,7 @@ export function MembersTable(props: MembersTableProps) {
 											<UserCircle className="size-4 mr-2" />
 											{t("profile")}
 										</Link>
-									</DropdownMenuItem>
+									</DropdownMenuItem>,
 								);
 
 								// Leave club action - only for current user who isn't owner
@@ -245,7 +248,7 @@ export function MembersTable(props: MembersTableProps) {
 												renderAsMenuItem
 												icon={<LogOut className="size-4 mr-2" />}
 											/>
-										</DropdownMenuItem>
+										</DropdownMenuItem>,
 									);
 								}
 
@@ -259,7 +262,7 @@ export function MembersTable(props: MembersTableProps) {
 										>
 											<UserMinus className="size-4 mr-2" />
 											{t("removeMember")}
-										</DropdownMenuItem>
+										</DropdownMenuItem>,
 									);
 								}
 
@@ -271,13 +274,13 @@ export function MembersTable(props: MembersTableProps) {
 											setMembershipToExtend({
 												...row,
 												userName: row.userName,
-												userAvatar: row.userAvatar
+												userAvatar: row.userAvatar,
 											});
 										}}
 									>
 										<Calendar className="size-4 mr-2" />
 										{t("extendMembership")}
-									</DropdownMenuItem>
+									</DropdownMenuItem>,
 								);
 
 								return items;

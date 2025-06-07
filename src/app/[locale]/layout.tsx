@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { env } from "@/lib/env";
@@ -18,6 +17,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import notFound from "@/app/not-found";
+import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],

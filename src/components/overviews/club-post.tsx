@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { Post } from "@prisma/client";
+import type { Post } from "@generated/client";
 import { Pencil } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
