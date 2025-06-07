@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { Club, ClubMembership, Post, User } from "@prisma/client";
+import type { Club, ClubMembership, Post, User } from "@generated/client";
 import {
 	ArrowUpRight,
 	AtSign,

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import { type ReactNode, createContext, useContext, useState } from "react";
 
 type CurrentClubContextType = {

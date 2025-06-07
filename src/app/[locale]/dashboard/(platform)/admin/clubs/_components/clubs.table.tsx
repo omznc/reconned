@@ -2,7 +2,7 @@
 
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";

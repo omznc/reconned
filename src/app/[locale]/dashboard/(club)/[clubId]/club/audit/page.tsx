@@ -1,6 +1,6 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
+import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";

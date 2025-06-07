@@ -3,7 +3,7 @@ import { InvitationsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/membe
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import type { InviteStatus, Prisma } from "@prisma/client";
+import type { InviteStatus, Prisma } from "@generated/client";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";

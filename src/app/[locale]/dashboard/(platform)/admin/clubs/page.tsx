@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@generated/client";
 import { ClubsSheet } from "./_components/clubs.sheet";
 import { ClubsTable } from "./_components/clubs.table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";

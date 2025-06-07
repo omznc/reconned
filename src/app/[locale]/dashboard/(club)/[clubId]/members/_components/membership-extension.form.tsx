@@ -18,7 +18,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { CalendarClock } from "lucide-react";
-import type { ClubMembership } from "@prisma/client";
+import type { ClubMembership } from "@generated/client";
 import { toast } from "sonner";
 import {
 	membershipExtensionSchema,

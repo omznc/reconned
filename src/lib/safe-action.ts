@@ -1,6 +1,6 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 

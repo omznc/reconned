@@ -4,7 +4,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { ErrorPage } from "@/components/error-page";
-import { Role } from "@prisma/client";
+import { Role } from "@generated/client";
 import { Square } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 

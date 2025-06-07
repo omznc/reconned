@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { revokeInvitation } from "./invitations.action.tsx";
-import type { InviteStatus } from "@prisma/client";
+import type { InviteStatus } from "@generated/client";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";

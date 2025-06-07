@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { LeaveClubButton } from "@/components/leave-club-button";
-import type { ClubMembership } from "@prisma/client";
+import type { ClubMembership } from "@generated/client";
 import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";

@@ -3,7 +3,7 @@
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import type { Event } from "@prisma/client";
+import type { Event } from "@generated/client";
 import { Eye, Pen, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";

@@ -6,7 +6,7 @@ import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-ove
 import { format } from "date-fns";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { getTranslations } from "next-intl/server";
-import type { Review, User } from "@prisma/client";
+import type { Review, User } from "@generated/client";
 
 interface ReviewsOverviewProps {
 	type: "club" | "event" | "user";

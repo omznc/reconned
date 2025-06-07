@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { demoteFromManager } from "./manager.action";
-import { Role } from "@prisma/client";
+import { Role } from "@generated/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { Role } from "@prisma/client";
+import { Role } from "@generated/client";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import {
 	demoteFromManagerSchema,

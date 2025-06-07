@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { Link } from "@/i18n/navigation";
 import Autoplay from "embla-carousel-autoplay";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import type { Event } from "@prisma/client";
+import type { Event } from "@generated/client";
 import Image from "next/image";
 
 interface CarouselProps {
