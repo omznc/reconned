@@ -2,7 +2,7 @@ import { UserSheet } from "@/app/[locale]/dashboard/(platform)/admin/users/_comp
 import { UserTable } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@generated/client";
 import { Suspense } from "react";
 
 interface PageProps {

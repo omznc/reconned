@@ -49,7 +49,7 @@ export default async function Page(props: PageProps) {
 				</div>
 				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
-					<span className="text-gray-500">ili</span>
+					<span className="text-gray-500">{t("or")}</span>
 					<hr className="flex-1 border-t-2 border-gray-300" />
 				</div>
 				<div className="flex flex-col gap-2">

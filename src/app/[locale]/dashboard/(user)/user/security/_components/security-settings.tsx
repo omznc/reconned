@@ -14,7 +14,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { bs } from "date-fns/locale";
-import type { Session } from "@prisma/client";
+import type { Session } from "@generated/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import type { Passkey } from "better-auth/plugins/passkey";

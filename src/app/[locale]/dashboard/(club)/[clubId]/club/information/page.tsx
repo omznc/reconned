@@ -2,7 +2,7 @@ import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/info
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getCountries } from "@/lib/cached-countries";
-import { Role } from "@prisma/client";
+import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
 import { getInstagramAuthUrl } from "@/lib/instagram";
 

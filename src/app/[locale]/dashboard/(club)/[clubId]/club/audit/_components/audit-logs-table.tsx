@@ -14,7 +14,12 @@ import {
 import { useState } from "react";
 import { Code, MoreHorizontal } from "lucide-react";
 import type { JsonValue } from "@prisma/client/runtime/client";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type AuditLog = {
 	id: string;

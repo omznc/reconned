@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { toast } from "sonner";
-import type { Post } from "@prisma/client";
+import type { Post } from "@generated/client";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { postSchema } from "./posts.schema";
 import { savePost, deletePost } from "./posts.action";

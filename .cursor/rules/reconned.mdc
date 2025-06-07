@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 ## Package Management and Development
 - Use `bun` as the package manager
 
@@ -46,4 +51,7 @@ can import them in actions as well.
 - All code strings need to be translated into every language under messages.
 - Use English for comments, variables, declarations, paths, etc.
 - When I say 'translate', extract keys from the files and add them to bs.json. If we're in an async component we have to use (await) import { getTranslations } from "next-intl/server", otherwise we use useTranslations.
+
+## Formatting and linting
+- You can use `bun format` and `bun lint`
 

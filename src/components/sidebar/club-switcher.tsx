@@ -9,9 +9,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { useCurrentClub } from "@/components/current-club-provider";
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import Image from "next/image";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
@@ -29,6 +29,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const t = useTranslations("components.sidebar");
+	const sidebar = useSidebar();
 
 	const activeClub = useMemo(() => clubs.find((club) => club.id === params.clubId), [clubs, params.clubId, clubId]);
 
@@ -84,7 +85,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 		return (
 			<Link href="/dashboard/add-club" className="w-full">
 				<Button variant="default" className="w-full">
-					{t("createClub")}
+					{sidebar.open ? t("createClub") : "+"}
 				</Button>
 			</Link>
 		);

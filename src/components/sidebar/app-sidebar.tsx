@@ -15,7 +15,7 @@ import {
 	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { User } from "better-auth";

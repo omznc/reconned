@@ -24,7 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DateTimePicker, initHourFormat } from "@/components/ui/date-time-picker";
 import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
 import { Switch } from "@/components/ui/switch";
-import type { ClubRule, Event } from "@prisma/client";
+import type { ClubRule, Event } from "@generated/client";
 import { bs } from "date-fns/locale";
 import {
 	ArrowUpRight,

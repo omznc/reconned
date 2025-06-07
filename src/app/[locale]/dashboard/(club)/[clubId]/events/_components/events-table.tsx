@@ -3,7 +3,7 @@
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import type { Event } from "@prisma/client";
+import type { Event } from "@generated/client";
 import { Eye, Pen, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -89,7 +89,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 										<Users className="size-4 mr-2" />
 										{t("attendence")}
 									</Link>
-								</DropdownMenuItem>
+								</DropdownMenuItem>,
 							);
 
 							// Edit action - only for managers
@@ -100,7 +100,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 											<Pen className="size-4 mr-2" />
 											{t("edit")}
 										</Link>
-									</DropdownMenuItem>
+									</DropdownMenuItem>,
 								);
 							}
 
@@ -111,7 +111,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 										<Eye className="size-4 mr-2" />
 										{t("view")}
 									</Link>
-								</DropdownMenuItem>
+								</DropdownMenuItem>,
 							);
 
 							return items;

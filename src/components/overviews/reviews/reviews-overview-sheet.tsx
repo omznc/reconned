@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
-import type { User } from "@prisma/client";
+import type { User } from "@generated/client";
 
 interface Review {
 	id: string;
