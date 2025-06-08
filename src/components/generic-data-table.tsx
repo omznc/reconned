@@ -50,7 +50,7 @@ interface CellConfig<T> {
 interface Filter {
 	key: string;
 	label: string;
-	options: { label: string; value: string; }[];
+	options: { label: string; value: string }[];
 }
 
 interface GenericTableProps<T> {
@@ -567,7 +567,7 @@ export function GenericDataTable<T>({
 	);
 }
 
-export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number; }) {
+export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number }) {
 	return (
 		<div className="space-y-4 w-full fade-in">
 			{/* Controls */}

@@ -451,7 +451,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</Button>
 					</FormLabel>
 					<FormControl>
-						<div className="h-[400px] w-full -z-10 rounded-lg overflow-hidden border">
+						<div className="h-[400px] w-full rounded-lg overflow-hidden border">
 							<MapSelector
 								clubs={[
 									{
