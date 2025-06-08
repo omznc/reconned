@@ -51,6 +51,12 @@ import { SlugInput } from "@/components/slug/slug-input";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import dynamic from "next/dynamic";
+
+// Dynamically import MapComponent to avoid SSR issues
+const MapComponent = dynamic(() => import("@/components/map-component").then((m) => ({ default: m.MapComponent })), {
+	ssr: false,
+});
 
 interface CreateEventFormProps {
 	event: Event | null;
@@ -1049,7 +1055,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					</AccordionItem>
 
 					{/* Map Section */}
-					{/* <AccordionItem value="map" className="border rounded-lg px-6 mt-4">
+					<AccordionItem value="map" className="border rounded-lg px-6 mt-4">
 						<AccordionTrigger className="py-4">
 							<div className="flex items-center gap-2">
 								<MapPin className="size-5" />
@@ -1058,9 +1064,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						</AccordionTrigger>
 						<AccordionContent className="pb-4">
 							<div className="space-y-4">
-								<p className="text-sm text-muted-foreground">
-									{t("mapDescription")}
-								</p>
+								<p className="text-sm text-muted-foreground">{t("mapDescription")}</p>
 								<div className="w-full h-[400px] border rounded-lg overflow-hidden">
 									<MapComponent
 										defaultMapData={form.watch("mapData")}
@@ -1071,7 +1075,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								</div>
 							</div>
 						</AccordionContent>
-					</AccordionItem> */}
+					</AccordionItem>
 				</Accordion>
 
 				<div className="flex justify-end pt-4 gap-4">
