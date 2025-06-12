@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import type { ClubRule, Event } from "@prisma/client";
+import type { ClubRule, Event } from "@generated/client";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";

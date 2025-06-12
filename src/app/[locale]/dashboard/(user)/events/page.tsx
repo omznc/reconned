@@ -1,7 +1,7 @@
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@generated/client";
 import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
 import { getTranslations } from "next-intl/server";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";

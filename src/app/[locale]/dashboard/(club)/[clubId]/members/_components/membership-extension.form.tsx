@@ -18,7 +18,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { CalendarClock } from "lucide-react";
-import type { ClubMembership } from "@prisma/client";
+import type { ClubMembership } from "@generated/client";
 import { toast } from "sonner";
 import {
 	membershipExtensionSchema,
@@ -49,7 +49,7 @@ export function MembershipExtensionForm({
 	variant = "button",
 	icon,
 	open,
-	onOpenChange
+	onOpenChange,
 }: MembershipExtensionFormProps) {
 	const t = useTranslations("components.membershipExtension");
 	const locale = useLocale();
@@ -108,13 +108,15 @@ export function MembershipExtensionForm({
 					<CalendarClock className="mr-2 h-4 w-4" /> {t("extendMembership")}
 				</Button>
 			);
-		} if (variant === "icon") {
+		}
+		if (variant === "icon") {
 			return (
 				<Button variant="ghost" size="sm">
 					<CalendarClock className="h-4 w-4" />
 				</Button>
 			);
-		} if (variant === "menuItem") {
+		}
+		if (variant === "menuItem") {
 			return (
 				<button type="button" className="flex items-center w-full text-left">
 					{icon || <CalendarClock className="size-4 mr-2" />}
@@ -129,11 +131,7 @@ export function MembershipExtensionForm({
 	return (
 		<Credenza open={isOpen} onOpenChange={setIsOpen}>
 			{/* Only render the trigger if we're not using controlled open state from parent */}
-			{open === undefined && (
-				<CredenzaTrigger asChild>
-					{renderTrigger()}
-				</CredenzaTrigger>
-			)}
+			{open === undefined && <CredenzaTrigger asChild>{renderTrigger()}</CredenzaTrigger>}
 			<CredenzaContent>
 				<CredenzaHeader>
 					<CredenzaTitle>{t("extendMembershipTitle")}</CredenzaTitle>

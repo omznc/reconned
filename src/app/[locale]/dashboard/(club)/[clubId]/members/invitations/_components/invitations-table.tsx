@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { revokeInvitation } from "./invitations.action.tsx";
-import type { InviteStatus } from "@prisma/client";
+import type { InviteStatus } from "@generated/client";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
@@ -139,11 +139,13 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 									key="revoke"
 									onClick={() => handleRevoke(row, row.club.id)}
 									disabled={row.status !== "PENDING"}
-									className={row.status === "PENDING" ? "text-destructive focus:text-destructive" : ""}
+									className={
+										row.status === "PENDING" ? "text-destructive focus:text-destructive" : ""
+									}
 								>
 									<Ban className="size-4 mr-2" />
 									{row.status === "PENDING" ? t("revoke.confirm") : t("inactive")}
-								</DropdownMenuItem>
+								</DropdownMenuItem>,
 							];
 						},
 					},

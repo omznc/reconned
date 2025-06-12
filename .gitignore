@@ -47,3 +47,4 @@ messages/*.d.json.ts
 
 certificates
 .unlighthouse
+generated

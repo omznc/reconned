@@ -28,7 +28,7 @@ import { useCurrentClub } from "@/components/current-club-provider";
 import Image from "next/image";
 import { Square, Building2, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { Club } from "@prisma/client";
+import type { Club } from "@generated/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { User } from "better-auth";
 import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";

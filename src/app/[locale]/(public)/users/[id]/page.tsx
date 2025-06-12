@@ -88,9 +88,14 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("avatar", user.image);
 	}
 
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug || user.id}`;
+
 	return {
 		title: `${user.name} - RECONNED`,
 		description: user.bio?.slice(0, 160) ?? t("description"),
+		alternates: {
+			canonical: canonicalUrl,
+		},
 		openGraph: {
 			images: [
 				{

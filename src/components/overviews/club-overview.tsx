@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { Club, ClubMembership, Post, User } from "@prisma/client";
+import type { Club, ClubMembership, Post, User } from "@generated/client";
 import {
 	ArrowUpRight,
 	AtSign,
@@ -286,21 +286,6 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 							</div>
 							<p>{t("instagramGalleryDescription")}</p>
 						</div>
-						<Link
-							target="_blank"
-							href={`https://instagram.com/${club.instagramUsername}`}
-							className="flex gap-2 h-full"
-						>
-							{club.instagramProfilePictureUrl && (
-								<Image
-									className="aspect-square border"
-									src={club.instagramProfilePictureUrl}
-									alt={"Instagram profile photo"}
-									width={60}
-									height={60}
-								/>
-							)}
-						</Link>
 					</div>
 					<div className="p-4">
 						<ClubInstagram

@@ -10,7 +10,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { EventApplicationSchemaType } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
 import { eventApplicationSchema } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
-import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@prisma/client";
+import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@generated/client";
 import type { User } from "better-auth";
 import { CirclePlus, Users, AlertCircle, X, Plus, UserIcon, Mail, ChevronsUpDown } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";

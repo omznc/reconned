@@ -1,6 +1,6 @@
 import { MembersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members-table";
 import { prisma } from "@/lib/prisma";
-import type { Prisma, Role } from "@prisma/client";
+import type { Prisma, Role } from "@generated/client";
 import { getTranslations } from "next-intl/server";
 import { isAuthenticated } from "@/lib/auth";
 import { Suspense } from "react";
