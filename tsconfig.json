@@ -31,7 +31,8 @@
 			"@components/*": ["./src/components/*"],
 			"@auth/client": ["./src/lib/auth-client"],
 			"@auth/server": ["./src/lib/auth"],
-			"@public/*": ["./public/*"]
+			"@public/*": ["./public/*"],
+			"@generated/*": ["./generated/*"]
 		},
 		"incremental": true,
 

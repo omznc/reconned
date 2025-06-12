@@ -1,6 +1,6 @@
 import { isAuthenticated } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
-import type { Role } from "@prisma/client";
+import { PrismaClient } from "@generated/client";
+import type { Role } from "@generated/client";
 import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();

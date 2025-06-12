@@ -42,6 +42,7 @@ interface CellConfig<T> {
 	variant?: "default" | "badge" | "custom";
 	badgeVariants?: Record<string, string>;
 	valueMap?: Record<string, string>;
+	// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
 	component?: ReactNode | ((value: any, row: T) => ReactNode);
 	components?: ReactNode[] | ((row: T) => ReactNode[]); // New property for action menus
 }
@@ -49,7 +50,7 @@ interface CellConfig<T> {
 interface Filter {
 	key: string;
 	label: string;
-	options: { label: string; value: string; }[];
+	options: { label: string; value: string }[];
 }
 
 interface GenericTableProps<T> {
@@ -65,6 +66,7 @@ interface GenericTableProps<T> {
 }
 
 // Helper function to get nested value
+// biome-ignore lint/suspicious/noExplicitAny: Needed for dynamic property access
 const getNestedValue = <T extends Record<string, any>>(obj: T, path: string): any => {
 	if (!path) {
 		return undefined;
@@ -80,78 +82,6 @@ const getNestedValue = <T extends Record<string, any>>(obj: T, path: string): an
 	} catch {
 		return undefined;
 	}
-};
-
-// biome-ignore lint/suspicious/noExplicitAny: Don't care
-const renderCell = <T extends Record<string, any>>(
-	item: T,
-	column: Column<T>,
-	tableConfig?: GenericTableProps<T>["tableConfig"],
-	currentLocale?: string,
-	isMobile?: boolean,
-) => {
-	const config = column.cellConfig;
-	const isActionsColumn = column.key.toString() === "actions";
-	// Get translation for "actions"
-	const t = useTranslations("components.table");
-
-	// Handle actions column with components array
-	if (isActionsColumn && config?.variant === "custom" && config.components) {
-		const actionItems = typeof config.components === "function"
-			? config.components(item)
-			: config.components;
-
-		// Always use dropdown menu structure, but with different styling for mobile
-		return (
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<Button
-						variant="ghost"
-						size="sm"
-						className={isMobile ? "w-full justify-center" : ""}
-					>
-						<MoreHorizontal className="size-4" />
-						{isMobile && <span className="ml-2">{t("actions", { fallback: "Actions" })}</span>}
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent align="end">
-					{actionItems}
-				</DropdownMenuContent>
-			</DropdownMenu>
-		);
-	}
-
-	if (config?.variant === "custom" && config.component) {
-		return typeof config.component === "function"
-			? config.component(getNestedValue(item, column.key.toString()), item)
-			: config.component;
-	}
-
-	const value = getNestedValue(item, column.key.toString());
-
-	if (value === undefined || value === null || value === "") {
-		if (!config?.valueMap?.default) {
-			return "-";
-		}
-	}
-
-	if (value instanceof Date || (typeof value === "string" && Date.parse(value))) {
-		const dateLocale = currentLocale === "bs" ? bs : enUS;
-		return format(new Date(value), tableConfig?.dateFormat || "PPP", {
-			locale: dateLocale,
-		});
-	}
-
-	if (config?.variant === "badge") {
-		const badgeClass = config.badgeVariants?.[value] ?? config.badgeVariants?.default ?? "bg-primary/10";
-		return (
-			<span className={`px-2 py-1 text-xs ${badgeClass}`}>
-				{config.valueMap?.[value] ?? config.valueMap?.default ?? value}
-			</span>
-		);
-	}
-
-	return config?.valueMap?.[value] || value;
 };
 
 export function GenericDataTable<T>({
@@ -222,7 +152,7 @@ export function GenericDataTable<T>({
 
 	// Check if the last visible column is "actions"
 	const visibleColumnsArray = useMemo(() => {
-		return columns.filter(column => visibleColumns.has(column.key.toString()));
+		return columns.filter((column) => visibleColumns.has(column.key.toString()));
 	}, [columns, visibleColumns]);
 
 	const hasActionsAsLastColumn = useMemo(() => {
@@ -315,6 +245,76 @@ export function GenericDataTable<T>({
 		);
 	};
 
+	// biome-ignore lint/suspicious/noExplicitAny: Don't care
+	const renderCell = (
+		// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
+		item: Record<string, any>,
+		// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
+		column: Column<any>,
+		// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
+		tableConfigParam?: GenericTableProps<any>["tableConfig"],
+		currentLocale?: string,
+		isMobile?: boolean,
+	) => {
+		const config = column.cellConfig;
+		const isActionsColumn = column.key.toString() === "actions";
+
+		// Handle actions column with components array
+		if (isActionsColumn && config?.variant === "custom" && config.components) {
+			const actionItems = typeof config.components === "function" ? config.components(item) : config.components;
+
+			// Always use dropdown menu structure, but with different styling for mobile
+			return (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							className={cn("shadow-none", isMobile ? "w-full justify-center" : "")}
+						>
+							<MoreHorizontal className="size-4" />
+							{isMobile && <span className="ml-2">{t("actions", { fallback: "Actions" })}</span>}
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">{actionItems}</DropdownMenuContent>
+				</DropdownMenu>
+			);
+		}
+
+		if (config?.variant === "custom" && config.component) {
+			return typeof config.component === "function"
+				? config.component(getNestedValue(item, column.key.toString()), item)
+				: config.component;
+		}
+
+		const value = getNestedValue(item, column.key.toString());
+
+		if (value === undefined || value === null || value === "") {
+			if (!config?.valueMap?.default) {
+				return "-";
+			}
+		}
+
+		if (value instanceof Date || (typeof value === "string" && Date.parse(value))) {
+			const dateLocale = currentLocale === "bs" ? bs : enUS;
+			return format(new Date(value), tableConfigParam?.dateFormat || "PPP", {
+				locale: dateLocale,
+			});
+		}
+
+		if (config?.variant === "badge") {
+			const badgeClass =
+				config.badgeVariants?.[value as string] ?? config.badgeVariants?.default ?? "bg-primary/10";
+			return (
+				<span className={`px-2 py-1 text-xs ${badgeClass}`}>
+					{config.valueMap?.[value as string] ?? config.valueMap?.default ?? value}
+				</span>
+			);
+		}
+
+		return config?.valueMap?.[value as string] || value;
+	};
+
 	return (
 		<div className="space-y-4 w-full">
 			{/* Controls */}
@@ -325,7 +325,7 @@ export function GenericDataTable<T>({
 						placeholder={searchPlaceholder}
 						value={inputValue}
 						onChange={handleSearchChange}
-						className="pl-9 pr-9"
+						className="pl-9 pr-9 h-10"
 					/>
 					{inputValue && (
 						<Button
@@ -335,7 +335,7 @@ export function GenericDataTable<T>({
 									target: { value: "" },
 								} as ChangeEvent<HTMLInputElement>)
 							}
-							className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent"
+							className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent h-10 w-10 shadow-none"
 						>
 							<X className="h-4 w-4" />
 						</Button>
@@ -344,7 +344,9 @@ export function GenericDataTable<T>({
 
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="outline">{t("showColumns")}</Button>
+						<Button variant="outline" className="h-10 shadow-none">
+							{t("showColumns")}
+						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-[200px]">
 						{columns.map((column) => (
@@ -375,7 +377,7 @@ export function GenericDataTable<T>({
 						value={filterValues[filter.key] || "all"}
 						onValueChange={(value) => handleFilterChange(filter.key, value)}
 					>
-						<SelectTrigger className="w-full md:w-[180px]">
+						<SelectTrigger className="w-full md:w-[180px] !h-10">
 							<SelectValue placeholder={filter.label} />
 						</SelectTrigger>
 						<SelectContent>
@@ -389,7 +391,11 @@ export function GenericDataTable<T>({
 				))}
 
 				{hasActiveFilters() && (
-					<Button variant="default" onClick={() => router.push("?")} className="h-9 px-2 lg:px-3">
+					<Button
+						variant="default"
+						onClick={() => router.push("?")}
+						className="h-10 px-2 lg:px-3 shadow-none"
+					>
 						<X className="h-4 w-4" />
 						<span className="ml-2 md:hidden inline lg:inline">{t("filters.clear")}</span>
 					</Button>
@@ -407,20 +413,21 @@ export function GenericDataTable<T>({
 						<TableHeader>
 							<TableRow>
 								{visibleColumnsArray.map((column, index) => {
-									const isActionsColumn = column.key.toString() === "actions" && index === visibleColumnsArray.length - 1;
+									const isActionsColumn =
+										column.key.toString() === "actions" && index === visibleColumnsArray.length - 1;
 									return (
 										<TableHead
 											key={column.key.toString()}
 											className={cn({
 												"bg-sidebar border-x": sortBy === column.key.toString(),
-												"sticky right-0 bg-background text-center": isActionsColumn
+												"sticky right-0 bg-background text-center": isActionsColumn,
 											})}
 										>
 											{column.sortable ? (
 												<Button
 													variant="ghost"
 													onClick={() => handleSort(column.key.toString())}
-													className="-ml-4 h-8 hover:bg-transparent"
+													className="-ml-4 h-8 hover:bg-transparent shadow-none"
 												>
 													{column.header}
 													{sortBy === column.key.toString() ? (
@@ -450,19 +457,26 @@ export function GenericDataTable<T>({
 								</TableRow>
 							) : (
 								data.map((item, idx) => (
-									<TableRow key={`${idx}-${item}`}>
+									<TableRow key={`${idx}-${JSON.stringify(item)}`}>
 										{visibleColumnsArray.map((column, colIndex) => {
-											const isActionsColumn = column.key.toString() === "actions" && colIndex === visibleColumnsArray.length - 1;
+											const isActionsColumn =
+												column.key.toString() === "actions" &&
+												colIndex === visibleColumnsArray.length - 1;
 											return (
 												<TableCell
 													key={String(column.key)}
 													className={cn({
 														"bg-sidebar border-x": sortBy === column.key.toString(),
-														"sticky right-0 bg-background text-center": isActionsColumn
+														"sticky right-0 bg-background text-center": isActionsColumn,
 													})}
 												>
-													{/* @ts-expect-error */}
-													{renderCell(item, column, tableConfig, locale)}
+													{/* biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types */}
+													{renderCell(
+														item as Record<string, any>,
+														column,
+														tableConfig,
+														locale,
+													)}
 												</TableCell>
 											);
 										})}
@@ -480,27 +494,40 @@ export function GenericDataTable<T>({
 					<div className="text-center py-8 text-muted-foreground">{t("noData")}</div>
 				) : (
 					data.map((item, idx) => (
-						<div key={`${idx}-${item}`} className="rounded-lg border bg-card shadow-sm p-4 space-y-3">
+						<div
+							key={`${idx}-${JSON.stringify(item)}`}
+							className="rounded-lg border bg-card shadow-sm p-4 space-y-3"
+						>
 							{columns
-								.filter((column) => visibleColumns.has(column.key.toString()) && column.key.toString() !== "actions")
+								.filter(
+									(column) =>
+										visibleColumns.has(column.key.toString()) &&
+										column.key.toString() !== "actions",
+								)
 								.map((column) => (
 									<div key={String(column.key)} className="grid grid-cols-3 gap-2 items-center">
-										<span className="text-sm font-medium text-muted-foreground truncate">{column.header}</span>
+										<span className="text-sm font-medium text-muted-foreground truncate">
+											{column.header}
+										</span>
 										<span className="col-span-2 font-medium">
-											{/* @ts-expect-error I know, I know */}
-											{renderCell(item, column, tableConfig, locale, true)}
+											{/* biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types */}
+											{renderCell(item as Record<string, any>, column, tableConfig, locale, true)}
 										</span>
 									</div>
 								))}
 
 							{/* Render actions separately at the bottom */}
 							{columns
-								.filter((column) => visibleColumns.has(column.key.toString()) && column.key.toString() === "actions")
+								.filter(
+									(column) =>
+										visibleColumns.has(column.key.toString()) &&
+										column.key.toString() === "actions",
+								)
 								.map((column) => (
 									<div key={String(column.key)} className="mt-3 pt-3 border-t border-border">
 										<div className="flex justify-center items-center">
-											{/* @ts-expect-error I know, I know */}
-											{renderCell(item, column, tableConfig, locale, true)}
+											{/* biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types */}
+											{renderCell(item as Record<string, any>, column, tableConfig, locale, true)}
 										</div>
 									</div>
 								))}
@@ -513,7 +540,7 @@ export function GenericDataTable<T>({
 			<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 				<div className="flex gap-2 w-full sm:w-auto items-center justify-start">
 					<Select value={perPage} onValueChange={handlePerPageChange}>
-						<SelectTrigger className="w-[70px]">
+						<SelectTrigger className="w-[70px] !h-10">
 							<SelectValue placeholder={perPage} />
 						</SelectTrigger>
 						<SelectContent>
@@ -530,7 +557,7 @@ export function GenericDataTable<T>({
 						variant="outline"
 						onClick={() => setPage((prev) => String(Number(prev) - 1))}
 						disabled={page === "1"}
-						className="flex-1 sm:flex-none"
+						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
 						{t("navigation.previous")}
 					</Button>
@@ -538,7 +565,7 @@ export function GenericDataTable<T>({
 						variant="outline"
 						onClick={() => setPage((prev) => String(Number(prev) + 1))}
 						disabled={Number(page) >= totalPages}
-						className="flex-1 sm:flex-none"
+						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
 						{t("navigation.next")}
 					</Button>
@@ -548,7 +575,7 @@ export function GenericDataTable<T>({
 	);
 }
 
-export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number; }) {
+export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number }) {
 	return (
 		<div className="space-y-4 w-full fade-in">
 			{/* Controls */}
@@ -577,17 +604,20 @@ export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: 
 					<TableHeader>
 						<TableRow>
 							{Array.from({ length: columns }, (_, idx) => (
-								<TableHead key={idx}>
+								// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton component doesn't need stable keys
+								<TableHead key={`skeleton-header-col-${idx}`}>
 									<div className="h-4 w-24 bg-muted-foreground/20 rounded-sm animate-pulse" />
 								</TableHead>
 							))}
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{Array.from({ length: rows }, (_, idx) => (
-							<TableRow key={idx}>
-								{Array.from({ length: columns }, (_, idx) => (
-									<TableCell key={idx}>
+						{Array.from({ length: rows }, (_, rowIdx) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton component doesn't need stable keys
+							<TableRow key={`skeleton-row-${rowIdx}`}>
+								{Array.from({ length: columns }, (_, colIdx) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton component doesn't need stable keys
+									<TableCell key={`skeleton-cell-row-${rowIdx}-col-${colIdx}`}>
 										<div className="h-4 w-full bg-muted-foreground/20 rounded-sm animate-pulse" />
 									</TableCell>
 								))}

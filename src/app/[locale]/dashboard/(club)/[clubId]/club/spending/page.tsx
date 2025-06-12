@@ -1,7 +1,7 @@
 import { AddPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.form";
 import { PurchasesTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/purchases-table";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@generated/client";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { ErrorPage } from "@/components/error-page";
 import { getTranslations } from "next-intl/server";

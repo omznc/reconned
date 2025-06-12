@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 import { authClient } from "@/lib/auth-client";
-import type { User } from "@prisma/client";
+import type { User } from "@generated/client";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { toast } from "sonner";
 import { BanIcon, CheckCircle, TrashIcon, UserIcon } from "lucide-react";

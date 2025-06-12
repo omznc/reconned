@@ -23,5 +23,5 @@ interface ClubsMapWrapperProps {
 }
 
 export function ClubsMapWrapper(props: ClubsMapWrapperProps) {
-	return <ClubsMap clubs={props.clubs} />;
+	return <ClubsMap {...props} />;
 }

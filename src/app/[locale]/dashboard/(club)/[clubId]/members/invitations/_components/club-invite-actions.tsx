@@ -2,12 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Check, X } from "lucide-react";
 
 interface ClubInvite {
 	inviteCode: string;
-	club: { id: string; };
+	club: { id: string };
 }
 
 interface ClubInviteActionsProps {
@@ -23,8 +28,8 @@ export function ClubInviteActions({ invite }: ClubInviteActionsProps) {
 			action === "approve"
 				? `/api/club/member-invite/${invite.inviteCode}?redirectTo=${encodeURIComponent(pathname)}`
 				: `/api/club/member-invite/${invite.inviteCode}?action=dismiss&redirectTo=${encodeURIComponent(
-					pathname,
-				)}`;
+						pathname,
+					)}`;
 		const res = await fetch(url);
 		if (res.ok) {
 			router.refresh();

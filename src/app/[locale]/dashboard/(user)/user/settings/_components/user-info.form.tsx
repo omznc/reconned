@@ -6,7 +6,7 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@prisma/client";
+import type { User } from "@generated/client";
 import { CloudUpload, Loader, Trash, User as UserIcon, Phone, Shield } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";

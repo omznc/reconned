@@ -112,9 +112,14 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("image", event.image);
 	}
 
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug || event.id}`;
+
 	return {
 		title: `${event.name} - RECONNED`,
 		description: event.description.slice(0, 160) ?? t("description"),
+		alternates: {
+			canonical: canonicalUrl,
+		},
 		openGraph: {
 			images: [
 				{

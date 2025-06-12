@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { PlusCircle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@generated/client";
 import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";

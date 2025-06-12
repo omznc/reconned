@@ -4,6 +4,7 @@ import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { AdminIcon } from "@/components/icons";
 import type { Metadata } from "next";
+import { env } from "@/lib/env";
 
 type UserSearch = {
 	id: string;
@@ -73,5 +74,8 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users`,
+		},
 	};
 }
