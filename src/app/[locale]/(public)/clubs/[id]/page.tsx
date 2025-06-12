@@ -106,9 +106,14 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("logo", club.logo);
 	}
 
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug || club.id}`;
+
 	return {
 		title: `${club.name} - RECONNED`,
 		description: club.description?.slice(0, 160) ?? t("description"),
+		alternates: {
+			canonical: canonicalUrl,
+		},
 		openGraph: {
 			images: [
 				{

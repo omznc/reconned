@@ -50,7 +50,7 @@ const ToolbarButton = ({
 			size="icon"
 			onClick={onClick}
 			disabled={disabled}
-			className="h-8 w-8"
+			className="h-8 w-8 shadow-none"
 		>
 			{children}
 		</Button>

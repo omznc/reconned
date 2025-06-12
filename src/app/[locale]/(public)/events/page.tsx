@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { isAuthenticated } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
+import { env } from "@/lib/env";
 
 export default async function Page() {
 	const user = await isAuthenticated();
@@ -144,5 +145,8 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events`,
+		},
 	};
 }

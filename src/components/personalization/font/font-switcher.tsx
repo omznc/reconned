@@ -26,7 +26,7 @@ export function FontSwitcher() {
 			variant="ghost"
 			onClick={() => setFont(font === "sans" ? "mono" : "sans")}
 			suppressHydrationWarning
-			className="w-full items-center justify-start cursor-pointer"
+			className="w-full items-center justify-start cursor-pointer shadow-none"
 		>
 			<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 			{t("toggle")}

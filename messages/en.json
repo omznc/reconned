@@ -1017,7 +1017,8 @@
 					"minimumChars": "Enter at least 2 characters",
 					"noResults": "No results",
 					"chooseUserDescription": "If the user is already on the platform, you can find them here.",
-					"emailDescription": "If you can't find the user, or already know their email, enter it here."
+					"emailDescription": "If you can't find the user, or already know their email, enter it here.",
+					"or": "or"
 				},
 				"managers": {
 					"title": "Managers",

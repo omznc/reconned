@@ -3,11 +3,9 @@ import { env } from "@/lib/env";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-// Removed QuickLinkIcon import and added required lucide icons.
 import { Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, BarChart2 } from "lucide-react";
 import { BadgeNew } from "@/components/badge-new";
-import Image from "next/image";
-import FooterImage from "@public/footer.webp";
+import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
 
 export function Footer() {
 	const t = useTranslations("components.footer");
@@ -138,14 +136,7 @@ export function Footer() {
 					)}
 				</div>
 			</div>
-			<Image
-				priority={false}
-				loading="lazy"
-				src={FooterImage}
-				alt="Footer image of a person looking up at his laptop while it's flying away."
-				draggable={false}
-				className="transition-all opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none"
-			/>
+			<FooterDrawing className="transition-all opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none" />
 		</footer>
 	);
 }
