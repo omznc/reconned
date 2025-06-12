@@ -267,7 +267,11 @@ export function GenericDataTable<T>({
 			return (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" size="sm" className={isMobile ? "w-full justify-center" : ""}>
+						<Button
+							variant="ghost"
+							size="sm"
+							className={cn("shadow-none", isMobile ? "w-full justify-center" : "")}
+						>
 							<MoreHorizontal className="size-4" />
 							{isMobile && <span className="ml-2">{t("actions", { fallback: "Actions" })}</span>}
 						</Button>
@@ -331,7 +335,7 @@ export function GenericDataTable<T>({
 									target: { value: "" },
 								} as ChangeEvent<HTMLInputElement>)
 							}
-							className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent h-10 w-10"
+							className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent h-10 w-10 shadow-none"
 						>
 							<X className="h-4 w-4" />
 						</Button>
@@ -340,7 +344,7 @@ export function GenericDataTable<T>({
 
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="h-10">
+						<Button variant="outline" className="h-10 shadow-none">
 							{t("showColumns")}
 						</Button>
 					</DropdownMenuTrigger>
@@ -387,7 +391,11 @@ export function GenericDataTable<T>({
 				))}
 
 				{hasActiveFilters() && (
-					<Button variant="default" onClick={() => router.push("?")} className="h-10 px-2 lg:px-3">
+					<Button
+						variant="default"
+						onClick={() => router.push("?")}
+						className="h-10 px-2 lg:px-3 shadow-none"
+					>
 						<X className="h-4 w-4" />
 						<span className="ml-2 md:hidden inline lg:inline">{t("filters.clear")}</span>
 					</Button>
@@ -419,7 +427,7 @@ export function GenericDataTable<T>({
 												<Button
 													variant="ghost"
 													onClick={() => handleSort(column.key.toString())}
-													className="-ml-4 h-8 hover:bg-transparent"
+													className="-ml-4 h-8 hover:bg-transparent shadow-none"
 												>
 													{column.header}
 													{sortBy === column.key.toString() ? (
@@ -549,7 +557,7 @@ export function GenericDataTable<T>({
 						variant="outline"
 						onClick={() => setPage((prev) => String(Number(prev) - 1))}
 						disabled={page === "1"}
-						className="flex-1 sm:flex-none h-10"
+						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
 						{t("navigation.previous")}
 					</Button>
@@ -557,7 +565,7 @@ export function GenericDataTable<T>({
 						variant="outline"
 						onClick={() => setPage((prev) => String(Number(prev) + 1))}
 						disabled={Number(page) >= totalPages}
-						className="flex-1 sm:flex-none h-10"
+						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
 						{t("navigation.next")}
 					</Button>

@@ -9,10 +9,9 @@ import { SiGithub } from "@icons-pack/react-simple-icons";
 import { remark } from "remark";
 import remarkHtml from "remark-html";
 import remarkGfm from "remark-gfm";
-import Peeking from "@public/peeking.webp";
-import Image from "next/image";
 
 import "./markdown.css";
+import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
 
 // Helper function to format GitHub release body markdown
 async function formatReleaseBody(body: string): Promise<string> {
@@ -101,14 +100,7 @@ export default async function ChangelogPage() {
 
 			{/* Latest Release */}
 			<div className="relative mb-16">
-				<Image
-					priority={true}
-					loading="eager"
-					src={Peeking}
-					alt="An airsoft player peeking from behind a wall"
-					draggable={false}
-					className="z-10 absolute -right-5 md:-right-0 -top-11 lg:-top-27 transition-all w-full max-w-[180px] lg:max-w-[300px] dark:invert"
-				/>
+				<PeekingDrawing className="z-10 absolute -right-5 md:-right-0 -top-11 lg:-top-27 transition-all w-full max-w-[180px] lg:max-w-[300px] dark:invert" />
 				<h2 className="text-2xl font-bold mb-6">{t("latestRelease")}</h2>
 				<Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">
 					<CardHeader className="bg-primary/5">

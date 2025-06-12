@@ -25,7 +25,7 @@ export function LanguageSwitcher() {
 				<Button
 					variant="ghost"
 					suppressHydrationWarning
-					className="items-center w-full justify-start cursor-pointer"
+					className="items-center w-full justify-start cursor-pointer shadow-none"
 				>
 					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}

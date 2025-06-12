@@ -32,8 +32,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
-import HomeImage from "@public/home.webp";
 import type { Metadata } from "next";
+import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -53,24 +53,24 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const conditionalPrivateWhere = user
 		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
+			OR: [
+				{
+					isPrivate: false,
+				},
+				{
+					club: {
+						members: {
+							some: {
+								userId: user?.id,
 							},
 						},
 					},
-				],
-			}
+				},
+			],
+		}
 		: {
-				isPrivate: false,
-			};
+			isPrivate: false,
+		};
 
 	const events = await prisma.event.findMany({
 		where: {
@@ -119,14 +119,7 @@ export default async function Home({ searchParams }: PageProps) {
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
-						<Image
-							priority={true}
-							loading="eager"
-							src={HomeImage}
-							alt="Homepage drawing of a person aiming an ak-47 to the left"
-							draggable={false}
-							className="absolute opacity-0 lg:opacity-100 transition-all -right-110 bottom-0 w-full max-w-[400px] dark:invert"
-						/>
+						<HomeDrawing className="absolute opacity-0 lg:opacity-100 transition-all -right-110 bottom-0 w-full max-w-[400px] h-auto dark:invert" />
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
 							{t.rich("hero.title", {
 								br: () => <br />,

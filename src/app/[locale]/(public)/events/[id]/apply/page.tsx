@@ -8,6 +8,7 @@ import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { isAfter, isBefore } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 interface EventApplicationPageProps {
 	params: Promise<{
@@ -145,4 +146,44 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 			/>
 		</div>
 	);
+}
+
+export async function generateMetadata(props: EventApplicationPageProps): Promise<Metadata> {
+	const params = await props.params;
+	const t = await getTranslations("public.events.metadata");
+
+	const event = await prisma.event.findFirst({
+		where: {
+			OR: [
+				{
+					id: params.id,
+				},
+				{
+					slug: params.id,
+				},
+			],
+		},
+		select: {
+			id: true,
+			slug: true,
+			name: true,
+			description: true,
+		},
+	});
+
+	if (!event) {
+		return {
+			title: "Event Not Found - RECONNED",
+		};
+	}
+
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug || event.id}/apply`;
+
+	return {
+		title: `Apply to ${event.name} - RECONNED`,
+		description: `Apply to participate in ${event.name}`,
+		alternates: {
+			canonical: canonicalUrl,
+		},
+	};
 }

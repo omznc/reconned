@@ -192,9 +192,9 @@ export function InvitationsForm() {
 						</FormItem>
 					)}
 				/>
-				<div className="flex gap-1 items-center -mb-2">
+				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
-					<span className="text-gray-500">ili</span>
+					<span className="text-gray-500">{t("or")}</span>
 					<hr className="flex-1 border-t-2 border-gray-300" />
 				</div>
 				<FormField

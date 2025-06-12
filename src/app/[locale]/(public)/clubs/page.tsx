@@ -4,6 +4,7 @@ import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { VerifiedClubIcon } from "@/components/icons";
 import type { Metadata } from "next";
+import { env } from "@/lib/env";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -76,5 +77,8 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs`,
+		},
 	};
 }

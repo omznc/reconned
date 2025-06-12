@@ -1066,7 +1066,8 @@
 					"minimumChars": "Unesite najmanje 2 slova",
 					"noResults": "Nema rezultata",
 					"chooseUserDescription": "Ako je korisnik već na platformi, možete ga pronaći ovdje.",
-					"emailDescription": "Ako ne možete pronaći korisnika, ili već znate njihov email, unesite ga ovdje."
+					"emailDescription": "Ako ne možete pronaći korisnika, ili već znate njihov email, unesite ga ovdje.",
+					"or": "ili"
 				},
 				"managers": {
 					"promote": {
