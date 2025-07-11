@@ -8,7 +8,7 @@ import { membershipExtensionSchema } from "@/app/[locale]/dashboard/(club)/[club
 import { logClubAudit } from "@/lib/audit-logger";
 
 export const extendMembership = safeActionClient
-	.schema(membershipExtensionSchema)
+	.inputSchema(membershipExtensionSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const { memberId, clubId, duration } = parsedInput;
 		try {

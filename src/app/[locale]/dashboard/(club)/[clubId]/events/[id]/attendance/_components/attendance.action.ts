@@ -5,7 +5,7 @@ import { safeActionClient } from "@/lib/safe-action";
 import { toggleAttendanceSchema } from "./attendance.schema";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
-export const toggleAttendance = safeActionClient.schema(toggleAttendanceSchema).action(async ({ parsedInput, ctx }) => {
+export const toggleAttendance = safeActionClient.inputSchema(toggleAttendanceSchema).action(async ({ parsedInput, ctx }) => {
 	if (!ctx.club?.id) {
 		throw new Error("Unauthorized");
 	}

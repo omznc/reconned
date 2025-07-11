@@ -18,7 +18,7 @@ import { disconnectInstagramAPI } from "@/lib/instagram";
 import { logClubAudit } from "@/lib/audit-logger";
 import { env } from "@/lib/env";
 
-export const saveClubInformation = safeActionClient.schema(clubInfoSchema).action(async ({ parsedInput, ctx }) => {
+export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
 	if (parsedInput.slug) {
 		const valid = await validateSlug({
@@ -114,7 +114,7 @@ export const saveClubInformation = safeActionClient.schema(clubInfoSchema).actio
 });
 
 export const getClubImageUploadUrl = safeActionClient
-	.schema(clubLogoFileSchema)
+	.inputSchema(clubLogoFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const key = `club/${ctx.club.id}/logo`;
 
@@ -127,7 +127,7 @@ export const getClubImageUploadUrl = safeActionClient
 		return resp;
 	});
 
-export const deleteClubImage = safeActionClient.schema(deleteClubImageSchema).action(async ({ ctx }) => {
+export const deleteClubImage = safeActionClient.inputSchema(deleteClubImageSchema).action(async ({ ctx }) => {
 	await prisma.club.update({
 		where: {
 			id: ctx.club.id,
@@ -153,7 +153,7 @@ export const deleteClubImage = safeActionClient.schema(deleteClubImageSchema).ac
 	return { success: true };
 });
 
-export const disconnectInstagramAccount = safeActionClient.schema(disconnectInstagramSchema).action(async ({ ctx }) => {
+export const disconnectInstagramAccount = safeActionClient.inputSchema(disconnectInstagramSchema).action(async ({ ctx }) => {
 	try {
 		const success = await disconnectInstagramAPI(ctx.club.id);
 
@@ -201,7 +201,7 @@ export const disconnectInstagramAccount = safeActionClient.schema(disconnectInst
 	}
 });
 
-export const deleteClub = safeActionClient.schema(deleteClubSchema).action(async ({ ctx }) => {
+export const deleteClub = safeActionClient.inputSchema(deleteClubSchema).action(async ({ ctx }) => {
 	const [, , locale] = await Promise.all([
 		prisma.club.delete({
 			where: {

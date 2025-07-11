@@ -8,7 +8,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 
 export const deleteRegistration = safeActionClient
-	.schema(
+	.inputSchema(
 		z.object({
 			eventId: z.string(),
 		}),
@@ -51,7 +51,7 @@ export const deleteRegistration = safeActionClient
 	});
 
 export const submitEventApplication = safeActionClient
-	.schema(eventApplicationSchema)
+	.inputSchema(eventApplicationSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const { type, invitedUsers, invitedUsersNotOnApp, paymentMethod, eventId } = parsedInput;
 

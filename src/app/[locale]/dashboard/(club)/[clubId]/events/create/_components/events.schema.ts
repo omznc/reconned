@@ -13,7 +13,7 @@ export const createEventFormSchema = z
 		description: z.string().min(1, {
 			message: "Susret mora imati opis",
 		}),
-		costPerPerson: z.coerce
+		costPerPerson: z
 			.number()
 			.gte(0, "Susret ne može imati negativnu cijenu")
 			.lte(300, "Susret ne može imati cijenu veću od 300KM"),
@@ -33,16 +33,16 @@ export const createEventFormSchema = z
 				return input;
 			})
 			.optional(),
-		dateStart: z.coerce.date({
+		dateStart: z.date({
 			message: "Susret mora imati datum početka",
 		}),
-		dateEnd: z.coerce.date({
+		dateEnd: z.date({
 			message: "Susret mora imati datum završetka",
 		}),
-		dateRegistrationsOpen: z.coerce.date({
+		dateRegistrationsOpen: z.date({
 			message: "Susret mora imati datum otvaranja prijava",
 		}),
-		dateRegistrationsClose: z.coerce.date({
+		dateRegistrationsClose: z.date({
 			message: "Susret mora imati datum zatvaranja prijava",
 		}),
 		slug: z.string().optional(),

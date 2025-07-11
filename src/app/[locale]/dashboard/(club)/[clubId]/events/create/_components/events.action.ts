@@ -14,7 +14,7 @@ import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
 import { logClubAudit } from "@/lib/audit-logger";
 
-export const createEvent = safeActionClient.schema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
+export const createEvent = safeActionClient.inputSchema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
 	if (parsedInput.slug) {
 		const valid = await validateSlug({
@@ -113,7 +113,7 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 });
 
 export const getEventImageUploadUrl = safeActionClient
-	.schema(eventImageFileSchema)
+	.inputSchema(eventImageFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const belongsToClub = await prisma.event.findFirst({
 			where: {
@@ -134,7 +134,7 @@ export const getEventImageUploadUrl = safeActionClient
 		return resp;
 	});
 
-export const deleteEventImage = safeActionClient.schema(deleteEventImageSchema).action(async ({ parsedInput, ctx }) => {
+export const deleteEventImage = safeActionClient.inputSchema(deleteEventImageSchema).action(async ({ parsedInput, ctx }) => {
 	await prisma.event.update({
 		where: {
 			id: parsedInput.eventId,
@@ -155,7 +155,7 @@ export const deleteEventImage = safeActionClient.schema(deleteEventImageSchema).
 	});
 });
 
-export const deleteEvent = safeActionClient.schema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
+export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
 	// If the event is in the past, you can't delete it.
 	const eventFinished = await prisma.event.findFirst({
 		where: {

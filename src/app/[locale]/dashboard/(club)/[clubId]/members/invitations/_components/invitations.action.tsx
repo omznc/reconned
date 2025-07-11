@@ -13,7 +13,7 @@ import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { render } from "@react-email/components";
 import { logClubAudit } from "@/lib/audit-logger";
 
-export const sendInvitation = safeActionClient.schema(sendInvitationSchema).action(async ({ parsedInput, ctx }) => {
+export const sendInvitation = safeActionClient.inputSchema(sendInvitationSchema).action(async ({ parsedInput, ctx }) => {
 	try {
 		const existingInvite = await prisma.clubInvite.findFirst({
 			where: {
@@ -121,7 +121,7 @@ export const sendInvitation = safeActionClient.schema(sendInvitationSchema).acti
 	}
 });
 
-export const revokeInvitation = safeActionClient.schema(revokeInvitationSchema).action(async ({ parsedInput, ctx }) => {
+export const revokeInvitation = safeActionClient.inputSchema(revokeInvitationSchema).action(async ({ parsedInput, ctx }) => {
 	try {
 		const invite = await prisma.clubInvite.findFirst({
 			where: {
