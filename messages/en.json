@@ -835,7 +835,7 @@
 					"eventDuration": ", lasts <number></number> hour/s.",
 					"error": "An error occurred while saving data",
 					"photoUploadError": "An error occurred while uploading the image",
-					"success": "Data about the event is saved",
+					"success": "Successfully created event",
 					"editingTitle": "Change of event",
 					"editingDescription": "This event has already been created, you are currently editing it.",
 					"delete": {

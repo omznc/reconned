@@ -142,7 +142,6 @@ export function getClubNavigationItems(t: TFunction, clubId: string, isManager: 
 				url: `/dashboard/${clubId}/club/spending`,
 				icon: DollarSign,
 				protected: true,
-				isNew: true,
 			},
 			{
 				title: t("info"),
@@ -161,7 +160,6 @@ export function getClubNavigationItems(t: TFunction, clubId: string, isManager: 
 				url: `/dashboard/${clubId}/club/audit`,
 				icon: History,
 				protected: true,
-				isNew: true,
 			},
 		);
 	}
@@ -230,7 +228,6 @@ export function getClubNavigationItems(t: TFunction, clubId: string, isManager: 
 				title: t("rules"),
 				url: `/dashboard/${clubId}/events/rules`,
 				icon: DiamondMinus,
-				isNew: true,
 				protected: true,
 			},
 		);
