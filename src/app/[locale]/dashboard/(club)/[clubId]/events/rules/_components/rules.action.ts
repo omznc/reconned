@@ -6,7 +6,7 @@ import { deleteRuleSchema, ruleSchema } from "./rules.schema";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { logClubAudit } from "@/lib/audit-logger";
 
-export const saveRule = safeActionClient.schema(ruleSchema).action(async ({ parsedInput, ctx }) => {
+export const saveRule = safeActionClient.inputSchema(ruleSchema).action(async ({ parsedInput, ctx }) => {
 	try {
 		const rule = parsedInput.id
 			? await prisma.clubRule.update({
@@ -47,7 +47,7 @@ export const saveRule = safeActionClient.schema(ruleSchema).action(async ({ pars
 	}
 });
 
-export const deleteRule = safeActionClient.schema(deleteRuleSchema).action(async ({ parsedInput, ctx }) => {
+export const deleteRule = safeActionClient.inputSchema(deleteRuleSchema).action(async ({ parsedInput, ctx }) => {
 	await prisma.clubRule.delete({
 		where: {
 			id: parsedInput.ruleId,

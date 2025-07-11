@@ -107,7 +107,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 					<div className="flex items-center gap-2">
 						<SidebarTrigger className="-ml-1" />
 						<Separator orientation="vertical" className="hidden md:flex mr-2 h-4" />
-						<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
+						<Breadcrumb className="hidden md:flex overflow-hidden whitespace-nowrap flex-nowrap">
 							<BreadcrumbList>
 								{sections.map((section, index) => {
 									const sectionKey = `${section}-${index}-${sections.slice(0, index + 1).join("/")}`;

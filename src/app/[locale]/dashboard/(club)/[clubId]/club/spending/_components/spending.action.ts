@@ -12,7 +12,7 @@ import { randomUUID } from "node:crypto";
 import { after } from "next/server";
 import { logClubAudit } from "@/lib/audit-logger";
 
-export const createPurchase = safeActionClient.schema(purchaseFormSchema).action(async ({ parsedInput }) => {
+export const createPurchase = safeActionClient.inputSchema(purchaseFormSchema).action(async ({ parsedInput }) => {
 	if (parsedInput.receiptUrls && parsedInput.receiptUrls.length > 3) {
 		return {
 			serverError: "Maksimalno 3 računa po stavci",
@@ -39,7 +39,7 @@ export const createPurchase = safeActionClient.schema(purchaseFormSchema).action
 });
 
 export const updatePurchase = safeActionClient
-	.schema(purchaseFormSchema.extend({ id: z.string() }))
+	.inputSchema(purchaseFormSchema.extend({ id: z.string() }))
 	.action(async ({ parsedInput }) => {
 		if (parsedInput.receiptUrls && parsedInput.receiptUrls.length > 3) {
 			return {
@@ -73,7 +73,7 @@ export const updatePurchase = safeActionClient
 	});
 
 export const deletePurchase = safeActionClient
-	.schema(z.object({ id: z.string(), clubId: z.string() }))
+	.inputSchema(z.object({ id: z.string(), clubId: z.string() }))
 	.action(async ({ parsedInput }) => {
 		const purchase = await prisma.clubPurchase.delete({
 			where: { id: parsedInput.id },
@@ -96,7 +96,7 @@ export const deletePurchase = safeActionClient
 	});
 
 export const getPurchaseReceiptUploadUrl = safeActionClient
-	.schema(purchaseReceiptSchema)
+	.inputSchema(purchaseReceiptSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const uuid = randomUUID();
 		const key = `receipt/${ctx.club?.id}/${uuid}-${parsedInput.file.name}`;
@@ -111,7 +111,7 @@ export const getPurchaseReceiptUploadUrl = safeActionClient
 	});
 
 // const deleteReceipt = safeActionClient
-// 	.schema(
+// 	.inputSchema(
 // 		z.object({
 // 			purchaseId: z.string(),
 // 			receiptUrl: z.string(),

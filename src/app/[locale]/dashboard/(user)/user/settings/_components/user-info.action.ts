@@ -10,7 +10,7 @@ import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { getTranslations } from "next-intl/server";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
-export const saveUserInformation = safeActionClient.schema(userInfoShema).action(async ({ parsedInput, ctx }) => {
+export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).action(async ({ parsedInput, ctx }) => {
 	const t = await getTranslations("dashboard.user.settings");
 	// Validate slug
 	if (parsedInput.slug) {
@@ -53,7 +53,7 @@ export const saveUserInformation = safeActionClient.schema(userInfoShema).action
 });
 
 export const getUserImageUploadUrl = safeActionClient
-	.schema(userImageFileSchema)
+	.inputSchema(userImageFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,

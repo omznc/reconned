@@ -10,7 +10,7 @@ const clubAdminActionSchema = z.object({
 	action: z.enum(["ban", "unban", "remove"]),
 });
 
-export const clubAdminAction = safeActionClient.schema(clubAdminActionSchema).action(async ({ parsedInput, ctx }) => {
+export const clubAdminAction = safeActionClient.inputSchema(clubAdminActionSchema).action(async ({ parsedInput, ctx }) => {
 	const { clubId, action } = parsedInput;
 
 	if (action === "ban") {

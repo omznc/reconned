@@ -6,7 +6,7 @@ import { safeActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 export const validateSlug = safeActionClient
-	.schema(
+	.inputSchema(
 		z.object({
 			type: z.union([z.literal("club"), z.literal("event"), z.literal("user")]),
 			slug: z.string().min(1),

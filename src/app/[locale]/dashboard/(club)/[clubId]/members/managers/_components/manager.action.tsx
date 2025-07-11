@@ -10,7 +10,7 @@ import {
 } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
 import { logClubAudit } from "@/lib/audit-logger";
 
-export const promoteToManager = safeActionClient.schema(promoteToManagerSchema).action(async ({ parsedInput, ctx }) => {
+export const promoteToManager = safeActionClient.inputSchema(promoteToManagerSchema).action(async ({ parsedInput, ctx }) => {
 	try {
 		const targetMembership = await prisma.clubMembership.findFirst({
 			where: {
@@ -86,7 +86,7 @@ export const promoteToManager = safeActionClient.schema(promoteToManagerSchema).
 });
 
 export const demoteFromManager = safeActionClient
-	.schema(demoteFromManagerSchema)
+	.inputSchema(demoteFromManagerSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		try {
 			const targetMembership = await prisma.clubMembership.findFirst({

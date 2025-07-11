@@ -5,7 +5,7 @@ import { safeActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 
 export const setThemeAction = safeActionClient
-	.schema(
+	.inputSchema(
 		z.object({
 			theme: z.union([z.literal("light"), z.literal("dark")]),
 		}),

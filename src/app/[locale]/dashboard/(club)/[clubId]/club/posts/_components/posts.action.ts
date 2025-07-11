@@ -6,7 +6,7 @@ import { deletePostSchema, postSchema } from "./posts.schema";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { logClubAudit } from "@/lib/audit-logger";
 
-export const savePost = safeActionClient.schema(postSchema).action(async ({ parsedInput, ctx }) => {
+export const savePost = safeActionClient.inputSchema(postSchema).action(async ({ parsedInput, ctx }) => {
 	const post = parsedInput.id
 		? await prisma.post.update({
 				where: {
@@ -47,7 +47,7 @@ export const savePost = safeActionClient.schema(postSchema).action(async ({ pars
 	return { success: true, post };
 });
 
-export const deletePost = safeActionClient.schema(deletePostSchema).action(async ({ parsedInput, ctx }) => {
+export const deletePost = safeActionClient.inputSchema(deletePostSchema).action(async ({ parsedInput, ctx }) => {
 	await prisma.post.delete({
 		where: {
 			id: parsedInput.postId,
