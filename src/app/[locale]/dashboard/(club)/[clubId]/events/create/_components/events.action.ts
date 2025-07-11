@@ -134,26 +134,28 @@ export const getEventImageUploadUrl = safeActionClient
 		return resp;
 	});
 
-export const deleteEventImage = safeActionClient.inputSchema(deleteEventImageSchema).action(async ({ parsedInput, ctx }) => {
-	await prisma.event.update({
-		where: {
-			id: parsedInput.eventId,
-			clubId: ctx.club.id,
-		},
-		data: {
-			image: null,
-		},
-	});
+export const deleteEventImage = safeActionClient
+	.inputSchema(deleteEventImageSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		await prisma.event.update({
+			where: {
+				id: parsedInput.eventId,
+				clubId: ctx.club.id,
+			},
+			data: {
+				image: null,
+			},
+		});
 
-	await logClubAudit({
-		clubId: ctx.club.id,
-		actionType: "EVENT_UPDATE",
-		actionData: {
-			id: parsedInput.eventId,
-			note: "Event image deleted",
-		},
+		await logClubAudit({
+			clubId: ctx.club.id,
+			actionType: "EVENT_UPDATE",
+			actionData: {
+				id: parsedInput.eventId,
+				note: "Event image deleted",
+			},
+		});
 	});
-});
 
 export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
 	// If the event is in the past, you can't delete it.

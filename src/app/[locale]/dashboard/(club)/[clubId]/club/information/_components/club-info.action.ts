@@ -153,53 +153,55 @@ export const deleteClubImage = safeActionClient.inputSchema(deleteClubImageSchem
 	return { success: true };
 });
 
-export const disconnectInstagramAccount = safeActionClient.inputSchema(disconnectInstagramSchema).action(async ({ ctx }) => {
-	try {
-		const success = await disconnectInstagramAPI(ctx.club.id);
+export const disconnectInstagramAccount = safeActionClient
+	.inputSchema(disconnectInstagramSchema)
+	.action(async ({ ctx }) => {
+		try {
+			const success = await disconnectInstagramAPI(ctx.club.id);
 
-		if (!success) {
+			if (!success) {
+				return {
+					success: false,
+					error: "Došlo je do greške prilikom odspajanja Instagram računa",
+				};
+			}
+
+			// Log the audit event
+			await logClubAudit({
+				clubId: ctx.club.id,
+				actionType: "INSTAGRAM_DISCONNECT",
+				actionData: {
+					disconnectedBy: "api",
+					success: true,
+				},
+			});
+
+			revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`, "page");
+			if (!ctx.club.isPrivate) {
+				revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
+				revalidateLocalizedPaths("/clubs");
+				revalidateLocalizedPaths("/search");
+			}
+
+			return { success: true };
+		} catch (error) {
+			// Log the audit event even if there's an error
+			await logClubAudit({
+				clubId: ctx.club.id,
+				actionType: "INSTAGRAM_DISCONNECT",
+				actionData: {
+					disconnectedBy: "api",
+					success: false,
+					error: error instanceof Error ? error.message : "Unknown error",
+				},
+			});
+
 			return {
 				success: false,
 				error: "Došlo je do greške prilikom odspajanja Instagram računa",
 			};
 		}
-
-		// Log the audit event
-		await logClubAudit({
-			clubId: ctx.club.id,
-			actionType: "INSTAGRAM_DISCONNECT",
-			actionData: {
-				disconnectedBy: "api",
-				success: true,
-			},
-		});
-
-		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/club/information`, "page");
-		if (!ctx.club.isPrivate) {
-			revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
-			revalidateLocalizedPaths("/clubs");
-			revalidateLocalizedPaths("/search");
-		}
-
-		return { success: true };
-	} catch (error) {
-		// Log the audit event even if there's an error
-		await logClubAudit({
-			clubId: ctx.club.id,
-			actionType: "INSTAGRAM_DISCONNECT",
-			actionData: {
-				disconnectedBy: "api",
-				success: false,
-				error: error instanceof Error ? error.message : "Unknown error",
-			},
-		});
-
-		return {
-			success: false,
-			error: "Došlo je do greške prilikom odspajanja Instagram računa",
-		};
-	}
-});
+	});
 
 export const deleteClub = safeActionClient.inputSchema(deleteClubSchema).action(async ({ ctx }) => {
 	const [, , locale] = await Promise.all([
