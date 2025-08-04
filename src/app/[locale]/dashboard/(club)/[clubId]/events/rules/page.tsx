@@ -1,4 +1,4 @@
-import { RulesForm } from "./_components/rules.form";
+import { RulesForm } from "./_components/rules.form.tsx";
 import { prisma } from "@/lib/prisma";
 
 export default async function Page(props: {

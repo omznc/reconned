@@ -4,7 +4,7 @@ import { getCountries } from "@/lib/cached-countries";
 import { CirclePlus, MailPlus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { RequestAccessForm } from "./_components/request-access.form";
+import { RequestAccessForm } from "./_components/request-access.form.tsx";
 
 interface PageProps {
 	searchParams: Promise<{

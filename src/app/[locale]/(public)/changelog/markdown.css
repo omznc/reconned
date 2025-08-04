@@ -147,7 +147,7 @@
 
 	/* For emoji support */
 	.emoji {
-		font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+		font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "sans-serif";
 	}
 
 	/* Diff blocks */

@@ -115,7 +115,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
-							component: (value, row) => (
+							component: (value) => (
 								<Badge variant="secondary" className="font-mono">
 									{getActionTypeLabel(value)}
 								</Badge>

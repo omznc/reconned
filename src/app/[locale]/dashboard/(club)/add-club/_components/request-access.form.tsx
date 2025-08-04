@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { requestAccess } from "./request-access.action";
+import { requestAccess } from "./request-access.action.ts";
 import { useTranslations } from "next-intl";
 import {
 	requestAccessSchema,

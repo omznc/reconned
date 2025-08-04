@@ -1,5 +1,5 @@
 "use client";
-import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
+import { FileDrop } from "@/components/ui/file-drop";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@generated/client";
-import { CloudUpload, Loader, Trash, User as UserIcon, Phone, Shield } from "lucide-react";
+import { Loader, Trash, User as UserIcon, Phone, Shield } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { useState } from "react";
@@ -25,8 +25,7 @@ import Image from "next/image";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { SlugInput } from "@/components/slug/slug-input";
-import { ImageCropDialog } from "@/app/[locale]/dashboard/(user)/user/settings/_components/image-crop-dialog";
-import type { DropzoneOptions } from "react-dropzone";
+
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -37,20 +36,12 @@ interface UserInfoFormProps {
 export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
-	const [files, setFiles] = useState<File[] | null>(null);
+	const [uploadedUrls, setUploadedUrls] = useState<string[]>(props.user.image ? [props.user.image] : []);
 	const [isSlugValid, setIsSlugValid] = useState(true);
-	const [cropFile, setCropFile] = useState<File | null>(null);
+
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.user.settings");
 
-	const dropZoneConfig = {
-		maxFiles: 1,
-		maxSize: 1024 * 1024 * 4,
-		accept: {
-			"image/jpeg": ["jpg", "jpeg"],
-			"image/png": ["png"],
-		},
-	} satisfies DropzoneOptions;
 	const form = useForm<z.infer<typeof userInfoShema>>({
 		resolver: zodResolver(userInfoShema),
 		defaultValues: {
@@ -70,42 +61,48 @@ export function UserInfoForm(props: UserInfoFormProps) {
 		},
 	});
 
+	const handleFileUpload = async (file: File): Promise<string | null> => {
+		try {
+			const img = await createImageBitmap(file);
+			const resp = await getUserImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+					dimensions: {
+						width: img.width,
+						height: img.height,
+					},
+				},
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		} catch (error) {
+			toast.error(t("imageUploadError"));
+			return null;
+		}
+	};
+
 	async function onSubmit(values: z.infer<typeof userInfoShema>) {
 		setIsLoading(true);
 		try {
-			if (files?.[0]) {
-				const img = await createImageBitmap(files[0]);
-				const resp = await getUserImageUploadUrl({
-					file: {
-						type: files[0].type,
-						size: files[0].size,
-						dimensions: {
-							width: img.width,
-							height: img.height,
-						},
-					},
-				});
-
-				if (!resp?.data?.url) {
-					toast.error(t("imageUploadError"));
-					return;
-				}
-
-				await fetch(resp.data?.url, {
-					method: "PUT",
-					body: files[0],
-					headers: {
-						"Content-Type": files[0].type,
-						"Content-Length": files[0].size.toString(),
-					},
-				});
-
-				values.image = resp.data.cdnUrl;
+			if (uploadedUrls.length > 0) {
+				values.image = uploadedUrls[0];
 			}
 
 			await saveUserInformation(values);
-
-			setFiles([]);
 
 			toast.success(t("profileUpdated"));
 		} catch (_error) {
@@ -279,72 +276,25 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							render={() => (
 								<FormItem>
 									<FormControl>
-										<FileUploader
-											key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
-											value={files}
-											onValueChange={(newFiles) => {
-												if (!newFiles || newFiles.length === 0) {
-													setFiles(null);
-													setCropFile(null);
-												} else if (newFiles[0]) {
-													setCropFile(newFiles[0]);
-												}
+										<FileDrop
+											uploadedUrls={uploadedUrls}
+											onUrlsChange={setUploadedUrls}
+											onUpload={handleFileUpload}
+											maxFiles={1}
+											maxFileSize={1024 * 1024 * 4}
+											acceptedTypes={{
+												"image/jpeg": [".jpg", ".jpeg"],
+												"image/png": [".png"],
 											}}
-											dropzoneOptions={dropZoneConfig}
 											className="relative bg-background p-0.5"
-										>
-											{(!files || files.length === 0) && (
-												<FileInput
-													key={`file-input-${files?.length}-${files?.[0]?.name}`}
-													id="fileInput"
-													className="outline-dashed outline-1 outline-slate-500"
-												>
-													<div className="flex items-center justify-center flex-col p-8 w-full ">
-														<CloudUpload className="text-gray-500 w-10 h-10" />
-														<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-															{t("fileUpload")}
-														</p>
-														<p className="text-xs text-gray-500 dark:text-gray-400">
-															{t("fileUploadFormats")} JPG, JPEG, PNG
-														</p>
-													</div>
-												</FileInput>
-											)}
-											<FileUploaderContent>
-												{files &&
-													files.length > 0 &&
-													files.map((file, i) => (
-														<FileUploaderItem
-															className="p-2 size-fit -ml-1"
-															key={file.name}
-															index={i}
-														>
-															{/** biome-ignore lint/performance/noImgElement: We're using object images here */}
-															<img
-																src={URL.createObjectURL(file)}
-																alt={file.name}
-																className="h-[100px] mr-4 w-auto object-fit"
-															/>
-														</FileUploaderItem>
-													))}
-											</FileUploaderContent>
-										</FileUploader>
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
 
-						<ImageCropDialog
-							file={cropFile}
-							onClose={() => setCropFile(null)}
-							onCrop={(croppedFile) => {
-								setFiles([croppedFile]);
-								setCropFile(null);
-							}}
-						/>
-
-						{props.user.image && (
+						{uploadedUrls.length > 0 && (
 							<HoverCard openDelay={100}>
 								<HoverCardTrigger>
 									<Button
@@ -366,6 +316,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 											setIsDeletingImage(true);
 											await deleteUserImage();
+											setUploadedUrls([]);
 											setIsDeletingImage(false);
 										}}
 										className="mt-1"
@@ -379,7 +330,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 									</Button>
 								</HoverCardTrigger>
 								<HoverCardContent className="size-full mb-8">
-									<Image src={props.user.image} alt="Club logo" width={200} height={200} />
+									<Image src={uploadedUrls[0]} alt="Profile photo" width={200} height={200} />
 								</HoverCardContent>
 							</HoverCard>
 						)}

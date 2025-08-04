@@ -1167,7 +1167,7 @@
 			},
 			"copyright": "© {year} RECONNED. ",
 			"sponsors": "Check out our sponsors and partners",
-			"version": "Version {commit}"
+			"version": "Version {commit} ({date})"
 		},
 		"table": {
 			"showColumns": "Show columns",
@@ -1189,6 +1189,11 @@
 			"login": "Login",
 			"logout": "Sign out",
 			"personalization": "Personalization"
+		},
+		"fileDrop": {
+			"dropFilesHere": "Drop files here or click to upload",
+			"maxFiles": "Max {count} files, {maxSize}MB each",
+			"someFilesFailed": "Some files failed to upload"
 		},
 		"themeSwitcher": {
 			"toggle": "Change theme"
@@ -1422,6 +1427,12 @@
 			"error": "There's been a problem contacting Instagram",
 			"noPhotos": "Nothing to show here",
 			"viewMore": "View more on Instagram"
+		},
+		"fileDrop": {
+			"dropFilesHere": "Drop files here or click to browse",
+			"maxFiles": "Max {count, plural, =1 {{count} file, {maxSize}MB} other {{count} files, {maxSize}MB each}}",
+			"someFilesFailed": "Some files failed to upload",
+			"maxFilesReached": "Maximum of {count, plural, =1 {{count} file} other {{count} files}} reached"
 		}
 	},
 	"imgur": {

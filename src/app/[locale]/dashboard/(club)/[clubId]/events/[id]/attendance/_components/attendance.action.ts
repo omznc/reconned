@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { toggleAttendanceSchema } from "./attendance.schema";
+import { toggleAttendanceSchema } from "./attendance.schema.ts";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
 export const toggleAttendance = safeActionClient

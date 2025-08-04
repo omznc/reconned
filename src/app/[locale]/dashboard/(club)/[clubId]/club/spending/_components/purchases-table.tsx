@@ -2,7 +2,7 @@
 
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Trash2, MoreHorizontal, Edit } from "lucide-react";
-import { deletePurchase } from "./spending.action";
+import { deletePurchase } from "./spending.action.ts";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { leaveClubSchema, removeMemberSchema } from "./members.schema";
+import { leaveClubSchema, removeMemberSchema } from "./members.schema.ts";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";

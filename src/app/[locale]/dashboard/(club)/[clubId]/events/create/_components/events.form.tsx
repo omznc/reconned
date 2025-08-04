@@ -22,21 +22,11 @@ import { createEventFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DateTimePicker, initHourFormat } from "@/components/ui/date-time-picker";
-import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
+import { FileDrop } from "@/components/ui/file-drop";
 import { Switch } from "@/components/ui/switch";
 import type { ClubRule, Event } from "@generated/client";
 import { bs } from "date-fns/locale";
-import {
-	ArrowUpRight,
-	Calendar as CalendarIcon,
-	CloudUpload,
-	Eye,
-	Loader,
-	MapPin,
-	RotateCcw,
-	Settings,
-	Trash,
-} from "lucide-react";
+import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -64,7 +54,7 @@ interface CreateEventFormProps {
 }
 
 export default function CreateEventForm(props: CreateEventFormProps) {
-	const [files, setFiles] = useState<File[] | null>(null);
+	const [uploadedUrls, setUploadedUrls] = useState<string[]>(props.event?.image ? [props.event.image] : []);
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
@@ -135,15 +125,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 		return <p className="text-sm text-muted-foreground min-h-[50px]">{parts}</p>;
 	}
-
-	const dropZoneConfig = {
-		maxFiles: 1,
-		maxSize: 1024 * 1024 * 4,
-		accept: {
-			"image/jpeg": ["jpg", "jpeg"],
-			"image/png": ["png"],
-		},
-	};
 
 	const router = useRouter();
 	const clubId = useParams<{ clubId: string }>().clubId;
@@ -242,9 +223,50 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		};
 	}, [form]);
 
+	const handleFileUpload = async (file: File): Promise<string | null> => {
+		try {
+			// If we're editing an existing event, we can upload immediately
+			if (props.event?.id) {
+				const resp = await getEventImageUploadUrl({
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+					eventId: props.event.id,
+					clubId: clubId,
+				});
+
+				if (!resp?.data?.url) {
+					throw new Error("Failed to get upload URL");
+				}
+
+				await fetch(resp.data.url, {
+					method: "PUT",
+					body: file,
+					headers: {
+						"Content-Type": file.type,
+						"Content-Length": file.size.toString(),
+					},
+				});
+
+				return resp.data.cdnUrl;
+			}
+			// For new events, we'll handle upload after event creation in onSubmit
+			toast.error(t("mustSaveEventFirst"));
+			return null;
+		} catch (error) {
+			toast.error(t("photoUploadError"));
+			return null;
+		}
+	};
+
 	async function onSubmit(values: z.infer<typeof createEventFormSchema>) {
 		setIsLoading(true);
 		try {
+			if (uploadedUrls.length > 0) {
+				values.image = uploadedUrls[0];
+			}
+
 			const event = await createEvent(values);
 
 			if (!event?.data || event.serverError) {
@@ -252,39 +274,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				return;
 			}
 
-			if (files?.[0]) {
-				const resp = await getEventImageUploadUrl({
-					file: {
-						type: files[0].type,
-						size: files[0].size,
-					},
-					eventId: event.data.id,
-					clubId: clubId,
-				});
-
-				if (!resp?.data?.url) {
-					toast.error(t("photoUploadError"));
-					return;
-				}
-
-				await fetch(resp.data?.url, {
-					method: "PUT",
-					body: files[0],
-					headers: {
-						"Content-Type": files[0].type,
-						"Content-Length": files[0].size.toString(),
-					},
-				});
-
-				values.image = resp.data.cdnUrl;
-				await createEvent({
-					...values,
-					eventId: event.data.id,
-				});
-			}
 			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 
-			setFiles([]);
 			toast.success(t("success"));
 		} catch (error) {
 			toast.error(t("error"));
@@ -427,54 +418,25 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									<FormItem>
 										<FormLabel>{t("photo")}</FormLabel>
 										<FormControl>
-											<FileUploader
-												value={files}
-												onValueChange={setFiles}
-												dropzoneOptions={dropZoneConfig}
+											<FileDrop
+												uploadedUrls={uploadedUrls}
+												onUrlsChange={setUploadedUrls}
+												onUpload={handleFileUpload}
+												maxFiles={1}
+												maxFileSize={1024 * 1024 * 4}
+												acceptedTypes={{
+													"image/jpeg": [".jpg", ".jpeg"],
+													"image/png": [".png"],
+												}}
+												disabled={!props.event?.id}
 												className="relative bg-background p-0.5"
-												key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
-											>
-												{(!files || files.length === 0) && (
-													<FileInput
-														key={`file-input-${files?.length}-${files?.[0]?.name}`}
-														id="fileInput"
-														className="outline-dashed outline-1 outline-slate-500"
-													>
-														<div className="flex items-center justify-center flex-col p-8 w-full ">
-															<CloudUpload className="text-gray-500 w-10 h-10" />
-															<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-																{t("fileUpload")}
-															</p>
-															<p className="text-xs text-gray-500 dark:text-gray-400">
-																{t("fileUploadFormats")} JPG, JPEG, PNG
-															</p>
-														</div>
-													</FileInput>
-												)}
-												<FileUploaderContent>
-													{files &&
-														files.length > 0 &&
-														files.map((file, i) => (
-															<FileUploaderItem
-																className="p-2 size-fit -ml-1"
-																key={file.name}
-																index={i}
-															>
-																<img
-																	src={URL.createObjectURL(file)}
-																	alt={file.name}
-																	className="h-[100px] mr-4 w-auto object-fit"
-																/>
-															</FileUploaderItem>
-														))}
-												</FileUploaderContent>
-											</FileUploader>
+											/>
 										</FormControl>
 										<FormDescription>{t("photoDescription")}</FormDescription>
 									</FormItem>
 								)}
 							/>
-							{props.event?.id && props.event?.image && (
+							{props.event?.id && uploadedUrls.length > 0 && (
 								<HoverCard openDelay={100}>
 									<HoverCardTrigger>
 										<Button
@@ -499,6 +461,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													eventId: props.event?.id as string,
 													clubId: clubId,
 												});
+												setUploadedUrls([]);
 												setIsDeletingImage(false);
 											}}
 											className="mt-1"
@@ -513,7 +476,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										</Button>
 									</HoverCardTrigger>
 									<HoverCardContent className="size-full mb-8">
-										<Image src={props.event.image} alt="Club logo" width={200} height={200} />
+										<Image src={uploadedUrls[0] || ""} alt="Event photo" width={200} height={200} />
 									</HoverCardContent>
 								</HoverCard>
 							)}
@@ -525,7 +488,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									<FormItem>
 										<FormLabel>{t("price")}</FormLabel>
 										<FormControl>
-											<Input placeholder="20" type="number" {...field} />
+											<Input
+												placeholder="20"
+												type="number"
+												{...field}
+												onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+											/>
 										</FormControl>
 										<FormDescription>{t("priceDescription")}</FormDescription>
 										<FormMessage />
@@ -1036,7 +1004,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																		className={cn(
 																			"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 																		)}
-																		// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 																		dangerouslySetInnerHTML={{
 																			__html: selectedRule.content,
 																		}}
@@ -1085,7 +1052,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						onClick={() => {
 							sessionStorage.removeItem("createEventForm");
 							form.reset(defaultFormValues);
-							setFiles([]);
+							setUploadedUrls([]);
 						}}
 					>
 						<RotateCcw className="size-4" />

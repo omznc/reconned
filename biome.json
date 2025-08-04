@@ -44,7 +44,14 @@
 			},
 			"suspicious": {
 				"noReactSpecificProps": "off"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "warn"
 			}
+		},
+		"domains": {
+			"next": "all",
+			"project": "all"
 		}
 	},
 	"formatter": {

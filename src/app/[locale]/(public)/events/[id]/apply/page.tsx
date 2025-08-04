@@ -150,7 +150,6 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 
 export async function generateMetadata(props: EventApplicationPageProps): Promise<Metadata> {
 	const params = await props.params;
-	const t = await getTranslations("public.events.metadata");
 
 	const event = await prisma.event.findFirst({
 		where: {

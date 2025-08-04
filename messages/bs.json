@@ -1167,7 +1167,7 @@
 			},
 			"copyright": "© {year} RECONNED. Sva prava zadržana.",
 			"sponsors": "Pogledajte naše sponzore i partnere",
-			"version": "Verzija {commit}"
+			"version": "Verzija {commit} ({date})"
 		},
 		"table": {
 			"showColumns": "Prikaži kolone",
@@ -1189,6 +1189,11 @@
 			"login": "Prijava",
 			"logout": "Odjava",
 			"personalization": "Personalizacija"
+		},
+		"fileDrop": {
+			"dropFilesHere": "Prevucite fajlove ovdje ili kliknite za upload",
+			"maxFiles": "Maksimalno {count} fajlova, {maxSize}MB svaki",
+			"someFilesFailed": "Neki fajlovi nisu uspješno uploadovani"
 		},
 		"themeSwitcher": {
 			"toggle": "Promijeni temu"
@@ -1422,6 +1427,12 @@
 			"noPhotos": "Nema fotografija za prikaz",
 			"viewMore": "Pogledaj više na Instagramu",
 			"error": "Greška pri učitavanju fotografija"
+		},
+		"fileDrop": {
+			"dropFilesHere": "Prevucite fajlove ovdje ili kliknite za pretraživanje",
+			"maxFiles": "Maksimalno {count, plural, =1 {{count} fajl, {maxSize}MB} =2 {{count} fajla, {maxSize}MB svaki} =3 {{count} fajla, {maxSize}MB svaki} =4 {{count} fajla, {maxSize}MB svaki} other {{count} fajlova, {maxSize}MB svaki}}",
+			"someFilesFailed": "Neki fajlovi nisu uspješno otpremljeni",
+			"maxFilesReached": "Dosegnut je maksimum od {count, plural, =1 {{count} fajla} =2 {{count} fajla} =3 {{count} fajla} =4 {{count} fajla} other {{count} fajlova}}"
 		}
 	},
 	"imgur": {

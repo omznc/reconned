@@ -715,7 +715,6 @@ export function EventApplicationForm({ existingApplication, event, user, current
 											className={cn(
 												"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 											)}
-											// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 											dangerouslySetInnerHTML={{
 												__html: rule.content,
 											}}

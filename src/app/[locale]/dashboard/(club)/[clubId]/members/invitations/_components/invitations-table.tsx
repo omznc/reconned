@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useQueryState } from "nuqs";
-import { ClubInviteActions } from "./club-invite-actions";
+import { ClubInviteActions } from "./club-invite-actions.tsx";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Ban } from "lucide-react";
 

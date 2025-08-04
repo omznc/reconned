@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@generated/client";
-import { ClubsSheet } from "./_components/clubs.sheet";
-import { ClubsTable } from "./_components/clubs.table";
+import { ClubsSheet } from "./_components/clubs.sheet.tsx";
+import { ClubsTable } from "./_components/clubs.table.tsx";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";

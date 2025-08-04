@@ -10,13 +10,14 @@ import type { z } from "zod";
 import { toast } from "sonner";
 import type { Post } from "@generated/client";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { postSchema } from "./posts.schema";
-import { savePost, deletePost } from "./posts.action";
+import { postSchema } from "./posts.schema.ts";
+import { savePost, deletePost, getPostImageUploadUrl } from "./posts.action.ts";
 import { useQueryState } from "nuqs";
 import { Switch } from "@/components/ui/switch";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { FileDrop, type FileUploadProgress } from "@/components/ui/file-drop";
 
 interface PostsFormProps {
 	clubId: string;
@@ -28,6 +29,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [editorContent, setEditorContent] = useState<string>(editingPost?.content ?? "");
+	const [uploadedUrls, setUploadedUrls] = useState<string[]>(editingPost?.images || []);
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.posts");
 
@@ -37,7 +39,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			id: editingPost?.id,
 			title: editingPost?.title ?? "",
 			content: editorContent,
-			// images: editingPost?.images ?? [],
+			images: editingPost?.images ?? [],
 			isPublic: editingPost?.isPublic ?? false,
 			clubId,
 		},
@@ -48,12 +50,52 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		form.setValue("content", content, { shouldValidate: true });
 	}
 
+	const handleUpload = async (file: File): Promise<string | null> => {
+		const resp = await getPostImageUploadUrl({
+			file: {
+				type: file.type,
+				size: file.size,
+				name: file.name,
+			},
+			clubId,
+		});
+
+		if (!resp?.data?.url) {
+			throw new Error("Failed to get upload URL");
+		}
+
+		const response = await fetch(resp.data.url, {
+			method: "PUT",
+			body: file,
+			headers: {
+				"Content-Type": file.type,
+				"Content-Length": file.size.toString(),
+			},
+		});
+
+		if (!response.ok) {
+			throw new Error(`Upload failed with status ${response.status}`);
+		}
+
+		return resp.data.cdnUrl;
+	};
+
+	const handleUrlsChange = (urls: string[]) => {
+		setUploadedUrls(urls);
+		form.setValue("images", urls);
+	};
+
 	async function onSubmit(values: z.infer<typeof postSchema>) {
 		setIsLoading(true);
 		try {
-			await savePost(values);
+			const postData = {
+				...values,
+				images: uploadedUrls,
+			};
+			await savePost(postData);
 			form.reset();
 			setPostId(null);
+			setUploadedUrls([]);
 			toast.success(values.id ? t("successCreated") : t("successEdited"));
 		} catch (error) {
 			toast.error(t("error"));
@@ -137,20 +179,28 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						)}
 					/>
 
-					{/* TODO */}
-					{/* <FormField
+					<FormField
 						control={form.control}
 						name="images"
-						render={({ field }) => (
+						render={() => (
 							<FormItem>
 								<FormLabel>Slike</FormLabel>
 								<FormControl>
-									<Input type="file" multiple {...field} />
+									<FileDrop
+										uploadedUrls={uploadedUrls}
+										onUrlsChange={handleUrlsChange}
+										onUpload={handleUpload}
+										maxFiles={5}
+										acceptedTypes={{
+											"image/*": [".jpg", ".jpeg", ".png", ".webp"],
+										}}
+										disabled={isLoading}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
 						)}
-					/> */}
+					/>
 
 					<FormField
 						control={form.control}

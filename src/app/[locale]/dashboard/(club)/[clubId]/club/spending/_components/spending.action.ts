@@ -8,7 +8,8 @@ import {
 import { safeActionClient } from "@/lib/safe-action";
 import { z } from "zod";
 import { getS3FileUploadUrl, deleteS3File } from "@/lib/storage";
-import { randomUUID } from "node:crypto";
+import { generateSecureFilename } from "@/lib/file-security";
+import { fileUploadRateLimit } from "@/lib/rate-limit";
 import { after } from "next/server";
 import { logClubAudit } from "@/lib/audit-logger";
 
@@ -80,8 +81,10 @@ export const deletePurchase = safeActionClient
 		});
 
 		after(async () => {
-			const keys = purchase.receiptUrls.map((url) => url.split(".com/")[1]);
-			await Promise.all(keys.map((key) => deleteS3File(key!)));
+			const keys = purchase.receiptUrls
+				.map((url) => url.split(".com/")[1])
+				.filter((key): key is string => Boolean(key));
+			await Promise.all(keys.map((key) => deleteS3File(key)));
 		});
 
 		await logClubAudit({
@@ -98,13 +101,23 @@ export const deletePurchase = safeActionClient
 export const getPurchaseReceiptUploadUrl = safeActionClient
 	.inputSchema(purchaseReceiptSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const uuid = randomUUID();
-		const key = `receipt/${ctx.club?.id}/${uuid}-${parsedInput.file.name}`;
+		// Rate limiting - 10 file uploads per minute per user
+		const rateLimitResult = await fileUploadRateLimit.limit(ctx.user.id);
+		if (!rateLimitResult.success) {
+			const resetTime = rateLimitResult.reset ? new Date(rateLimitResult.reset).toLocaleTimeString() : "soon";
+			throw new Error(`Too many upload attempts. Try again at ${resetTime}.`);
+		}
+
+		// Generate secure filename
+		const secureFilename = generateSecureFilename(parsedInput.file.name);
+		const key = `receipt/${ctx.club?.id}/${secureFilename}`;
 
 		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
 			size: parsedInput.file.size,
 			key,
+			clubId: ctx.club?.id,
+			userId: ctx.user.id,
 		});
 
 		return resp;

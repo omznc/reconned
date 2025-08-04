@@ -8,7 +8,7 @@ import {
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { Button } from "@/components/ui/button";
-import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
+import { FileDrop } from "@/components/ui/file-drop";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -24,7 +24,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Club } from "@generated/client";
 import { format } from "date-fns";
 import { AlertCircle, ArrowUpRight, Calendar as CalendarIcon, CheckCircle, Loader, Trash } from "lucide-react";
-import { CloudUpload } from "lucide-react";
 
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { useState, useEffect } from "react";
@@ -60,7 +59,7 @@ interface ClubInfoFormProps {
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
-	const [files, setFiles] = useState<File[] | null>(null);
+	const [uploadedUrls, setUploadedUrls] = useState<string[]>(props.club?.logo ? [props.club.logo] : []);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [open, setOpen] = useState(false);
@@ -102,15 +101,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		newUrl.searchParams.delete("errorMessage");
 		window.history.replaceState({}, document.title, newUrl.toString());
 	}, [instagramSuccessParam, instagramErrorParam, errorMessageParam]);
-
-	const dropZoneConfig = {
-		maxFiles: 1,
-		maxSize: 1024 * 1024 * 4,
-		accept: {
-			"image/jpeg": ["jpg", "jpeg"],
-			"image/png": ["png"],
-		},
-	};
 
 	const form = useForm<z.infer<typeof clubInfoSchema>>({
 		resolver: zodResolver(clubInfoSchema),
@@ -207,77 +197,50 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		}
 	};
 
+	const handleFileUpload = async (file: File): Promise<string | null> => {
+		if (!props.club?.id) {
+			toast.error(t("mustSaveClubFirst"));
+			return null;
+		}
+
+		try {
+			const resp = await getClubImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+				clubId: props.club.id,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		} catch (error) {
+			toast.error(t("photoUploadError"));
+			return null;
+		}
+	};
+
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
-			/**
-			 * If editing a club, and the logo changes, upload it.
-			 */
-			if (files?.[0] && props.club?.id) {
-				const resp = await getClubImageUploadUrl({
-					file: {
-						type: files[0].type,
-						size: files[0].size,
-					},
-					clubId: props.club.id,
-				});
-
-				if (!resp?.data?.url) {
-					toast.error(t("photoUploadError"));
-					return;
-				}
-
-				await fetch(resp.data?.url, {
-					method: "PUT",
-					body: files[0],
-					headers: {
-						"Content-Type": files[0].type,
-						"Content-Length": files[0].size.toString(),
-					},
-				});
-
-				values.logo = resp.data.cdnUrl;
+			if (uploadedUrls.length > 0) {
+				values.logo = uploadedUrls[0];
 			}
 
 			const resp = await saveClubInformation(values);
 			const newClubId = resp?.data?.id;
-
-			/**
-			 * If creating a new club with a logo, upload it after the save, and re-save the club with the new logo URL.
-			 */
-			if (files?.[0] && !props.club?.id) {
-				if (!newClubId) {
-					toast.error(t("clubCreationError"));
-					return;
-				}
-				const resp = await getClubImageUploadUrl({
-					file: {
-						type: files[0].type,
-						size: files[0].size,
-					},
-					clubId: newClubId,
-				});
-
-				if (!resp?.data?.url) {
-					toast.error(t("photoUploadError"));
-					return;
-				}
-
-				await fetch(resp.data?.url, {
-					method: "PUT",
-					body: files[0],
-					headers: {
-						"Content-Type": files[0].type,
-						"Content-Length": files[0].size.toString(),
-					},
-				});
-
-				await saveClubInformation({
-					...values,
-					logo: resp.data.cdnUrl,
-					clubId: newClubId,
-				});
-			}
 
 			if (resp?.serverError) {
 				toast.error(resp.serverError);
@@ -289,8 +252,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				router.push(`/dashboard/${newClubId}/club`);
 				router.refresh();
 			}
-
-			setFiles([]);
 
 			toast.success(props.club?.id ? t("clubSaved") : t("clubCreationSuccess"));
 		} catch (error) {
@@ -605,49 +566,19 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem>
 							<FormLabel>{t("logo")}</FormLabel>
 							<FormControl>
-								<FileUploader
-									key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
-									value={files}
-									onValueChange={setFiles}
-									dropzoneOptions={dropZoneConfig}
+								<FileDrop
+									uploadedUrls={uploadedUrls}
+									onUrlsChange={setUploadedUrls}
+									onUpload={handleFileUpload}
+									maxFiles={1}
+									maxFileSize={1024 * 1024 * 4}
+									acceptedTypes={{
+										"image/jpeg": [".jpg", ".jpeg"],
+										"image/png": [".png"],
+									}}
+									disabled={!props.club?.id}
 									className="relative bg-background p-0.5"
-								>
-									{(!files || files.length === 0) && (
-										<FileInput
-											key={`file-input-${files?.length}-${files?.[0]?.name}`}
-											id="fileInput"
-											className="outline-dashed outline-1 outline-slate-500"
-										>
-											<div className="flex items-center justify-center flex-col p-8 w-full ">
-												<CloudUpload className="text-gray-500 w-10 h-10" />
-												<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-													{t("fileUpload")}
-												</p>
-												<p className="text-xs text-gray-500 dark:text-gray-400">
-													{t("fileUploadFormats")} JPG, JPEG, PNG
-												</p>
-											</div>
-										</FileInput>
-									)}
-									<FileUploaderContent>
-										{files &&
-											files.length > 0 &&
-											files.map((file, i) => (
-												<FileUploaderItem
-													className="p-2 size-fit -ml-1"
-													key={file.name}
-													index={i}
-												>
-													{/** biome-ignore lint/performance/noImgElement: Local image */}
-													<img
-														src={URL.createObjectURL(file)}
-														alt={file.name}
-														className="h-[100px] mr-4 w-auto object-fit"
-													/>
-												</FileUploaderItem>
-											))}
-									</FileUploaderContent>
-								</FileUploader>
+								/>
 							</FormControl>
 							<FormDescription>{t("logoDescription")}</FormDescription>
 							<FormMessage />
@@ -655,7 +586,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 				/>
 
-				{props.club?.id && props.club?.logo && (
+				{props.club?.id && uploadedUrls.length > 0 && (
 					<HoverCard openDelay={100}>
 						<HoverCardTrigger>
 							<Button
@@ -683,6 +614,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									await deleteClubImage({
 										clubId: props.club.id,
 									});
+									setUploadedUrls([]);
 									setIsDeletingImage(false);
 								}}
 								className="mt-1"
@@ -693,7 +625,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							</Button>
 						</HoverCardTrigger>
 						<HoverCardContent className="size-full mb-8">
-							<Image src={props.club.logo} alt="Club logo" width={200} height={200} />
+							<Image src={uploadedUrls[0] || ""} alt="Club logo" width={200} height={200} />
 						</HoverCardContent>
 					</HoverCard>
 				)}

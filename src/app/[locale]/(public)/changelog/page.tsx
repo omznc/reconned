@@ -122,7 +122,6 @@ export default async function ChangelogPage() {
 					</CardHeader>
 					<CardContent className="pt-6">
 						<div className="markdown-content">
-							{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
 							<div
 								dangerouslySetInnerHTML={{
 									__html: content,
@@ -173,7 +172,6 @@ export default async function ChangelogPage() {
 								</CardHeader>
 								<CardContent>
 									<div className="markdown-content">
-										{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
 										<div
 											dangerouslySetInnerHTML={{
 												__html: release.formattedBody,
