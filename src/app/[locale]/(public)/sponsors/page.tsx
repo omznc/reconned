@@ -1,10 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUpRight, MailCheckIcon } from "lucide-react";
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
 import type { Metadata } from "next";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
 
 const sponsors = [
 	{

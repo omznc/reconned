@@ -1,27 +1,27 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Editor } from "@/components/editor/editor";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import type { ClubRule } from "@generated/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calendar, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { z } from "zod";
 import { toast } from "sonner";
-import type { ClubRule } from "@generated/client";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { Trash, Calendar, Pencil } from "lucide-react";
-import { ruleSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.schema";
+import type { z } from "zod";
 import { deleteRule, saveRule } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.action";
+import { ruleSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.schema";
+import { Editor } from "@/components/editor/editor";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import "@/components/editor/editor.css";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { format } from "date-fns";
-import { useQueryState } from "nuqs";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 interface RulesFormProps {
 	rules: ClubRule[];
@@ -63,7 +63,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			setRuleId(null);
 			setRandom(Math.random());
 			toast.success(values.id ? t("rule.updated") : t("rule.created"));
-		} catch (error) {
+		} catch (_) {
 			toast.error(t("rule.error"));
 		}
 		setIsLoading(false);

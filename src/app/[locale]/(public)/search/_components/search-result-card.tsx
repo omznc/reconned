@@ -1,10 +1,10 @@
-import { Card, CardTitle, CardDescription } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { Link } from "@/i18n/navigation";
-import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 import { ArrowUpRight, Building2, Calendar, User } from "lucide-react";
+import Image from "next/image";
 import type { ReactNode } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 interface SearchResultCardProps {
 	title: ReactNode;

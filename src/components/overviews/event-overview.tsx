@@ -1,19 +1,19 @@
-import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
-import { LoadChildOnClick } from "@/components/load-child-on-click";
-import { MapComponent } from "@/components/map-component";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { isAuthenticated } from "@/lib/auth";
-import { cn } from "@/lib/utils";
 import type { ClubRule, Event } from "@generated/client";
+import { isAfter, isBefore } from "date-fns";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
-import { isAfter, isBefore } from "date-fns";
-import { BadgeSoon } from "@/components/badge-soon";
-import { getPageViews } from "@/lib/analytics";
 import { getTranslations } from "next-intl/server";
+import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
+import { BadgeSoon } from "@/components/badge-soon";
+import { LoadChildOnClick } from "@/components/load-child-on-click";
+import { MapComponent } from "@/components/map-component";
+import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import { getPageViews } from "@/lib/analytics";
+import { isAuthenticated } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 interface EventOverviewProps {
 	event: Event & {

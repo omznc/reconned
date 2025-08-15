@@ -1,5 +1,8 @@
 "use client";
+import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
+import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,12 +15,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { Link, useRouter } from "@/i18n/navigation";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
-import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 
 export function UserSwitcher() {
 	const { isMobile } = useSidebar();

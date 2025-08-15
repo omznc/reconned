@@ -1,19 +1,19 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { Code, MoreHorizontal } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
+import { GenericDataTable } from "@/components/generic-data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Credenza,
 	CredenzaContent,
+	CredenzaDescription,
 	CredenzaHeader,
 	CredenzaTitle,
-	CredenzaDescription,
 } from "@/components/ui/credenza";
-import { useState } from "react";
-import { Code, MoreHorizontal } from "lucide-react";
-import type { JsonValue } from "@prisma/client/runtime/client";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

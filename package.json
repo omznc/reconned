@@ -104,7 +104,8 @@
 	},
 	"name": "airsoft-bih",
 	"overrides": {
-		"react-is": "^19.0.0"
+		"react-is": "^19.0.0",
+		"import-in-the-middle": "1.14.2"
 	},
 	"packageManager": "bun@1.2.10",
 	"prisma": {
@@ -114,7 +115,8 @@
 	"scripts": {
 		"build": "next build --turbopack",
 		"dev": "next dev --turbo",
-		"format": "bunx @biomejs/biome format --write .",
+		"format": "bunx --bun @biomejs/biome format --write .",
+		"check": "bunx --bun @biomejs/biome check --write .",
 		"knip": "knip",
 		"lighthouse": "bunx unlighthouse --site https://reconned.com --sitemaps https://reconned.com/sitemap.xml",
 		"lint": "bunx biome lint --write ./src",

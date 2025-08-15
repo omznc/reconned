@@ -1,6 +1,6 @@
+import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
 	const user = await isAuthenticated();

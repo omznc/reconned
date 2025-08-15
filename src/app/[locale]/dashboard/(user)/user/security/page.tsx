@@ -1,8 +1,8 @@
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { SecuritySettings } from "@/app/[locale]/dashboard/(user)/user/security/_components/security-settings";
 import { auth, isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
 
 export default async function Page() {
 	const user = await isAuthenticated();

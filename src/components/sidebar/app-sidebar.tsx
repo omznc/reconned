@@ -1,10 +1,18 @@
 "use client";
 
+import type { Club } from "@generated/client";
+import type { User } from "better-auth";
+import { MailPlus, Search } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { useCurrentClub } from "@/components/current-club-provider";
+import { ClubSwitcher } from "@/components/sidebar/club-switcher";
+import { useCommandMenu } from "@/components/sidebar/command-menu";
 import { NavApp } from "@/components/sidebar/nav-app";
 import { NavClub } from "@/components/sidebar/nav-club";
 import { UserSwitcher } from "@/components/sidebar/user-switcher";
-import { ClubSwitcher } from "@/components/sidebar/club-switcher";
-import { useCurrentClub } from "@/components/current-club-provider";
+import { Button } from "@/components/ui/button";
 import {
 	Sidebar,
 	SidebarContent,
@@ -15,16 +23,8 @@ import {
 	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import type { Club } from "@generated/client";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { User } from "better-auth";
-import { useLocale, useTranslations } from "next-intl";
-import { env } from "@/lib/env";
 import { Link, usePathname } from "@/i18n/navigation";
-import { MailPlus, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useCommandMenu } from "@/components/sidebar/command-menu";
+import { env } from "@/lib/env";
 
 interface AppSidebarProps {
 	clubs: Club[];

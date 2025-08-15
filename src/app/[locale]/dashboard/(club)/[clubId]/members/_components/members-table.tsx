@@ -1,19 +1,19 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { toast } from "sonner";
-import { LeaveClubButton } from "@/components/leave-club-button";
 import type { ClubMembership } from "@generated/client";
-import { Link } from "@/i18n/navigation";
+import { Calendar, LogOut, UserCircle, UserMinus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { toast } from "sonner";
 import { removeMember } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
 import { MembershipExtensionForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.form";
-import { useState } from "react";
+import { GenericDataTable } from "@/components/generic-data-table";
+import { LeaveClubButton } from "@/components/leave-club-button";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { UserCircle, Calendar, LogOut, UserMinus } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 interface MembersTableProps {
 	members: (ClubMembership & {

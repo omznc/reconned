@@ -1,3 +1,7 @@
+import { isAfter, isBefore } from "date-fns";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.form";
 import { ErrorPage } from "@/components/error-page";
 import { redirect } from "@/i18n/navigation";
@@ -5,10 +9,6 @@ import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { isAfter, isBefore } from "date-fns";
-import { getLocale, getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
 
 interface EventApplicationPageProps {
 	params: Promise<{

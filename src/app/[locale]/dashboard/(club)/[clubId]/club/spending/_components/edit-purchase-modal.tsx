@@ -1,5 +1,16 @@
 "use client";
 
+import type { Purchase } from "@generated/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Pencil } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { PurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import { purchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Button } from "@/components/ui/button";
 import {
 	Credenza,
@@ -9,49 +20,46 @@ import {
 	CredenzaTitle,
 	CredenzaTrigger,
 } from "@/components/ui/credenza";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Loader } from "lucide-react";
+import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
+import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { updatePurchase, getPurchaseReceiptUploadUrl } from "./spending.action.ts";
-import type { EditPurchaseFormValues } from "./spending.schema.ts";
-import { editPurchaseFormSchema } from "./spending.schema.ts";
-import type { ClubPurchase } from "@generated/client";
-import { useTranslations } from "next-intl";
-import { FileDrop } from "@/components/ui/file-drop";
+import { getPurchaseReceiptUploadUrl, updatePurchase } from "./spending.action.ts";
 
-export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
+interface EditPurchaseModalProps {
+	purchase: Purchase;
+}
+
+export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 	const [open, setOpen] = useState(false);
-	const t = useTranslations("dashboard.club.spending");
+	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
-	const [uploadedUrls, setUploadedUrls] = useState<string[]>(purchase.receiptUrls || []);
-	const [isLoading, setIsLoading] = useState(false);
-	const form = useForm<EditPurchaseFormValues>({
-		resolver: zodResolver(editPurchaseFormSchema),
-		defaultValues: {
-			id: purchase.id,
-			clubId: purchase.clubId,
-			title: purchase.title,
-			description: purchase.description || "",
-			amount: purchase.amount,
-			receiptUrls: purchase.receiptUrls,
-		},
-	});
+	const t = useTranslations("dashboard.club.spending");
+	const { setHasUnsavedChanges } = useUnsavedChanges();
 
-	const handleFileUpload = async (file: File): Promise<string | null> => {
-		try {
+	// Initialize file upload system for receipts
+	const initialFiles: FileUploadItem[] = purchase.receiptUrls
+		? purchase.receiptUrls.map((url, index) => ({
+				id: `existing-${index}`,
+				url,
+				name: `Receipt ${index + 1}`,
+				type: url.endsWith(".pdf") ? "application/pdf" : "image/jpeg",
+				isExisting: true,
+			}))
+		: [];
+
+	const receiptUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
 			const resp = await getPurchaseReceiptUploadUrl({
 				file: {
 					type: file.type,
 					size: file.size,
 					name: file.name,
 				},
-				clubId: purchase.clubId,
+				clubId: params.clubId,
 			});
 
 			if (!resp?.data?.url) {
@@ -72,23 +80,41 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 			}
 
 			return resp.data.cdnUrl;
-		} catch (error) {
-			toast.error(`${t("errorReceipt")} ${file.name}`);
-			return null;
-		}
-	};
+		},
+		maxFiles: 3,
+		initialFiles,
+		onFilesChange: () => {
+			setHasUnsavedChanges(true);
+		},
+	});
 
-	const onSubmit = async (data: EditPurchaseFormValues) => {
+	const form = useForm<PurchaseFormValues>({
+		resolver: zodResolver(purchaseFormSchema),
+		defaultValues: {
+			id: purchase.id,
+			clubId: params.clubId,
+			title: purchase.title,
+			description: purchase.description || "",
+			amount: purchase.amount,
+			receiptUrls: purchase.receiptUrls || [],
+		},
+	});
+
+	const [isLoading, setIsLoading] = useState(false);
+
+	const onSubmit = async (data: PurchaseFormValues) => {
 		setIsLoading(true);
 		try {
+			// Upload any new receipts
+			const uploadedUrls = await receiptUpload.uploadAllFiles();
 			data.receiptUrls = uploadedUrls;
 
 			const result = await updatePurchase(data);
-			if (result?.data) {
-				toast.success(t("successEdit"));
+			if (result?.data?.purchase) {
+				receiptUpload.markAsSaved();
+				setHasUnsavedChanges(false);
+				toast.success(t("successUpdated"));
 				setOpen(false);
-				setUploadedUrls([]);
-				form.reset();
 				router.refresh();
 			}
 		} catch (error) {
@@ -97,16 +123,25 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 		setIsLoading(false);
 	};
 
+	const handleOpenChange = (newOpen: boolean) => {
+		if (!newOpen) {
+			// Reset to initial state when closing
+			receiptUpload.resetToInitial();
+			form.reset();
+		}
+		setOpen(newOpen);
+	};
+
 	return (
-		<Credenza open={open} onOpenChange={setOpen}>
+		<Credenza open={open} onOpenChange={handleOpenChange}>
 			<CredenzaTrigger asChild>
-				<Button variant="ghost" size="icon" type="button">
+				<Button variant="ghost" size="sm">
 					<Pencil className="h-4 w-4" />
 				</Button>
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{t("edit")}</CredenzaTitle>
+					<CredenzaTitle>{t("editItem")}</CredenzaTitle>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -118,7 +153,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 									<FormItem>
 										<FormLabel>{t("details.title")}</FormLabel>
 										<FormControl>
-											<Input {...field} />
+											<Input placeholder={t("details.title")} {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -131,7 +166,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 									<FormItem>
 										<FormLabel>{t("details.description")}</FormLabel>
 										<FormControl>
-											<Textarea {...field} />
+											<Textarea placeholder={t("details.description")} {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -147,6 +182,7 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 											<Input
 												type="number"
 												step="0.01"
+												placeholder="0.00"
 												{...field}
 												onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
 											/>
@@ -160,38 +196,30 @@ export function EditPurchaseModal({ purchase }: { purchase: ClubPurchase }) {
 								name="receiptUrls"
 								render={() => (
 									<FormItem>
-										<FormLabel>
-											{t("details.receipts")} ({uploadedUrls.length}/3)
-										</FormLabel>
+										<FormLabel>{t("details.receipts")}</FormLabel>
 										<FormControl>
-											<FileDrop
-												uploadedUrls={uploadedUrls}
-												onUrlsChange={setUploadedUrls}
-												onUpload={handleFileUpload}
+											<FileUpload
+												value={receiptUpload.files}
+												onChange={receiptUpload.setFiles}
 												maxFiles={3}
-												maxFileSize={1024 * 1024 * 5}
-												acceptedTypes={{
+												maxFileSize={5 * 1024 * 1024}
+												accept={{
 													"image/png": [".png"],
 													"image/jpeg": [".jpg", ".jpeg"],
 													"application/pdf": [".pdf"],
 												}}
-												className="relative bg-background p-0.5"
+												multiple={true}
+												showPreview={true}
 											/>
 										</FormControl>
+										<FormDescription>{t("details.receiptsMaxCount")}</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-							<Button type="submit" className="w-full mb-2" disabled={isLoading}>
-								{isLoading ? (
-									<>
-										<Loader className="mr-2 h-4 w-4 animate-spin" />
-										{t("saving")}
-									</>
-								) : (
-									t("saveChanges")
-								)}
-							</Button>
+							<LoaderSubmitButton isLoading={isLoading} className="w-full">
+								{isLoading ? t("saving") : t("save")}
+							</LoaderSubmitButton>
 						</form>
 					</Form>
 				</CredenzaBody>

@@ -1,8 +1,8 @@
 "use client";
 
+import type { ClubRule, Event } from "@generated/client";
 import { AddToCalendarButton as CalendarButtonBase } from "add-to-calendar-button-react";
 import { format } from "date-fns";
-import type { ClubRule, Event } from "@generated/client";
 import { useTranslations } from "next-intl";
 
 export default function AddEventToCalendarButton({ event }: { event: Event & { rules: ClubRule[] } }) {

@@ -1,25 +1,25 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { cn } from "@/lib/utils";
 import {
 	Bold,
-	Italic,
-	List,
-	ListOrdered,
-	Quote,
 	Heading1,
 	Heading2,
 	Heading3,
-	Minus,
-	Link as LinkIcon,
+	Italic,
 	Link2Off,
+	Link as LinkIcon,
+	List,
+	ListOrdered,
+	Minus,
+	Quote,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import "./editor.css";
-import { Button } from "@/components/ui/button";
-import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { useTranslations } from "next-intl";
+import { usePrompt } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
 
 interface EditorProps {
 	initialValue?: string;

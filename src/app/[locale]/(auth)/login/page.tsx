@@ -1,26 +1,25 @@
 "use client";
 
+import { Button } from "@components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { SuccessContext } from "better-auth/react";
+import { Key } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { BadgeSoon } from "@/components/badge-soon";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@components/ui/button";
-import { Link } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { useQueryState } from "nuqs";
-import { Key } from "lucide-react";
-import type { SuccessContext } from "better-auth/react";
-import { BadgeSoon } from "@/components/badge-soon";
-import { useTranslations } from "next-intl";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);

@@ -470,47 +470,36 @@
 			},
 			"settings": {
 				"title": "General",
-				"imageUploadError": "An error occurred while uploading the image",
-				"profileUpdated": "User data has been saved",
-				"profileUpdateError": "An error occurred while saving data",
+				"success": "User data has been saved",
+				"error": "An error occurred while saving data",
+				"general": "General",
+				"avatar": "Profile picture",
+				"avatarDescription": "We recommend that you upload a profile picture.",
+				"saving": "Saving...",
 				"name": "Your name",
 				"callsign": "Callsign",
+				"callsignPlaceholder": "My callsign",
+				"callsignDescription": "Callsign you use on the field",
 				"location": "Location",
+				"locationPlaceholder": "Sarajevo, BiH",
 				"locationDescription": "The city or town where you are located",
 				"bio": "About you",
 				"bioDescription": "This is your chance to stand out in a few sentences",
-				"public": "Displayed publicly",
-				"private": "Hidden",
-				"privateProfile": "Private profile",
-				"privateProfileDescription": "Hide profile from public access. ",
+				"private": "Private profile",
+				"privateDescription": "Hide profile from public access. We recommend keeping profile public.",
+				"privateEmail": "Private email",
+				"privateEmailDescription": "Hide your email address from public access",
+				"privatePhone": "Private phone",
+				"privatePhoneDescription": "Hide your phone number from public access",
+				"privacy": "Privacy",
 				"privateStats": "Private Statistics",
 				"privateStatsDescription": "Only you can see how many views your profile has",
-				"profilePhoto": "Profile picture",
-				"profilePhotoDescription": "We recommend that you upload a profile picture.",
-				"fileUpload": "Drag or click to upload image",
-				"fileUploadFormats": "Supported formats:",
-				"deleteProfilePhoto": {
-					"title": "Are you sure?",
-					"body": "Are you sure you want to delete your profile picture?",
-					"confirm": "Delete profile picture",
-					"cancel": "No, come back"
-				},
 				"contact": "Contact",
 				"phone": "Phone number",
 				"website": "Website",
 				"save": "Save changes",
-				"linkTaken": "The selected link is busy",
-				"cropPhotoTitle": "Crop the image",
-				"cropPhotoDescription": "Select the part of the image you want to save",
-				"cancel": "Cancel",
 				"bioPlaceholder": "Something about me is that...",
-				"requiredSection": "Required",
-				"profileDescription": "Some information about you",
-				"additionalInformation": "Additional information",
-				"optional": "Optional",
-				"contactDescription": "This is how people can reach you",
-				"privacySettings": "Privacy",
-				"privacyDescription": "Show or hide your information"
+				"phoneDescription": "This is how people can reach you"
 			},
 			"security": {}
 		},
@@ -620,6 +609,7 @@
 				"clubCreationError": "An error occurred while creating the club",
 				"clubCreationSuccess": "Club successfully created",
 				"clubSaved": "Club information has been saved",
+				"success": "Club information has been saved",
 				"error": "An error occurred",
 				"clubEditTitle": "You are changing your club information",
 				"clubEditDescription": "Changes will be visible immediately after you save them.",
@@ -656,6 +646,15 @@
 				"privateStatsDescription": "Only club members can see how many views the club has",
 				"logo": "Logo",
 				"logoDescription": "Add a club logo. ",
+				"uploadLogo": "Upload logo",
+				"replaceLogo": "Replace logo",
+				"removeLogo": "Remove logo",
+				"uploadingLogo": "Uploading logo...",
+				"pleaseWait": "Please wait",
+				"logoUploadDescription": "Drag and drop your logo here, or click to browse",
+				"logoFormats": "JPG, PNG, or WebP up to 4MB",
+				"logoUploaded": "Logo uploaded successfully",
+				"logoSelected": "Logo selected",
 				"fileUpload": "Drag or click to upload image",
 				"fileUploadFormats": "Supported formats:",
 				"logoDelete": {
@@ -719,7 +718,8 @@
 					"pageNotFound": "Facebook Page not found.",
 					"personalAccount": "The Instagram account connected to the selected Facebook page is not a Business account. You need to use an Instagram Business account to connect."
 				},
-				"descriptionPlaceholder": "This is a cool description"
+				"descriptionPlaceholder": "This is a cool description",
+				"mustSaveClubFirst": "Please save the club information before uploading a logo"
 			},
 			"posts": {
 				"successEdited": "Post successfully modified",
@@ -1093,6 +1093,19 @@
 		}
 	},
 	"components": {
+		"unsavedChanges": {
+			"confirm": {
+				"title": "Leave without saving?",
+				"body": "You have unsaved changes. If you leave this page now, your changes will be lost.",
+				"leave": "Leave page",
+				"stay": "Stay"
+			},
+			"unloadPrompt": "You have unsaved changes.",
+			"banner": {
+				"title": "You have unsaved changes",
+				"subtitle": "Save your work before navigating away"
+			}
+		},
 		"sidebar": {
 			"betaMessage": "Beta version - Changes and errors are possible.",
 			"githubMessage": "We're open-source! Click here and help us become better.",
@@ -1189,11 +1202,6 @@
 			"login": "Login",
 			"logout": "Sign out",
 			"personalization": "Personalization"
-		},
-		"fileDrop": {
-			"dropFilesHere": "Drop files here or click to upload",
-			"maxFiles": "Max {count} files, {maxSize}MB each",
-			"someFilesFailed": "Some files failed to upload"
 		},
 		"themeSwitcher": {
 			"toggle": "Change theme"

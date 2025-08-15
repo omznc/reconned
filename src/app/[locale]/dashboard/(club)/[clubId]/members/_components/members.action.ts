@@ -1,12 +1,12 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { logClubAudit } from "@/lib/audit-logger";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { leaveClubSchema, removeMemberSchema } from "./members.schema.ts";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
-import { redirect } from "@/i18n/navigation";
-import { getLocale } from "next-intl/server";
-import { logClubAudit } from "@/lib/audit-logger";
 
 export const removeMember = safeActionClient.inputSchema(removeMemberSchema).action(async ({ parsedInput, ctx }) => {
 	try {

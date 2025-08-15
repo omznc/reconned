@@ -1,21 +1,21 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
-import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { toast } from "sonner";
-import { demoteFromManager } from "./manager.action.tsx";
 import { Role } from "@generated/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { MoreHorizontal, UserMinus } from "lucide-react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import { GenericDataTable } from "@/components/generic-data-table";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, UserMinus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { demoteFromManager } from "./manager.action.tsx";
 
 type Manager = {
 	id: string;

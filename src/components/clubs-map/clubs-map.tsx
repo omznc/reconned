@@ -1,15 +1,15 @@
 "use client";
 
-import { MapContainer, TileLayer, Popup, useMapEvents } from "react-leaflet";
+import { MapContainer, Popup, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Link } from "@/i18n/navigation";
+import { Marker } from "@adamscybot/react-leaflet-component-marker";
+import { MapPin } from "lucide-react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { useQueryState } from "nuqs";
-import { useTranslations } from "next-intl";
-import { MapPin } from "lucide-react";
-import { Marker } from "@adamscybot/react-leaflet-component-marker";
-import Image from "next/image";
+import { Link } from "@/i18n/navigation";
 
 // Helper function to create a custom icon from club logo
 function createClubIcon(logoUrl: string | null | undefined, size: number) {

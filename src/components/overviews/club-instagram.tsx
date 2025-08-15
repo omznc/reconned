@@ -1,10 +1,10 @@
 "use client";
 
-import { ExternalLink, PlusIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
-import type { InstagramMedia } from "@/lib/instagram";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
+import { ExternalLink, PlusIcon } from "lucide-react";
+import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
+import type { InstagramMedia } from "@/lib/instagram";
 
 interface ClubInstagramProps {
 	clubId?: string;

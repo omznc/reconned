@@ -1,8 +1,8 @@
 "use server";
 
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { z } from "zod";
 
 export const setFontAction = safeActionClient
 	.inputSchema(

@@ -1,5 +1,5 @@
-import { RulesForm } from "./_components/rules.form.tsx";
 import { prisma } from "@/lib/prisma";
+import { RulesForm } from "./_components/rules.form.tsx";
 
 export default async function Page(props: {
 	params: Promise<{ clubId: string }>;

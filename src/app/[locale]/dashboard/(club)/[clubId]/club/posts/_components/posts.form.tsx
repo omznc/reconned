@@ -1,23 +1,25 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Editor } from "@/components/editor/editor";
-import { Input } from "@/components/ui/input";
+import type { Post } from "@generated/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { z } from "zod";
 import { toast } from "sonner";
-import type { Post } from "@generated/client";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { postSchema } from "./posts.schema.ts";
-import { savePost, deletePost, getPostImageUploadUrl } from "./posts.action.ts";
-import { useQueryState } from "nuqs";
-import { Switch } from "@/components/ui/switch";
+import type { z } from "zod";
+import { Editor } from "@/components/editor/editor";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
+import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
+import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { FileDrop, type FileUploadProgress } from "@/components/ui/file-drop";
+import { deletePost, getPostImageUploadUrl, savePost } from "./posts.action.ts";
+import { postSchema } from "./posts.schema.ts";
 
 interface PostsFormProps {
 	clubId: string;
@@ -25,13 +27,61 @@ interface PostsFormProps {
 }
 
 export function PostsForm({ clubId, editingPost }: PostsFormProps) {
-	const [postId, setPostId] = useQueryState("postId");
+	const [_, setPostId] = useQueryState("postId");
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [editorContent, setEditorContent] = useState<string>(editingPost?.content ?? "");
-	const [uploadedUrls, setUploadedUrls] = useState<string[]>(editingPost?.images || []);
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.posts");
+	const { setHasUnsavedChanges } = useUnsavedChanges();
+
+	// Initialize file upload system for post images
+	const initialFiles: FileUploadItem[] = editingPost?.images
+		? editingPost.images.map((url, index) => ({
+				id: `existing-${index}`,
+				url,
+				name: `Post image ${index + 1}`,
+				type: "image/jpeg",
+				isExisting: true,
+			}))
+		: [];
+
+	const imageUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			const resp = await getPostImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+					name: file.name,
+				},
+				clubId,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			const response = await fetch(resp.data.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`Upload failed with status ${response.status}`);
+			}
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 5,
+		initialFiles,
+		onFilesChange: () => {
+			setHasUnsavedChanges(true);
+		},
+	});
 
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
@@ -48,55 +98,25 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	function handleEditorChange(content: string) {
 		setEditorContent(content);
 		form.setValue("content", content, { shouldValidate: true });
+		setHasUnsavedChanges(true);
 	}
-
-	const handleUpload = async (file: File): Promise<string | null> => {
-		const resp = await getPostImageUploadUrl({
-			file: {
-				type: file.type,
-				size: file.size,
-				name: file.name,
-			},
-			clubId,
-		});
-
-		if (!resp?.data?.url) {
-			throw new Error("Failed to get upload URL");
-		}
-
-		const response = await fetch(resp.data.url, {
-			method: "PUT",
-			body: file,
-			headers: {
-				"Content-Type": file.type,
-				"Content-Length": file.size.toString(),
-			},
-		});
-
-		if (!response.ok) {
-			throw new Error(`Upload failed with status ${response.status}`);
-		}
-
-		return resp.data.cdnUrl;
-	};
-
-	const handleUrlsChange = (urls: string[]) => {
-		setUploadedUrls(urls);
-		form.setValue("images", urls);
-	};
 
 	async function onSubmit(values: z.infer<typeof postSchema>) {
 		setIsLoading(true);
 		try {
-			const postData = {
-				...values,
-				images: uploadedUrls,
-			};
-			await savePost(postData);
+			// Upload any new images
+			const uploadedUrls = await imageUpload.uploadAllFiles();
+			values.images = uploadedUrls;
+
+			await savePost(values);
+
+			// Mark files as saved and clear unsaved changes
+			imageUpload.markAsSaved();
+			setHasUnsavedChanges(false);
+
 			form.reset();
 			setPostId(null);
-			setUploadedUrls([]);
-			toast.success(values.id ? t("successCreated") : t("successEdited"));
+			toast.success(values.id ? t("successEdited") : t("successCreated"));
 		} catch (error) {
 			toast.error(t("error"));
 		} finally {
@@ -184,17 +204,18 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="images"
 						render={() => (
 							<FormItem>
-								<FormLabel>Slike</FormLabel>
+								<FormLabel>{t("images")}</FormLabel>
 								<FormControl>
-									<FileDrop
-										uploadedUrls={uploadedUrls}
-										onUrlsChange={handleUrlsChange}
-										onUpload={handleUpload}
+									<FileUpload
+										value={imageUpload.files}
+										onChange={imageUpload.setFiles}
 										maxFiles={5}
-										acceptedTypes={{
+										maxFileSize={5 * 1024 * 1024}
+										accept={{
 											"image/*": [".jpg", ".jpeg", ".png", ".webp"],
 										}}
-										disabled={isLoading}
+										multiple={true}
+										showPreview={true}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -217,7 +238,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 					/>
 
 					<Button type="submit" disabled={isLoading}>
-						{editingPost ? t("saveNewPost") : t("saveEditPost")}
+						{editingPost ? t("saveEditPost") : t("saveNewPost")}
 					</Button>
 				</form>
 			</Form>

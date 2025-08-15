@@ -1,7 +1,7 @@
 "use client";
 
+import { type ReactNode, useEffect, useState } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
-import { useEffect, useState, type ReactNode } from "react";
 
 interface FontBodyProps {
 	children: ReactNode;

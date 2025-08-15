@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { toast } from "sonner";
-import { BanIcon, CheckCircle, TrashIcon } from "lucide-react";
 import type { Club } from "@generated/client";
-import { clubAdminAction } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club.actions";
-import { useRouter } from "@/i18n/navigation";
+import { BanIcon, CheckCircle, TrashIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { clubAdminAction } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club.actions";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 
 export function ClubActions({ club }: { club: Club }) {
 	const searchParams = useSearchParams();

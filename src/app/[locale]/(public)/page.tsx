@@ -1,39 +1,39 @@
-import { EventCalendar } from "@/components/event-calendar";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import {
-	startOfMonth,
-	endOfMonth,
-	subMonths,
 	addMonths,
-	parse as parseDateFns,
+	endOfMonth,
 	format,
 	formatDistanceToNow,
+	parse as parseDateFns,
+	startOfMonth,
+	subMonths,
 } from "date-fns";
 import { bs } from "date-fns/locale";
 import {
+	Building2,
+	Calendar,
 	CalendarDays,
 	Clock,
-	MapPin,
 	DollarSign,
-	Calendar,
 	LayoutDashboard,
+	MapIcon,
+	MapPin,
 	Medal,
 	Search,
 	ShieldQuestion,
-	Building2,
 	Users,
-	MapIcon,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Link } from "@/i18n/navigation";
+import type { Metadata } from "next";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
-import type { Metadata } from "next";
+import { EventCalendar } from "@/components/event-calendar";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	searchParams: Promise<{

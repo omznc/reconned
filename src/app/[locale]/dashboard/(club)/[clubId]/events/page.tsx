@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { PlusCircle } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { notFound } from "next/navigation";
 import type { Prisma } from "@generated/client";
-import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
+import { PlusCircle } from "lucide-react";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;

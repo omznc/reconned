@@ -1,10 +1,10 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { Input } from "@/components/ui/input";
 
 export function Search() {
 	const [query, setQuery] = useQueryState("q", {

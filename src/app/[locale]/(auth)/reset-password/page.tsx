@@ -1,20 +1,19 @@
 "use client";
-import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
-import { Link, redirect } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
 import { useQueryState } from "nuqs";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { z } from "zod";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link, redirect, useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
 	const [token, _] = useQueryState("token");

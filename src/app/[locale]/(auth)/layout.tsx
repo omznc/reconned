@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { House } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import type { ReactNode } from "react";
-import background from "./background-blur.webp";
-import backgroundLight from "./background-blur-light.webp";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { AnimationWrapper } from "@/app/[locale]/(auth)/_components/animation-wrapper";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import background from "./background-blur.webp";
+import backgroundLight from "./background-blur-light.webp";
 
 export default async function RootLayout({
 	children,

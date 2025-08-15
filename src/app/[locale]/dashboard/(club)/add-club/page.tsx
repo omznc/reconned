@@ -1,9 +1,9 @@
-import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
-import { Button } from "@/components/ui/button";
-import { getCountries } from "@/lib/cached-countries";
 import { CirclePlus, MailPlus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
+import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { getCountries } from "@/lib/cached-countries";
 import { RequestAccessForm } from "./_components/request-access.form.tsx";
 
 interface PageProps {

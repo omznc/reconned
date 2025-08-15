@@ -1,18 +1,18 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
-import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
 import type { Event } from "@generated/client";
 import { ArrowUpRight, ExternalLink, MoreHorizontal } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
+import { GenericDataTable } from "@/components/generic-data-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "@/i18n/navigation";
 
 function getEventStatus(dateStart: Date, dateEnd: Date) {
 	const now = new Date();

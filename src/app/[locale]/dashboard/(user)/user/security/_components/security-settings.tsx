@@ -1,24 +1,24 @@
 "use client";
 
+import { authClient } from "@auth/client";
+import { Button } from "@components/ui/button";
+import type { Session } from "@generated/client";
+import type { Passkey } from "better-auth/plugins/passkey";
+import { formatDate, formatDistanceToNow } from "date-fns";
+import { bs } from "date-fns/locale";
+import { Dice5, Download, KeyRound, Laptop, ShieldQuestion, Smartphone, Tablet, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { QRCodeSVG } from "qrcode.react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { PasswordChangeForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-change.form";
 import { SetupPasswordForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-setup.form";
 import { BadgeSoon } from "@/components/badge-soon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePrompt } from "@/components/ui/alert-dialog-provider";
-import { authClient } from "@auth/client";
-import { Button } from "@components/ui/button";
-import { formatDate, formatDistanceToNow } from "date-fns";
-import { Dice5, Download, KeyRound, Trash2, Laptop, Smartphone, Tablet, ShieldQuestion } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
-import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { bs } from "date-fns/locale";
-import type { Session } from "@generated/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import type { Passkey } from "better-auth/plugins/passkey";
-import { useTranslations } from "next-intl";
 
 interface SecuritySettingsProps {
 	passkeys: Passkey[];

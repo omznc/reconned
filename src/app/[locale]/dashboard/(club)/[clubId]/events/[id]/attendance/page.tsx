@@ -1,10 +1,10 @@
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { AttendanceTracker } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
+import { ErrorPage } from "@/components/error-page";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import { ErrorPage } from "@/components/error-page";
-import { AttendanceTracker } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	params: Promise<{

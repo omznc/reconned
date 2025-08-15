@@ -1,6 +1,6 @@
+import { addMonths, endOfMonth, parse as parseDateFns, startOfMonth, subMonths } from "date-fns";
 import { EventCalendar } from "@/components/event-calendar";
 import { prisma } from "@/lib/prisma";
-import { startOfMonth, endOfMonth, subMonths, addMonths, parse as parseDateFns } from "date-fns";
 
 interface PageProps {
 	params: Promise<{

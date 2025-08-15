@@ -1,8 +1,5 @@
 "use client";
 
-import { sendInvitation } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.action";
-import { sendInvitationSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
-import { cn } from "@/lib/utils";
 import { Button } from "@components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@components/ui/command";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
@@ -11,13 +8,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
+import { sendInvitation } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.action";
+import { sendInvitationSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
 import { useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 type SearchUser = {
 	id: string;

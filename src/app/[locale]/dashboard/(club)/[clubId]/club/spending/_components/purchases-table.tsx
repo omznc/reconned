@@ -1,23 +1,23 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
-import { Trash2, MoreHorizontal, Edit } from "lucide-react";
-import { deletePurchase } from "./spending.action.ts";
-import { toast } from "sonner";
-import { useRouter } from "@/i18n/navigation";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { EditPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/edit-purchase-modal";
-import { Button } from "@/components/ui/button";
 import type { ClubPurchase } from "@generated/client";
-import { useState } from "react";
-import { FilePreviewModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/file-preview-modal";
+import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
+import { EditPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/edit-purchase-modal";
+import { FilePreviewModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/file-preview-modal";
+import { GenericDataTable } from "@/components/generic-data-table";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "@/i18n/navigation";
+import { deletePurchase } from "./spending.action.ts";
 
 interface PurchasesTableProps {
 	purchases: ClubPurchase[];

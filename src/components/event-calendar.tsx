@@ -1,36 +1,37 @@
 "use client";
 
-import { useQueryState } from "nuqs";
+import { Button } from "@components/ui/button";
 import type { Event } from "@generated/client";
-import { useParams } from "next/navigation";
 import {
-	startOfMonth,
-	endOfMonth,
-	startOfWeek,
-	eachDayOfInterval,
 	addMonths,
-	isSameDay,
-	subMonths,
+	eachDayOfInterval,
+	endOfMonth,
 	format,
-	isSameMonth,
-	isWithinInterval,
+	format as formatDateFns,
 	isAfter,
 	isBefore,
+	isSameDay,
+	isSameMonth,
+	isWithinInterval,
+	parse as parseDateFns,
+	startOfMonth,
+	startOfWeek,
+	subMonths,
 } from "date-fns";
-import { Fragment, useEffect, useMemo } from "react";
-import Image from "next/image";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
-import { Button } from "@components/ui/button";
-import { enUS, bs } from "date-fns/locale";
+import { bs, enUS } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { parse as parseDateFns, format as formatDateFns } from "date-fns";
-import { authClient, useIsAuthenticated } from "@/lib/auth-client";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { Fragment, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
-import { useTranslations } from "next-intl";
 import { VerifiedClubIcon } from "@/components/icons";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useRouter } from "@/i18n/navigation";
+import { authClient, useIsAuthenticated } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 interface EventCalendarProps {
 	events: (Event & {

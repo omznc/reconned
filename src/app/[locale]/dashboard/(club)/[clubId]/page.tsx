@@ -1,5 +1,5 @@
-import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 
 interface PageProps {
 	params: Promise<{

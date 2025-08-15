@@ -1,49 +1,52 @@
 "use client";
+import type { Club } from "@generated/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SiInstagram } from "@icons-pack/react-simple-icons";
+import { format } from "date-fns";
+import {
+	AlertCircle,
+	ArrowUpRight,
+	Calendar as CalendarIcon,
+	Check,
+	CheckCircle,
+	ChevronsUpDown,
+	Loader,
+	Trash,
+} from "lucide-react";
+import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { z } from "zod";
 import {
 	deleteClub,
-	deleteClubImage,
+	disconnectInstagramAccount,
 	getClubImageUploadUrl,
 	saveClubInformation,
-	disconnectInstagramAccount,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { SlugInput } from "@/components/slug/slug-input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
-import { FileDrop } from "@/components/ui/file-drop";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Club } from "@generated/client";
-import { format } from "date-fns";
-import { AlertCircle, ArrowUpRight, Calendar as CalendarIcon, CheckCircle, Loader, Trash } from "lucide-react";
-
-import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import type { z } from "zod";
-import { toast } from "sonner";
-import { DateTimePicker } from "@/components/ui/date-time-picker";
-import Image from "next/image";
-import { useRouter } from "@/i18n/navigation";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { SlugInput } from "@/components/slug/slug-input";
-
-import dynamic from "next/dynamic";
-import { Link } from "@/i18n/navigation";
-import type { Country } from "@/lib/cached-countries";
-import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
+import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
+import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
-import { SiInstagram } from "@icons-pack/react-simple-icons";
+import { Link, useRouter } from "@/i18n/navigation";
+import type { Country } from "@/lib/cached-countries";
+import { cn } from "@/lib/utils";
 
 // Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
@@ -59,18 +62,64 @@ interface ClubInfoFormProps {
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
-	const [uploadedUrls, setUploadedUrls] = useState<string[]>(props.club?.logo ? [props.club.logo] : []);
-	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [open, setOpen] = useState(false);
-	const [isConnectingInstagram, setIsConnectingInstagram] = useState(false);
-	const [isDisconnectingInstagram, setIsDisconnectingInstagram] = useState(false);
 	const [instagramSuccess, setInstagramSuccess] = useState(false);
 	const [instagramError, setInstagramError] = useState<string | null>(null);
 	const [instagramErrorMessage, setInstagramErrorMessage] = useState<string | null>(null);
-	const router = useRouter();
+	const [isDisconnectingInstagram, setIsDisconnectingInstagram] = useState(false);
+	const [isConnectingInstagram, setIsConnectingInstagram] = useState(false);
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.info");
+	const { setHasUnsavedChanges } = useUnsavedChanges();
+
+	// Initialize file upload system for logo
+	const initialFiles: FileUploadItem[] = props.club?.logo
+		? [
+				{
+					id: `existing-${props.club.id}`,
+					url: props.club.logo,
+					name: "Club logo",
+					type: "image/jpeg",
+					isExisting: true,
+				},
+			]
+		: [];
+
+	const logoUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			if (!props.club?.id) {
+				throw new Error("Must save club first");
+			}
+
+			const resp = await getClubImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+				clubId: props.club.id,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data?.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 1,
+		initialFiles,
+	});
+
+	const router = useRouter();
 	const searchParams = useSearchParams();
 
 	// Add hash navigation support
@@ -125,17 +174,42 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		mode: "onBlur",
 	});
 
+	// Watch for form changes using isDirty
+	useEffect(() => {
+		const subscription = form.watch(() => {
+			const isDirty = form.formState.isDirty;
+			const hasFileChanges = logoUpload.hasUnsavedChanges;
+			const shouldShowIndicator = isDirty || hasFileChanges;
+
+			// Update unsaved changes based on form state and file upload state
+			setHasUnsavedChanges(shouldShowIndicator);
+		});
+
+		return () => subscription.unsubscribe();
+	}, [form, setHasUnsavedChanges, logoUpload.hasUnsavedChanges]);
+
+	// Also watch for file upload changes separately
+	useEffect(() => {
+		const isDirty = form.formState.isDirty;
+		const hasFileChanges = logoUpload.hasUnsavedChanges;
+		const shouldShowIndicator = isDirty || hasFileChanges;
+
+		setHasUnsavedChanges(shouldShowIndicator);
+	}, [logoUpload.hasUnsavedChanges, form.formState.isDirty, setHasUnsavedChanges]);
+
 	// Add this handler for map location selection
 	const handleLocationSelect = (lat: number, lng: number) => {
-		form.setValue("latitude", lat);
-		form.setValue("longitude", lng);
+		form.setValue("latitude", lat, { shouldDirty: true });
+		form.setValue("longitude", lng, { shouldDirty: true });
 	};
 
 	const handleLocationReset = () => {
-		if (props.club) {
-			form.setValue("latitude", props.club.latitude ?? undefined);
-			form.setValue("longitude", props.club.longitude ?? undefined);
+		if (!props.club) {
+			return;
 		}
+
+		form.setValue("latitude", props.club.latitude ?? undefined, { shouldDirty: true });
+		form.setValue("longitude", props.club.longitude ?? undefined, { shouldDirty: true });
 	};
 
 	// Add this function to handle Instagram disconnection
@@ -168,7 +242,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 			toast.success(t("instagramDisconnectSuccess"));
 			router.refresh();
-		} catch (error) {
+		} catch (_) {
 			toast.error(t("instagramDisconnectError"));
 		} finally {
 			setIsDisconnectingInstagram(false);
@@ -197,63 +271,20 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		}
 	};
 
-	const handleFileUpload = async (file: File): Promise<string | null> => {
-		if (!props.club?.id) {
-			toast.error(t("mustSaveClubFirst"));
-			return null;
-		}
-
-		try {
-			const resp = await getClubImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
-				},
-				clubId: props.club.id,
-			});
-
-			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
-			}
-
-			await fetch(resp.data.url, {
-				method: "PUT",
-				body: file,
-				headers: {
-					"Content-Type": file.type,
-					"Content-Length": file.size.toString(),
-				},
-			});
-
-			return resp.data.cdnUrl;
-		} catch (error) {
-			toast.error(t("photoUploadError"));
-			return null;
-		}
-	};
-
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
-			if (uploadedUrls.length > 0) {
-				values.logo = uploadedUrls[0];
+			// Upload logo and handle deletion
+			const uploadedUrls = await logoUpload.uploadAllFiles();
+			values.logo = uploadedUrls.length > 0 ? uploadedUrls[0] : undefined;
+
+			const result = await saveClubInformation(values);
+
+			if (result?.data?.id) {
+				logoUpload.markAsSaved();
+				setHasUnsavedChanges(false);
+				toast.success(t("success"));
 			}
-
-			const resp = await saveClubInformation(values);
-			const newClubId = resp?.data?.id;
-
-			if (resp?.serverError) {
-				toast.error(resp.serverError);
-				router.refresh();
-				return;
-			}
-
-			if (!props.club?.id) {
-				router.push(`/dashboard/${newClubId}/club`);
-				router.refresh();
-			}
-
-			toast.success(props.club?.id ? t("clubSaved") : t("clubCreationSuccess"));
 		} catch (error) {
 			toast.error(t("error"));
 		}
@@ -332,7 +363,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									<FormControl>
 										<Button
 											variant="outline"
-											role="combobox"
 											aria-expanded={open}
 											className={cn(
 												"w-full justify-between",
@@ -356,7 +386,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 													key={country.id}
 													value={country.name}
 													onSelect={() => {
-														form.setValue("countryId", country.id);
+														form.setValue("countryId", country.id, { shouldDirty: true });
 														setOpen(false);
 													}}
 												>
@@ -450,7 +480,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							defaultSlug={field.value}
 							type="club"
 							onValid={(slug) => {
-								form.setValue("slug", slug);
+								form.setValue("slug", slug, { shouldDirty: true });
 								setIsSlugValid(true);
 							}}
 							onValidityChange={setIsSlugValid}
@@ -566,18 +596,18 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<FormItem>
 							<FormLabel>{t("logo")}</FormLabel>
 							<FormControl>
-								<FileDrop
-									uploadedUrls={uploadedUrls}
-									onUrlsChange={setUploadedUrls}
-									onUpload={handleFileUpload}
+								<FileUpload
+									value={logoUpload.files}
+									onChange={logoUpload.setFiles}
 									maxFiles={1}
-									maxFileSize={1024 * 1024 * 4}
-									acceptedTypes={{
+									maxFileSize={4 * 1024 * 1024}
+									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],
+										"image/webp": [".webp"],
 									}}
-									disabled={!props.club?.id}
-									className="relative bg-background p-0.5"
+									multiple={false}
+									showPreview={true}
 								/>
 							</FormControl>
 							<FormDescription>{t("logoDescription")}</FormDescription>
@@ -585,50 +615,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</FormItem>
 					)}
 				/>
-
-				{props.club?.id && uploadedUrls.length > 0 && (
-					<HoverCard openDelay={100}>
-						<HoverCardTrigger>
-							<Button
-								type="button"
-								disabled={isLoading}
-								variant={"destructive"}
-								onClick={async () => {
-									if (!props.club?.id) {
-										return;
-									}
-
-									const resp = await confirm({
-										title: t("logoDelete.title"),
-										body: t("logoDelete.body"),
-										actionButtonVariant: "destructive",
-										actionButton: t("logoDelete.confirm"),
-										cancelButton: t("logoDelete.cancel"),
-									});
-
-									if (!resp) {
-										return;
-									}
-
-									setIsDeletingImage(true);
-									await deleteClubImage({
-										clubId: props.club.id,
-									});
-									setUploadedUrls([]);
-									setIsDeletingImage(false);
-								}}
-								className="mt-1"
-							>
-								<Trash className="size-4" />
-
-								{isDeletingImage ? <Loader className="size-5 animate-spin" /> : t("logoDelete.confirm")}
-							</Button>
-						</HoverCardTrigger>
-						<HoverCardContent className="size-full mb-8">
-							<Image src={uploadedUrls[0] || ""} alt="Club logo" width={200} height={200} />
-						</HoverCardContent>
-					</HoverCard>
-				)}
 
 				<div>
 					<h3 className="text-lg font-semibold">{t("contact")}</h3>
@@ -682,7 +668,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				{/* Instagram integration section with alerts */}
 				{(props.club?.instagramConnected || props.instagramConnectionUrl) && (
 					<div id="instagram" className="border rounded-lg p-4 space-y-4">
-						<div className="flex items-center justify-between">
+						<div className="flex sm:flex-row flex-col gap-2 items-center justify-between">
 							<div className="flex items-center gap-2">
 								<SiInstagram className="h-5 w-5" />
 								<h4 className="font-medium">{t("instagramConnection")}</h4>

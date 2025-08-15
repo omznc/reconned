@@ -1,5 +1,11 @@
 "use client";
+import type { User } from "better-auth";
+import { ArrowLeft, LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Logo } from "@/components/logos/logo";
+import { FontSwitcher } from "@/components/personalization/font/font-switcher";
+import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,13 +16,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { User } from "better-auth";
-import { ArrowLeft, LogOut } from "lucide-react";
-import { Link, useRouter, usePathname } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
-import { FontSwitcher } from "@/components/personalization/font/font-switcher";
-import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function Header({ user }: { user: User | null }) {

@@ -1,7 +1,6 @@
+import { createHash, randomUUID } from "node:crypto";
 import { fileTypeFromBuffer } from "file-type";
 import sharp from "sharp";
-import { randomUUID } from "node:crypto";
-import { createHash } from "node:crypto";
 
 export interface FileValidationResult {
 	isValid: boolean;

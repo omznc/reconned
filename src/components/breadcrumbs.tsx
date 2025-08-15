@@ -1,20 +1,20 @@
 "use client";
 
+import { Building2Icon, CalendarFoldIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Fragment, useEffect, useState } from "react";
 import {
 	Breadcrumb,
-	BreadcrumbList,
 	BreadcrumbItem,
 	BreadcrumbLink,
+	BreadcrumbList,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Fragment, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { Building2Icon, CalendarFoldIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 type BreadcrumbsProps = {
 	clubs?: Array<{

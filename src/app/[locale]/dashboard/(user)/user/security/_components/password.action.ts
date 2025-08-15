@@ -1,8 +1,8 @@
 "use server";
 
+import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { safeActionClient } from "@/lib/safe-action";
-import { headers } from "next/headers";
 import { setupPasswordSchema } from "./password.schema.ts";
 
 export const setupPasswordAction = safeActionClient.inputSchema(setupPasswordSchema).action(async ({ parsedInput }) => {

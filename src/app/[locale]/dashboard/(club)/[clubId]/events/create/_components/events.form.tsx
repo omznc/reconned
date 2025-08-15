@@ -1,47 +1,47 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import type { ClubRule, Event } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { differenceInDays, format } from "date-fns";
+import { bs } from "date-fns/locale";
+import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { type ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
-
 import {
 	createEvent,
 	deleteEvent,
-	deleteEventImage,
 	getEventImageUploadUrl,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action";
 import { createEventFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
-import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { DateTimePicker, initHourFormat } from "@/components/ui/date-time-picker";
-import { FileDrop } from "@/components/ui/file-drop";
-import { Switch } from "@/components/ui/switch";
-import type { ClubRule, Event } from "@generated/client";
-import { bs } from "date-fns/locale";
-import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
-import { Link, useRouter } from "@/i18n/navigation";
-import { useParams } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
-import Image from "next/image";
-import { Label } from "@/components/ui/label";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { AnimatedNumber } from "@/components/animated-number";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
-import { useTranslations } from "next-intl";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import dynamic from "next/dynamic";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DateTimePicker, initHourFormat } from "@/components/ui/date-time-picker";
+import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
+import { useFileUpload } from "@/hooks/use-file-upload";
+import { Link, useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 // Dynamically import MapComponent to avoid SSR issues
 const MapComponent = dynamic(() => import("@/components/map-component").then((m) => ({ default: m.MapComponent })), {
@@ -54,13 +54,60 @@ interface CreateEventFormProps {
 }
 
 export default function CreateEventForm(props: CreateEventFormProps) {
-	const [uploadedUrls, setUploadedUrls] = useState<string[]>(props.event?.image ? [props.event.image] : []);
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.events.create");
+	const { setHasUnsavedChanges } = useUnsavedChanges();
+
+	// Initialize file upload system
+	const initialFiles: FileUploadItem[] = props.event?.image
+		? [
+				{
+					id: `existing-${props.event.id}`,
+					url: props.event.image,
+					name: "Event image",
+					type: "image/jpeg",
+					isExisting: true,
+				},
+			]
+		: [];
+
+	const eventImageUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			if (!props.event?.id) {
+				throw new Error("Must save event first");
+			}
+
+			const resp = await getEventImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+				eventId: props.event.id,
+				clubId: clubId,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 1,
+		initialFiles,
+	});
 
 	function EventTimelineDescription({
 		dateRegistrationsOpen,
@@ -198,7 +245,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 	useEffect(() => {
 		const subscription = form.watch((value, { name }) => {
-			sessionStorage.setItem("createEventForm", JSON.stringify(value));
+			if (!props.event?.id) {
+				sessionStorage.setItem("createEventForm", JSON.stringify(value));
+			}
+
+			// Set unsaved changes when form values change
+			setHasUnsavedChanges(form.formState.isDirty || eventImageUpload.hasUnsavedChanges);
+
 			if (name === "dateStart") {
 				const startDate = value.dateStart as Date;
 				if (!startDate) {
@@ -221,52 +274,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		return () => {
 			subscription.unsubscribe();
 		};
-	}, [form]);
-
-	const handleFileUpload = async (file: File): Promise<string | null> => {
-		try {
-			// If we're editing an existing event, we can upload immediately
-			if (props.event?.id) {
-				const resp = await getEventImageUploadUrl({
-					file: {
-						type: file.type,
-						size: file.size,
-					},
-					eventId: props.event.id,
-					clubId: clubId,
-				});
-
-				if (!resp?.data?.url) {
-					throw new Error("Failed to get upload URL");
-				}
-
-				await fetch(resp.data.url, {
-					method: "PUT",
-					body: file,
-					headers: {
-						"Content-Type": file.type,
-						"Content-Length": file.size.toString(),
-					},
-				});
-
-				return resp.data.cdnUrl;
-			}
-			// For new events, we'll handle upload after event creation in onSubmit
-			toast.error(t("mustSaveEventFirst"));
-			return null;
-		} catch (error) {
-			toast.error(t("photoUploadError"));
-			return null;
-		}
-	};
+	}, [form, setHasUnsavedChanges, eventImageUpload.hasUnsavedChanges, props.event?.id]);
 
 	async function onSubmit(values: z.infer<typeof createEventFormSchema>) {
 		setIsLoading(true);
 		try {
-			if (uploadedUrls.length > 0) {
-				values.image = uploadedUrls[0];
-			}
-
+			// First create/update the event
 			const event = await createEvent(values);
 
 			if (!event?.data || event.serverError) {
@@ -274,8 +287,26 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				return;
 			}
 
-			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
+			// Then upload any new files and handle deletion
+			const uploadedUrls = await eventImageUpload.uploadAllFiles();
+			if (uploadedUrls.length > 0 || eventImageUpload.files.length === 0) {
+				// Update the event with the image URL (or undefined if deleted)
+				await createEvent({
+					...values,
+					eventId: event.data.id,
+					image: uploadedUrls.length > 0 ? uploadedUrls[0] : undefined,
+				});
+			}
 
+			// Mark files as saved and clear unsaved changes
+			eventImageUpload.markAsSaved();
+			setHasUnsavedChanges(false);
+
+			if (!props.event) {
+				sessionStorage.removeItem("createEventForm");
+			}
+
+			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 			toast.success(t("success"));
 		} catch (error) {
 			toast.error(t("error"));
@@ -418,68 +449,24 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									<FormItem>
 										<FormLabel>{t("photo")}</FormLabel>
 										<FormControl>
-											<FileDrop
-												uploadedUrls={uploadedUrls}
-												onUrlsChange={setUploadedUrls}
-												onUpload={handleFileUpload}
+											<FileUpload
+												value={eventImageUpload.files}
+												onChange={eventImageUpload.setFiles}
 												maxFiles={1}
-												maxFileSize={1024 * 1024 * 4}
-												acceptedTypes={{
+												maxFileSize={4 * 1024 * 1024}
+												accept={{
 													"image/jpeg": [".jpg", ".jpeg"],
 													"image/png": [".png"],
+													"image/webp": [".webp"],
 												}}
-												disabled={!props.event?.id}
-												className="relative bg-background p-0.5"
+												multiple={false}
+												showPreview={true}
 											/>
 										</FormControl>
 										<FormDescription>{t("photoDescription")}</FormDescription>
 									</FormItem>
 								)}
 							/>
-							{props.event?.id && uploadedUrls.length > 0 && (
-								<HoverCard openDelay={100}>
-									<HoverCardTrigger>
-										<Button
-											type="button"
-											disabled={isLoading}
-											variant={"destructive"}
-											onClick={async () => {
-												const resp = await confirm({
-													title: t("deletePhoto.title"),
-													body: t("deletePhoto.body"),
-													actionButtonVariant: "destructive",
-													actionButton: t("deletePhoto.confirm"),
-													cancelButton: t("deletePhoto.cancel"),
-												});
-
-												if (!resp) {
-													return;
-												}
-
-												setIsDeletingImage(true);
-												await deleteEventImage({
-													eventId: props.event?.id as string,
-													clubId: clubId,
-												});
-												setUploadedUrls([]);
-												setIsDeletingImage(false);
-											}}
-											className="mt-1"
-										>
-											<Trash className="size-4" />
-
-											{isDeletingImage ? (
-												<Loader className="size-5 animate-spin" />
-											) : (
-												t("deletePhoto.confirm")
-											)}
-										</Button>
-									</HoverCardTrigger>
-									<HoverCardContent className="size-full mb-8">
-										<Image src={uploadedUrls[0] || ""} alt="Event photo" width={200} height={200} />
-									</HoverCardContent>
-								</HoverCard>
-							)}
 
 							<FormField
 								control={form.control}
@@ -1050,9 +1037,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						type="button"
 						variant="outline"
 						onClick={() => {
-							sessionStorage.removeItem("createEventForm");
+							if (!props.event?.id) {
+								sessionStorage.removeItem("createEventForm");
+							}
 							form.reset(defaultFormValues);
-							setUploadedUrls([]);
+							eventImageUpload.resetToInitial();
 						}}
 					>
 						<RotateCcw className="size-4" />

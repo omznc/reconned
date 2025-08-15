@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
 import { AlertCircle, ArrowLeft, Info, Loader, ShieldAlert, Verified } from "lucide-react";
 import Image from "next/image";
+import { useParams, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
+import { useRouter } from "@/i18n/navigation";
 
 interface FacebookPage {
 	id: string;

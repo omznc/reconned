@@ -1,5 +1,15 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { PurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import { purchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Button } from "@/components/ui/button";
 import {
 	Credenza,
@@ -9,28 +19,21 @@ import {
 	CredenzaTitle,
 	CredenzaTrigger,
 } from "@/components/ui/credenza";
+import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { createPurchase, getPurchaseReceiptUploadUrl } from "./spending.action.ts";
-import type { PurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import { purchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
+import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { FileDrop } from "@/components/ui/file-drop";
+import { createPurchase, getPurchaseReceiptUploadUrl } from "./spending.action.ts";
 
 export function AddPurchaseModal() {
 	const [open, setOpen] = useState(false);
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const t = useTranslations("dashboard.club.spending");
+	const { setHasUnsavedChanges } = useUnsavedChanges();
 
 	const form = useForm<PurchaseFormValues>({
 		resolver: zodResolver(purchaseFormSchema),
@@ -42,92 +45,59 @@ export function AddPurchaseModal() {
 			receiptUrls: [],
 		},
 	});
-	const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+
+	const receiptUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			const resp = await getPurchaseReceiptUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+					name: file.name,
+				},
+				clubId: params.clubId,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			const response = await fetch(resp.data.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`Upload failed with status ${response.status}`);
+			}
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 3,
+		onFilesChange: () => {
+			setHasUnsavedChanges(true);
+		},
+	});
+
 	const [isLoading, setIsLoading] = useState(false);
-
-	const uploadFile = async (file: File, retryCount = 0): Promise<string | null> => {
-		try {
-			const resp = await getPurchaseReceiptUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
-					name: file.name,
-				},
-				clubId: params.clubId,
-			});
-
-			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
-			}
-
-			const response = await fetch(resp.data.url, {
-				method: "PUT",
-				body: file,
-				headers: {
-					"Content-Type": file.type,
-					"Content-Length": file.size.toString(),
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error(`Upload failed with status ${response.status}`);
-			}
-
-			return resp.data.cdnUrl;
-		} catch (error) {
-			if (retryCount < 3 && (error as any).message.includes("503")) {
-				await new Promise((resolve) => setTimeout(resolve, 1000 * (retryCount + 1)));
-				return uploadFile(file, retryCount + 1);
-			}
-			throw error;
-		}
-	};
-
-	const handleFileUpload = async (file: File): Promise<string | null> => {
-		try {
-			const resp = await getPurchaseReceiptUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
-					name: file.name,
-				},
-				clubId: params.clubId,
-			});
-
-			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
-			}
-
-			const response = await fetch(resp.data.url, {
-				method: "PUT",
-				body: file,
-				headers: {
-					"Content-Type": file.type,
-					"Content-Length": file.size.toString(),
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error(`Upload failed with status ${response.status}`);
-			}
-
-			return resp.data.cdnUrl;
-		} catch (error) {
-			toast.error(`${t("errorReceipt")} ${file.name}`);
-			return null;
-		}
-	};
 
 	const onSubmit = async (data: PurchaseFormValues) => {
 		setIsLoading(true);
 		try {
+			// Upload files first
+			const uploadedUrls = await receiptUpload.uploadAllFiles();
 			data.receiptUrls = uploadedUrls;
+
 			const result = await createPurchase(data);
 			if (result?.data?.purchase) {
 				toast.success(t("success"));
 				setOpen(false);
-				setUploadedUrls([]);
+				receiptUpload.resetToInitial();
 				form.reset();
+				setHasUnsavedChanges(false);
 				router.refresh();
 			}
 		} catch (error) {
@@ -135,9 +105,6 @@ export function AddPurchaseModal() {
 		}
 		setIsLoading(false);
 	};
-
-	const remainingFileSlots = 3 - uploadedUrls.length;
-	const canAddMoreFiles = remainingFileSlots > 0;
 
 	return (
 		<Credenza open={open} onOpenChange={setOpen}>
@@ -204,28 +171,20 @@ export function AddPurchaseModal() {
 								name="receiptUrls"
 								render={() => (
 									<FormItem>
-										<FormLabel>
-											{t("details.receipts")} ({uploadedUrls.length}/3)
-											{!canAddMoreFiles && (
-												<span className="text-destructive ml-2 text-sm">
-													{t("details.receiptsLimit")}
-												</span>
-											)}
-										</FormLabel>
+										<FormLabel>{t("details.receipts")}</FormLabel>
 										<FormControl>
-											<FileDrop
-												uploadedUrls={uploadedUrls}
-												onUrlsChange={setUploadedUrls}
-												onUpload={handleFileUpload}
+											<FileUpload
+												value={receiptUpload.files}
+												onChange={receiptUpload.setFiles}
 												maxFiles={3}
-												maxFileSize={1024 * 1024 * 5}
-												acceptedTypes={{
+												maxFileSize={5 * 1024 * 1024}
+												accept={{
 													"image/png": [".png"],
 													"image/jpeg": [".jpg", ".jpeg"],
 													"application/pdf": [".pdf"],
 												}}
-												disabled={!canAddMoreFiles}
-												className="relative bg-background p-0.5"
+												multiple={true}
+												showPreview={true}
 											/>
 										</FormControl>
 										<FormDescription>{t("details.receiptsMaxCount")}</FormDescription>

@@ -1,18 +1,27 @@
 "use client";
 
-import {
-	useState,
-	useRef,
-	useEffect,
-	useCallback,
-	useMemo,
-	createContext,
-	useContext,
-	type ReactNode,
-	type Dispatch,
-	type SetStateAction,
-} from "react";
+import type { Club } from "@generated/client";
+import type { User } from "better-auth";
 import Fuse from "fuse.js";
+import { Building2, Settings, Square } from "lucide-react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import {
+	createContext,
+	type Dispatch,
+	type ReactNode,
+	type SetStateAction,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
+import { useCurrentClub } from "@/components/current-club-provider";
+import { flattenNavigationItems, getAppNavigationItems, getClubFlatItems } from "@/components/sidebar/navigation-items";
+import type { NavItem } from "@/components/sidebar/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	Command,
 	CommandEmpty,
@@ -23,17 +32,8 @@ import {
 	CommandSeparator,
 	CommandShortcut,
 } from "@/components/ui/command";
-import { useRouter } from "@/i18n/navigation";
-import { useCurrentClub } from "@/components/current-club-provider";
-import Image from "next/image";
-import { Square, Building2, Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
-import type { Club } from "@generated/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { User } from "better-auth";
 import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
-import { getAppNavigationItems, flattenNavigationItems, getClubFlatItems } from "@/components/sidebar/navigation-items";
-import type { NavItem } from "@/components/sidebar/types";
+import { useRouter } from "@/i18n/navigation";
 
 interface CommandMenuProps {
 	clubs: Club[];

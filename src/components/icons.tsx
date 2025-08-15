@@ -1,8 +1,8 @@
 "use client";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Crown, UserCog, VerifiedIcon, Wrench } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function AdminIcon() {
 	const t = useTranslations("components.icons");

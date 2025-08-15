@@ -1,28 +1,28 @@
-import type { NavItem } from "@/components/sidebar/types";
 import {
-	Building2,
-	Search,
-	Pencil,
-	ChartBar,
+	Bell,
 	BookUser,
-	MailPlus,
-	CalendarFold,
-	Plus,
+	Building2,
 	CalendarDays,
+	CalendarFold,
+	ChartBar,
+	Cog,
 	DiamondMinus,
 	DollarSign,
-	NotebookPen,
-	Cog,
+	History,
 	House,
 	Info,
 	Key,
 	LayoutDashboard,
 	Mail,
+	MailPlus,
+	NotebookPen,
+	Pencil,
+	Plus,
+	Search,
 	Shield,
 	User,
-	Bell,
-	History,
 } from "lucide-react";
+import type { NavItem } from "@/components/sidebar/types";
 
 type TFunction = (key: string, values?: Record<string, unknown>) => string;
 

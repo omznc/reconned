@@ -1,11 +1,11 @@
-import { BadgeSoon } from "@/components/badge-soon";
-import { env } from "@/lib/env";
-import { Link } from "@/i18n/navigation";
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-import { Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, BarChart2 } from "lucide-react";
-import { BadgeNew } from "@/components/badge-new";
-import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
+import { BarChart2, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
+import { BadgeNew } from "@/components/badge-new";
+import { BadgeSoon } from "@/components/badge-soon";
+import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
+import { Link } from "@/i18n/navigation";
+import { env } from "@/lib/env";
 
 const CURRENT_COMMIT = env.NEXT_PUBLIC_SOURCE_COMMIT;
 type CommitResponse = {

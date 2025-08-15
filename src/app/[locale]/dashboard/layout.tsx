@@ -1,13 +1,14 @@
+import { getLocale } from "next-intl/server";
+import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { CurrentClubProvider } from "@/components/current-club-provider";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { CommandMenu, CommandMenuProvider } from "@/components/sidebar/command-menu";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { UnsavedChangesProvider } from "@/components/unsaved-changes-provider";
+import { redirect } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "@/i18n/navigation";
-import type { ReactNode } from "react";
-import { getLocale } from "next-intl/server";
 
 interface DashboardLayoutProps {
 	children: ReactNode;
@@ -81,19 +82,21 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		<SidebarProvider>
 			<CurrentClubProvider>
 				<CommandMenuProvider>
-					<AppSidebar
-						clubs={clubs}
-						user={user}
-						invitesCount={invitesCountForUser}
-						inviteRequestsCount={inviteRequestsCountByClub}
-					/>
-					<CommandMenu clubs={clubs} user={user} />
-					<SidebarInset className="max-h-dvh overflow-auto flex items-center p-4 justify-start">
-						<Breadcrumbs clubs={simplifiedClubs} />
-						<div className="space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-							{props.children}
-						</div>
-					</SidebarInset>
+					<UnsavedChangesProvider>
+						<AppSidebar
+							clubs={clubs}
+							user={user}
+							invitesCount={invitesCountForUser}
+							inviteRequestsCount={inviteRequestsCountByClub}
+						/>
+						<CommandMenu clubs={clubs} user={user} />
+						<SidebarInset className="max-h-dvh overflow-auto flex items-center p-4 justify-start">
+							<Breadcrumbs clubs={simplifiedClubs} />
+							<div className="space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+								{props.children}
+							</div>
+						</SidebarInset>
+					</UnsavedChangesProvider>
 				</CommandMenuProvider>
 			</CurrentClubProvider>
 		</SidebarProvider>

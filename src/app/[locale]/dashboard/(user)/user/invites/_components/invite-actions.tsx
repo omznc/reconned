@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 
 interface Invite {
 	inviteCode: string;

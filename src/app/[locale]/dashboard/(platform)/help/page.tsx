@@ -1,15 +1,15 @@
 "use client";
 
-import { useHash } from "@/hooks/use-hash";
 import { Hash } from "lucide-react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
-import GoogleMap1Image from "@/../public/help/google-map-1.png";
 import DeleteClubPhoto1 from "@/../public/help/delete-club-photo-1.png";
 import DeleteClubPhoto2 from "@/../public/help/delete-club-photo-2.png";
-import Image from "next/image";
+import GoogleMap1Image from "@/../public/help/google-map-1.png";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useTranslations } from "next-intl";
+import { useHash } from "@/hooks/use-hash";
 
 export default function Page() {
 	const t = useTranslations("dashboard.help");

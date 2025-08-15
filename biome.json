@@ -73,7 +73,8 @@
 			"!**/build/**",
 			"!**/.next/**",
 			"!**/src/components/ui/**",
-			"!**/.unlighthouse/**"
+			"!**/.unlighthouse/**",
+			"!**/generated/**"
 		],
 		"maxSize": 10000000
 	}

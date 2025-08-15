@@ -1,21 +1,21 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
-import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useQueryState } from "nuqs";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { authClient } from "@/lib/auth-client";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
