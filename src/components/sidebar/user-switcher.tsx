@@ -24,7 +24,6 @@ export function UserSwitcher(props: { user: User }) {
 	const t = useTranslations("components.sidebar");
 	const router = useRouter();
 	const { user } = props;
-	console.log(user);
 
 	return (
 		<SidebarMenu>

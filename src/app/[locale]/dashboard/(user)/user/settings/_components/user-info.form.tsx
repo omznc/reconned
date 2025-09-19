@@ -33,8 +33,6 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [cropFile, setCropFile] = useState<File | null>(null);
 	const t = useTranslations("dashboard.user.settings");
 
-	console.log(props.user);
-
 	// Initialize file upload system for avatar
 	const initialFiles: FileUploadItem[] = props.user?.image
 		? [
