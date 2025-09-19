@@ -1,14 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-
-import { authClient } from "@/lib/auth-client";
 import type { User } from "@generated/client";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { toast } from "sonner";
 import { BanIcon, CheckCircle, TrashIcon, UserIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export function UserActions({ user }: { user: User }) {
 	const searchParams = useSearchParams();

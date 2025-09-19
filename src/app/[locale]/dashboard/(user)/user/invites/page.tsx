@@ -1,9 +1,9 @@
+import { getLocale, getTranslations } from "next-intl/server";
+import { InviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/invite-actions";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { redirect } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getLocale, getTranslations } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { InviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/invite-actions";
 
 export default async function InvitesPage() {
 	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);

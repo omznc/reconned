@@ -1,13 +1,13 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { prisma } from "@/lib/prisma";
-import { Users, Shield, Calendar } from "lucide-react";
-import { Suspense } from "react";
-import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
-import { Search } from "@/app/[locale]/(public)/search/_components/search";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
-import { getLocale, getTranslations } from "next-intl/server";
+import { Calendar, Shield, Users } from "lucide-react";
 import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { Search } from "@/app/[locale]/(public)/search/_components/search";
+import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
+import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { prisma } from "@/lib/prisma";
 
 interface Props {
 	searchParams: Promise<{

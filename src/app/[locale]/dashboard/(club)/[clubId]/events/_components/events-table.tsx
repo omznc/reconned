@@ -1,12 +1,12 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
-import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
 import type { Event } from "@generated/client";
 import { Eye, Pen, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { GenericDataTable } from "@/components/generic-data-table";
+import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Link } from "@/i18n/navigation";
 
 interface EventsTableProps {
 	events: (Event & {

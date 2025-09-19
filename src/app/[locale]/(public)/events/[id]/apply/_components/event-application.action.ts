@@ -1,11 +1,11 @@
 "use server";
 
-import { safeActionClient } from "@/lib/safe-action";
-import { prisma } from "@/lib/prisma";
-import { eventApplicationSchema } from "./event-application.schema";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
+import { eventApplicationSchema } from "./event-application.schema.ts";
 
 export const deleteRegistration = safeActionClient
 	.inputSchema(

@@ -1,13 +1,13 @@
-import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { Club, User, Event } from "@generated/client";
+import type { Club, Event, User } from "@generated/client";
 import { format } from "date-fns";
+import { Globe, MapPin } from "lucide-react";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
+import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
-import { Badge } from "@/components/ui/badge";
-import { getTranslations } from "next-intl/server";
-import { Globe, MapPin } from "lucide-react";
 import { isAuthenticated } from "@/lib/auth";
 
 interface ExtendedUser extends User {

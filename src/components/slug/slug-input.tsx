@@ -1,12 +1,12 @@
 "use client";
 
-import { validateSlug } from "@/components/slug/validate-slug";
-import { FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { env } from "@/lib/env";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { useTranslations } from "next-intl";
+import { validateSlug } from "@/components/slug/validate-slug";
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { env } from "@/lib/env";
 
 interface SlugInputProps {
 	type: "club" | "event" | "user";

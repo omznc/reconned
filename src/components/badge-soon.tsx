@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface BadgeSoonProps extends React.HTMLAttributes<HTMLDivElement> {
 	className?: string;

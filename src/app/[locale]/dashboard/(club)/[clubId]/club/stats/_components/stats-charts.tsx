@@ -1,12 +1,12 @@
 "use client";
 
-import { Area, AreaChart, Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
-import { type ChartConfig, ChartContainer, ChartTooltipContent, ChartTooltip } from "@/components/ui/chart";
-import { useCallback, useState, type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { type ReactNode, useCallback, useState } from "react";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Button } from "@/components/ui/button";
+import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 type ChartData = {
 	title: string;

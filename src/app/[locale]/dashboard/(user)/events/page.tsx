@@ -1,11 +1,11 @@
+import type { Prisma } from "@generated/client";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import type { Prisma } from "@generated/client";
-import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
-import { getTranslations } from "next-intl/server";
-import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { Suspense } from "react";
 
 interface PageProps {
 	searchParams: Promise<{

@@ -1,18 +1,18 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
-import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { toast } from "sonner";
-import { revokeInvitation } from "./invitations.action.tsx";
 import type { InviteStatus } from "@generated/client";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { useQueryState } from "nuqs";
-import { ClubInviteActions } from "./club-invite-actions";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Ban } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { GenericDataTable } from "@/components/generic-data-table";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { ClubInviteActions } from "./club-invite-actions.tsx";
+import { revokeInvitation } from "./invitations.action.tsx";
 
 interface FormattedInvite {
 	id: string;

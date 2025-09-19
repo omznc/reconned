@@ -1,8 +1,8 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "@/i18n/navigation";
 import type { NextRequest } from "next/server";
 import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface RouteParams {
 	params: Promise<{

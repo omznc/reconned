@@ -1,7 +1,7 @@
-import { Link } from "@/i18n/navigation";
-import { Logo } from "@/components/logos/logo";
-import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { Logo } from "@/components/logos/logo";
+import { Link } from "@/i18n/navigation";
 
 export default async function Home() {
 	const t = await getTranslations("public.about");

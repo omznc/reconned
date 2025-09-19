@@ -1,12 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star } from "lucide-react";
-import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
-import { format } from "date-fns";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { getTranslations } from "next-intl/server";
 import type { Review, User } from "@generated/client";
+import { format } from "date-fns";
+import { Star } from "lucide-react";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { prisma } from "@/lib/prisma";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 
 interface ReviewsOverviewProps {
 	type: "club" | "event" | "user";

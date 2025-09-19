@@ -1,16 +1,16 @@
+import { render } from "@react-email/components";
+import { Mail } from "lucide-react";
+import { EmailSheet } from "@/app/[locale]/dashboard/(platform)/admin/emails/_components/email-sheet";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClubInvitationEmail } from "@/emails/airsoft-invitation";
 import { CreateAccountEmail } from "@/emails/create-account";
 import { EmailVerification } from "@/emails/email-verification";
-import { PasswordReset } from "@/emails/password-reset";
-import { RateEventEmail } from "@/emails/rate-event";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Mail } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { render } from "@react-email/components";
-import { cn } from "@/lib/utils";
-import { EmailSheet } from "@/app/[locale]/dashboard/(platform)/admin/emails/_components/email-sheet";
 import { MembershipExpiration } from "@/emails/membership-expiration";
 import { MembershipExpirationOwner } from "@/emails/membership-expiration-owner";
+import { PasswordReset } from "@/emails/password-reset";
+import { RateEventEmail } from "@/emails/rate-event";
+import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 const SAMPLE_CLUB = {
 	name: "Moj airsoft klub",

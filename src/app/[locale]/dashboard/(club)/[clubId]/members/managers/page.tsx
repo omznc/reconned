@@ -1,13 +1,13 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@generated/client";
+import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { AddManagerForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.form";
 import { ManagersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/managers-table";
-import { Role } from "@generated/client";
-import type { Prisma } from "@generated/client";
-import { getTranslations } from "next-intl/server";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { Suspense } from "react";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;

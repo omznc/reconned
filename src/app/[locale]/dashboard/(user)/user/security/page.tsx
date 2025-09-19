@@ -1,8 +1,8 @@
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { SecuritySettings } from "@/app/[locale]/dashboard/(user)/user/security/_components/security-settings";
 import { auth, isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
 
 export default async function Page() {
 	const user = await isAuthenticated();
@@ -27,18 +27,20 @@ export default async function Page() {
 		headers: await headers(),
 	});
 
-	const backupCodes = await auth.api
-		.viewBackupCodes({
-			body: {
-				userId: user.id,
-			},
-			headers: await headers(),
-		})
-		.catch(() => {
-			return {
-				backupCodes: [],
-			};
-		});
+	const backupCodes = user.twoFactorEnabled
+		? await auth.api
+				.viewBackupCodes({
+					body: {
+						userId: user.id,
+					},
+					headers: await headers(),
+				})
+				.catch(() => {
+					return {
+						backupCodes: "" as string,
+					};
+				})
+		: { backupCodes: "" as string };
 
 	const sessions = await auth.api.listSessions({
 		headers: await headers(),

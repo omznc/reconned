@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
 import { Role } from "@generated/client";
+import { prisma } from "@/lib/prisma";
 
 export const fetchManagedClubs = async (userId: string) => {
 	const ids = await prisma.clubMembership.findMany({

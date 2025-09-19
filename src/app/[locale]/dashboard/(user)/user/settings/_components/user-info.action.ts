@@ -1,14 +1,14 @@
 "use server";
+import { getTranslations } from "next-intl/server";
 import {
-	userImageFileSchema,
+	userAvatarFileSchema,
 	userInfoShema,
 } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
-import { getTranslations } from "next-intl/server";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 
 export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).action(async ({ parsedInput, ctx }) => {
 	const t = await getTranslations("dashboard.user.settings");
@@ -23,15 +23,16 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 		}
 	}
 
+	const shouldDeleteImage = parsedInput.image === undefined;
+
 	const user = await prisma.user.update({
 		where: {
 			id: ctx.user.id,
 		},
 		data: {
 			name: parsedInput.name,
-			// email: parsedInput.email,
 			isPrivate: parsedInput.isPrivate,
-			image: parsedInput.image ? `${parsedInput.image}?v=${Date.now()}` : undefined,
+			image: parsedInput.image ? `${parsedInput.image}?v=${Date.now()}` : null,
 			bio: parsedInput.bio,
 			location: parsedInput.location,
 			website: parsedInput.website,
@@ -44,6 +45,10 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 		},
 	});
 
+	if (shouldDeleteImage) {
+		await deleteUserImage();
+	}
+
 	revalidateLocalizedPaths("/dashboard/user/");
 	if (!user.isPrivate) {
 		revalidateLocalizedPaths(`/users/${user.slug ?? user.id}`);
@@ -53,7 +58,7 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 });
 
 export const getUserImageUploadUrl = safeActionClient
-	.inputSchema(userImageFileSchema)
+	.inputSchema(userAvatarFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const resp = await getS3FileUploadUrl({
 			type: parsedInput.file.type,
@@ -74,7 +79,11 @@ export const deleteUserImage = safeActionClient.action(async ({ ctx }) => {
 		},
 	});
 
-	await deleteS3File(`user/${ctx.user.id}/image`);
+	try {
+		await deleteS3File(`user/${ctx.user.id}/image`);
+	} catch (error) {
+		console.warn("Failed to delete S3 file:", error);
+	}
 
 	revalidateLocalizedPaths("/dashboard/user/");
 	if (!user.isPrivate) {

@@ -1,33 +1,33 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import type { ClubMembership } from "@generated/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format, formatDistanceToNow } from "date-fns";
+import { bs, enUS } from "date-fns/locale";
+import { CalendarClock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { extendMembership } from "./membership-extension.action";
+import { toast } from "sonner";
+import {
+	type MembershipExtensionFormValues,
+	membershipExtensionSchema,
+} from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Credenza,
 	CredenzaBody,
 	CredenzaContent,
+	CredenzaFooter,
 	CredenzaHeader,
 	CredenzaTitle,
 	CredenzaTrigger,
-	CredenzaFooter,
 } from "@/components/ui/credenza";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { CalendarClock } from "lucide-react";
-import type { ClubMembership } from "@generated/client";
-import { toast } from "sonner";
-import {
-	membershipExtensionSchema,
-	type MembershipExtensionFormValues,
-} from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
-import { format, formatDistanceToNow } from "date-fns";
-import { enUS, bs } from "date-fns/locale";
-import { Badge } from "@/components/ui/badge";
-import type { ReactNode } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { extendMembership } from "./membership-extension.action.ts";
 
 interface MembershipExtensionFormProps {
 	clubId: string;

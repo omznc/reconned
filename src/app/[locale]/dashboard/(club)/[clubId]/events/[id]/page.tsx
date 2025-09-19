@@ -1,11 +1,11 @@
-import { EventOverview } from "@/components/overviews/event-overview";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { EventOverview } from "@/components/overviews/event-overview";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{

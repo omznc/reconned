@@ -1,7 +1,7 @@
+import { notFound } from "next/navigation";
 import CreateEventForm from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.form";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
 
 interface PageProps {
 	searchParams: Promise<{

@@ -1,6 +1,6 @@
-import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 const lastUpdated = new Date("2025-04-13");
 

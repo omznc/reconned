@@ -1,7 +1,7 @@
 "use client";
 
+import { type HTMLAttributes, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useState, type HTMLAttributes } from "react";
 
 export function LoadChildOnClick(props: HTMLAttributes<HTMLDivElement>) {
 	const [isLoaded, setIsLoaded] = useState(false);

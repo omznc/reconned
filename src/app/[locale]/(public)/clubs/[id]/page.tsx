@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import NotFoundTemporary from "@/app/[locale]/not-found";
 import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
-import type { Metadata } from "next";
 import { env } from "@/lib/env";
-import NotFoundTemporary from "@/app/[locale]/not-found";
-import { getTranslations } from "next-intl/server";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{

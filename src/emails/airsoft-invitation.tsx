@@ -1,6 +1,6 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
-import { emailStyles } from "@/emails/styles";
 import { getTranslations } from "next-intl/server";
+import { emailStyles } from "@/emails/styles";
 
 interface ClubInvitationEmailProps {
 	code: string;

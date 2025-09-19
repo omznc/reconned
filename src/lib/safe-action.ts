@@ -1,8 +1,8 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import type { Club } from "@generated/client";
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const unsafeActionClient = createSafeActionClient();
 
@@ -25,7 +25,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 
 	// 2. Check if a clubId is provided. If not, allow the action to proceed
 	const clubIdInput = clientInput as { clubId?: string };
-	if (!clubIdInput.clubId) {
+	if (!clubIdInput?.clubId) {
 		return next({ ctx: { user, club: undefined as unknown as Club } });
 	}
 

@@ -1,4 +1,6 @@
 "use server";
+import { revalidateTag } from "next/cache";
+import { getLocale } from "next-intl/server";
 import {
 	clubInfoSchema,
 	clubLogoFileSchema,
@@ -7,16 +9,14 @@ import {
 	disconnectInstagramSchema,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
+import { redirect } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { logClubAudit } from "@/lib/audit-logger";
+import { env } from "@/lib/env";
+import { disconnectInstagramAPI } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
-import { revalidateTag } from "next/cache";
-import { redirect } from "@/i18n/navigation";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
-import { getLocale } from "next-intl/server";
-import { disconnectInstagramAPI } from "@/lib/instagram";
-import { logClubAudit } from "@/lib/audit-logger";
-import { env } from "@/lib/env";
 
 export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
@@ -32,6 +32,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 
 	const isCreate = !ctx.club?.id;
 	const actionType = isCreate ? "CLUB_CREATE" : "CLUB_UPDATE";
+	const shouldDeleteLogo = parsedInput.logo === undefined;
 
 	const club = await prisma.club.upsert({
 		where: {
@@ -45,10 +46,10 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			isAllied: parsedInput.isAllied,
 			isPrivate: parsedInput.isPrivate,
 			isPrivateStats: parsedInput.isPrivateStats,
-			logo: parsedInput.logo ? `${parsedInput.logo}?v=${Date.now()}` : undefined,
+			logo: parsedInput.logo ? `${parsedInput.logo}?v=${Date.now()}` : null,
 			contactPhone: parsedInput.contactPhone,
 			contactEmail: parsedInput.contactEmail,
-			slug: parsedInput.slug ? parsedInput.slug : undefined,
+			slug: parsedInput.slug ? parsedInput.slug : null,
 			latitude: parsedInput.latitude,
 			longitude: parsedInput.longitude,
 			countryId: parsedInput.countryId,
@@ -78,6 +79,12 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			},
 		},
 	});
+
+	if (shouldDeleteLogo) {
+		await deleteClubImage({
+			clubId: club.id,
+		});
+	}
 
 	await logClubAudit({
 		clubId: club.id,

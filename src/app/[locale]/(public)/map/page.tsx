@@ -1,7 +1,7 @@
-import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
-import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
+import { prisma } from "@/lib/prisma";
 
 export default async function MapPage() {
 	const clubs = await prisma.club.findMany({

@@ -1,14 +1,14 @@
 "use client";
 
+import { Check, MoreHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "@/i18n/navigation";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Check, X } from "lucide-react";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 interface ClubInvite {
 	inviteCode: string;

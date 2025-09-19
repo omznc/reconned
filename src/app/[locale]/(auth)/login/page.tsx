@@ -1,26 +1,25 @@
 "use client";
 
+import { Button } from "@components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { SuccessContext } from "better-auth/react";
+import { Key } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { BadgeSoon } from "@/components/badge-soon";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@components/ui/button";
-import { Link } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { useQueryState } from "nuqs";
-import { Key } from "lucide-react";
-import type { SuccessContext } from "better-auth/react";
-import { BadgeSoon } from "@/components/badge-soon";
-import { useTranslations } from "next-intl";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +42,7 @@ export default function LoginPage() {
 	const loginSchema = z.object({
 		email: z.string().email(t("invalidEmail")),
 		password: z.string().min(1, t("passwordRequired")),
+		turnstileToken: z.string().min(1, t("captchaError")),
 	});
 
 	type LoginFormValues = z.infer<typeof loginSchema>;
@@ -53,6 +53,7 @@ export default function LoginPage() {
 		defaultValues: {
 			email: email || "",
 			password: "",
+			turnstileToken: "",
 		},
 		mode: "onChange",
 	});
@@ -78,13 +79,8 @@ export default function LoginPage() {
 	}
 
 	async function onSubmit(data: LoginFormValues) {
-		if (!turnstileToken) {
-			toast.error(t("captchaError"));
-			return;
-		}
-
 		const headers = new Headers();
-		headers.append("x-captcha-response", turnstileToken);
+		headers.append("x-captcha-response", data.turnstileToken);
 
 		await authClient.signIn.email({
 			email: data.email,
@@ -224,13 +220,14 @@ export default function LoginPage() {
 							onVerify={(token) => {
 								if (token && token.length > 0) {
 									setTurnstileToken(token);
+									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
 						/>
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							disabled={isForgotPasswordLoading || !turnstileToken || !form.formState.isValid}
+							disabled={isForgotPasswordLoading || !form.formState.isValid}
 							className="w-full plausible-event-name=login-button-click"
 						>
 							{t("login")}
