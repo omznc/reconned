@@ -1,14 +1,32 @@
-import { BadgeSoon } from "@/components/badge-soon";
-import { env } from "@/lib/env";
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-import { Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, BarChart2 } from "lucide-react";
+import { BarChart2, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 import { BadgeNew } from "@/components/badge-new";
+import { BadgeSoon } from "@/components/badge-soon";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
+import { Link } from "@/i18n/navigation";
+import { env } from "@/lib/env";
 
-export function Footer() {
-	const t = useTranslations("components.footer");
+const CURRENT_COMMIT = env.NEXT_PUBLIC_SOURCE_COMMIT;
+type CommitResponse = {
+	commit?: {
+		committer?: {
+			date?: string;
+		};
+	};
+};
+
+export async function Footer() {
+	const t = await getTranslations("components.footer");
+	const locale = await getLocale();
+
+	const commitDateResponse = await fetch(`https://api.github.com/repos/omznc/reconned/commits/${CURRENT_COMMIT}`, {
+		cache: "force-cache",
+		next: {
+			revalidate: false,
+		},
+	});
+	const body: CommitResponse = await commitDateResponse.json();
 
 	return (
 		<footer className="relative w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
@@ -127,10 +145,15 @@ export function Footer() {
 					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
 						{t("sponsors")}
 					</Link>
-					{env.NEXT_PUBLIC_SOURCE_COMMIT && (
+					{CURRENT_COMMIT && body.commit?.committer?.date && (
 						<p className="font-mono mt-4 opacity-30">
 							{t("version", {
-								commit: env.NEXT_PUBLIC_SOURCE_COMMIT.slice(0, 7),
+								commit: CURRENT_COMMIT.slice(0, 7),
+								date: new Date(body.commit.committer.date).toLocaleDateString(locale, {
+									year: "numeric",
+									month: "long",
+									day: "numeric",
+								}),
 							})}
 						</p>
 					)}

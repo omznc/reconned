@@ -1,9 +1,9 @@
 "use client";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { setThemeAction } from "@/lib/global-actions/theme";
 
 export function ThemeSwitcher() {

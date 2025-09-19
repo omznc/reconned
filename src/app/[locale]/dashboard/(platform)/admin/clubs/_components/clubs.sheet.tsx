@@ -1,5 +1,8 @@
 "use client";
 
+import type { Club } from "@generated/client";
+import { format } from "date-fns";
+import { ClubActions } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club-table-actions";
 import {
 	Credenza,
 	CredenzaContent,
@@ -7,10 +10,7 @@ import {
 	CredenzaHeader,
 	CredenzaTitle,
 } from "@/components/ui/credenza";
-import { format } from "date-fns";
 import { useRouter } from "@/i18n/navigation";
-import type { Club } from "@generated/client";
-import { ClubActions } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club-table-actions";
 
 interface ClubsSheetProps {
 	selectedClub?: Club;

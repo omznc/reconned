@@ -1,7 +1,7 @@
 "use client";
 
-import { SheetContent, SheetHeader, SheetTitle, SheetDescription, Sheet } from "@/components/ui/sheet";
 import { useQueryState } from "nuqs";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface EmailSheetProps {
 	renderedContent: string;

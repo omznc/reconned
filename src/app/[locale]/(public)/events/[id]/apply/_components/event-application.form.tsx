@@ -1,35 +1,35 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useCallback, useMemo } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { User } from "better-auth";
+import { AlertCircle, ChevronsUpDown, CirclePlus, Mail, Plus, UserIcon, Users, X } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import type { EventApplicationSchemaType } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
 import { eventApplicationSchema } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
-import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@generated/client";
-import type { User } from "better-auth";
-import { CirclePlus, Users, AlertCircle, X, Plus, UserIcon, Mail, ChevronsUpDown } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import "@/components/editor/editor.css";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import debounce from "lodash/debounce";
 import { Loader2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { cn, isValidEmail } from "@/lib/utils"; // Add this utility function if not exists
 import { toast } from "sonner";
-import { useRouter } from "@/i18n/navigation";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	deleteRegistration,
 	submitEventApplication,
 } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.action";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "@/i18n/navigation";
+import { cn, isValidEmail } from "@/lib/utils"; // Add this utility function if not exists
 
 interface EventApplicationProps {
 	existingApplication:
@@ -76,7 +76,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							name: user.name,
 							email: user.email,
 							image: user.image,
-							// @ts-ignore Callsign exists on user, but heyyy.
+							// @ts-expect-error Callsign exists on user, but heyyy.
 							callsign: user.callsign || null,
 						},
 						...existingApplication.invitedUsers.filter((u) => u.id !== user.id),
@@ -87,7 +87,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							name: user.name,
 							email: user.email,
 							image: user.image,
-							// @ts-ignore Callsign exists on user, but heyyy.
+							// @ts-expect-error Callsign exists on user, but heyyy.
 
 							callsign: user.callsign || null,
 						},
@@ -182,7 +182,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			}
 			const data = await response.json();
 			setSearchResults(data);
-		} catch (error) {
+		} catch (_) {
 			setSearchResults([]);
 		} finally {
 			setIsSearching(false);
@@ -715,7 +715,6 @@ export function EventApplicationForm({ existingApplication, event, user, current
 											className={cn(
 												"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 											)}
-											// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 											dangerouslySetInnerHTML={{
 												__html: rule.content,
 											}}

@@ -1,13 +1,13 @@
 "use client";
 
+import type { Event } from "@generated/client";
+import { format } from "date-fns";
+import Autoplay from "embla-carousel-autoplay";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { format } from "date-fns";
 import { Link } from "@/i18n/navigation";
-import Autoplay from "embla-carousel-autoplay";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import type { Event } from "@generated/client";
-import Image from "next/image";
 
 interface CarouselProps {
 	events: (Event & { club: { name: string } })[];

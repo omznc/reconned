@@ -1,14 +1,14 @@
-import { getLocale, getTranslations } from "next-intl/server";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ExternalLink, AlertTriangle } from "lucide-react";
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import { AlertTriangle, ExternalLink } from "lucide-react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { remark } from "remark";
-import remarkHtml from "remark-html";
 import remarkGfm from "remark-gfm";
+import remarkHtml from "remark-html";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 import "./markdown.css";
 import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
@@ -122,7 +122,6 @@ export default async function ChangelogPage() {
 					</CardHeader>
 					<CardContent className="pt-6">
 						<div className="markdown-content">
-							{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
 							<div
 								dangerouslySetInnerHTML={{
 									__html: content,
@@ -173,7 +172,6 @@ export default async function ChangelogPage() {
 								</CardHeader>
 								<CardContent>
 									<div className="markdown-content">
-										{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
 										<div
 											dangerouslySetInnerHTML={{
 												__html: release.formattedBody,

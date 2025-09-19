@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getInstagramBusinessAccount } from "@/lib/instagram";
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
+import { getInstagramBusinessAccount } from "@/lib/instagram";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url);

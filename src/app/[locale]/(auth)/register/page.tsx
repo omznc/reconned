@@ -1,21 +1,21 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
-import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useQueryState } from "nuqs";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { authClient } from "@/lib/auth-client";
 
 export default function RegisterPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +35,7 @@ export default function RegisterPage() {
 		name: z.string().min(1, t("nameRequired")),
 		email: z.string().email(t("invalidEmail")),
 		password: z.string().min(8, t("passwordTooShort")),
+		turnstileToken: z.string().min(1, t("captchaError")),
 	});
 
 	type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -46,6 +47,7 @@ export default function RegisterPage() {
 			name: "",
 			email: email || "",
 			password: "",
+			turnstileToken: "",
 		},
 		mode: "onChange",
 	});
@@ -62,14 +64,9 @@ export default function RegisterPage() {
 	}, []);
 
 	async function onSubmit(data: RegisterFormValues) {
-		if (!turnstileToken) {
-			toast.error(t("captchaError"));
-			return;
-		}
-
 		// Create headers with the token
 		const headers = new Headers();
-		headers.append("x-captcha-response", turnstileToken);
+		headers.append("x-captcha-response", data.turnstileToken);
 
 		setIsLoading(true);
 
@@ -207,6 +204,7 @@ export default function RegisterPage() {
 							onVerify={(token) => {
 								if (token && token.length > 0) {
 									setTurnstileToken(token);
+									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
 						/>
@@ -216,7 +214,7 @@ export default function RegisterPage() {
 						<LoaderSubmitButton
 							isLoading={isLoading}
 							className="w-full plausible-event-name=register-button-click"
-							disabled={!(turnstileToken && form.formState.isValid)}
+							disabled={!form.formState.isValid}
 						>
 							{t("register")}
 						</LoaderSubmitButton>

@@ -1,7 +1,7 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
 import { X } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export function ImpersonationAlert() {
 	return (

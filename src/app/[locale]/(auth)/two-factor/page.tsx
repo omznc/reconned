@@ -1,17 +1,16 @@
 "use client";
 
-import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
-import { Link } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useQueryState } from "nuqs";
-import { useTranslations } from "next-intl";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link, useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);

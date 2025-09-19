@@ -1,30 +1,25 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
-import { cn } from "@/lib/utils";
 import {
 	Bold,
-	Italic,
-	List,
-	ListOrdered,
-	Quote,
+	Heading1,
 	Heading2,
 	Heading3,
-	Minus,
-	Link as LinkIcon,
+	Italic,
 	Link2Off,
-	Image as ImageIcon,
+	Link as LinkIcon,
+	List,
+	ListOrdered,
+	Minus,
+	Quote,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import "./editor.css";
-import { Button } from "@/components/ui/button";
-import { usePrompt } from "@/components/ui/alert-dialog-provider";
-import { uploadToImgur, ImgurError } from "@/lib/imgur";
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { usePrompt } from "@/components/ui/alert-dialog-provider";
+import { Button } from "@/components/ui/button";
 
 interface EditorProps {
 	initialValue?: string;
@@ -59,23 +54,14 @@ const ToolbarButton = ({
 
 export const Editor = ({ editable = true, initialValue = "", onChange }: EditorProps) => {
 	const t = useTranslations();
-	const [isUploading, setIsUploading] = useState(false);
 	const editor = useEditor({
 		extensions: [
-			// @ts-ignore I don't get it.
-			StarterKit,
-			Link.configure({
-				openOnClick: false,
-				autolink: true,
-				defaultProtocol: "https",
-				protocols: ["http", "https"],
-				HTMLAttributes: {
-					class: "rounded-lg max-h-[500px] object-contain",
-				},
-			}),
-			Image.configure({
-				HTMLAttributes: {
-					class: "rounded-lg max-h-[500px] object-contain",
+			StarterKit.configure({
+				link: {
+					openOnClick: false,
+					autolink: true,
+					defaultProtocol: "https",
+					protocols: ["http", "https"],
 				},
 			}),
 		],
@@ -124,47 +110,6 @@ export const Editor = ({ editable = true, initialValue = "", onChange }: EditorP
 		editor.chain().focus().setLink({ href: url }).run();
 	};
 
-	const handleImageUpload = () => {
-		if (!editor) {
-			return;
-		}
-
-		const input = document.createElement("input");
-		input.type = "file";
-		input.accept = "image/*";
-
-		input.onchange = async () => {
-			if (!input.files?.length) {
-				return;
-			}
-
-			try {
-				const file = input.files[0];
-				if (!file) {
-					return;
-				}
-				if (file.size > 8 * 1024 * 1024) {
-					toast.error("5MB max");
-					return;
-				}
-
-				setIsUploading(true);
-				const imageUrl = await uploadToImgur(file);
-				editor.chain().focus().setImage({ src: imageUrl }).run();
-			} catch (error) {
-				if (error instanceof ImgurError) {
-					toast.error(error.message);
-				} else {
-					toast.error(t("imgur.error.generic"));
-				}
-			} finally {
-				setIsUploading(false);
-			}
-		};
-
-		input.click();
-	};
-
 	const handleContainerClick = () => {
 		if (editable && editor) {
 			editor.chain().focus().run();
@@ -173,13 +118,6 @@ export const Editor = ({ editable = true, initialValue = "", onChange }: EditorP
 
 	return (
 		<div className="relative border rounded-lg">
-			{isUploading && (
-				<div className="absolute inset-x-0 top-0 z-50">
-					<div className="h-1 w-full bg-muted">
-						<div className="h-full bg-primary animate-progress" />
-					</div>
-				</div>
-			)}
 			{editable && editor && (
 				<div className="flex flex-wrap gap-1 p-1 border-b items-center">
 					<ToolbarButton
@@ -197,6 +135,13 @@ export const Editor = ({ editable = true, initialValue = "", onChange }: EditorP
 					</ToolbarButton>
 
 					<div className="w-px h-6 bg-border mx-1" />
+
+					<ToolbarButton
+						onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+						active={editor.isActive("heading", { level: 1 })}
+					>
+						<Heading1 className="h-4 w-4" />
+					</ToolbarButton>
 
 					<ToolbarButton
 						onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -253,14 +198,6 @@ export const Editor = ({ editable = true, initialValue = "", onChange }: EditorP
 					>
 						<Link2Off className="h-4 w-4" />
 					</ToolbarButton>
-
-					<div className="w-px h-6 bg-border mx-1" />
-
-					<div className="relative">
-						<ToolbarButton onClick={handleImageUpload} disabled={isUploading}>
-							<ImageIcon className="h-4 w-4" />
-						</ToolbarButton>
-					</div>
 				</div>
 			)}
 

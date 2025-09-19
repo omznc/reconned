@@ -1,12 +1,12 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import { UserOverview } from "@/components/overviews/user-overview";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Eye, Pencil } from "lucide-react";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { UserOverview } from "@/components/overviews/user-overview";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export default async function Page() {
 	const user = await isAuthenticated();

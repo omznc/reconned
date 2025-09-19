@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { VerifiedClubIcon } from "@/components/icons";
-import type { Metadata } from "next";
 import { env } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
 
 const ITEMS_PER_PAGE = 12;
 

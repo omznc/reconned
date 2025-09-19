@@ -1,12 +1,12 @@
+import type { InviteStatus, Prisma } from "@generated/client";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { InvitationsForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.form";
 import { InvitationsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations-table";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import type { InviteStatus, Prisma } from "@generated/client";
-import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { Suspense } from "react";
-import { getTranslations } from "next-intl/server";
 
 interface PageProps {
 	params: Promise<{

@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { toast } from "sonner";
-import { leaveClub } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
-import { useRouter } from "@/i18n/navigation";
 import { LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ButtonProps } from "@/components/ui/button";
 import type { ReactNode } from "react";
+import { toast } from "sonner";
+import { leaveClub } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
+import type { ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 
 interface LeaveClubButtonProps extends Omit<ButtonProps, "onClick"> {
 	clubId: string;

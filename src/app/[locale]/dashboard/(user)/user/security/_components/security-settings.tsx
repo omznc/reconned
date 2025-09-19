@@ -1,30 +1,30 @@
 "use client";
 
+import { authClient } from "@auth/client";
+import { Button } from "@components/ui/button";
+import type { Session } from "@generated/client";
+import type { Passkey } from "better-auth/plugins/passkey";
+import { formatDate, formatDistanceToNow } from "date-fns";
+import { bs } from "date-fns/locale";
+import { Dice5, Download, KeyRound, Laptop, ShieldQuestion, Smartphone, Tablet, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { QRCodeSVG } from "qrcode.react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { PasswordChangeForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-change.form";
 import { SetupPasswordForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-setup.form";
 import { BadgeSoon } from "@/components/badge-soon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePrompt } from "@/components/ui/alert-dialog-provider";
-import { authClient } from "@auth/client";
-import { Button } from "@components/ui/button";
-import { formatDate, formatDistanceToNow } from "date-fns";
-import { Dice5, Download, KeyRound, Trash2, Laptop, Smartphone, Tablet, ShieldQuestion } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
-import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { bs } from "date-fns/locale";
-import type { Session } from "@generated/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import type { Passkey } from "better-auth/plugins/passkey";
-import { useTranslations } from "next-intl";
 
 interface SecuritySettingsProps {
 	passkeys: Passkey[];
 	hasPassword: boolean;
 	hasTwoFactor?: boolean | null;
-	backupCodes?: string[] | null;
+	backupCodes?: string | null;
 	sessions: (Omit<Session, "impersonatedBy"> & {
 		isCurrentSession: boolean;
 	})[];
@@ -34,13 +34,18 @@ export function SecuritySettings({
 	passkeys,
 	hasPassword,
 	hasTwoFactor,
-	backupCodes,
+	backupCodes: backupCodesString,
 	sessions,
 }: SecuritySettingsProps) {
 	const [isLoading, setIsLoading] = useState(false);
+	const [regeneratedBackupCodes, setRegeneratedBackupCodes] = useState<string[] | null>(null);
 	const router = useRouter();
 	const prompt = usePrompt();
 	const t = useTranslations("dashboard.security.securitySettings");
+
+	const backupCodes: string[] = JSON.parse((backupCodesString?.length ?? 0) > 0 ? backupCodesString || "[]" : "[]");
+	const displayBackupCodes = regeneratedBackupCodes || backupCodes;
+	const hasBackupCodes = displayBackupCodes.length > 0;
 
 	const getDeviceIcon = (userAgent?: string) => {
 		if (!userAgent) return ShieldQuestion;
@@ -196,40 +201,20 @@ export function SecuritySettings({
 									{t("disable")}
 								</Button>
 							</Alert>
-							<Alert className="flex flex-col gap-1">
-								<AlertTitle className="flex items-center justify-between">
-									<span>{t("backupCodes")}</span>
-									<div className="flex gap-2">
+							{!hasBackupCodes ? (
+								<Alert className="flex flex-col gap-1">
+									<AlertTitle className="flex items-center gap-2 justify-between">
+										<span>{t("backupCodes")}</span>
 										<Button
 											type="button"
 											variant="outline"
 											disabled={isLoading}
-											onClick={() => {
-												const text = backupCodes?.join("\n") ?? "";
-												const blob = new Blob([text], {
-													type: "text/plain",
-												});
-												const url = window.URL.createObjectURL(blob);
-												const a = document.createElement("a");
-												a.href = url;
-												a.download = "rezervni-kodovi.txt";
-												a.click();
-												window.URL.revokeObjectURL(url);
-											}}
-										>
-											<Download className="w-4 h-4 mr-2" />
-											{t("download")}
-										</Button>
-										<Button
-											type="button"
-											variant="outline"
-											disabled={true}
 											onClick={async () => {
 												const confirmed = await prompt({
-													title: "Regeneriši rezervne kodove",
-													body: "Da li ste sigurni da želite regenerisati rezervne kodove? Ako jeste, upišite svoju lozinku. Stari kodovi će biti poništeni.",
-													cancelButton: "Otkaži",
-													actionButton: "Regeneriši",
+													title: t("regenerate"),
+													body: t("regenerateDescription"),
+													cancelButton: t("regenerateCancel"),
+													actionButton: t("regenerateConfirm"),
 													actionButtonVariant: "destructive",
 													inputType: "input",
 													inputProps: {
@@ -249,12 +234,13 @@ export function SecuritySettings({
 														onRequest: () => {
 															setIsLoading(true);
 														},
-														onSuccess: () => {
+														onSuccess: (r) => {
 															setIsLoading(false);
-															router.refresh();
+															// remove - from backup codes
+															setRegeneratedBackupCodes(r.data.backupCodes);
 															toast.success(t("regenerateSuccess"));
 														},
-														onError: () => {
+														onError: (e) => {
 															setIsLoading(false);
 															toast.error(t("regenerateError"));
 														},
@@ -264,26 +250,98 @@ export function SecuritySettings({
 										>
 											<Dice5 className="w-4 h-4 mr-2" />
 											{t("regenerate")}
-											<BadgeSoon />
 										</Button>
+									</AlertTitle>
+									<AlertDescription>{t("backupCodesNotVisible")}</AlertDescription>
+								</Alert>
+							) : (
+								<Alert className="flex flex-col gap-1">
+									<AlertTitle className="flex items-center gap-2 justify-between">
+										<span>{t("backupCodes")}</span>
+										<div className="flex gap-2">
+											<Button
+												type="button"
+												variant="outline"
+												disabled={isLoading}
+												onClick={() => {
+													const text = displayBackupCodes?.join("\n") ?? "";
+													const blob = new Blob([text], {
+														type: "text/plain",
+													});
+													const url = window.URL.createObjectURL(blob);
+													const a = document.createElement("a");
+													a.href = url;
+													a.download = "rezervni-kodovi.txt";
+													a.click();
+													window.URL.revokeObjectURL(url);
+												}}
+											>
+												<Download className="w-4 h-4 mr-2" />
+												{t("download")}
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												onClick={async () => {
+													const confirmed = await prompt({
+														title: t("regenerate"),
+														body: t("regenerateDescription"),
+														cancelButton: t("regenerateCancel"),
+														actionButton: t("regenerateConfirm"),
+														actionButtonVariant: "destructive",
+														inputType: "input",
+														inputProps: {
+															type: "password",
+														},
+													});
+
+													if (!confirmed) {
+														return;
+													}
+
+													await authClient.twoFactor.generateBackupCodes(
+														{
+															password: confirmed,
+														},
+														{
+															onRequest: () => {
+																setIsLoading(true);
+															},
+															onSuccess: (r) => {
+																setIsLoading(false);
+																setRegeneratedBackupCodes(r.data.backupCodes);
+																toast.success(t("regenerateSuccess"));
+															},
+															onError: (e) => {
+																setIsLoading(false);
+																toast.error(t("regenerateError"));
+															},
+														},
+													);
+												}}
+											>
+												<Dice5 className="w-4 h-4 mr-2" />
+												{t("regenerate")}
+											</Button>
+										</div>
+									</AlertTitle>
+									<AlertDescription>{t("regenerateDescription")}</AlertDescription>
+									<div className="bg-background border p-4 mt-2 flex flex-wrap gap-2">
+										{displayBackupCodes?.map((code) => (
+											<code
+												onClick={() => {
+													navigator.clipboard.writeText(code);
+													toast.success("Kopirano u clipboard.");
+												}}
+												key={code}
+												className="grow cursor-pointer text-center bg-sidebar blur-sm hover:blur-none transition-all p-2 font-mono"
+											>
+												{code}
+											</code>
+										))}
 									</div>
-								</AlertTitle>
-								<AlertDescription>{t("regenerateDescription")}</AlertDescription>
-								<div className="bg-background border p-4 mt-2 flex flex-wrap gap-2">
-									{backupCodes?.map((code) => (
-										<code
-											onClick={() => {
-												navigator.clipboard.writeText(code);
-												toast.success("Kopirano u clipboard.");
-											}}
-											key={code}
-											className="grow cursor-pointer text-center bg-sidebar md:blur-[3px] hover:blur-0 transition-all p-2 font-mono"
-										>
-											{code}
-										</code>
-									))}
-								</div>
-							</Alert>
+								</Alert>
+							)}
 						</>
 					) : (
 						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
@@ -342,13 +400,15 @@ export function SecuritySettings({
 										body: (
 											<div className="space-y-2">
 												<p>{t("twoFactorConfirmPrompt.scanQr")}</p>
-												<div className="bg-white p-2 w-fit">
-													<QRCodeSVG value={resp.data.totpURI} />
+												<div className="w-fit flex flex-col items-center w-full">
+													<QRCodeSVG value={resp.data.totpURI} className="w-full" />
+													<p className="mt-2 w-full text-left">
+														{t("twoFactorConfirmPrompt.enterCode")}
+													</p>
+													<code className="font-semibold select-all break-all whitespace-pre-wrap">
+														{resp.data.totpURI.split("?secret=")[1]?.split("&")[0]}
+													</code>
 												</div>
-												<p>{t("twoFactorConfirmPrompt.enterCode")}</p>
-												<code className="font-semibold">
-													{resp.data.totpURI.split("?secret=")[1]?.split("&")[0]}
-												</code>
 												<span className="block mt-2">
 													{t("twoFactorConfirmPrompt.verifyCode")}
 												</span>

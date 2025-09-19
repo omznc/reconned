@@ -1,6 +1,6 @@
-import { isAuthenticated } from "@/lib/auth";
 import { PrismaClient } from "@generated/client";
 import { NextResponse } from "next/server";
+import { isAuthenticated } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 

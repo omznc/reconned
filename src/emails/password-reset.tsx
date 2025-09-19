@@ -1,6 +1,6 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
-import { env } from "@/lib/env";
 import { emailStyles } from "@/emails/styles";
+import { env } from "@/lib/env";
 
 interface PasswordResetProps {
 	resetUrl: string;

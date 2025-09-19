@@ -1,10 +1,10 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { safeActionClient } from "@/lib/safe-action";
-import { deleteRuleSchema, ruleSchema } from "./rules.schema";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { logClubAudit } from "@/lib/audit-logger";
+import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
+import { deleteRuleSchema, ruleSchema } from "./rules.schema.ts";
 
 export const saveRule = safeActionClient.inputSchema(ruleSchema).action(async ({ parsedInput, ctx }) => {
 	try {

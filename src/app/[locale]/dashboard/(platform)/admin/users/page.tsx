@@ -1,9 +1,9 @@
+import type { Prisma } from "@generated/client";
+import { Suspense } from "react";
 import { UserSheet } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-sheet";
 import { UserTable } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@generated/client";
-import { Suspense } from "react";
 
 interface PageProps {
 	searchParams: Promise<{

@@ -1,10 +1,10 @@
+import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
-import { routing } from "@/i18n/routing";
 import { getLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 import { env } from "@/lib/env";
-import { headers } from "next/headers";
 
 const handleI18nRouting = createMiddleware(routing);
 

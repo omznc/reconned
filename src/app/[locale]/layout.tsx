@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { env } from "@/lib/env";
-import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
-import { Toaster } from "sonner";
-import { FontProvider } from "@/components/personalization/font/font-provider";
 
-import { Geist_Mono, Geist } from "next/font/google";
-import { FontBody } from "@/components/font-body";
-import type { ReactNode } from "react";
-import { isAuthenticated } from "@/lib/auth";
-import { ImpersonationAlert } from "@/components/impersonation-alert";
+import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import type { ReactNode } from "react";
+import { Toaster } from "sonner";
 import notFound from "@/app/not-found";
+import { FontBody } from "@/components/font-body";
+import { ImpersonationAlert } from "@/components/impersonation-alert";
+import { FontProvider } from "@/components/personalization/font/font-provider";
+import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { routing } from "@/i18n/routing";
+import { isAuthenticated } from "@/lib/auth";
+import { env } from "@/lib/env";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],

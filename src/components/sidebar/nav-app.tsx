@@ -1,10 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { getAppNavigationItems } from "@/components/sidebar/navigation-items";
-import { renderExpandedItem, renderCollapsedItem } from "@/components/sidebar/utils";
+import { renderCollapsedItem, renderExpandedItem } from "@/components/sidebar/utils";
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
 
 export function NavApp({ isAdmin, pendingInvites }: { isAdmin: boolean; pendingInvites: number }) {
 	const path = usePathname();

@@ -1,16 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
 import { format, formatDistanceToNow } from "date-fns";
 import { bs } from "date-fns/locale";
-import { CalendarDays, Clock, MapPin, DollarSign } from "lucide-react";
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { Badge } from "@/components/ui/badge";
-import { isAuthenticated } from "@/lib/auth";
-import { getTranslations } from "next-intl/server";
+import { CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
+import { getTranslations } from "next-intl/server";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
 
 export default async function Page() {
 	const user = await isAuthenticated();

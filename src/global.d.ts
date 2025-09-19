@@ -1,7 +1,7 @@
 // global.d.ts
 
 import type { formats } from "@/i18n/request";
-import type ba from "./messages/bs.json";
+import type ba from "./messages/bs.json" with { type: "json" };
 
 declare module "next-intl" {
 	interface AppConfig {

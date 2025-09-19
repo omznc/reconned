@@ -1,11 +1,11 @@
 "use client";
 
-import { useFont } from "@/components/personalization/font/font-provider";
-import { Button } from "@/components/ui/button";
-import { setFontAction } from "@/lib/global-actions/font";
 import { Type } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
+import { useFont } from "@/components/personalization/font/font-provider";
+import { Button } from "@/components/ui/button";
+import { setFontAction } from "@/lib/global-actions/font";
 
 export function FontSwitcher() {
 	const { font, setFont } = useFont();

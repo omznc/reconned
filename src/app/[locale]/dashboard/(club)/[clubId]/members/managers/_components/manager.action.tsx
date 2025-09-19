@@ -1,14 +1,14 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { safeActionClient } from "@/lib/safe-action";
 import { Role } from "@generated/client";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import {
 	demoteFromManagerSchema,
 	promoteToManagerSchema,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { logClubAudit } from "@/lib/audit-logger";
+import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
 
 export const promoteToManager = safeActionClient
 	.inputSchema(promoteToManagerSchema)

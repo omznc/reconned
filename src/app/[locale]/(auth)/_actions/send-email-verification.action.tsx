@@ -1,8 +1,8 @@
+import { render } from "@react-email/components";
+import { getTranslations } from "next-intl/server";
 import EmailVerification from "@/emails/email-verification";
 import { env } from "@/lib/env";
 import { sendEmail } from "@/lib/mail";
-import { render } from "@react-email/components";
-import { getTranslations } from "next-intl/server";
 
 export async function sendEmailVerificationAction({
 	to,
@@ -37,7 +37,7 @@ export async function sendEmailVerificationAction({
 		});
 
 		return resp.MessageId;
-	} catch (error) {
+	} catch (_) {
 		return null;
 	}
 }

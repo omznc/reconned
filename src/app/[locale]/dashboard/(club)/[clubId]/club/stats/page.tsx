@@ -1,7 +1,7 @@
 import { format } from "date-fns";
-import { prisma } from "@/lib/prisma";
-import { StatsCharts } from "@/app/[locale]/dashboard/(club)/[clubId]/club/stats/_components/stats-charts";
 import { bs } from "date-fns/locale";
+import { StatsCharts } from "@/app/[locale]/dashboard/(club)/[clubId]/club/stats/_components/stats-charts";
+import { prisma } from "@/lib/prisma";
 
 async function getClubStats(clubId: string) {
 	// First get club creation date

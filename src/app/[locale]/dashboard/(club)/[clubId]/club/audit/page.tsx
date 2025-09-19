@@ -1,11 +1,11 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";
 import { Suspense } from "react";
+import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{ clubId: string; locale: string }>;
@@ -108,7 +108,7 @@ async function AuditLogsPageFetcher(props: PageProps) {
 
 export default async function AuditLogsPage(props: PageProps) {
 	const t = await getTranslations("dashboard.club.audit");
-	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
+	const [_, searchParams] = await Promise.all([props.params, props.searchParams]);
 
 	return (
 		<div className="space-y-6">

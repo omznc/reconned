@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@generated/client";
-import { ClubsSheet } from "./_components/clubs.sheet";
-import { ClubsTable } from "./_components/clubs.table";
-import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { prisma } from "@/lib/prisma";
+import { ClubsSheet } from "./_components/clubs.sheet.tsx";
+import { ClubsTable } from "./_components/clubs.table.tsx";
 
 interface PageProps {
 	searchParams: Promise<{

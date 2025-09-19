@@ -1,22 +1,22 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { requestAccess } from "./request-access.action";
-import { useTranslations } from "next-intl";
-import {
-	requestAccessSchema,
-	type RequestAccessSchema,
-} from "@/app/[locale]/dashboard/(club)/add-club/_components/request-access.schema";
-import { useCallback, useState } from "react";
 import debounce from "lodash/debounce";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import {
+	type RequestAccessSchema,
+	requestAccessSchema,
+} from "@/app/[locale]/dashboard/(club)/add-club/_components/request-access.schema";
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { requestAccess } from "./request-access.action.ts";
 
 type Club = {
 	id: string;

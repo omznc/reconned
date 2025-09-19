@@ -469,48 +469,38 @@
 				"viewClub": "Pogledaj klub"
 			},
 			"settings": {
-				"title": "Općento",
-				"imageUploadError": "Došlo je do greške prilikom uploada slike",
-				"profileUpdated": "Podataci o korisniku su spašeni",
-				"profileUpdateError": "Došlo je do greške prilikom spašavanja podataka",
+				"title": "Općenito",
+				"success": "Podataci o korisniku su spašeni",
+				"error": "Došlo je do greške prilikom spašavanja podataka",
+				"general": "Općenito",
+				"avatar": "Profilna slika",
+				"avatarDescription": "Preporučujemo da postavite profilnu sliku.",
+				"saving": "Spašavanje...",
+				"cancel": "Odustani",
 				"name": "Vaše ime",
 				"callsign": "Callsign/Pozivni znak",
+				"callsignPlaceholder": "Moj pozivni znak",
+				"callsignDescription": "Pozivni znak koji koristite na terenu",
 				"location": "Lokacija",
+				"locationPlaceholder": "Sarajevo, BiH",
 				"locationDescription": "Grad ili mjesto gdje se nalazite",
 				"bio": "O vama",
 				"bioDescription": "Ovo je vaša prilika da se istaknete u nekoliko recenica",
-				"public": "Prikazano javno",
-				"private": "Sakriveno",
-				"privateProfile": "Privatni profil",
-				"privateProfileDescription": "Sakrijte profil od javnog pristupa. Preporučujemo da ostavite profil javnim.",
+				"private": "Privatni profil",
+				"privateDescription": "Sakrijte profil od javnog pristupa. Preporučujemo da ostavite profil javnim.",
+				"privateEmail": "Privatni email",
+				"privateEmailDescription": "Sakrijte svoju email adresu od javnog pristupa",
+				"privatePhone": "Privatni telefon",
+				"privatePhoneDescription": "Sakrijte svoj broj telefona od javnog pristupa",
+				"privacy": "Privatnost",
 				"privateStats": "Privatna statistika",
 				"privateStatsDescription": "Samo vi možete vidjeti koliko pregleda ima vaš profil",
-				"profilePhoto": "Profilna slika",
-				"profilePhotoDescription": "Preporučujemo da postavite profilnu sliku.",
-				"fileUpload": "Povucite ili kliknite za upload slike",
-				"fileUploadFormats": "Podržani formati:",
-				"deleteProfilePhoto": {
-					"title": "Jeste li sigurni?",
-					"body": "Da li ste sigurni da želite obrisati profilnu sliku?",
-					"confirm": "Obriši profilnu sliku",
-					"cancel": "Ne, vrati se"
-				},
 				"contact": "Kontakt",
 				"phone": "Broj telefona",
 				"website": "Web stranica",
 				"save": "Spasi promjene",
-				"linkTaken": "Izabrani link je zauzet",
-				"cropPhotoTitle": "Izreži sliku",
-				"cropPhotoDescription": "Izaberite dio slike koji želite sačuvati",
-				"cancel": "Otkaži",
 				"bioPlaceholder": "Nešto o meni je to da...",
-				"requiredSection": "Obavezno",
-				"profileDescription": "Osnovne informacije o vama",
-				"additionalInformation": "Dodatne, neobavezne informacije",
-				"optional": "Neobavezno",
-				"contactDescription": "Ovako vas ljudi mogu kontaktirati",
-				"privacySettings": "Privatnost",
-				"privacyDescription": "Pokažite ili sakrijte informacije"
+				"phoneDescription": "Ovako vas ljudi mogu kontaktirati"
 			},
 			"security": {}
 		},
@@ -552,11 +542,14 @@
 					"invalidPassword": "Unesite ispravnu lozinku"
 				},
 				"backupCodes": "Rezervni kodovi",
+				"backupCodesNotVisible": "Rezervni kodovi nisu vidljivi iz sigurnosnih razloga. Morate ih regenerirati da biste ih vidjeli i sačuvali. Upozorenje: regeneriranje će poništiti sve postojeće rezervne kodove.",
 				"download": "Preuzmi",
 				"regenerate": "Regeneriši kodove",
-				"regenerateDescription": "Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na sigurno mjesto.",
+				"regenerateDescription": "Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na sigurno mjesto. Unesite svoju lozinku da biste ih regenerisali.",
 				"regenerateSuccess": "Kodovi uspješno regenerisani",
 				"regenerateError": "Došlo je do greške prilikom regenerisanja kodova",
+				"regenerateCancel": "Ne, vrati se",
+				"regenerateConfirm": "Regeneriši",
 				"twoFactorEnable": "Omogući 2-faktorsku autentikaciju",
 				"twoFactorEnableDescription": "Omogućite 2-faktorsku autentikaciju za dodatnu sigurnost vašeg računa.",
 				"twoFactorEnablePrompt": {
@@ -620,6 +613,7 @@
 				"clubCreationError": "Došlo je do greške prilikom kreiranja kluba",
 				"clubCreationSuccess": "Klub uspješno kreiran",
 				"clubSaved": "Podaci o klubu su spašeni",
+				"success": "Podaci o klubu su spašeni",
 				"error": "Došlo je do greške",
 				"clubEditTitle": "Mijenjate podatke o klubu",
 				"clubEditDescription": "Promjene će biti vidljive odmah nakon što ih sačuvate.",
@@ -656,6 +650,15 @@
 				"privateStatsDescription": "Samo članovi kluba mogu vidjeti koliko pregleda ima klub",
 				"logo": "Logo",
 				"logoDescription": "Dodajte logo kluba. Preporučujemo da koristite kvadratnu sliku sa providnom pozadinom.",
+				"uploadLogo": "Učitaj logo",
+				"replaceLogo": "Zamijeni logo",
+				"removeLogo": "Ukloni logo",
+				"uploadingLogo": "Učitavanje logo-a...",
+				"pleaseWait": "Molimo pričekajte",
+				"logoUploadDescription": "Povucite i spustite logo ovdje, ili kliknite za pregledavanje",
+				"logoFormats": "JPG, PNG, ili WebP do 4MB",
+				"logoUploaded": "Logo uspješno učitan",
+				"logoSelected": "Logo odabran",
 				"fileUpload": "Povucite ili kliknite za upload slike",
 				"fileUploadFormats": "Podržani formati:",
 				"logoDelete": {
@@ -719,7 +722,8 @@
 					"personalAccount": "Instagram račun povezan sa odabranom Facebook stranicom nije Business račun. Potrebno je koristiti Instagram Business račun za povezivanje."
 				},
 				"cancel": "Odustani",
-				"descriptionPlaceholder": "Ovo je kul opis"
+				"descriptionPlaceholder": "Ovo je kul opis",
+				"mustSaveClubFirst": "Spremite informacije o klubu prije dodavanja logo-a."
 			},
 			"posts": {
 				"successEdited": "Objava uspješno izmjenjena",
@@ -1167,7 +1171,7 @@
 			},
 			"copyright": "© {year} RECONNED. Sva prava zadržana.",
 			"sponsors": "Pogledajte naše sponzore i partnere",
-			"version": "Verzija {commit}"
+			"version": "Verzija {commit} ({date})"
 		},
 		"table": {
 			"showColumns": "Prikaži kolone",
@@ -1276,7 +1280,7 @@
 			}
 		},
 		"userOverview": {
-			"views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
+			"views": "{count} pregled/a",
 			"freelancer": "Slobodni igrač",
 			"tabs": {
 				"memberships": "Članstva",
@@ -1328,7 +1332,7 @@
 			"showEventMap": "Prikaži mapu susreta"
 		},
 		"clubOverview": {
-			"views": "{count, plural, one {# pregled} few {# pregleda} other {# pregleda}}",
+			"views": "{count} pregled/a",
 			"map": "Mapa",
 			"edit": "Uredi",
 			"private": "Privatni klub",
@@ -1422,6 +1426,12 @@
 			"noPhotos": "Nema fotografija za prikaz",
 			"viewMore": "Pogledaj više na Instagramu",
 			"error": "Greška pri učitavanju fotografija"
+		},
+		"fileDrop": {
+			"dropFilesHere": "Prevucite fajlove ovdje ili kliknite za pretraživanje",
+			"maxFiles": "Maksimalno {count, plural, =1 {{count} fajl, {maxSize}MB} =2 {{count} fajla, {maxSize}MB svaki} =3 {{count} fajla, {maxSize}MB svaki} =4 {{count} fajla, {maxSize}MB svaki} other {{count} fajlova, {maxSize}MB svaki}}",
+			"someFilesFailed": "Neki fajlovi nisu uspješno otpremljeni",
+			"maxFilesReached": "Dosegnut je maksimum od {count, plural, =1 {{count} fajla} =2 {{count} fajla} =3 {{count} fajla} =4 {{count} fajla} other {{count} fajlova}}"
 		}
 	},
 	"imgur": {

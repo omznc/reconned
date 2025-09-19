@@ -1,6 +1,6 @@
 import "server-only";
-import { env } from "@/lib/env";
 import { routing } from "@/i18n/routing";
+import { env } from "@/lib/env";
 
 const locales = routing.locales;
 

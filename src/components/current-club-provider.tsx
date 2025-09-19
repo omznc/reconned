@@ -1,7 +1,7 @@
 "use client";
 
 import type { Club } from "@generated/client";
-import { type ReactNode, createContext, useContext, useState } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 
 type CurrentClubContextType = {
 	clubId?: Club["id"];

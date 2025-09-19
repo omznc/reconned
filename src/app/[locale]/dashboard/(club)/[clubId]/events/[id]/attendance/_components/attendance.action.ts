@@ -1,9 +1,9 @@
 "use server";
 
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { toggleAttendanceSchema } from "./attendance.schema";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { toggleAttendanceSchema } from "./attendance.schema.ts";
 
 export const toggleAttendance = safeActionClient
 	.inputSchema(toggleAttendanceSchema)

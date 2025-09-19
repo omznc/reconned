@@ -1,5 +1,9 @@
 "use client";
+import type { User } from "better-auth";
+import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
+import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,18 +16,15 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import { authClient, useIsAuthenticated } from "@/lib/auth-client";
-import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
-import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { Link, useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth-client";
 
-export function UserSwitcher() {
+export function UserSwitcher(props: { user: User }) {
 	const { isMobile } = useSidebar();
 	const t = useTranslations("components.sidebar");
-	const { user } = useIsAuthenticated();
 	const router = useRouter();
+	const { user } = props;
+
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
@@ -33,8 +34,10 @@ export function UserSwitcher() {
 							size="lg"
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
-							<Avatar className="h-8 w-8 rounded-lg">
-								{user?.image && <AvatarImage src={user?.image} alt={user?.name} />}
+							<Avatar key={user?.image} className="h-8 w-8 rounded-lg">
+								{user?.image && user.image.length > 0 && (
+									<AvatarImage src={user?.image} alt={user?.name} />
+								)}
 								<AvatarFallback className="rounded-lg">
 									{user?.name?.charAt(0).toUpperCase()}
 								</AvatarFallback>

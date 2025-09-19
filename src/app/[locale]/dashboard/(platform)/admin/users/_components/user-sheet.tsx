@@ -1,5 +1,10 @@
 "use client";
 
+import type { ClubMembership, User } from "@generated/client";
+import { format } from "date-fns";
+import { useQueryState } from "nuqs";
+import { UserActions } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table-actions";
+import { Badge } from "@/components/ui/badge";
 import {
 	Credenza,
 	CredenzaContent,
@@ -7,11 +12,6 @@ import {
 	CredenzaHeader,
 	CredenzaTitle,
 } from "@/components/ui/credenza";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import type { ClubMembership, User } from "@generated/client";
-import { useQueryState } from "nuqs";
-import { UserActions } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table-actions";
 
 type Props = {
 	user?: User & {

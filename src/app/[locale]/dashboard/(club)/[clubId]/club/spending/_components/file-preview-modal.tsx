@@ -1,10 +1,10 @@
 "use client";
 
-import { Credenza, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
-import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Credenza, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
 
 interface FilePreviewModalProps {
 	isOpen: boolean;
