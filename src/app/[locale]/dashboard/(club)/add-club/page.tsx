@@ -29,7 +29,6 @@ export default async function Page(props: PageProps) {
 	}
 
 	if (type === "new") {
-		// @ts-expect-error
 		return <ClubInfoForm countries={countries} />;
 	}
 	return (
