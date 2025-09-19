@@ -11,7 +11,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	const user = await isAuthenticated();
+	const user = await isAuthenticated({ bypassCache: true });
 	const t = await getTranslations("components.sidebar");
 
 	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta");

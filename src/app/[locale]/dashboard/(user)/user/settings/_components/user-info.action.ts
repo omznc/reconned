@@ -2,7 +2,6 @@
 import { getTranslations } from "next-intl/server";
 import {
 	userAvatarFileSchema,
-	userImageFileSchema,
 	userInfoShema,
 } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
 import { validateSlug } from "@/components/slug/validate-slug";

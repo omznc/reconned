@@ -476,7 +476,7 @@
 				"avatar": "Profilna slika",
 				"avatarDescription": "Preporučujemo da postavite profilnu sliku.",
 				"saving": "Spašavanje...",
-
+				"cancel": "Odustani",
 				"name": "Vaše ime",
 				"callsign": "Callsign/Pozivni znak",
 				"callsignPlaceholder": "Moj pozivni znak",
@@ -542,11 +542,14 @@
 					"invalidPassword": "Unesite ispravnu lozinku"
 				},
 				"backupCodes": "Rezervni kodovi",
+				"backupCodesNotVisible": "Rezervni kodovi nisu vidljivi iz sigurnosnih razloga. Morate ih regenerirati da biste ih vidjeli i sačuvali. Upozorenje: regeneriranje će poništiti sve postojeće rezervne kodove.",
 				"download": "Preuzmi",
 				"regenerate": "Regeneriši kodove",
-				"regenerateDescription": "Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na sigurno mjesto.",
+				"regenerateDescription": "Ovo su vaši rezervni kodovi za 2-faktorsku autentikaciju. Svaki kod možete iskoristiti samo jednom. Sačuvajte ih na sigurno mjesto. Unesite svoju lozinku da biste ih regenerisali.",
 				"regenerateSuccess": "Kodovi uspješno regenerisani",
 				"regenerateError": "Došlo je do greške prilikom regenerisanja kodova",
+				"regenerateCancel": "Ne, vrati se",
+				"regenerateConfirm": "Regeneriši",
 				"twoFactorEnable": "Omogući 2-faktorsku autentikaciju",
 				"twoFactorEnableDescription": "Omogućite 2-faktorsku autentikaciju za dodatnu sigurnost vašeg računa.",
 				"twoFactorEnablePrompt": {
@@ -1094,19 +1097,6 @@
 		}
 	},
 	"components": {
-		"unsavedChanges": {
-			"confirm": {
-				"title": "Napustiti bez spašavanja?",
-				"body": "Imate nespašene izmjene. Ako napustite stranicu sada, izmjene će biti izgubljene.",
-				"leave": "Napusti stranicu",
-				"stay": "Ostani"
-			},
-			"unloadPrompt": "Imate nespašene izmjene.",
-			"banner": {
-				"title": "Imate nespašene izmjene",
-				"subtitle": "Spasite svoj rad prije napuštanja stranice"
-			}
-		},
 		"sidebar": {
 			"betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",
 			"githubMessage": "Sada smo open-source! Kliknite i pomozite nam da postanemo bolji!",

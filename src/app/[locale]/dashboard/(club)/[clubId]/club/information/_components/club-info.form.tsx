@@ -41,7 +41,6 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -71,7 +70,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isConnectingInstagram, setIsConnectingInstagram] = useState(false);
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.info");
-	const { setHasUnsavedChanges } = useUnsavedChanges();
 
 	// Initialize file upload system for logo
 	const initialFiles: FileUploadItem[] = props.club?.logo
@@ -174,29 +172,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		mode: "onBlur",
 	});
 
-	// Watch for form changes using isDirty
-	useEffect(() => {
-		const subscription = form.watch(() => {
-			const isDirty = form.formState.isDirty;
-			const hasFileChanges = logoUpload.hasUnsavedChanges;
-			const shouldShowIndicator = isDirty || hasFileChanges;
-
-			// Update unsaved changes based on form state and file upload state
-			setHasUnsavedChanges(shouldShowIndicator);
-		});
-
-		return () => subscription.unsubscribe();
-	}, [form, setHasUnsavedChanges, logoUpload.hasUnsavedChanges]);
-
-	// Also watch for file upload changes separately
-	useEffect(() => {
-		const isDirty = form.formState.isDirty;
-		const hasFileChanges = logoUpload.hasUnsavedChanges;
-		const shouldShowIndicator = isDirty || hasFileChanges;
-
-		setHasUnsavedChanges(shouldShowIndicator);
-	}, [logoUpload.hasUnsavedChanges, form.formState.isDirty, setHasUnsavedChanges]);
-
 	// Add this handler for map location selection
 	const handleLocationSelect = (lat: number, lng: number) => {
 		form.setValue("latitude", lat, { shouldDirty: true });
@@ -282,7 +257,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 			if (result?.data?.id) {
 				logoUpload.markAsSaved();
-				setHasUnsavedChanges(false);
 				toast.success(t("success"));
 			}
 		} catch (error) {

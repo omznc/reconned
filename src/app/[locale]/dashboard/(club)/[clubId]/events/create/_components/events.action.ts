@@ -70,7 +70,8 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 		throw new Error("Ne možete ažurirati susret koji je već završio.");
 	}
 
-	if (shouldDeleteImage) {
+	// If the event has an image and the image is being deleted, delete the image.
+	if (shouldDeleteImage && parsedInput.eventId) {
 		await deleteEventImage({
 			eventId: parsedInput.eventId,
 			clubId: ctx.club.id,

@@ -218,7 +218,7 @@ export function EventCalendar(props: EventCalendarProps) {
 			<header className="flex py-4 items-center justify-between border-b">
 				<h2 className="text-2xl font-bold">
 					{t(
-						// @ts-ignore This will always be untyped, sadly, but hey there's only 12 months anyways.
+						// @ts-expect-error This will always be untyped, sadly, but hey there's only 12 months anyways.
 						`months.${format(currentDate, "MMM", { locale: enUS }).toLowerCase()}`,
 					)}{" "}
 					{format(currentDate, "yyyy")}

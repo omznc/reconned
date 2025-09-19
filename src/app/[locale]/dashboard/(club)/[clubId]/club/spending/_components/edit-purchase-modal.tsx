@@ -1,6 +1,6 @@
 "use client";
 
-import type { Purchase } from "@generated/client";
+import type { ClubPurchase } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -8,8 +8,8 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { PurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import { purchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import type { EditPurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import { editPurchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,13 +24,12 @@ import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { getPurchaseReceiptUploadUrl, updatePurchase } from "./spending.action.ts";
 
 interface EditPurchaseModalProps {
-	purchase: Purchase;
+	purchase: ClubPurchase;
 }
 
 export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
@@ -38,7 +37,6 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const t = useTranslations("dashboard.club.spending");
-	const { setHasUnsavedChanges } = useUnsavedChanges();
 
 	// Initialize file upload system for receipts
 	const initialFiles: FileUploadItem[] = purchase.receiptUrls
@@ -83,13 +81,10 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 		},
 		maxFiles: 3,
 		initialFiles,
-		onFilesChange: () => {
-			setHasUnsavedChanges(true);
-		},
 	});
 
-	const form = useForm<PurchaseFormValues>({
-		resolver: zodResolver(purchaseFormSchema),
+	const form = useForm<EditPurchaseFormValues>({
+		resolver: zodResolver(editPurchaseFormSchema),
 		defaultValues: {
 			id: purchase.id,
 			clubId: params.clubId,
@@ -102,7 +97,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 
 	const [isLoading, setIsLoading] = useState(false);
 
-	const onSubmit = async (data: PurchaseFormValues) => {
+	const onSubmit = async (data: EditPurchaseFormValues) => {
 		setIsLoading(true);
 		try {
 			// Upload any new receipts
@@ -110,14 +105,13 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			data.receiptUrls = uploadedUrls;
 
 			const result = await updatePurchase(data);
-			if (result?.data?.purchase) {
+			if (result?.data?.data?.purchase) {
 				receiptUpload.markAsSaved();
-				setHasUnsavedChanges(false);
 				toast.success(t("successUpdated"));
 				setOpen(false);
 				router.refresh();
 			}
-		} catch (error) {
+		} catch {
 			toast.error(t("error"));
 		}
 		setIsLoading(false);

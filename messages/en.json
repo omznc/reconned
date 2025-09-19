@@ -477,6 +477,7 @@
 				"avatarDescription": "We recommend that you upload a profile picture.",
 				"saving": "Saving...",
 				"name": "Your name",
+				"cancel": "Cancel",
 				"callsign": "Callsign",
 				"callsignPlaceholder": "My callsign",
 				"callsignDescription": "Callsign you use on the field",
@@ -541,18 +542,21 @@
 					"invalidPassword": "Please enter the correct password"
 				},
 				"backupCodes": "Backup codes",
+				"backupCodesNotVisible": "Backup codes are not visible for security reasons. You need to regenerate them to see and save them. Warning: regenerating will invalidate all existing backup codes.",
 				"download": "Download",
 				"regenerate": "Regenerate codes",
-				"regenerateDescription": "These are your backup codes for 2-factor authentication. ",
+				"regenerateDescription": "These are your backup codes for 2-factor authentication. Enter your password to regenerate them.",
 				"regenerateSuccess": "Codes successfully regenerated",
 				"regenerateError": "An error occurred while regenerating the codes",
+				"regenerateCancel": "No, go back",
+				"regenerateConfirm": "Regenerate",
 				"twoFactorEnable": "Enable 2-factor authentication",
 				"twoFactorEnableDescription": "Enable 2-factor authentication for extra security of your account.",
 				"twoFactorEnablePrompt": {
 					"title": "Enable 2-factor authentication?",
-					"body": "Are you sure you want to enable 2-factor authentication? ",
+					"body": "Enter your password to enable 2-factor authentication.",
 					"confirm": "Enable",
-					"cancel": "No, come back"
+					"cancel": "No, go back"
 				},
 				"twoFactorConfirmPrompt": {
 					"scanQr": "Scan the QR code with your app for 2-factor authentication.",
@@ -1093,19 +1097,6 @@
 		}
 	},
 	"components": {
-		"unsavedChanges": {
-			"confirm": {
-				"title": "Leave without saving?",
-				"body": "You have unsaved changes. If you leave this page now, your changes will be lost.",
-				"leave": "Leave page",
-				"stay": "Stay"
-			},
-			"unloadPrompt": "You have unsaved changes.",
-			"banner": {
-				"title": "You have unsaved changes",
-				"subtitle": "Save your work before navigating away"
-			}
-		},
 		"sidebar": {
 			"betaMessage": "Beta version - Changes and errors are possible.",
 			"githubMessage": "We're open-source! Click here and help us become better.",

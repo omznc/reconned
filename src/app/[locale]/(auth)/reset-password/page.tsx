@@ -30,6 +30,7 @@ export default function LoginPage() {
 		.object({
 			password: z.string().min(6, t("passwordTooShort")),
 			confirmPassword: z.string(),
+			turnstileToken: z.string().min(1, t("captchaError")),
 		})
 		.refine((data) => data.password === data.confirmPassword, {
 			message: "Šifre se ne podudaraju.",
@@ -44,6 +45,7 @@ export default function LoginPage() {
 		defaultValues: {
 			password: "",
 			confirmPassword: "",
+			turnstileToken: "",
 		},
 		mode: "onChange",
 	});
@@ -53,14 +55,9 @@ export default function LoginPage() {
 	}
 
 	async function onSubmit(data: ResetPasswordFormValues) {
-		if (!turnstileToken) {
-			toast.error(t("captchaError"));
-			return;
-		}
-
 		// Create headers with the token
 		const headers = new Headers();
-		headers.append("x-captcha-response", turnstileToken);
+		headers.append("x-captcha-response", data.turnstileToken);
 
 		await authClient.resetPassword({
 			newPassword: data.password,
@@ -136,15 +133,12 @@ export default function LoginPage() {
 								// Only set if we have a valid token
 								if (token && token.length > 0) {
 									setTurnstileToken(token);
+									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
 						/>
 
-						<LoaderSubmitButton
-							isLoading={isLoading}
-							className="w-full"
-							disabled={!(turnstileToken && form.formState.isValid)}
-						>
+						<LoaderSubmitButton isLoading={isLoading} className="w-full" disabled={!form.formState.isValid}>
 							{t("resetPassword")}
 						</LoaderSubmitButton>
 					</form>

@@ -27,18 +27,20 @@ export default async function Page() {
 		headers: await headers(),
 	});
 
-	const backupCodes = await auth.api
-		.viewBackupCodes({
-			body: {
-				userId: user.id,
-			},
-			headers: await headers(),
-		})
-		.catch(() => {
-			return {
-				backupCodes: [],
-			};
-		});
+	const backupCodes = user.twoFactorEnabled
+		? await auth.api
+				.viewBackupCodes({
+					body: {
+						userId: user.id,
+					},
+					headers: await headers(),
+				})
+				.catch(() => {
+					return {
+						backupCodes: "" as string,
+					};
+				})
+		: { backupCodes: "" as string };
 
 	const sessions = await auth.api.listSessions({
 		headers: await headers(),

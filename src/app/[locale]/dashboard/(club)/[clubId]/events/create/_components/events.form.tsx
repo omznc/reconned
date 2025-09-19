@@ -38,7 +38,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -60,7 +59,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.events.create");
-	const { setHasUnsavedChanges } = useUnsavedChanges();
 
 	// Initialize file upload system
 	const initialFiles: FileUploadItem[] = props.event?.image
@@ -249,9 +247,6 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				sessionStorage.setItem("createEventForm", JSON.stringify(value));
 			}
 
-			// Set unsaved changes when form values change
-			setHasUnsavedChanges(form.formState.isDirty || eventImageUpload.hasUnsavedChanges);
-
 			if (name === "dateStart") {
 				const startDate = value.dateStart as Date;
 				if (!startDate) {
@@ -274,7 +269,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		return () => {
 			subscription.unsubscribe();
 		};
-	}, [form, setHasUnsavedChanges, eventImageUpload.hasUnsavedChanges, props.event?.id]);
+	}, [form, props.event?.id]);
 
 	async function onSubmit(values: z.infer<typeof createEventFormSchema>) {
 		setIsLoading(true);
@@ -298,9 +293,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				});
 			}
 
-			// Mark files as saved and clear unsaved changes
+			// Mark files as saved
 			eventImageUpload.markAsSaved();
-			setHasUnsavedChanges(false);
 
 			if (!props.event) {
 				sessionStorage.removeItem("createEventForm");

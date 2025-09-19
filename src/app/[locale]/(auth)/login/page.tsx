@@ -42,6 +42,7 @@ export default function LoginPage() {
 	const loginSchema = z.object({
 		email: z.string().email(t("invalidEmail")),
 		password: z.string().min(1, t("passwordRequired")),
+		turnstileToken: z.string().min(1, t("captchaError")),
 	});
 
 	type LoginFormValues = z.infer<typeof loginSchema>;
@@ -52,6 +53,7 @@ export default function LoginPage() {
 		defaultValues: {
 			email: email || "",
 			password: "",
+			turnstileToken: "",
 		},
 		mode: "onChange",
 	});
@@ -77,13 +79,8 @@ export default function LoginPage() {
 	}
 
 	async function onSubmit(data: LoginFormValues) {
-		if (!turnstileToken) {
-			toast.error(t("captchaError"));
-			return;
-		}
-
 		const headers = new Headers();
-		headers.append("x-captcha-response", turnstileToken);
+		headers.append("x-captcha-response", data.turnstileToken);
 
 		await authClient.signIn.email({
 			email: data.email,
@@ -223,13 +220,14 @@ export default function LoginPage() {
 							onVerify={(token) => {
 								if (token && token.length > 0) {
 									setTurnstileToken(token);
+									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
 						/>
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							disabled={isForgotPasswordLoading || !turnstileToken || !form.formState.isValid}
+							disabled={isForgotPasswordLoading || !form.formState.isValid}
 							className="w-full plausible-event-name=login-button-click"
 						>
 							{t("login")}

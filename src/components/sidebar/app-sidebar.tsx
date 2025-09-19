@@ -4,7 +4,7 @@ import type { Club } from "@generated/client";
 import type { User } from "better-auth";
 import { MailPlus, Search } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { ClubSwitcher } from "@/components/sidebar/club-switcher";
@@ -64,7 +64,6 @@ export function AppSidebar(props: AppSidebarProps) {
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
-	const locale = useLocale();
 	const t = useTranslations("components.sidebar");
 	const [isMac, setIsMac] = useState(false);
 
@@ -155,7 +154,7 @@ export function AppSidebar(props: AppSidebarProps) {
 						</SidebarMenuItem>
 					</SidebarMenu>
 				)}
-				<UserSwitcher />
+				<UserSwitcher user={props.user} />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>

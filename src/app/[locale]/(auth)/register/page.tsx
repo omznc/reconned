@@ -35,6 +35,7 @@ export default function RegisterPage() {
 		name: z.string().min(1, t("nameRequired")),
 		email: z.string().email(t("invalidEmail")),
 		password: z.string().min(8, t("passwordTooShort")),
+		turnstileToken: z.string().min(1, t("captchaError")),
 	});
 
 	type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -46,6 +47,7 @@ export default function RegisterPage() {
 			name: "",
 			email: email || "",
 			password: "",
+			turnstileToken: "",
 		},
 		mode: "onChange",
 	});
@@ -62,14 +64,9 @@ export default function RegisterPage() {
 	}, []);
 
 	async function onSubmit(data: RegisterFormValues) {
-		if (!turnstileToken) {
-			toast.error(t("captchaError"));
-			return;
-		}
-
 		// Create headers with the token
 		const headers = new Headers();
-		headers.append("x-captcha-response", turnstileToken);
+		headers.append("x-captcha-response", data.turnstileToken);
 
 		setIsLoading(true);
 
@@ -207,6 +204,7 @@ export default function RegisterPage() {
 							onVerify={(token) => {
 								if (token && token.length > 0) {
 									setTurnstileToken(token);
+									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
 						/>
@@ -216,7 +214,7 @@ export default function RegisterPage() {
 						<LoaderSubmitButton
 							isLoading={isLoading}
 							className="w-full plausible-event-name=register-button-click"
-							disabled={!(turnstileToken && form.formState.isValid)}
+							disabled={!form.formState.isValid}
 						>
 							{t("register")}
 						</LoaderSubmitButton>

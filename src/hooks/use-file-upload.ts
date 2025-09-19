@@ -3,7 +3,6 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { FileUploadItem } from "@/components/ui/file-upload";
-import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
 
 export interface UseFileUploadOptions {
 	/** Function to upload a single file and return the CDN URL */
@@ -24,20 +23,13 @@ export function useFileUpload({
 }: UseFileUploadOptions) {
 	const [files, setFiles] = useState<FileUploadItem[]>(initialFiles);
 	const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
-	const { setHasUnsavedChanges } = useUnsavedChanges();
 
 	const updateFiles = useCallback(
 		(newFiles: FileUploadItem[]) => {
 			setFiles(newFiles);
 			onFilesChange?.(newFiles);
-
-			// Check if there are any new files (not existing ones) or removed files
-			const hasNewFiles = newFiles.some((f) => f.file && !f.isExisting);
-			const hasRemovedFiles = initialFiles.length !== newFiles.filter((f) => f.isExisting).length;
-
-			setHasUnsavedChanges(hasNewFiles || hasRemovedFiles);
 		},
-		[onFilesChange, setHasUnsavedChanges, initialFiles.length],
+		[onFilesChange, initialFiles.length],
 	);
 
 	const uploadAllFiles = useCallback(async (): Promise<string[]> => {
@@ -92,14 +84,12 @@ export function useFileUpload({
 
 	const resetToInitial = useCallback(() => {
 		setFiles(initialFiles);
-		setHasUnsavedChanges(false);
-	}, [initialFiles, setHasUnsavedChanges]);
+	}, [initialFiles]);
 
 	const markAsSaved = useCallback(() => {
 		// Mark all files as existing after successful form save
 		setFiles((prevFiles) => prevFiles.map((f) => ({ ...f, isExisting: true, file: undefined })));
-		setHasUnsavedChanges(false);
-	}, [setHasUnsavedChanges]);
+	}, []);
 
 	return {
 		files,
@@ -108,8 +98,5 @@ export function useFileUpload({
 		uploadingFiles,
 		resetToInitial,
 		markAsSaved,
-		hasUnsavedChanges:
-			files.some((f) => f.file && !f.isExisting) ||
-			initialFiles.length !== files.filter((f) => f.isExisting).length,
 	};
 }

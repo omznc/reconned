@@ -76,7 +76,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							name: user.name,
 							email: user.email,
 							image: user.image,
-							// @ts-ignore Callsign exists on user, but heyyy.
+							// @ts-expect-error Callsign exists on user, but heyyy.
 							callsign: user.callsign || null,
 						},
 						...existingApplication.invitedUsers.filter((u) => u.id !== user.id),
@@ -87,7 +87,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							name: user.name,
 							email: user.email,
 							image: user.image,
-							// @ts-ignore Callsign exists on user, but heyyy.
+							// @ts-expect-error Callsign exists on user, but heyyy.
 
 							callsign: user.callsign || null,
 						},

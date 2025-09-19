@@ -68,13 +68,13 @@
 		"ignoreUnknown": true,
 		"includes": [
 			"**",
-			"!**/node_modules/**",
-			"!**/dist/**",
-			"!**/build/**",
-			"!**/.next/**",
-			"!**/src/components/ui/**",
-			"!**/.unlighthouse/**",
-			"!**/generated/**"
+			"!**/node_modules",
+			"!**/dist",
+			"!**/build",
+			"!**/.next",
+			"!**/src/components/ui",
+			"!**/.unlighthouse",
+			"!**/generated"
 		],
 		"maxSize": 10000000
 	}

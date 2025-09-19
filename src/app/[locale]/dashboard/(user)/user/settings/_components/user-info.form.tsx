@@ -20,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { ImageCropDialog } from "./image-crop-dialog.tsx";
 
@@ -33,7 +32,8 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [cropFile, setCropFile] = useState<File | null>(null);
 	const t = useTranslations("dashboard.user.settings");
-	const { setHasUnsavedChanges } = useUnsavedChanges();
+
+	console.log(props.user);
 
 	// Initialize file upload system for avatar
 	const initialFiles: FileUploadItem[] = props.user?.image
@@ -127,10 +127,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 			if (result?.data) {
 				avatarUpload.markAsSaved();
-				setHasUnsavedChanges(false);
+				form.reset(values);
 				toast.success(t("success"));
 			}
-		} catch (error) {
+		} catch {
 			toast.error(t("error"));
 		}
 		setIsLoading(false);

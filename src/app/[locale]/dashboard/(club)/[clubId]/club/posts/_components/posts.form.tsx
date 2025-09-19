@@ -15,7 +15,6 @@ import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useUnsavedChanges } from "@/components/unsaved-changes-provider";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { deletePost, getPostImageUploadUrl, savePost } from "./posts.action.ts";
@@ -33,7 +32,6 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const [editorContent, setEditorContent] = useState<string>(editingPost?.content ?? "");
 	const confirm = useConfirm();
 	const t = useTranslations("dashboard.club.posts");
-	const { setHasUnsavedChanges } = useUnsavedChanges();
 
 	// Initialize file upload system for post images
 	const initialFiles: FileUploadItem[] = editingPost?.images
@@ -78,9 +76,6 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		},
 		maxFiles: 5,
 		initialFiles,
-		onFilesChange: () => {
-			setHasUnsavedChanges(true);
-		},
 	});
 
 	const form = useForm<z.infer<typeof postSchema>>({
@@ -98,7 +93,6 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	function handleEditorChange(content: string) {
 		setEditorContent(content);
 		form.setValue("content", content, { shouldValidate: true });
-		setHasUnsavedChanges(true);
 	}
 
 	async function onSubmit(values: z.infer<typeof postSchema>) {
@@ -112,7 +106,6 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 
 			// Mark files as saved and clear unsaved changes
 			imageUpload.markAsSaved();
-			setHasUnsavedChanges(false);
 
 			form.reset();
 			setPostId(null);
