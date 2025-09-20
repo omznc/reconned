@@ -1,6 +1,4 @@
-import { PrismaClient } from "@generated/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 const API_BASE = "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/json/";
 
