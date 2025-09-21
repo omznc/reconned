@@ -375,10 +375,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						{isLoading ? (
 							<>
 								<Loader className="mr-2 h-4 w-4 animate-spin" />
-								{t("dashboard.user.settings.saving")}
+								{t("common.actions.saving")}
 							</>
 						) : (
-							t("dashboard.user.settings.save")
+							t("common.actions.save")
 						)}
 					</LoaderSubmitButton>
 				</form>

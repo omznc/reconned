@@ -46,9 +46,9 @@ export function MembersTable(props: MembersTableProps) {
 
 		const confirmed = await confirm({
 			title: t("dashboard.club.members.membersTable.remove.title"),
-			body: t("remove.body", { name: member.userName }),
-			cancelButton: t("dashboard.club.members.membersTable.remove.cancel"),
-			actionButton: t("dashboard.club.members.membersTable.remove.confirm"),
+			body: t("dashboard.club.members.membersTable.remove.body", { name: member.userName }),
+			cancelButton: t("common.actions.cancel"),
+			actionButton: t("common.actions.confirm"),
 			actionButtonVariant: "destructive",
 		});
 

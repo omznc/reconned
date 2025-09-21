@@ -221,7 +221,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								)}
 							/>
 							<LoaderSubmitButton isLoading={isLoading} className="w-full">
-								{isLoading ? t("dashboard.club.spending.saving") : t("dashboard.club.spending.save")}
+								{isLoading ? t("common.actions.saving") : t("common.actions.save")}
 							</LoaderSubmitButton>
 						</form>
 					</Form>

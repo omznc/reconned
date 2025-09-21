@@ -54,8 +54,8 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 		const confirmed = await confirm({
 			title: t("dashboard.club.members.invitations.table.revoke.title"),
 			body: t("dashboard.club.members.invitations.table.revoke.body"),
-			cancelButton: t("dashboard.club.members.invitations.table.revoke.cancel"),
-			actionButton: t("dashboard.club.members.invitations.table.revoke.confirm"),
+			cancelButton: t("common.actions.cancel"),
+			actionButton: t("common.actions.confirm"),
 			actionButtonVariant: "destructive",
 		});
 

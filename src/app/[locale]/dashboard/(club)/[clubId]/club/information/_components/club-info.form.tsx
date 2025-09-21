@@ -197,8 +197,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			title: t("dashboard.club.info.instagramDisconnect.title"),
 			body: t("dashboard.club.info.instagramDisconnect.body"),
 			actionButtonVariant: "destructive",
-			actionButton: t("dashboard.club.info.instagramDisconnect.confirm"),
-			cancelButton: t("dashboard.club.info.instagramDisconnect.cancel"),
+			actionButton: t("common.actions.confirm"),
+			cancelButton: t("common.actions.cancel"),
 		});
 
 		if (!confirmed) {
@@ -739,7 +739,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				)}
 
 				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
-					{props.club ? t("dashboard.club.info.save") : t("dashboard.club.info.create")}
+					{props.club ? t("common.actions.save") : t("common.actions.create")}
 				</LoaderSubmitButton>
 			</form>
 		</Form>

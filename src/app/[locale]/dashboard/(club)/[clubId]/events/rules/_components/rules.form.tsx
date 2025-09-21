@@ -128,12 +128,12 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 					<div className="flex gap-2 justify-start">
 						<Button type="submit" className="w-full" disabled={isLoading}>
 							{editingRule
-								? t("dashboard.club.events.rules.rule.save")
-								: t("dashboard.club.events.rules.rule.create")}
+								? t("common.actions.save")
+								: t("common.actions.create")}
 						</Button>
 						{editingRule && (
 							<Button className="w-full" type="button" variant="outline" onClick={() => setRuleId(null)}>
-								{t("dashboard.club.events.rules.rule.cancel")}
+								{t("common.actions.cancel")}
 							</Button>
 						)}
 					</div>
@@ -190,8 +190,8 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 											confirm({
 												title: t("dashboard.club.events.rules.rule.delete.title"),
 												body: t("dashboard.club.events.rules.rule.delete.body"),
-												actionButton: t("dashboard.club.events.rules.rule.delete.action"),
-												cancelButton: t("dashboard.club.events.rules.rule.delete.cancel"),
+												actionButton: t("common.actions.confirm"),
+												cancelButton: t("common.actions.cancel"),
 												actionButtonVariant: "destructive",
 											}).then((confirmed) => {
 												if (confirmed) {

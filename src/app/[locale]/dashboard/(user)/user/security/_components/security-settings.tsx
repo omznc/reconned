@@ -170,7 +170,7 @@ export function SecuritySettings({
 									onClick={async () => {
 										const confirmed = await prompt({
 											cancelButton: t(
-												"dashboard.security.securitySettings.twoFactorDisablePrompt.cancel",
+												"common.actions.cancel",
 											),
 											cancelButtonVariant: "ghost",
 											title: t(
@@ -178,7 +178,7 @@ export function SecuritySettings({
 											),
 											body: t("dashboard.security.securitySettings.twoFactorDisablePrompt.body"),
 											actionButton: t(
-												"dashboard.security.securitySettings.twoFactorDisablePrompt.confirm",
+												"common.actions.disable",
 											),
 											inputType: "input",
 											inputProps: {
@@ -406,13 +406,13 @@ export function SecuritySettings({
 								onClick={async () => {
 									const password = await prompt({
 										cancelButton: t(
-											"dashboard.security.securitySettings.twoFactorEnablePrompt.cancel",
+											"common.actions.cancel",
 										),
 										cancelButtonVariant: "ghost",
 										title: t("dashboard.security.securitySettings.twoFactorEnablePrompt.title"),
 										body: t("dashboard.security.securitySettings.twoFactorEnablePrompt.body"),
 										actionButton: t(
-											"dashboard.security.securitySettings.twoFactorEnablePrompt.confirm",
+											"common.actions.confirm",
 										),
 										inputType: "input",
 										inputProps: {
@@ -449,7 +449,7 @@ export function SecuritySettings({
 
 									const confirmed = await prompt({
 										cancelButton: t(
-											"dashboard.security.securitySettings.twoFactorEnablePrompt.cancel",
+											"common.actions.cancel",
 										),
 										cancelButtonVariant: "ghost",
 										title: t("dashboard.security.securitySettings.twoFactorEnablePrompt.title"),
@@ -479,7 +479,7 @@ export function SecuritySettings({
 											</div>
 										),
 										actionButton: t(
-											"dashboard.security.securitySettings.twoFactorEnablePrompt.confirm",
+											"common.actions.enable",
 										),
 										inputType: "input",
 										inputProps: {

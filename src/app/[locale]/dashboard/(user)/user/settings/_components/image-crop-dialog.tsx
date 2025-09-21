@@ -124,9 +124,9 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 				</div>
 				<DialogFooter>
 					<Button variant="ghost" onClick={onClose}>
-						{t("dashboard.user.settings.cancel")}
+						{t("common.actions.cancel")}
 					</Button>
-					<Button onClick={handleCrop}>{t("dashboard.user.settings.save")}</Button>
+					<Button onClick={handleCrop}>{t("common.actions.save")}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

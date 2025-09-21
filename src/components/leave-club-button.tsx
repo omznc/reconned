@@ -40,8 +40,8 @@ export function LeaveClubButton({
 		const confirmed = await confirm({
 			title: t("components.leaveClubButton.title"),
 			body: t("components.leaveClubButton.body"),
-			cancelButton: t("components.leaveClubButton.cancel"),
-			actionButton: t("components.leaveClubButton.confirm"),
+			cancelButton: t("common.actions.cancel"),
+			actionButton: t("common.actions.confirm"),
 			actionButtonVariant: "destructive",
 		});
 

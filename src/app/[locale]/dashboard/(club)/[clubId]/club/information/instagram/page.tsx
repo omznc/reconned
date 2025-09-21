@@ -248,7 +248,7 @@ export default function InstagramPageSelection() {
 			</CardContent>
 			<CardFooter className="flex justify-between">
 				<Button variant="outline" onClick={handleCancel} disabled={isConnecting}>
-					{t("dashboard.club.info.cancel")}
+					{t("common.actions.cancel")}
 				</Button>
 				<Button
 					onClick={handleConnect}

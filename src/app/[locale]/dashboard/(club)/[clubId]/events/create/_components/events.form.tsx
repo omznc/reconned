@@ -330,8 +330,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										title: t("dashboard.club.events.create.delete.title"),
 										body: t("dashboard.club.events.create.delete.body"),
 										actionButtonVariant: "destructive",
-										actionButton: t("dashboard.club.events.create.delete.confirm"),
-										cancelButton: t("dashboard.club.events.create.delete.cancel"),
+										actionButton: t("common.actions.confirm"),
+										cancelButton: t("common.actions.cancel"),
 									});
 									if (resp) {
 										setIsLoading(true);
@@ -1110,7 +1110,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						}}
 					>
 						<RotateCcw className="size-4" />
-						{t("dashboard.club.events.create.reset")}
+						{t("common.actions.reset")}
 					</Button>
 					<LoaderSubmitButton
 						isLoading={isLoading}
@@ -1118,8 +1118,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						className="min-w-[200px]"
 					>
 						{props.event
-							? t("dashboard.club.events.create.save")
-							: t("dashboard.club.events.create.create")}
+							? t("common.actions.save")
+							: t("common.actions.create")}
 					</LoaderSubmitButton>
 				</div>
 			</form>

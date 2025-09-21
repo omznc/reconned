@@ -230,12 +230,12 @@ export function MembershipExtensionForm({
 
 								<CredenzaFooter>
 									<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-										{t("components.membershipExtension.cancel")}
+										{t("common.actions.cancel")}
 									</Button>
 									<Button type="submit" disabled={isLoading}>
 										{isLoading
-											? t("components.membershipExtension.extending")
-											: t("components.membershipExtension.extend")}
+											? t("common.actions.saving")
+											: t("common.actions.save")}
 									</Button>
 								</CredenzaFooter>
 							</form>

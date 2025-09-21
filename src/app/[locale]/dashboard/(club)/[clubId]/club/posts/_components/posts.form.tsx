@@ -130,8 +130,8 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		const confirmed = await confirm({
 			title: t("dashboard.club.posts.delete.title"),
 			body: t("dashboard.club.posts.delete.body"),
-			cancelButton: t("dashboard.club.posts.delete.cancel"),
-			actionButton: t("dashboard.club.posts.delete.confirm"),
+			cancelButton: t("common.actions.cancel"),
+			actionButton: t("common.actions.confirm"),
 			actionButtonVariant: "destructive",
 		});
 

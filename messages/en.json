@@ -1,4 +1,59 @@
 {
+	"common": {
+		"actions": {
+			"save": "Save",
+			"saveChanges": "Save changes",
+			"cancel": "Cancel",
+			"edit": "Edit",
+			"delete": "Delete",
+			"create": "Create",
+			"view": "View",
+			"add": "Add",
+			"remove": "Remove",
+			"back": "Back",
+			"next": "Next",
+			"previous": "Previous",
+			"confirm": "Confirm",
+			"loading": "Loading...",
+			"saving": "Saving...",
+			"search": "Search",
+			"reset": "Reset",
+			"enable": "Enable",
+			"disable": "Disable"
+		},
+		"fields": {
+			"name": "Name",
+			"description": "Description",
+			"email": "Email",
+			"phone": "Phone number",
+			"location": "Location",
+			"website": "Website",
+			"password": "Password",
+			"title": "Title",
+			"date": "Date",
+			"actions": "Actions",
+			"status": "Status"
+		},
+		"states": {
+			"success": "Success",
+			"error": "Error",
+			"private": "Private",
+			"public": "Public",
+			"active": "Active",
+			"inactive": "Inactive",
+			"expired": "Expired",
+			"unlimited": "Unlimited",
+			"pending": "Pending"
+		},
+		"messages": {
+			"noResults": "No results found",
+			"noData": "No data found",
+			"searchPlaceholder": "Search...",
+			"selectPlaceholder": "Select...",
+			"areYouSure": "Are you sure?",
+			"cannotUndo": "This action cannot be undone."
+		}
+	},
 	"emails": {
 		"emailVerification": {
 			"title": "Verify your email address",
