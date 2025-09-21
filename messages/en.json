@@ -743,7 +743,8 @@
 				"content": "Content",
 				"public": "Public announcement",
 				"saveNewPost": "Save the post",
-				"saveEditPost": "Save changes"
+				"saveEditPost": "Save changes",
+				"images": "Images"
 			},
 			"spending": {
 				"title": "Spending",
@@ -763,7 +764,9 @@
 				"receipt": {
 					"title": "Receipt",
 					"pdfDocument": "PDF Document",
-					"download": "Download"
+					"download": "Download",
+					"downloading": "Downloading...",
+					"open": "Open"
 				},
 				"date": "Date",
 				"save": "Save",
@@ -789,7 +792,9 @@
 					"cancel": "No, go back"
 				},
 				"search": "Search expenses...",
-				"delete": "Delete"
+				"delete": "Delete",
+				"editItem": "Edut",
+				"successUpdated": "Saved"
 			},
 			"stats": {
 				"members": "Number of members",
@@ -1432,6 +1437,13 @@
 			"maxFiles": "Max {count, plural, =1 {{count} file, {maxSize}MB} other {{count} files, {maxSize}MB each}}",
 			"someFilesFailed": "Some files failed to upload",
 			"maxFilesReached": "Maximum of {count, plural, =1 {{count} file} other {{count} files}} reached"
+		},
+		"fileUpload": {
+			"dropFilesHere": "Drop files here",
+			"clickToUploadOrDragAndDrop": "Click to upload or drag and drop",
+			"maxFiles": "Up to {count} files",
+			"maxFileSize": "Maximum size of {size} MB",
+			"filesSelected": "{count} of {maxFiles} files added"
 		}
 	},
 	"imgur": {

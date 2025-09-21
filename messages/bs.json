@@ -743,7 +743,8 @@
 				"content": "Sadržaj",
 				"public": "Javna objava",
 				"saveNewPost": "Spasi objavu",
-				"saveEditPost": "Spasi izmjene"
+				"saveEditPost": "Spasi izmjene",
+				"images": "Slike"
 			},
 			"spending": {
 				"title": "Troškovi",
@@ -763,7 +764,9 @@
 				"receipt": {
 					"title": "Račun",
 					"pdfDocument": "PDF Dokument",
-					"download": "Preuzmi"
+					"download": "Preuzmi",
+					"downloading": "Preuzimanje...",
+					"open": "Otvori"
 				},
 				"date": "Datum",
 				"save": "Spasi",
@@ -789,7 +792,9 @@
 					"cancel": "Ne, vrati se"
 				},
 				"search": "Pretraži troškove...",
-				"delete": "Obriši"
+				"delete": "Obriši",
+				"editItem": "Izmjeni",
+				"successUpdated": "Spremljeno"
 			},
 			"stats": {
 				"members": "Broj članova",
@@ -1432,6 +1437,13 @@
 			"maxFiles": "Maksimalno {count, plural, =1 {{count} fajl, {maxSize}MB} =2 {{count} fajla, {maxSize}MB svaki} =3 {{count} fajla, {maxSize}MB svaki} =4 {{count} fajla, {maxSize}MB svaki} other {{count} fajlova, {maxSize}MB svaki}}",
 			"someFilesFailed": "Neki fajlovi nisu uspješno otpremljeni",
 			"maxFilesReached": "Dosegnut je maksimum od {count, plural, =1 {{count} fajla} =2 {{count} fajla} =3 {{count} fajla} =4 {{count} fajla} other {{count} fajlova}}"
+		},
+		"fileUpload": {
+			"dropFilesHere": "Ubacite fajlove ovde",
+			"clickToUploadOrDragAndDrop": "Kliknite za upload ili ubacite fajl ovde",
+			"maxFiles": "Dozvoljeno {count} fajl/a",
+			"maxFileSize": "Maksimalna velicina od {size} MB",
+			"filesSelected": "{count} od {maxFiles} fajla dodana"
 		}
 	},
 	"imgur": {

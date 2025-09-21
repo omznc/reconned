@@ -2,6 +2,7 @@
 
 import type { ClubPurchase } from "@generated/client";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -55,6 +56,49 @@ export function PurchasesTable(props: PurchasesTableProps) {
 						sortable: true,
 						cellConfig: {
 							component: (value: number) => `${value.toFixed(2)} KM`,
+						},
+					},
+					{
+						key: "receiptUrls",
+						header: t("details.receipts"),
+						sortable: false,
+						cellConfig: {
+							variant: "custom",
+							component: (receiptUrls: string[], _row) => (
+								<div className="flex gap-1 flex-wrap">
+									{receiptUrls && receiptUrls.length > 0 ? (
+										receiptUrls.map((url, index) => (
+											<button
+												key={`receipt-${url.split('/').pop()}-${index}`}
+												type="button"
+												onClick={() => {
+													const isPdf = url.toLowerCase().endsWith(".pdf");
+													const fileName = `Receipt ${index + 1}${isPdf ? ".pdf" : ""}`;
+													setSelectedFile({ url, name: fileName });
+												}}
+												className="w-8 h-8 rounded border overflow-hidden hover:border-primary transition-colors"
+											>
+												{url.toLowerCase().endsWith(".pdf") ? (
+													<div className="w-full h-full bg-red-100 flex items-center justify-center text-xs text-red-600 font-medium">
+														PDF
+													</div>
+												) : (
+													<Image
+														src={url}
+														alt={`Receipt ${index + 1}`}
+														width={32}
+														height={32}
+														className="w-full h-full object-cover"
+														style={{ imageRendering: "pixelated" }}
+													/>
+												)}
+											</button>
+										))
+									) : (
+										<span className="text-muted-foreground text-sm">-</span>
+									)}
+								</div>
+							),
 						},
 					},
 					{

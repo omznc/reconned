@@ -2,7 +2,6 @@
 
 import type { ClubPurchase } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -11,7 +10,6 @@ import { toast } from "sonner";
 import type { EditPurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { editPurchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { Button } from "@/components/ui/button";
 import {
 	Credenza,
 	CredenzaBody,
@@ -129,9 +127,12 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 	return (
 		<Credenza open={open} onOpenChange={handleOpenChange}>
 			<CredenzaTrigger asChild>
-				<Button variant="ghost" size="sm">
-					<Pencil className="h-4 w-4" />
-				</Button>
+				<button
+					id={`edit-purchase-${purchase.id}`}
+					type="button"
+					className="hidden"
+					onClick={() => setOpen(true)}
+				/>
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { X, File as FileIcon, Image as ImageIcon, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -52,6 +53,7 @@ export function FileUpload({
     multiple = true,
 }: FileUploadProps) {
     const [dragActive, setDragActive] = useState(false);
+    const t = useTranslations("components.fileUpload")
 
     const canAddMore = multiple ? value.length < maxFiles : value.length === 0;
 
@@ -176,11 +178,11 @@ export function FileUpload({
                         <Upload className="w-8 h-8 text-muted-foreground" />
                         <div className="space-y-1">
                             <p className="text-sm font-medium">
-                                {dragActive ? "Drop files here" : "Click to upload or drag and drop"}
+                                {dragActive ? t("dropFilesHere") : t("clickToUploadOrDragAndDrop")}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                {multiple && `Up to ${maxFiles} files, `}
-                                Max {Math.round(maxFileSize / (1024 * 1024))}MB each
+                                {multiple && t("maxFiles", { count: maxFiles })}
+                                {t("maxFileSize", { size: Math.round(maxFileSize / (1024 * 1024)) })}
                             </p>
                         </div>
                     </div>
@@ -190,7 +192,7 @@ export function FileUpload({
             {/* File count indicator */}
             {multiple && value.length > 0 && (
                 <p className="text-xs text-muted-foreground">
-                    {value.length} of {maxFiles} files selected
+                    {t("filesSelected", { count: value.length, maxFiles })}
                 </p>
             )}
         </div>
