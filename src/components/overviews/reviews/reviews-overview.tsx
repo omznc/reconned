@@ -14,7 +14,7 @@ interface ReviewsOverviewProps {
 }
 
 export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
-	const t = await getTranslations("components.reviews");
+	const t = await getTranslations();
 
 	if (!FEATURE_FLAGS.REVIEWS) {
 		return;
@@ -82,7 +82,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 	return (
 		<Card>
 			<CardHeader className="pb-2">
-				<CardTitle>{t("title")}</CardTitle>
+				<CardTitle>{t("components.reviews.title")}</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<div className="flex flex-col gap-4">
@@ -100,7 +100,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 
 					{reviews.length > 0 ? (
 						<>
-							<h2 className="text-lg font-semibold">{t("latestReviews")}</h2>
+							<h2 className="text-lg font-semibold">{t("components.reviews.latestReviews")}</h2>
 							<div className="flex flex-col md:flex-row gap-4 items-start justify-between">
 								{reviews?.slice(0, 3).map((review) => (
 									<div key={review.id} className="space-y-1">
@@ -130,7 +130,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 							<ReviewsOverviewSheet reviews={reviews} title={title} />
 						</>
 					) : (
-						<p className="text-sm text-muted-foreground">{t("noReviews")}</p>
+						<p className="text-sm text-muted-foreground">{t("components.reviews.noReviews")}</p>
 					)}
 				</div>
 			</CardContent>

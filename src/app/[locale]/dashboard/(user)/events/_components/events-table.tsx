@@ -40,32 +40,32 @@ interface EventsTableProps {
 }
 
 export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps) {
-	const t = useTranslations("dashboard.events");
+	const t = useTranslations();
 
 	return (
 		<GenericDataTable
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
-			searchPlaceholder={t("search")}
+			searchPlaceholder={t("dashboard.events.search")}
 			columns={[
 				{
 					key: "name",
-					header: t("name"),
+					header: t("dashboard.events.name"),
 					sortable: true,
 				},
 				{
 					key: "location",
-					header: t("location"),
+					header: t("dashboard.events.location"),
 					sortable: true,
 				},
 				{
 					key: "dateStart",
-					header: t("dateStart"),
+					header: t("dashboard.events.dateStart"),
 					sortable: true,
 				},
 				{
 					key: "dateRegistrationsClose",
-					header: t("dateRegistrationsClose"),
+					header: t("dashboard.events.dateRegistrationsClose"),
 					sortable: true,
 				},
 				{
@@ -82,12 +82,12 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 				},
 				{
 					key: "club.name",
-					header: t("clubName"),
+					header: t("dashboard.events.clubName"),
 					sortable: true,
 				},
 				{
 					key: "actions",
-					header: t("actions"),
+					header: t("dashboard.events.actions"),
 					cellConfig: {
 						variant: "custom",
 						component: (_, item) => {

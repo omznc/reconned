@@ -56,6 +56,14 @@
 			"expiringMessage": "The membership of {memberName} in your {clubName} club will expire on {date} (in {days} days).",
 			"action": "Manage Members",
 			"footer": "This is an automated notification to help you manage your club memberships."
+		},
+		"passwordReset": {
+			"title": "Reset your password",
+			"helloUser": "Hello {name}",
+			"hello": "Hello",
+			"message": "To reset your password, please click on the button below",
+			"action": "Reset my password",
+			"footer": "If this email is unexpected, and you didn't request a password reset, simply ignore it."
 		}
 	},
 	"public": {

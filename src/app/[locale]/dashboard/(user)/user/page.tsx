@@ -14,7 +14,7 @@ export default async function Page() {
 		return notFound();
 	}
 
-	const t = await getTranslations("dashboard.user.overview");
+	const t = await getTranslations();
 
 	const userFromDb = await prisma.user.findUnique({
 		where: {
@@ -41,21 +41,21 @@ export default async function Page() {
 		<>
 			<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 				<div className="flex flex-col">
-					<AlertTitle>{t("alertTitle")}</AlertTitle>
-					<AlertDescription>{t("alertDescription")}</AlertDescription>
+					<AlertTitle>{t("dashboard.user.overview.alertTitle")}</AlertTitle>
+					<AlertDescription>{t("dashboard.user.overview.alertDescription")}</AlertDescription>
 				</div>
 				<div className="flex gap-1 flex-col md:flex-row">
 					<Button variant="outline" asChild={true}>
 						<Link className="flex items-center gap-1" href={"/dashboard/user/settings"}>
 							<Pencil size={16} />
-							{t("edit")}
+							{t("dashboard.user.overview.edit")}
 						</Link>
 					</Button>
 					{!userFromDb.isPrivate && (
 						<Button variant="outline" asChild={true}>
 							<Link target="_blank" className="flex items-center gap-1" href={`/users/${user.id}`}>
 								<Eye size={16} />
-								{t("view")}
+								{t("dashboard.user.overview.view")}
 							</Link>
 						</Button>
 					)}

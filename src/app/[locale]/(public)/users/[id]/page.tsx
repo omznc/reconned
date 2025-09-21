@@ -63,7 +63,7 @@ export default async function Page(props: PageProps) {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
 	const params = await props.params;
-	const t = await getTranslations("public.users.metadata");
+	const t = await getTranslations();
 
 	const user = await prisma.user.findFirst({
 		where: {
@@ -92,7 +92,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 	return {
 		title: `${user.name} - RECONNED`,
-		description: user.bio?.slice(0, 160) ?? t("description"),
+		description: user.bio?.slice(0, 160) ?? t("public.users.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
 		},

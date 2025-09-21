@@ -122,13 +122,13 @@ export async function ManagersPageFetcher(props: PageProps) {
 }
 
 export default async function Page(props: PageProps) {
-	const t = await getTranslations("dashboard.club.members.managers");
+	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 
 	return (
 		<div className="space-y-8">
 			<div>
-				<h2 className="text-2xl font-bold mb-4">{t("title")}</h2>
+				<h2 className="text-2xl font-bold mb-4">{t("dashboard.club.members.managers.title")}</h2>
 				<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 					<ManagersPageFetcher {...props} />
 				</Suspense>

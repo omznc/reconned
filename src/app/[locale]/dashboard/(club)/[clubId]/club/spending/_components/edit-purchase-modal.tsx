@@ -34,7 +34,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 	const [open, setOpen] = useState(false);
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
-	const t = useTranslations("dashboard.club.spending");
+	const t = useTranslations();
 
 	// Initialize file upload system for receipts
 	const initialFiles: FileUploadItem[] = purchase.receiptUrls
@@ -105,12 +105,12 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			const result = await updatePurchase(data);
 			if (result?.data?.data?.purchase) {
 				receiptUpload.markAsSaved();
-				toast.success(t("successUpdated"));
+				toast.success(t("dashboard.club.spending.successUpdated"));
 				setOpen(false);
 				router.refresh();
 			}
 		} catch {
-			toast.error(t("error"));
+			toast.error(t("dashboard.club.spending.error"));
 		}
 		setIsLoading(false);
 	};
@@ -136,7 +136,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{t("editItem")}</CredenzaTitle>
+					<CredenzaTitle>{t("dashboard.club.spending.editItem")}</CredenzaTitle>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -146,9 +146,12 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="title"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("details.title")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.title")}</FormLabel>
 										<FormControl>
-											<Input placeholder={t("details.title")} {...field} />
+											<Input
+												placeholder={t("dashboard.club.spending.details.title")}
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -159,9 +162,12 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="description"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("details.description")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.description")}</FormLabel>
 										<FormControl>
-											<Textarea placeholder={t("details.description")} {...field} />
+											<Textarea
+												placeholder={t("dashboard.club.spending.details.description")}
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -172,7 +178,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="amount"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("details.amount")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.amount")}</FormLabel>
 										<FormControl>
 											<Input
 												type="number"
@@ -191,7 +197,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="receiptUrls"
 								render={() => (
 									<FormItem>
-										<FormLabel>{t("details.receipts")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.receipts")}</FormLabel>
 										<FormControl>
 											<FileUpload
 												value={receiptUpload.files}
@@ -207,13 +213,15 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 												showPreview={true}
 											/>
 										</FormControl>
-										<FormDescription>{t("details.receiptsMaxCount")}</FormDescription>
+										<FormDescription>
+											{t("dashboard.club.spending.details.receiptsMaxCount")}
+										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
 							<LoaderSubmitButton isLoading={isLoading} className="w-full">
-								{isLoading ? t("saving") : t("save")}
+								{isLoading ? t("dashboard.club.spending.saving") : t("dashboard.club.spending.save")}
 							</LoaderSubmitButton>
 						</form>
 					</Form>

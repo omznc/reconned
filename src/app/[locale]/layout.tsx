@@ -31,10 +31,10 @@ const geistMono = Geist_Mono({
 
 type Props = {
 	children: React.ReactNode;
-	params: Promise<{locale: string}>;
-  };
-   
-  export default async function LocaleLayout({children, params}: Props) {
+	params: Promise<{ locale: string }>;
+};
+
+export default async function LocaleLayout({ children, params }: Props) {
 	const [messages, user] = await Promise.all([getMessages(), isAuthenticated()]);
 
 	const { locale } = await params;
@@ -90,12 +90,12 @@ type Props = {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public.layout.metadata");
+	const t = await getTranslations();
 	return {
-		title: t("title"),
-		description: t("description"),
+		title: t("public.layout.metadata.title"),
+		description: t("public.layout.metadata.description"),
 		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
-		keywords: t("keywords")
+		keywords: t("public.layout.metadata.keywords")
 			.split(", ")
 			.map((keyword) => keyword.trim()),
 	};

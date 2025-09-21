@@ -19,7 +19,7 @@ export const ClubInvitationEmail = async ({
 	clubName,
 	clubLocation,
 }: ClubInvitationEmailProps) => {
-	const t = await getTranslations("emails.airsoftInvitation");
+	const t = await getTranslations();
 
 	return (
 		<Html>
@@ -37,30 +37,30 @@ export const ClubInvitationEmail = async ({
 							{clubName} - {clubLocation}
 						</Heading>
 					</Section>
-					<Heading style={emailStyles.h1}>{t("invitation")}</Heading>
+					<Heading style={emailStyles.h1}>{t("emails.airsoftInvitation.invitation")}</Heading>
 					{name ? (
 						<Text style={emailStyles.text}>
-							{t("helloUser", {
+							{t("emails.airsoftInvitation.helloUser", {
 								name,
 							})}
 						</Text>
 					) : (
-						<Text style={emailStyles.text}>{t("hello")}</Text>
+						<Text style={emailStyles.text}>{t("emails.airsoftInvitation.hello")}</Text>
 					)}
 					<Text style={emailStyles.text}>
-						{t("message", {
+						{t("emails.airsoftInvitation.message", {
 							clubName,
 						})}
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={url}>
-							{t("action")}
+							{t("emails.airsoftInvitation.action")}
 						</Button>
 					</Section>
 					<Text style={emailStyles.text}>Ili koristite ovaj pozivni kod:</Text>
 					<code style={emailStyles.code}>{code}</code>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("footer")}</Text>
+					<Text style={emailStyles.footer}>{t("emails.airsoftInvitation.footer")}</Text>
 				</Container>
 			</Body>
 		</Html>

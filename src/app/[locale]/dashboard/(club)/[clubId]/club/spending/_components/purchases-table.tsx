@@ -29,7 +29,7 @@ interface PurchasesTableProps {
 export function PurchasesTable(props: PurchasesTableProps) {
 	const router = useRouter();
 	const confirm = useConfirm();
-	const t = useTranslations("dashboard.club.spending");
+	const t = useTranslations();
 	const [selectedFile, setSelectedFile] = useState<{
 		url: string;
 		name: string;
@@ -42,17 +42,17 @@ export function PurchasesTable(props: PurchasesTableProps) {
 				columns={[
 					{
 						key: "title",
-						header: t("details.title"),
+						header: t("dashboard.club.spending.details.title"),
 						sortable: true,
 					},
 					{
 						key: "description",
-						header: t("details.description"),
+						header: t("dashboard.club.spending.details.description"),
 						sortable: true,
 					},
 					{
 						key: "amount",
-						header: t("details.amount"),
+						header: t("dashboard.club.spending.details.amount"),
 						sortable: true,
 						cellConfig: {
 							component: (value: number) => `${value.toFixed(2)} KM`,
@@ -60,7 +60,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 					{
 						key: "receiptUrls",
-						header: t("details.receipts"),
+						header: t("dashboard.club.spending.details.receipts"),
 						sortable: false,
 						cellConfig: {
 							variant: "custom",
@@ -69,7 +69,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 									{receiptUrls && receiptUrls.length > 0 ? (
 										receiptUrls.map((url, index) => (
 											<button
-												key={`receipt-${url.split('/').pop()}-${index}`}
+												key={`receipt-${url.split("/").pop()}-${index}`}
 												type="button"
 												onClick={() => {
 													const isPdf = url.toLowerCase().endsWith(".pdf");
@@ -103,7 +103,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 					{
 						key: "createdAt",
-						header: t("date"),
+						header: t("dashboard.club.spending.date"),
 						sortable: true,
 						cellConfig: {
 							component: (value: Date) =>
@@ -116,7 +116,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 					{
 						key: "actions",
-						header: t("details.actions"),
+						header: t("dashboard.club.spending.details.actions"),
 						sortable: false,
 						cellConfig: {
 							variant: "custom",
@@ -135,18 +135,18 @@ export function PurchasesTable(props: PurchasesTableProps) {
 											}}
 										>
 											<Edit className="size-4 mr-2" />
-											{t("edit")}
+											{t("dashboard.club.spending.edit")}
 										</DropdownMenuItem>
 										<DropdownMenuItem
 											className="text-destructive focus:text-destructive"
 											onSelect={async (e) => {
 												e.preventDefault();
 												const confirmed = await confirm({
-													title: t("deleteConfirm.title"),
-													body: t("deleteConfirm.body"),
-													actionButton: t("deleteConfirm.action"),
+													title: t("dashboard.club.spending.deleteConfirm.title"),
+													body: t("dashboard.club.spending.deleteConfirm.body"),
+													actionButton: t("dashboard.club.spending.deleteConfirm.action"),
 													actionButtonVariant: "destructive",
-													cancelButton: t("deleteConfirm.cancel"),
+													cancelButton: t("dashboard.club.spending.deleteConfirm.cancel"),
 												});
 
 												if (!confirmed) {
@@ -158,16 +158,16 @@ export function PurchasesTable(props: PurchasesTableProps) {
 													clubId: row.clubId,
 												}).then((result) => {
 													if (result?.data) {
-														toast.success(t("successDelete"));
+														toast.success(t("dashboard.club.spending.successDelete"));
 														router.refresh();
 													} else {
-														toast.error(t("errorDelete"));
+														toast.error(t("dashboard.club.spending.errorDelete"));
 													}
 												});
 											}}
 										>
 											<Trash2 className="size-4 mr-2" />
-											{t("delete")}
+											{t("dashboard.club.spending.delete")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
@@ -176,7 +176,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 				]}
 				totalPages={Math.ceil(props.totalPurchases / props.pageSize)}
-				searchPlaceholder={t("search")}
+				searchPlaceholder={t("dashboard.club.spending.search")}
 			/>
 
 			<div className="hidden">

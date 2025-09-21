@@ -70,13 +70,13 @@ export async function ClubsPageFetcher({ searchParams }: PageProps) {
 }
 
 export default async function ClubsPage({ searchParams }: PageProps) {
-	const t = await getTranslations("dashboard.admin.clubs");
+	const t = await getTranslations();
 	const params = await searchParams;
 
 	return (
 		<>
 			<div>
-				<h3 className="text-lg font-semibold">{t("allClubs")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.admin.clubs.allClubs")}</h3>
 			</div>
 			<Suspense key={JSON.stringify(params)} fallback={<GenericDataTableSkeleton />}>
 				<ClubsPageFetcher searchParams={searchParams} />

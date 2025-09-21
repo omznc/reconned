@@ -32,7 +32,7 @@ export const revalidate = 3600; // 1 hour
 
 // Main changelog page
 export default async function ChangelogPage() {
-	const t = await getTranslations("public.changelog");
+	const t = await getTranslations();
 	const locale = await getLocale();
 
 	// Get the latest releases from GitHub
@@ -56,14 +56,14 @@ export default async function ChangelogPage() {
 		return (
 			<div className="container mx-auto py-12 px-4 md:px-6">
 				<div className="text-center mb-12">
-					<h1 className="text-4xl font-bold mb-4">{t("title")}</h1>
-					<p className="text-lg text-muted-foreground">{t("description")}</p>
+					<h1 className="text-4xl font-bold mb-4">{t("public.title")}</h1>
+					<p className="text-lg text-muted-foreground">{t("public.description")}</p>
 				</div>
 
 				<Alert variant="destructive" className="mb-6">
 					<AlertTriangle className="h-4 w-4" />
 					<AlertTitle>Error</AlertTitle>
-					<AlertDescription>{t("errorLoading")}</AlertDescription>
+					<AlertDescription>{t("public.errorLoading")}</AlertDescription>
 				</Alert>
 			</div>
 		);
@@ -94,14 +94,14 @@ export default async function ChangelogPage() {
 	return (
 		<div className="container mx-auto py-12 px-4 md:px-6">
 			<div className="text-center mb-12">
-				<h1 className="text-4xl font-bold mb-4">{t("title")}</h1>
-				<p className="text-lg text-muted-foreground">{t("description")}</p>
+				<h1 className="text-4xl font-bold mb-4">{t("public.title")}</h1>
+				<p className="text-lg text-muted-foreground">{t("public.description")}</p>
 			</div>
 
 			{/* Latest Release */}
 			<div className="relative mb-16">
 				<PeekingDrawing className="z-10 absolute -right-5 md:-right-0 -top-11 lg:-top-27 transition-all w-full max-w-[180px] lg:max-w-[300px] dark:invert" />
-				<h2 className="text-2xl font-bold mb-6">{t("latestRelease")}</h2>
+				<h2 className="text-2xl font-bold mb-6">{t("public.latestRelease")}</h2>
 				<Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">
 					<CardHeader className="bg-primary/5">
 						<CardTitle className="text-2xl flex items-center gap-2">
@@ -138,7 +138,7 @@ export default async function ChangelogPage() {
 								className="flex items-center gap-2"
 							>
 								<SiGithub className="h-4 w-4" />
-								{t("viewOnGithub")}
+								{t("public.viewOnGithub")}
 								<ExternalLink className="h-3 w-3" />
 							</a>
 						</Button>
@@ -149,7 +149,7 @@ export default async function ChangelogPage() {
 			{/* Previous Releases */}
 			{previousReleasesContent.length > 0 && (
 				<div>
-					<h2 className="text-2xl font-bold mb-6">{t("previousReleases")}</h2>
+					<h2 className="text-2xl font-bold mb-6">{t("public.previousReleases")}</h2>
 					<div className="space-y-6">
 						{previousReleasesContent.map((release) => (
 							<Card key={release.id} className="overflow-hidden">
@@ -188,7 +188,7 @@ export default async function ChangelogPage() {
 											className="flex items-center gap-2"
 										>
 											<SiGithub className="h-4 w-4" />
-											{t("viewOnGithub")}
+											{t("public.viewOnGithub")}
 											<ExternalLink className="h-3 w-3" />
 										</a>
 									</Button>
@@ -203,12 +203,12 @@ export default async function ChangelogPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("changelog.metadata.title"),
-		description: t("changelog.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.changelog.metadata.title"),
+		description: t("public.changelog.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

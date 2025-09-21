@@ -72,7 +72,7 @@ export default async function Page(props: PageProps) {
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
 	const params = await props.params;
 	const user = await isAuthenticated();
-	const t = await getTranslations("public.events.metadata");
+	const t = await getTranslations();
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -116,7 +116,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 	return {
 		title: `${event.name} - RECONNED`,
-		description: event.description.slice(0, 160) ?? t("description"),
+		description: event.description.slice(0, 160) ?? t("public.events.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
 		},

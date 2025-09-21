@@ -20,7 +20,7 @@ export function SetupPasswordForm({
 	setIsLoading: Dispatch<SetStateAction<boolean>>;
 }) {
 	const router = useRouter();
-	const t = useTranslations("dashboard.security.passwordSetup");
+	const t = useTranslations();
 
 	const setupPasswordForm = useForm<z.infer<typeof setupPasswordSchema>>({
 		resolver: zodResolver(setupPasswordSchema),
@@ -37,14 +37,14 @@ export function SetupPasswordForm({
 			});
 
 			if (response?.data?.success) {
-				toast.success(t("success"));
+				toast.success(t("dashboard.security.passwordSetup.success"));
 				router.refresh();
 			} else {
-				toast.error(t("error"));
+				toast.error(t("dashboard.security.passwordSetup.error"));
 			}
 			setIsLoading(false);
 		} catch (_e) {
-			toast(t("error"));
+			toast(t("dashboard.security.passwordSetup.error"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -54,14 +54,14 @@ export function SetupPasswordForm({
 		<Form {...setupPasswordForm}>
 			<form onSubmit={setupPasswordForm.handleSubmit(onSetupPasswordSubmit)} className="space-y-4 w-full">
 				<div>
-					<h3 className="text-lg font-semibold">{t("title")}</h3>
+					<h3 className="text-lg font-semibold">{t("dashboard.security.passwordSetup.title")}</h3>
 				</div>
 				<FormField
 					control={setupPasswordForm.control}
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("newPassword")}</FormLabel>
+							<FormLabel>{t("dashboard.security.passwordSetup.newPassword")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -71,7 +71,9 @@ export function SetupPasswordForm({
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
 					<LockIcon className="w-4 h-4 mr-2" />
-					{isLoading ? t("loading") : t("setupPassword")}
+					{isLoading
+						? t("dashboard.security.passwordSetup.loading")
+						: t("dashboard.security.passwordSetup.setupPassword")}
 				</Button>
 			</form>
 		</Form>

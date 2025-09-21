@@ -84,7 +84,7 @@ export default async function Page(props: PageProps) {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
 	const params = await props.params;
-	const t = await getTranslations("public.clubs.metadata");
+	const t = await getTranslations();
 
 	const club = await prisma.club.findFirst({
 		where: {
@@ -110,7 +110,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 	return {
 		title: `${club.name} - RECONNED`,
-		description: club.description?.slice(0, 160) ?? t("description"),
+		description: club.description?.slice(0, 160) ?? t("public.clubs.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
 		},

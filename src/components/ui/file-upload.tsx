@@ -53,7 +53,7 @@ export function FileUpload({
     multiple = true,
 }: FileUploadProps) {
     const [dragActive, setDragActive] = useState(false);
-    const t = useTranslations("components.fileUpload")
+    const t = useTranslations()
 
     const canAddMore = multiple ? value.length < maxFiles : value.length === 0;
 
@@ -178,7 +178,7 @@ export function FileUpload({
                         <Upload className="w-8 h-8 text-muted-foreground" />
                         <div className="space-y-1">
                             <p className="text-sm font-medium">
-                                {dragActive ? t("dropFilesHere") : t("clickToUploadOrDragAndDrop")}
+                                {dragActive ? t("components.fileUpload.dropFilesHere") : t("components.fileUpload.clickToUploadOrDragAndDrop")}
                             </p>
                             <p className="text-xs text-muted-foreground">
                                 {multiple && t("maxFiles", { count: maxFiles })}

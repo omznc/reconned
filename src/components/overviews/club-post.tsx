@@ -21,7 +21,7 @@ interface ClubPostProps {
 }
 
 export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
-	const t = useTranslations("components.post");
+	const t = useTranslations();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const { ref, isOverflowing } = useOverflow();
 
@@ -74,7 +74,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					onClick={() => setIsExpanded(!isExpanded)}
 					className="w-full hover:bg-transparent"
 				>
-					{isExpanded ? t("showLess") : t("readMore")}
+					{isExpanded ? t("components.post.showLess") : t("components.post.readMore")}
 				</Button>
 			)}
 		</div>

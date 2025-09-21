@@ -40,12 +40,12 @@ export default function InstagramPageSelection() {
 	const searchParams = useSearchParams();
 	const sessionId = searchParams.get("sessionId");
 	const router = useRouter();
-	const t = useTranslations("dashboard.club.info");
+	const t = useTranslations();
 
 	// Fetch the available Facebook pages
 	useEffect(() => {
 		if (!sessionId) {
-			setError(t("instagramSessionMissing"));
+			setError(t("dashboard.club.info.instagramSessionMissing"));
 			setIsLoading(false);
 			return;
 		}
@@ -58,7 +58,7 @@ export default function InstagramPageSelection() {
 
 				if (!response.ok) {
 					const errorData = await response.json();
-					setError(errorData.error || t("instagramPagesFetchFailed"));
+					setError(errorData.error || t("dashboard.club.info.instagramPagesFetchFailed"));
 					setIsLoading(false);
 					return;
 				}
@@ -88,7 +88,7 @@ export default function InstagramPageSelection() {
 
 				setIsLoading(false);
 			} catch (err) {
-				setError(t("instagramPagesFetchFailed"));
+				setError(t("dashboard.club.info.instagramPagesFetchFailed"));
 				setIsLoading(false);
 			}
 		};
@@ -110,13 +110,13 @@ export default function InstagramPageSelection() {
 		try {
 			const selectedPage = pages.find((page) => page.id === selectedPageId);
 			if (!selectedPage) {
-				throw new Error(t("instagramSelectedPageNotFound"));
+				throw new Error(t("dashboard.club.info.instagramSelectedPageNotFound"));
 			}
 
 			// Redirect to the callback route with the selected page ID and its page-specific access token
 			window.location.href = `/api/club/instagram/callback?pageId=${selectedPageId}&accessToken=${encodeURIComponent(selectedPage.access_token)}&state=${params.clubId}`;
 		} catch (err) {
-			setError(err instanceof Error ? err.message : t("instagramConnectionFailed"));
+			setError(err instanceof Error ? err.message : t("dashboard.club.info.instagramConnectionFailed"));
 			setIsConnecting(false);
 		}
 	};
@@ -130,7 +130,7 @@ export default function InstagramPageSelection() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[400px]">
 				<Loader className="h-8 w-8 animate-spin text-primary mb-4" />
-				<p className="text-lg text-muted-foreground">{t("instagramLoadingPages")}</p>
+				<p className="text-lg text-muted-foreground">{t("dashboard.club.info.instagramLoadingPages")}</p>
 			</div>
 		);
 	}
@@ -139,11 +139,11 @@ export default function InstagramPageSelection() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh]">
 				<AlertCircle className="h-12 w-12 text-destructive" />
-				<h2 className="text-xl font-bold mt-4">{t("instagramError")}</h2>
+				<h2 className="text-xl font-bold mt-4">{t("dashboard.club.info.instagramError")}</h2>
 				<p className="text-muted-foreground mt-2">{error}</p>
 				<Button variant="default" className="mt-6" onClick={handleCancel}>
 					<ArrowLeft className="mr-2 h-4 w-4" />
-					{t("backToClub")}
+					{t("dashboard.club.info.backToClub")}
 				</Button>
 			</div>
 		);
@@ -153,11 +153,11 @@ export default function InstagramPageSelection() {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>{t("instagramNoPages")}</CardTitle>
-					<CardDescription>{t("instagramNoPageDescription")}</CardDescription>
+					<CardTitle>{t("dashboard.club.info.instagramNoPages")}</CardTitle>
+					<CardDescription>{t("dashboard.club.info.instagramNoPageDescription")}</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<Button onClick={handleCancel}>{t("backToClub")}</Button>
+					<Button onClick={handleCancel}>{t("dashboard.club.info.backToClub")}</Button>
 				</CardContent>
 			</Card>
 		);
@@ -171,16 +171,16 @@ export default function InstagramPageSelection() {
 			<CardHeader>
 				<div className="flex items-center gap-2">
 					<SiInstagram className="h-5 w-5" />
-					<CardTitle>{t("instagramSelectPageTitle")}</CardTitle>
+					<CardTitle>{t("dashboard.club.info.instagramSelectPageTitle")}</CardTitle>
 				</div>
-				<CardDescription>{t("instagramSelectPageDescription")}</CardDescription>
+				<CardDescription>{t("dashboard.club.info.instagramSelectPageDescription")}</CardDescription>
 			</CardHeader>
 
 			{!hasEligiblePages && (
 				<CardContent>
 					<Alert className="mb-4">
 						<ShieldAlert className="h-4 w-4" />
-						<AlertDescription>{t("instagramNoEligiblePages")}</AlertDescription>
+						<AlertDescription>{t("dashboard.club.info.instagramNoEligiblePages")}</AlertDescription>
 					</Alert>
 				</CardContent>
 			)}
@@ -223,7 +223,7 @@ export default function InstagramPageSelection() {
 									{isEligible ? (
 										<div className="flex flex-shrink-0 items-center text-sm text-green-600 font-medium gap-1">
 											<Verified className="h-4 w-4" />
-											<span>{t("instagramEligible")}</span>
+											<span>{t("dashboard.club.info.instagramEligible")}</span>
 										</div>
 									) : (
 										<TooltipProvider>
@@ -231,11 +231,11 @@ export default function InstagramPageSelection() {
 												<TooltipTrigger asChild>
 													<div className="flex flex-shrink-0 items-center text-sm text-amber-500 font-medium gap-1">
 														<Info className="h-4 w-4" />
-														<span>{t("instagramIneligible")}</span>
+														<span>{t("dashboard.club.info.instagramIneligible")}</span>
 													</div>
 												</TooltipTrigger>
 												<TooltipContent className="max-w-xs">
-													<p>{t("instagramIneligibleTooltip")}</p>
+													<p>{t("dashboard.club.info.instagramIneligibleTooltip")}</p>
 												</TooltipContent>
 											</Tooltip>
 										</TooltipProvider>
@@ -248,7 +248,7 @@ export default function InstagramPageSelection() {
 			</CardContent>
 			<CardFooter className="flex justify-between">
 				<Button variant="outline" onClick={handleCancel} disabled={isConnecting}>
-					{t("cancel")}
+					{t("dashboard.club.info.cancel")}
 				</Button>
 				<Button
 					onClick={handleConnect}
@@ -258,12 +258,12 @@ export default function InstagramPageSelection() {
 					{isConnecting ? (
 						<>
 							<Loader className="h-4 w-4 animate-spin" />
-							<span>{t("instagramConnecting")}</span>
+							<span>{t("dashboard.club.info.instagramConnecting")}</span>
 						</>
 					) : (
 						<>
 							<SiInstagram className="h-4 w-4" />
-							<span>{t("instagramConnect")}</span>
+							<span>{t("dashboard.club.info.instagramConnect")}</span>
 						</>
 					)}
 				</Button>

@@ -31,7 +31,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [cropFile, setCropFile] = useState<File | null>(null);
-	const t = useTranslations("dashboard.user.settings");
+	const t = useTranslations();
 
 	// Initialize file upload system for avatar
 	const initialFiles: FileUploadItem[] = props.user?.image
@@ -126,10 +126,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			if (result?.data) {
 				avatarUpload.markAsSaved();
 				form.reset(values);
-				toast.success(t("success"));
+				toast.success(t("dashboard.user.settings.success"));
 			}
 		} catch {
-			toast.error(t("error"));
+			toast.error(t("dashboard.user.settings.error"));
 		}
 		setIsLoading(false);
 	}
@@ -141,7 +141,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					<div>
 						<h3 className="text-lg font-semibold flex items-center gap-2">
 							<UserIcon className="h-5 w-5" />
-							{t("general")}
+							{t("dashboard.user.settings.general")}
 						</h3>
 					</div>
 
@@ -150,7 +150,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="image"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("avatar")}</FormLabel>
+								<FormLabel>{t("dashboard.user.settings.avatar")}</FormLabel>
 								<FormControl>
 									<FileUpload
 										value={avatarUpload.files}
@@ -173,7 +173,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 										showPreview={true}
 									/>
 								</FormControl>
-								<FormDescription>{t("avatarDescription")}</FormDescription>
+								<FormDescription>{t("dashboard.user.settings.avatarDescription")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -184,9 +184,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("name")}</FormLabel>
+								<FormLabel>{t("dashboard.user.settings.name")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("name")} {...field} />
+									<Input placeholder={t("dashboard.user.settings.name")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -215,11 +215,15 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="bio"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("bio")}</FormLabel>
+								<FormLabel>{t("dashboard.user.settings.bio")}</FormLabel>
 								<FormControl>
-									<Textarea placeholder={t("bioPlaceholder")} className="resize-none" {...field} />
+									<Textarea
+										placeholder={t("dashboard.user.settings.bioPlaceholder")}
+										className="resize-none"
+										{...field}
+									/>
 								</FormControl>
-								<FormDescription>{t("bioDescription")}</FormDescription>
+								<FormDescription>{t("dashboard.user.settings.bioDescription")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -230,11 +234,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="callsign"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("callsign")}</FormLabel>
+								<FormLabel>{t("dashboard.user.settings.callsign")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("callsignPlaceholder")} {...field} />
+									<Input placeholder={t("dashboard.user.settings.callsignPlaceholder")} {...field} />
 								</FormControl>
-								<FormDescription>{t("callsignDescription")}</FormDescription>
+								<FormDescription>{t("dashboard.user.settings.callsignDescription")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -245,9 +249,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="location"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("location")}</FormLabel>
+								<FormLabel>{t("dashboard.user.settings.location")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("locationPlaceholder")} {...field} />
+									<Input placeholder={t("dashboard.user.settings.locationPlaceholder")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -259,7 +263,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="website"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("website")}</FormLabel>
+								<FormLabel>{t("dashboard.user.settings.website")}</FormLabel>
 								<FormControl>
 									<Input placeholder="https://..." {...field} />
 								</FormControl>
@@ -271,7 +275,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					<div>
 						<h3 className="text-lg font-semibold flex items-center gap-2">
 							<Phone className="h-5 w-5" />
-							{t("contact")}
+							{t("dashboard.user.settings.contact")}
 						</h3>
 					</div>
 
@@ -280,11 +284,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="phone"
 						render={({ field }) => (
 							<FormItem className="flex flex-col items-start">
-								<FormLabel>{t("phone")}</FormLabel>
+								<FormLabel>{t("dashboard.user.settings.phone")}</FormLabel>
 								<FormControl className="w-full">
 									<PhoneInput placeholder="063 000 000" {...field} defaultCountry="BA" />
 								</FormControl>
-								<FormDescription>{t("phoneDescription")}</FormDescription>
+								<FormDescription>{t("dashboard.user.settings.phoneDescription")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -293,7 +297,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					<div>
 						<h3 className="text-lg font-semibold flex items-center gap-2">
 							<Shield className="h-5 w-5" />
-							{t("privacy")}
+							{t("dashboard.user.settings.privacy")}
 						</h3>
 					</div>
 
@@ -303,8 +307,8 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("private")}</FormLabel>
-									<FormDescription>{t("privateDescription")}</FormDescription>
+									<FormLabel>{t("dashboard.user.settings.private")}</FormLabel>
+									<FormDescription>{t("dashboard.user.settings.privateDescription")}</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -319,8 +323,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("privateEmail")}</FormLabel>
-									<FormDescription>{t("privateEmailDescription")}</FormDescription>
+									<FormLabel>{t("dashboard.user.settings.privateEmail")}</FormLabel>
+									<FormDescription>
+										{t("dashboard.user.settings.privateEmailDescription")}
+									</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -335,8 +341,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("privatePhone")}</FormLabel>
-									<FormDescription>{t("privatePhoneDescription")}</FormDescription>
+									<FormLabel>{t("dashboard.user.settings.privatePhone")}</FormLabel>
+									<FormDescription>
+										{t("dashboard.user.settings.privatePhoneDescription")}
+									</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -351,8 +359,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("privateStats")}</FormLabel>
-									<FormDescription>{t("privateStatsDescription")}</FormDescription>
+									<FormLabel>{t("dashboard.user.settings.privateStats")}</FormLabel>
+									<FormDescription>
+										{t("dashboard.user.settings.privateStatsDescription")}
+									</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -365,10 +375,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						{isLoading ? (
 							<>
 								<Loader className="mr-2 h-4 w-4 animate-spin" />
-								{t("saving")}
+								{t("dashboard.user.settings.saving")}
 							</>
 						) : (
-							t("save")
+							t("dashboard.user.settings.save")
 						)}
 					</LoaderSubmitButton>
 				</form>

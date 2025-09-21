@@ -6,31 +6,31 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("notFound.metadata.title"),
-		description: t("notFound.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.notFound.notFound.metadata.title"),
+		description: t("public.notFound.notFound.metadata.description"),
+		keywords: t("public.notFound.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};
 }
 
 export default async function NotFound() {
-	const t = await getTranslations("public.notFound");
+	const t = await getTranslations();
 
 	return (
 		<main className="flex h-dvh w-full fade-in-up flex-col items-center justify-center p-8">
 			<Image src={Error404} alt="404" draggable={false} className="w-full max-w-[400px] dark:invert" />
-			<h1 className="text-4xl font-bold mb-4 text-center">{t("title")}</h1>
-			<p className="text-lg mb-8 text-center">{t("message")}</p>
+			<h1 className="text-4xl font-bold mb-4 text-center">{t("public.notFound.title")}</h1>
+			<p className="text-lg mb-8 text-center">{t("public.notFound.message")}</p>
 			<Button asChild={true}>
 				<Link
 					href="/"
 					className="text-lg text-center hover:bg-accent transition-all bg-background px-4 py-2 rounded-md border"
 				>
-					{t("backHome")}
+					{t("public.notFound.backHome")}
 				</Link>
 			</Button>
 		</main>

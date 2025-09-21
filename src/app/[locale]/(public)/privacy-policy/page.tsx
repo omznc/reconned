@@ -7,12 +7,12 @@ const lastUpdated = new Date("2025-04-13");
 export const revalidate = 86_400; // 1 day
 
 export default async function PrivacyPolicyPage() {
-	const t = await getTranslations("public.privacy");
+	const t = await getTranslations();
 	const locale = await getLocale();
 
 	return (
 		<div className="container mx-auto py-12 px-4 max-w-4xl">
-			<h1 className="text-3xl font-bold mb-8">{t("title")}</h1>
+			<h1 className="text-3xl font-bold mb-8">{t("public.title")}</h1>
 
 			<div className="prose dark:prose-invert max-w-none">
 				<p className="text-lg mb-6">
@@ -22,93 +22,93 @@ export default async function PrivacyPolicyPage() {
 				</p>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("introduction.title")}</h2>
-					<p>{t("introduction.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.introduction.title")}</h2>
+					<p>{t("public.introduction.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("dataCollection.title")}</h2>
-					<p>{t("dataCollection.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.dataCollection.title")}</h2>
+					<p>{t("public.dataCollection.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("dataCollection.personalInfo")}</li>
-						<li>{t("dataCollection.accountInfo")}</li>
-						<li>{t("dataCollection.clubInfo")}</li>
-						<li>{t("dataCollection.eventInfo")}</li>
-						<li>{t("dataCollection.socialInfo")}</li>
-						<li>{t("dataCollection.usageInfo")}</li>
-						<li>{t("dataCollection.deviceInfo")}</li>
+						<li>{t("public.dataCollection.personalInfo")}</li>
+						<li>{t("public.dataCollection.accountInfo")}</li>
+						<li>{t("public.dataCollection.clubInfo")}</li>
+						<li>{t("public.dataCollection.eventInfo")}</li>
+						<li>{t("public.dataCollection.socialInfo")}</li>
+						<li>{t("public.dataCollection.usageInfo")}</li>
+						<li>{t("public.dataCollection.deviceInfo")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("dataUse.title")}</h2>
-					<p>{t("dataUse.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.dataUse.title")}</h2>
+					<p>{t("public.dataUse.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("dataUse.provideService")}</li>
-						<li>{t("dataUse.improveService")}</li>
-						<li>{t("dataUse.communicate")}</li>
-						<li>{t("dataUse.security")}</li>
+						<li>{t("public.dataUse.provideService")}</li>
+						<li>{t("public.dataUse.improveService")}</li>
+						<li>{t("public.dataUse.communicate")}</li>
+						<li>{t("public.dataUse.security")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("dataSecurity.title")}</h2>
-					<p>{t("dataSecurity.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.dataSecurity.title")}</h2>
+					<p>{t("public.dataSecurity.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("dataSharing.title")}</h2>
-					<p>{t("dataSharing.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.dataSharing.title")}</h2>
+					<p>{t("public.dataSharing.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("dataSharing.clubMembers")}</li>
-						<li>{t("dataSharing.eventParticipants")}</li>
-						<li>{t("dataSharing.serviceProviders")}</li>
-						<li>{t("dataSharing.legal")}</li>
+						<li>{t("public.dataSharing.clubMembers")}</li>
+						<li>{t("public.dataSharing.eventParticipants")}</li>
+						<li>{t("public.dataSharing.serviceProviders")}</li>
+						<li>{t("public.dataSharing.legal")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("cookies.title")}</h2>
-					<p>{t("cookies.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.cookies.title")}</h2>
+					<p>{t("public.cookies.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("userRights.title")}</h2>
-					<p>{t("userRights.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.userRights.title")}</h2>
+					<p>{t("public.userRights.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("userRights.access")}</li>
-						<li>{t("userRights.rectification")}</li>
-						<li>{t("userRights.deletion")}</li>
-						<li>{t("userRights.restriction")}</li>
-						<li>{t("userRights.objection")}</li>
-						<li>{t("userRights.portability")}</li>
+						<li>{t("public.userRights.access")}</li>
+						<li>{t("public.userRights.rectification")}</li>
+						<li>{t("public.userRights.deletion")}</li>
+						<li>{t("public.userRights.restriction")}</li>
+						<li>{t("public.userRights.objection")}</li>
+						<li>{t("public.userRights.portability")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("thirdPartyServices.title")}</h2>
-					<p>{t("thirdPartyServices.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.thirdPartyServices.title")}</h2>
+					<p>{t("public.thirdPartyServices.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("thirdPartyServices.auth")}</li>
-						<li>{t("thirdPartyServices.storage")}</li>
-						<li>{t("thirdPartyServices.maps")}</li>
-						<li>{t("thirdPartyServices.analytics")}</li>
-						<li>{t("thirdPartyServices.instagram")}</li>
+						<li>{t("public.thirdPartyServices.auth")}</li>
+						<li>{t("public.thirdPartyServices.storage")}</li>
+						<li>{t("public.thirdPartyServices.maps")}</li>
+						<li>{t("public.thirdPartyServices.analytics")}</li>
+						<li>{t("public.thirdPartyServices.instagram")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("childrenPrivacy.title")}</h2>
-					<p>{t("childrenPrivacy.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.childrenPrivacy.title")}</h2>
+					<p>{t("public.childrenPrivacy.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("changes.title")}</h2>
-					<p>{t("changes.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.changes.title")}</h2>
+					<p>{t("public.changes.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("contact.title")}</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.contact.title")}</h2>
 					<p>
 						{t.rich("contact.description", {
 							email: () => (
@@ -122,7 +122,7 @@ export default async function PrivacyPolicyPage() {
 
 				<div className="mt-12 border-t pt-6">
 					<Link href="/terms-of-use" className="text-primary hover:underline">
-						{t("viewTerms")}
+						{t("public.viewTerms")}
 					</Link>
 				</div>
 			</div>
@@ -131,12 +131,12 @@ export default async function PrivacyPolicyPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("privacy.metadata.title"),
-		description: t("privacy.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.privacy.metadata.title"),
+		description: t("public.privacy.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

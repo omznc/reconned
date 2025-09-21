@@ -56,6 +56,14 @@
 			"expiringMessage": "Članstvo korisnika {memberName} u vašem klubu {clubName} ističe dana {date} (za {days} dana).",
 			"action": "Upravljaj Članovima",
 			"footer": "Ovo je automatska obavijest koja vam pomaže da upravljate članstvima u klubu."
+		},
+		"passwordReset": {
+			"title": "Resetujte lozinku",
+			"helloUser": "Zdravo {name}",
+			"hello": "Zdravo",
+			"message": "Da resetujete lozinku, kliknite na dugme ispod",
+			"action": "Resetuj lozinku",
+			"footer": "Ako ste neočekivano primili ovaj email i niste tražili resetovanje lozinke, samo ga ignorišite."
 		}
 	},
 	"public": {

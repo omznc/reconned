@@ -33,7 +33,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const [optimisticRegistrations, setOptimisticRegistrations] = useState<Record<string, ExtendedEventRegistration>>(
 		{},
 	);
-	const t = useTranslations("dashboard.club.events.attendenceTracking");
+	const t = useTranslations();
 
 	const registrations = event.eventRegistration.map((reg) => ({
 		...reg,
@@ -83,7 +83,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				...prev,
 				[registration.id]: registration,
 			}));
-			toast.error(t("error"));
+			toast.error(t("dashboard.club.events.attendenceTracking.error"));
 		} finally {
 			setIsLoading(null);
 		}
@@ -164,11 +164,15 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 
 	return (
 		<div className="space-y-4 w-full max-w-3xl">
-			<Input placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />
+			<Input
+				placeholder={t("dashboard.club.events.attendenceTracking.search")}
+				value={search}
+				onChange={(e) => setSearch(e.target.value)}
+			/>
 			<div className="grid md:grid-cols-2 gap-4">
 				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">
-						{t("registered")} ({notAttending.length})
+						{t("dashboard.club.events.attendenceTracking.registered")} ({notAttending.length})
 					</h2>
 					{notAttending.map((registration) => (
 						<RegistrationCard key={registration.id} registration={registration} />
@@ -176,7 +180,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				</div>
 				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">
-						{t("attending")} ({attendees.length})
+						{t("dashboard.club.events.attendenceTracking.attending")} ({attendees.length})
 					</h2>
 					{attendees.map((registration) => (
 						<RegistrationCard key={registration.id} registration={registration} />

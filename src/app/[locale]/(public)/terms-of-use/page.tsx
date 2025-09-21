@@ -7,12 +7,12 @@ const lastUpdated = new Date("2025-04-13");
 export const revalidate = 86_400; // 1 day
 
 export default async function TermsOfUsePage() {
-	const t = await getTranslations("public.terms");
+	const t = await getTranslations();
 	const locale = await getLocale();
 
 	return (
 		<div className="container mx-auto py-12 px-4 max-w-4xl">
-			<h1 className="text-3xl font-bold mb-8">{t("title")}</h1>
+			<h1 className="text-3xl font-bold mb-8">{t("public.title")}</h1>
 
 			<div className="prose dark:prose-invert max-w-none">
 				<p className="text-lg mb-6" suppressHydrationWarning>
@@ -22,89 +22,89 @@ export default async function TermsOfUsePage() {
 				</p>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("introduction.title")}</h2>
-					<p>{t("introduction.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.introduction.title")}</h2>
+					<p>{t("public.introduction.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("acceptance.title")}</h2>
-					<p>{t("acceptance.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.acceptance.title")}</h2>
+					<p>{t("public.acceptance.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("eligibility.title")}</h2>
-					<p>{t("eligibility.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.eligibility.title")}</h2>
+					<p>{t("public.eligibility.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("userAccounts.title")}</h2>
-					<p>{t("userAccounts.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.userAccounts.title")}</h2>
+					<p>{t("public.userAccounts.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("userAccounts.accuracy")}</li>
-						<li>{t("userAccounts.security")}</li>
-						<li>{t("userAccounts.responsibility")}</li>
-						<li>{t("userAccounts.termination")}</li>
+						<li>{t("public.userAccounts.accuracy")}</li>
+						<li>{t("public.userAccounts.security")}</li>
+						<li>{t("public.userAccounts.responsibility")}</li>
+						<li>{t("public.userAccounts.termination")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("content.title")}</h2>
-					<p>{t("content.description")}</p>
-					<h3 className="text-xl font-semibold mt-4 mb-2">{t("content.userContent.title")}</h3>
-					<p>{t("content.userContent.description")}</p>
-					<h3 className="text-xl font-semibold mt-4 mb-2">{t("content.prohibited.title")}</h3>
-					<p>{t("content.prohibited.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.content.title")}</h2>
+					<p>{t("public.content.description")}</p>
+					<h3 className="text-xl font-semibold mt-4 mb-2">{t("public.content.userContent.title")}</h3>
+					<p>{t("public.content.userContent.description")}</p>
+					<h3 className="text-xl font-semibold mt-4 mb-2">{t("public.content.prohibited.title")}</h3>
+					<p>{t("public.content.prohibited.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("content.prohibited.illegal")}</li>
-						<li>{t("content.prohibited.harmful")}</li>
-						<li>{t("content.prohibited.impersonation")}</li>
-						<li>{t("content.prohibited.spam")}</li>
-						<li>{t("content.prohibited.infringement")}</li>
+						<li>{t("public.content.prohibited.illegal")}</li>
+						<li>{t("public.content.prohibited.harmful")}</li>
+						<li>{t("public.content.prohibited.impersonation")}</li>
+						<li>{t("public.content.prohibited.spam")}</li>
+						<li>{t("public.content.prohibited.infringement")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("intellectualProperty.title")}</h2>
-					<p>{t("intellectualProperty.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.intellectualProperty.title")}</h2>
+					<p>{t("public.intellectualProperty.description")}</p>
 					<ul className="list-disc pl-6 mt-4 space-y-2">
-						<li>{t("intellectualProperty.ownership")}</li>
-						<li>{t("intellectualProperty.license")}</li>
-						<li>{t("intellectualProperty.feedback")}</li>
+						<li>{t("public.intellectualProperty.ownership")}</li>
+						<li>{t("public.intellectualProperty.license")}</li>
+						<li>{t("public.intellectualProperty.feedback")}</li>
 					</ul>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("thirdParty.title")}</h2>
-					<p>{t("thirdParty.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.thirdParty.title")}</h2>
+					<p>{t("public.thirdParty.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("disclaimer.title")}</h2>
-					<p>{t("disclaimer.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.disclaimer.title")}</h2>
+					<p>{t("public.disclaimer.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("limitation.title")}</h2>
-					<p>{t("limitation.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.limitation.title")}</h2>
+					<p>{t("public.limitation.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("changes.title")}</h2>
-					<p>{t("changes.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.changes.title")}</h2>
+					<p>{t("public.changes.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("termination.title")}</h2>
-					<p>{t("termination.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.termination.title")}</h2>
+					<p>{t("public.termination.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("governing.title")}</h2>
-					<p>{t("governing.description")}</p>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.governing.title")}</h2>
+					<p>{t("public.governing.description")}</p>
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("contact.title")}</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.contact.title")}</h2>
 					<p>
 						{t.rich("contact.description", {
 							email: () => (
@@ -118,7 +118,7 @@ export default async function TermsOfUsePage() {
 
 				<div className="mt-12 border-t pt-6">
 					<Link href="/privacy-policy" className="text-primary hover:underline">
-						{t("viewPrivacy")}
+						{t("public.viewPrivacy")}
 					</Link>
 				</div>
 			</div>
@@ -127,12 +127,12 @@ export default async function TermsOfUsePage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("terms.metadata.title"),
-		description: t("terms.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.terms.metadata.title"),
+		description: t("public.terms.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

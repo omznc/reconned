@@ -137,12 +137,12 @@ export default async function Page() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("events.metadata.title"),
-		description: t("events.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.events.metadata.title"),
+		description: t("public.events.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 		alternates: {

@@ -26,16 +26,16 @@ export default function RegisterPage() {
 		clearOnDefault: true,
 		shallow: true,
 	});
-	const t = useTranslations("public.auth");
+	const t = useTranslations();
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
 	// Register form schema with Zod
 	const registerSchema = z.object({
-		name: z.string().min(1, t("nameRequired")),
-		email: z.string().email(t("invalidEmail")),
-		password: z.string().min(8, t("passwordTooShort")),
-		turnstileToken: z.string().min(1, t("captchaError")),
+		name: z.string().min(1, t("public.auth.nameRequired")),
+		email: z.string().email(t("public.auth.invalidEmail")),
+		password: z.string().min(8, t("public.auth.passwordTooShort")),
+		turnstileToken: z.string().min(1, t("public.auth.captchaError")),
 	});
 
 	type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -87,16 +87,16 @@ export default function RegisterPage() {
 					}
 				},
 				onSuccess: () => {
-					toast.success(t("registerSuccess"));
+					toast.success(t("public.auth.registerSuccess"));
 					router.push("/login");
 					router.refresh();
 				},
 				onError: (ctx) => {
 					if (ctx.error.status === 403) {
-						toast.error(t("unverified"));
+						toast.error(t("public.auth.unverified"));
 					} else {
 						if (ctx.error.message === "Missing CAPTCHA response") {
-							toast.error(t("captchaError"));
+							toast.error(t("public.auth.captchaError"));
 							router.refresh();
 						}
 						setIsError(true);
@@ -109,15 +109,17 @@ export default function RegisterPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t("register")}</CardTitle>
+				<CardTitle className="text-2xl">{t("public.auth.register")}</CardTitle>
 				<CardDescription>
-					{t("registerDescription")}{" "}
+					{t("public.auth.registerDescription")}{" "}
 					<Accordion type="single" collapsible className="w-full border-b-none">
 						<AccordionItem value="item-1" className="border-b-none">
 							<AccordionTrigger className="border-b-none">
-								<span className="text-red-500">{t("registerDescriptionTooltipTitle")}</span>
+								<span className="text-red-500">{t("public.auth.registerDescriptionTooltipTitle")}</span>
 							</AccordionTrigger>
-							<AccordionContent>{t("registerDescriptionTooltipDescription")}</AccordionContent>
+							<AccordionContent>
+								{t("public.auth.registerDescriptionTooltipDescription")}
+							</AccordionContent>
 						</AccordionItem>
 					</Accordion>
 				</CardDescription>
@@ -130,13 +132,13 @@ export default function RegisterPage() {
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="name">{t("name")}</Label>
+									<Label htmlFor="name">{t("public.auth.name")}</Label>
 									<FormControl>
 										<Input
 											{...field}
 											id="name"
 											type="text"
-											placeholder={t("name")}
+											placeholder={t("public.auth.name")}
 											autoComplete="name"
 										/>
 									</FormControl>
@@ -163,14 +165,14 @@ export default function RegisterPage() {
 									</FormControl>
 									{!!email && (
 										<p className="text-sm text-gray-500">
-											{t("emailAutofilled")}{" "}
+											{t("public.auth.emailAutofilled")}{" "}
 											<span
 												className="text-foreground cursor-pointer inline"
 												onClick={() => {
 													setEmail("");
 												}}
 											>
-												{t("remove")}
+												{t("public.auth.remove")}
 											</span>
 										</p>
 									)}
@@ -184,13 +186,13 @@ export default function RegisterPage() {
 							name="password"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="password">{t("password")}</Label>
+									<Label htmlFor="password">{t("public.auth.password")}</Label>
 									<FormControl>
 										<Input
 											{...field}
 											id="password"
 											type="password"
-											placeholder={t("password")}
+											placeholder={t("public.auth.password")}
 											autoComplete="new-password"
 										/>
 									</FormControl>
@@ -209,22 +211,22 @@ export default function RegisterPage() {
 							}}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("invalidDataOrUserExists")}</p>}
+						{isError && <p className="text-red-500 -mb-2">{t("public.auth.invalidDataOrUserExists")}</p>}
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
 							className="w-full plausible-event-name=register-button-click"
 							disabled={!form.formState.isValid}
 						>
-							{t("register")}
+							{t("public.auth.register")}
 						</LoaderSubmitButton>
 						<GoogleLoginButton />
 					</form>
 				</Form>
 				<div className="mt-4 text-center text-sm">
-					{t("haveAccountQuestion")}{" "}
+					{t("public.auth.haveAccountQuestion")}{" "}
 					<Link suppressHydrationWarning={true} href="/login" className="underline">
-						{t("login")}
+						{t("public.auth.login")}
 					</Link>
 				</div>
 			</CardContent>

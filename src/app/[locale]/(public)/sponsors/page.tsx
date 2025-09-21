@@ -30,22 +30,24 @@ const sponsors = [
 export const revalidate = 86_400; // 1 day
 
 export default function SponsorsPage() {
-	const t = useTranslations("public.sponsors");
+	const t = useTranslations();
 
 	return (
 		<>
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
-						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">{t("title")}</h1>
-						<p className="text-xl text-text/80 mb-8">{t("description")}</p>
+						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
+							{t("public.public.sponsors.title")}
+						</h1>
+						<p className="text-xl text-text/80 mb-8">{t("public.public.sponsors.description")}</p>
 					</div>
 				</div>
 			</div>
 
 			<div className="flex flex-col size-full gap-16 max-w-[1200px] px-4 py-16">
 				<section>
-					<h2 className="text-3xl font-bold mb-8">{t("currentSponsors")}</h2>
+					<h2 className="text-3xl font-bold mb-8">{t("public.public.sponsors.currentSponsors")}</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 						{sponsors.map((sponsor) => (
 							<Link target="_blank" key={sponsor.name} href={sponsor.website} className="h-full group">
@@ -98,8 +100,8 @@ export default function SponsorsPage() {
 									/>
 								</CardHeader>
 								<CardContent className="flex flex-col gap-1">
-									<CardTitle>{t("cta.title")}</CardTitle>
-									<p className="opacity-80">{t("cta.description")}</p>
+									<CardTitle>{t("public.public.sponsors.cta.title")}</CardTitle>
+									<p className="opacity-80">{t("public.public.sponsors.cta.description")}</p>
 								</CardContent>
 							</Card>
 						</Link>
@@ -107,9 +109,9 @@ export default function SponsorsPage() {
 				</section>
 
 				<section>
-					<h2 className="text-3xl font-bold mb-4">{t("contactUs")}</h2>
+					<h2 className="text-3xl font-bold mb-4">{t("public.public.sponsors.contactUs")}</h2>
 					<p className="text-lg">
-						{t("contactDescription")}{" "}
+						{t("public.public.sponsors.contactDescription")}{" "}
 						<Link
 							href="mailto:mail@reconned.com"
 							className="text-red-600 underline hover:text-red-400 transition-colors"
@@ -125,12 +127,12 @@ export default function SponsorsPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("sponsors.metadata.title"),
-		description: t("sponsors.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.public.sponsors.sponsors.metadata.title"),
+		description: t("public.public.sponsors.sponsors.metadata.description"),
+		keywords: t("public.public.sponsors.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

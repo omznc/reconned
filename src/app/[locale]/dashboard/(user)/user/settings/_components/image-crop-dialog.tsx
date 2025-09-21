@@ -29,7 +29,7 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 		y: 5,
 	});
 	const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
-	const t = useTranslations("dashboard.user.settings");
+	const t = useTranslations();
 
 	const onImageLoad = useCallback((img: HTMLImageElement) => {
 		setImageRef(img);
@@ -106,8 +106,8 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 		<Dialog open={!!file} onOpenChange={onClose}>
 			<DialogContent className="max-w-[800px]">
 				<DialogHeader>
-					<DialogTitle>{t("cropPhotoTitle")}</DialogTitle>
-					<DialogDescription>{t("cropPhotoDescription")}</DialogDescription>
+					<DialogTitle>{t("dashboard.user.settings.cropPhotoTitle")}</DialogTitle>
+					<DialogDescription>{t("dashboard.user.settings.cropPhotoDescription")}</DialogDescription>
 				</DialogHeader>
 				<div className="my-4 flex justify-center">
 					<div className="max-h-[500px] w-auto">
@@ -124,9 +124,9 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 				</div>
 				<DialogFooter>
 					<Button variant="ghost" onClick={onClose}>
-						{t("cancel")}
+						{t("dashboard.user.settings.cancel")}
 					</Button>
-					<Button onClick={handleCrop}>{t("save")}</Button>
+					<Button onClick={handleCrop}>{t("dashboard.user.settings.save")}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

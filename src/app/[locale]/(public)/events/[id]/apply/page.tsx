@@ -17,9 +17,9 @@ interface EventApplicationPageProps {
 }
 
 export default async function EventApplicationPage(props: EventApplicationPageProps) {
-	const t = await getTranslations("dashboard.club.events");
+	const t = await getTranslations();
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
-		return <ErrorPage title={t("attendenceTracking.unavailable")} />;
+		return <ErrorPage title={t("dashboard.club.events.attendenceTracking.unavailable")} />;
 	}
 
 	const [locale, user, params] = await Promise.all([getLocale(), isAuthenticated(), props.params]);

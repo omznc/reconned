@@ -21,7 +21,7 @@ type ClubSearch = {
 
 export default async function Page(props: { searchParams: Promise<{ page?: string }> }) {
 	const searchParams = await props.searchParams;
-	const t = await getTranslations("public.clubs");
+	const t = await getTranslations();
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -44,7 +44,7 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 
 	return (
 		<div className="container max-w-4xl py-8 space-y-8 px-4">
-			<h1 className="text-2xl font-bold">{t("title")}</h1>
+			<h1 className="text-2xl font-bold">{t("public.title")}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				{clubs.map((club) => (
 					<SearchResultCard
@@ -58,7 +58,9 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 						}
 						description={club.description}
 						href={`/clubs/${club.slug ?? club.id}`}
-						badges={[`${club.member_count} ${club.member_count === 1 ? t("member") : t("members")}`]}
+						badges={[
+							`${club.member_count} ${club.member_count === 1 ? t("public.member") : t("public.members")}`,
+						]}
 						meta={club.location || undefined}
 					/>
 				))}
@@ -69,12 +71,12 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("clubs.metadata.title"),
-		description: t("clubs.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.clubs.metadata.title"),
+		description: t("public.clubs.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 		alternates: {

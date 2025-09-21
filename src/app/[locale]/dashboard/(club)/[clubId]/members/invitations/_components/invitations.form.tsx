@@ -47,7 +47,7 @@ export function InvitationsForm() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
-	const t = useTranslations("dashboard.club.members.invitations");
+	const t = useTranslations();
 
 	const form = useForm<z.infer<typeof sendInvitationSchema>>({
 		resolver: zodResolver(sendInvitationSchema),
@@ -66,7 +66,7 @@ export function InvitationsForm() {
 					const results = await searchUsers(value);
 					setUsers(results);
 				} catch (_error) {
-					toast.error(t("searchError"));
+					toast.error(t("dashboard.club.members.invitations.searchError"));
 				} finally {
 					setIsLoading(false);
 				}
@@ -87,13 +87,13 @@ export function InvitationsForm() {
 			const response = await sendInvitation(values);
 
 			if (!response?.data?.success) {
-				toast.error(response?.data?.error || t("sendError"));
+				toast.error(response?.data?.error || t("dashboard.club.members.invitations.sendError"));
 				return;
 			}
 
-			toast.success(t("sendSuccess"));
+			toast.success(t("dashboard.club.members.invitations.sendSuccess"));
 		} catch (_error) {
-			toast.error(t("sendError"));
+			toast.error(t("dashboard.club.members.invitations.sendError"));
 		} finally {
 			form.reset({ userName: "", userEmail: "", clubId: params.clubId });
 			router.refresh();
@@ -104,15 +104,15 @@ export function InvitationsForm() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
 				<div>
-					<h3 className="text-lg font-semibold">{t("title")}</h3>
-					<span className="text-muted-foreground">{t("description")}</span>
+					<h3 className="text-lg font-semibold">{t("dashboard.club.members.invitations.title")}</h3>
+					<span className="text-muted-foreground">{t("dashboard.club.members.invitations.description")}</span>
 				</div>
 				<FormField
 					control={form.control}
 					name="userName"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("user")}</FormLabel>
+							<FormLabel>{t("dashboard.club.members.invitations.user")}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -126,7 +126,7 @@ export function InvitationsForm() {
 										>
 											{field.value
 												? users.find((user) => user.id === field.value)?.name
-												: t("searchPlaceholder")}
+												: t("dashboard.club.members.invitations.searchPlaceholder")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
@@ -134,7 +134,7 @@ export function InvitationsForm() {
 								<PopoverContent className="sm:w-[448px] p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder={t("searchPlaceholder")}
+											placeholder={t("dashboard.club.members.invitations.searchPlaceholder")}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -144,9 +144,13 @@ export function InvitationsForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>{t("minimumChars")}</CommandEmpty>
+												<CommandEmpty>
+													{t("dashboard.club.members.invitations.minimumChars")}
+												</CommandEmpty>
 											) : users.length === 0 ? (
-												<CommandEmpty>{t("noResults")}</CommandEmpty>
+												<CommandEmpty>
+													{t("dashboard.club.members.invitations.noResults")}
+												</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{users.map((user) => (
@@ -187,14 +191,16 @@ export function InvitationsForm() {
 									</Command>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>{t("chooseUserDescription")}</FormDescription>
+							<FormDescription>
+								{t("dashboard.club.members.invitations.chooseUserDescription")}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
-					<span className="text-gray-500">{t("or")}</span>
+					<span className="text-gray-500">{t("dashboard.club.members.invitations.or")}</span>
 					<hr className="flex-1 border-t-2 border-gray-300" />
 				</div>
 				<FormField
@@ -206,13 +212,15 @@ export function InvitationsForm() {
 							<FormControl>
 								<Input {...field} />
 							</FormControl>
-							<FormDescription>{t("emailDescription")}</FormDescription>
+							<FormDescription>
+								{t("dashboard.club.members.invitations.emailDescription")}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
-					{t("send")}
+					{t("dashboard.club.members.invitations.send")}
 				</Button>
 			</form>
 		</Form>

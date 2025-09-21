@@ -67,7 +67,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 	const [mounted, setMounted] = useState(false);
 	const [logoSize, setLogoSize] = useState(32); // Default size
 	const [clubId] = useQueryState("clubId");
-	const t = useTranslations("components.clubsMap");
+	const t = useTranslations();
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
 
@@ -133,7 +133,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 											href={`/clubs/${club.slug || club.id}`}
 											className="text-sm text-red-500 hover:underline plausible-event-name=club-map-profile-link"
 										>
-											{t("viewProfile")}
+											{t("components.clubsMap.viewProfile")}
 										</Link>
 									</div>
 								</Popup>

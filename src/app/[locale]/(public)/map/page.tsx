@@ -36,12 +36,12 @@ export default async function MapPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("map.metadata.title"),
-		description: t("map.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.map.metadata.title"),
+		description: t("public.map.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

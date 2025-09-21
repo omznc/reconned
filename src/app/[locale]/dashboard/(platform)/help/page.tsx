@@ -12,46 +12,46 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useHash } from "@/hooks/use-hash";
 
 export default function Page() {
-	const t = useTranslations("dashboard.help");
+	const t = useTranslations();
 	return (
 		<>
 			<div className="mb-6">
-				<h3 className="text-lg font-semibold">{t("title")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.help.title")}</h3>
 			</div>
 			<Accordion type="single" collapsible className="space-y-4">
-				<HelpItem title={t("googleMaps.title")} id="google-maps">
+				<HelpItem title={t("dashboard.help.googleMaps.title")} id="google-maps">
 					<div className="space-y-4 text-muted-foreground">
 						<ol className="pl-4 space-y-2 list-disc">
-							<li>{t("googleMaps.steps.step1")}</li>
-							<li>{t("googleMaps.steps.step2")}</li>
-							<li>{t("googleMaps.steps.step3")}</li>
-							<li>{t("googleMaps.steps.step4")}</li>
+							<li>{t("dashboard.help.googleMaps.steps.step1")}</li>
+							<li>{t("dashboard.help.googleMaps.steps.step2")}</li>
+							<li>{t("dashboard.help.googleMaps.steps.step3")}</li>
+							<li>{t("dashboard.help.googleMaps.steps.step4")}</li>
 							<Image
 								src={GoogleMap1Image}
 								alt="Google Maps dijalog za dijeljenje"
 								className="w-full border md:w-1/2 dark:invert"
 							/>
-							<li>{t("googleMaps.steps.step5")}</li>
+							<li>{t("dashboard.help.googleMaps.steps.step5")}</li>
 						</ol>
 					</div>
 				</HelpItem>
 
-				<HelpItem title={t("deleteClub.title")} id="delete-club">
+				<HelpItem title={t("dashboard.help.deleteClub.title")} id="delete-club">
 					<div className="space-y-4 text-muted-foreground">
-						<p>{t("deleteClub.description")}</p>
+						<p>{t("dashboard.help.deleteClub.description")}</p>
 						<ol className="pl-4 space-y-4 list-decimal">
-							<li>{t("deleteClub.steps.step1")}</li>
-							<li>{t("deleteClub.steps.step2")}</li>
-							<li>{t("deleteClub.steps.step3")}</li>
+							<li>{t("dashboard.help.deleteClub.steps.step1")}</li>
+							<li>{t("dashboard.help.deleteClub.steps.step2")}</li>
+							<li>{t("dashboard.help.deleteClub.steps.step3")}</li>
 							<Image
 								src={DeleteClubPhoto1}
 								alt="Navigation to club information page"
 								className="w-full border md:w-2/3"
 							/>
-							<li>{t("deleteClub.steps.step4")}</li>
+							<li>{t("dashboard.help.deleteClub.steps.step4")}</li>
 							<Image src={DeleteClubPhoto2} alt="Delete club button" className="w-full border md:w-2/3" />
 						</ol>
-						<p className="mt-4 text-sm italic">{t("deleteClub.notes")}</p>
+						<p className="mt-4 text-sm italic">{t("dashboard.help.deleteClub.notes")}</p>
 					</div>
 				</HelpItem>
 			</Accordion>

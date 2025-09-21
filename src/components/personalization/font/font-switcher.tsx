@@ -9,7 +9,7 @@ import { setFontAction } from "@/lib/global-actions/font";
 
 export function FontSwitcher() {
 	const { font, setFont } = useFont();
-	const t = useTranslations("components.fontSwitcher");
+	const t = useTranslations();
 
 	useEffect(() => {
 		if (font !== "sans" && font !== "mono") {
@@ -29,7 +29,7 @@ export function FontSwitcher() {
 			className="w-full items-center justify-start cursor-pointer shadow-none"
 		>
 			<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-			{t("toggle")}
+			{t("components.fontSwitcher.toggle")}
 		</Button>
 	);
 }

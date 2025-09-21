@@ -14,10 +14,10 @@ interface PageProps {
 }
 
 export default async function Page(props: PageProps) {
-	const t = await getTranslations("dashboard.club.events");
+	const t = await getTranslations();
 
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
-		return <ErrorPage title={t("attendenceTracking.unavailable")} />;
+		return <ErrorPage title={t("dashboard.club.events.attendenceTracking.unavailable")} />;
 	}
 
 	const params = await props.params;
@@ -50,9 +50,9 @@ export default async function Page(props: PageProps) {
 	if (new Date() < event.dateRegistrationsClose) {
 		return (
 			<ErrorPage
-				title={t("attendenceTracking.registrationNotClosed")}
+				title={t("dashboard.club.events.attendenceTracking.registrationNotClosed")}
 				link={`/dashboard/${params.clubId}/events/${params.id}`}
-				linkText={t("attendenceTracking.backToEvent")}
+				linkText={t("dashboard.club.events.attendenceTracking.backToEvent")}
 			/>
 		);
 	}
@@ -60,9 +60,9 @@ export default async function Page(props: PageProps) {
 	if (new Date() > event.dateEnd) {
 		return (
 			<ErrorPage
-				title={t("attendenceTracking.eventEnded")}
+				title={t("dashboard.club.events.attendenceTracking.eventEnded")}
 				link={`/dashboard/${params.clubId}/events/${params.id}`}
-				linkText={t("attendenceTracking.backToEvent")}
+				linkText={t("dashboard.club.events.attendenceTracking.backToEvent")}
 			/>
 		);
 	}

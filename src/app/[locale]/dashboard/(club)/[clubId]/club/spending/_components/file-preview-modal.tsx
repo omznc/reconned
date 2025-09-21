@@ -16,7 +16,7 @@ interface FilePreviewModalProps {
 
 export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePreviewModalProps) {
 	const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
-	const t = useTranslations("dashboard.club.spending");
+	const t = useTranslations();
 	const [isDownloading, setIsDownloading] = useState(false);
 
 	const handleDownload = async () => {
@@ -44,22 +44,15 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 					<CredenzaTitle className="flex items-center justify-between">
 						<span>{fileName}</span>
 						<div className="flex gap-2">
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => window.open(fileUrl, "_blank")}
-							>
+							<Button variant="outline" size="sm" onClick={() => window.open(fileUrl, "_blank")}>
 								<ExternalLink className="h-4 w-4 mr-2" />
-								{t("receipt.open")}
+								{t("dashboard.club.spending.receipt.open")}
 							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={handleDownload}
-								disabled={isDownloading}
-							>
+							<Button variant="outline" size="sm" onClick={handleDownload} disabled={isDownloading}>
 								<Download className="h-4 w-4 mr-2" />
-								{isDownloading ? t("receipt.downloading") : t("receipt.download")}
+								{isDownloading
+									? t("dashboard.club.spending.receipt.downloading")
+									: t("dashboard.club.spending.receipt.download")}
 							</Button>
 						</div>
 					</CredenzaTitle>

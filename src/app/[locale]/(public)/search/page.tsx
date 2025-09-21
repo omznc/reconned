@@ -127,7 +127,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 			take: 25,
 		}),
 	]);
-	const t = await getTranslations("public.search");
+	const t = await getTranslations();
 	const locale = await getLocale();
 
 	// Determine the first non-empty tab
@@ -152,21 +152,21 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 				<TabsList className="grid w-full grid-cols-3 mb-8">
 					<TabsTrigger value="clubs" className="text-xs flex gap-2">
 						<Shield className="h-4 w-4 hidden md:block" />
-						{t("clubs")} ({clubs.length})
+						{t("public.clubs")} ({clubs.length})
 					</TabsTrigger>
 					<TabsTrigger value="users" className="text-xs flex gap-2">
 						<Users className="h-4 w-4 hidden md:block" />
-						{t("users")} ({users.length})
+						{t("public.users")} ({users.length})
 					</TabsTrigger>
 					<TabsTrigger value="events" className="text-xs flex gap-2">
 						<Calendar className="h-4 w-4 hidden md:block" />
-						{t("events")} ({events.length})
+						{t("public.events")} ({events.length})
 					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="clubs" className="grid gap-4">
 					{clubs.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">{t("noResults")}</div>
+						<div className="text-center text-muted-foreground py-12">{t("public.noResults")}</div>
 					) : (
 						clubs
 							.sort((a, b) => b._count.members - a._count.members)
@@ -182,7 +182,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									description={club.description}
 									href={`/clubs/${club.slug ?? club.id}`}
 									meta={`${club._count.members} ${
-										club._count.members === 1 ? t("member") : t("members")
+										club._count.members === 1 ? t("public.member") : t("public.members")
 									}`}
 									type="club"
 								/>
@@ -192,7 +192,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 				<TabsContent value="users" className="grid gap-4">
 					{users.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">{t("noResults")}</div>
+						<div className="text-center text-muted-foreground py-12">{t("public.noResults")}</div>
 					) : (
 						users
 							.sort((a, b) => {
@@ -230,7 +230,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 				<TabsContent value="events" className="grid gap-4">
 					{events.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">{t("noResults")}</div>
+						<div className="text-center text-muted-foreground py-12">{t("public.noResults")}</div>
 					) : (
 						events
 							.sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime())
@@ -243,7 +243,7 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									href={`/events/${event.slug ?? event.id}`}
 									badges={[
 										event.club.name,
-										event.isPrivate ? t("private") : t("public"),
+										event.isPrivate ? t("public.private") : t("public.public"),
 										event.dateStart.toLocaleDateString(locale, {
 											year: "numeric",
 											month: "long",
@@ -263,20 +263,20 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 
 export default async function SearchPage(props: Props) {
 	const { q, tab } = await props.searchParams;
-	const t = await getTranslations("public.search");
+	const t = await getTranslations();
 
 	return (
 		<div className="container max-w-4xl py-8 space-y-8 px-4">
 			<div>
-				<h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
-				<p className="text-muted-foreground">{t("description")}</p>
+				<h1 className="text-4xl font-bold mb-2">{t("public.title")}</h1>
+				<p className="text-muted-foreground">{t("public.description")}</p>
 			</div>
 
 			<div className="w-full">
 				<Search />
 			</div>
 
-			<Suspense fallback={<div className="text-center text-muted-foreground py-12">{t("loading")}</div>}>
+			<Suspense fallback={<div className="text-center text-muted-foreground py-12">{t("public.loading")}</div>}>
 				<SearchResults query={q} tab={tab} />
 			</Suspense>
 		</div>
@@ -285,7 +285,7 @@ export default async function SearchPage(props: Props) {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
 	const { q } = await props.searchParams;
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
 		title: t("search.metadata.title", {
@@ -294,7 +294,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 		description: t("search.metadata.description", {
 			query: q,
 		}),
-		keywords: t("layout.metadata.keywords")
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

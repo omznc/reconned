@@ -36,7 +36,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	const confirm = useConfirm();
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 	const [editorContent, setEditorContent] = useState<string>(editingRule?.content ?? "");
-	const t = useTranslations("dashboard.club.events.rules");
+	const t = useTranslations();
 
 	const form = useForm<z.infer<typeof ruleSchema>>({
 		resolver: zodResolver(ruleSchema),
@@ -62,9 +62,13 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			form.reset();
 			setRuleId(null);
 			setRandom(Math.random());
-			toast.success(values.id ? t("rule.updated") : t("rule.created"));
+			toast.success(
+				values.id
+					? t("dashboard.club.events.rules.rule.updated")
+					: t("dashboard.club.events.rules.rule.created"),
+			);
 		} catch (_) {
-			toast.error(t("rule.error"));
+			toast.error(t("dashboard.club.events.rules.rule.error"));
 		}
 		setIsLoading(false);
 	}
@@ -78,9 +82,12 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("rule.name")}</FormLabel>
+								<FormLabel>{t("dashboard.club.events.rules.rule.name")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("rule.namePlaceholder")} {...field} />
+									<Input
+										placeholder={t("dashboard.club.events.rules.rule.namePlaceholder")}
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -92,9 +99,12 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="description"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("rule.description")}</FormLabel>
+								<FormLabel>{t("dashboard.club.events.rules.rule.description")}</FormLabel>
 								<FormControl>
-									<Textarea placeholder={t("rule.descriptionPlaceholder")} {...field} />
+									<Textarea
+										placeholder={t("dashboard.club.events.rules.rule.descriptionPlaceholder")}
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -106,7 +116,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						name="content"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("rule.content")}</FormLabel>
+								<FormLabel>{t("dashboard.club.events.rules.rule.content")}</FormLabel>
 								<FormControl>
 									<Editor onChange={handleEditorChange} initialValue={editorContent} />
 								</FormControl>
@@ -117,11 +127,13 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 
 					<div className="flex gap-2 justify-start">
 						<Button type="submit" className="w-full" disabled={isLoading}>
-							{editingRule ? t("rule.save") : t("rule.create")}
+							{editingRule
+								? t("dashboard.club.events.rules.rule.save")
+								: t("dashboard.club.events.rules.rule.create")}
 						</Button>
 						{editingRule && (
 							<Button className="w-full" type="button" variant="outline" onClick={() => setRuleId(null)}>
-								{t("rule.cancel")}
+								{t("dashboard.club.events.rules.rule.cancel")}
 							</Button>
 						)}
 					</div>
@@ -129,8 +141,10 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 			</Form>
 
 			<div className="space-y-4">
-				<h3 className="text-lg font-semibold">{t("rules.title")}</h3>
-				{rules.length === 0 && <div className="text-muted-foreground">{t("rules.empty")}</div>}
+				<h3 className="text-lg font-semibold">{t("dashboard.club.events.rules.rules.title")}</h3>
+				{rules.length === 0 && (
+					<div className="text-muted-foreground">{t("dashboard.club.events.rules.rules.empty")}</div>
+				)}
 				{rules.map((rule) => (
 					<Card
 						key={rule.id}
@@ -174,10 +188,10 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 										onClick={(e) => {
 											e.stopPropagation(); // Prevent card click
 											confirm({
-												title: t("rule.delete.title"),
-												body: t("rule.delete.body"),
-												actionButton: t("rule.delete.action"),
-												cancelButton: t("rule.delete.cancel"),
+												title: t("dashboard.club.events.rules.rule.delete.title"),
+												body: t("dashboard.club.events.rules.rule.delete.body"),
+												actionButton: t("dashboard.club.events.rules.rule.delete.action"),
+												cancelButton: t("dashboard.club.events.rules.rule.delete.cancel"),
 												actionButtonVariant: "destructive",
 											}).then((confirmed) => {
 												if (confirmed) {
@@ -185,7 +199,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 														ruleId: rule.id,
 														clubId: rule.clubId,
 													}).then(() => {
-														toast.success(t("rule.delete.success"));
+														toast.success(
+															t("dashboard.club.events.rules.rule.delete.success"),
+														);
 													});
 												}
 											});
@@ -198,7 +214,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						</CardHeader>
 						<CardContent>
 							<div className="text-sm">
-								{(rule.description?.length ?? 0) > 0 ? rule.description : t("rule.noDescription")}
+								{(rule.description?.length ?? 0) > 0
+									? rule.description
+									: t("dashboard.club.events.rules.rule.noDescription")}
 							</div>
 						</CardContent>
 					</Card>
@@ -214,7 +232,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 								<p className="text-muted-foreground">
 									{(selectedRule.description?.length ?? 0) > 0
 										? selectedRule.description
-										: t("rule.noDescription")}
+										: t("dashboard.club.events.rules.rule.noDescription")}
 								</p>
 							</SheetHeader>
 							<div className="mt-6 flex-1 overflow-y-auto">

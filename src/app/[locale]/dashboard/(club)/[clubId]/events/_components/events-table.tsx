@@ -21,42 +21,42 @@ interface EventsTableProps {
 }
 
 export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManager }: EventsTableProps) {
-	const t = useTranslations("dashboard.club.events");
+	const t = useTranslations();
 	return (
 		<GenericDataTable
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
-			searchPlaceholder={t("search")}
+			searchPlaceholder={t("dashboard.club.events.search")}
 			columns={[
 				{
 					key: "name",
-					header: t("name"),
+					header: t("dashboard.club.events.name"),
 					sortable: true,
 				},
 				{
 					key: "location",
-					header: t("location"),
+					header: t("dashboard.club.events.location"),
 					sortable: true,
 				},
 				{
 					key: "dateStart",
-					header: t("dateStart"),
+					header: t("dashboard.club.events.dateStart"),
 					sortable: true,
 				},
 				{
 					key: "dateRegistrationsClose",
-					header: t("dateRegistrationsClose"),
+					header: t("dashboard.club.events.dateRegistrationsClose"),
 					sortable: true,
 				},
 				{
 					key: "isPrivate",
-					header: t("type"),
+					header: t("dashboard.club.events.type"),
 					sortable: true,
 					cellConfig: {
 						variant: "badge",
 						valueMap: {
-							true: t("private"),
-							false: t("public"),
+							true: t("dashboard.club.events.private"),
+							false: t("dashboard.club.events.public"),
 						},
 						badgeVariants: {
 							true: "bg-red-100 text-red-800",
@@ -66,12 +66,12 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 				},
 				{
 					key: "_count.eventRegistration",
-					header: t("registrations"),
+					header: t("dashboard.club.events.registrations"),
 					sortable: true,
 				},
 				{
 					key: "actions",
-					header: t("actions"),
+					header: t("dashboard.club.events.actions"),
 					cellConfig: {
 						variant: "custom",
 						components: (item) => {
@@ -87,7 +87,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 								<DropdownMenuItem key="attendance" asChild disabled={disabledAttendence}>
 									<Link href={`/dashboard/${clubId}/events/${item.id}/attendance`}>
 										<Users className="size-4 mr-2" />
-										{t("attendence")}
+										{t("dashboard.club.events.attendence")}
 									</Link>
 								</DropdownMenuItem>,
 							);
@@ -98,7 +98,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 									<DropdownMenuItem key="edit" asChild>
 										<Link href={`/dashboard/${clubId}/events/create?id=${item.id}`}>
 											<Pen className="size-4 mr-2" />
-											{t("edit")}
+											{t("dashboard.club.events.edit")}
 										</Link>
 									</DropdownMenuItem>,
 								);
@@ -109,7 +109,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 								<DropdownMenuItem key="view" asChild>
 									<Link href={`/dashboard/${clubId}/events/${item.id}`}>
 										<Eye className="size-4 mr-2" />
-										{t("view")}
+										{t("dashboard.club.events.view")}
 									</Link>
 								</DropdownMenuItem>,
 							);

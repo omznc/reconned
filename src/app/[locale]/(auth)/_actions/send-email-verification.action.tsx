@@ -15,7 +15,7 @@ export async function sendEmailVerificationAction({
 }) {
 	const redirectUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/login`;
 	const url = new URL(inviteLink);
-	const t = await getTranslations("public.auth");
+	const t = await getTranslations();
 
 	if (!url.pathname.startsWith("/api/auth/")) {
 		url.pathname = `/api/auth${url.pathname}`;
@@ -30,7 +30,7 @@ export async function sendEmailVerificationAction({
 	try {
 		const resp = await sendEmail({
 			to,
-			subject: t("verifyEmail"),
+			subject: t("public.auth.verifyEmail"),
 			html: await render(<EmailVerification userName={name} verificationUrl={url.toString()} />, {
 				pretty: true,
 			}),

@@ -30,7 +30,7 @@ export function AvatarUpload({
 }: AvatarUploadProps) {
 	const [dragActive, setDragActive] = useState(false);
 	const [cropFile, setCropFile] = useState<File | null>(null);
-	const t = useTranslations("dashboard.user.settings");
+	const t = useTranslations();
 
 	const onDrop = useCallback(async (acceptedFiles: File[]) => {
 		if (acceptedFiles.length === 0) return;
@@ -107,7 +107,7 @@ export function AvatarUpload({
 										disabled={disabled}
 									>
 										<Upload className="w-4 h-4 mr-2" />
-										{t("replaceAvatar")}
+										{t("dashboard.user.settings.replaceAvatar")}
 									</Button>
 									<Button
 										type="button"
@@ -117,7 +117,7 @@ export function AvatarUpload({
 										disabled={disabled}
 									>
 										<X className="w-4 h-4 mr-2" />
-										{t("removeAvatar")}
+										{t("dashboard.user.settings.removeAvatar")}
 									</Button>
 								</div>
 							</div>
@@ -144,7 +144,7 @@ export function AvatarUpload({
 						<div className="w-12 h-12 bg-muted flex items-center justify-center">
 							<User className="w-6 h-6 text-muted-foreground" />
 						</div>
-						<p className="text-xs font-medium">{t("uploadAvatar")}</p>
+						<p className="text-xs font-medium">{t("dashboard.user.settings.uploadAvatar")}</p>
 					</div>
 				</div>
 			)}
@@ -160,7 +160,7 @@ export function AvatarUpload({
 						className="h-6 px-2 text-xs"
 					>
 						<X className="w-3 h-3 mr-1" />
-						{t("removeAvatar")}
+						{t("dashboard.user.settings.removeAvatar")}
 					</Button>
 				</div>
 			)}
