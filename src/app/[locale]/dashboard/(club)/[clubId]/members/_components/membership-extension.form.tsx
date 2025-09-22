@@ -91,7 +91,7 @@ export function MembershipExtensionForm({
 			toast.success(t("success", { user: membership.user.name }));
 
 			setIsOpen(false);
-		} catch (error) {
+		} catch {
 			toast.error(t("components.membershipExtension.error"));
 		} finally {
 			setIsLoading(false);
@@ -233,9 +233,7 @@ export function MembershipExtensionForm({
 										{t("common.actions.cancel")}
 									</Button>
 									<Button type="submit" disabled={isLoading}>
-										{isLoading
-											? t("common.actions.saving")
-											: t("common.actions.save")}
+										{isLoading ? t("common.actions.saving") : t("common.actions.save")}
 									</Button>
 								</CredenzaFooter>
 							</form>

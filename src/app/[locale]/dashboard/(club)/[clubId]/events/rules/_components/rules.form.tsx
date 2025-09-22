@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import "@/components/editor/editor.css";
 import { format } from "date-fns";
+import DOMPurify from "isomorphic-dompurify";
 import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -127,9 +128,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 
 					<div className="flex gap-2 justify-start">
 						<Button type="submit" className="w-full" disabled={isLoading}>
-							{editingRule
-								? t("common.actions.save")
-								: t("common.actions.create")}
+							{editingRule ? t("common.actions.save") : t("common.actions.create")}
 						</Button>
 						{editingRule && (
 							<Button className="w-full" type="button" variant="outline" onClick={() => setRuleId(null)}>
@@ -240,8 +239,9 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 									className={cn(
 										"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 									)}
+									// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 									dangerouslySetInnerHTML={{
-										__html: selectedRule.content,
+										__html: DOMPurify.sanitize(selectedRule.content),
 									}}
 								/>
 							</div>

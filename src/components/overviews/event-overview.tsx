@@ -149,7 +149,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							<h2 className="text-xl font-semibold">{t("components.eventOverview.map")}</h2>
 							<LoadChildOnClick title={t("components.eventOverview.showEventMap")}>
 								<MapComponent
-									// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+									// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 									defaultMapData={event.mapData as any}
 									readOnly={true}
 								/>

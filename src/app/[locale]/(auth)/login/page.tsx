@@ -27,7 +27,6 @@ export default function LoginPage() {
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
 	const t = useTranslations();
-	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 	const [email, setEmail] = useQueryState("email", {
 		defaultValue: "",
@@ -221,7 +220,6 @@ export default function LoginPage() {
 							ref={turnstileRef}
 							onVerify={(token) => {
 								if (token && token.length > 0) {
-									setTurnstileToken(token);
 									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}

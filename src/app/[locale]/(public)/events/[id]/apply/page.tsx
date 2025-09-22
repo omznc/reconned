@@ -125,9 +125,9 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 	if (!canApplyToEvent) {
 		return (
 			<ErrorPage
-				title="Registracije za ovaj susret nisu otvorene"
+				title={t("public.events.apply.registrationsClosed")}
 				link={`/events/${event.id}`}
-				linkText="Povratak na susret"
+				linkText={t("public.events.apply.backToEvent")}
 			/>
 		);
 	}
@@ -135,7 +135,7 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 	return (
 		<div className="container mx-auto max-w-[1200px] py-8">
 			<h1 className="text-3xl font-bold mb-8">
-				{existingApplication ? "Promjena prijave na susret: " : "Prijava na susret: "}
+				{existingApplication ? t("public.events.apply.editTitle") : t("public.events.apply.title")}:{" "}
 				{event.name}
 			</h1>
 			<EventApplicationForm
@@ -150,6 +150,7 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 
 export async function generateMetadata(props: EventApplicationPageProps): Promise<Metadata> {
 	const params = await props.params;
+	const t = await getTranslations();
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -172,15 +173,15 @@ export async function generateMetadata(props: EventApplicationPageProps): Promis
 
 	if (!event) {
 		return {
-			title: "Event Not Found - RECONNED",
+			title: t("public.events.apply.eventNotFound"),
 		};
 	}
 
 	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug || event.id}/apply`;
 
 	return {
-		title: `Apply to ${event.name} - RECONNED`,
-		description: `Apply to participate in ${event.name}`,
+		title: t("public.events.apply.applyToEvent", { eventName: event.name }),
+		description: t("public.events.apply.applyToParticipate", { eventName: event.name }),
 		alternates: {
 			canonical: canonicalUrl,
 		},

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Event } from "@generated/client";
-import { ArrowUpRight, ExternalLink, MoreHorizontal } from "lucide-react";
+import { ExternalLink, MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Badge } from "@/components/ui/badge";

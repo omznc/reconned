@@ -9,7 +9,6 @@ import DeleteClubPhoto1 from "@/../public/help/delete-club-photo-1.png";
 import DeleteClubPhoto2 from "@/../public/help/delete-club-photo-2.png";
 import GoogleMap1Image from "@/../public/help/google-map-1.png";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useHash } from "@/hooks/use-hash";
 
 export default function Page() {
 	const t = useTranslations();
@@ -60,8 +59,6 @@ export default function Page() {
 }
 
 function HelpItem({ title, children, id }: { title: string; children: ReactNode; id: string }) {
-	const hash = useHash();
-
 	return (
 		<AccordionItem value={id} className="border rounded-lg px-4">
 			<AccordionTrigger className="group">

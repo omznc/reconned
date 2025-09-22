@@ -63,21 +63,33 @@ echo -e "${BLUE}📊 Found $TOTAL_KEYS total translation keys${NC}"
 # Find used translation keys in source files
 echo -e "${YELLOW}🔎 Scanning source files for used translation keys...${NC}"
 
-# Pattern 1: t("key.path") - direct usage
-# Pattern 2: t("key.path.subkey") - nested usage
-# Pattern 3: useTranslations()("key.path") - hook usage
-# Pattern 4: getTranslations()("key.path") - server usage
-find "$SRC_DIR" -name "*.tsx" -o -name "*.ts" | xargs grep -ho '\(t\|useTranslations()\|getTranslations()\)("[^"]*")' 2>/dev/null | \
-    sed 's/.*("\([^"]*\)").*/\1/' | \
-    sort -u > "$USED_KEYS_FILE"
+# Create temporary file for all patterns
+TEMP_PATTERNS=$(mktemp)
 
-# Also check for partial key usage (like t("common.actions.save"))
+# Pattern 1: t("key.path") - most common pattern in components (handles parameters)
+echo "Scanning for t() calls..."
 find "$SRC_DIR" -name "*.tsx" -o -name "*.ts" | xargs grep -ho 't("[^"]*"' 2>/dev/null | \
-    sed 's/t("\([^"]*\)").*/\1/' | \
-    sort -u >> "$USED_KEYS_FILE"
+    sed 's/t("\([^"]*\)".*/\1/' >> "$TEMP_PATTERNS"
 
-# Remove duplicates
-sort -u "$USED_KEYS_FILE" -o "$USED_KEYS_FILE"
+# Pattern 2: useTranslations()("key.path") - direct hook usage
+echo "Scanning for useTranslations() calls..."
+find "$SRC_DIR" -name "*.tsx" -o -name "*.ts" | xargs grep -ho 'useTranslations()("[^"]*")' 2>/dev/null | \
+    sed 's/useTranslations()("\([^"]*\)").*/\1/' >> "$TEMP_PATTERNS"
+
+# Pattern 3: getTranslations()("key.path") - server component usage
+echo "Scanning for getTranslations() calls..."
+find "$SRC_DIR" -name "*.tsx" -o -name "*.ts" | xargs grep -ho 'getTranslations()("[^"]*")' 2>/dev/null | \
+    sed 's/getTranslations()("\([^"]*\)").*/\1/' >> "$TEMP_PATTERNS"
+
+# Pattern 4: Check for any string that looks like a translation key in quotes
+echo "Scanning for potential translation key strings..."
+find "$SRC_DIR" -name "*.tsx" -o -name "*.ts" | xargs grep -ho '"[a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z0-9.]*"' 2>/dev/null | \
+    sed 's/"\([^"]*\)"/\1/' | \
+    grep -E '^[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$' >> "$TEMP_PATTERNS"
+
+# Remove duplicates and empty lines
+grep -v '^$' "$TEMP_PATTERNS" | sort -u > "$USED_KEYS_FILE"
+rm -f "$TEMP_PATTERNS"
 
 USED_KEYS_COUNT=$(wc -l < "$USED_KEYS_FILE")
 echo -e "${BLUE}📊 Found $USED_KEYS_COUNT used translation keys${NC}"
@@ -86,25 +98,22 @@ echo -e "${BLUE}📊 Found $USED_KEYS_COUNT used translation keys${NC}"
 echo -e "${YELLOW}🔍 Identifying unused keys...${NC}"
 UNUSED_KEYS_FILE=$(mktemp)
 
-# Check each key to see if it's used (including partial matches)
+# Simple approach: check if each key is directly used or if it's a parent of a used key
 while IFS= read -r key; do
+    key_used=false
+    
     # Check if this exact key is used
-    if ! grep -q "^$key$" "$USED_KEYS_FILE"; then
-        # Check if any used key starts with this key (for parent keys)
-        if ! grep -q "^$key\." "$USED_KEYS_FILE"; then
-            # Check if this key is a substring of any used key (for nested usage)
-            key_found=false
-            while IFS= read -r used_key; do
-                if [[ "$used_key" == *"$key"* ]] || [[ "$key" == *"$used_key"* ]]; then
-                    key_found=true
-                    break
-                fi
-            done < "$USED_KEYS_FILE"
-            
-            if [ "$key_found" = false ]; then
-                echo "$key" >> "$UNUSED_KEYS_FILE"
-            fi
+    if grep -q "^$key$" "$USED_KEYS_FILE"; then
+        key_used=true
+    else
+        # Check if this is a parent key (e.g., "common" is used if "common.actions.save" is used)
+        if grep -q "^$key\." "$USED_KEYS_FILE"; then
+            key_used=true
         fi
+    fi
+    
+    if [ "$key_used" = false ]; then
+        echo "$key" >> "$UNUSED_KEYS_FILE"
     fi
 done < "$ALL_KEYS_FILE"
 
@@ -129,7 +138,7 @@ echo
 # Ask user if they want to proceed
 read -p "Do you want to remove these unused keys? (y/N): " -n 1 -r
 echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+if [ "$REPLY" != "y" ] && [ "$REPLY" != "Y" ]; then
     echo -e "${YELLOW}⏹️  Operation cancelled${NC}"
     rm -f "$TEMP_FILE" "$USED_KEYS_FILE" "$ALL_KEYS_FILE" "$UNUSED_KEYS_FILE"
     exit 0

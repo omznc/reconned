@@ -6,7 +6,6 @@ import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 import notFound from "@/app/not-found";
 import { FontBody } from "@/components/font-body";

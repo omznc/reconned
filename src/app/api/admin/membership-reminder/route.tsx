@@ -56,7 +56,7 @@ async function notifyMember(membership: MembershipWithRelations, isExpired: bool
 		});
 
 		return true;
-	} catch (error) {
+	} catch {
 		return false;
 	}
 }
@@ -104,7 +104,7 @@ async function notifyClubOwner(membership: MembershipWithRelations, isExpired: b
 		});
 
 		return true;
-	} catch (error) {
+	} catch {
 		return false;
 	}
 }
@@ -237,7 +237,7 @@ export async function GET(request: Request) {
 				notificationsSent: expiredNotifications,
 			},
 		});
-	} catch (error) {
+	} catch {
 		return NextResponse.json({ error: "Membership reminder failed" }, { status: 500 });
 	}
 }

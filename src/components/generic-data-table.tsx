@@ -13,7 +13,6 @@ import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
-	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -244,7 +243,6 @@ export function GenericDataTable<T>({
 		);
 	};
 
-	// biome-ignore lint/suspicious/noExplicitAny: Don't care
 	const renderCell = (
 		// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
 		item: Record<string, any>,
@@ -352,10 +350,8 @@ export function GenericDataTable<T>({
 							<DropdownMenuCheckboxItem
 								key={column.key.toString()}
 								checked={visibleColumns.has(column.key.toString())}
-								onCheckedChange={(checked) => {
+								onCheckedChange={() => {
 									toggleColumn(column.key.toString());
-									// Prevent the dropdown from closing
-									event?.preventDefault();
 								}}
 							>
 								{typeof column.header === "string" ? column.header : column.key.toString()}
@@ -469,8 +465,8 @@ export function GenericDataTable<T>({
 														"sticky right-0 bg-background text-center": isActionsColumn,
 													})}
 												>
-													{/* biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types */}
 													{renderCell(
+														// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
 														item as Record<string, any>,
 														column,
 														tableConfig,

@@ -27,7 +27,6 @@ export default function RegisterPage() {
 		shallow: true,
 	});
 	const t = useTranslations();
-	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
 	// Register form schema with Zod
@@ -205,7 +204,6 @@ export default function RegisterPage() {
 							ref={turnstileRef}
 							onVerify={(token) => {
 								if (token && token.length > 0) {
-									setTurnstileToken(token);
 									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}

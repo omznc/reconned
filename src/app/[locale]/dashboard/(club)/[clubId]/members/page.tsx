@@ -122,7 +122,7 @@ export async function MembersPageFetcher(props: PageProps) {
 
 export default async function MembersPage(props: PageProps) {
 	const t = await getTranslations();
-	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
+	const searchParams = await props.searchParams;
 
 	return (
 		<>

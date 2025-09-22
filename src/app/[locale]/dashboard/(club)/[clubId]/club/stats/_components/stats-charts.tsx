@@ -10,9 +10,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 type ChartData = {
 	title: string;
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: Dynamic chart that I don't want to type
 	data: any[];
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: same
 	renderChart: (data: any[]) => ReactNode;
 };
 
@@ -159,7 +159,7 @@ export function StatsCharts({ memberData, roleData, eventData, registrationData 
 				{charts.map((chart, index) => (
 					// @ts-expect-error
 					<ChartContainer
-						// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+						// biome-ignore lint/suspicious/noArrayIndexKey: It's irrelevant
 						key={index}
 						config={chartConfig}
 						className="p-4 min-h-[300px] w-full relative"

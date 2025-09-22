@@ -52,6 +52,14 @@
 			"selectPlaceholder": "Select...",
 			"areYouSure": "Are you sure?",
 			"cannotUndo": "This action cannot be undone."
+		},
+		"words": {
+			"breakfast": "Breakfast",
+			"lunch": "Lunch",
+			"dinner": "Dinner",
+			"snacks": "Snacks",
+			"drinks": "Drinks",
+			"prizes": "Prizes"
 		}
 	},
 	"emails": {
@@ -268,6 +276,91 @@
 			"metadata": {
 				"title": "Airsoft events - RECONNED",
 				"description": "The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players."
+			},
+			"title": "Upcoming events",
+			"none": "There are no upcomig events",
+			"costPerPerson": "per person",
+			"allowFreelancers": "Freelancer-friendly",
+			"onlyClubs": "No freelancers",
+			"starts": "Starts",
+			"registrationsOpen": "Registrations open for ",
+			"view": "View",
+			"apply": {
+				"title": "Apply to event",
+				"editTitle": "Edit event application",
+				"registrationsClosed": "Registrations for this event are not open",
+				"backToEvent": "Back to event",
+				"eventNotFound": "Event Not Found - RECONNED",
+				"applyToEvent": "Apply to {eventName} - RECONNED",
+				"applyToParticipate": "Apply to participate in {eventName}",
+				"form": {
+					"submitting": "Submitting application...",
+					"success": "Successfully applied to event!",
+					"error": "An error occurred while applying",
+					"deleteConfirm": "Are you sure you want to delete your application? This will also delete all invitations you sent.",
+					"deleting": "Deleting application...",
+					"deleteSuccess": "Successfully deleted application!",
+					"deleteError": "An error occurred while deleting application",
+					"steps": {
+						"type": "Type",
+						"team": "Team",
+						"info": "Info",
+						"rules": "Rules",
+						"payment": "Payment"
+					},
+					"typeSelection": {
+						"soloTitle": "Solo application",
+						"soloDescription": "Choose this option if you're coming alone to the event",
+						"teamTitle": "Team application",
+						"teamDescription": "Choose this option if you're coming with multiple players",
+						"soloButton": "Apply solo",
+						"teamButton": "Apply team",
+						"cannotApplySolo": "You cannot apply solo because you are not a member of any club and this event does not allow freelancer applications.",
+						"currentlySelected": "Currently selected",
+						"switchingWarning": "Switching to solo application will cancel all current team member invitations.",
+						"or": "or"
+					},
+					"teamMembers": "Team members",
+					"searchPlayers": "Search players...",
+					"searchPlaceholder": "Search by name, email or callsign...",
+					"searchMinChars": "Enter at least 2 characters...",
+					"noResults": "No results for \"{query}\"",
+					"addNewMember": "Add new member",
+					"alreadyAdded": "Already added to team",
+					"membersWithAccount": "Members with account",
+					"membersWithAccountDesc": "These people have an account on the app, so the event will appear on their dashboard. There they can decline or see more information about it.",
+					"invitedMembers": "Invited members (without account)",
+					"invitedMembersDesc": "Members who don't have an account on the app who will receive an email invitation. It's not mandatory to use it.",
+					"teamMinMembers": "Team must have at least one member besides you",
+					"userInfo": "Your information",
+					"memberOf": "Member of clubs: {clubs}",
+					"addMemberTitle": "Add new member",
+					"fullName": "Full name",
+					"fullNamePlaceholder": "Enter full name",
+					"nameRequired": "Name is required",
+					"email": "Email",
+					"emailPlaceholder": "Enter email address",
+					"emailDesc": "Using email address, people who don't have an account on the site will receive a registration invitation, but that registration is not mandatory.",
+					"emailInvalid": "Email address is not valid",
+					"cancel": "Cancel",
+					"addMember": "Add member",
+					"eventRules": "Event rules",
+					"rulesAccept": "I have read and accept all event rules",
+					"rulesReadCarefully": "Please read the rules carefully before accepting them",
+					"rulesRequired": "You must accept the event rules",
+					"paymentMethod": "Payment method",
+					"cash": "Cash",
+					"bank": "Bank",
+					"cashDesc": "Cash payment on the day of the event",
+					"bankDesc": "Bank: Example Bank\nIBAN: BA123456789\nPurpose: Event-{eventId}",
+					"navigation": {
+						"back": "Back",
+						"next": "Next",
+						"deleteApplication": "Delete application",
+						"saveChanges": "Save changes",
+						"submitApplication": "Submit application"
+					}
+				}
 			}
 		},
 		"layout": {
@@ -475,6 +568,9 @@
 				"title": "Club Map - RECONNED",
 				"description": "Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players."
 			}
+		},
+		"supportUs": {
+			"title": "Support us (coming soon)"
 		}
 	},
 	"dashboard": {

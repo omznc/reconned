@@ -114,7 +114,7 @@ export async function GET(request: Request) {
 			expiredClubBans: results[5].count,
 			deletedAuditLogs: results[6].count,
 		});
-	} catch (error) {
+	} catch {
 		return NextResponse.json({ error: "Čišćenje nije uspjelo" }, { status: 500 });
 	}
 }

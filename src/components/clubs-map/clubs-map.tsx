@@ -54,6 +54,7 @@ function LocationMarker({ position, logo }: { position: [number, number]; logo?:
 
 function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
 	useMapEvents({
+		// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 		click: (e: any) => {
 			if (onLocationSelect) {
 				onLocationSelect(e.latlng.lat, e.latlng.lng);

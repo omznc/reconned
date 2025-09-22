@@ -169,17 +169,13 @@ export function SecuritySettings({
 									className="w-full md:w-auto"
 									onClick={async () => {
 										const confirmed = await prompt({
-											cancelButton: t(
-												"common.actions.cancel",
-											),
+											cancelButton: t("common.actions.cancel"),
 											cancelButtonVariant: "ghost",
 											title: t(
 												"dashboard.security.securitySettings.twoFactorDisablePrompt.title",
 											),
 											body: t("dashboard.security.securitySettings.twoFactorDisablePrompt.body"),
-											actionButton: t(
-												"common.actions.disable",
-											),
+											actionButton: t("common.actions.disable"),
 											inputType: "input",
 											inputProps: {
 												type: "password",
@@ -258,7 +254,6 @@ export function SecuritySettings({
 														},
 														onSuccess: (r) => {
 															setIsLoading(false);
-															// remove - from backup codes
 															setRegeneratedBackupCodes(r.data.backupCodes);
 															toast.success(
 																t(
@@ -266,7 +261,7 @@ export function SecuritySettings({
 																),
 															);
 														},
-														onError: (e) => {
+														onError: () => {
 															setIsLoading(false);
 															toast.error(
 																t(
@@ -354,7 +349,7 @@ export function SecuritySettings({
 																	),
 																);
 															},
-															onError: (e) => {
+															onError: () => {
 																setIsLoading(false);
 																toast.error(
 																	t(
@@ -405,15 +400,11 @@ export function SecuritySettings({
 								className="w-full md:w-auto"
 								onClick={async () => {
 									const password = await prompt({
-										cancelButton: t(
-											"common.actions.cancel",
-										),
+										cancelButton: t("common.actions.cancel"),
 										cancelButtonVariant: "ghost",
 										title: t("dashboard.security.securitySettings.twoFactorEnablePrompt.title"),
 										body: t("dashboard.security.securitySettings.twoFactorEnablePrompt.body"),
-										actionButton: t(
-											"common.actions.confirm",
-										),
+										actionButton: t("common.actions.confirm"),
 										inputType: "input",
 										inputProps: {
 											type: "password",
@@ -448,9 +439,7 @@ export function SecuritySettings({
 									}
 
 									const confirmed = await prompt({
-										cancelButton: t(
-											"common.actions.cancel",
-										),
+										cancelButton: t("common.actions.cancel"),
 										cancelButtonVariant: "ghost",
 										title: t("dashboard.security.securitySettings.twoFactorEnablePrompt.title"),
 										body: (
@@ -478,9 +467,7 @@ export function SecuritySettings({
 												</span>
 											</div>
 										),
-										actionButton: t(
-											"common.actions.enable",
-										),
+										actionButton: t("common.actions.enable"),
 										inputType: "input",
 										inputProps: {
 											type: "text",

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 import "./markdown.css";
+import DOMPurify from "isomorphic-dompurify";
 import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
 
 // Helper function to format GitHub release body markdown
@@ -123,8 +124,9 @@ export default async function ChangelogPage() {
 					<CardContent className="pt-6">
 						<div className="markdown-content">
 							<div
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 								dangerouslySetInnerHTML={{
-									__html: content,
+									__html: DOMPurify.sanitize(content),
 								}}
 							/>
 						</div>
@@ -173,8 +175,9 @@ export default async function ChangelogPage() {
 								<CardContent>
 									<div className="markdown-content">
 										<div
+											// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 											dangerouslySetInnerHTML={{
-												__html: release.formattedBody,
+												__html: DOMPurify.sanitize(release.formattedBody),
 											}}
 										/>
 									</div>

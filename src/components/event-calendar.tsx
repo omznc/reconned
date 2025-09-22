@@ -136,7 +136,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		};
 	};
 
-	const getEventPositions = (events: Event[], week: Date[]) => {
+	const getEventPositions = (events: Event[]) => {
 		const positions = new Map<string, number>();
 		const layers = [] as Set<string>[];
 
@@ -265,7 +265,7 @@ export function EventCalendar(props: EventCalendarProps) {
 						const weekEvents = props.events.filter((event) =>
 							week.some((day) => getEventsForDay(day).includes(event)),
 						);
-						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents, week);
+						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents);
 						const weekHeight = Math.max(8, (maxLayer + 1) * 2); // 8rem minimum, 2rem per layer
 
 						return (

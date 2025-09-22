@@ -22,7 +22,6 @@ export default function LoginPage() {
 	const router = useRouter();
 	const t = useTranslations();
 	const locale = useLocale();
-	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
 	// Reset password form schema with Zod
@@ -132,7 +131,6 @@ export default function LoginPage() {
 							onVerify={(token) => {
 								// Only set if we have a valid token
 								if (token && token.length > 0) {
-									setTurnstileToken(token);
 									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}

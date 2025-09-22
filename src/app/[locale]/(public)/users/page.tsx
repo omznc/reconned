@@ -41,7 +41,7 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 
 	return (
 		<div className="container py-8 space-y-8 px-4">
-			<h1 className="text-2xl font-bold">{t("public.title")}</h1>
+			<h1 className="text-2xl font-bold">{t("public.users.title")}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{users.map((user) => (
 					<SearchResultCard
@@ -71,9 +71,6 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.users.metadata.title"),
 		description: t("public.users.metadata.description"),
-		keywords: t("public.layout.metadata.keywords")
-			.split(",")
-			.map((keyword) => keyword.trim()),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users`,
 		},

@@ -121,7 +121,7 @@ export default async function Home({ searchParams }: PageProps) {
 					<div className="relative max-w-2xl">
 						<HomeDrawing className="absolute opacity-0 lg:opacity-100 transition-all -right-110 bottom-0 w-full max-w-[400px] h-auto dark:invert" />
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
-							{t.rich("hero.title", {
+							{t("public.home.hero.title", {
 								br: () => <br />,
 							})}
 						</h1>
@@ -131,10 +131,10 @@ export default async function Home({ searchParams }: PageProps) {
 									"inline-flex items-center rounded-full border border-green-500/30 dark:text-white bg-green-500/50 px-2.5 py-0.5 text-xs font text-black transition-colors hover:bg-green-500/20"
 								}
 							>
-								{t("public.hero.button")}
+								{t("public.home.hero.button")}
 							</span>
 						</Link>
-						<p className="text-xl text-text/80 mb-8 mt-4">{t("public.hero.description")}</p>
+						<p className="text-xl text-text/80 mb-8 mt-4">{t("public.home.hero.description")}</p>
 						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
 							<Button
 								size="sm"
@@ -144,7 +144,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/search">
 									<Search className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.search")}</span>
+									<span className="text-sm">{t("public.home.hero.search")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -155,7 +155,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/events">
 									<Calendar className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.events")}</span>
+									<span className="text-sm">{t("public.home.hero.events")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -166,7 +166,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/clubs">
 									<Building2 className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.clubs")}</span>
+									<span className="text-sm">{t("public.home.hero.clubs")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -177,7 +177,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/users">
 									<Users className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.members")}</span>
+									<span className="text-sm">{t("public.home.hero.members")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -188,7 +188,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/map">
 									<MapIcon className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.map")}</span>
+									<span className="text-sm">{t("public.home.hero.map")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -199,7 +199,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/about">
 									<ShieldQuestion className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.about")}</span>
+									<span className="text-sm">{t("public.home.hero.about")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -210,7 +210,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/dashboard">
 									<LayoutDashboard className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.dashboard")}</span>
+									<span className="text-sm">{t("public.home.hero.dashboard")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -221,7 +221,7 @@ export default async function Home({ searchParams }: PageProps) {
 							>
 								<Link href="/sponsors">
 									<Medal className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.hero.sponsors")}</span>
+									<span className="text-sm">{t("public.home.hero.sponsors")}</span>
 								</Link>
 							</Button>
 						</div>
@@ -290,43 +290,43 @@ export default async function Home({ searchParams }: PageProps) {
 										<div className="flex flex-wrap gap-2 my-4">
 											<Badge variant="outline" className="grow justify-center">
 												{event.allowFreelancers
-													? t("public.eventCard.canFreelance")
-													: t("public.eventCard.cannotFreelance")}
+													? t("public.home.eventCard.canFreelance")
+													: t("public.home.eventCard.cannotFreelance")}
 											</Badge>
 											{event.hasBreakfast && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.eventCard.breakfast")}
+													{t("public.home.eventCard.breakfast")}
 												</Badge>
 											)}
 											{event.hasLunch && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.eventCard.lunch")}
+													{t("public.home.eventCard.lunch")}
 												</Badge>
 											)}
 											{event.hasDinner && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.eventCard.dinner")}
+													{t("public.home.eventCard.dinner")}
 												</Badge>
 											)}
 											{event.hasSnacks && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.eventCard.snacks")}
+													{t("public.home.eventCard.snacks")}
 												</Badge>
 											)}
 											{event.hasDrinks && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.eventCard.drinks")}
+													{t("public.home.eventCard.drinks")}
 												</Badge>
 											)}
 											{event.hasPrizes && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.eventCard.prizes")}
+													{t("public.home.eventCard.prizes")}
 												</Badge>
 											)}
 										</div>
 										{event.isPrivate && (
 											<span className="text-xs text-muted-foreground">
-												{t("eventCard.privateEvent", {
+												{t("public.home.eventCard.privateEvent", {
 													club: event.club?.name,
 												})}
 											</span>
@@ -335,7 +335,7 @@ export default async function Home({ searchParams }: PageProps) {
 									<CardFooter className="flex justify-between items-center">
 										<div className="flex flex-col">
 											<div className="text-sm text-muted-foreground">
-												{t("public.eventCard.starts")}{" "}
+												{t("public.home.eventCard.starts")}{" "}
 												{formatDistanceToNow(event.dateStart, {
 													addSuffix: true,
 													locale: bs,
@@ -368,8 +368,5 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.home.metadata.title"),
 		description: t("public.home.metadata.description"),
-		keywords: t("public.layout.metadata.keywords")
-			.split(",")
-			.map((keyword) => keyword.trim()),
 	};
 }

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 interface FacebookPage {
 	id: string;
@@ -87,7 +88,7 @@ export default function InstagramPageSelection() {
 				}
 
 				setIsLoading(false);
-			} catch (err) {
+			} catch {
 				setError(t("dashboard.club.info.instagramPagesFetchFailed"));
 				setIsLoading(false);
 			}
@@ -193,9 +194,11 @@ export default function InstagramPageSelection() {
 						return (
 							<div
 								key={page.id}
-								className={`border rounded-md p-4 flex items-center gap-4 transition-colors ${
-									isEligible ? "hover:bg-accent/50 cursor-pointer" : "opacity-75 bg-muted"
-								} ${selectedPageId === page.id ? "border-primary bg-accent" : ""}`}
+								className={cn(
+									"border rounded-md p-4 flex items-center gap-4 transition-colors",
+									isEligible ? "hover:bg-accent/50 cursor-pointer" : "opacity-75 bg-muted",
+									selectedPageId === page.id ? "border-primary bg-accent" : "",
+								)}
 								onClick={() => isEligible && handleSelectPage(page.id)}
 							>
 								<div className="flex items-center gap-3 flex-1">

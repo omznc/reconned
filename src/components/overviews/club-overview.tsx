@@ -58,7 +58,7 @@ async function fetchInstagramPhotos(clubId: string): Promise<{ photos: Instagram
 			photos: instagramMedia.data || [],
 			username: instagramMedia.data[0]?.username || null,
 		};
-	} catch (error) {
+	} catch {
 		return { photos: [], username: null };
 	}
 }

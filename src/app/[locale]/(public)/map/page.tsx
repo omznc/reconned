@@ -41,8 +41,5 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.map.metadata.title"),
 		description: t("public.map.metadata.description"),
-		keywords: t("public.layout.metadata.keywords")
-			.split(",")
-			.map((keyword) => keyword.trim()),
 	};
 }

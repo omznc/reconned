@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { leaveClubSchema, removeMemberSchema } from "./members.schema.ts";
 
-export const removeMember = safeActionClient.inputSchema(removeMemberSchema).action(async ({ parsedInput, ctx }) => {
+export const removeMember = safeActionClient.inputSchema(removeMemberSchema).action(async ({ parsedInput }) => {
 	try {
 		const membership = await prisma.clubMembership.findFirst({
 			where: {

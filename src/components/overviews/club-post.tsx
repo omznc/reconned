@@ -49,6 +49,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 			<div ref={ref} className={cn("relative", !isExpanded && "max-h-[500px] overflow-hidden")}>
 				<div
 					className="prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 p-4"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: It's sanitized content
 					dangerouslySetInnerHTML={{
 						__html: DOMPurify.sanitize(post.content),
 					}}

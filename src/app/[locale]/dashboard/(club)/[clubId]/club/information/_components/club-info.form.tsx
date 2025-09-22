@@ -67,7 +67,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [instagramError, setInstagramError] = useState<string | null>(null);
 	const [instagramErrorMessage, setInstagramErrorMessage] = useState<string | null>(null);
 	const [isDisconnectingInstagram, setIsDisconnectingInstagram] = useState(false);
-	const [isConnectingInstagram, setIsConnectingInstagram] = useState(false);
 	const confirm = useConfirm();
 	const t = useTranslations();
 
@@ -259,7 +258,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				logoUpload.markAsSaved();
 				toast.success(t("dashboard.club.info.success"));
 			}
-		} catch (error) {
+		} catch {
 			toast.error(t("dashboard.club.info.error"));
 		}
 		setIsLoading(false);
@@ -676,20 +675,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								</Button>
 							) : (
 								<Link href={props.instagramConnectionUrl ?? ""}>
-									<Button
-										type="button"
-										variant="outline"
-										size="sm"
-										disabled={isConnectingInstagram || !props.club?.id}
-									>
-										{isConnectingInstagram ? (
-											<>
-												<Loader className="mr-2 h-4 w-4 animate-spin" />
-												{t("dashboard.club.info.instagramConnecting")}
-											</>
-										) : (
-											t("dashboard.club.info.instagramConnect")
-										)}
+									<Button type="button" variant="outline" size="sm" disabled={!props.club?.id}>
+										t("dashboard.club.info.instagramConnect")
 									</Button>
 								</Link>
 							)}

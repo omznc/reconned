@@ -17,7 +17,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 
 interface ClubSwitcherProps {
 	clubs: Club[];
@@ -163,7 +163,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						<DropdownMenuLabel className="text-xs text-muted-foreground">
 							{t("components.sidebar.clubs")}
 						</DropdownMenuLabel>
-						{clubs.map((club, index) => (
+						{clubs.map((club) => (
 							<DropdownMenuItem
 								key={club.id}
 								onClick={() => navigateToClub(club)}

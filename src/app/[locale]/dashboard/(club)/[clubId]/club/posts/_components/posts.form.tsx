@@ -112,7 +112,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			toast.success(
 				values.id ? t("dashboard.club.posts.successEdited") : t("dashboard.club.posts.successCreated"),
 			);
-		} catch (error) {
+		} catch {
 			toast.error(t("dashboard.club.posts.error"));
 		} finally {
 			if (values.id) {
@@ -147,7 +147,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			});
 			setPostId(null);
 			toast.success(t("dashboard.club.posts.delete.success"));
-		} catch (error) {
+		} catch {
 			toast.error(t("dashboard.club.posts.delete.error"));
 		} finally {
 			router.back();

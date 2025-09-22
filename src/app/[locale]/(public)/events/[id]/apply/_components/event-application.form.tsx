@@ -3,7 +3,9 @@
 import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "better-auth";
+import DOMPurify from "isomorphic-dompurify";
 import { AlertCircle, ChevronsUpDown, CirclePlus, Mail, Plus, UserIcon, Users, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { EventApplicationSchemaType } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
@@ -61,6 +63,7 @@ type SearchUser = {
 export function EventApplicationForm({ existingApplication, event, user, currentUserClubs }: EventApplicationProps) {
 	const [step, setStep] = useState(1);
 	const router = useRouter();
+	const t = useTranslations();
 
 	// Initialize form with existing application data if it exists
 	const form = useForm<EventApplicationSchemaType>({
@@ -130,12 +133,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 				eventId: event.id,
 			}),
 			{
-				loading: "Slanje prijave...",
+				loading: t("public.events.apply.form.submitting"),
 				success: () => {
 					router.push(`/events/${event.id}`);
-					return "Uspješno ste se prijavili na susret!";
+					return t("public.events.apply.form.success");
 				},
-				error: (e) => e?.message ?? "Došlo je do greške prilikom prijave",
+				error: (e) => e?.message ?? t("public.events.apply.form.error"),
 			},
 		);
 	};
@@ -147,7 +150,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			if (totalMembers < 2) {
 				form.setError("invitedUsers", {
 					type: "manual",
-					message: "Tim mora imati najmanje 2 člana (Vi + jedan član)",
+					message: t("public.events.apply.form.teamMinMembers"),
 				});
 				return;
 			}
@@ -155,7 +158,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 		if (step === 3 && !form.watch("rulesAccepted")) {
 			form.setError("rulesAccepted", {
 				type: "manual",
-				message: "Morate prihvatiti pravila susreta",
+				message: t("public.events.apply.form.rulesRequired"),
 			});
 			return;
 		}
@@ -243,19 +246,17 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	// Add delete handler
 	const handleDelete = async () => {
-		const confirm = window.confirm(
-			"Da li ste sigurni da želite obrisati vašu prijavu? Ovo će također obrisati sve pozivnice koje ste poslali.",
-		);
+		const confirm = window.confirm(t("public.events.apply.form.deleteConfirm"));
 
 		if (confirm) {
 			toast.promise(deleteRegistration({ eventId: event.id }), {
-				loading: "Brisanje prijave...",
+				loading: t("public.events.apply.form.deleting"),
 				success: () => {
 					router.refresh();
 					router.push(`/events/${event.id}`);
-					return "Uspješno ste obrisali prijavu!";
+					return t("public.events.apply.form.deleteSuccess");
 				},
-				error: "Došlo je do greške prilikom brisanja prijave",
+				error: t("public.events.apply.form.deleteError"),
 			});
 		}
 	};
@@ -273,20 +274,23 @@ export function EventApplicationForm({ existingApplication, event, user, current
 						disabled={!event.allowFreelancers && currentUserClubs.length === 0}
 					>
 						<CirclePlus />
-						Prijavi se samostalno
+						{t("public.events.apply.form.typeSelection.soloButton")}
 					</Button>
 					<span className="text-gray-500 text-sm">
 						{!event.allowFreelancers && currentUserClubs.length === 0
-							? "Ne možete se prijaviti samostalno jer niste član nijednog kluba, a ovaj susret ne dozvoljava freelancer prijave."
-							: "Odaberite ovu opciju ako dolazite sami na susret."}
+							? t("public.events.apply.form.typeSelection.cannotApplySolo")
+							: t("public.events.apply.form.typeSelection.soloDescription")}
 					</span>
 					{existingApplication !== null && (
 						<>
-							{form.watch("type") === "solo" && <p className="text-sm text-primary">Trenutno odabrano</p>}
+							{form.watch("type") === "solo" && (
+								<p className="text-sm text-primary">
+									{t("public.events.apply.form.typeSelection.currentlySelected")}
+								</p>
+							)}
 							{form.watch("type") === "team" && (
 								<p className="text-sm text-destructive">
-									Prebacivanje na samostalnu prijavu će poništiti sve trenutne pozivnice članovima
-									tima.
+									{t("public.events.apply.form.typeSelection.switchingWarning")}
 								</p>
 							)}
 						</>
@@ -295,18 +299,22 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
-					<span className="text-gray-500">ili</span>
+					<span className="text-gray-500">{t("public.events.apply.form.typeSelection.or")}</span>
 					<hr className="flex-1 border-t-2 border-gray-300" />
 				</div>
 
 				<div className="flex flex-col gap-2">
 					<Button type="button" className="flex items-center gap-2" onClick={() => handleTypeChange("team")}>
 						<Users />
-						Prijavi tim
+						{t("public.events.apply.form.typeSelection.teamButton")}
 					</Button>
-					<span className="text-gray-500 text-sm">Odaberite ovu opciju ako dolazite s više igrača.</span>
+					<span className="text-gray-500 text-sm">
+						{t("public.events.apply.form.typeSelection.teamDescription")}
+					</span>
 					{existingApplication && form.watch("type") === "team" && (
-						<p className="text-sm text-primary">Trenutno odabrano</p>
+						<p className="text-sm text-primary">
+							{t("public.events.apply.form.typeSelection.currentlySelected")}
+						</p>
 					)}
 				</div>
 			</div>
@@ -332,8 +340,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							<CirclePlus className="size-16 text-muted-foreground group-hover:text-primary transition-colors" />
 						</div>
 						<div className="mt-8 text-center">
-							<h3 className="text-2xl font-semibold mb-2">Samostalna prijava</h3>
-							<p className="text-muted-foreground">Odaberite ovu opciju ako dolazite sami na susret</p>
+							<h3 className="text-2xl font-semibold mb-2">
+								{t("public.events.apply.form.typeSelection.soloTitle")}
+							</h3>
+							<p className="text-muted-foreground">
+								{t("public.events.apply.form.typeSelection.soloDescription")}
+							</p>
 						</div>
 						<div className="absolute inset-0 border-2 border-primary scale-105 opacity-0 rounded-lg group-hover:opacity-100 transition-all" />
 					</button>
@@ -360,8 +372,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							<Users className="size-16 text-muted-foreground group-hover:text-primary transition-colors" />
 						</div>
 						<div className="mt-8 text-center">
-							<h3 className="text-2xl font-semibold mb-2">Timska prijava</h3>
-							<p className="text-muted-foreground">Odaberite ovu opciju ako dolazite s više igrača</p>
+							<h3 className="text-2xl font-semibold mb-2">
+								{t("public.events.apply.form.typeSelection.teamTitle")}
+							</h3>
+							<p className="text-muted-foreground">
+								{t("public.events.apply.form.typeSelection.teamDescription")}
+							</p>
 						</div>
 						<div className="absolute inset-0 border-2 border-primary scale-105 opacity-0 rounded-lg group-hover:opacity-100 transition-all" />
 					</button>
@@ -376,24 +392,28 @@ export function EventApplicationForm({ existingApplication, event, user, current
 		<div className="flex gap-2 justify-between">
 			{existingApplication && (
 				<Button type="button" variant="destructive" onClick={handleDelete}>
-					Obriši prijavu
+					{t("public.events.apply.form.navigation.deleteApplication")}
 				</Button>
 			)}
 
 			<div className="flex gap-2">
 				{step > 1 && (
 					<Button type="button" variant="outline" onClick={() => setStep(step - 1)}>
-						Nazad
+						{t("public.events.apply.form.navigation.back")}
 					</Button>
 				)}
 				{step < 4 && (
 					<Button type="button" onClick={() => handleNextStep()}>
-						Dalje
+						{t("public.events.apply.form.navigation.next")}
 					</Button>
 				)}
 
 				{step === 4 && (
-					<Button type="submit">{existingApplication ? "Sačuvaj izmjene" : "Pošalji prijavu"}</Button>
+					<Button type="submit">
+						{existingApplication
+							? t("public.events.apply.form.navigation.saveChanges")
+							: t("public.events.apply.form.navigation.submitApplication")}
+					</Button>
 				)}
 			</div>
 		</div>
@@ -401,10 +421,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	const renderInvitedUsers = () => (
 		<div className="space-y-2">
-			<h4 className="text-sm font-medium">Članovi s računom</h4>
+			<h4 className="text-sm font-medium">{t("public.events.apply.form.membersWithAccount")}</h4>
 			<span className="text-sm text-muted-foreground">
-				Ove osobe imaju račun na aplikaciji, te će im se susret prikazati na dashboard-u. Tu ga mogu odbiti ili
-				vidjeti više informacija o njemu.
+				{t("public.events.apply.form.membersWithAccountDesc")}
 			</span>
 			{invitedUserFields.map((field, index) => (
 				<div key={field.id} className="flex bg-sidebar items-center justify-between p-2 border rounded-md">
@@ -439,10 +458,8 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	const renderInvitedUsersNotOnApp = () => (
 		<div className="space-y-2">
-			<h4 className="text-sm font-medium">Pozvani članovi (bez računa)</h4>
-			<span className="text-sm text-muted-foreground">
-				Članovi koji nemaju račun na aplikaciji koji će dobiti email pozivnicu. Nije je obavezno iskoristiti.
-			</span>
+			<h4 className="text-sm font-medium">{t("public.events.apply.form.invitedMembers")}</h4>
+			<span className="text-sm text-muted-foreground">{t("public.events.apply.form.invitedMembersDesc")}</span>
 			{invitedUserNotOnAppFields.map((field, index) => (
 				<div key={field.id} className="flex bg-sidebar items-center justify-between p-2 border rounded-md">
 					<div className="flex items-center gap-2">
@@ -473,25 +490,24 @@ export function EventApplicationForm({ existingApplication, event, user, current
 	// Replace the existing team members section with this
 	const renderTeamSection = () => (
 		<div className="space-y-4">
-			<h3 className="font-medium">Članovi tima</h3>
+			<h3 className="font-medium">{t("public.events.apply.form.teamMembers")}</h3>
 			<div className="flex gap-2">
 				<Popover open={open} onOpenChange={setOpen}>
 					<PopoverTrigger asChild>
 						<Button
 							variant="outline"
-							// biome-ignore lint/a11y/useSemanticElements: I don't want to
 							role="combobox"
 							aria-expanded={open}
 							className="w-full justify-between"
 						>
-							{searchValue || "Pretraži igrače..."}
+							{searchValue || t("public.events.apply.form.searchPlayers")}
 							<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent align="start" className="p-0 w-[var(--radix-popover-trigger-width)]">
 						<Command shouldFilter={false}>
 							<CommandInput
-								placeholder="Pretraži po imenu, emailu ili callsignu..."
+								placeholder={t("public.events.apply.form.searchPlaceholder")}
 								value={searchValue}
 								onValueChange={handleSearch}
 							/>
@@ -502,12 +518,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 									</CommandEmpty>
 								)}
 								{!isSearching && searchValue.length < 2 && (
-									<CommandEmpty>Unesite najmanje 2 karaktera...</CommandEmpty>
+									<CommandEmpty>{t("public.events.apply.form.searchMinChars")}</CommandEmpty>
 								)}
 								{!isSearching && searchValue.length >= 2 && searchResults.length === 0 && (
 									<CommandEmpty>
 										<div className="p-4 text-sm space-y-4">
-											<p>Nema rezultata za "{searchValue}"</p>
+											<p>{t("public.events.apply.form.noResults", { query: searchValue })}</p>
 											<Button
 												type="button"
 												variant="outline"
@@ -523,7 +539,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 												}}
 											>
 												<Plus className="mr-2 h-4 w-4" />
-												Dodaj novog člana
+												{t("public.events.apply.form.addNewMember")}
 											</Button>
 										</div>
 									</CommandEmpty>
@@ -560,7 +576,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 														)}
 														{isAlreadyAdded && (
 															<span className="text-muted-foreground text-xs ml-2">
-																- Već dodan u tim
+																- {t("public.events.apply.form.alreadyAdded")}
 															</span>
 														)}
 													</span>
@@ -599,12 +615,20 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			<div className="space-y-2">
 				<Progress value={(step / 4) * 100} className="h-2" />
 				<div className="flex justify-between select-none text-sm text-muted-foreground px-1">
-					<span className={step >= 1 ? "text-foreground font-medium" : ""}>Tip</span>
-					<span className={step >= 2 ? "text-foreground font-medium" : ""}>
-						{form.watch("type") === "team" ? "Tim" : "Info"}
+					<span className={step >= 1 ? "text-foreground font-medium" : ""}>
+						{t("public.events.apply.form.steps.type")}
 					</span>
-					<span className={step >= 3 ? "text-foreground font-medium" : ""}>Pravila</span>
-					<span className={step >= 4 ? "text-foreground font-medium" : ""}>Plaćanje</span>
+					<span className={step >= 2 ? "text-foreground font-medium" : ""}>
+						{form.watch("type") === "team"
+							? t("public.events.apply.form.steps.team")
+							: t("public.events.apply.form.steps.info")}
+					</span>
+					<span className={step >= 3 ? "text-foreground font-medium" : ""}>
+						{t("public.events.apply.form.steps.rules")}
+					</span>
+					<span className={step >= 4 ? "text-foreground font-medium" : ""}>
+						{t("public.events.apply.form.steps.payment")}
+					</span>
 				</div>
 			</div>
 
@@ -715,8 +739,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 											className={cn(
 												"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 											)}
+											// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 											dangerouslySetInnerHTML={{
-												__html: rule.content,
+												__html: DOMPurify.sanitize(rule.content),
 											}}
 										/>
 										{index < event.rules.length - 1 && <hr className="border-t" />}

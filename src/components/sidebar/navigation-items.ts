@@ -25,8 +25,6 @@ import {
 import { useTranslations } from "next-intl";
 import type { NavItem } from "@/components/sidebar/types";
 
-type TFunction = (key: string, values?: Record<string, unknown>) => string;
-
 /**
  * Get application-wide navigation items
  */

@@ -4,9 +4,9 @@ import type { ClubRule, Event } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { differenceInDays, format } from "date-fns";
 import { bs } from "date-fns/locale";
+import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useState } from "react";
@@ -31,7 +31,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DateTimePicker, initHourFormat } from "@/components/ui/date-time-picker";
 import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -55,7 +54,6 @@ interface CreateEventFormProps {
 export default function CreateEventForm(props: CreateEventFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
-	const [isDeletingImage, setIsDeletingImage] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
 	const t = useTranslations();
@@ -302,7 +300,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 			toast.success(t("dashboard.club.events.create.success"));
-		} catch (error) {
+		} catch {
 			toast.error(t("dashboard.club.events.create.error"));
 		}
 		setIsLoading(false);
@@ -1052,8 +1050,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																		className={cn(
 																			"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
 																		)}
+																		// biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized
 																		dangerouslySetInnerHTML={{
-																			__html: selectedRule.content,
+																			__html: DOMPurify.sanitize(
+																				selectedRule.content,
+																			),
 																		}}
 																	/>
 																</div>
@@ -1117,9 +1118,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						disabled={!isSlugValid && !!form.watch("slug")}
 						className="min-w-[200px]"
 					>
-						{props.event
-							? t("common.actions.save")
-							: t("common.actions.create")}
+						{props.event ? t("common.actions.save") : t("common.actions.create")}
 					</LoaderSubmitButton>
 				</div>
 			</form>

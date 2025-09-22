@@ -9,7 +9,7 @@ import { safeActionClient } from "@/lib/safe-action";
 
 export const extendMembership = safeActionClient
 	.inputSchema(membershipExtensionSchema)
-	.action(async ({ parsedInput, ctx }) => {
+	.action(async ({ parsedInput }) => {
 		const { memberId, clubId, duration } = parsedInput;
 		try {
 			// Find the membership
@@ -37,7 +37,7 @@ export const extendMembership = safeActionClient
 			}
 
 			// Convert duration string to number
-			const durationMonths = Number.parseInt(duration);
+			const durationMonths = Number.parseInt(duration, 10);
 
 			// Calculate new end date
 			const newEndDate = addMonths(baseDate, durationMonths);
@@ -76,7 +76,7 @@ export const extendMembership = safeActionClient
 				membership: updatedMembership,
 				message: `Membership extended by ${durationMonths} months`,
 			};
-		} catch (error) {
+		} catch {
 			return { error: "Failed to extend membership" };
 		}
 	});
