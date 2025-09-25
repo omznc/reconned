@@ -2,8 +2,11 @@ import { ArrowUpRight, MailCheckIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import type { CollectionPage, WithContext } from "schema-dts";
+import JsonLdScript from "@/components/json-ld-script";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { env } from "@/lib/env";
 
 const sponsors = [
 	{
@@ -31,8 +34,35 @@ export const revalidate = 86_400; // 1 day
 export default async function SponsorsPage() {
 	const t = await getTranslations();
 
+	const sponsorPageSchema: WithContext<CollectionPage> = {
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sponsors`,
+		name: t("public.sponsors.metadata.title"),
+		description: t("public.sponsors.metadata.description"),
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sponsors`,
+		mainEntity: {
+			"@type": "ItemList",
+			name: "Reconned Sponsors",
+			description: "Organizations supporting the Reconned airsoft platform",
+			itemListElement: sponsors.map((sponsor, index) => ({
+				"@type": "ListItem",
+				position: index + 1,
+				item: {
+					"@type": "SportsOrganization",
+					name: sponsor.name,
+					description: sponsor.description,
+					sport: "Airsoft",
+					url: sponsor.website,
+					logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${sponsor.logo}`,
+				},
+			})),
+		},
+	};
+
 	return (
 		<>
+			<JsonLdScript data={sponsorPageSchema} />
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">

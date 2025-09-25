@@ -1,4 +1,67 @@
 {
+	"common": {
+		"actions": {
+			"save": "Sačuvaj",
+			"saveChanges": "Sačuvaj promjene",
+			"cancel": "Otkaži",
+			"edit": "Izmjeni",
+			"delete": "Obriši",
+			"create": "Kreiraj",
+			"view": "Pogledaj",
+			"add": "Dodaj",
+			"remove": "Ukloni",
+			"back": "Nazad",
+			"next": "Dalje",
+			"previous": "Prethodno",
+			"confirm": "Potvrdi",
+			"loading": "Učitavanje...",
+			"saving": "Spašavanje...",
+			"search": "Pretraži",
+			"reset": "Resetuj",
+			"enable": "Omogući",
+			"disable": "Onemogući"
+		},
+		"fields": {
+			"name": "Ime",
+			"description": "Opis",
+			"email": "Email",
+			"phone": "Broj telefona",
+			"location": "Lokacija",
+			"website": "Web stranica",
+			"password": "Lozinka",
+			"title": "Naslov",
+			"date": "Datum",
+			"actions": "Akcije",
+			"status": "Status"
+		},
+		"states": {
+			"success": "Uspjeh",
+			"error": "Greška",
+			"private": "Privatno",
+			"public": "Javno",
+			"active": "Aktivno",
+			"inactive": "Neaktivno",
+			"expired": "Isteklo",
+			"unlimited": "Neograničeno",
+			"pending": "Na čekanju"
+		},
+		"messages": {
+			"noResults": "Nema pronađenih rezultata",
+			"noData": "Nema pronađenih podataka",
+			"searchPlaceholder": "Pretraži...",
+			"selectPlaceholder": "Odaberi...",
+			"areYouSure": "Da li ste sigurni?",
+			"cannotUndo": "Ova akcija se ne može poništiti."
+		},
+		"words": {
+			"breakfast": "Doručak",
+			"lunch": "Ručak",
+			"dinner": "Večera",
+			"snacks": "Užina",
+			"drinks": "Piće",
+			"prizes": "Nagrade"
+		}
+	},
 	"emails": {
 		"emailVerification": {
 			"title": "Verifikujte vašu email adresu",
@@ -15,7 +78,9 @@
 			"helloUser": "Zdravo {name},",
 			"message": "Pozvani ste da se pridružite klubu {clubName}. Radujemo se što ćemo vas vidjeti na terenu!",
 			"action": "Prihvati Poziv",
-			"footer": "Ako niste očekivali ovu pozivnicu, molimo vas da zanemarite ovaj email."
+			"footer": "Ako niste očekivali ovu pozivnicu, molimo vas da zanemarite ovaj email.",
+			"clubLogo": "Logo Kluba",
+			"invitationCode": "Ili koristite ovaj pozivni kod:"
 		},
 		"createAccount": {
 			"title": "Pozvani ste na airsoft susret! Kreirajte račun da biste se pridružili.",
@@ -24,7 +89,8 @@
 			"clubMessage": "Vaš račun će automatski biti povezan sa klubom {clubName} i moći ćete odmah pristupiti detaljima susreta.",
 			"action": "Kreiraj Račun",
 			"emailLinked": "Ovaj link je povezan sa email adresom: {email}",
-			"footer": "Ako niste očekivali ovaj poziv, molimo vas da zanemarite ovaj email."
+			"footer": "Ako niste očekivali ovaj poziv, molimo vas da zanemarite ovaj email.",
+			"clubLogo": "Logo Kluba"
 		},
 		"rateEvent": {
 			"title": "Ocjenite vaše iskustvo na susretu {eventName}!",
@@ -33,7 +99,8 @@
 			"helloUser": "Pozdrav {name},",
 			"message": "Hvala vam što ste prisustvovali susretu {eventName} održanom {date}. Vaše mišljenje nam je važno i pomoći će nam da unaprijedimo buduće susrete.",
 			"action": "Ocijeni Susret",
-			"footer": "{clubName} - Hvala vam na vašem učešću!"
+			"footer": "{clubName} - Hvala vam na vašem učešću!",
+			"clubLogo": "Logo Kluba"
 		},
 		"membershipExpiration": {
 			"expiredTitle": "Vaše članstvo u klubu {clubName} je isteklo",
@@ -44,7 +111,8 @@
 			"expiredMessage": "Vaše članstvo u klubu {clubName} je isteklo dana {date}. Ako želite nastaviti biti član kluba, molimo vas da obnovite članstvo.",
 			"expiringMessage": "Vaše članstvo u klubu {clubName} ističe dana {date} (za {days} dana). Da biste osigurali kontinuirano članstvo, razmislite o obnovi prije datuma isteka.",
 			"action": "Obnovi Članstvo",
-			"footer": "Ako više ne želite biti član kluba {clubName}, možete zanemariti ovaj email."
+			"footer": "Ako više ne želite biti član kluba {clubName}, možete zanemariti ovaj email.",
+			"clubLogo": "Logo Kluba"
 		},
 		"membershipExpirationOwner": {
 			"expiredTitle": "Članstvo korisnika {memberName} u klubu {clubName} je isteklo",
@@ -55,7 +123,8 @@
 			"expiredMessage": "Članstvo korisnika {memberName} u vašem klubu {clubName} je isteklo dana {date}.",
 			"expiringMessage": "Članstvo korisnika {memberName} u vašem klubu {clubName} ističe dana {date} (za {days} dana).",
 			"action": "Upravljaj Članovima",
-			"footer": "Ovo je automatska obavijest koja vam pomaže da upravljate članstvima u klubu."
+			"footer": "Ovo je automatska obavijest koja vam pomaže da upravljate članstvima u klubu.",
+			"clubLogo": "Logo Kluba"
 		},
 		"passwordReset": {
 			"title": "Resetujte lozinku",
@@ -71,6 +140,11 @@
 			"title": "Izgubili ste se",
 			"message": "Stranica nije pronađena",
 			"backHome": "Vrati se na početnu stranicu",
+			"layout": {
+				"metadata": {
+					"keywords": "404, nije pronađeno, stranica nije pronađena, airsoft, Bosna, BiH"
+				}
+			},
 			"metadata": {
 				"title": "404 - Stranica nije pronađena - RECONNED",
 				"description": "Stranica nije pronađena"
@@ -255,7 +329,14 @@
 						"cannotApplySolo": "Ne možete se prijaviti samostalno jer niste član nijednog kluba, a ovaj susret ne dozvoljava freelancer prijave.",
 						"currentlySelected": "Trenutno odabrano",
 						"switchingWarning": "Prebacivanje na samostalnu prijavu će poništiti sve trenutne pozivnice članovima tima.",
-						"or": "ili"
+						"or": "ili",
+						"applyToEvent": "Prijavi se na susret",
+						"nameRequired": "Ime je obavezno",
+						"enterEmail": "Unesite email adresu",
+						"enterFullName": "Unesite puno ime i prezime",
+						"invalidEmail": "Email adresa nije validna",
+						"addNewMember": "Dodaj novog člana",
+						"fullName": "Ime i prezime"
 					},
 					"teamMembers": "Članovi tima",
 					"searchPlayers": "Pretraži igrače...",
@@ -505,6 +586,13 @@
 				"title": "Mapa klubova - RECONNED",
 				"description": "Pronađite gdje se nalaze airsoft klubovi. Istražite i pronađite zajednice u vašoj blizini. Prva univerzalna platforma za airsoft klubove, susrete, i igrače."
 			}
+		},
+		"supportUs": {
+			"title": "Podržite nas (uskoro)",
+			"metadata": {
+				"title": "Podržite nas - RECONNED",
+				"description": "Podržite RECONNED platformu i pomozite nam da izgradimo najbolju airsoft zajednicu. Prva univerzalna platforma za airsoft klubove, susrete, i igrače."
+			}
 		}
 	},
 	"dashboard": {
@@ -521,12 +609,18 @@
 			"error": "Došlo je do greške",
 			"loading": "Učitavanje...",
 			"nextEvent": "Sljedeći susret",
-			"latestReview": "Najnovija recenzija"
+			"latestReview": "Najnovija recenzija",
+			"icons": {
+				"clubOwner": "Vlasnik kluba",
+				"clubManager": "Menadžer kluba",
+				"member": "Član"
+			}
 		},
 		"help": {
 			"title": "Pomoć",
 			"googleMaps": {
 				"title": "Kako dodati Google Maps link na susret",
+				"shareDialog": "Google Maps dijalog za dijeljenje",
 				"steps": {
 					"step1": "Otvorite Google Maps i pronađite željenu lokaciju",
 					"step2": "Kliknite na dugme \"Share\" (Podijeli)",
@@ -569,6 +663,11 @@
 				"avatar": "Profilna slika",
 				"avatarDescription": "Preporučujemo da postavite profilnu sliku.",
 				"saving": "Spašavanje...",
+				"uploadAvatar": "Učitaj avatar",
+				"replaceAvatar": "Zamijeni avatar",
+				"removeAvatar": "Ukloni avatar",
+				"cropPhotoTitle": "Izreži fotografiju",
+				"cropPhotoDescription": "Podesite područje izrezivanja i kliknite sačuvaj da primijenite promjene",
 				"cancel": "Odustani",
 				"name": "Vaše ime",
 				"callsign": "Callsign/Pozivni znak",
@@ -699,6 +798,17 @@
 			"enterTwoChars": "Unesite najmanje dva slova",
 			"noClubsFound": "Nema pronađenih klubova",
 			"or": "ili"
+		},
+		"admin": {
+			"clubs": {
+				"allClubs": "Svi klubovi",
+				"notFound": "Klub nije pronađen."
+			},
+			"noAccess": "Nemate pristup ovoj stranici",
+			"users": {
+				"notFound": "Korisnik nije pronađen.",
+				"memberSince": "Član od:"
+			}
 		},
 		"club": {
 			"info": {
@@ -1050,6 +1160,7 @@
 					"map": "Mapa",
 					"save": "Spasi promjene",
 					"create": "Kreiraj susret",
+					"namePlaceholder": "Food Wars 24",
 					"eventDates": "Datumi susreta",
 					"advancedSettings": "Napredne postavke",
 					"basicInformationDescription": "Osnovne informacije koje su nam potrebne za kreiranje vašeg susreta",
@@ -1302,7 +1413,8 @@
 			"select": "Odaberite jezik"
 		},
 		"clubsMap": {
-			"viewProfile": "Pogledaj profil"
+			"viewProfile": "Pogledaj profil",
+			"clubLogo": "Club logo"
 		},
 		"calendar": {
 			"today": "Danas",
@@ -1338,6 +1450,13 @@
 				"cost": "Cijena",
 				"apply": "Prijavi se",
 				"registrationsClosed": "Prijave za ovaj susret trenutno nisu otvorene"
+			},
+			"carousel": {
+				"nextSlide": "Next slide",
+				"previousSlide": "Previous slide"
+			},
+			"sidebar": {
+				"mobileToggle": "Displays the mobile sidebar."
 			}
 		},
 		"error": {
@@ -1380,6 +1499,12 @@
 		"userOverview": {
 			"views": "{count} pregled/a",
 			"freelancer": "Slobodni igrač",
+			"email": "Email",
+			"location": "Lokacija",
+			"phone": "Telefon",
+			"additionalInfo": {
+				"title": "Dodatne informacije"
+			},
 			"tabs": {
 				"memberships": "Članstva",
 				"events": "Susreti",

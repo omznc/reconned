@@ -664,9 +664,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				{showAddMember && (
 					<div className="space-y-4 p-4 bg-sidebar border">
-						<h3 className="font-medium">Dodaj novog člana</h3>
+						<h3 className="font-medium">{t("events.apply.form.addNewMember")}</h3>
 						<div className="space-y-2">
-							<Label htmlFor="memberName">Ime i prezime</Label>
+							<Label htmlFor="memberName">{t("events.apply.form.fullName")}</Label>
 							<Input
 								id="memberName"
 								value={tempMember.name}
@@ -676,9 +676,11 @@ export function EventApplicationForm({ existingApplication, event, user, current
 										name: e.target.value,
 									}))
 								}
-								placeholder="Unesite puno ime i prezime"
+								placeholder={t("events.apply.form.enterFullName")}
 							/>
-							{!tempMember.name && <p className="text-sm text-destructive">Ime je obavezno</p>}
+							{!tempMember.name && (
+								<p className="text-sm text-destructive">{t("events.apply.form.nameRequired")}</p>
+							)}
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="memberEmail">Email</Label>
@@ -692,14 +694,14 @@ export function EventApplicationForm({ existingApplication, event, user, current
 										email: e.target.value,
 									}))
 								}
-								placeholder="Unesite email adresu"
+								placeholder={t("events.apply.form.enterEmail")}
 							/>
 							<span className="text-sm text-muted-foreground">
 								Koristeći email adresu, osobe koje nemaju račun na sajtu će dobiti pozivnicu za
 								registraciju, ali ta registracija nije obavezna.
 							</span>
 							{tempMember.email && !isValidEmail(tempMember.email) && (
-								<p className="text-sm text-destructive">Email adresa nije validna</p>
+								<p className="text-sm text-destructive">{t("events.apply.form.invalidEmail")}</p>
 							)}
 						</div>
 						<div className="flex gap-2 justify-end">

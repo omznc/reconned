@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+import type { WebPage, WithContext } from "schema-dts";
+import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
+import { env } from "@/lib/env";
 
 const lastUpdated = new Date("2025-04-13");
 
@@ -10,8 +13,31 @@ export default async function PrivacyPolicyPage() {
 	const t = await getTranslations();
 	const locale = await getLocale();
 
+	const privacyPageSchema: WithContext<WebPage> = {
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/privacy-policy`,
+		name: t("public.privacy.metadata.title"),
+		description: t("public.privacy.metadata.description"),
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/privacy-policy`,
+		dateModified: lastUpdated.toISOString(),
+		datePublished: lastUpdated.toISOString(),
+		publisher: {
+			"@type": "Organization",
+			name: "Reconned",
+			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+			logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		},
+		about: {
+			"@type": "Thing",
+			name: "Privacy Policy",
+			description: "Data privacy and protection policies",
+		},
+	};
+
 	return (
 		<div className="container mx-auto py-12 px-4 max-w-4xl">
+			<JsonLdScript data={privacyPageSchema} />
 			<h1 className="text-3xl font-bold mb-8">{t("public.privacy.title")}</h1>
 
 			<div className="prose dark:prose-invert max-w-none">

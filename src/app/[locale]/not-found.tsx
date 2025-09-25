@@ -9,8 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
 	const t = await getTranslations();
 
 	return {
-		title: t("public.notFound.notFound.metadata.title"),
-		description: t("public.notFound.notFound.metadata.description"),
+		title: t("public.notFound.title"),
+		description: t("public.notFound.metadata.description"),
 		keywords: t("public.notFound.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),

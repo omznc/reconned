@@ -19,3 +19,14 @@ export function ErrorPage(props: ErrorPageProps) {
 		</div>
 	);
 }
+
+interface ErrorPageWithTranslationProps {
+	titleKey: string;
+	link?: string;
+	linkText?: string;
+}
+
+export function ErrorPageWithTranslation(props: ErrorPageWithTranslationProps) {
+	const t = useTranslations();
+	return <ErrorPage title={t(props.titleKey)} link={props.link} linkText={props.linkText} />;
+}

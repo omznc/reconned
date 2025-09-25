@@ -25,14 +25,17 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import { EventCalendar } from "@/components/event-calendar";
+import JsonLdScript from "@/components/json-ld-script";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
+import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
 interface PageProps {
@@ -113,8 +116,50 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const t = await getTranslations();
 
+	const websiteSchema: WithContext<WebSite> = {
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		name: "Reconned",
+		description: t("public.home.metadata.description"),
+		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		sameAs: ["https://github.com/omznc/reconned"],
+		potentialAction: {
+			"@type": "SearchAction",
+			target: {
+				"@type": "EntryPoint",
+				urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search?q={search_term_string}`,
+			},
+			"query-input": "required name=search_term_string",
+		},
+		about: {
+			"@type": "SportsOrganization",
+			name: "Airsoft Community",
+			sport: "Airsoft",
+			description: "Platform connecting airsoft clubs and players",
+		},
+	};
+
+	const organizationSchema: WithContext<SportsOrganization> = {
+		"@context": "https://schema.org",
+		"@type": "SportsOrganization",
+		name: "Reconned",
+		sport: "Airsoft",
+		description: t("public.home.metadata.description"),
+		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		foundingDate: "2024",
+		address: {
+			"@type": "PostalAddress",
+			addressCountry: "BA",
+		},
+		sameAs: ["https://github.com/omznc/reconned"],
+	};
+
 	return (
 		<>
+			<JsonLdScript data={websiteSchema} />
+			<JsonLdScript data={organizationSchema} />
 			<MessageHandler />
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
@@ -232,12 +277,12 @@ export default async function Home({ searchParams }: PageProps) {
 			<div className="flex flex-col size-full gap-8 max-w-[1200px] px-4 py-8">
 				<div className="flex flex-col gap-4">
 					<div>
-						<h2 className="text-2xl font-bold">{t("public.upcomingEventsTitle")}</h2>
-						<p className="text-gray-400">{t("public.upcomingEventsSubtitle")}</p>
+						<h2 className="text-2xl font-bold">{t("public.home.upcomingEventsTitle")}</h2>
+						<p className="text-gray-400">{t("public.home.upcomingEventsSubtitle")}</p>
 					</div>
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{upcomingEvents.length === 0 && (
-							<div className="text-muted-foreground">{t("public.upcomingEventsNone")}</div>
+							<div className="text-muted-foreground">{t("public.home.upcomingEventsNone")}</div>
 						)}
 
 						{upcomingEvents.map((event) => (

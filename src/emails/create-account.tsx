@@ -28,7 +28,12 @@ export const CreateAccountEmail = async ({
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
-						<Img src={clubLogo} alt="Logo Kluba" width="100" style={emailStyles.logo} />
+						<Img
+							src={clubLogo}
+							alt={t("emails.createAccount.clubLogo")}
+							width="100"
+							style={emailStyles.logo}
+						/>
 					</Section>
 					<Heading style={emailStyles.h1}>{t("emails.createAccount.invitationTitle")}</Heading>
 					<Text style={emailStyles.text}>{t("emails.createAccount.message", { eventName, eventDate })}</Text>

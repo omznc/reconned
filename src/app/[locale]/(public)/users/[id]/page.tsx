@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import type { Person, ProfilePage, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
+import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
@@ -54,8 +56,56 @@ export default async function Page(props: PageProps) {
 	user.eventRegistration = user.eventRegistration.filter((reg) => !(reg.event.isPrivate || reg.event.club.isPrivate));
 	user.clubMembership = user.clubMembership.filter((membership) => !membership.club.isPrivate);
 
+	const personSchema: WithContext<Person> = {
+		"@context": "https://schema.org",
+		"@type": "Person",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		name: user.name,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		image: user.image || undefined,
+		description: user.bio || undefined,
+		address: user.location
+			? {
+					"@type": "PostalAddress",
+					addressLocality: user.location,
+				}
+			: undefined,
+		additionalName: user.callsign || undefined,
+		sameAs: user.website ? [user.website] : undefined,
+		memberOf: user.clubMembership.map((membership) => ({
+			"@type": "SportsOrganization",
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${membership.club.slug ?? membership.club.id}`,
+			name: membership.club.name,
+			sport: "Airsoft",
+		})),
+		knowsAbout: ["Airsoft", "Military Simulation", "Team Sports"],
+		hasOccupation: {
+			"@type": "Occupation",
+			name: "Airsoft Player",
+		},
+	};
+
+	const profilePageSchema: WithContext<ProfilePage> = {
+		"@context": "https://schema.org",
+		"@type": "ProfilePage",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		mainEntity: {
+			"@type": "Person",
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+			name: user.name,
+			image: user.image || undefined,
+			description: user.bio || undefined,
+		},
+		about: {
+			"@type": "Person",
+			name: user.name,
+		},
+	};
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
+			<JsonLdScript data={personSchema} />
+			<JsonLdScript data={profilePageSchema} />
 			<UserOverview user={user} />
 		</div>
 	);

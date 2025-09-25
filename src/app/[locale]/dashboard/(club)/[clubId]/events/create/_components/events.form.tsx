@@ -387,7 +387,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											<RequiredFieldMarker />
 										</FormLabel>
 										<FormControl>
-											<Input placeholder="Food Wars 24" type="text" {...field} />
+											<Input
+												placeholder={t("dashboard.club.events.create.namePlaceholder")}
+												type="text"
+												{...field}
+											/>
 										</FormControl>
 										<FormDescription>
 											{t("dashboard.club.events.create.nameDescription")}

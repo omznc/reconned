@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+import type { WebPage, WithContext } from "schema-dts";
+import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
+import { env } from "@/lib/env";
 
 const lastUpdated = new Date("2025-04-13");
 
@@ -10,8 +13,31 @@ export default async function TermsOfUsePage() {
 	const t = await getTranslations();
 	const locale = await getLocale();
 
+	const termsPageSchema: WithContext<WebPage> = {
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/terms-of-use`,
+		name: t("public.terms.metadata.title"),
+		description: t("public.terms.metadata.description"),
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/terms-of-use`,
+		dateModified: lastUpdated.toISOString(),
+		datePublished: lastUpdated.toISOString(),
+		publisher: {
+			"@type": "Organization",
+			name: "Reconned",
+			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+			logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		},
+		about: {
+			"@type": "Thing",
+			name: "Terms of Use",
+			description: "Terms and conditions for using the platform",
+		},
+	};
+
 	return (
 		<div className="container mx-auto py-12 px-4 max-w-4xl">
+			<JsonLdScript data={termsPageSchema} />
 			<h1 className="text-3xl font-bold mb-8">{t("public.terms.title")}</h1>
 
 			<div className="prose dark:prose-invert max-w-none">
@@ -32,7 +58,7 @@ export default async function TermsOfUsePage() {
 				</section>
 
 				<section className="mb-8">
-					<h2 className="text-2xl font-semibold mb-4">{t("public.eligibility.title")}</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("public.terms.eligibility.title")}</h2>
 					<p>{t("public.terms.eligibility.description")}</p>
 				</section>
 

@@ -4,6 +4,8 @@ import { CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import type { ItemList, WithContext } from "schema-dts";
+import JsonLdScript from "@/components/json-ld-script";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,8 +56,52 @@ export default async function Page() {
 		take: 100,
 	});
 	const t = await getTranslations();
+
+	const itemListSchema: WithContext<ItemList> = {
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		name: t("public.events.metadata.title"),
+		description: t("public.events.metadata.description"),
+		numberOfItems: upcomingEvents.length,
+		itemListElement: upcomingEvents.map((event, index) => ({
+			"@type": "ListItem",
+			position: index + 1,
+			item: {
+				"@type": "SportsEvent",
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+				name: event.name,
+				description: event.description,
+				sport: "Airsoft",
+				startDate: event.dateStart.toISOString(),
+				endDate: event.dateEnd.toISOString(),
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+				image: event.image || undefined,
+				location: {
+					"@type": "Place",
+					name: event.location,
+				},
+				organizer: {
+					"@type": "SportsOrganization",
+					name: event.club?.name,
+					sport: "Airsoft",
+				},
+				offers:
+					event.costPerPerson > 0
+						? {
+								"@type": "Offer",
+								price: event.costPerPerson,
+								priceCurrency: "BAM",
+							}
+						: undefined,
+				eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+				eventStatus: "https://schema.org/EventScheduled",
+			},
+		})),
+	};
+
 	return (
 		<div className="flex flex-col gap-4 max-w-[1200px] py-8 px-4">
+			<JsonLdScript data={itemListSchema} />
 			<h1 className="text-xl font-bold">{t("public.events.title")}</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{upcomingEvents.length === 0 && <div className="text-muted-foreground">{t("public.events.none")}</div>}

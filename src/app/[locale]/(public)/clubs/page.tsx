@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import type { ItemList, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { VerifiedClubIcon } from "@/components/icons";
+import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
@@ -42,9 +44,43 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 		OFFSET ${skip}
 	`;
 
+	const itemListSchema: WithContext<ItemList> = {
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		name: t("public.clubs.metadata.title"),
+		description: t("public.clubs.metadata.description"),
+		numberOfItems: total,
+		itemListElement: clubs.map((club, index) => ({
+			"@type": "ListItem",
+			position: index + 1 + skip,
+			item: {
+				"@type": "SportsOrganization",
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+				name: club.name,
+				description: club.description,
+				sport: "Airsoft",
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+				logo: club.logo || undefined,
+				address: club.location
+					? {
+							"@type": "PostalAddress",
+							addressLocality: club.location,
+						}
+					: undefined,
+				memberOf: club.verified
+					? {
+							"@type": "Organization",
+							name: "Verified Airsoft Clubs",
+						}
+					: undefined,
+			},
+		})),
+	};
+
 	return (
 		<div className="container max-w-4xl py-8 space-y-8 px-4">
-			<h1 className="text-2xl font-bold">{t("public.title")}</h1>
+			<JsonLdScript data={itemListSchema} />
+			<h1 className="text-2xl font-bold">{t("public.clubs.title")}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				{clubs.map((club) => (
 					<SearchResultCard
@@ -59,7 +95,7 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 						description={club.description}
 						href={`/clubs/${club.slug ?? club.id}`}
 						badges={[
-							`${club.member_count} ${club.member_count === 1 ? t("public.member") : t("public.members")}`,
+							`${club.member_count} ${club.member_count === 1 ? t("public.clubs.member") : t("public.clubs.members")}`,
 						]}
 						meta={club.location || undefined}
 					/>

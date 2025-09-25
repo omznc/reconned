@@ -79,7 +79,7 @@ export function LogoUpload({
 							<div className="relative w-full h-48 bg-muted">
 								<Image
 									src={displayValue}
-									alt="Club logo"
+									alt={t("components.clubsMap.clubLogo")}
 									fill
 									className="object-contain"
 									sizes="(max-width: 768px) 100vw, 400px"

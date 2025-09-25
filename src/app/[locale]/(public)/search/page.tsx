@@ -2,11 +2,14 @@ import { Calendar, Shield, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import type { SearchResultsPage, WithContext } from "schema-dts";
 import { Search } from "@/app/[locale]/(public)/search/_components/search";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
+import JsonLdScript from "@/components/json-ld-script";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
 interface Props {
@@ -267,8 +270,39 @@ export default async function SearchPage(props: Props) {
 	const { q, tab } = await props.searchParams;
 	const t = await getTranslations();
 
+	const searchSchema: WithContext<SearchResultsPage> = {
+		"@context": "https://schema.org",
+		"@type": "SearchResultsPage",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+		name: t("public.search.metadata.title", { query: q }),
+		description: t("public.search.metadata.description", { query: q }),
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+		mainEntity: {
+			"@type": "WebSite",
+			"@id": env.NEXT_PUBLIC_BETTER_AUTH_URL,
+			name: "Reconned",
+			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+			potentialAction: {
+				"@type": "SearchAction",
+				target: {
+					"@type": "EntryPoint",
+					urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search?q={search_term_string}`,
+				},
+				"query-input": "required name=search_term_string",
+			},
+		},
+		about: q
+			? {
+					"@type": "Thing",
+					name: q,
+					description: `Search results for: ${q}`,
+				}
+			: undefined,
+	};
+
 	return (
 		<div className="container max-w-4xl py-8 space-y-8 px-4">
+			<JsonLdScript data={searchSchema} />
 			<div>
 				<h1 className="text-4xl font-bold mb-2">{t("public.search.title")}</h1>
 				<p className="text-muted-foreground">{t("public.search.description")}</p>

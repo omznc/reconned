@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import type { SportsEvent, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
+import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
@@ -53,6 +55,15 @@ export default async function Page(props: PageProps) {
 				},
 			},
 			rules: true,
+			club: {
+				select: {
+					id: true,
+					name: true,
+					slug: true,
+					logo: true,
+					verified: true,
+				},
+			},
 		},
 	});
 
@@ -62,8 +73,55 @@ export default async function Page(props: PageProps) {
 		return <NotFoundTemporary />;
 	}
 
+	const sportsEventSchema: WithContext<SportsEvent> = {
+		"@context": "https://schema.org",
+		"@type": "SportsEvent",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+		name: event.name,
+		description: event.description,
+		sport: "Airsoft",
+		startDate: event.dateStart.toISOString(),
+		endDate: event.dateEnd.toISOString(),
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+		image: event.image || undefined,
+		location: {
+			"@type": "Place",
+			name: event.location,
+			hasMap: event.googleMapsLink || undefined,
+		},
+		organizer: {
+			"@type": "SportsOrganization",
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${event.club.slug ?? event.club.id}`,
+			name: event.club.name,
+			sport: "Airsoft",
+			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${event.club.slug ?? event.club.id}`,
+			logo: event.club.logo || undefined,
+		},
+		offers:
+			event.costPerPerson > 0
+				? {
+						"@type": "Offer",
+						price: event.costPerPerson,
+						priceCurrency: "BAM",
+						availability: "https://schema.org/InStock",
+						validFrom: event.dateRegistrationsOpen.toISOString(),
+						validThrough: event.dateRegistrationsClose.toISOString(),
+					}
+				: undefined,
+		eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+		eventStatus: "https://schema.org/EventScheduled",
+		maximumAttendeeCapacity: event.allowFreelancers ? undefined : "Members only",
+		typicalAgeRange: "18+",
+		about: {
+			"@type": "Thing",
+			name: "Airsoft",
+			description: "Military simulation sport using replica firearms",
+		},
+	};
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8  px-4">
+			<JsonLdScript data={sportsEventSchema} />
 			<EventOverview event={event} />
 		</div>
 	);

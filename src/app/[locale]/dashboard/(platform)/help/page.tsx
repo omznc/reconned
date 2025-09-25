@@ -27,7 +27,7 @@ export default function Page() {
 							<li>{t("dashboard.help.googleMaps.steps.step4")}</li>
 							<Image
 								src={GoogleMap1Image}
-								alt="Google Maps dijalog za dijeljenje"
+								alt={t("dashboard.help.googleMaps.shareDialog")}
 								className="w-full border md:w-1/2 dark:invert"
 							/>
 							<li>{t("dashboard.help.googleMaps.steps.step5")}</li>

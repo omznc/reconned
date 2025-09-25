@@ -4,6 +4,7 @@ import type { Event } from "@generated/client";
 import { format } from "date-fns";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Link } from "@/i18n/navigation";
@@ -15,6 +16,7 @@ interface CarouselProps {
 
 export function EventsCarousel(props: CarouselProps) {
 	const { user } = useIsAuthenticated();
+	const t = useTranslations();
 	return (
 		<Carousel
 			opts={{
@@ -60,7 +62,9 @@ export function EventsCarousel(props: CarouselProps) {
 									className="cursor-pointer w-1/2 transition-all"
 								>
 									{user ? (
-										<Link href={`/events/${event.id}?register=true`}>Prijavi se na susret</Link>
+										<Link href={`/events/${event.id}?register=true`}>
+											{t("events.apply.form.applyToEvent")}
+										</Link>
 									) : (
 										<Link suppressHydrationWarning={true} href="/login">
 											Uloguj se

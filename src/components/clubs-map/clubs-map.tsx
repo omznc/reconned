@@ -17,7 +17,7 @@ function createClubIcon(logoUrl: string | null | undefined, size: number) {
 		return (
 			<Image
 				src={logoUrl}
-				alt="Club logo"
+				alt={t("components.clubsMap.clubLogo")}
 				width={size}
 				height={size}
 				className="object-contain transition-transform hover:scale-125"

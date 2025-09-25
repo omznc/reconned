@@ -78,7 +78,9 @@
 			"helloUser": "Hi {name},",
 			"message": "You are invited to join the {clubName} club. ",
 			"action": "Accept invite",
-			"footer": "If you did not expect this invitation, please ignore this email."
+			"footer": "If you did not expect this invitation, please ignore this email.",
+			"clubLogo": "Club Logo",
+			"invitationCode": "Or use this invitation code:"
 		},
 		"createAccount": {
 			"title": "You are invited to an airsoft event! ",
@@ -87,7 +89,8 @@
 			"clubMessage": "Your account will automatically be linked to club {clubName} and you will be able to access match details immediately.",
 			"action": "Create Account",
 			"emailLinked": "This link is associated with the email address: {email}",
-			"footer": "If you were not expecting this invitation, please ignore this email."
+			"footer": "If you were not expecting this invitation, please ignore this email.",
+			"clubLogo": "Club Logo"
 		},
 		"rateEvent": {
 			"title": "Rate your experience at {eventName}!",
@@ -96,7 +99,8 @@
 			"helloUser": "Hello {name},",
 			"message": "Thank you for attending the {eventName} event held on {date}. ",
 			"action": "Rate the event",
-			"footer": "{clubName} - Thank you for your participation!"
+			"footer": "{clubName} - Thank you for your participation!",
+			"clubLogo": "Club Logo"
 		},
 		"membershipExpiration": {
 			"expiredTitle": "Your membership in {clubName} has expired",
@@ -107,7 +111,8 @@
 			"expiredMessage": "Your membership in the {clubName} club has expired on {date}. If you wish to continue being a club member, please renew your membership.",
 			"expiringMessage": "Your membership in the {clubName} club will expire on {date} (in {days} days). To ensure continuous membership, please consider renewing before the expiry date.",
 			"action": "Renew Membership",
-			"footer": "If you no longer wish to be a member of {clubName}, you can ignore this email."
+			"footer": "If you no longer wish to be a member of {clubName}, you can ignore this email.",
+			"clubLogo": "Club Logo"
 		},
 		"membershipExpirationOwner": {
 			"expiredTitle": "{memberName}'s membership in {clubName} has expired",
@@ -118,7 +123,8 @@
 			"expiredMessage": "The membership of {memberName} in your {clubName} club has expired on {date}.",
 			"expiringMessage": "The membership of {memberName} in your {clubName} club will expire on {date} (in {days} days).",
 			"action": "Manage Members",
-			"footer": "This is an automated notification to help you manage your club memberships."
+			"footer": "This is an automated notification to help you manage your club memberships.",
+			"clubLogo": "Club Logo"
 		},
 		"passwordReset": {
 			"title": "Reset your password",
@@ -134,6 +140,11 @@
 			"title": "You are lost",
 			"message": "Page not found",
 			"backHome": "Return to homepage",
+			"layout": {
+				"metadata": {
+					"keywords": "404, not found, page not found, airsoft, Bosnia, BiH"
+				}
+			},
 			"metadata": {
 				"title": "404 - Page not found - RECONNED",
 				"description": "The page you are looking for does not exist."
@@ -318,7 +329,14 @@
 						"cannotApplySolo": "You cannot apply solo because you are not a member of any club and this event does not allow freelancer applications.",
 						"currentlySelected": "Currently selected",
 						"switchingWarning": "Switching to solo application will cancel all current team member invitations.",
-						"or": "or"
+						"or": "or",
+						"applyToEvent": "Apply to event",
+						"nameRequired": "Name is required",
+						"enterEmail": "Enter email address",
+						"enterFullName": "Enter full name",
+						"invalidEmail": "Email address is not valid",
+						"addNewMember": "Add new member",
+						"fullName": "Full name"
 					},
 					"teamMembers": "Team members",
 					"searchPlayers": "Search players...",
@@ -570,7 +588,11 @@
 			}
 		},
 		"supportUs": {
-			"title": "Support us (coming soon)"
+			"title": "Support us (coming soon)",
+			"metadata": {
+				"title": "Support us - RECONNED",
+				"description": "Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players."
+			}
 		}
 	},
 	"dashboard": {
@@ -587,12 +609,18 @@
 			"error": "An error occurred",
 			"loading": "Loading...",
 			"nextEvent": "Next event",
-			"latestReview": "Latest review"
+			"latestReview": "Latest review",
+			"icons": {
+				"clubOwner": "Club owner",
+				"clubManager": "Club manager",
+				"member": "Member"
+			}
 		},
 		"help": {
 			"title": "Help",
 			"googleMaps": {
 				"title": "How to add a Google Maps link to an event",
+				"shareDialog": "Google Maps share dialog",
 				"steps": {
 					"step1": "Open Google Maps and find the desired location",
 					"step2": "Click the \"Share\" button",
@@ -635,6 +663,11 @@
 				"avatar": "Profile picture",
 				"avatarDescription": "We recommend that you upload a profile picture.",
 				"saving": "Saving...",
+				"uploadAvatar": "Upload avatar",
+				"replaceAvatar": "Replace avatar",
+				"removeAvatar": "Remove avatar",
+				"cropPhotoTitle": "Crop photo",
+				"cropPhotoDescription": "Adjust the crop area and click save to apply changes",
 				"name": "Your name",
 				"cancel": "Cancel",
 				"callsign": "Callsign",
@@ -662,6 +695,17 @@
 				"phoneDescription": "This is how people can reach you"
 			},
 			"security": {}
+		},
+		"admin": {
+			"clubs": {
+				"allClubs": "All clubs",
+				"notFound": "Club not found."
+			},
+			"noAccess": "You don't have access to this page",
+			"users": {
+				"notFound": "User not found.",
+				"memberSince": "Member since:"
+			}
 		},
 		"security": {
 			"passwordChange": {
@@ -1067,6 +1111,7 @@
 					"map": "Map",
 					"save": "Save changes",
 					"create": "Create an event",
+					"namePlaceholder": "Food Wars 24",
 					"requiredSection": "Required",
 					"basicInformationDescription": "The basic information we need to create your event",
 					"registrationPeriod": "Registration period",
@@ -1368,7 +1413,8 @@
 			"select": "Choose a language"
 		},
 		"clubsMap": {
-			"viewProfile": "View profile"
+			"viewProfile": "View profile",
+			"clubLogo": "Club logo"
 		},
 		"calendar": {
 			"today": "Today",
@@ -1404,6 +1450,13 @@
 				"cost": "Price",
 				"apply": "Log in",
 				"registrationsClosed": "Registrations for this event are currently not open"
+			},
+			"carousel": {
+				"nextSlide": "Next slide",
+				"previousSlide": "Previous slide"
+			},
+			"sidebar": {
+				"mobileToggle": "Displays the mobile sidebar."
 			}
 		},
 		"error": {
@@ -1446,6 +1499,12 @@
 		"userOverview": {
 			"views": "{count} view/s",
 			"freelancer": "Freelancer",
+			"email": "Email",
+			"location": "Location",
+			"phone": "Phone",
+			"additionalInfo": {
+				"title": "Additional information"
+			},
 			"clubs": {
 				"title": "Clubs",
 				"noClubs": "Not a member of any club"

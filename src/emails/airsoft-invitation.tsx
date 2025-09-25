@@ -32,7 +32,12 @@ export const ClubInvitationEmail = async ({
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
-						<Img src={clubLogo} alt="Logo Kluba" width="100" style={emailStyles.logo} />
+						<Img
+							src={clubLogo}
+							alt={t("emails.airsoftInvitation.clubLogo")}
+							width="100"
+							style={emailStyles.logo}
+						/>
 						<Heading style={emailStyles.clubName}>
 							{clubName} - {clubLocation}
 						</Heading>
@@ -57,7 +62,7 @@ export const ClubInvitationEmail = async ({
 							{t("emails.airsoftInvitation.action")}
 						</Button>
 					</Section>
-					<Text style={emailStyles.text}>Ili koristite ovaj pozivni kod:</Text>
+					<Text style={emailStyles.text}>{t("emails.airsoftInvitation.invitationCode")}</Text>
 					<code style={emailStyles.code}>{code}</code>
 					<Hr style={emailStyles.hr} />
 					<Text style={emailStyles.footer}>{t("emails.airsoftInvitation.footer")}</Text>

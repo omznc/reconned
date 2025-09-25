@@ -84,7 +84,9 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			</Card> */}
 			<div className="flex flex-wrap gap-2">
 				{shouldShowStats && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						{t("components.userOverview.views", { count: visitors })}
+					</Badge>
 				)}
 				{user.clubMembership.length === 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
