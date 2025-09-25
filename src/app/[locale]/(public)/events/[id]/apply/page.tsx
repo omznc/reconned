@@ -2,7 +2,7 @@ import { isAfter, isBefore } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import type { WebPage, WithContext } from "schema-dts";
+import type { CollectionPage, WithContext } from "schema-dts";
 import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.form";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
@@ -134,9 +134,9 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 		);
 	}
 
-	const applicationPageSchema: WithContext<WebPage> = {
+	const applicationPageSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
-		"@type": "WebPage",
+		"@type": "CollectionPage",
 		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
 		name: `${existingApplication ? t("public.events.apply.editTitle") : t("public.events.apply.title")}: ${event.name}`,
 		description: t("public.events.apply.metadata.description", { eventName: event.name }),

@@ -77,6 +77,10 @@ export default async function Page(props: PageProps) {
 		"@type": "SportsOrganization",
 		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
 		name: club.name,
+		numberOfEmployees: {
+			"@type": "QuantitativeValue",
+			value: club._count.members,
+		},
 		description: club.description || undefined,
 		sport: "Airsoft",
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
@@ -89,14 +93,15 @@ export default async function Page(props: PageProps) {
 					addressCountry: "BA",
 				}
 			: undefined,
-		geo:
-			club.latitude && club.longitude
-				? {
+		...(club.latitude && club.longitude
+			? {
+					geo: {
 						"@type": "GeoCoordinates",
 						latitude: club.latitude,
 						longitude: club.longitude,
-					}
-				: undefined,
+					},
+				}
+			: {}),
 		contactPoint:
 			club.contactEmail || club.contactPhone
 				? {
@@ -114,7 +119,6 @@ export default async function Page(props: PageProps) {
 			image: member.user.image || undefined,
 			additionalName: member.user.callsign || undefined,
 		})),
-		numberOfEmployees: club._count.members,
 		aggregateRating: club.verified
 			? {
 					"@type": "AggregateRating",

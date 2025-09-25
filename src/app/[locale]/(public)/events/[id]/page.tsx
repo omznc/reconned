@@ -110,7 +110,8 @@ export default async function Page(props: PageProps) {
 				: undefined,
 		eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
 		eventStatus: "https://schema.org/EventScheduled",
-		maximumAttendeeCapacity: event.allowFreelancers ? undefined : "Members only",
+		// TODO: Add maximumAttendeeCapacity
+		// maximumAttendeeCapacity: event.allowFreelancers ? undefined : "Members only",
 		typicalAgeRange: "18+",
 		about: {
 			"@type": "Thing",

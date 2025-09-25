@@ -25,7 +25,7 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
+import type { SportsOrganization, WithContext } from "schema-dts";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import { EventCalendar } from "@/components/event-calendar";
 import JsonLdScript from "@/components/json-ld-script";
@@ -116,7 +116,7 @@ export default async function Home({ searchParams }: PageProps) {
 
 	const t = await getTranslations();
 
-	const websiteSchema: WithContext<WebSite> = {
+	const websiteSchema = {
 		"@context": "https://schema.org",
 		"@type": "WebSite",
 		name: "Reconned",

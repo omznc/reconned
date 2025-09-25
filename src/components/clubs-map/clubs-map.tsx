@@ -12,7 +12,8 @@ import { Slider } from "@/components/ui/slider";
 import { Link } from "@/i18n/navigation";
 
 // Helper function to create a custom icon from club logo
-function createClubIcon(logoUrl: string | null | undefined, size: number) {
+function createClubIcon(logoUrl: string | null | undefined, size: number, t: ReturnType<typeof useTranslations>) {
+	console.log(t);
 	if (logoUrl) {
 		return (
 			<Image
@@ -48,8 +49,8 @@ interface ClubsMapProps {
 	interactive?: boolean;
 }
 
-function LocationMarker({ position, logo }: { position: [number, number]; logo?: string | null }) {
-	return position ? <Marker position={position} icon={createClubIcon(logo, 32)} /> : null;
+function LocationMarker({ position, logo, t }: { position: [number, number]; logo?: string | null; t: ReturnType<typeof useTranslations> }) {
+	return position ? <Marker position={position} icon={createClubIcon(logo, 32, t	)} /> : null;
 }
 
 function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
@@ -113,7 +114,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 				{interactive && <MapEventHandler onLocationSelect={onLocationSelect} />}
 
 				{interactive && selectedLocation && (
-					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} />
+					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} t={t} />
 				)}
 
 				{!interactive &&
@@ -122,7 +123,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 							<Marker
 								key={club.id}
 								position={[club.latitude, club.longitude]}
-								icon={createClubIcon(club.logo, logoSize)}
+								icon={createClubIcon(club.logo, logoSize, t)}
 							>
 								<Popup className="rounded-none [&_.leaflet-popup-content-wrapper]:dark:bg-gray-800 [&_.leaflet-popup-content-wrapper]:dark:text-white">
 									<div className="flex flex-col items-center gap-2 p-2">
