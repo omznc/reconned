@@ -669,11 +669,11 @@
 				"allClubs": "All clubs",
 				"notFound": "Club not found."
 			},
-			"noAccess": "You don't have access to this page",
 			"users": {
 				"notFound": "User not found.",
 				"memberSince": "Member since:"
-			}
+			},
+			"noAccess": "You have no access to this page"
 		},
 		"security": {
 			"passwordChange": {
@@ -1475,13 +1475,7 @@
 			"pastEvents": {
 				"title": "Previous events",
 				"noEvents": "No previous events"
-			},
-			"tabs": {
-				"events": "Events",
-				"reviews": "Reviews",
-				"memberships": "Memberships"
-			},
-			"attended": "Attended"
+			}
 		},
 		"reviews": {
 			"title": "Ratings",
@@ -1566,8 +1560,6 @@
 		"leaveClubButton": {
 			"title": "Leave club",
 			"body": "Are you sure you'd like to leave this club? You'll need an invite to join it again.",
-			"confirm": "Leave club",
-			"cancel": "No, cancel",
 			"error": "There was an error while trying to leave the club",
 			"action": "Leave club",
 			"ownerError": "Club owners cannot leave the club. You must first transfer ownership or delete the club."
@@ -1593,7 +1585,6 @@
 			"unlimited": "Unlimited"
 		},
 		"instagramGallery": {
-			"error": "There's been a problem contacting Instagram",
 			"noPhotos": "Nothing to show here",
 			"viewMore": "View more on Instagram"
 		},

@@ -772,11 +772,11 @@
 				"allClubs": "Svi klubovi",
 				"notFound": "Klub nije pronađen."
 			},
-			"noAccess": "Nemate pristup ovoj stranici",
 			"users": {
 				"notFound": "Korisnik nije pronađen.",
 				"memberSince": "Član od:"
-			}
+			},
+			"noAccess": "Nemate pristup ovoj stranici"
 		},
 		"club": {
 			"info": {
@@ -888,7 +888,6 @@
 					"pageNotFound": "Facebook Page nije pronađena.",
 					"personalAccount": "Instagram račun povezan sa odabranom Facebook stranicom nije Business račun. Potrebno je koristiti Instagram Business račun za povezivanje."
 				},
-				"cancel": "Odustani",
 				"descriptionPlaceholder": "Ovo je kul opis",
 				"mustSaveClubFirst": "Spremite informacije o klubu prije dodavanja logo-a."
 			},
@@ -1271,6 +1270,7 @@
 	},
 	"components": {
 		"sidebar": {
+			"mobileToggle": "Prikazuje mobilni sidebar.",
 			"betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",
 			"githubMessage": "Sada smo open-source! Kliknite i pomozite nam da postanemo bolji!",
 			"home": "Početna",
@@ -1412,14 +1412,11 @@
 				"cost": "Cijena",
 				"apply": "Prijavi se",
 				"registrationsClosed": "Prijave za ovaj susret trenutno nisu otvorene"
-			},
-			"carousel": {
-				"nextSlide": "Next slide",
-				"previousSlide": "Previous slide"
-			},
-			"sidebar": {
-				"mobileToggle": "Displays the mobile sidebar."
 			}
+		},
+		"carousel": {
+			"nextSlide": "Sljedeći slide",
+			"previousSlide": "Prethodni slide"
 		},
 		"error": {
 			"backToHome": "Povratak na početnu stranicu"
@@ -1467,11 +1464,6 @@
 			"additionalInfo": {
 				"title": "Dodatne informacije"
 			},
-			"tabs": {
-				"memberships": "Članstva",
-				"events": "Susreti",
-				"reviews": "Recenzije"
-			},
 			"clubs": {
 				"title": "Klubovi",
 				"noClubs": "Korisnik nije član nijednog kluba"
@@ -1483,8 +1475,7 @@
 			"pastEvents": {
 				"title": "Prošli susreti",
 				"noEvents": "Nema prošlih susreta"
-			},
-			"attended": "Prisustvovao"
+			}
 		},
 		"reviews": {
 			"title": "Ocjene",
@@ -1531,8 +1522,6 @@
 		"leaveClubButton": {
 			"title": "Napuštanje kluba",
 			"body": "Jeste li sigurni da želite napustiti ovaj klub? \nTrebat će vam pozivnica da se ponovo pridružite.",
-			"confirm": "Napusti klub",
-			"cancel": "Ne, vrati se",
 			"error": "Došlo je do greške prilikom napuštanja kluba",
 			"action": "Napusti klub",
 			"ownerError": "Vlasnik kluba ne može napustiti klub. Morate prvo prenijeti vlasništvo ili obrisati klub."
@@ -1597,8 +1586,7 @@
 		},
 		"instagramGallery": {
 			"noPhotos": "Nema fotografija za prikaz",
-			"viewMore": "Pogledaj više na Instagramu",
-			"error": "Greška pri učitavanju fotografija"
+			"viewMore": "Pogledaj više na Instagramu"
 		},
 		"fileUpload": {
 			"dropFilesHere": "Ubacite fajlove ovde",
@@ -1614,6 +1602,5 @@
 			"rateLimit": "Previše pokušaja. Molimo sačekajte nekoliko minuta.",
 			"generic": "Greška pri otpremanju slike."
 		}
-	},
-	"version": "Verzija {commit} ({date})"
+	}
 }

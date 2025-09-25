@@ -31,7 +31,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 				<div className="space-y-1">
 					<h3 className="font-medium">{post.title}</h3>
 					<p className="text-sm text-muted-foreground">
-						{t("published", {
+						{t("components.post.published", {
 							date: formatRelative(post.createdAt, new Date(), {
 								locale: bs,
 							}),
