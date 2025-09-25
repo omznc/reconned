@@ -181,8 +181,8 @@ export function FileUpload({
                                 {dragActive ? t("components.fileUpload.dropFilesHere") : t("components.fileUpload.clickToUploadOrDragAndDrop")}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                {multiple && t("maxFiles", { count: maxFiles })}
-                                {t("maxFileSize", { size: Math.round(maxFileSize / (1024 * 1024)) })}
+                                {multiple && t("components.fileUpload.maxFiles", { count: maxFiles })}
+                                {t("components.fileUpload.maxFileSize", { size: Math.round(maxFileSize / (1024 * 1024)) })}
                             </p>
                         </div>
                     </div>
@@ -192,7 +192,7 @@ export function FileUpload({
             {/* File count indicator */}
             {multiple && value.length > 0 && (
                 <p className="text-xs text-muted-foreground">
-                    {t("filesSelected", { count: value.length, maxFiles })}
+                    {t("components.fileUpload.filesSelected", { count: value.length, maxFiles })}
                 </p>
             )}
         </div>

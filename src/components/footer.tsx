@@ -141,7 +141,7 @@ export async function Footer() {
 					</div>
 				</div>
 				<div className="mt-8 pt-8 border-t border-border/10 text-center text-sm ">
-					<p>{t("copyright", { year: new Date().getFullYear() })}</p>
+					<p>© RECONNED, {new Date().getFullYear()} </p>
 					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
 						{t("components.footer.sponsors")}
 					</Link>

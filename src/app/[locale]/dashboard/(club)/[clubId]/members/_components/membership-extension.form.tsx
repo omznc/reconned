@@ -88,11 +88,11 @@ export function MembershipExtensionForm({
 				return;
 			}
 
-			toast.success(t("success", { user: membership.user.name }));
+			toast.success(t("components.membershipExtension.success", { user: membership.user.name }));
 
 			setIsOpen(false);
 		} catch {
-			toast.error(t("components.membershipExtension.error"));
+			toast.error(t("components.membershipExtension.failedToExtend"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -136,7 +136,7 @@ export function MembershipExtensionForm({
 				<CredenzaHeader>
 					<CredenzaTitle>{t("components.membershipExtension.extendMembershipTitle")}</CredenzaTitle>
 					<p className="text-sm text-muted-foreground">
-						{t("extendMembershipDescription", {
+						{t("components.membershipExtension.extendMembershipDescription", {
 							user: membership.user.name,
 						})}
 					</p>

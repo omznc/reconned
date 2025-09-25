@@ -38,7 +38,7 @@ export default async function RootLayout({
 					<Button variant={"outline"} className="w-full" asChild={true}>
 						<Link href="/" className="flex items-center gap-2">
 							<House className="w-4 h-4" />
-							{t("public.home")}
+							{t("components.sidebar.home")}
 						</Link>
 					</Button>
 				</div>

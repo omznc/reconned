@@ -2,57 +2,21 @@
 	"common": {
 		"actions": {
 			"save": "Sačuvaj",
-			"saveChanges": "Sačuvaj promjene",
 			"cancel": "Otkaži",
-			"edit": "Izmjeni",
-			"delete": "Obriši",
 			"create": "Kreiraj",
-			"view": "Pogledaj",
 			"add": "Dodaj",
-			"remove": "Ukloni",
 			"back": "Nazad",
-			"next": "Dalje",
-			"previous": "Prethodno",
 			"confirm": "Potvrdi",
-			"loading": "Učitavanje...",
 			"saving": "Spašavanje...",
-			"search": "Pretraži",
 			"reset": "Resetuj",
 			"enable": "Omogući",
 			"disable": "Onemogući"
 		},
 		"fields": {
-			"name": "Ime",
-			"description": "Opis",
-			"email": "Email",
-			"phone": "Broj telefona",
-			"location": "Lokacija",
-			"website": "Web stranica",
-			"password": "Lozinka",
-			"title": "Naslov",
-			"date": "Datum",
-			"actions": "Akcije",
-			"status": "Status"
+			"email": "Email"
 		},
-		"states": {
-			"success": "Uspjeh",
-			"error": "Greška",
-			"private": "Privatno",
-			"public": "Javno",
-			"active": "Aktivno",
-			"inactive": "Neaktivno",
-			"expired": "Isteklo",
-			"unlimited": "Neograničeno",
-			"pending": "Na čekanju"
-		},
-		"messages": {
-			"noResults": "Nema pronađenih rezultata",
-			"noData": "Nema pronađenih podataka",
-			"searchPlaceholder": "Pretraži...",
-			"selectPlaceholder": "Odaberi...",
-			"areYouSure": "Da li ste sigurni?",
-			"cannotUndo": "Ova akcija se ne može poništiti."
-		},
+		"states": {},
+		"messages": {},
 		"words": {
 			"breakfast": "Doručak",
 			"lunch": "Ručak",
@@ -378,6 +342,9 @@
 						"saveChanges": "Sačuvaj izmjene",
 						"submitApplication": "Pošalji prijavu"
 					}
+				},
+				"metadata": {
+					"description": "Prijava za {eventName}"
 				}
 			}
 		},
@@ -692,7 +659,8 @@
 				"website": "Web stranica",
 				"save": "Spasi promjene",
 				"bioPlaceholder": "Nešto o meni je to da...",
-				"phoneDescription": "Ovako vas ljudi mogu kontaktirati"
+				"phoneDescription": "Ovako vas ljudi mogu kontaktirati",
+				"linkTaken": "Link je zauzet"
 			},
 			"security": {}
 		},
@@ -813,7 +781,6 @@
 		"club": {
 			"info": {
 				"photoUploadError": "Došlo je do greške prilikom uploada slike",
-				"clubCreationError": "Došlo je do greške prilikom kreiranja kluba",
 				"clubCreationSuccess": "Klub uspješno kreiran",
 				"clubSaved": "Podaci o klubu su spašeni",
 				"success": "Podaci o klubu su spašeni",
@@ -866,7 +833,6 @@
 				"fileUploadFormats": "Podržani formati:",
 				"logoDelete": {
 					"title": "Jeste li sigurni?",
-					"body": "Da li ste sigurni da želite obrisati logo kluba?",
 					"confirm": "Obriši logo",
 					"cancel": "Ne, vrati se"
 				},
@@ -883,7 +849,6 @@
 				"instagramConnect": "Poveži Instagram",
 				"instagramConnecting": "Povezivanje...",
 				"instagramConnectSuccess": "Instagram račun je uspješno povezan",
-				"instagramConnectError": "Došlo je do greške prilikom povezivanja Instagram računa",
 				"instagramConnectedMessage": "Vaš klub je povezan sa Instagram računom",
 				"instagramDisconnecting": "Odspajanje...",
 				"instagramDisconnectSuccess": "Instagram račun je uspješno odspojen",
@@ -900,7 +865,6 @@
 				"instagramSelectPageDescription": "Odaberite Facebook stranicu koja je povezana s Instagram Business računom koji želite povezati s vašim klubom.",
 				"instagramNoPages": "Nije pronađena niti jedna Facebook stranica",
 				"instagramNoPageDescription": "Nisu pronađene Facebook stranice povezane s vašim računom. Prvo kreirajte Facebook stranicu i povežite je s Instagram Business računom.",
-				"instagramConnected": "Instagram povezan",
 				"instagramNotConnected": "Instagram nije povezan",
 				"instagramLoadingPages": "Učitavanje stranica...",
 				"backToClub": "Natrag na klub",
@@ -1378,9 +1342,7 @@
 				"terms": "Uslovi korištenja",
 				"changelog": "Izmjene"
 			},
-			"copyright": "© {year} RECONNED. Sva prava zadržana.",
-			"sponsors": "Pogledajte naše sponzore i partnere",
-			"version": "Verzija {commit} ({date})"
+			"sponsors": "Pogledajte naše sponzore i partnere"
 		},
 		"table": {
 			"showColumns": "Prikaži kolone",
@@ -1545,10 +1507,8 @@
 			"editEvent": "Izmjeni susret",
 			"apply": "Prijava",
 			"registrationsClosed": "Prijave zatvorene",
-			"registeredCount": "{count} prijavljenih",
 			"privateEvent": "Privatni susret",
 			"publicEvent": "Javni susret",
-			"views": "{count} pregled/a",
 			"location": "Lokacija",
 			"showLocation": "Prikaži lokaciju",
 			"map": "Mapa",
@@ -1563,16 +1523,10 @@
 			"allied": "Saveznički klub",
 			"instagramGallery": "Instagram galerija",
 			"instagramGalleryDescription": "Najnovije objave sa Instagrama",
-			"tabs": {
-				"posts": "Objave",
-				"members": "Članovi",
-				"reviews": "Recenzije"
-			},
 			"posts": "Objave kluba",
 			"createPost": "Nova objava",
 			"noPosts": "Nema objava",
-			"members": "Članovi",
-			"noMembers": "Ovaj klub trenutno nema članova"
+			"members": "Članovi"
 		},
 		"leaveClubButton": {
 			"title": "Napuštanje kluba",
@@ -1634,11 +1588,7 @@
 			"threeMonths": "3 mjeseca",
 			"sixMonths": "6 mjeseci",
 			"oneYear": "1 godina",
-			"cancel": "Otkaži",
-			"extend": "Produži",
-			"extending": "Produžavanje...",
 			"success": "Članstvo uspješno produženo",
-			"error": "Greška",
 			"failedToExtend": "Došlo je do greške prilikom produženja članstva",
 			"active": "Aktivno",
 			"expired": "Isteklo",
@@ -1649,12 +1599,6 @@
 			"noPhotos": "Nema fotografija za prikaz",
 			"viewMore": "Pogledaj više na Instagramu",
 			"error": "Greška pri učitavanju fotografija"
-		},
-		"fileDrop": {
-			"dropFilesHere": "Prevucite fajlove ovdje ili kliknite za pretraživanje",
-			"maxFiles": "Maksimalno {count, plural, =1 {{count} fajl, {maxSize}MB} =2 {{count} fajla, {maxSize}MB svaki} =3 {{count} fajla, {maxSize}MB svaki} =4 {{count} fajla, {maxSize}MB svaki} other {{count} fajlova, {maxSize}MB svaki}}",
-			"someFilesFailed": "Neki fajlovi nisu uspješno otpremljeni",
-			"maxFilesReached": "Dosegnut je maksimum od {count, plural, =1 {{count} fajla} =2 {{count} fajla} =3 {{count} fajla} =4 {{count} fajla} other {{count} fajlova}}"
 		},
 		"fileUpload": {
 			"dropFilesHere": "Ubacite fajlove ovde",
@@ -1670,5 +1614,6 @@
 			"rateLimit": "Previše pokušaja. Molimo sačekajte nekoliko minuta.",
 			"generic": "Greška pri otpremanju slike."
 		}
-	}
+	},
+	"version": "Verzija {commit} ({date})"
 }

@@ -140,7 +140,7 @@ export default function InstagramPageSelection() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh]">
 				<AlertCircle className="h-12 w-12 text-destructive" />
-				<h2 className="text-xl font-bold mt-4">{t("dashboard.club.info.instagramError")}</h2>
+				<h2 className="text-xl font-bold mt-4">{t("dashboard.club.info.instagramError.title")}</h2>
 				<p className="text-muted-foreground mt-2">{error}</p>
 				<Button variant="default" className="mt-6" onClick={handleCancel}>
 					<ArrowLeft className="mr-2 h-4 w-4" />

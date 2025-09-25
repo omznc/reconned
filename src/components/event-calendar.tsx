@@ -438,7 +438,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																		}}
 																	>
 																		<Plus className="h-4 w-4 mr-2" />
-																		{t("components.calendar.eventDetails.apply")}{" "}
+																		{t("components.calendar.eventDetails.apply")}
 																		<BadgeSoon className="ml-2" />
 																	</Button>
 																) : (

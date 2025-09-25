@@ -63,16 +63,16 @@ export function EventsCarousel(props: CarouselProps) {
 								>
 									{user ? (
 										<Link href={`/events/${event.id}?register=true`}>
-											{t("events.apply.form.applyToEvent")}
+											{t("public.events.apply.applyToEvent", { eventName: event.name })}
 										</Link>
 									) : (
 										<Link suppressHydrationWarning={true} href="/login">
-											Uloguj se
+											{t("public.auth.login")}
 										</Link>
 									)}
 								</Button>
 								<Button asChild={true} className="w-1/2 cursor-pointer">
-									<Link href={`/events/${event.id}`}>Detalji</Link>
+									<Link href={`/events/${event.id}`}>{t("public.events.view")}</Link>
 								</Button>
 							</div>
 						</div>

@@ -2,57 +2,21 @@
 	"common": {
 		"actions": {
 			"save": "Save",
-			"saveChanges": "Save changes",
 			"cancel": "Cancel",
-			"edit": "Edit",
-			"delete": "Delete",
 			"create": "Create",
-			"view": "View",
 			"add": "Add",
-			"remove": "Remove",
 			"back": "Back",
-			"next": "Next",
-			"previous": "Previous",
 			"confirm": "Confirm",
-			"loading": "Loading...",
 			"saving": "Saving...",
-			"search": "Search",
 			"reset": "Reset",
 			"enable": "Enable",
 			"disable": "Disable"
 		},
 		"fields": {
-			"name": "Name",
-			"description": "Description",
-			"email": "Email",
-			"phone": "Phone number",
-			"location": "Location",
-			"website": "Website",
-			"password": "Password",
-			"title": "Title",
-			"date": "Date",
-			"actions": "Actions",
-			"status": "Status"
+			"email": "Email"
 		},
-		"states": {
-			"success": "Success",
-			"error": "Error",
-			"private": "Private",
-			"public": "Public",
-			"active": "Active",
-			"inactive": "Inactive",
-			"expired": "Expired",
-			"unlimited": "Unlimited",
-			"pending": "Pending"
-		},
-		"messages": {
-			"noResults": "No results found",
-			"noData": "No data found",
-			"searchPlaceholder": "Search...",
-			"selectPlaceholder": "Select...",
-			"areYouSure": "Are you sure?",
-			"cannotUndo": "This action cannot be undone."
-		},
+		"states": {},
+		"messages": {},
 		"words": {
 			"breakfast": "Breakfast",
 			"lunch": "Lunch",
@@ -378,6 +342,9 @@
 						"saveChanges": "Save changes",
 						"submitApplication": "Submit application"
 					}
+				},
+				"metadata": {
+					"description": "Applying to {eventName}"
 				}
 			}
 		},
@@ -692,7 +659,8 @@
 				"website": "Website",
 				"save": "Save changes",
 				"bioPlaceholder": "Something about me is that...",
-				"phoneDescription": "This is how people can reach you"
+				"phoneDescription": "This is how people can reach you",
+				"linkTaken": "Link taken"
 			},
 			"security": {}
 		},
@@ -813,7 +781,6 @@
 		"club": {
 			"info": {
 				"photoUploadError": "An error occurred while uploading the image",
-				"clubCreationError": "An error occurred while creating the club",
 				"clubCreationSuccess": "Club successfully created",
 				"clubSaved": "Club information has been saved",
 				"success": "Club information has been saved",
@@ -866,7 +833,6 @@
 				"fileUploadFormats": "Supported formats:",
 				"logoDelete": {
 					"title": "Are you sure?",
-					"body": "Are you sure you want to delete the club logo?",
 					"confirm": "Clear logo",
 					"cancel": "No, come back"
 				},
@@ -877,7 +843,6 @@
 				"website": "Website",
 				"save": "Save changes",
 				"create": "Create a club",
-				"cancel": "Cancel",
 				"backToClub": "Back to club",
 				"socialMedia": "Social Media",
 				"instagramConnection": "Instagram Connection",
@@ -885,7 +850,6 @@
 				"instagramConnect": "Connect Instagram",
 				"instagramConnecting": "Connecting...",
 				"instagramConnectSuccess": "Instagram account successfully connected",
-				"instagramConnectError": "An error occurred while connecting Instagram account",
 				"instagramConnectedMessage": "Your club is connected to an Instagram account",
 				"instagramDisconnecting": "Disconnecting...",
 				"instagramDisconnectSuccess": "Instagram account successfully disconnected",
@@ -902,7 +866,6 @@
 				"instagramSelectPageDescription": "Select the Facebook page that is connected to the Instagram Business account you want to connect to your club.",
 				"instagramNoPages": "No Facebook pages found",
 				"instagramNoPageDescription": "No Facebook pages connected to your account found. First create a Facebook page and connect it to an Instagram Business account.",
-				"instagramConnected": "Instagram connected",
 				"instagramNotConnected": "Instagram not connected",
 				"instagramLoadingPages": "Loading pages...",
 				"instagramSelectPage": "Please select a page",
@@ -1307,6 +1270,7 @@
 	},
 	"components": {
 		"sidebar": {
+			"mobileToggle": "Displays the mobile sidebar.",
 			"betaMessage": "Beta version - Changes and errors are possible.",
 			"githubMessage": "We're open-source! Click here and help us become better.",
 			"home": "Homepage",
@@ -1378,9 +1342,7 @@
 				"terms": "Terms of Use",
 				"changelog": "Changelog"
 			},
-			"copyright": "© {year} RECONNED. ",
-			"sponsors": "Check out our sponsors and partners",
-			"version": "Version {commit} ({date})"
+			"sponsors": "Check out our sponsors and partners"
 		},
 		"table": {
 			"showColumns": "Show columns",
@@ -1450,14 +1412,11 @@
 				"cost": "Price",
 				"apply": "Log in",
 				"registrationsClosed": "Registrations for this event are currently not open"
-			},
-			"carousel": {
-				"nextSlide": "Next slide",
-				"previousSlide": "Previous slide"
-			},
-			"sidebar": {
-				"mobileToggle": "Displays the mobile sidebar."
 			}
+		},
+		"carousel": {
+			"nextSlide": "Next slide",
+			"previousSlide": "Previous slide"
 		},
 		"error": {
 			"backToHome": "Return to homepage"
@@ -1545,10 +1504,8 @@
 			"editEvent": "Edit event",
 			"apply": "Login",
 			"registrationsClosed": "Applications closed",
-			"registeredCount": "{count} registered",
 			"privateEvent": "Private event",
 			"publicEvent": "Public event",
-			"views": "{count} view/s",
 			"location": "Location",
 			"showLocation": "Show location",
 			"map": "Map",
@@ -1566,13 +1523,7 @@
 			"noPosts": "There are no posts",
 			"allied": "Allied with ASK FBIH",
 			"instagramGallery": "Instagram photos",
-			"instagramGalleryDescription": "View our latest posts on Instagram",
-			"noMembers": "This club has no members",
-			"tabs": {
-				"members": "Mmebers",
-				"reviews": "Reviews",
-				"posts": "Posts"
-			}
+			"instagramGalleryDescription": "View our latest posts on Instagram"
 		},
 		"breadcrumbs": {
 			"currentClub": "Current club",
@@ -1634,11 +1585,7 @@
 			"threeMonths": "3 months",
 			"sixMonths": "6 months",
 			"oneYear": "1 year",
-			"cancel": "Cancel",
-			"extend": "Extend",
-			"extending": "Extending...",
 			"success": "Membership successfully extended",
-			"error": "Error",
 			"failedToExtend": "There was an error while extending the membership",
 			"active": "Active",
 			"expired": "Expired",
@@ -1649,12 +1596,6 @@
 			"error": "There's been a problem contacting Instagram",
 			"noPhotos": "Nothing to show here",
 			"viewMore": "View more on Instagram"
-		},
-		"fileDrop": {
-			"dropFilesHere": "Drop files here or click to browse",
-			"maxFiles": "Max {count, plural, =1 {{count} file, {maxSize}MB} other {{count} files, {maxSize}MB each}}",
-			"someFilesFailed": "Some files failed to upload",
-			"maxFilesReached": "Maximum of {count, plural, =1 {{count} file} other {{count} files}} reached"
 		},
 		"fileUpload": {
 			"dropFilesHere": "Drop files here",

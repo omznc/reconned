@@ -227,21 +227,21 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const getInstagramErrorTranslationKey = (errorCode: string): string => {
 		switch (errorCode) {
 			case "no_facebook_pages":
-				return "instagramError.noFacebookPages";
+				return "dashboard.club.info.instagramError.noFacebookPages";
 			case "no_instagram_business_account":
-				return "instagramError.noInstagramAccount";
+				return "dashboard.club.info.instagramError.noInstagramAccount";
 			case "not_connected_to_instagram":
-				return "instagramError.notConnected";
+				return "dashboard.club.info.instagramError.notConnected";
 			case "missing_params":
-				return "instagramError.missingParams";
+				return "dashboard.club.info.instagramError.missingParams";
 			case "auth_failed":
-				return "instagramError.authFailed";
+				return "dashboard.club.info.instagramError.authFailed";
 			case "page_not_found":
-				return "instagramError.pageNotFound";
+				return "dashboard.club.info.instagramError.pageNotFound";
 			case "personal_account":
-				return "instagramError.personalAccount";
+				return "dashboard.club.info.instagramError.personalAccount";
 			default:
-				return "instagramError.connectionFailed";
+				return "dashboard.club.info.instagramError.connectionFailed";
 		}
 	};
 
@@ -438,7 +438,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						</div>
 					</FormControl>
 					<FormDescription>
-						{t.rich("exactLocationDescription", {
+						{t.rich("dashboard.club.info.exactLocationDescription", {
 							link: () => (
 								<Link target="_blank" className="text-red-500" href="/map">
 									{t("dashboard.club.info.exactLocationLink")}

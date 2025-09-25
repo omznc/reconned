@@ -134,13 +134,15 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			const days = Math.floor(regOpenDiff / (1000 * 60 * 60 * 24));
 			parts.push(
 				<span key="regOpen">
-					{t.rich("registrationsOpenIn", {
+					{t.rich("dashboard.club.events.create.registrationsOpenIn", {
 						number: () => <AnimatedNumber value={days} />,
 					})}
 				</span>,
 			);
 		} else if (regCloseDiff > 0) {
 			parts.push(<span key="regOpen">{t("dashboard.club.events.create.registrationsOpen")}</span>);
+		} else if (regCloseDiff < 0) {
+			parts.push(<span key="regClose">{t("dashboard.club.events.create.registrationsClosed")}</span>);
 		} else {
 			parts.push(<span key="regClose">{t("dashboard.club.events.create.registrationsClosed")}</span>);
 		}
@@ -149,7 +151,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			const days = Math.floor(startDiff / (1000 * 60 * 60 * 24));
 			parts.push(
 				<span key="start">
-					{t.rich("eventStartsIn", {
+					{t.rich("dashboard.club.events.create.eventStartsIn", {
 						number: () => <AnimatedNumber value={days} />,
 					})}
 				</span>,
@@ -160,7 +162,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 		parts.push(
 			<span key="duration">
-				{t.rich("eventDuration", {
+				{t.rich("dashboard.club.events.create.eventDuration", {
 					number: () => <AnimatedNumber value={Math.round(eventDuration)} />,
 				})}
 			</span>,
@@ -1009,12 +1011,17 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																				? t(
 																						"dashboard.club.events.create.changedToday",
 																					)
-																				: t("changedAgo", {
-																						time: differenceInDays(
-																							new Date(rule.createdAt),
-																							new Date(),
-																						),
-																					})}
+																				: t(
+																						"dashboard.club.events.create.changedAgo",
+																						{
+																							time: differenceInDays(
+																								new Date(
+																									rule.createdAt,
+																								),
+																								new Date(),
+																							),
+																						},
+																					)}
 																		</p>
 																	</div>
 																</div>

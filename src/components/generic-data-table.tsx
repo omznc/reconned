@@ -397,7 +397,7 @@ export function GenericDataTable<T>({
 				)}
 
 				<div className="ml-auto text-sm text-muted-foreground">
-					{t("navigation.page", { page, total: totalPages })}
+					{t("components.table.navigation.page", { page, total: totalPages })}
 				</div>
 			</div>
 

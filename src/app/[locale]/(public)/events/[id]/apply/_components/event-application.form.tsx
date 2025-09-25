@@ -664,9 +664,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				{showAddMember && (
 					<div className="space-y-4 p-4 bg-sidebar border">
-						<h3 className="font-medium">{t("events.apply.form.addNewMember")}</h3>
+						<h3 className="font-medium">{t("public.events.apply.form.addNewMember")}</h3>
 						<div className="space-y-2">
-							<Label htmlFor="memberName">{t("events.apply.form.fullName")}</Label>
+							<Label htmlFor="memberName">{t("public.events.apply.form.fullName")}</Label>
 							<Input
 								id="memberName"
 								value={tempMember.name}
@@ -676,14 +676,14 @@ export function EventApplicationForm({ existingApplication, event, user, current
 										name: e.target.value,
 									}))
 								}
-								placeholder={t("events.apply.form.enterFullName")}
+								placeholder={t("public.events.apply.form.typeSelection.enterFullName")}
 							/>
 							{!tempMember.name && (
-								<p className="text-sm text-destructive">{t("events.apply.form.nameRequired")}</p>
+								<p className="text-sm text-destructive">{t("public.events.apply.form.nameRequired")}</p>
 							)}
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="memberEmail">Email</Label>
+							<Label htmlFor="memberEmail">{t("common.fields.email")}</Label>
 							<Input
 								id="memberEmail"
 								type="email"
@@ -694,14 +694,15 @@ export function EventApplicationForm({ existingApplication, event, user, current
 										email: e.target.value,
 									}))
 								}
-								placeholder={t("events.apply.form.enterEmail")}
+								placeholder={"my@email.com"}
 							/>
 							<span className="text-sm text-muted-foreground">
-								Koristeći email adresu, osobe koje nemaju račun na sajtu će dobiti pozivnicu za
-								registraciju, ali ta registracija nije obavezna.
+								{t("public.events.apply.form.emailDesc")}
 							</span>
 							{tempMember.email && !isValidEmail(tempMember.email) && (
-								<p className="text-sm text-destructive">{t("events.apply.form.invalidEmail")}</p>
+								<p className="text-sm text-destructive">
+									{t("public.events.apply.form.typeSelection.invalidEmail")}
+								</p>
 							)}
 						</div>
 						<div className="flex gap-2 justify-end">
@@ -713,14 +714,14 @@ export function EventApplicationForm({ existingApplication, event, user, current
 									setTempMember({ name: "", email: "" });
 								}}
 							>
-								Odustani
+								{t("common.actions.cancel")}
 							</Button>
 							<Button
 								type="button"
 								onClick={addCustomMember}
 								disabled={!(tempMember.name && tempMember.email && isValidEmail(tempMember.email))}
 							>
-								Dodaj člana
+								{t("common.actions.add")}
 							</Button>
 						</div>
 					</div>
@@ -728,7 +729,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				{step === 3 && (
 					<div className="fade-in-up space-y-4">
-						<h3 className="font-medium">Pravila susreta</h3>
+						<h3 className="font-medium">{t("public.events.apply.form.eventRules")}</h3>
 						<ScrollArea className="h-[400px] rounded-md border p-4">
 							<div className="space-y-8">
 								{event.rules?.map((rule, index) => (
@@ -759,13 +760,13 @@ export function EventApplicationForm({ existingApplication, event, user, current
 								onCheckedChange={(checked) => form.setValue("rulesAccepted", checked as boolean)}
 							/>
 							<Label htmlFor="rules" className="text-sm cursor-pointer select-none">
-								Pročitao/la sam i prihvatam sva pravila susreta
+								{t("public.events.apply.form.rulesAccept")}
 							</Label>
 						</div>
 
 						<p className="text-sm text-muted-foreground flex items-center gap-2">
 							<AlertCircle className="h-4 w-4" />
-							Molimo vas da detaljno pročitate pravila prije nego što ih prihvatite
+							{t("public.events.apply.form.rulesReadCarefully")}
 						</p>
 
 						{form.formState.errors.rulesAccepted && (
@@ -779,21 +780,21 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				{step === 4 && (
 					<div className="space-y-4 fade-in-up">
-						<h3 className="font-medium">Način plaćanja</h3>
+						<h3 className="font-medium">{t("public.events.apply.form.paymentMethod")}</h3>
 						<Tabs
 							defaultValue="cash"
 							onValueChange={(val) => form.setValue("paymentMethod", val as "cash" | "bank")}
 							className="w-full"
 						>
 							<TabsList className="grid w-full grid-cols-2">
-								<TabsTrigger value="cash">Gotovina</TabsTrigger>
-								<TabsTrigger value="bank">Banka</TabsTrigger>
+								<TabsTrigger value="cash">{t("public.events.apply.form.cash")}</TabsTrigger>
+								<TabsTrigger value="bank">{t("public.events.apply.form.bank")}</TabsTrigger>
 							</TabsList>
 							<TabsContent value="cash" className="p-4 border rounded-lg mt-2">
-								Plaćanje gotovinom na dan susreta
+								{t("public.events.apply.form.cashDesc")}
 							</TabsContent>
 							<TabsContent value="bank" className="p-4 border rounded-lg mt-2">
-								Banka: Example Bank
+								{t("public.events.apply.form.bankDesc")}
 								<br />
 								IBAN: BA123456789
 								<br />
