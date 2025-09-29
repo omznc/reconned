@@ -270,7 +270,9 @@ export function GenericDataTable<T>({
 							className={cn("shadow-none", isMobile ? "w-full justify-center" : "")}
 						>
 							<MoreHorizontal className="size-4" />
-							{isMobile && <span className="ml-2">{t("actions", { fallback: "Actions" })}</span>}
+							{isMobile && (
+								<span className="ml-2">{t("components.table.actions", { fallback: "Actions" })}</span>
+							)}
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">{actionItems}</DropdownMenuContent>

@@ -40,6 +40,8 @@ interface EventCalendarProps {
 	})[];
 }
 
+type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "sep" | "oct" | "nov" | "dec";
+
 export function EventCalendar(props: EventCalendarProps) {
 	const t = useTranslations();
 	const params = useParams<{ clubId: string }>();
@@ -217,7 +219,9 @@ export function EventCalendar(props: EventCalendarProps) {
 		<div className="flex flex-col h-full w-full text-foreground">
 			<header className="flex py-4 items-center justify-between border-b">
 				<h2 className="text-2xl font-bold">
-					{t(`months.${format(currentDate, "MMM", { locale: enUS }).toLowerCase()}`)}{" "}
+					{t(
+						`components.calendar.months.${format(currentDate, "MMM", { locale: enUS }).toLowerCase() as Months}`,
+					)}{" "}
 					{format(currentDate, "yyyy")}
 				</h2>
 				<div className="flex items-center gap-2">

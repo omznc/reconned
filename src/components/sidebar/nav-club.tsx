@@ -23,7 +23,7 @@ export function NavClub({ user }: NavClubProps) {
 	}
 
 	const isManager = user?.managedClubs?.includes(clubId);
-	const items = getClubNavigationItems(clubId, isManager);
+	const items = getClubNavigationItems(clubId, isManager, t);
 
 	return (
 		<SidebarGroup>

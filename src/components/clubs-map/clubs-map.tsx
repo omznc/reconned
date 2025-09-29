@@ -49,8 +49,16 @@ interface ClubsMapProps {
 	interactive?: boolean;
 }
 
-function LocationMarker({ position, logo, t }: { position: [number, number]; logo?: string | null; t: ReturnType<typeof useTranslations> }) {
-	return position ? <Marker position={position} icon={createClubIcon(logo, 32, t	)} /> : null;
+function LocationMarker({
+	position,
+	logo,
+	t,
+}: {
+	position: [number, number];
+	logo?: string | null;
+	t: ReturnType<typeof useTranslations>;
+}) {
+	return position ? <Marker position={position} icon={createClubIcon(logo, 32, t)} /> : null;
 }
 
 function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {

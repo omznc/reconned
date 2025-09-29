@@ -11,7 +11,7 @@ export function NavApp({ isAdmin, pendingInvites }: { isAdmin: boolean; pendingI
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const t = useTranslations();
 
-	const items = getAppNavigationItems(isAdmin, pendingInvites);
+	const items = getAppNavigationItems(isAdmin, pendingInvites, t);
 
 	return (
 		<SidebarGroup>

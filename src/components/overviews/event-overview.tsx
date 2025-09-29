@@ -104,7 +104,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					<div className="flex flex-wrap -mt-2">
 						<Badge className="flex h-fit items-center gap-1">
 							<UserIcon className="size-4" />
-							{t("registeredCount", {
+							{t("components.eventOverview.registeredCount", {
 								count: event._count?.eventRegistration,
 							})}
 						</Badge>
@@ -127,7 +127,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 								{event.location}
 							</Badge>
 						)}
-						<Badge className="h-fit">{t("views", { count: visitors })}</Badge>
+						<Badge className="h-fit">{t("components.eventOverview.views", { count: visitors })}</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.googleMapsLink && (

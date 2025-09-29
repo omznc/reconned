@@ -77,14 +77,14 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 					// The section is the part after the clubId
 					const section = urlParts[2];
 					if (section) {
-						return `${t("components.sidebar.overview")} - ${t(section)}`;
+						return `${t("components.sidebar.overview")} - ${t(`components.sidebar.${section}`)}`;
 					}
 				}
 				// For general overview pages
 				else if (urlParts[0] === "dashboard") {
 					const section = urlParts[1];
 					if (section) {
-						return `${t("components.sidebar.overview")} - ${t(section)}`;
+						return `${t("components.sidebar.overview")} - ${t(`components.sidebar.${section}`)}`;
 					}
 				}
 			}
@@ -95,14 +95,14 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 	// Generate all navigation items using our centralized functions
 	const allItems = useMemo(() => {
 		// App navigation items
-		const appItems = getAppNavigationItems(user.role === "admin", 0);
+		const appItems = getAppNavigationItems(user.role === "admin", 0, t);
 		const flatAppItems = flattenNavigationItems(appItems);
 
 		// Club-specific items for each club
 		let clubItems: NavItem[] = [];
 		for (const club of clubs) {
 			const isManager = user?.managedClubs?.includes(club.id);
-			const items = getClubFlatItems(club.id, isManager);
+			const items = getClubFlatItems(club.id, isManager, t);
 			// Add club information to each item
 			const itemsWithClub = items.map((item) => ({ ...item, club }));
 			clubItems = [...clubItems, ...itemsWithClub];

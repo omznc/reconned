@@ -289,7 +289,7 @@ export default async function SearchPage(props: Props) {
 					urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search?q={search_term_string}`,
 				},
 				"query-input": "required name=search_term_string",
-			// biome-ignore lint/suspicious/noExplicitAny: Idk how else to get this to work
+				// biome-ignore lint/suspicious/noExplicitAny: Idk how else to get this to work
 			} as any,
 		},
 		about: q

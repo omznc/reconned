@@ -85,7 +85,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		}
 
 		try {
-			const resp = t(`translations.${section}`);
+			const resp = t(`components.breadcrumbs.translations.${section}`);
 			if (resp.startsWith("components.breadcrumbs.translations.")) {
 				return "👀";
 			}

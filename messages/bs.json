@@ -1342,7 +1342,8 @@
 				"terms": "Uslovi korištenja",
 				"changelog": "Izmjene"
 			},
-			"sponsors": "Pogledajte naše sponzore i partnere"
+			"sponsors": "Pogledajte naše sponzore i partnere",
+			"version": "Verzija {commit} ({date})"
 		},
 		"table": {
 			"showColumns": "Prikaži kolone",
@@ -1503,7 +1504,9 @@
 			"location": "Lokacija",
 			"showLocation": "Prikaži lokaciju",
 			"map": "Mapa",
-			"showEventMap": "Prikaži mapu susreta"
+			"showEventMap": "Prikaži mapu susreta",
+			"views": "{count} pregleda",
+			"registeredCount": "{count} registracija"
 		},
 		"clubOverview": {
 			"views": "{count} pregled/a",
