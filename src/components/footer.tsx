@@ -147,7 +147,7 @@ export async function Footer() {
 					</Link>
 					{CURRENT_COMMIT && body.commit?.committer?.date && (
 						<p className="font-mono mt-4 opacity-30">
-							{t("version", {
+							{t("components.footer.version", {
 								commit: CURRENT_COMMIT.slice(0, 7),
 								date: new Date(body.commit.committer.date).toLocaleDateString(locale, {
 									year: "numeric",

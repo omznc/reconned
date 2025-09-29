@@ -1342,7 +1342,8 @@
 				"terms": "Terms of Use",
 				"changelog": "Changelog"
 			},
-			"sponsors": "Check out our sponsors and partners"
+			"sponsors": "Check out our sponsors and partners",
+			"version": "Version {commit} ({date})"
 		},
 		"table": {
 			"showColumns": "Show columns",
@@ -1503,7 +1504,9 @@
 			"location": "Location",
 			"showLocation": "Show location",
 			"map": "Map",
-			"showEventMap": "Show match map"
+			"showEventMap": "Show match map",
+			"registeredCount": "{count} registered",
+			"views": "{count} views"
 		},
 		"clubOverview": {
 			"views": "{count} view/s",

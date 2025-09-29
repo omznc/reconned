@@ -4,7 +4,6 @@ import {
 	Building2,
 	CalendarDays,
 	CalendarFold,
-	ChartBar,
 	Cog,
 	DiamondMinus,
 	DollarSign,
@@ -22,15 +21,12 @@ import {
 	Shield,
 	User,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import type { NavItem } from "@/components/sidebar/types";
 
 /**
  * Get application-wide navigation items
  */
-export function getAppNavigationItems(isAdmin: boolean, pendingInvites: number): NavItem[] {
-	const t = useTranslations();
-
+export function getAppNavigationItems(isAdmin: boolean, pendingInvites: number, t: (key: string) => string): NavItem[] {
 	const items: NavItem[] = [
 		{
 			title: t("components.sidebar.home"),
@@ -113,9 +109,7 @@ export function getAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 /**
  * Get club-specific navigation items
  */
-export function getClubNavigationItems(clubId: string, isManager: boolean): NavItem[] {
-	const t = useTranslations();
-
+export function getClubNavigationItems(clubId: string, isManager: boolean, t: (key: string) => string): NavItem[] {
 	const items: NavItem[] = [
 		{
 			title: t("components.sidebar.club"),
@@ -152,12 +146,12 @@ export function getClubNavigationItems(clubId: string, isManager: boolean): NavI
 				icon: Pencil,
 				protected: true,
 			},
-			{
-				title: t("components.sidebar.stats"),
-				url: `/dashboard/${clubId}/club/stats`,
-				icon: ChartBar,
-				protected: true,
-			},
+			// {
+			// 	title: t("components.sidebar.stats"),
+			// 	url: `/dashboard/${clubId}/club/stats`,
+			// 	icon: ChartBar,
+			// 	protected: true,
+			// },
 			{
 				title: t("components.sidebar.auditLogs"),
 				url: `/dashboard/${clubId}/club/audit`,
@@ -265,7 +259,7 @@ export function flattenNavigationItems(items: NavItem[]): NavItem[] {
 /**
  * Helper function to extract all club navigation items as a flat list
  */
-export function getClubFlatItems(clubId: string, isManager: boolean): NavItem[] {
-	const clubItems = getClubNavigationItems(clubId, isManager);
+export function getClubFlatItems(clubId: string, isManager: boolean, t: (key: string) => string): NavItem[] {
+	const clubItems = getClubNavigationItems(clubId, isManager, t);
 	return flattenNavigationItems(clubItems);
 }

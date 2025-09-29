@@ -54,7 +54,7 @@ export default async function Home() {
 							{t("public.about.title")}
 						</h1>
 						<p className="text-xl text-text/80 mb-8">
-							{t.rich("subtitle", {
+							{t.rich("public.about.subtitle", {
 								omar: () => (
 									<Link
 										className="text-red-500 hover:text-red-400 transition-colors"

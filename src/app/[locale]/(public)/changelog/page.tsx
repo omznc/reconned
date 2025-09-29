@@ -149,7 +149,7 @@ export default async function ChangelogPage() {
 					<CardHeader className="bg-primary/5">
 						<CardTitle className="text-2xl flex items-center gap-2">
 							{latestRelease.name ||
-								t("public.changelog.version", {
+								t.rich("public.changelog.version", {
 									version: latestRelease.tag_name,
 								})}
 						</CardTitle>
@@ -200,7 +200,7 @@ export default async function ChangelogPage() {
 								<CardHeader>
 									<CardTitle className="text-xl">
 										{release.name ||
-											t("public.changelog.version", {
+											t.rich("public.changelog.version", {
 												version: release.tag_name,
 											})}
 									</CardTitle>

@@ -215,7 +215,7 @@ export function SecuritySettings({
 							</Alert>
 							{!hasBackupCodes ? (
 								<Alert className="flex flex-col gap-1">
-									<AlertTitle className="flex items-center gap-2 justify-between">
+									<AlertTitle className="flex items-center gap-4 justify-between">
 										<span>{t("dashboard.security.securitySettings.backupCodes")}</span>
 										<Button
 											type="button"
@@ -572,7 +572,7 @@ export function SecuritySettings({
 												<span className="block text-xs">IP: {session.ipAddress}</span>
 											)}
 											<span className="block text-xs">
-												{t("sessionLastUsed", {
+												{t("dashboard.security.securitySettings.sessionLastUsed", {
 													date: formatDistanceToNow(session.updatedAt, {
 														addSuffix: true,
 														locale: bs,

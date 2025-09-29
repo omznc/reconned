@@ -166,7 +166,7 @@ export default async function Home({ searchParams }: PageProps) {
 					<div className="relative max-w-2xl">
 						<HomeDrawing className="absolute opacity-0 lg:opacity-100 transition-all -right-110 bottom-0 w-full max-w-[400px] h-auto dark:invert" />
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
-							{t("public.home.hero.title", {
+							{t.rich("public.home.hero.title", {
 								br: () => <br />,
 							})}
 						</h1>
