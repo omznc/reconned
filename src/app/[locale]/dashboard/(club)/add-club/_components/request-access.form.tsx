@@ -32,7 +32,7 @@ async function searchClubs(query: string) {
 }
 
 export function RequestAccessForm() {
-	const t = useTranslations("dashboard.addClub");
+	const t = useTranslations();
 	const [clubs, setClubs] = useState<Club[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -50,7 +50,7 @@ export function RequestAccessForm() {
 					const results = await searchClubs(value);
 					setClubs(results);
 				} catch (_error) {
-					toast.error(t("searchFailed"));
+					toast.error(t("dashboard.addClub.searchFailed"));
 				} finally {
 					setIsLoading(false);
 				}
@@ -70,10 +70,10 @@ export function RequestAccessForm() {
 		const response = await requestAccess(data);
 
 		if (response?.data?.success) {
-			toast.success(t("requestSent"));
+			toast.success(t("dashboard.addClub.requestSent"));
 			form.reset();
 		} else {
-			toast.error(response?.data?.error || t("requestFailed"));
+			toast.error(response?.data?.error || t("dashboard.addClub.requestFailed"));
 		}
 	}
 
@@ -85,7 +85,7 @@ export function RequestAccessForm() {
 					name="clubIdTarget"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("selectClub")}</FormLabel>
+							<FormLabel>{t("dashboard.addClub.selectClub")}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -100,7 +100,7 @@ export function RequestAccessForm() {
 										>
 											{field.value
 												? clubs.find((club) => club.id === field.value)?.name
-												: t("selectClubPlaceholder")}
+												: t("dashboard.addClub.selectClubPlaceholder")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
@@ -108,7 +108,7 @@ export function RequestAccessForm() {
 								<PopoverContent className="w-full p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder={t("searchClubs")}
+											placeholder={t("dashboard.addClub.searchClubs")}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -118,9 +118,9 @@ export function RequestAccessForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>{t("enterTwoChars")}</CommandEmpty>
+												<CommandEmpty>{t("dashboard.addClub.enterTwoChars")}</CommandEmpty>
 											) : clubs.length === 0 ? (
-												<CommandEmpty>{t("noClubsFound")}</CommandEmpty>
+												<CommandEmpty>{t("dashboard.addClub.noClubsFound")}</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{clubs.map((club) => (
@@ -153,7 +153,7 @@ export function RequestAccessForm() {
 						</FormItem>
 					)}
 				/>
-				<Button type="submit">{t("sendRequest")}</Button>
+				<Button type="submit">{t("dashboard.addClub.sendRequest")}</Button>
 			</form>
 		</Form>
 	);

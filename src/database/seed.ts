@@ -11,6 +11,7 @@ async function main() {
 	await prisma.$transaction(async (tx) => {
 		const countries = await fetchData("countries");
 		await tx.country.createMany({
+			// biome-ignore lint/suspicious/noExplicitAny: Seeding countries, idc
 			data: countries.map((country: any) => ({
 				name: country.name,
 				iso3: country.iso3,

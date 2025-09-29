@@ -31,7 +31,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const path = usePathname();
 	const sections = path.split("/").filter(Boolean);
-	const t = useTranslations("components.breadcrumbs");
+	const t = useTranslations();
 
 	useEffect(() => {
 		const main = document.querySelector("main");
@@ -60,7 +60,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>{t("currentClub")}</p>
+						<p>{t("components.breadcrumbs.currentClub")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);
@@ -78,7 +78,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>{t("currentEvent")}</p>
+						<p>{t("components.breadcrumbs.currentEvent")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);

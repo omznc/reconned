@@ -81,7 +81,7 @@ export function UserActions({ user }: { user: User }) {
 					break;
 				}
 			}
-		} catch (error) {
+		} catch {
 			toast.error("Došlo je do greške prilikom izvršavanja akcije.");
 		} finally {
 			const params = new URLSearchParams(searchParams);
@@ -91,36 +91,34 @@ export function UserActions({ user }: { user: User }) {
 	};
 
 	return (
-		<>
-			<div className="flex flex-col gap-2">
-				<Button
-					variant="default"
-					onClick={() => {
-						onAction("impersonate");
-					}}
-				>
-					<UserIcon />
-					Impersoniraj
-				</Button>
-				<Button
-					variant={user.banned ? "default" : "destructive"}
-					onClick={() => {
-						onAction("ban");
-					}}
-				>
-					{user.banned ? <CheckCircle /> : <BanIcon />}
-					{user.banned ? "Ukloni ban" : "Banuj korisnika"}
-				</Button>
-				<Button
-					variant="destructive"
-					onClick={() => {
-						onAction("delete");
-					}}
-				>
-					<TrashIcon />
-					Izbriši račun
-				</Button>
-			</div>
-		</>
+		<div className="flex flex-col gap-2">
+			<Button
+				variant="default"
+				onClick={() => {
+					onAction("impersonate");
+				}}
+			>
+				<UserIcon />
+				Impersoniraj
+			</Button>
+			<Button
+				variant={user.banned ? "default" : "destructive"}
+				onClick={() => {
+					onAction("ban");
+				}}
+			>
+				{user.banned ? <CheckCircle /> : <BanIcon />}
+				{user.banned ? "Ukloni ban" : "Banuj korisnika"}
+			</Button>
+			<Button
+				variant="destructive"
+				onClick={() => {
+					onAction("delete");
+				}}
+			>
+				<TrashIcon />
+				Izbriši račun
+			</Button>
+		</div>
 	);
 }

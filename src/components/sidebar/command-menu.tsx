@@ -45,7 +45,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 	const [search, setSearch] = useState("");
 	const router = useRouter();
 	const { clubId } = useCurrentClub();
-	const t = useTranslations("components.sidebar");
+	const t = useTranslations();
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const handleClubSelection = (club: Club) => {
@@ -68,7 +68,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 	// Determine if this is an overview item and which section it belongs to
 	function getDisplayTitle(item: NavItem): string {
 		// If the title is "overview" and it has a club and the URL contains a section identifier
-		if (item.title.toLowerCase() === t("overview").toLowerCase() && item.url) {
+		if (item.title.toLowerCase() === t("components.sidebar.overview").toLowerCase() && item.url) {
 			// Extract section from URL pattern like /dashboard/{clubId}/{section} or /dashboard/{section}
 			const urlParts = item.url.split("/").filter(Boolean);
 			if (urlParts.length >= 2) {
@@ -77,14 +77,14 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 					// The section is the part after the clubId
 					const section = urlParts[2];
 					if (section) {
-						return `${t("overview")} - ${t(section)}`;
+						return `${t("components.sidebar.overview")} - ${t(section)}`;
 					}
 				}
 				// For general overview pages
 				else if (urlParts[0] === "dashboard") {
 					const section = urlParts[1];
 					if (section) {
-						return `${t("overview")} - ${t(section)}`;
+						return `${t("components.sidebar.overview")} - ${t(section)}`;
 					}
 				}
 			}
@@ -95,14 +95,14 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 	// Generate all navigation items using our centralized functions
 	const allItems = useMemo(() => {
 		// App navigation items
-		const appItems = getAppNavigationItems(t, user.role === "admin", 0);
+		const appItems = getAppNavigationItems(user.role === "admin", 0);
 		const flatAppItems = flattenNavigationItems(appItems);
 
 		// Club-specific items for each club
 		let clubItems: NavItem[] = [];
 		for (const club of clubs) {
 			const isManager = user?.managedClubs?.includes(club.id);
-			const items = getClubFlatItems(t, club.id, isManager);
+			const items = getClubFlatItems(club.id, isManager);
 			// Add club information to each item
 			const itemsWithClub = items.map((item) => ({ ...item, club }));
 			clubItems = [...clubItems, ...itemsWithClub];
@@ -187,20 +187,20 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 		<Credenza open={open} onOpenChange={setOpen}>
 			<CredenzaTrigger className="hidden">{null}</CredenzaTrigger>
 			<CredenzaContent className="p-0 overflow-hidden">
-				<CredenzaTitle className="sr-only">{t("searchPlaceholder")}</CredenzaTitle>
+				<CredenzaTitle className="sr-only">{t("components.sidebar.searchPlaceholder")}</CredenzaTitle>
 				<Command>
 					<CommandInput
 						ref={inputRef}
-						placeholder={t("searchPlaceholder")}
+						placeholder={t("components.sidebar.searchPlaceholder")}
 						value={search}
 						onValueChange={setSearch}
 						className="border-none focus:ring-0"
 					/>
 					<CommandList className="overflow-y-auto overflow-x-hidden">
-						<CommandEmpty>{t("noResults")}</CommandEmpty>
+						<CommandEmpty>{t("components.sidebar.noResults")}</CommandEmpty>
 						{/* User navigation section */}
 						{navItems.length > 0 && (
-							<CommandGroup heading={t("navigation")}>
+							<CommandGroup heading={t("components.sidebar.navigation")}>
 								{navItems.map((item) => (
 									<CommandItem
 										key={item.url}
@@ -218,7 +218,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 						)}
 
 						{/* Clubs section */}
-						<CommandGroup heading={t("clubs")}>
+						<CommandGroup heading={t("components.sidebar.clubs")}>
 							{clubs.map((club, index) => (
 								<CommandItem
 									key={club.id}
@@ -238,7 +238,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 						{clubItems.length > 0 && (
 							<>
 								<CommandSeparator />
-								<CommandGroup heading={t("navigation")}>
+								<CommandGroup heading={t("components.sidebar.navigation")}>
 									{clubItems.map((item) => (
 										<CommandItem
 											key={item.url}
@@ -278,7 +278,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 
 						{/* User account section */}
 						<CommandSeparator />
-						<CommandGroup heading={t("account")}>
+						<CommandGroup heading={t("components.sidebar.account")}>
 							<CommandItem
 								onSelect={() => handleCommand("/dashboard/user")}
 								className="flex items-center gap-3 py-3"
@@ -299,7 +299,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 								className="flex items-center gap-3 py-3"
 							>
 								<Settings className="h-4 w-4" />
-								<span>{t("userSettings")}</span>
+								<span>{t("components.sidebar.userSettings")}</span>
 							</CommandItem>
 						</CommandGroup>
 					</CommandList>

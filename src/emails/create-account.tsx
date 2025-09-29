@@ -19,28 +19,35 @@ export const CreateAccountEmail = async ({
 	clubLogo,
 	clubName,
 }: CreateAccountEmailProps) => {
-	const t = await getTranslations("emails.createAccount");
+	const t = await getTranslations();
 
 	return (
 		<Html>
 			<Head />
-			<Preview>{t("title")}</Preview>
+			<Preview>{t("emails.createAccount.title")}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
-						<Img src={clubLogo} alt="Logo Kluba" width="100" style={emailStyles.logo} />
+						<Img
+							src={clubLogo}
+							alt={t("emails.createAccount.clubLogo")}
+							width="100"
+							style={emailStyles.logo}
+						/>
 					</Section>
-					<Heading style={emailStyles.h1}>{t("invitationTitle")}</Heading>
-					<Text style={emailStyles.text}>{t("message", { eventName, eventDate })}</Text>
-					<Text style={emailStyles.text}>{t("clubMessage", { clubName })}</Text>
+					<Heading style={emailStyles.h1}>{t("emails.createAccount.invitationTitle")}</Heading>
+					<Text style={emailStyles.text}>{t("emails.createAccount.message", { eventName, eventDate })}</Text>
+					<Text style={emailStyles.text}>{t("emails.createAccount.clubMessage", { clubName })}</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={signupUrl}>
-							{t("action")}
+							{t("emails.createAccount.action")}
 						</Button>
 					</Section>
-					<Text style={emailStyles.smallText}>{t("emailLinked", { email: inviteeEmail })}</Text>
+					<Text style={emailStyles.smallText}>
+						{t("emails.createAccount.emailLinked", { email: inviteeEmail })}
+					</Text>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("footer")}</Text>
+					<Text style={emailStyles.footer}>{t("emails.createAccount.footer")}</Text>
 				</Container>
 			</Body>
 		</Html>

@@ -15,7 +15,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	const t = await getTranslations("public.auth");
+	const t = await getTranslations();
 
 	return (
 		<>
@@ -38,7 +38,7 @@ export default async function RootLayout({
 					<Button variant={"outline"} className="w-full" asChild={true}>
 						<Link href="/" className="flex items-center gap-2">
 							<House className="w-4 h-4" />
-							{t("home")}
+							{t("components.sidebar.home")}
 						</Link>
 					</Button>
 				</div>
@@ -49,12 +49,12 @@ export default async function RootLayout({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("auth.metadata.title"),
-		description: t("auth.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.auth.metadata.title"),
+		description: t("public.auth.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

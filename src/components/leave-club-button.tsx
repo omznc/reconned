@@ -28,20 +28,20 @@ export function LeaveClubButton({
 	...props
 }: LeaveClubButtonProps) {
 	const confirm = useConfirm();
-	const t = useTranslations("components.leaveClubButton");
+	const t = useTranslations();
 	const router = useRouter();
 
 	const handleLeaveClub = async () => {
 		if (isClubOwner) {
-			toast.error(t("ownerError"));
+			toast.error(t("components.leaveClubButton.ownerError"));
 			return;
 		}
 
 		const confirmed = await confirm({
-			title: t("title"),
-			body: t("body"),
-			cancelButton: t("cancel"),
-			actionButton: t("confirm"),
+			title: t("components.leaveClubButton.title"),
+			body: t("components.leaveClubButton.body"),
+			cancelButton: t("common.actions.cancel"),
+			actionButton: t("common.actions.confirm"),
 			actionButtonVariant: "destructive",
 		});
 
@@ -53,7 +53,7 @@ export function LeaveClubButton({
 			await leaveClub({ clubId });
 			router.push("/dashboard");
 		} catch (error) {
-			toast.error(error instanceof Error ? error.message : t("error"));
+			toast.error(error instanceof Error ? error.message : t("components.leaveClubButton.error"));
 		}
 	};
 
@@ -64,10 +64,10 @@ export function LeaveClubButton({
 				onClick={handleLeaveClub}
 				disabled={isClubOwner}
 				className={`flex items-center w-full text-left ${isClubOwner ? "opacity-50 pointer-events-none" : "cursor-pointer"} text-destructive`}
-				title={isClubOwner ? t("ownerError") : undefined}
+				title={isClubOwner ? t("components.leaveClubButton.ownerError") : undefined}
 			>
 				{icon || <LogOut className="size-4 mr-2" />}
-				{t("action")}
+				{t("components.leaveClubButton.action")}
 			</button>
 		);
 	}
@@ -77,12 +77,12 @@ export function LeaveClubButton({
 			variant={variant}
 			onClick={handleLeaveClub}
 			disabled={isClubOwner}
-			title={isClubOwner ? t("ownerError") : undefined}
+			title={isClubOwner ? t("components.leaveClubButton.ownerError") : undefined}
 			size={size}
 			{...props}
 		>
 			{icon || <LogOut className="h-4 w-4 mr-2" />}
-			{t("action")}
+			{t("components.leaveClubButton.action")}
 		</Button>
 	);
 }

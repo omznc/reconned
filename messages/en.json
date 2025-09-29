@@ -1,4 +1,31 @@
 {
+	"common": {
+		"actions": {
+			"save": "Save",
+			"cancel": "Cancel",
+			"create": "Create",
+			"add": "Add",
+			"back": "Back",
+			"confirm": "Confirm",
+			"saving": "Saving...",
+			"reset": "Reset",
+			"enable": "Enable",
+			"disable": "Disable"
+		},
+		"fields": {
+			"email": "Email"
+		},
+		"states": {},
+		"messages": {},
+		"words": {
+			"breakfast": "Breakfast",
+			"lunch": "Lunch",
+			"dinner": "Dinner",
+			"snacks": "Snacks",
+			"drinks": "Drinks",
+			"prizes": "Prizes"
+		}
+	},
 	"emails": {
 		"emailVerification": {
 			"title": "Verify your email address",
@@ -15,7 +42,9 @@
 			"helloUser": "Hi {name},",
 			"message": "You are invited to join the {clubName} club. ",
 			"action": "Accept invite",
-			"footer": "If you did not expect this invitation, please ignore this email."
+			"footer": "If you did not expect this invitation, please ignore this email.",
+			"clubLogo": "Club Logo",
+			"invitationCode": "Or use this invitation code:"
 		},
 		"createAccount": {
 			"title": "You are invited to an airsoft event! ",
@@ -24,7 +53,8 @@
 			"clubMessage": "Your account will automatically be linked to club {clubName} and you will be able to access match details immediately.",
 			"action": "Create Account",
 			"emailLinked": "This link is associated with the email address: {email}",
-			"footer": "If you were not expecting this invitation, please ignore this email."
+			"footer": "If you were not expecting this invitation, please ignore this email.",
+			"clubLogo": "Club Logo"
 		},
 		"rateEvent": {
 			"title": "Rate your experience at {eventName}!",
@@ -33,7 +63,8 @@
 			"helloUser": "Hello {name},",
 			"message": "Thank you for attending the {eventName} event held on {date}. ",
 			"action": "Rate the event",
-			"footer": "{clubName} - Thank you for your participation!"
+			"footer": "{clubName} - Thank you for your participation!",
+			"clubLogo": "Club Logo"
 		},
 		"membershipExpiration": {
 			"expiredTitle": "Your membership in {clubName} has expired",
@@ -44,7 +75,8 @@
 			"expiredMessage": "Your membership in the {clubName} club has expired on {date}. If you wish to continue being a club member, please renew your membership.",
 			"expiringMessage": "Your membership in the {clubName} club will expire on {date} (in {days} days). To ensure continuous membership, please consider renewing before the expiry date.",
 			"action": "Renew Membership",
-			"footer": "If you no longer wish to be a member of {clubName}, you can ignore this email."
+			"footer": "If you no longer wish to be a member of {clubName}, you can ignore this email.",
+			"clubLogo": "Club Logo"
 		},
 		"membershipExpirationOwner": {
 			"expiredTitle": "{memberName}'s membership in {clubName} has expired",
@@ -55,7 +87,16 @@
 			"expiredMessage": "The membership of {memberName} in your {clubName} club has expired on {date}.",
 			"expiringMessage": "The membership of {memberName} in your {clubName} club will expire on {date} (in {days} days).",
 			"action": "Manage Members",
-			"footer": "This is an automated notification to help you manage your club memberships."
+			"footer": "This is an automated notification to help you manage your club memberships.",
+			"clubLogo": "Club Logo"
+		},
+		"passwordReset": {
+			"title": "Reset your password",
+			"helloUser": "Hello {name}",
+			"hello": "Hello",
+			"message": "To reset your password, please click on the button below",
+			"action": "Reset my password",
+			"footer": "If this email is unexpected, and you didn't request a password reset, simply ignore it."
 		}
 	},
 	"public": {
@@ -63,6 +104,11 @@
 			"title": "You are lost",
 			"message": "Page not found",
 			"backHome": "Return to homepage",
+			"layout": {
+				"metadata": {
+					"keywords": "404, not found, page not found, airsoft, Bosnia, BiH"
+				}
+			},
 			"metadata": {
 				"title": "404 - Page not found - RECONNED",
 				"description": "The page you are looking for does not exist."
@@ -205,6 +251,101 @@
 			"metadata": {
 				"title": "Airsoft events - RECONNED",
 				"description": "The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players."
+			},
+			"title": "Upcoming events",
+			"none": "There are no upcomig events",
+			"costPerPerson": "per person",
+			"allowFreelancers": "Freelancer-friendly",
+			"onlyClubs": "No freelancers",
+			"starts": "Starts",
+			"registrationsOpen": "Registrations open for ",
+			"view": "View",
+			"apply": {
+				"title": "Apply to event",
+				"editTitle": "Edit event application",
+				"registrationsClosed": "Registrations for this event are not open",
+				"backToEvent": "Back to event",
+				"eventNotFound": "Event Not Found - RECONNED",
+				"applyToEvent": "Apply to {eventName} - RECONNED",
+				"applyToParticipate": "Apply to participate in {eventName}",
+				"form": {
+					"submitting": "Submitting application...",
+					"success": "Successfully applied to event!",
+					"error": "An error occurred while applying",
+					"deleteConfirm": "Are you sure you want to delete your application? This will also delete all invitations you sent.",
+					"deleting": "Deleting application...",
+					"deleteSuccess": "Successfully deleted application!",
+					"deleteError": "An error occurred while deleting application",
+					"steps": {
+						"type": "Type",
+						"team": "Team",
+						"info": "Info",
+						"rules": "Rules",
+						"payment": "Payment"
+					},
+					"typeSelection": {
+						"soloTitle": "Solo application",
+						"soloDescription": "Choose this option if you're coming alone to the event",
+						"teamTitle": "Team application",
+						"teamDescription": "Choose this option if you're coming with multiple players",
+						"soloButton": "Apply solo",
+						"teamButton": "Apply team",
+						"cannotApplySolo": "You cannot apply solo because you are not a member of any club and this event does not allow freelancer applications.",
+						"currentlySelected": "Currently selected",
+						"switchingWarning": "Switching to solo application will cancel all current team member invitations.",
+						"or": "or",
+						"applyToEvent": "Apply to event",
+						"nameRequired": "Name is required",
+						"enterEmail": "Enter email address",
+						"enterFullName": "Enter full name",
+						"invalidEmail": "Email address is not valid",
+						"addNewMember": "Add new member",
+						"fullName": "Full name"
+					},
+					"teamMembers": "Team members",
+					"searchPlayers": "Search players...",
+					"searchPlaceholder": "Search by name, email or callsign...",
+					"searchMinChars": "Enter at least 2 characters...",
+					"noResults": "No results for \"{query}\"",
+					"addNewMember": "Add new member",
+					"alreadyAdded": "Already added to team",
+					"membersWithAccount": "Members with account",
+					"membersWithAccountDesc": "These people have an account on the app, so the event will appear on their dashboard. There they can decline or see more information about it.",
+					"invitedMembers": "Invited members (without account)",
+					"invitedMembersDesc": "Members who don't have an account on the app who will receive an email invitation. It's not mandatory to use it.",
+					"teamMinMembers": "Team must have at least one member besides you",
+					"userInfo": "Your information",
+					"memberOf": "Member of clubs: {clubs}",
+					"addMemberTitle": "Add new member",
+					"fullName": "Full name",
+					"fullNamePlaceholder": "Enter full name",
+					"nameRequired": "Name is required",
+					"email": "Email",
+					"emailPlaceholder": "Enter email address",
+					"emailDesc": "Using email address, people who don't have an account on the site will receive a registration invitation, but that registration is not mandatory.",
+					"emailInvalid": "Email address is not valid",
+					"cancel": "Cancel",
+					"addMember": "Add member",
+					"eventRules": "Event rules",
+					"rulesAccept": "I have read and accept all event rules",
+					"rulesReadCarefully": "Please read the rules carefully before accepting them",
+					"rulesRequired": "You must accept the event rules",
+					"paymentMethod": "Payment method",
+					"cash": "Cash",
+					"bank": "Bank",
+					"cashDesc": "Cash payment on the day of the event",
+					"bankDesc": "Bank: Example Bank\nIBAN: BA123456789\nPurpose: Event-{eventId}",
+					"navigation": {
+						"back": "Back",
+						"next": "Next",
+						"deleteApplication": "Delete application",
+						"saveChanges": "Save changes",
+						"submitApplication": "Submit application"
+					}
+				},
+				"metadata": {
+					"description": "Applying to {eventName}"
+				}
 			}
 		},
 		"layout": {
@@ -412,6 +553,13 @@
 				"title": "Club Map - RECONNED",
 				"description": "Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players."
 			}
+		},
+		"supportUs": {
+			"title": "Support us (coming soon)",
+			"metadata": {
+				"title": "Support us - RECONNED",
+				"description": "Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players."
+			}
 		}
 	},
 	"dashboard": {
@@ -428,12 +576,18 @@
 			"error": "An error occurred",
 			"loading": "Loading...",
 			"nextEvent": "Next event",
-			"latestReview": "Latest review"
+			"latestReview": "Latest review",
+			"icons": {
+				"clubOwner": "Club owner",
+				"clubManager": "Club manager",
+				"member": "Member"
+			}
 		},
 		"help": {
 			"title": "Help",
 			"googleMaps": {
 				"title": "How to add a Google Maps link to an event",
+				"shareDialog": "Google Maps share dialog",
 				"steps": {
 					"step1": "Open Google Maps and find the desired location",
 					"step2": "Click the \"Share\" button",
@@ -476,6 +630,11 @@
 				"avatar": "Profile picture",
 				"avatarDescription": "We recommend that you upload a profile picture.",
 				"saving": "Saving...",
+				"uploadAvatar": "Upload avatar",
+				"replaceAvatar": "Replace avatar",
+				"removeAvatar": "Remove avatar",
+				"cropPhotoTitle": "Crop photo",
+				"cropPhotoDescription": "Adjust the crop area and click save to apply changes",
 				"name": "Your name",
 				"cancel": "Cancel",
 				"callsign": "Callsign",
@@ -500,9 +659,21 @@
 				"website": "Website",
 				"save": "Save changes",
 				"bioPlaceholder": "Something about me is that...",
-				"phoneDescription": "This is how people can reach you"
+				"phoneDescription": "This is how people can reach you",
+				"linkTaken": "Link taken"
 			},
 			"security": {}
+		},
+		"admin": {
+			"clubs": {
+				"allClubs": "All clubs",
+				"notFound": "Club not found."
+			},
+			"users": {
+				"notFound": "User not found.",
+				"memberSince": "Member since:"
+			},
+			"noAccess": "You have no access to this page"
 		},
 		"security": {
 			"passwordChange": {
@@ -610,7 +781,6 @@
 		"club": {
 			"info": {
 				"photoUploadError": "An error occurred while uploading the image",
-				"clubCreationError": "An error occurred while creating the club",
 				"clubCreationSuccess": "Club successfully created",
 				"clubSaved": "Club information has been saved",
 				"success": "Club information has been saved",
@@ -663,7 +833,6 @@
 				"fileUploadFormats": "Supported formats:",
 				"logoDelete": {
 					"title": "Are you sure?",
-					"body": "Are you sure you want to delete the club logo?",
 					"confirm": "Clear logo",
 					"cancel": "No, come back"
 				},
@@ -674,7 +843,6 @@
 				"website": "Website",
 				"save": "Save changes",
 				"create": "Create a club",
-				"cancel": "Cancel",
 				"backToClub": "Back to club",
 				"socialMedia": "Social Media",
 				"instagramConnection": "Instagram Connection",
@@ -682,7 +850,6 @@
 				"instagramConnect": "Connect Instagram",
 				"instagramConnecting": "Connecting...",
 				"instagramConnectSuccess": "Instagram account successfully connected",
-				"instagramConnectError": "An error occurred while connecting Instagram account",
 				"instagramConnectedMessage": "Your club is connected to an Instagram account",
 				"instagramDisconnecting": "Disconnecting...",
 				"instagramDisconnectSuccess": "Instagram account successfully disconnected",
@@ -699,7 +866,6 @@
 				"instagramSelectPageDescription": "Select the Facebook page that is connected to the Instagram Business account you want to connect to your club.",
 				"instagramNoPages": "No Facebook pages found",
 				"instagramNoPageDescription": "No Facebook pages connected to your account found. First create a Facebook page and connect it to an Instagram Business account.",
-				"instagramConnected": "Instagram connected",
 				"instagramNotConnected": "Instagram not connected",
 				"instagramLoadingPages": "Loading pages...",
 				"instagramSelectPage": "Please select a page",
@@ -743,7 +909,8 @@
 				"content": "Content",
 				"public": "Public announcement",
 				"saveNewPost": "Save the post",
-				"saveEditPost": "Save changes"
+				"saveEditPost": "Save changes",
+				"images": "Images"
 			},
 			"spending": {
 				"title": "Spending",
@@ -763,7 +930,9 @@
 				"receipt": {
 					"title": "Receipt",
 					"pdfDocument": "PDF Document",
-					"download": "Download"
+					"download": "Download",
+					"downloading": "Downloading...",
+					"open": "Open"
 				},
 				"date": "Date",
 				"save": "Save",
@@ -789,7 +958,9 @@
 					"cancel": "No, go back"
 				},
 				"search": "Search expenses...",
-				"delete": "Delete"
+				"delete": "Delete",
+				"editItem": "Edut",
+				"successUpdated": "Saved"
 			},
 			"stats": {
 				"members": "Number of members",
@@ -903,6 +1074,7 @@
 					"map": "Map",
 					"save": "Save changes",
 					"create": "Create an event",
+					"namePlaceholder": "Food Wars 24",
 					"requiredSection": "Required",
 					"basicInformationDescription": "The basic information we need to create your event",
 					"registrationPeriod": "Registration period",
@@ -1098,6 +1270,7 @@
 	},
 	"components": {
 		"sidebar": {
+			"mobileToggle": "Displays the mobile sidebar.",
 			"betaMessage": "Beta version - Changes and errors are possible.",
 			"githubMessage": "We're open-source! Click here and help us become better.",
 			"home": "Homepage",
@@ -1169,9 +1342,7 @@
 				"terms": "Terms of Use",
 				"changelog": "Changelog"
 			},
-			"copyright": "© {year} RECONNED. ",
-			"sponsors": "Check out our sponsors and partners",
-			"version": "Version {commit} ({date})"
+			"sponsors": "Check out our sponsors and partners"
 		},
 		"table": {
 			"showColumns": "Show columns",
@@ -1204,7 +1375,8 @@
 			"select": "Choose a language"
 		},
 		"clubsMap": {
-			"viewProfile": "View profile"
+			"viewProfile": "View profile",
+			"clubLogo": "Club logo"
 		},
 		"calendar": {
 			"today": "Today",
@@ -1241,6 +1413,10 @@
 				"apply": "Log in",
 				"registrationsClosed": "Registrations for this event are currently not open"
 			}
+		},
+		"carousel": {
+			"nextSlide": "Next slide",
+			"previousSlide": "Previous slide"
 		},
 		"error": {
 			"backToHome": "Return to homepage"
@@ -1282,6 +1458,12 @@
 		"userOverview": {
 			"views": "{count} view/s",
 			"freelancer": "Freelancer",
+			"email": "Email",
+			"location": "Location",
+			"phone": "Phone",
+			"additionalInfo": {
+				"title": "Additional information"
+			},
 			"clubs": {
 				"title": "Clubs",
 				"noClubs": "Not a member of any club"
@@ -1293,13 +1475,7 @@
 			"pastEvents": {
 				"title": "Previous events",
 				"noEvents": "No previous events"
-			},
-			"tabs": {
-				"events": "Events",
-				"reviews": "Reviews",
-				"memberships": "Memberships"
-			},
-			"attended": "Attended"
+			}
 		},
 		"reviews": {
 			"title": "Ratings",
@@ -1322,10 +1498,8 @@
 			"editEvent": "Edit event",
 			"apply": "Login",
 			"registrationsClosed": "Applications closed",
-			"registeredCount": "{count} registered",
 			"privateEvent": "Private event",
 			"publicEvent": "Public event",
-			"views": "{count} view/s",
 			"location": "Location",
 			"showLocation": "Show location",
 			"map": "Map",
@@ -1343,13 +1517,7 @@
 			"noPosts": "There are no posts",
 			"allied": "Allied with ASK FBIH",
 			"instagramGallery": "Instagram photos",
-			"instagramGalleryDescription": "View our latest posts on Instagram",
-			"noMembers": "This club has no members",
-			"tabs": {
-				"members": "Mmebers",
-				"reviews": "Reviews",
-				"posts": "Posts"
-			}
+			"instagramGalleryDescription": "View our latest posts on Instagram"
 		},
 		"breadcrumbs": {
 			"currentClub": "Current club",
@@ -1392,8 +1560,6 @@
 		"leaveClubButton": {
 			"title": "Leave club",
 			"body": "Are you sure you'd like to leave this club? You'll need an invite to join it again.",
-			"confirm": "Leave club",
-			"cancel": "No, cancel",
 			"error": "There was an error while trying to leave the club",
 			"action": "Leave club",
 			"ownerError": "Club owners cannot leave the club. You must first transfer ownership or delete the club."
@@ -1411,11 +1577,7 @@
 			"threeMonths": "3 months",
 			"sixMonths": "6 months",
 			"oneYear": "1 year",
-			"cancel": "Cancel",
-			"extend": "Extend",
-			"extending": "Extending...",
 			"success": "Membership successfully extended",
-			"error": "Error",
 			"failedToExtend": "There was an error while extending the membership",
 			"active": "Active",
 			"expired": "Expired",
@@ -1423,15 +1585,15 @@
 			"unlimited": "Unlimited"
 		},
 		"instagramGallery": {
-			"error": "There's been a problem contacting Instagram",
 			"noPhotos": "Nothing to show here",
 			"viewMore": "View more on Instagram"
 		},
-		"fileDrop": {
-			"dropFilesHere": "Drop files here or click to browse",
-			"maxFiles": "Max {count, plural, =1 {{count} file, {maxSize}MB} other {{count} files, {maxSize}MB each}}",
-			"someFilesFailed": "Some files failed to upload",
-			"maxFilesReached": "Maximum of {count, plural, =1 {{count} file} other {{count} files}} reached"
+		"fileUpload": {
+			"dropFilesHere": "Drop files here",
+			"clickToUploadOrDragAndDrop": "Click to upload or drag and drop",
+			"maxFiles": "Up to {count} files",
+			"maxFileSize": "Maximum size of {size} MB",
+			"filesSelected": "{count} of {maxFiles} files added"
 		}
 	},
 	"imgur": {

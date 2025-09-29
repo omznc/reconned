@@ -62,17 +62,17 @@ export async function SpendingPageFetcher(props: PageProps) {
 }
 
 export default async function SpendingPage(props: PageProps) {
-	const t = await getTranslations("dashboard.club.spending");
+	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 
 	if (!FEATURE_FLAGS.CLUBS_SPENDING) {
-		return <ErrorPage title={t("title")} />;
+		return <ErrorPage title={t("dashboard.club.spending.title")} />;
 	}
 
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("title")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.club.spending.title")}</h3>
 				<AddPurchaseModal />
 			</div>
 

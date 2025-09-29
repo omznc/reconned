@@ -27,7 +27,7 @@ export function LogoUpload({
 	className,
 }: LogoUploadProps) {
 	const [dragActive, setDragActive] = useState(false);
-	const t = useTranslations("dashboard.club.info");
+	const t = useTranslations();
 
 	const onDrop = useCallback(
 		async (acceptedFiles: File[]) => {
@@ -79,7 +79,7 @@ export function LogoUpload({
 							<div className="relative w-full h-48 bg-muted">
 								<Image
 									src={displayValue}
-									alt="Club logo"
+									alt={t("components.clubsMap.clubLogo")}
 									fill
 									className="object-contain"
 									sizes="(max-width: 768px) 100vw, 400px"
@@ -96,7 +96,7 @@ export function LogoUpload({
 										disabled={disabled}
 									>
 										<Upload className="w-4 h-4 mr-2" />
-										{t("replaceLogo")}
+										{t("dashboard.club.info.replaceLogo")}
 									</Button>
 									<Button
 										type="button"
@@ -106,7 +106,7 @@ export function LogoUpload({
 										disabled={disabled}
 									>
 										<X className="w-4 h-4 mr-2" />
-										{t("removeLogo")}
+										{t("dashboard.club.info.removeLogo")}
 									</Button>
 								</div>
 							</div>
@@ -134,9 +134,11 @@ export function LogoUpload({
 							<ImageIcon className="w-8 h-8 text-muted-foreground" />
 						</div>
 						<div className="space-y-2">
-							<p className="text-sm font-medium">{t("uploadLogo")}</p>
-							<p className="text-xs text-muted-foreground">{t("logoUploadDescription")}</p>
-							<p className="text-xs text-muted-foreground">{t("logoFormats")}</p>
+							<p className="text-sm font-medium">{t("dashboard.club.info.uploadLogo")}</p>
+							<p className="text-xs text-muted-foreground">
+								{t("dashboard.club.info.logoUploadDescription")}
+							</p>
+							<p className="text-xs text-muted-foreground">{t("dashboard.club.info.logoFormats")}</p>
 						</div>
 					</div>
 				</div>
@@ -144,7 +146,9 @@ export function LogoUpload({
 
 			{displayValue && (
 				<div className="flex items-center justify-between text-xs text-muted-foreground">
-					<span>{selectedFile ? t("logoSelected") : t("logoUploaded")}</span>
+					<span>
+						{selectedFile ? t("dashboard.club.info.logoSelected") : t("dashboard.club.info.logoUploaded")}
+					</span>
 					<Button
 						type="button"
 						variant="ghost"
@@ -154,7 +158,7 @@ export function LogoUpload({
 						className="h-6 px-2 text-xs"
 					>
 						<X className="w-3 h-3 mr-1" />
-						{t("removeLogo")}
+						{t("dashboard.club.info.removeLogo")}
 					</Button>
 				</div>
 			)}

@@ -11,7 +11,7 @@ import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 
 export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).action(async ({ parsedInput, ctx }) => {
-	const t = await getTranslations("dashboard.user.settings");
+	const t = await getTranslations();
 	// Validate slug
 	if (parsedInput.slug) {
 		const valid = await validateSlug({
@@ -19,7 +19,7 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 			slug: parsedInput.slug,
 		});
 		if (!valid) {
-			throw new Error(t("linkTaken"));
+			throw new Error(t("dashboard.user.settings.linkTaken"));
 		}
 	}
 

@@ -9,11 +9,11 @@ interface EmailVerificationProps {
 }
 
 export const EmailVerification = async ({ verificationUrl, userName }: EmailVerificationProps) => {
-	const t = await getTranslations("emails.emailVerification");
+	const t = await getTranslations();
 	return (
 		<Html>
 			<Head />
-			<Preview>{t("title")}</Preview>
+			<Preview>{t("emails.emailVerification.title")}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -24,24 +24,24 @@ export const EmailVerification = async ({ verificationUrl, userName }: EmailVeri
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>{t("title")}</Heading>
+					<Heading style={emailStyles.h1}>{t("emails.emailVerification.title")}</Heading>
 					{userName ? (
 						<Text style={emailStyles.text}>
-							{t("helloUser", {
+							{t("emails.emailVerification.helloUser", {
 								name: userName,
 							})}
 						</Text>
 					) : (
-						<Text style={emailStyles.text}>{t("hello")}</Text>
+						<Text style={emailStyles.text}>{t("emails.emailVerification.hello")}</Text>
 					)}
-					<Text style={emailStyles.text}>{t("message")}</Text>
+					<Text style={emailStyles.text}>{t("emails.emailVerification.message")}</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={verificationUrl}>
-							{t("action")}
+							{t("emails.emailVerification.action")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("footer")}</Text>
+					<Text style={emailStyles.footer}>{t("emails.emailVerification.footer")}</Text>
 				</Container>
 			</Body>
 		</Html>

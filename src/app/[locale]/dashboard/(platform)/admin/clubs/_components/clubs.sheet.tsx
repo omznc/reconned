@@ -2,6 +2,7 @@
 
 import type { Club } from "@generated/client";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 import { ClubActions } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club-table-actions";
 import {
 	Credenza,
@@ -18,6 +19,7 @@ interface ClubsSheetProps {
 
 export function ClubsSheet({ selectedClub }: ClubsSheetProps) {
 	const router = useRouter();
+	const t = useTranslations();
 
 	return (
 		<Credenza open={Boolean(selectedClub)} onOpenChange={() => router.push("?")}>
@@ -28,7 +30,7 @@ export function ClubsSheet({ selectedClub }: ClubsSheetProps) {
 				</CredenzaHeader>
 				{!selectedClub && (
 					<div className="mt-4 space-y-4">
-						<p>Klub nije pronađen.</p>
+						<p>{t("dashboard.admin.clubs.notFound")}</p>
 					</div>
 				)}
 				{selectedClub && (

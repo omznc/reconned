@@ -26,7 +26,7 @@ interface Poi {
 }
 
 interface MapData {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 	areas: any[];
 	pois: Poi[];
 }
@@ -118,7 +118,7 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 	useEffect(() => {
 		if (!mapRef.current || readOnly) return;
 
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 		const handleDrawCreated = (event: any) => {
 			const layer = event.layer;
 			drawnItemsRef.current?.addLayer(layer);

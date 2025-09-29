@@ -58,7 +58,7 @@ export const validateFileBuffer = async (
 		}
 
 		return { isValid: true, mimeType: fileType.mime };
-	} catch (error) {
+	} catch {
 		return { isValid: false, error: "File validation failed" };
 	}
 };
@@ -81,7 +81,7 @@ export const optimizeImage = async (
 			})
 			.jpeg({ quality })
 			.toBuffer();
-	} catch (error) {
+	} catch {
 		// If optimization fails, return original buffer
 		return buffer;
 	}

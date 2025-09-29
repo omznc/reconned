@@ -13,7 +13,7 @@ export function Search() {
 		defaultValue: "",
 	});
 	const [input, setInput] = useState(query);
-	const t = useTranslations("public.search");
+	const t = useTranslations();
 
 	const handleSearch = useDebouncedCallback((value: string) => {
 		setQuery(value);
@@ -26,7 +26,7 @@ export function Search() {
 				setInput(e.target.value);
 				handleSearch(e.target.value);
 			}}
-			placeholder={t("placeholder")}
+			placeholder={t("public.search.placeholder")}
 		/>
 	);
 }

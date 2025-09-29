@@ -24,15 +24,15 @@ export const MembershipExpirationOwner = async ({
 	membersUrl,
 	isExpired,
 }: MembershipExpirationOwnerProps) => {
-	const t = await getTranslations("emails.membershipExpirationOwner");
+	const t = await getTranslations();
 
 	return (
 		<Html>
 			<Head />
 			<Preview>
 				{isExpired
-					? t("expiredTitle", { memberName, clubName })
-					: t("expiringTitle", {
+					? t("emails.membershipExpirationOwner.expiredTitle", { memberName, clubName })
+					: t("emails.membershipExpirationOwner.expiringTitle", {
 							memberName,
 							clubName,
 							days: daysUntilExpiry,
@@ -43,21 +43,25 @@ export const MembershipExpirationOwner = async ({
 					<Section style={emailStyles.logoSection}>
 						<Img
 							src={clubLogo || `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/logo.png`}
-							alt="Logo Kluba"
+							alt={t("emails.membershipExpirationOwner.clubLogo")}
 							width="100"
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>{isExpired ? t("expiredHeading") : t("expiringHeading")}</Heading>
+					<Heading style={emailStyles.h1}>
+						{isExpired
+							? t("emails.membershipExpirationOwner.expiredHeading")
+							: t("emails.membershipExpirationOwner.expiringHeading")}
+					</Heading>
 					<Text style={emailStyles.text}>{t("hello", { name: ownerName })}</Text>
 					<Text style={emailStyles.text}>
 						{isExpired
-							? t("expiredMessage", {
+							? t("emails.membershipExpirationOwner.expiredMessage", {
 									memberName,
 									clubName,
 									date: expiryDate,
 								})
-							: t("expiringMessage", {
+							: t("emails.membershipExpirationOwner.expiringMessage", {
 									memberName,
 									clubName,
 									date: expiryDate,
@@ -66,11 +70,11 @@ export const MembershipExpirationOwner = async ({
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={membersUrl}>
-							{t("action")}
+							{t("emails.membershipExpirationOwner.action")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("footer")}</Text>
+					<Text style={emailStyles.footer}>{t("emails.membershipExpirationOwner.footer")}</Text>
 				</Container>
 			</Body>
 		</Html>

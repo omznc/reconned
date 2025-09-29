@@ -5,7 +5,6 @@ import { Settings, UserCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 

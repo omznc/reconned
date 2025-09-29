@@ -29,7 +29,7 @@ interface MembersTableProps {
 
 export function MembersTable(props: MembersTableProps) {
 	const confirm = useConfirm();
-	const t = useTranslations("dashboard.club.members.membersTable");
+	const t = useTranslations();
 	const locale = useLocale();
 	const [membershipToExtend, setMembershipToExtend] = useState<
 		| (ClubMembership & {
@@ -45,10 +45,10 @@ export function MembersTable(props: MembersTableProps) {
 		}
 
 		const confirmed = await confirm({
-			title: t("remove.title"),
-			body: t("remove.body", { name: member.userName }),
-			cancelButton: t("remove.cancel"),
-			actionButton: t("remove.confirm"),
+			title: t("dashboard.club.members.membersTable.remove.title"),
+			body: t("dashboard.club.members.membersTable.remove.body", { name: member.userName }),
+			cancelButton: t("common.actions.cancel"),
+			actionButton: t("common.actions.confirm"),
 			actionButtonVariant: "destructive",
 		});
 
@@ -62,11 +62,11 @@ export function MembersTable(props: MembersTableProps) {
 		});
 
 		if (!response?.data?.success) {
-			toast.error(response?.data?.error || t("remove.error"));
+			toast.error(response?.data?.error || t("dashboard.club.members.membersTable.remove.error"));
 			return;
 		}
 
-		toast.success(t("remove.success"));
+		toast.success(t("dashboard.club.members.membersTable.remove.success"));
 	};
 
 	const getMembershipStatus = (membership: ClubMembership) => {
@@ -74,14 +74,14 @@ export function MembersTable(props: MembersTableProps) {
 
 		if (!membership.startDate && !membership.endDate) {
 			return {
-				label: t("membershipStatus.unlimited"),
+				label: t("dashboard.club.members.membersTable.membershipStatus.unlimited"),
 				variant: "default",
 			} as const;
 		}
 
 		if (membership.endDate && new Date(membership.endDate) < today) {
 			return {
-				label: t("membershipStatus.expired"),
+				label: t("dashboard.club.members.membersTable.membershipStatus.expired"),
 				variant: "outline",
 			} as const;
 		}
@@ -93,19 +93,19 @@ export function MembersTable(props: MembersTableProps) {
 
 			if (new Date(membership.endDate) < sevenDaysFromNow) {
 				return {
-					label: t("membershipStatus.expiringSoon"),
+					label: t("dashboard.club.members.membersTable.membershipStatus.expiringSoon"),
 					variant: "secondary",
 				} as const;
 			}
 
 			return {
-				label: t("membershipStatus.active"),
+				label: t("dashboard.club.members.membersTable.membershipStatus.active"),
 				variant: "default",
 			} as const;
 		}
 
 		return {
-			label: t("membershipStatus.active"),
+			label: t("dashboard.club.members.membersTable.membershipStatus.active"),
 			variant: "default",
 		} as const;
 	};
@@ -115,7 +115,7 @@ export function MembersTable(props: MembersTableProps) {
 			<GenericDataTable
 				data={props.members}
 				totalPages={Math.ceil(props.totalMembers / props.pageSize)}
-				searchPlaceholder={t("searchPlaceholder")}
+				searchPlaceholder={t("dashboard.club.members.membersTable.searchPlaceholder")}
 				columns={[
 					{
 						key: "avatar",
@@ -137,24 +137,24 @@ export function MembersTable(props: MembersTableProps) {
 					},
 					{
 						key: "userName",
-						header: t("name"),
+						header: t("dashboard.club.members.membersTable.name"),
 						sortable: true,
 					},
 					{
 						key: "userCallsign",
-						header: t("callsign"),
+						header: t("dashboard.club.members.membersTable.callsign"),
 						sortable: true,
 					},
 					{
 						key: "role",
-						header: t("role"),
+						header: t("dashboard.club.members.membersTable.role"),
 						sortable: true,
 						cellConfig: {
 							variant: "badge",
 							valueMap: {
-								CLUB_OWNER: t("owner"),
-								MANAGER: t("manager"),
-								USER: t("member"),
+								CLUB_OWNER: t("dashboard.club.members.membersTable.owner"),
+								MANAGER: t("dashboard.club.members.membersTable.manager"),
+								USER: t("dashboard.club.members.membersTable.member"),
 							},
 							badgeVariants: {
 								CLUB_OWNER: "bg-red-100 text-red-800",
@@ -165,7 +165,7 @@ export function MembersTable(props: MembersTableProps) {
 					},
 					{
 						key: "membershipStatus",
-						header: t("membershipStatus.title"),
+						header: t("dashboard.club.members.membersTable.membershipStatus.title"),
 						sortable: false,
 						cellConfig: {
 							variant: "custom",
@@ -181,7 +181,7 @@ export function MembersTable(props: MembersTableProps) {
 					},
 					{
 						key: "startDate",
-						header: t("startDate"),
+						header: t("dashboard.club.members.membersTable.startDate"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
@@ -193,14 +193,14 @@ export function MembersTable(props: MembersTableProps) {
 												month: "long",
 												year: "numeric",
 											})
-										: t("notSet")}
+										: t("dashboard.club.members.membersTable.notSet")}
 								</span>
 							),
 						},
 					},
 					{
 						key: "endDate",
-						header: t("endDate"),
+						header: t("dashboard.club.members.membersTable.endDate"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
@@ -212,14 +212,14 @@ export function MembersTable(props: MembersTableProps) {
 												month: "long",
 												year: "numeric",
 											})
-										: t("unlimited")}
+										: t("dashboard.club.members.membersTable.unlimited")}
 								</span>
 							),
 						},
 					},
 					{
 						key: "actions",
-						header: t("actions"),
+						header: t("dashboard.club.members.membersTable.actions"),
 						cellConfig: {
 							variant: "custom",
 							components: (row) => {
@@ -233,7 +233,7 @@ export function MembersTable(props: MembersTableProps) {
 									<DropdownMenuItem key="profile" asChild>
 										<Link href={`/users/${row.userSlug ?? row.userId}`} target="_blank">
 											<UserCircle className="size-4 mr-2" />
-											{t("profile")}
+											{t("dashboard.club.members.membersTable.profile")}
 										</Link>
 									</DropdownMenuItem>,
 								);
@@ -261,7 +261,7 @@ export function MembersTable(props: MembersTableProps) {
 											onClick={() => handleRemove(row, row.clubId)}
 										>
 											<UserMinus className="size-4 mr-2" />
-											{t("removeMember")}
+											{t("dashboard.club.members.membersTable.removeMember")}
 										</DropdownMenuItem>,
 									);
 								}
@@ -279,7 +279,7 @@ export function MembersTable(props: MembersTableProps) {
 										}}
 									>
 										<Calendar className="size-4 mr-2" />
-										{t("extendMembership")}
+										{t("dashboard.club.members.membersTable.extendMembership")}
 									</DropdownMenuItem>,
 								);
 
@@ -293,10 +293,10 @@ export function MembersTable(props: MembersTableProps) {
 						key: "role",
 						label: "Filter po ulozi",
 						options: [
-							{ label: t("allRoles"), value: "all" },
-							{ label: t("owner"), value: "CLUB_OWNER" },
-							{ label: t("manager"), value: "MANAGER" },
-							{ label: t("member"), value: "USER" },
+							{ label: t("dashboard.club.members.membersTable.allRoles"), value: "all" },
+							{ label: t("dashboard.club.members.membersTable.owner"), value: "CLUB_OWNER" },
+							{ label: t("dashboard.club.members.membersTable.manager"), value: "MANAGER" },
+							{ label: t("dashboard.club.members.membersTable.member"), value: "USER" },
 						],
 					},
 				]}

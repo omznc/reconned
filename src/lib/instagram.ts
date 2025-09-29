@@ -365,7 +365,7 @@ export async function checkAndRefreshToken(
 			token: club.instagramAccessToken,
 			igBusinessId: club.instagramBusinessId,
 		};
-	} catch (error) {
+	} catch {
 		// In case of any error, we return the existing token and let the API call handle any issues
 		return {
 			token: club.instagramAccessToken,
@@ -406,7 +406,8 @@ export async function disconnectInstagramAPI(clubId: string): Promise<boolean> {
 			clubId,
 			actionType: "INSTAGRAM_DISCONNECT",
 			actionData: {
-				success: true,
+				success: false,
+				error: error instanceof Error ? error.message : "Unknown error",
 			},
 		});
 		return false;

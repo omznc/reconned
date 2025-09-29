@@ -17,9 +17,9 @@ export interface UseFileUploadOptions {
 
 export function useFileUpload({
 	uploadFunction,
-	maxFiles = 5,
 	initialFiles = [],
 	onFilesChange,
+	maxFiles = 5,
 }: UseFileUploadOptions) {
 	const [files, setFiles] = useState<FileUploadItem[]>(initialFiles);
 	const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
@@ -37,7 +37,12 @@ export function useFileUpload({
 
 		if (filesToUpload.length === 0) {
 			// Return existing file URLs
+			// biome-ignore lint/style/noNonNullAssertion: File URLs are guaranteed to be non-null
 			return files.filter((f) => f.url).map((f) => f.url!);
+		}
+
+		if (filesToUpload.length > maxFiles) {
+			throw new Error(`Maximum number of files exceeded: ${maxFiles}`);
 		}
 
 		const uploadPromises = filesToUpload.map(async (fileItem) => {
@@ -74,10 +79,12 @@ export function useFileUpload({
 			const successfulUploads = results.filter(Boolean) as string[];
 
 			// Include existing file URLs
+			// biome-ignore lint/style/noNonNullAssertion: File URLs are guaranteed to be non-null
 			const existingUrls = files.filter((f) => f.isExisting && f.url).map((f) => f.url!);
 
 			return [...existingUrls, ...successfulUploads];
 		} catch (error) {
+			console.error(error);
 			throw new Error("Some files failed to upload");
 		}
 	}, [files, uploadFunction]);

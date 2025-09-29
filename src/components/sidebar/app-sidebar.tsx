@@ -39,7 +39,7 @@ interface AppSidebarProps {
 // Component properly using the useCommandMenu hook within the provider context
 function SearchButton({ isMac }: { isMac: boolean }) {
 	const { toggleOpen } = useCommandMenu();
-	const t = useTranslations("components.sidebar");
+	const t = useTranslations();
 	const sidebar = useSidebar();
 
 	if (!sidebar.open) {
@@ -50,7 +50,7 @@ function SearchButton({ isMac }: { isMac: boolean }) {
 		<Button variant="outline" size="sm" className="w-full h-8 gap-2 text-xs justify-between" onClick={toggleOpen}>
 			<div className="flex items-center gap-2">
 				<Search className="h-3.5 w-3.5" />
-				<span>{t("searchPlaceholder")}</span>
+				<span>{t("components.sidebar.searchPlaceholder")}</span>
 			</div>
 			<kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
 				{isMac ? "⌘" : "Ctrl+"}K
@@ -64,7 +64,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const path = usePathname();
-	const t = useTranslations("components.sidebar");
+	const t = useTranslations();
 	const [isMac, setIsMac] = useState(false);
 
 	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta");
@@ -141,7 +141,9 @@ export function AppSidebar(props: AppSidebarProps) {
 						<SidebarMenuItem>
 							{sidebar.open ? (
 								<div className="px-3 py-2 border bg-background/20">
-									<p className="text-xs text-muted-foreground">{t("betaMessage")}</p>
+									<p className="text-xs text-muted-foreground">
+										{t("components.sidebar.betaMessage")}
+									</p>
 								</div>
 							) : (
 								<div className="px-1 py-2 border bg-background/20 flex flex-col items-center">

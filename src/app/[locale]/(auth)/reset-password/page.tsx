@@ -20,17 +20,16 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations("public.auth");
+	const t = useTranslations();
 	const locale = useLocale();
-	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
 	// Reset password form schema with Zod
 	const resetPasswordSchema = z
 		.object({
-			password: z.string().min(6, t("passwordTooShort")),
+			password: z.string().min(6, t("public.auth.passwordTooShort")),
 			confirmPassword: z.string(),
-			turnstileToken: z.string().min(1, t("captchaError")),
+			turnstileToken: z.string().min(1, t("public.auth.captchaError")),
 		})
 		.refine((data) => data.password === data.confirmPassword, {
 			message: "Šifre se ne podudaraju.",
@@ -74,12 +73,12 @@ export default function LoginPage() {
 					}
 				},
 				onSuccess: () => {
-					toast.success(t("resetPasswordSuccess"));
+					toast.success(t("public.auth.resetPasswordSuccess"));
 					router.push("/login");
 				},
 				onError: (ctx) => {
 					if (ctx.error.status === 403) {
-						toast.error(t("resetPasswordError"));
+						toast.error(t("public.auth.resetPasswordError"));
 					} else {
 						setIsError(true);
 					}
@@ -91,8 +90,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t("resetPassword")}</CardTitle>
-				<CardDescription>{t("resetPasswordDescription")}</CardDescription>
+				<CardTitle className="text-2xl">{t("public.auth.resetPassword")}</CardTitle>
+				<CardDescription>{t("public.auth.resetPasswordDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Form {...form}>
@@ -102,7 +101,7 @@ export default function LoginPage() {
 							name="password"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="password">{t("password")}</Label>
+									<Label htmlFor="password">{t("public.auth.password")}</Label>
 									<FormControl>
 										<Input {...field} id="password" type="password" />
 									</FormControl>
@@ -116,7 +115,7 @@ export default function LoginPage() {
 							name="confirmPassword"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
+									<Label htmlFor="confirmPassword">{t("public.auth.confirmPassword")}</Label>
 									<FormControl>
 										<Input {...field} id="confirmPassword" type="password" />
 									</FormControl>
@@ -125,28 +124,27 @@ export default function LoginPage() {
 							)}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
+						{isError && <p className="text-red-500 -mb-2">{t("public.auth.invalidData")}</p>}
 
 						<TurnstileWidget
 							ref={turnstileRef}
 							onVerify={(token) => {
 								// Only set if we have a valid token
 								if (token && token.length > 0) {
-									setTurnstileToken(token);
 									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
 						/>
 
 						<LoaderSubmitButton isLoading={isLoading} className="w-full" disabled={!form.formState.isValid}>
-							{t("resetPassword")}
+							{t("public.auth.resetPassword")}
 						</LoaderSubmitButton>
 					</form>
 				</Form>
 				<div className="mt-4 text-center text-sm">
-					{t("noAccountQuestion")}{" "}
+					{t("public.auth.noAccountQuestion")}{" "}
 					<Link href="/register" className="underline">
-						{t("register")}
+						{t("public.auth.register")}
 					</Link>
 				</div>
 			</CardContent>

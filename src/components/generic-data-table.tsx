@@ -13,7 +13,6 @@ import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
-	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -91,7 +90,7 @@ export function GenericDataTable<T>({
 	totalPages,
 	tableConfig,
 }: GenericTableProps<T>) {
-	const t = useTranslations("components.table");
+	const t = useTranslations();
 	const locale = useLocale();
 	const [search, setSearch] = useQueryState("search", { shallow: false });
 	const [page, setPage] = useQueryState("page", {
@@ -244,7 +243,6 @@ export function GenericDataTable<T>({
 		);
 	};
 
-	// biome-ignore lint/suspicious/noExplicitAny: Don't care
 	const renderCell = (
 		// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
 		item: Record<string, any>,
@@ -344,7 +342,7 @@ export function GenericDataTable<T>({
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" className="h-10 shadow-none">
-							{t("showColumns")}
+							{t("components.table.showColumns")}
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-[200px]">
@@ -352,10 +350,8 @@ export function GenericDataTable<T>({
 							<DropdownMenuCheckboxItem
 								key={column.key.toString()}
 								checked={visibleColumns.has(column.key.toString())}
-								onCheckedChange={(checked) => {
+								onCheckedChange={() => {
 									toggleColumn(column.key.toString());
-									// Prevent the dropdown from closing
-									event?.preventDefault();
 								}}
 							>
 								{typeof column.header === "string" ? column.header : column.key.toString()}
@@ -396,12 +392,12 @@ export function GenericDataTable<T>({
 						className="h-10 px-2 lg:px-3 shadow-none"
 					>
 						<X className="h-4 w-4" />
-						<span className="ml-2 md:hidden inline lg:inline">{t("filters.clear")}</span>
+						<span className="ml-2 md:hidden inline lg:inline">{t("components.table.filters.clear")}</span>
 					</Button>
 				)}
 
 				<div className="ml-auto text-sm text-muted-foreground">
-					{t("navigation.page", { page, total: totalPages })}
+					{t("components.table.navigation.page", { page, total: totalPages })}
 				</div>
 			</div>
 
@@ -451,7 +447,7 @@ export function GenericDataTable<T>({
 							{data.length === 0 ? (
 								<TableRow>
 									<TableCell colSpan={visibleColumnsArray.length} className="text-center h-24">
-										{t("noData")}
+										{t("components.table.noData")}
 									</TableCell>
 								</TableRow>
 							) : (
@@ -469,8 +465,8 @@ export function GenericDataTable<T>({
 														"sticky right-0 bg-background text-center": isActionsColumn,
 													})}
 												>
-													{/* biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types */}
 													{renderCell(
+														// biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types
 														item as Record<string, any>,
 														column,
 														tableConfig,
@@ -490,7 +486,7 @@ export function GenericDataTable<T>({
 			{/* Mobile Cards */}
 			<div className="space-y-4 md:hidden">
 				{data.length === 0 ? (
-					<div className="text-center py-8 text-muted-foreground">{t("noData")}</div>
+					<div className="text-center py-8 text-muted-foreground">{t("components.table.noData")}</div>
 				) : (
 					data.map((item, idx) => (
 						<div
@@ -548,7 +544,7 @@ export function GenericDataTable<T>({
 							<SelectItem value="100">100</SelectItem>
 						</SelectContent>
 					</Select>
-					<span className="text-sm text-muted-foreground">{t("navigation.perPage")}</span>
+					<span className="text-sm text-muted-foreground">{t("components.table.navigation.perPage")}</span>
 				</div>
 
 				<div className="flex items-center justify-center w-full sm:w-auto gap-2">
@@ -558,7 +554,7 @@ export function GenericDataTable<T>({
 						disabled={page === "1"}
 						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
-						{t("navigation.previous")}
+						{t("components.table.navigation.previous")}
 					</Button>
 					<Button
 						variant="outline"
@@ -566,7 +562,7 @@ export function GenericDataTable<T>({
 						disabled={Number(page) >= totalPages}
 						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
-						{t("navigation.next")}
+						{t("components.table.navigation.next")}
 					</Button>
 				</div>
 			</div>

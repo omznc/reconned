@@ -6,7 +6,7 @@ interface BadgeNewProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function BadgeNew({ className, ...props }: BadgeNewProps) {
-	const t = useTranslations("components.badge");
+	const t = useTranslations();
 	return (
 		<span
 			className={cn(
@@ -15,7 +15,7 @@ export function BadgeNew({ className, ...props }: BadgeNewProps) {
 			)}
 			{...props}
 		>
-			{t("new")}
+			{t("components.badge.new")}
 		</span>
 	);
 }

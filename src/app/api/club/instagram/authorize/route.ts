@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 	try {
 		const authUrl = await getInstagramAuthUrl(clubId);
 		return NextResponse.json({ url: authUrl });
-	} catch (error) {
+	} catch {
 		return NextResponse.json({ error: "Failed to generate Instagram authorization URL" }, { status: 500 });
 	}
 }

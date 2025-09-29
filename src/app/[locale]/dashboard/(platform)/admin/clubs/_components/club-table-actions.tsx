@@ -42,7 +42,7 @@ export function ClubActions({ club }: { club: Club }) {
 				throw new Error("Došlo je do greške prilikom izvršavanja akcije.");
 			}
 			// Optionally toast success message or refresh data
-		} catch (error) {
+		} catch {
 			toast.error("Došlo je do greške prilikom izvršavanja akcije.");
 		} finally {
 			const params = new URLSearchParams(searchParams);
