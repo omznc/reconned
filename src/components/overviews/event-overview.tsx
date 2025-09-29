@@ -26,7 +26,7 @@ interface EventOverviewProps {
 }
 
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
-	const t = await getTranslations("components.eventOverview");
+	const t = await getTranslations();
 	const user = await isAuthenticated();
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
 	const [analyticsId, analyticsSlug] = await Promise.all([
@@ -76,7 +76,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 									href={`/dashboard/${clubId}/events/create?id=${event.id}`}
 								>
 									<Pencil className="size-4" />
-									{t("editEvent")}
+									{t("components.eventOverview.editEvent")}
 								</Link>
 							</Button>
 						)
@@ -85,11 +85,13 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							{user && canApplyToEvent(event) ? (
 								<Link href={`/events/${event.id}/apply`}>
 									<Button variant="outline" size="sm" className="w-full md:w-auto">
-										{t("apply")} <BadgeSoon className="ml-2" />
+										{t("components.eventOverview.apply")} <BadgeSoon className="ml-2" />
 									</Button>
 								</Link>
 							) : user ? (
-								<p className="text-sm text-muted-foreground">{t("registrationsClosed")}</p>
+								<p className="text-sm text-muted-foreground">
+									{t("components.eventOverview.registrationsClosed")}
+								</p>
 							) : null}
 							<AddEventToCalendarButton event={event} />
 						</div>
@@ -110,12 +112,12 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							{event.isPrivate ? (
 								<>
 									<EyeOff className="size-4" />
-									{t("privateEvent")}
+									{t("components.eventOverview.privateEvent")}
 								</>
 							) : (
 								<>
 									<Eye className="size-4" />
-									{t("publicEvent")}
+									{t("components.eventOverview.publicEvent")}
 								</>
 							)}
 						</Badge>
@@ -130,8 +132,8 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.googleMapsLink && (
 						<div className="size-full flex flex-col gap-2">
-							<h2 className="text-xl font-semibold">{t("location")}</h2>
-							<LoadChildOnClick title={t("showLocation")}>
+							<h2 className="text-xl font-semibold">{t("components.eventOverview.location")}</h2>
+							<LoadChildOnClick title={t("components.eventOverview.showLocation")}>
 								<iframe
 									src={event.googleMapsLink}
 									loading="lazy"
@@ -144,10 +146,10 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					)}
 					{event.mapData && JSON.stringify(event.mapData) !== `{"pois":[],"areas":[]}` && (
 						<div className="size-full flex flex-col gap-2">
-							<h2 className="text-xl font-semibold">{t("map")}</h2>
-							<LoadChildOnClick title={t("showEventMap")}>
+							<h2 className="text-xl font-semibold">{t("components.eventOverview.map")}</h2>
+							<LoadChildOnClick title={t("components.eventOverview.showEventMap")}>
 								<MapComponent
-									// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+									// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 									defaultMapData={event.mapData as any}
 									readOnly={true}
 								/>

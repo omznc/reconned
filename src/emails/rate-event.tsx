@@ -19,31 +19,33 @@ export const RateEventEmail = async ({
 	clubLogo,
 	clubName,
 }: RateEventEmailProps) => {
-	const t = await getTranslations("emails.rateEvent");
+	const t = await getTranslations();
 
 	return (
 		<Html>
 			<Head />
-			<Preview>{t("title", { eventName })}</Preview>
+			<Preview>{t("emails.rateEvent.title", { eventName })}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
-						<Img src={clubLogo} alt="Logo Kluba" width="100" style={emailStyles.logo} />
+						<Img src={clubLogo} alt={t("emails.rateEvent.clubLogo")} width="100" style={emailStyles.logo} />
 					</Section>
-					<Heading style={emailStyles.h1}>{t("heading")}</Heading>
+					<Heading style={emailStyles.h1}>{t("emails.rateEvent.heading")}</Heading>
 					{playerName ? (
-						<Text style={emailStyles.text}>{t("helloUser", { name: playerName })}</Text>
+						<Text style={emailStyles.text}>{t("emails.rateEvent.helloUser", { name: playerName })}</Text>
 					) : (
-						<Text style={emailStyles.text}>{t("hello")}</Text>
+						<Text style={emailStyles.text}>{t("emails.rateEvent.hello")}</Text>
 					)}
-					<Text style={emailStyles.text}>{t("message", { eventName, date: eventDate })}</Text>
+					<Text style={emailStyles.text}>
+						{t("emails.rateEvent.message", { eventName, date: eventDate })}
+					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={rateUrl}>
-							{t("action")}
+							{t("emails.rateEvent.action")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("footer", { clubName })}</Text>
+					<Text style={emailStyles.footer}>{t("emails.rateEvent.footer", { clubName })}</Text>
 				</Container>
 			</Body>
 		</Html>

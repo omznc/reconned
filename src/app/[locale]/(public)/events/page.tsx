@@ -4,6 +4,8 @@ import { CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import type { ItemList, WithContext } from "schema-dts";
+import JsonLdScript from "@/components/json-ld-script";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,13 +55,56 @@ export default async function Page() {
 		// TODO: Add proper pagination
 		take: 100,
 	});
+	const t = await getTranslations();
+
+	const itemListSchema: WithContext<ItemList> = {
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		name: t("public.events.metadata.title"),
+		description: t("public.events.metadata.description"),
+		numberOfItems: upcomingEvents.length,
+		itemListElement: upcomingEvents.map((event, index) => ({
+			"@type": "ListItem",
+			position: index + 1,
+			item: {
+				"@type": "SportsEvent",
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+				name: event.name,
+				description: event.description,
+				sport: "Airsoft",
+				startDate: event.dateStart.toISOString(),
+				endDate: event.dateEnd.toISOString(),
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+				image: event.image || undefined,
+				location: {
+					"@type": "Place",
+					name: event.location,
+				},
+				organizer: {
+					"@type": "SportsOrganization",
+					name: event.club?.name,
+					sport: "Airsoft",
+				},
+				offers:
+					event.costPerPerson > 0
+						? {
+								"@type": "Offer",
+								price: event.costPerPerson,
+								priceCurrency: "BAM",
+							}
+						: undefined,
+				eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+				eventStatus: "https://schema.org/EventScheduled",
+			},
+		})),
+	};
+
 	return (
 		<div className="flex flex-col gap-4 max-w-[1200px] py-8 px-4">
-			<h1 className="text-xl font-bold">Nadolazeći susreti</h1>
+			<JsonLdScript data={itemListSchema} />
+			<h1 className="text-xl font-bold">{t("public.events.title")}</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{upcomingEvents.length === 0 && (
-					<div className="text-muted-foreground">Trenutno nema nadolazećih susreta.</div>
-				)}
+				{upcomingEvents.length === 0 && <div className="text-muted-foreground">{t("public.events.none")}</div>}
 				{upcomingEvents.map((event) => (
 					<Card key={event.id} className="flex flex-col">
 						<CardHeader className="p-0">
@@ -93,24 +138,40 @@ export default async function Page() {
 							</div>
 							<div className="flex items-center">
 								<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
-								<span>{event.costPerPerson.toFixed(2)}KM po osobi</span>
+								<span>
+									{event.costPerPerson.toFixed(2)}KM {t("public.events.costPerPerson")}
+								</span>
 							</div>
 							<div className="flex flex-wrap gap-2 my-4">
 								<Badge className="grow justify-center">
-									{event.allowFreelancers ? "Dozvoljeni freelanceri" : "Samo klubovi"}
+									{event.allowFreelancers
+										? t("public.events.allowFreelancers")
+										: t("public.events.onlyClubs")}
 								</Badge>
-								{event.hasBreakfast && <Badge className="grow justify-center">Doručak</Badge>}
-								{event.hasLunch && <Badge className="flex-growjustify-center ">Ručak</Badge>}
-								{event.hasDinner && <Badge className="grow justify-center ">Večera</Badge>}
-								{event.hasSnacks && <Badge className="grow justify-center">Grickalice</Badge>}
-								{event.hasDrinks && <Badge className="grow justify-center">Pića</Badge>}
-								{event.hasPrizes && <Badge className="grow justify-center ">Nagrade</Badge>}
+								{event.hasBreakfast && (
+									<Badge className="grow justify-center">{t("common.words.breakfast")}</Badge>
+								)}
+								{event.hasLunch && (
+									<Badge className="flex-growjustify-center ">{t("common.words.lunch")}</Badge>
+								)}
+								{event.hasDinner && (
+									<Badge className="grow justify-center ">{t("common.words.dinner")}</Badge>
+								)}
+								{event.hasSnacks && (
+									<Badge className="grow justify-center">{t("common.words.snacks")}</Badge>
+								)}
+								{event.hasDrinks && (
+									<Badge className="grow justify-center">{t("common.words.drinks")}</Badge>
+								)}
+								{event.hasPrizes && (
+									<Badge className="grow justify-center ">{t("common.words.prizes")}</Badge>
+								)}
 							</div>
 						</CardContent>
 						<CardFooter className="flex justify-between items-center">
 							<div className="flex flex-col">
 								<div className="text-sm text-muted-foreground">
-									Kreće{" "}
+									{t("public.events.starts")}{" "}
 									{formatDistanceToNow(event.dateStart, {
 										addSuffix: true,
 										locale: bs,
@@ -118,7 +179,7 @@ export default async function Page() {
 								</div>
 								{event.dateRegistrationsClose && (
 									<div className="text-sm text-muted-foreground">
-										Prijave otvorene još{" "}
+										{t("public.events.registrationsOpen")}{" "}
 										{formatDistanceToNow(event.dateRegistrationsClose, {
 											locale: bs,
 										})}
@@ -126,7 +187,7 @@ export default async function Page() {
 								)}
 							</div>
 							<Button asChild={true}>
-								<Link href={`/events/${event.id}`}>Pogledaj</Link>
+								<Link href={`/events/${event.id}`}>{t("public.events.view")}</Link>
 							</Button>
 						</CardFooter>
 					</Card>
@@ -137,14 +198,11 @@ export default async function Page() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("events.metadata.title"),
-		description: t("events.metadata.description"),
-		keywords: t("layout.metadata.keywords")
-			.split(",")
-			.map((keyword) => keyword.trim()),
+		title: t("public.events.metadata.title"),
+		description: t("public.events.metadata.description"),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events`,
 		},

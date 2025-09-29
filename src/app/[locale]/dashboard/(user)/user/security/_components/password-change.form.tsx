@@ -18,7 +18,7 @@ export function PasswordChangeForm({
 	isLoading: boolean;
 	setIsLoading: Dispatch<SetStateAction<boolean>>;
 }) {
-	const t = useTranslations("dashboard.security.passwordChange");
+	const t = useTranslations();
 	const changePasswordForm = useForm<z.infer<typeof passwordChangeSchema>>({
 		resolver: zodResolver(passwordChangeSchema),
 		defaultValues: {
@@ -42,17 +42,17 @@ export function PasswordChangeForm({
 					},
 					onError: () => {
 						setIsLoading(false);
-						toast.error(t("error"));
+						toast.error(t("dashboard.security.passwordChange.error"));
 					},
 					onSuccess: () => {
 						setIsLoading(false);
-						toast.success(t("success"));
+						toast.success(t("dashboard.security.passwordChange.success"));
 					},
 				},
 			);
 			changePasswordForm.reset();
 		} catch (_e) {
-			toast(t("error"));
+			toast(t("dashboard.security.passwordChange.error"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -62,14 +62,14 @@ export function PasswordChangeForm({
 		<Form {...changePasswordForm}>
 			<form onSubmit={changePasswordForm.handleSubmit(onChangePasswordSubmit)} className="space-y-4 w-full">
 				<div>
-					<h3 className="text-lg font-semibold">{t("title")}</h3>
+					<h3 className="text-lg font-semibold">{t("dashboard.security.passwordChange.title")}</h3>
 				</div>
 				<FormField
 					control={changePasswordForm.control}
 					name="currentPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("currentPassword")}</FormLabel>
+							<FormLabel>{t("dashboard.security.passwordChange.currentPassword")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -82,7 +82,7 @@ export function PasswordChangeForm({
 					name="newPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("newPassword")}</FormLabel>
+							<FormLabel>{t("dashboard.security.passwordChange.newPassword")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -95,7 +95,7 @@ export function PasswordChangeForm({
 					name="confirmPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("confirmPassword")}</FormLabel>
+							<FormLabel>{t("dashboard.security.passwordChange.confirmPassword")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -105,7 +105,9 @@ export function PasswordChangeForm({
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
 					<LockIcon className="w-4 h-4 mr-2" />
-					{isLoading ? t("loading") : t("changePassword")}
+					{isLoading
+						? t("dashboard.security.passwordChange.loading")
+						: t("dashboard.security.passwordChange.changePassword")}
 				</Button>
 			</form>
 		</Form>

@@ -26,8 +26,7 @@ export default function LoginPage() {
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations("public.auth");
-	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const t = useTranslations();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 	const [email, setEmail] = useQueryState("email", {
 		defaultValue: "",
@@ -40,9 +39,9 @@ export default function LoginPage() {
 
 	// Login form schema with Zod
 	const loginSchema = z.object({
-		email: z.string().email(t("invalidEmail")),
-		password: z.string().min(1, t("passwordRequired")),
-		turnstileToken: z.string().min(1, t("captchaError")),
+		email: z.string().email(t("public.auth.invalidEmail")),
+		password: z.string().min(1, t("public.auth.passwordRequired")),
+		turnstileToken: z.string().min(1, t("public.auth.captchaError")),
 	});
 
 	type LoginFormValues = z.infer<typeof loginSchema>;
@@ -100,10 +99,10 @@ export default function LoginPage() {
 				onSuccess: handleSuccessfulLogin,
 				onError: (ctx) => {
 					if (ctx.error.status === 403) {
-						toast.error(t("unverified"));
+						toast.error(t("public.auth.unverified"));
 					} else {
 						if (ctx.error.message === "Missing CAPTCHA response") {
-							toast.error(t("captchaError"));
+							toast.error(t("public.auth.captchaError"));
 							router.refresh();
 						}
 						setIsError(true);
@@ -116,8 +115,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t("login")}</CardTitle>
-				<CardDescription>{t("loginDescription")}</CardDescription>
+				<CardTitle className="text-2xl">{t("public.auth.login")}</CardTitle>
+				<CardDescription>{t("public.auth.loginDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Form {...form}>
@@ -140,14 +139,14 @@ export default function LoginPage() {
 									</FormControl>
 									{!!email && (
 										<p className="text-sm text-gray-500">
-											{t("emailAutofilled")}{" "}
+											{t("public.auth.emailAutofilled")}{" "}
 											<span
 												className="text-foreground cursor-pointer inline"
 												onClick={() => {
 													setEmail("");
 												}}
 											>
-												{t("remove")}
+												{t("public.auth.remove")}
 											</span>
 										</p>
 									)}
@@ -162,7 +161,7 @@ export default function LoginPage() {
 							render={({ field }) => (
 								<FormItem>
 									<div className="flex items-center">
-										<Label htmlFor="password">{t("password")}</Label>
+										<Label htmlFor="password">{t("public.auth.password")}</Label>
 										<Button
 											type="button"
 											onClick={async () => {
@@ -172,7 +171,7 @@ export default function LoginPage() {
 												setIsForgotPasswordLoading(true);
 												const email = form.getValues("email");
 												if (!email) {
-													toast.error(t("forgotPasswordNoEmail"));
+													toast.error(t("public.auth.forgotPasswordNoEmail"));
 													setIsForgotPasswordLoading(false);
 													return;
 												}
@@ -181,7 +180,7 @@ export default function LoginPage() {
 													!form.formState.dirtyFields.email ||
 													form.getFieldState("email").invalid
 												) {
-													toast.error(t("forgotPasswordWrongEmail"));
+													toast.error(t("public.auth.forgotPasswordWrongEmail"));
 													setIsForgotPasswordLoading(false);
 													return;
 												}
@@ -190,14 +189,16 @@ export default function LoginPage() {
 													email,
 													redirectTo: "/reset-password",
 												});
-												toast.success(t("forgotPasswordSuccess"));
+												toast.success(t("public.auth.forgotPasswordSuccess"));
 												setIsForgotPasswordLoading(false);
 											}}
 											variant="ghost"
 											className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 											disabled={isLoading || isForgotPasswordLoading}
 										>
-											{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
+											{isForgotPasswordLoading
+												? t("public.auth.loading")
+												: t("public.auth.forgotPassword")}
 										</Button>
 									</div>
 									<FormControl>
@@ -213,13 +214,12 @@ export default function LoginPage() {
 							)}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
+						{isError && <p className="text-red-500 -mb-2">{t("public.auth.invalidData")}</p>}
 
 						<TurnstileWidget
 							ref={turnstileRef}
 							onVerify={(token) => {
 								if (token && token.length > 0) {
-									setTurnstileToken(token);
 									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
@@ -230,7 +230,7 @@ export default function LoginPage() {
 							disabled={isForgotPasswordLoading || !form.formState.isValid}
 							className="w-full plausible-event-name=login-button-click"
 						>
-							{t("login")}
+							{t("public.auth.login")}
 						</LoaderSubmitButton>
 
 						<div className="flex max-w-full items-center gap-2">
@@ -265,12 +265,12 @@ export default function LoginPage() {
 					</form>
 				</Form>
 				<div className="mt-4 text-center text-sm">
-					{t("noAccountQuestion")}{" "}
+					{t("public.auth.noAccountQuestion")}{" "}
 					<Link
 						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
 						className="underline"
 					>
-						{t("register")}
+						{t("public.auth.register")}
 					</Link>
 				</div>
 			</CardContent>

@@ -16,18 +16,18 @@ export function NavClub({ user }: NavClubProps) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const { clubId } = useCurrentClub();
-	const t = useTranslations("components.sidebar");
+	const t = useTranslations();
 
 	if (!clubId) {
 		return null;
 	}
 
 	const isManager = user?.managedClubs?.includes(clubId);
-	const items = getClubNavigationItems(t, clubId, isManager);
+	const items = getClubNavigationItems(clubId, isManager);
 
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>{t("myClub")}</SidebarGroupLabel>
+			<SidebarGroupLabel>{t("components.sidebar.myClub")}</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) =>
 					sidebarOpen || isMobile

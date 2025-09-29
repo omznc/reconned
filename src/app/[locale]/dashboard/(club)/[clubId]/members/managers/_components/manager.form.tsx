@@ -41,7 +41,7 @@ export function AddManagerForm() {
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
-	const t = useTranslations("dashboard.club.members.managers");
+	const t = useTranslations();
 
 	const form = useForm<z.infer<typeof promoteToManagerSchema>>({
 		resolver: zodResolver(promoteToManagerSchema),
@@ -59,7 +59,7 @@ export function AddManagerForm() {
 					const results = await searchMembers(params.clubId, value);
 					setMembers(results);
 				} catch (_error) {
-					toast.error(t("search.error"));
+					toast.error(t("dashboard.club.members.managers.search.error"));
 				} finally {
 					setIsLoading(false);
 				}
@@ -80,14 +80,14 @@ export function AddManagerForm() {
 			const response = await promoteToManager(values);
 
 			if (!response?.data?.success) {
-				toast.error(response?.data?.error || t("promote.error"));
+				toast.error(response?.data?.error || t("dashboard.club.members.managers.promote.error"));
 				return;
 			}
 
-			toast(t("promote.success"));
+			toast(t("dashboard.club.members.managers.promote.success"));
 			form.reset({ clubId: params.clubId, memberId: "" });
 		} catch (_error) {
-			toast.error(t("promote.error"));
+			toast.error(t("dashboard.club.members.managers.promote.error"));
 		}
 	}
 
@@ -95,14 +95,14 @@ export function AddManagerForm() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl w-full">
 				<div>
-					<h3 className="text-lg font-semibold">{t("promote.title")}</h3>
+					<h3 className="text-lg font-semibold">{t("dashboard.club.members.managers.promote.title")}</h3>
 				</div>
 				<FormField
 					control={form.control}
 					name="memberId"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("promote.member.label")}</FormLabel>
+							<FormLabel>{t("dashboard.club.members.managers.promote.member.label")}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -116,7 +116,7 @@ export function AddManagerForm() {
 										>
 											{field.value
 												? members.find((member) => member.id === field.value)?.user.name
-												: t("promote.member.placeholder")}
+												: t("dashboard.club.members.managers.promote.member.placeholder")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
@@ -124,7 +124,7 @@ export function AddManagerForm() {
 								<PopoverContent className="sm:w-[448px] p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder={t("promote.member.search")}
+											placeholder={t("dashboard.club.members.managers.promote.member.search")}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -134,9 +134,13 @@ export function AddManagerForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>{t("promote.member.searchEmpty")}</CommandEmpty>
+												<CommandEmpty>
+													{t("dashboard.club.members.managers.promote.member.searchEmpty")}
+												</CommandEmpty>
 											) : members.length === 0 ? (
-												<CommandEmpty>{t("promote.member.noResults")}</CommandEmpty>
+												<CommandEmpty>
+													{t("dashboard.club.members.managers.promote.member.noResults")}
+												</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{members.map((member) => (
@@ -174,13 +178,15 @@ export function AddManagerForm() {
 									</Command>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>{t("promote.member.description")}</FormDescription>
+							<FormDescription>
+								{t("dashboard.club.members.managers.promote.member.description")}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
-					{t("promote.submit")}
+					{t("dashboard.club.members.managers.promote.submit")}
 				</Button>
 			</form>
 		</Form>

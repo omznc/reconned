@@ -21,7 +21,7 @@ import { authClient } from "@/lib/auth-client";
 
 export function UserSwitcher(props: { user: User }) {
 	const { isMobile } = useSidebar();
-	const t = useTranslations("components.sidebar");
+	const t = useTranslations();
 	const router = useRouter();
 	const { user } = props;
 
@@ -73,7 +73,7 @@ export function UserSwitcher(props: { user: User }) {
 							</Link>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>
+						<DropdownMenuLabel>{t("components.sidebar.personalization")}</DropdownMenuLabel>
 						<DropdownMenuItem asChild={true}>
 							<Button
 								variant="ghost"
@@ -82,7 +82,7 @@ export function UserSwitcher(props: { user: User }) {
 							>
 								<Link href="/dashboard/user/settings" className="cursor-pointer">
 									<UserCog className="h-[1.2rem] w-[1.2rem] transition-all" />
-									{t("settings")}
+									{t("components.sidebar.settings")}
 								</Link>
 							</Button>
 						</DropdownMenuItem>
@@ -113,7 +113,7 @@ export function UserSwitcher(props: { user: User }) {
 								className="w-full items-center justify-start cursor-pointer"
 							>
 								<LogOut className="w-4 h-4" />
-								{t("logout")}
+								{t("components.sidebar.logout")}
 							</Button>
 						</DropdownMenuItem>
 					</DropdownMenuContent>

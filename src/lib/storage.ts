@@ -44,7 +44,7 @@ export const generateKeyWithSize = (baseKey: string, size: number): string => {
 
 export const extractSizeFromKey = (key: string): number => {
 	const match = key.match(/_(\d+)b\./);
-	return match && match[1] ? Number.parseInt(match[1], 10) : 0;
+	return match?.[1] ? Number.parseInt(match[1], 10) : 0;
 };
 
 export interface SecureUploadResult {

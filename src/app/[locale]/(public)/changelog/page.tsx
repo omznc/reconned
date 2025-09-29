@@ -6,11 +6,15 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
+import JsonLdScript from "@/components/json-ld-script";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { env } from "@/lib/env";
 
 import "./markdown.css";
+import DOMPurify from "isomorphic-dompurify";
+import type { CollectionPage, WithContext } from "schema-dts";
 import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
 
 // Helper function to format GitHub release body markdown
@@ -32,7 +36,7 @@ export const revalidate = 3600; // 1 hour
 
 // Main changelog page
 export default async function ChangelogPage() {
-	const t = await getTranslations("public.changelog");
+	const t = await getTranslations();
 	const locale = await getLocale();
 
 	// Get the latest releases from GitHub
@@ -56,14 +60,14 @@ export default async function ChangelogPage() {
 		return (
 			<div className="container mx-auto py-12 px-4 md:px-6">
 				<div className="text-center mb-12">
-					<h1 className="text-4xl font-bold mb-4">{t("title")}</h1>
-					<p className="text-lg text-muted-foreground">{t("description")}</p>
+					<h1 className="text-4xl font-bold mb-4">{t("public.changelog.title")}</h1>
+					<p className="text-lg text-muted-foreground">{t("public.changelog.description")}</p>
 				</div>
 
 				<Alert variant="destructive" className="mb-6">
 					<AlertTriangle className="h-4 w-4" />
 					<AlertTitle>Error</AlertTitle>
-					<AlertDescription>{t("errorLoading")}</AlertDescription>
+					<AlertDescription>{t("public.changelog.errorLoading")}</AlertDescription>
 				</Alert>
 			</div>
 		);
@@ -91,27 +95,66 @@ export default async function ChangelogPage() {
 		})),
 	);
 
+	const changelogSchema: WithContext<CollectionPage> = {
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog`,
+		name: t("public.changelog.metadata.title"),
+		description: t("public.changelog.metadata.description"),
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog`,
+		mainEntity: {
+			"@type": "ItemList",
+			name: "Reconned Releases",
+			description: "Software releases and updates for the Reconned platform",
+			itemListElement: releases.map((release, index) => ({
+				"@type": "ListItem",
+				position: index + 1,
+				item: {
+					"@type": "Article",
+					"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog#${release.tag_name}`,
+					headline: release.name || `Version ${release.tag_name}`,
+					datePublished: release.published_at,
+					dateModified: release.published_at,
+					author: {
+						"@type": "Organization",
+						name: "Reconned Team",
+						url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+					},
+					publisher: {
+						"@type": "Organization",
+						name: "Reconned",
+						url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+						logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+					},
+					articleBody: release.body,
+					url: release.html_url,
+				},
+			})),
+		},
+	};
+
 	return (
 		<div className="container mx-auto py-12 px-4 md:px-6">
+			<JsonLdScript data={changelogSchema} />
 			<div className="text-center mb-12">
-				<h1 className="text-4xl font-bold mb-4">{t("title")}</h1>
-				<p className="text-lg text-muted-foreground">{t("description")}</p>
+				<h1 className="text-4xl font-bold mb-4">{t("public.changelog.title")}</h1>
+				<p className="text-lg text-muted-foreground">{t("public.changelog.description")}</p>
 			</div>
 
 			{/* Latest Release */}
 			<div className="relative mb-16">
 				<PeekingDrawing className="z-10 absolute -right-5 md:-right-0 -top-11 lg:-top-27 transition-all w-full max-w-[180px] lg:max-w-[300px] dark:invert" />
-				<h2 className="text-2xl font-bold mb-6">{t("latestRelease")}</h2>
+				<h2 className="text-2xl font-bold mb-6">{t("public.changelog.latestRelease")}</h2>
 				<Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">
 					<CardHeader className="bg-primary/5">
 						<CardTitle className="text-2xl flex items-center gap-2">
 							{latestRelease.name ||
-								t("version", {
+								t("public.changelog.version", {
 									version: latestRelease.tag_name,
 								})}
 						</CardTitle>
 						<div className="text-sm text-muted-foreground">
-							{t("published", {
+							{t("public.changelog.published", {
 								date: new Date(latestRelease.published_at).toLocaleDateString(locale, {
 									year: "numeric",
 									month: "long",
@@ -123,8 +166,9 @@ export default async function ChangelogPage() {
 					<CardContent className="pt-6">
 						<div className="markdown-content">
 							<div
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 								dangerouslySetInnerHTML={{
-									__html: content,
+									__html: DOMPurify.sanitize(content),
 								}}
 							/>
 						</div>
@@ -138,7 +182,7 @@ export default async function ChangelogPage() {
 								className="flex items-center gap-2"
 							>
 								<SiGithub className="h-4 w-4" />
-								{t("viewOnGithub")}
+								{t("public.changelog.viewOnGithub")}
 								<ExternalLink className="h-3 w-3" />
 							</a>
 						</Button>
@@ -149,19 +193,19 @@ export default async function ChangelogPage() {
 			{/* Previous Releases */}
 			{previousReleasesContent.length > 0 && (
 				<div>
-					<h2 className="text-2xl font-bold mb-6">{t("previousReleases")}</h2>
+					<h2 className="text-2xl font-bold mb-6">{t("public.changelog.previousReleases")}</h2>
 					<div className="space-y-6">
 						{previousReleasesContent.map((release) => (
 							<Card key={release.id} className="overflow-hidden">
 								<CardHeader>
 									<CardTitle className="text-xl">
 										{release.name ||
-											t("version", {
+											t("public.changelog.version", {
 												version: release.tag_name,
 											})}
 									</CardTitle>
 									<div className="text-sm text-muted-foreground">
-										{t("published", {
+										{t("public.changelog.published", {
 											date: new Date(release.published_at).toLocaleDateString(locale, {
 												year: "numeric",
 												month: "long",
@@ -173,8 +217,9 @@ export default async function ChangelogPage() {
 								<CardContent>
 									<div className="markdown-content">
 										<div
+											// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 											dangerouslySetInnerHTML={{
-												__html: release.formattedBody,
+												__html: DOMPurify.sanitize(release.formattedBody),
 											}}
 										/>
 									</div>
@@ -188,7 +233,7 @@ export default async function ChangelogPage() {
 											className="flex items-center gap-2"
 										>
 											<SiGithub className="h-4 w-4" />
-											{t("viewOnGithub")}
+											{t("public.changelog.viewOnGithub")}
 											<ExternalLink className="h-3 w-3" />
 										</a>
 									</Button>
@@ -203,12 +248,12 @@ export default async function ChangelogPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("changelog.metadata.title"),
-		description: t("changelog.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.changelog.metadata.title"),
+		description: t("public.changelog.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

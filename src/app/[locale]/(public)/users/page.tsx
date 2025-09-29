@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import type { ItemList, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { AdminIcon } from "@/components/icons";
+import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
@@ -20,7 +22,7 @@ const ITEMS_PER_PAGE = 12;
 
 export default async function Page(props: { searchParams: Promise<{ page?: string }> }) {
 	const searchParams = await props.searchParams;
-	const t = await getTranslations("public.users");
+	const t = await getTranslations();
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -39,9 +41,37 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 		OFFSET ${skip}
 	`;
 
+	const itemListSchema: WithContext<ItemList> = {
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		name: t("public.users.metadata.title"),
+		description: t("public.users.metadata.description"),
+		numberOfItems: total,
+		itemListElement: users.map((user, index) => ({
+			"@type": "ListItem",
+			position: index + 1 + skip,
+			item: {
+				"@type": "Person",
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+				name: user.name,
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+				image: user.image || undefined,
+				address: user.location
+					? {
+							"@type": "PostalAddress",
+							addressLocality: user.location,
+						}
+					: undefined,
+				additionalName: user.callsign || undefined,
+				jobTitle: user.role === "admin" ? "Administrator" : undefined,
+			},
+		})),
+	};
+
 	return (
 		<div className="container py-8 space-y-8 px-4">
-			<h1 className="text-2xl font-bold">{t("title")}</h1>
+			<JsonLdScript data={itemListSchema} />
+			<h1 className="text-2xl font-bold">{t("public.users.title")}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{users.map((user) => (
 					<SearchResultCard
@@ -66,14 +96,11 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("users.metadata.title"),
-		description: t("users.metadata.description"),
-		keywords: t("layout.metadata.keywords")
-			.split(",")
-			.map((keyword) => keyword.trim()),
+		title: t("public.users.metadata.title"),
+		description: t("public.users.metadata.description"),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users`,
 		},

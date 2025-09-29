@@ -12,12 +12,13 @@ import { Slider } from "@/components/ui/slider";
 import { Link } from "@/i18n/navigation";
 
 // Helper function to create a custom icon from club logo
-function createClubIcon(logoUrl: string | null | undefined, size: number) {
+function createClubIcon(logoUrl: string | null | undefined, size: number, t: ReturnType<typeof useTranslations>) {
+	console.log(t);
 	if (logoUrl) {
 		return (
 			<Image
 				src={logoUrl}
-				alt="Club logo"
+				alt={t("components.clubsMap.clubLogo")}
 				width={size}
 				height={size}
 				className="object-contain transition-transform hover:scale-125"
@@ -48,12 +49,13 @@ interface ClubsMapProps {
 	interactive?: boolean;
 }
 
-function LocationMarker({ position, logo }: { position: [number, number]; logo?: string | null }) {
-	return position ? <Marker position={position} icon={createClubIcon(logo, 32)} /> : null;
+function LocationMarker({ position, logo, t }: { position: [number, number]; logo?: string | null; t: ReturnType<typeof useTranslations> }) {
+	return position ? <Marker position={position} icon={createClubIcon(logo, 32, t	)} /> : null;
 }
 
 function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
 	useMapEvents({
+		// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 		click: (e: any) => {
 			if (onLocationSelect) {
 				onLocationSelect(e.latlng.lat, e.latlng.lng);
@@ -67,7 +69,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 	const [mounted, setMounted] = useState(false);
 	const [logoSize, setLogoSize] = useState(32); // Default size
 	const [clubId] = useQueryState("clubId");
-	const t = useTranslations("components.clubsMap");
+	const t = useTranslations();
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
 
@@ -112,7 +114,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 				{interactive && <MapEventHandler onLocationSelect={onLocationSelect} />}
 
 				{interactive && selectedLocation && (
-					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} />
+					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} t={t} />
 				)}
 
 				{!interactive &&
@@ -121,7 +123,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 							<Marker
 								key={club.id}
 								position={[club.latitude, club.longitude]}
-								icon={createClubIcon(club.logo, logoSize)}
+								icon={createClubIcon(club.logo, logoSize, t)}
 							>
 								<Popup className="rounded-none [&_.leaflet-popup-content-wrapper]:dark:bg-gray-800 [&_.leaflet-popup-content-wrapper]:dark:text-white">
 									<div className="flex flex-col items-center gap-2 p-2">
@@ -133,7 +135,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 											href={`/clubs/${club.slug || club.id}`}
 											className="text-sm text-red-500 hover:underline plausible-event-name=club-map-profile-link"
 										>
-											{t("viewProfile")}
+											{t("components.clubsMap.viewProfile")}
 										</Link>
 									</div>
 								</Popup>

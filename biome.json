@@ -36,14 +36,16 @@
 			},
 			"a11y": {
 				"useKeyWithMouseEvents": "off",
-				"useKeyWithClickEvents": "off"
+				"useKeyWithClickEvents": "off",
+				"noStaticElementInteractions": "warn"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
 				"noUndeclaredDependencies": "off"
 			},
 			"suspicious": {
-				"noReactSpecificProps": "off"
+				"noReactSpecificProps": "off",
+				"noUnknownAtRules": "off"
 			},
 			"security": {
 				"noDangerouslySetInnerHtml": "warn"

@@ -1,10 +1,12 @@
 import { ArrowUpRight, MailCheckIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import type { CollectionPage, WithContext } from "schema-dts";
+import JsonLdScript from "@/components/json-ld-script";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { env } from "@/lib/env";
 
 const sponsors = [
 	{
@@ -29,23 +31,52 @@ const sponsors = [
 
 export const revalidate = 86_400; // 1 day
 
-export default function SponsorsPage() {
-	const t = useTranslations("public.sponsors");
+export default async function SponsorsPage() {
+	const t = await getTranslations();
+
+	const sponsorPageSchema: WithContext<CollectionPage> = {
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sponsors`,
+		name: t("public.sponsors.metadata.title"),
+		description: t("public.sponsors.metadata.description"),
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sponsors`,
+		mainEntity: {
+			"@type": "ItemList",
+			name: "Reconned Sponsors",
+			description: "Organizations supporting the Reconned airsoft platform",
+			itemListElement: sponsors.map((sponsor, index) => ({
+				"@type": "ListItem",
+				position: index + 1,
+				item: {
+					"@type": "SportsOrganization",
+					name: sponsor.name,
+					description: sponsor.description,
+					sport: "Airsoft",
+					url: sponsor.website,
+					logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${sponsor.logo}`,
+				},
+			})),
+		},
+	};
 
 	return (
 		<>
+			<JsonLdScript data={sponsorPageSchema} />
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
-						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">{t("title")}</h1>
-						<p className="text-xl text-text/80 mb-8">{t("description")}</p>
+						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
+							{t("public.sponsors.title")}
+						</h1>
+						<p className="text-xl text-text/80 mb-8">{t("public.sponsors.description")}</p>
 					</div>
 				</div>
 			</div>
 
 			<div className="flex flex-col size-full gap-16 max-w-[1200px] px-4 py-16">
 				<section>
-					<h2 className="text-3xl font-bold mb-8">{t("currentSponsors")}</h2>
+					<h2 className="text-3xl font-bold mb-8">{t("public.sponsors.currentSponsors")}</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 						{sponsors.map((sponsor) => (
 							<Link target="_blank" key={sponsor.name} href={sponsor.website} className="h-full group">
@@ -98,8 +129,8 @@ export default function SponsorsPage() {
 									/>
 								</CardHeader>
 								<CardContent className="flex flex-col gap-1">
-									<CardTitle>{t("cta.title")}</CardTitle>
-									<p className="opacity-80">{t("cta.description")}</p>
+									<CardTitle>{t("public.sponsors.cta.title")}</CardTitle>
+									<p className="opacity-80">{t("public.sponsors.cta.description")}</p>
 								</CardContent>
 							</Card>
 						</Link>
@@ -107,9 +138,9 @@ export default function SponsorsPage() {
 				</section>
 
 				<section>
-					<h2 className="text-3xl font-bold mb-4">{t("contactUs")}</h2>
+					<h2 className="text-3xl font-bold mb-4">{t("public.sponsors.contactUs")}</h2>
 					<p className="text-lg">
-						{t("contactDescription")}{" "}
+						{t("public.sponsors.contactDescription")}{" "}
 						<Link
 							href="mailto:mail@reconned.com"
 							className="text-red-600 underline hover:text-red-400 transition-colors"
@@ -125,13 +156,10 @@ export default function SponsorsPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("sponsors.metadata.title"),
-		description: t("sponsors.metadata.description"),
-		keywords: t("layout.metadata.keywords")
-			.split(",")
-			.map((keyword) => keyword.trim()),
+		title: t("public.sponsors.metadata.title"),
+		description: t("public.sponsors.metadata.description"),
 	};
 }

@@ -41,7 +41,7 @@ interface EventCalendarProps {
 }
 
 export function EventCalendar(props: EventCalendarProps) {
-	const t = useTranslations("components.calendar");
+	const t = useTranslations();
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const [currentDate, setCurrentDate] = useQueryState("month", {
@@ -136,7 +136,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		};
 	};
 
-	const getEventPositions = (events: Event[], week: Date[]) => {
+	const getEventPositions = (events: Event[]) => {
 		const positions = new Map<string, number>();
 		const layers = [] as Set<string>[];
 
@@ -225,9 +225,13 @@ export function EventCalendar(props: EventCalendarProps) {
 						variant={isSameMonth(new Date(), currentDate) ? "outline" : "default"}
 						onClick={handleToday}
 						disabled={isSameMonth(new Date(), currentDate)}
-						title={isSameMonth(new Date(), currentDate) ? t("alreadyToday") : t("goToToday")}
+						title={
+							isSameMonth(new Date(), currentDate)
+								? t("components.calendar.alreadyToday")
+								: t("components.calendar.goToToday")
+						}
 					>
-						{t("today")}
+						{t("components.calendar.today")}
 					</Button>
 					<div className="flex">
 						<Button variant="outline" className="border-r-0" onClick={handlePreviousMonth}>
@@ -244,13 +248,13 @@ export function EventCalendar(props: EventCalendarProps) {
 				<div className="grid grid-cols-7 border-l">
 					{/* Day headers */}
 					{[
-						t("days.mon"),
-						t("days.tue"),
-						t("days.wed"),
-						t("days.thu"),
-						t("days.fri"),
-						t("days.sat"),
-						t("days.sun"),
+						t("components.calendar.days.mon"),
+						t("components.calendar.days.tue"),
+						t("components.calendar.days.wed"),
+						t("components.calendar.days.thu"),
+						t("components.calendar.days.fri"),
+						t("components.calendar.days.sat"),
+						t("components.calendar.days.sun"),
 					].map((day) => (
 						<div key={day} className="h-12 border-b border-r px-2 py-1 font-medium">
 							{day}
@@ -261,7 +265,7 @@ export function EventCalendar(props: EventCalendarProps) {
 						const weekEvents = props.events.filter((event) =>
 							week.some((day) => getEventsForDay(day).includes(event)),
 						);
-						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents, week);
+						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents);
 						const weekHeight = Math.max(8, (maxLayer + 1) * 2); // 8rem minimum, 2rem per layer
 
 						return (
@@ -356,7 +360,10 @@ export function EventCalendar(props: EventCalendarProps) {
 																<div className="text-sm space-y-1">
 																	<div className="grid grid-cols-[auto_1fr] gap-2">
 																		<span className="font-medium">
-																			{t("eventDetails.start")}:
+																			{t(
+																				"components.calendar.eventDetails.start",
+																			)}
+																			:
 																		</span>
 																		<span>
 																			{format(
@@ -371,7 +378,10 @@ export function EventCalendar(props: EventCalendarProps) {
 																		{event.dateEnd && (
 																			<>
 																				<span className="font-medium">
-																					{t("eventDetails.end")}:
+																					{t(
+																						"components.calendar.eventDetails.end",
+																					)}
+																					:
 																				</span>
 																				<span>
 																					{format(
@@ -388,7 +398,10 @@ export function EventCalendar(props: EventCalendarProps) {
 																		{event.location && (
 																			<>
 																				<span className="font-medium">
-																					{t("eventDetails.location")}:
+																					{t(
+																						"components.calendar.eventDetails.location",
+																					)}
+																					:
 																				</span>
 																				<span>{event.location}</span>
 																			</>
@@ -397,7 +410,10 @@ export function EventCalendar(props: EventCalendarProps) {
 																		{event?.costPerPerson && (
 																			<>
 																				<span className="font-medium">
-																					{t("eventDetails.cost")}:
+																					{t(
+																						"components.calendar.eventDetails.cost",
+																					)}
+																					:
 																				</span>
 																				<span>{event.costPerPerson} KM</span>
 																			</>
@@ -422,12 +438,14 @@ export function EventCalendar(props: EventCalendarProps) {
 																		}}
 																	>
 																		<Plus className="h-4 w-4 mr-2" />
-																		{t("eventDetails.apply")}{" "}
+																		{t("components.calendar.eventDetails.apply")}
 																		<BadgeSoon className="ml-2" />
 																	</Button>
 																) : (
 																	<p className="text-sm text-muted-foreground text-center mt-2">
-																		{t("eventDetails.registrationsClosed")}
+																		{t(
+																			"components.calendar.eventDetails.registrationsClosed",
+																		)}
 																	</p>
 																)}
 															</div>

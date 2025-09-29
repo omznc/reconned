@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 
 						// No Instagram business account found
 						return page;
-					} catch (error) {
+					} catch {
 						// Return the original page if there was an error
 						return page;
 					}
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({
 			pages: pagesWithInstagramInfo,
 		});
-	} catch (error) {
+	} catch {
 		return NextResponse.json({ error: "Failed to retrieve Facebook pages" }, { status: 500 });
 	}
 }

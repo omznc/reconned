@@ -14,13 +14,13 @@ interface ClubInstagramProps {
 }
 
 export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProps) {
-	const t = useTranslations("components.instagramGallery");
+	const t = useTranslations();
 	const locale = useLocale();
 
 	if (photos.length === 0) {
 		return (
 			<div className="text-center py-8 text-muted-foreground">
-				<p>{t("noPhotos")}</p>
+				<p>{t("components.instagramGallery.noPhotos")}</p>
 			</div>
 		);
 	}
@@ -94,7 +94,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 					className="overflow-hidden rounded-md aspect-square relative group hover:opacity-70 transition-opacity flex flex-col items-center justify-center bg-sidebar border border-border"
 				>
 					<SiInstagram className="h-8 w-8 mb-2" />
-					<p className="text-sm text-center font-medium">{t("viewMore")}</p>
+					<p className="text-sm text-center font-medium">{t("components.instagramGallery.viewMore")}</p>
 					<div className="flex items-center text-xs text-muted-foreground mt-1">
 						<span>{photos.length - limit}+ </span>
 						<ExternalLink className="h-3 w-3 ml-1" />

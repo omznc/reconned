@@ -84,13 +84,13 @@ export async function EventsPageFetcher(props: PageProps) {
 }
 
 export default async function Page(props: PageProps) {
-	const t = await getTranslations("dashboard.events");
+	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("title")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.events.title")}</h3>
 			</div>
 			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<EventsPageFetcher {...props} />

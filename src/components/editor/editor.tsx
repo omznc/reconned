@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import "./editor.css";
-import { useTranslations } from "next-intl";
 import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 
@@ -53,7 +52,6 @@ const ToolbarButton = ({
 };
 
 export const Editor = ({ editable = true, initialValue = "", onChange }: EditorProps) => {
-	const t = useTranslations();
 	const editor = useEditor({
 		extensions: [
 			StarterKit.configure({
@@ -201,6 +199,7 @@ export const Editor = ({ editable = true, initialValue = "", onChange }: EditorP
 				</div>
 			)}
 
+			{/** biome-ignore lint/a11y/noStaticElementInteractions: TODO: use button */}
 			<div onClick={handleContainerClick} className={cn("cursor-text", editable ? "min-h-[150px]" : "")}>
 				<EditorContent
 					editor={editor}

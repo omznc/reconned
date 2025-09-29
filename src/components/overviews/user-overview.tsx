@@ -25,7 +25,7 @@ interface UserOverviewProps {
 }
 
 export async function UserOverview({ user }: UserOverviewProps) {
-	const t = await getTranslations("components.userOverview");
+	const t = await getTranslations();
 	const [analyticsId, analyticsSlug] = await Promise.all([
 		getPageViews(`/users/${user.id}`),
 		getPageViews(`/users/${user.slug}`),
@@ -68,26 +68,30 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			{/* New Additional User Information Card */}
 			{/* <Card>
 				<CardHeader>
-					<CardTitle>{t("additionalInfo.title")}</CardTitle>
+					<CardTitle>{t("components.userOverview.additionalInfo.title")}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<ul className="space-y-2">
-						<li>{t("email")}: {user.email}</li>
+						<li>{t("components.userOverview.email")}: {user.email}</li>
 						{user.location && (
-							<li>{t("location")}: {user.location}</li>
+							<li>{t("components.userOverview.location")}: {user.location}</li>
 						)}
 						{user.phone && !user.isPrivatePhone && (
-							<li>{t("phone")}: {user.phone}</li>
+							<li>{t("components.userOverview.phone")}: {user.phone}</li>
 						)}
 					</ul>
 				</CardContent>
 			</Card> */}
 			<div className="flex flex-wrap gap-2">
 				{shouldShowStats && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						{t("components.userOverview.views", { count: visitors })}
+					</Badge>
 				)}
 				{user.clubMembership.length === 0 && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">{t("freelancer")}</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						{t("components.userOverview.freelancer")}
+					</Badge>
 				)}
 				{user.website && (
 					<Link href={user.website} target="_blank" rel="noopener noreferrer" className="md:grow-0 grow">
@@ -113,11 +117,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>
-						<CardTitle>{t("clubs.title")}</CardTitle>
+						<CardTitle>{t("components.userOverview.clubs.title")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{user.clubMembership.length === 0 ? (
-							<p className="text-muted-foreground">{t("clubs.noClubs")}</p>
+							<p className="text-muted-foreground">{t("components.userOverview.clubs.noClubs")}</p>
 						) : (
 							<ul className="space-y-4">
 								{user.clubMembership.map((membership) => (
@@ -149,11 +153,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>{t("upcomingEvents.title")}</CardTitle>
+						<CardTitle>{t("components.userOverview.upcomingEvents.title")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{futureEvents.length === 0 ? (
-							<p className="text-muted-foreground">{t("upcomingEvents.noEvents")}</p>
+							<p className="text-muted-foreground">
+								{t("components.userOverview.upcomingEvents.noEvents")}
+							</p>
 						) : (
 							<ul className="space-y-2">
 								{futureEvents.map((reg) => (
@@ -173,11 +179,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>{t("pastEvents.title")}</CardTitle>
+						<CardTitle>{t("components.userOverview.pastEvents.title")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{pastEvents.length === 0 ? (
-							<p className="text-muted-foreground">{t("pastEvents.noEvents")}</p>
+							<p className="text-muted-foreground">{t("components.userOverview.pastEvents.noEvents")}</p>
 						) : (
 							<ul className="space-y-2">
 								{pastEvents.map((reg) => (

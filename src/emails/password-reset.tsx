@@ -1,4 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
+import { getTranslations } from "next-intl/server";
 import { emailStyles } from "@/emails/styles";
 import { env } from "@/lib/env";
 
@@ -7,11 +8,13 @@ interface PasswordResetProps {
 	userName?: string;
 }
 
-export const PasswordReset = ({ resetUrl, userName }: PasswordResetProps) => {
+export const PasswordReset = async ({ resetUrl, userName }: PasswordResetProps) => {
+	const t = await getTranslations();
+
 	return (
 		<Html>
 			<Head />
-			<Preview>Resetujte vašu lozinku</Preview>
+			<Preview>{t("emails.passwordReset.title")}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -22,22 +25,20 @@ export const PasswordReset = ({ resetUrl, userName }: PasswordResetProps) => {
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>Resetovanje Lozinke</Heading>
+					<Heading style={emailStyles.h1}>{t("emails.passwordReset.title")}</Heading>
 					{userName ? (
-						<Text style={emailStyles.text}>Pozdrav {userName},</Text>
+						<Text style={emailStyles.text}>{t("emails.passwordReset.helloUser", { name: userName })}</Text>
 					) : (
-						<Text style={emailStyles.text}>Pozdrav,</Text>
+						<Text style={emailStyles.text}>{t("emails.passwordReset.hello")}</Text>
 					)}
-					<Text style={emailStyles.text}>
-						Molimo vas da kliknete na dugme ispod kako biste resetovali vašu lozinku.
-					</Text>
+					<Text style={emailStyles.text}>{t("emails.passwordReset.message")}</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={resetUrl}>
-							Resetuj Lozinku
+							{t("emails.passwordReset.action")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>Ako niste očekivali ovaj email, molimo vas da ga zanemarite.</Text>
+					<Text style={emailStyles.footer}>{t("emails.passwordReset.footer")}</Text>
 				</Container>
 			</Body>
 		</Html>

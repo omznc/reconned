@@ -2,7 +2,6 @@
 
 import type { ClubPurchase } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -11,7 +10,6 @@ import { toast } from "sonner";
 import type { EditPurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { editPurchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { Button } from "@/components/ui/button";
 import {
 	Credenza,
 	CredenzaBody,
@@ -36,7 +34,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 	const [open, setOpen] = useState(false);
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
-	const t = useTranslations("dashboard.club.spending");
+	const t = useTranslations();
 
 	// Initialize file upload system for receipts
 	const initialFiles: FileUploadItem[] = purchase.receiptUrls
@@ -107,12 +105,12 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			const result = await updatePurchase(data);
 			if (result?.data?.data?.purchase) {
 				receiptUpload.markAsSaved();
-				toast.success(t("successUpdated"));
+				toast.success(t("dashboard.club.spending.successUpdated"));
 				setOpen(false);
 				router.refresh();
 			}
 		} catch {
-			toast.error(t("error"));
+			toast.error(t("dashboard.club.spending.error"));
 		}
 		setIsLoading(false);
 	};
@@ -129,13 +127,16 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 	return (
 		<Credenza open={open} onOpenChange={handleOpenChange}>
 			<CredenzaTrigger asChild>
-				<Button variant="ghost" size="sm">
-					<Pencil className="h-4 w-4" />
-				</Button>
+				<button
+					id={`edit-purchase-${purchase.id}`}
+					type="button"
+					className="hidden"
+					onClick={() => setOpen(true)}
+				/>
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{t("editItem")}</CredenzaTitle>
+					<CredenzaTitle>{t("dashboard.club.spending.editItem")}</CredenzaTitle>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -145,9 +146,12 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="title"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("details.title")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.title")}</FormLabel>
 										<FormControl>
-											<Input placeholder={t("details.title")} {...field} />
+											<Input
+												placeholder={t("dashboard.club.spending.details.title")}
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -158,9 +162,12 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="description"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("details.description")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.description")}</FormLabel>
 										<FormControl>
-											<Textarea placeholder={t("details.description")} {...field} />
+											<Textarea
+												placeholder={t("dashboard.club.spending.details.description")}
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -171,7 +178,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="amount"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("details.amount")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.amount")}</FormLabel>
 										<FormControl>
 											<Input
 												type="number"
@@ -190,7 +197,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 								name="receiptUrls"
 								render={() => (
 									<FormItem>
-										<FormLabel>{t("details.receipts")}</FormLabel>
+										<FormLabel>{t("dashboard.club.spending.details.receipts")}</FormLabel>
 										<FormControl>
 											<FileUpload
 												value={receiptUpload.files}
@@ -206,13 +213,15 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 												showPreview={true}
 											/>
 										</FormControl>
-										<FormDescription>{t("details.receiptsMaxCount")}</FormDescription>
+										<FormDescription>
+											{t("dashboard.club.spending.details.receiptsMaxCount")}
+										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
 							<LoaderSubmitButton isLoading={isLoading} className="w-full">
-								{isLoading ? t("saving") : t("save")}
+								{isLoading ? t("common.actions.saving") : t("common.actions.save")}
 							</LoaderSubmitButton>
 						</form>
 					</Form>
