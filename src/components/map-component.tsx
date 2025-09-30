@@ -1,16 +1,16 @@
 "use client";
 
 import {
+	divIcon,
 	FeatureGroup,
 	LayerGroup,
 	type Map as LeafletMap,
 	Marker,
+	marker,
 	type PM,
 	Polygon,
-	Rectangle,
-	divIcon,
-	marker,
 	polygon,
+	Rectangle,
 } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
@@ -26,7 +26,7 @@ interface Poi {
 }
 
 interface MapData {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 	areas: any[];
 	pois: Poi[];
 }
@@ -55,9 +55,10 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 	const mapRef = useRef<LeafletMap | null>(null);
 	const drawnItemsRef = useRef<FeatureGroup | null>(null);
 	const [mapData, setMapData] = useState<MapData>(defaultMapData || { areas: [], pois: [] });
+	const [isMapReady, setIsMapReady] = useState(false);
 
 	useEffect(() => {
-		if (!mapRef.current) return;
+		if (!isMapReady || !mapRef.current) return;
 
 		drawnItemsRef.current = new FeatureGroup();
 		// Clear all layers
@@ -85,10 +86,10 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 				drawText: false,
 			});
 		}
-	}, [readOnly]);
+	}, [isMapReady, readOnly]);
 
 	useEffect(() => {
-		if (!(mapRef.current && drawnItemsRef.current && defaultMapData)) {
+		if (!isMapReady || !mapRef.current || !drawnItemsRef.current || !defaultMapData) {
 			return;
 		}
 
@@ -113,12 +114,12 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 		for (const poi of pois) {
 			marker([poi.lat, poi.lng], { icon: generatePinIcon() }).addTo(drawnItemsRef.current);
 		}
-	}, [defaultMapData]);
+	}, [isMapReady, defaultMapData]);
 
 	useEffect(() => {
-		if (!mapRef.current || readOnly) return;
+		if (!isMapReady || !mapRef.current || readOnly) return;
 
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
 		const handleDrawCreated = (event: any) => {
 			const layer = event.layer;
 			drawnItemsRef.current?.addLayer(layer);
@@ -158,12 +159,12 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 		mapRef.current.on("pm:create", handleDrawCreated);
 		mapRef.current.on("pm:remove", handleDrawDeleted);
 
-		// Cleanup on unmount or when mapRef changes
+		// Cleanup on unmount or when dependencies change
 		return () => {
 			mapRef.current?.off("pm:create", handleDrawCreated);
 			mapRef.current?.off("pm:remove", handleDrawDeleted);
 		};
-	}, [mapRef, mapData, onSaveMapData, readOnly]); // Added readOnly as dependency
+	}, [isMapReady, mapData, onSaveMapData, readOnly]);
 
 	const calculateCenter = () => {
 		if (defaultMapData && defaultMapData.areas.length > 0) {
@@ -189,7 +190,13 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 	const mapCenter = calculateCenter();
 
 	return (
-		<MapContainer center={mapCenter} zoom={13} ref={mapRef} style={{ height: "500px", width: "100%", zIndex: "0" }}>
+		<MapContainer
+			center={mapCenter}
+			zoom={13}
+			ref={mapRef}
+			whenReady={() => setIsMapReady(true)}
+			style={{ height: "500px", width: "100%" }}
+		>
 			<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 		</MapContainer>
 	);

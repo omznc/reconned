@@ -1,33 +1,33 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import type { ClubMembership } from "@generated/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format, formatDistanceToNow } from "date-fns";
+import { bs, enUS } from "date-fns/locale";
+import { CalendarClock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { extendMembership } from "./membership-extension.action";
+import { toast } from "sonner";
+import {
+	type MembershipExtensionFormValues,
+	membershipExtensionSchema,
+} from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Credenza,
 	CredenzaBody,
 	CredenzaContent,
+	CredenzaFooter,
 	CredenzaHeader,
 	CredenzaTitle,
 	CredenzaTrigger,
-	CredenzaFooter,
 } from "@/components/ui/credenza";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { CalendarClock } from "lucide-react";
-import type { ClubMembership } from "@generated/client";
-import { toast } from "sonner";
-import {
-	membershipExtensionSchema,
-	type MembershipExtensionFormValues,
-} from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
-import { format, formatDistanceToNow } from "date-fns";
-import { enUS, bs } from "date-fns/locale";
-import { Badge } from "@/components/ui/badge";
-import type { ReactNode } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { extendMembership } from "./membership-extension.action.ts";
 
 interface MembershipExtensionFormProps {
 	clubId: string;
@@ -51,7 +51,7 @@ export function MembershipExtensionForm({
 	open,
 	onOpenChange,
 }: MembershipExtensionFormProps) {
-	const t = useTranslations("components.membershipExtension");
+	const t = useTranslations();
 	const locale = useLocale();
 	const [isLocalOpen, setIsLocalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -88,11 +88,11 @@ export function MembershipExtensionForm({
 				return;
 			}
 
-			toast.success(t("success", { user: membership.user.name }));
+			toast.success(t("components.membershipExtension.success", { user: membership.user.name }));
 
 			setIsOpen(false);
-		} catch (error) {
-			toast.error(t("error"));
+		} catch {
+			toast.error(t("components.membershipExtension.failedToExtend"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -105,7 +105,7 @@ export function MembershipExtensionForm({
 		if (variant === "button") {
 			return (
 				<Button variant="outline" size="sm">
-					<CalendarClock className="mr-2 h-4 w-4" /> {t("extendMembership")}
+					<CalendarClock className="mr-2 h-4 w-4" /> {t("components.membershipExtension.extendMembership")}
 				</Button>
 			);
 		}
@@ -120,7 +120,7 @@ export function MembershipExtensionForm({
 			return (
 				<button type="button" className="flex items-center w-full text-left">
 					{icon || <CalendarClock className="size-4 mr-2" />}
-					{t("extendMembership")}
+					{t("components.membershipExtension.extendMembership")}
 				</button>
 			);
 		}
@@ -134,9 +134,9 @@ export function MembershipExtensionForm({
 			{open === undefined && <CredenzaTrigger asChild>{renderTrigger()}</CredenzaTrigger>}
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{t("extendMembershipTitle")}</CredenzaTitle>
+					<CredenzaTitle>{t("components.membershipExtension.extendMembershipTitle")}</CredenzaTitle>
 					<p className="text-sm text-muted-foreground">
-						{t("extendMembershipDescription", {
+						{t("components.membershipExtension.extendMembershipDescription", {
 							user: membership.user.name,
 						})}
 					</p>
@@ -144,7 +144,7 @@ export function MembershipExtensionForm({
 				<CredenzaBody>
 					<div className="grid gap-4 py-4">
 						<div className="grid gap-2">
-							<div className="font-medium">{t("currentStatus")}</div>
+							<div className="font-medium">{t("components.membershipExtension.currentStatus")}</div>
 							<div className="text-sm">
 								<Badge variant={membershipStatus.variant}>{membershipStatus.label}</Badge>
 							</div>
@@ -152,7 +152,7 @@ export function MembershipExtensionForm({
 
 						{membership.startDate && (
 							<div className="grid gap-2">
-								<div className="font-medium">{t("startDate")}</div>
+								<div className="font-medium">{t("components.membershipExtension.startDate")}</div>
 								<div className="text-sm flex items-center gap-2">
 									<span>
 										{format(membership.startDate, "PPP", {
@@ -173,7 +173,7 @@ export function MembershipExtensionForm({
 
 						{membership.endDate && (
 							<div className="grid gap-2">
-								<div className="font-medium">{t("endDate")}</div>
+								<div className="font-medium">{t("components.membershipExtension.endDate")}</div>
 								<div className="text-sm flex items-center gap-2">
 									<span>
 										{format(membership.endDate, "PPP", {
@@ -199,16 +199,28 @@ export function MembershipExtensionForm({
 									name="duration"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>{t("extensionDuration")}</FormLabel>
+											<FormLabel>
+												{t("components.membershipExtension.extensionDuration")}
+											</FormLabel>
 											<Select onValueChange={field.onChange} defaultValue={field.value}>
 												<SelectTrigger>
-													<SelectValue placeholder={t("selectDuration")} />
+													<SelectValue
+														placeholder={t("components.membershipExtension.selectDuration")}
+													/>
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value="1">{t("oneMonth")}</SelectItem>
-													<SelectItem value="3">{t("threeMonths")}</SelectItem>
-													<SelectItem value="6">{t("sixMonths")}</SelectItem>
-													<SelectItem value="12">{t("oneYear")}</SelectItem>
+													<SelectItem value="1">
+														{t("components.membershipExtension.oneMonth")}
+													</SelectItem>
+													<SelectItem value="3">
+														{t("components.membershipExtension.threeMonths")}
+													</SelectItem>
+													<SelectItem value="6">
+														{t("components.membershipExtension.sixMonths")}
+													</SelectItem>
+													<SelectItem value="12">
+														{t("components.membershipExtension.oneYear")}
+													</SelectItem>
 												</SelectContent>
 											</Select>
 											<FormMessage />
@@ -218,10 +230,10 @@ export function MembershipExtensionForm({
 
 								<CredenzaFooter>
 									<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-										{t("cancel")}
+										{t("common.actions.cancel")}
 									</Button>
 									<Button type="submit" disabled={isLoading}>
-										{isLoading ? t("extending") : t("extend")}
+										{isLoading ? t("common.actions.saving") : t("common.actions.save")}
 									</Button>
 								</CredenzaFooter>
 							</form>
@@ -241,14 +253,14 @@ function getMembershipStatus(
 
 	if (!(membership.startDate || membership.endDate)) {
 		return {
-			label: t("unlimited"),
+			label: t("components.membershipExtension.unlimited"),
 			variant: "default",
 		} as const;
 	}
 
 	if (membership.endDate && new Date(membership.endDate) < today) {
 		return {
-			label: t("expired"),
+			label: t("components.membershipExtension.expired"),
 			variant: "outline",
 		} as const;
 	}
@@ -260,19 +272,19 @@ function getMembershipStatus(
 
 		if (new Date(membership.endDate) < thirtyDaysFromNow) {
 			return {
-				label: t("expiringSoon"),
+				label: t("components.membershipExtension.expiringSoon"),
 				variant: "secondary",
 			} as const;
 		}
 
 		return {
-			label: t("active"),
+			label: t("components.membershipExtension.active"),
 			variant: "default",
 		} as const;
 	}
 
 	return {
-		label: t("active"),
+		label: t("components.membershipExtension.active"),
 		variant: "default",
 	} as const;
 }

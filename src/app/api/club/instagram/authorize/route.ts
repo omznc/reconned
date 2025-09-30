@@ -1,5 +1,5 @@
-import { isAuthenticated } from "@/lib/auth";
 import { type NextRequest, NextResponse } from "next/server";
+import { isAuthenticated } from "@/lib/auth";
 import { getInstagramAuthUrl } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 	try {
 		const authUrl = await getInstagramAuthUrl(clubId);
 		return NextResponse.json({ url: authUrl });
-	} catch (error) {
+	} catch {
 		return NextResponse.json({ error: "Failed to generate Instagram authorization URL" }, { status: 500 });
 	}
 }

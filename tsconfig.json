@@ -23,6 +23,9 @@
 		"inlineSources": true,
 		"sourceMap": true,
 
+		// For next-intl
+		"allowArbitraryExtensions": true,
+
 		// Next.js Specific
 		"jsx": "preserve",
 		"plugins": [{ "name": "next" }],

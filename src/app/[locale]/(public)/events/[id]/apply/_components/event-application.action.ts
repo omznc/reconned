@@ -1,14 +1,14 @@
 "use server";
 
-import { safeActionClient } from "@/lib/safe-action";
-import { prisma } from "@/lib/prisma";
-import { eventApplicationSchema } from "./event-application.schema";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
+import { eventApplicationSchema } from "./event-application.schema.ts";
 
 export const deleteRegistration = safeActionClient
-	.schema(
+	.inputSchema(
 		z.object({
 			eventId: z.string(),
 		}),
@@ -51,7 +51,7 @@ export const deleteRegistration = safeActionClient
 	});
 
 export const submitEventApplication = safeActionClient
-	.schema(eventApplicationSchema)
+	.inputSchema(eventApplicationSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const { type, invitedUsers, invitedUsersNotOnApp, paymentMethod, eventId } = parsedInput;
 

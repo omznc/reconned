@@ -1,5 +1,11 @@
 "use client";
 
+import type { ClubMembership, User } from "@generated/client";
+import { format } from "date-fns";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { UserActions } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table-actions";
+import { Badge } from "@/components/ui/badge";
 import {
 	Credenza,
 	CredenzaContent,
@@ -7,11 +13,6 @@ import {
 	CredenzaHeader,
 	CredenzaTitle,
 } from "@/components/ui/credenza";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import type { ClubMembership, User } from "@generated/client";
-import { useQueryState } from "nuqs";
-import { UserActions } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table-actions";
 
 type Props = {
 	user?: User & {
@@ -29,6 +30,7 @@ export function UserSheet({ user }: Props) {
 		clearOnDefault: true,
 		history: "replace",
 	});
+	const t = useTranslations();
 	return (
 		<Credenza open={Boolean(open)} onOpenChange={() => setOpen("")}>
 			<CredenzaContent>
@@ -38,7 +40,7 @@ export function UserSheet({ user }: Props) {
 				</CredenzaHeader>
 				{!user && (
 					<div className="mt-4 space-y-4">
-						<p>Korisnik nije pronađen.</p>
+						<p>{t("dashboard.admin.users.notFound")}</p>
 					</div>
 				)}
 				{user && (
@@ -52,7 +54,9 @@ export function UserSheet({ user }: Props) {
 									</div>
 								)}
 								<div>
-									<span className="text-muted-foreground">Član od:</span>{" "}
+									<span className="text-muted-foreground">
+										{t("dashboard.admin.users.memberSince")}
+									</span>{" "}
 									{format(new Date(user.createdAt), "d. MMMM yyyy.")}
 								</div>
 								{user.banned && (

@@ -1,20 +1,20 @@
 "use client";
 
+import { Building2Icon, CalendarFoldIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Fragment, useEffect, useState } from "react";
 import {
 	Breadcrumb,
-	BreadcrumbList,
 	BreadcrumbItem,
 	BreadcrumbLink,
+	BreadcrumbList,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Fragment, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { Building2Icon, CalendarFoldIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 type BreadcrumbsProps = {
 	clubs?: Array<{
@@ -31,7 +31,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const path = usePathname();
 	const sections = path.split("/").filter(Boolean);
-	const t = useTranslations("components.breadcrumbs");
+	const t = useTranslations();
 
 	useEffect(() => {
 		const main = document.querySelector("main");
@@ -60,7 +60,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>{t("currentClub")}</p>
+						<p>{t("components.breadcrumbs.currentClub")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);
@@ -78,14 +78,14 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>{t("currentEvent")}</p>
+						<p>{t("components.breadcrumbs.currentEvent")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);
 		}
 
 		try {
-			const resp = t(`translations.${section}`);
+			const resp = t(`components.breadcrumbs.translations.${section}`);
 			if (resp.startsWith("components.breadcrumbs.translations.")) {
 				return "👀";
 			}
@@ -107,7 +107,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 					<div className="flex items-center gap-2">
 						<SidebarTrigger className="-ml-1" />
 						<Separator orientation="vertical" className="hidden md:flex mr-2 h-4" />
-						<Breadcrumb className="hidden md:flex overflow-x-scroll whitespace-nowrap flex-nowrap">
+						<Breadcrumb className="hidden md:flex overflow-hidden whitespace-nowrap flex-nowrap">
 							<BreadcrumbList>
 								{sections.map((section, index) => {
 									const sectionKey = `${section}-${index}-${sections.slice(0, index + 1).join("/")}`;

@@ -1,508 +1,390 @@
 "use client";
-import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from "@/components/ui/file-upload";
+import type { User } from "@generated/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader, Phone, Shield, User as UserIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { z } from "zod";
+import {
+	getUserImageUploadUrl,
+	saveUserInformation,
+} from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action";
+import { userInfoShema } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
+import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { SlugInput } from "@/components/slug/slug-input";
+import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@generated/client";
-import { CloudUpload, Loader, Trash, User as UserIcon, Phone, Shield } from "lucide-react";
-
-import { LoaderSubmitButton } from "@/components/loader-submit-button";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import type { z } from "zod";
-import { toast } from "sonner";
-import { userInfoShema } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
-import {
-	deleteUserImage,
-	getUserImageUploadUrl,
-	saveUserInformation,
-} from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
-import { SlugInput } from "@/components/slug/slug-input";
-import { ImageCropDialog } from "@/app/[locale]/dashboard/(user)/user/settings/_components/image-crop-dialog";
-import type { DropzoneOptions } from "react-dropzone";
-import { useTranslations } from "next-intl";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useFileUpload } from "@/hooks/use-file-upload";
+import { ImageCropDialog } from "./image-crop-dialog.tsx";
 
 interface UserInfoFormProps {
-	user: User;
+	user: User | null;
 }
 
 export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
-	const [isDeletingImage, setIsDeletingImage] = useState(false);
-	const [files, setFiles] = useState<File[] | null>(null);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [cropFile, setCropFile] = useState<File | null>(null);
-	const confirm = useConfirm();
-	const t = useTranslations("dashboard.user.settings");
+	const t = useTranslations();
 
-	const dropZoneConfig = {
-		maxFiles: 1,
-		maxSize: 1024 * 1024 * 4,
-		accept: {
-			"image/jpeg": ["jpg", "jpeg"],
-			"image/png": ["png"],
+	// Initialize file upload system for avatar
+	const initialFiles: FileUploadItem[] = props.user?.image
+		? [
+				{
+					id: `existing-${props.user.id}`,
+					url: props.user.image,
+					name: "User avatar",
+					type: "image/jpeg",
+					isExisting: true,
+				},
+			]
+		: [];
+
+	const avatarUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			const resp = await getUserImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+					dimensions: {
+						width: 100,
+						height: 100,
+					},
+				},
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data?.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
 		},
-	} satisfies DropzoneOptions;
+		maxFiles: 1,
+		initialFiles,
+	});
+
 	const form = useForm<z.infer<typeof userInfoShema>>({
 		resolver: zodResolver(userInfoShema),
 		defaultValues: {
-			name: props.user.name,
-			isPrivate: props.user.isPrivate,
-			isPrivateStats: props.user.isPrivateStats,
-			image: props.user.image || "",
-			bio: props.user.bio || "",
-			location: props.user.location || "",
-			website: props.user.website || "",
-			phone: props.user.phone || "",
-			callsign: props.user.callsign || "",
-			email: props.user.email || "",
-			slug: props.user.slug || "",
-			isPrivateEmail: props.user.isPrivateEmail,
-			isPrivatePhone: props.user.isPrivatePhone,
+			name: props.user?.name || "",
+			bio: props.user?.bio || "",
+			location: props.user?.location || "",
+			website: props.user?.website || "",
+			phone: props.user?.phone || "",
+			callsign: props.user?.callsign || "",
+			isPrivate: props.user?.isPrivate || false,
+			isPrivateEmail: props.user?.isPrivateEmail || false,
+			isPrivatePhone: props.user?.isPrivatePhone || false,
+			isPrivateStats: props.user?.isPrivateStats || false,
+			slug: props.user?.slug || "",
 		},
+		mode: "onChange",
 	});
+
+	const handleCrop = (croppedFile: File) => {
+		// Replace the current file with the cropped version
+		const newFile: FileUploadItem = {
+			id: `cropped-${Date.now()}`,
+			file: croppedFile,
+			name: croppedFile.name,
+			type: croppedFile.type,
+			size: croppedFile.size,
+			isExisting: false,
+		};
+		avatarUpload.setFiles([newFile]);
+		setCropFile(null);
+	};
+
+	const handleCloseCrop = () => {
+		setCropFile(null);
+	};
 
 	async function onSubmit(values: z.infer<typeof userInfoShema>) {
 		setIsLoading(true);
 		try {
-			if (files?.[0]) {
-				const img = await createImageBitmap(files[0]);
-				const resp = await getUserImageUploadUrl({
-					file: {
-						type: files[0].type,
-						size: files[0].size,
-						dimensions: {
-							width: img.width,
-							height: img.height,
-						},
-					},
-				});
+			// Upload avatar and handle deletion
+			const uploadedUrls = await avatarUpload.uploadAllFiles();
+			values.image = uploadedUrls.length > 0 ? uploadedUrls[0] : undefined;
 
-				if (!resp?.data?.url) {
-					toast.error(t("imageUploadError"));
-					return;
-				}
+			const result = await saveUserInformation(values);
 
-				await fetch(resp.data?.url, {
-					method: "PUT",
-					body: files[0],
-					headers: {
-						"Content-Type": files[0].type,
-						"Content-Length": files[0].size.toString(),
-					},
-				});
-
-				values.image = resp.data.cdnUrl;
+			if (result?.data) {
+				avatarUpload.markAsSaved();
+				form.reset(values);
+				toast.success(t("dashboard.user.settings.success"));
 			}
-
-			await saveUserInformation(values);
-
-			setFiles([]);
-
-			toast.success(t("profileUpdated"));
-		} catch (_error) {
-			toast.error(t("profileUpdateError"));
+		} catch {
+			toast.error(t("dashboard.user.settings.error"));
 		}
 		setIsLoading(false);
 	}
 
-	const RequiredFieldMarker = () => <span className="text-destructive ml-0.5">*</span>;
-
 	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-3xl">
-				{/* Basic Information Section */}
-				<Card className="bg-sidebar">
-					<CardHeader>
-						<CardTitle className="flex items-center gap-4">
-							<UserIcon className="size-5" /> {t("title")}
-							<span className="text-sm font-normal text-muted-foreground">{t("requiredSection")}</span>
-						</CardTitle>
-						<CardDescription>{t("profileDescription")}</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						{/* Required fields */}
-						<div className="space-y-4">
-							<FormField
-								control={form.control}
-								name="name"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>
-											{t("name")}
-											<RequiredFieldMarker /> ({form.watch("name")?.length}/
-											{userInfoShema.shape.name.maxLength})
-										</FormLabel>
-										<FormControl>
-											<Input placeholder="Veis" type="text" {...field} />
-										</FormControl>
-										<FormDescription>{t("name")}</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
+		<>
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+					<div>
+						<h3 className="text-lg font-semibold flex items-center gap-2">
+							<UserIcon className="h-5 w-5" />
+							{t("dashboard.user.settings.general")}
+						</h3>
+					</div>
 
-							<FormField
-								control={form.control}
-								name="email"
-								render={({ field }) => (
-									<FormItem>
-										<div className="flex justify-between items-center">
-											<FormLabel>
-												Email
-												<RequiredFieldMarker />
-											</FormLabel>
-											<FormField
-												control={form.control}
-												name="isPrivateEmail"
-												render={({ field: privateField }) => (
-													<div className="flex items-center gap-2">
-														<FormLabel className="text-sm text-muted-foreground">
-															{privateField.value ? t("private") : t("public")}
-														</FormLabel>
-														<Switch
-															checked={privateField.value}
-															onCheckedChange={privateField.onChange}
-														/>
-													</div>
-												)}
-											/>
-										</div>
-										<FormControl>
-											<Input disabled={true} placeholder="me@gmail.com" type="email" {...field} />
-										</FormControl>
-										<FormDescription>Email</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</div>
-
-						{/* Optional profile fields */}
-						<div className="pt-4 border-t space-y-4">
-							<div className="flex items-center justify-between gap-2">
-								<h3 className="text-base font-medium">{t("additionalInformation")}</h3>
-								<span className="text-xs text-muted-foreground">{t("optional")}</span>
-							</div>
-
-							<FormField
-								control={form.control}
-								name="callsign"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>{t("callsign")}</FormLabel>
-										<FormControl>
-											<Input placeholder="Ninja" {...field} />
-										</FormControl>
-										<FormDescription>{t("callsign")}</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="location"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>{t("location")}</FormLabel>
-										<FormControl>
-											<Input placeholder="Livno" type="text" {...field} />
-										</FormControl>
-										<FormDescription>{t("locationDescription")}</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="slug"
-								render={({ field }) => (
-									<SlugInput
-										currentSlug={props.user.slug}
-										defaultSlug={field.value}
-										type="user"
-										onValid={(slug) => {
-											form.setValue("slug", slug);
-											setIsSlugValid(true);
-										}}
-										onValidityChange={setIsSlugValid}
-									/>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="bio"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>
-											{t("bio")} ({form.watch("bio")?.length}/{userInfoShema.shape.bio.maxLength})
-										</FormLabel>
-										<FormControl>
-											<Textarea
-												placeholder={t("bioPlaceholder")}
-												className="h-[144px] min-h-[144px] max-h-[144px]"
-												{...field}
-											/>
-										</FormControl>
-										<FormDescription>{t("bioDescription")}</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</div>
-					</CardContent>
-				</Card>
-
-				{/* Profile Photo Section */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center gap-4">
-							<UserIcon className="size-5" /> {t("profilePhoto")}
-						</CardTitle>
-						<CardDescription>{t("profilePhotoDescription")}</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<FormField
-							control={form.control}
-							name="image"
-							render={() => (
-								<FormItem>
-									<FormControl>
-										<FileUploader
-											key={`file-uploader-${files?.length}-${files?.[0]?.name}`}
-											value={files}
-											onValueChange={(newFiles) => {
-												if (!newFiles || newFiles.length === 0) {
-													setFiles(null);
-													setCropFile(null);
-												} else if (newFiles[0]) {
-													setCropFile(newFiles[0]);
-												}
-											}}
-											dropzoneOptions={dropZoneConfig}
-											className="relative bg-background p-0.5"
-										>
-											{(!files || files.length === 0) && (
-												<FileInput
-													key={`file-input-${files?.length}-${files?.[0]?.name}`}
-													id="fileInput"
-													className="outline-dashed outline-1 outline-slate-500"
-												>
-													<div className="flex items-center justify-center flex-col p-8 w-full ">
-														<CloudUpload className="text-gray-500 w-10 h-10" />
-														<p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-															{t("fileUpload")}
-														</p>
-														<p className="text-xs text-gray-500 dark:text-gray-400">
-															{t("fileUploadFormats")} JPG, JPEG, PNG
-														</p>
-													</div>
-												</FileInput>
-											)}
-											<FileUploaderContent>
-												{files &&
-													files.length > 0 &&
-													files.map((file, i) => (
-														<FileUploaderItem
-															className="p-2 size-fit -ml-1"
-															key={file.name}
-															index={i}
-														>
-															{/** biome-ignore lint/nursery/noImgElement: We're using object images here */}
-															<img
-																src={URL.createObjectURL(file)}
-																alt={file.name}
-																className="h-[100px] mr-4 w-auto object-fit"
-															/>
-														</FileUploaderItem>
-													))}
-											</FileUploaderContent>
-										</FileUploader>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<ImageCropDialog
-							file={cropFile}
-							onClose={() => setCropFile(null)}
-							onCrop={(croppedFile) => {
-								setFiles([croppedFile]);
-								setCropFile(null);
-							}}
-						/>
-
-						{props.user.image && (
-							<HoverCard openDelay={100}>
-								<HoverCardTrigger>
-									<Button
-										type="button"
-										disabled={isDeletingImage}
-										variant={"destructive"}
-										onClick={async () => {
-											const resp = await confirm({
-												title: t("deleteProfilePhoto.title"),
-												body: t("deleteProfilePhoto.body"),
-												actionButtonVariant: "destructive",
-												actionButton: t("deleteProfilePhoto.confirm"),
-												cancelButton: t("deleteProfilePhoto.cancel"),
-											});
-
-											if (!resp) {
-												return;
+					<FormField
+						control={form.control}
+						name="image"
+						render={() => (
+							<FormItem>
+								<FormLabel>{t("dashboard.user.settings.avatar")}</FormLabel>
+								<FormControl>
+									<FileUpload
+										value={avatarUpload.files}
+										onChange={(files) => {
+											if (files.length > 0 && files[0]?.file) {
+												// Open crop dialog for new image files
+												setCropFile(files[0].file);
+											} else {
+												avatarUpload.setFiles(files);
 											}
-
-											setIsDeletingImage(true);
-											await deleteUserImage();
-											setIsDeletingImage(false);
 										}}
-										className="mt-1"
-									>
-										<Trash className="size-4 mr-2" />
-										{isDeletingImage ? (
-											<Loader className="size-5 animate-spin" />
-										) : (
-											t("deleteProfilePhoto.confirm")
-										)}
-									</Button>
-								</HoverCardTrigger>
-								<HoverCardContent className="size-full mb-8">
-									<Image src={props.user.image} alt="Club logo" width={200} height={200} />
-								</HoverCardContent>
-							</HoverCard>
+										maxFiles={1}
+										maxFileSize={4 * 1024 * 1024}
+										accept={{
+											"image/jpeg": [".jpg", ".jpeg"],
+											"image/png": [".png"],
+											"image/webp": [".webp"],
+										}}
+										multiple={false}
+										showPreview={true}
+									/>
+								</FormControl>
+								<FormDescription>{t("dashboard.user.settings.avatarDescription")}</FormDescription>
+								<FormMessage />
+							</FormItem>
 						)}
-					</CardContent>
-				</Card>
+					/>
 
-				{/* Contact Information Section */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center gap-4">
-							<Phone className="size-5" /> {t("contact")}
-						</CardTitle>
-						<CardDescription>{t("contactDescription")}</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<FormField
-							control={form.control}
-							name="phone"
-							render={({ field }) => (
-								<FormItem>
-									<div className="flex justify-between items-center">
-										<FormLabel>{t("phone")}</FormLabel>
-										<FormField
-											control={form.control}
-											name="isPrivatePhone"
-											render={({ field: privateField }) => (
-												<div className="flex items-center gap-2">
-													<FormLabel className="text-sm text-muted-foreground">
-														{privateField.value ? t("private") : t("public")}
-													</FormLabel>
-													<Switch
-														checked={privateField.value}
-														onCheckedChange={privateField.onChange}
-													/>
-												</div>
-											)}
-										/>
-									</div>
-									<FormControl>
-										<PhoneInput defaultCountry="BA" placeholder="061 123 456" {...field} />
-									</FormControl>
-									<FormDescription>{t("phone")}</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+					<FormField
+						control={form.control}
+						name="name"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>{t("dashboard.user.settings.name")}</FormLabel>
+								<FormControl>
+									<Input placeholder={t("dashboard.user.settings.name")} {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-						<FormField
-							control={form.control}
-							name="website"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t("website")}</FormLabel>
-									<FormControl>
-										<Input placeholder="https://google.com" {...field} />
-									</FormControl>
-									<FormDescription>{t("website")}</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</CardContent>
-				</Card>
+					<FormField
+						control={form.control}
+						name="slug"
+						render={({ field }) => (
+							<SlugInput
+								currentSlug={props.user?.slug}
+								defaultSlug={field.value}
+								type="user"
+								onValid={(slug) => {
+									form.setValue("slug", slug);
+									setIsSlugValid(true);
+								}}
+								onValidityChange={setIsSlugValid}
+							/>
+						)}
+					/>
 
-				{/* Privacy Settings Section */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center gap-4">
-							<Shield className="size-5" /> {t("privacySettings")}
-						</CardTitle>
-						<CardDescription>{t("privacyDescription")}</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<FormField
-							control={form.control}
-							name="isPrivate"
-							render={({ field }) => (
-								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-									<div className="space-y-0.5">
-										<div className="flex items-center gap-2">
-											<FormLabel>{t("privateProfile")}</FormLabel>
-											<span className="text-sm text-muted-foreground">
-												{field.value ? t("private") : t("public")}
-											</span>
-										</div>
-										<FormDescription>{t("privateProfileDescription")}</FormDescription>
-									</div>
-									<FormControl>
-										<Switch checked={field.value} onCheckedChange={field.onChange} />
-									</FormControl>
-								</FormItem>
-							)}
-						/>
+					<FormField
+						control={form.control}
+						name="bio"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>{t("dashboard.user.settings.bio")}</FormLabel>
+								<FormControl>
+									<Textarea
+										placeholder={t("dashboard.user.settings.bioPlaceholder")}
+										className="resize-none"
+										{...field}
+									/>
+								</FormControl>
+								<FormDescription>{t("dashboard.user.settings.bioDescription")}</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-						<FormField
-							control={form.control}
-							name="isPrivateStats"
-							render={({ field }) => (
-								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-									<div className="space-y-0.5">
-										<div className="flex items-center gap-2">
-											<FormLabel>{t("privateStats")}</FormLabel>
-											<span className="text-sm text-muted-foreground">
-												{field.value ? t("private") : t("public")}
-											</span>
-										</div>
-										<FormDescription>{t("privateStatsDescription")}</FormDescription>
-									</div>
-									<FormControl>
-										<Switch checked={field.value} onCheckedChange={field.onChange} />
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-					</CardContent>
-				</Card>
+					<FormField
+						control={form.control}
+						name="callsign"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>{t("dashboard.user.settings.callsign")}</FormLabel>
+								<FormControl>
+									<Input placeholder={t("dashboard.user.settings.callsignPlaceholder")} {...field} />
+								</FormControl>
+								<FormDescription>{t("dashboard.user.settings.callsignDescription")}</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-				<div className="flex justify-end pt-4">
+					<FormField
+						control={form.control}
+						name="location"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>{t("dashboard.user.settings.location")}</FormLabel>
+								<FormControl>
+									<Input placeholder={t("dashboard.user.settings.locationPlaceholder")} {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="website"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>{t("dashboard.user.settings.website")}</FormLabel>
+								<FormControl>
+									<Input placeholder="https://..." {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<div>
+						<h3 className="text-lg font-semibold flex items-center gap-2">
+							<Phone className="h-5 w-5" />
+							{t("dashboard.user.settings.contact")}
+						</h3>
+					</div>
+
+					<FormField
+						control={form.control}
+						name="phone"
+						render={({ field }) => (
+							<FormItem className="flex flex-col items-start">
+								<FormLabel>{t("dashboard.user.settings.phone")}</FormLabel>
+								<FormControl className="w-full">
+									<PhoneInput placeholder="063 000 000" {...field} defaultCountry="BA" />
+								</FormControl>
+								<FormDescription>{t("dashboard.user.settings.phoneDescription")}</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<div>
+						<h3 className="text-lg font-semibold flex items-center gap-2">
+							<Shield className="h-5 w-5" />
+							{t("dashboard.user.settings.privacy")}
+						</h3>
+					</div>
+
+					<FormField
+						control={form.control}
+						name="isPrivate"
+						render={({ field }) => (
+							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+								<div className="space-y-0.5">
+									<FormLabel>{t("dashboard.user.settings.private")}</FormLabel>
+									<FormDescription>{t("dashboard.user.settings.privateDescription")}</FormDescription>
+								</div>
+								<FormControl>
+									<Switch checked={field.value} onCheckedChange={field.onChange} />
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="isPrivateEmail"
+						render={({ field }) => (
+							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+								<div className="space-y-0.5">
+									<FormLabel>{t("dashboard.user.settings.privateEmail")}</FormLabel>
+									<FormDescription>
+										{t("dashboard.user.settings.privateEmailDescription")}
+									</FormDescription>
+								</div>
+								<FormControl>
+									<Switch checked={field.value} onCheckedChange={field.onChange} />
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="isPrivatePhone"
+						render={({ field }) => (
+							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+								<div className="space-y-0.5">
+									<FormLabel>{t("dashboard.user.settings.privatePhone")}</FormLabel>
+									<FormDescription>
+										{t("dashboard.user.settings.privatePhoneDescription")}
+									</FormDescription>
+								</div>
+								<FormControl>
+									<Switch checked={field.value} onCheckedChange={field.onChange} />
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="isPrivateStats"
+						render={({ field }) => (
+							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+								<div className="space-y-0.5">
+									<FormLabel>{t("dashboard.user.settings.privateStats")}</FormLabel>
+									<FormDescription>
+										{t("dashboard.user.settings.privateStatsDescription")}
+									</FormDescription>
+								</div>
+								<FormControl>
+									<Switch checked={field.value} onCheckedChange={field.onChange} />
+								</FormControl>
+							</FormItem>
+						)}
+					/>
+
 					<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
-						{t("save")}
+						{isLoading ? (
+							<>
+								<Loader className="mr-2 h-4 w-4 animate-spin" />
+								{t("common.actions.saving")}
+							</>
+						) : (
+							t("common.actions.save")
+						)}
 					</LoaderSubmitButton>
-				</div>
-			</form>
-		</Form>
+				</form>
+			</Form>
+
+			<ImageCropDialog file={cropFile} onClose={handleCloseCrop} onCrop={handleCrop} />
+		</>
 	);
 }

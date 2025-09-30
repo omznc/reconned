@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import * as Sentry from "@sentry/nextjs";
-import Link from "next/link";
-import { useEffect } from "react";
-import Image from "next/image";
-import { useLocale, useMessages } from "next-intl";
 import Error500 from "@public/errors/500.webp";
+import * as Sentry from "@sentry/nextjs";
+import Image from "next/image";
+import Link from "next/link";
+import { useLocale, useMessages } from "next-intl";
 import { useTheme } from "next-themes";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
 	useEffect(() => {

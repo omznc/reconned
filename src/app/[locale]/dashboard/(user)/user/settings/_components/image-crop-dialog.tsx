@@ -1,5 +1,8 @@
 "use client";
 
+import { useCallback, useState } from "react";
+import ReactCrop, { type Crop } from "react-image-crop";
+import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -8,9 +11,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import ReactCrop, { type Crop } from "react-image-crop";
-import { useCallback, useState } from "react";
 import "react-image-crop/dist/ReactCrop.css";
 import { useTranslations } from "next-intl";
 
@@ -29,7 +29,7 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 		y: 5,
 	});
 	const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
-	const t = useTranslations("dashboard.user.settings");
+	const t = useTranslations();
 
 	const onImageLoad = useCallback((img: HTMLImageElement) => {
 		setImageRef(img);
@@ -106,13 +106,13 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 		<Dialog open={!!file} onOpenChange={onClose}>
 			<DialogContent className="max-w-[800px]">
 				<DialogHeader>
-					<DialogTitle>{t("cropPhotoTitle")}</DialogTitle>
-					<DialogDescription>{t("cropPhotoDescription")}</DialogDescription>
+					<DialogTitle>{t("dashboard.user.settings.cropPhotoTitle")}</DialogTitle>
+					<DialogDescription>{t("dashboard.user.settings.cropPhotoDescription")}</DialogDescription>
 				</DialogHeader>
 				<div className="my-4 flex justify-center">
 					<div className="max-h-[500px] w-auto">
 						<ReactCrop crop={crop} onChange={(c) => setCrop(c)} aspect={1} className="max-h-[500px] w-auto">
-							{/** biome-ignore lint/nursery/noImgElement: Local image */}
+							{/** biome-ignore lint/performance/noImgElement: Local image */}
 							<img
 								src={URL.createObjectURL(file)}
 								alt="Crop"
@@ -124,9 +124,9 @@ export function ImageCropDialog({ file, onClose, onCrop }: ImageCropDialogProps)
 				</div>
 				<DialogFooter>
 					<Button variant="ghost" onClick={onClose}>
-						{t("cancel")}
+						{t("common.actions.cancel")}
 					</Button>
-					<Button onClick={handleCrop}>{t("save")}</Button>
+					<Button onClick={handleCrop}>{t("common.actions.save")}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

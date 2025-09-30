@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { PlusCircle } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { notFound } from "next/navigation";
 import type { Prisma } from "@generated/client";
-import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
+import { PlusCircle } from "lucide-react";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -91,18 +91,18 @@ export async function EventsPageFetcher(props: PageProps) {
 }
 
 export default async function Page(props: PageProps) {
-	const t = await getTranslations("dashboard.club.events");
+	const t = await getTranslations();
 	const { clubId } = await props.params;
 	const searchParams = await props.searchParams;
 
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("allEvents")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.club.events.allEvents")}</h3>
 				<Button asChild>
 					<Link href={`/dashboard/${clubId}/events/create`}>
 						<PlusCircle className="size-4 mr-2" />
-						{t("createEvent")}
+						{t("dashboard.club.events.createEvent")}
 					</Link>
 				</Button>
 			</div>

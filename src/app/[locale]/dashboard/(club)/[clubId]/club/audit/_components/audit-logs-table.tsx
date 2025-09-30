@@ -1,19 +1,19 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { Code, MoreHorizontal } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
+import { GenericDataTable } from "@/components/generic-data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Credenza,
 	CredenzaContent,
+	CredenzaDescription,
 	CredenzaHeader,
 	CredenzaTitle,
-	CredenzaDescription,
 } from "@/components/ui/credenza";
-import { useState } from "react";
-import { Code, MoreHorizontal } from "lucide-react";
-import type { JsonValue } from "@prisma/client/runtime/client";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -42,37 +42,37 @@ interface AuditLogsTableProps {
 }
 
 export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProps) {
-	const t = useTranslations("dashboard.club.audit");
+	const t = useTranslations();
 	const locale = useLocale();
 	const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
 	const actionTypeMap: Record<string, string> = {
-		CLUB_CREATE: t("actionTypes.clubCreate"),
-		CLUB_UPDATE: t("actionTypes.clubUpdate"),
-		CLUB_DELETE: t("actionTypes.clubDelete"),
-		MEMBER_INVITE: t("actionTypes.memberInvite"),
-		MEMBER_REMOVE: t("actionTypes.memberRemove"),
-		MEMBER_PROMOTE: t("actionTypes.memberPromote"),
-		MEMBER_DEMOTE: t("actionTypes.memberDemote"),
-		MEMBER_JOIN: t("actionTypes.memberJoin"),
-		MEMBER_LEAVE: t("actionTypes.memberLeave"),
-		CLUB_BAN: t("actionTypes.clubBan"), // Admin-only
-		CLUB_UNBAN: t("actionTypes.clubUnban"),
-		SPENDING_CREATE: t("actionTypes.spendingCreate"),
-		SPENDING_UPDATE: t("actionTypes.spendingUpdate"),
-		SPENDING_DELETE: t("actionTypes.spendingDelete"),
-		POST_CREATE: t("actionTypes.postCreate"),
-		POST_UPDATE: t("actionTypes.postUpdate"),
-		POST_DELETE: t("actionTypes.postDelete"),
-		INSTAGRAM_CONNECT: t("actionTypes.instagramConnect"),
-		INSTAGRAM_DISCONNECT: t("actionTypes.instagramDisconnect"),
-		EVENT_CREATE: t("actionTypes.eventCreate"),
-		EVENT_UPDATE: t("actionTypes.eventUpdate"),
-		EVENT_DELETE: t("actionTypes.eventDelete"),
-		CLUB_RULE_UPDATE: t("actionTypes.clubRuleUpdate"),
-		CLUB_RULE_CREATE: t("actionTypes.clubRuleCreate"),
-		CLUB_RULE_DELETE: t("actionTypes.clubRuleDelete"),
-		MEMBERSHIP_EXTENSION: t("actionTypes.membershipExtension"),
+		CLUB_CREATE: t("dashboard.club.audit.actionTypes.clubCreate"),
+		CLUB_UPDATE: t("dashboard.club.audit.actionTypes.clubUpdate"),
+		CLUB_DELETE: t("dashboard.club.audit.actionTypes.clubDelete"),
+		MEMBER_INVITE: t("dashboard.club.audit.actionTypes.memberInvite"),
+		MEMBER_REMOVE: t("dashboard.club.audit.actionTypes.memberRemove"),
+		MEMBER_PROMOTE: t("dashboard.club.audit.actionTypes.memberPromote"),
+		MEMBER_DEMOTE: t("dashboard.club.audit.actionTypes.memberDemote"),
+		MEMBER_JOIN: t("dashboard.club.audit.actionTypes.memberJoin"),
+		MEMBER_LEAVE: t("dashboard.club.audit.actionTypes.memberLeave"),
+		CLUB_BAN: t("dashboard.club.audit.actionTypes.clubBan"), // Admin-only
+		CLUB_UNBAN: t("dashboard.club.audit.actionTypes.clubUnban"),
+		SPENDING_CREATE: t("dashboard.club.audit.actionTypes.spendingCreate"),
+		SPENDING_UPDATE: t("dashboard.club.audit.actionTypes.spendingUpdate"),
+		SPENDING_DELETE: t("dashboard.club.audit.actionTypes.spendingDelete"),
+		POST_CREATE: t("dashboard.club.audit.actionTypes.postCreate"),
+		POST_UPDATE: t("dashboard.club.audit.actionTypes.postUpdate"),
+		POST_DELETE: t("dashboard.club.audit.actionTypes.postDelete"),
+		INSTAGRAM_CONNECT: t("dashboard.club.audit.actionTypes.instagramConnect"),
+		INSTAGRAM_DISCONNECT: t("dashboard.club.audit.actionTypes.instagramDisconnect"),
+		EVENT_CREATE: t("dashboard.club.audit.actionTypes.eventCreate"),
+		EVENT_UPDATE: t("dashboard.club.audit.actionTypes.eventUpdate"),
+		EVENT_DELETE: t("dashboard.club.audit.actionTypes.eventDelete"),
+		CLUB_RULE_UPDATE: t("dashboard.club.audit.actionTypes.clubRuleUpdate"),
+		CLUB_RULE_CREATE: t("dashboard.club.audit.actionTypes.clubRuleCreate"),
+		CLUB_RULE_DELETE: t("dashboard.club.audit.actionTypes.clubRuleDelete"),
+		MEMBERSHIP_EXTENSION: t("dashboard.club.audit.actionTypes.membershipExtension"),
 	};
 
 	const getActionTypeLabel = (actionType: string): string => {
@@ -81,7 +81,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 
 	// Create filter options from the action type map
 	const filterOptions = [
-		{ label: t("allActions"), value: "all" },
+		{ label: t("dashboard.club.audit.allActions"), value: "all" },
 		// Generate options from the actionTypeMap
 		...Object.entries(actionTypeMap).map(([value, label]) => ({
 			label,
@@ -93,11 +93,11 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 			<GenericDataTable
 				data={logs}
 				totalPages={Math.ceil(totalLogs / pageSize)}
-				searchPlaceholder={t("search")}
+				searchPlaceholder={t("dashboard.club.audit.search")}
 				columns={[
 					{
 						key: "createdAt",
-						header: t("columns.date"),
+						header: t("dashboard.club.audit.columns.date"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
@@ -111,11 +111,11 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 					},
 					{
 						key: "actionType",
-						header: t("columns.action"),
+						header: t("dashboard.club.audit.columns.action"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
-							component: (value, row) => (
+							component: (value) => (
 								<Badge variant="secondary" className="font-mono">
 									{getActionTypeLabel(value)}
 								</Badge>
@@ -124,12 +124,12 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 					},
 					{
 						key: "user.name",
-						header: t("columns.user"),
+						header: t("dashboard.club.audit.columns.user"),
 						sortable: true,
 					},
 					{
 						key: "ipAddress",
-						header: t("columns.ipAddress"),
+						header: t("dashboard.club.audit.columns.ipAddress"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
@@ -138,7 +138,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 					},
 					{
 						key: "actions",
-						header: t("columns.actions"),
+						header: t("dashboard.club.audit.columns.actions"),
 						cellConfig: {
 							variant: "custom",
 							component: (_, log) => (
@@ -151,7 +151,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem onClick={() => setSelectedLog(log)}>
 											<Code className="size-4 mr-2" />
-											{t("viewDetails")}
+											{t("dashboard.club.audit.viewDetails")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
@@ -162,7 +162,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 				filters={[
 					{
 						key: "actionType",
-						label: t("filterByAction"),
+						label: t("dashboard.club.audit.filterByAction"),
 						options: filterOptions,
 					},
 				]}
@@ -180,7 +180,7 @@ interface LogDetailCredenzaProps {
 }
 
 function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaProps) {
-	const t = useTranslations("dashboard.club.audit");
+	const t = useTranslations();
 	const locale = useLocale();
 
 	if (!log) {
@@ -191,7 +191,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 		<Credenza open={Boolean(log)} onOpenChange={onClose}>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle className="truncate mr-8">{t("detailsTitle")}</CredenzaTitle>
+					<CredenzaTitle className="truncate mr-8">{t("dashboard.club.audit.detailsTitle")}</CredenzaTitle>
 					<CredenzaDescription>
 						{new Date(log.createdAt).toLocaleDateString(locale, {
 							year: "numeric",
@@ -204,12 +204,12 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 
 				<div className="mt-4 space-y-4 p-4 md:p-0">
 					<div>
-						<h3 className="text-sm font-medium">{t("actionType")}</h3>
+						<h3 className="text-sm font-medium">{t("dashboard.club.audit.actionType")}</h3>
 						<p className="mt-1 font-mono text-sm">{actionTypeMap[log.actionType] || log.actionType}</p>
 					</div>
 
 					<div>
-						<h3 className="text-sm font-medium">{t("userInfo")}</h3>
+						<h3 className="text-sm font-medium">{t("dashboard.club.audit.userInfo")}</h3>
 						<p className="mt-1 text-sm">
 							{log.user?.name ?? "-"} ({log.user?.email ?? "-"})
 						</p>
@@ -217,20 +217,20 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 
 					{log.ipAddress && (
 						<div>
-							<h3 className="text-sm font-medium">{t("ipAddress")}</h3>
+							<h3 className="text-sm font-medium">{t("dashboard.club.audit.ipAddress")}</h3>
 							<p className="mt-1 font-mono text-sm">{log.ipAddress}</p>
 						</div>
 					)}
 
 					{log.userAgent && (
 						<div>
-							<h3 className="text-sm font-medium">{t("userAgent")}</h3>
+							<h3 className="text-sm font-medium">{t("dashboard.club.audit.userAgent")}</h3>
 							<p className="mt-1 text-sm truncate">{log.userAgent}</p>
 						</div>
 					)}
 
 					<div>
-						<h3 className="text-sm font-medium">{t("actionData")}</h3>
+						<h3 className="text-sm font-medium">{t("dashboard.club.audit.actionData")}</h3>
 						<pre className="mt-1 p-4 bg-muted rounded-md overflow-auto text-xs max-h-[300px]">
 							{JSON.stringify(log.actionData, null, 2)}
 						</pre>

@@ -1,4 +1,5 @@
 "use server";
+import { getLocale } from "next-intl/server";
 import {
 	createEventFormSchema,
 	deleteEventImageSchema,
@@ -6,15 +7,14 @@ import {
 	eventImageFileSchema,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
+import { redirect } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { logClubAudit } from "@/lib/audit-logger";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
-import { redirect } from "@/i18n/navigation";
-import { getLocale } from "next-intl/server";
-import { logClubAudit } from "@/lib/audit-logger";
 
-export const createEvent = safeActionClient.schema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
+export const createEvent = safeActionClient.inputSchema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
 	if (parsedInput.slug) {
 		const valid = await validateSlug({
@@ -26,6 +26,8 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 		}
 	}
 
+	const shouldDeleteImage = parsedInput.image === undefined;
+
 	const data = {
 		name: parsedInput.name,
 		description: parsedInput.description,
@@ -36,7 +38,7 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 		dateEnd: parsedInput.dateEnd,
 		dateRegistrationsOpen: parsedInput.dateRegistrationsOpen,
 		dateRegistrationsClose: parsedInput.dateRegistrationsClose,
-		image: parsedInput.image ? `${parsedInput.image}?v=${Date.now()}` : undefined,
+		image: parsedInput.image ? `${parsedInput.image}?v=${Date.now()}` : null,
 		isPrivate: parsedInput.isPrivate,
 		allowFreelancers: parsedInput.allowFreelancers,
 		hasBreakfast: parsedInput.hasBreakfast,
@@ -66,6 +68,14 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 
 	if (eventFinished) {
 		throw new Error("Ne možete ažurirati susret koji je već završio.");
+	}
+
+	// If the event has an image and the image is being deleted, delete the image.
+	if (shouldDeleteImage && parsedInput.eventId) {
+		await deleteEventImage({
+			eventId: parsedInput.eventId,
+			clubId: ctx.club.id,
+		});
 	}
 
 	// revalidate paths
@@ -113,7 +123,7 @@ export const createEvent = safeActionClient.schema(createEventFormSchema).action
 });
 
 export const getEventImageUploadUrl = safeActionClient
-	.schema(eventImageFileSchema)
+	.inputSchema(eventImageFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		const belongsToClub = await prisma.event.findFirst({
 			where: {
@@ -134,28 +144,30 @@ export const getEventImageUploadUrl = safeActionClient
 		return resp;
 	});
 
-export const deleteEventImage = safeActionClient.schema(deleteEventImageSchema).action(async ({ parsedInput, ctx }) => {
-	await prisma.event.update({
-		where: {
-			id: parsedInput.eventId,
+export const deleteEventImage = safeActionClient
+	.inputSchema(deleteEventImageSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		await prisma.event.update({
+			where: {
+				id: parsedInput.eventId,
+				clubId: ctx.club.id,
+			},
+			data: {
+				image: null,
+			},
+		});
+
+		await logClubAudit({
 			clubId: ctx.club.id,
-		},
-		data: {
-			image: null,
-		},
+			actionType: "EVENT_UPDATE",
+			actionData: {
+				id: parsedInput.eventId,
+				note: "Event image deleted",
+			},
+		});
 	});
 
-	await logClubAudit({
-		clubId: ctx.club.id,
-		actionType: "EVENT_UPDATE",
-		actionData: {
-			id: parsedInput.eventId,
-			note: "Event image deleted",
-		},
-	});
-});
-
-export const deleteEvent = safeActionClient.schema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
+export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
 	// If the event is in the past, you can't delete it.
 	const eventFinished = await prisma.event.findFirst({
 		where: {

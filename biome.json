@@ -15,10 +15,8 @@
 				"noImplicitBoolean": "off",
 				"useNamingConvention": "off",
 				"useLiteralEnumMembers": "error",
-				"noCommaOperator": "error",
 				"useNodejsImportProtocol": "error",
 				"useAsConstAssertion": "error",
-				"useNumericLiterals": "error",
 				"useEnumInitializers": "error",
 				"useSelfClosingElements": "error",
 				"useConst": "error",
@@ -31,7 +29,6 @@
 				"noParameterAssign": "error",
 				"noNonNullAssertion": "error",
 				"useDefaultParameterLast": "error",
-				"noArguments": "error",
 				"useImportType": "error",
 				"useExportType": "error",
 				"noUselessElse": "error",
@@ -39,15 +36,23 @@
 			},
 			"a11y": {
 				"useKeyWithMouseEvents": "off",
-				"useKeyWithClickEvents": "off"
+				"useKeyWithClickEvents": "off",
+				"noStaticElementInteractions": "warn"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
 				"noUndeclaredDependencies": "off"
 			},
 			"suspicious": {
-				"noReactSpecificProps": "off"
+				"noReactSpecificProps": "off",
+				"noUnknownAtRules": "off"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "warn"
 			}
+		},
+		"domains": {
+			"next": "all"
 		}
 	},
 	"formatter": {
@@ -64,12 +69,14 @@
 		"ignoreUnknown": true,
 		"includes": [
 			"**",
-			"!**/node_modules/**",
-			"!**/dist/**",
-			"!**/build/**",
-			"!**/.next/**",
-			"!**/src/components/ui/**",
-			"!**/.unlighthouse/**"
-		]
+			"!**/node_modules",
+			"!**/dist",
+			"!**/build",
+			"!**/.next",
+			"!**/src/components/ui",
+			"!**/.unlighthouse",
+			"!**/generated"
+		],
+		"maxSize": 10000000
 	}
 }

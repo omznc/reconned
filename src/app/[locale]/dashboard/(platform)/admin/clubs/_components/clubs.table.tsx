@@ -1,13 +1,12 @@
 "use client";
 
-import { GenericDataTable } from "@/components/generic-data-table";
-import { Button } from "@/components/ui/button";
 import type { Club } from "@generated/client";
-import { Link } from "@/i18n/navigation";
+import { ExternalLink, Settings } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { ExternalLink, Settings } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 interface ClubsTableProps {
 	clubs: Club[];

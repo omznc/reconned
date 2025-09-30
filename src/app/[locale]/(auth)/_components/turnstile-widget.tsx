@@ -1,8 +1,8 @@
 "use client";
 
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { env } from "@/lib/env";
 
 export interface TurnstileWidgetRef {

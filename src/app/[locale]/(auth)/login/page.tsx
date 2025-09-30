@@ -1,34 +1,32 @@
 "use client";
 
+import { Button } from "@components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { SuccessContext } from "better-auth/react";
+import { Key } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useQueryState } from "nuqs";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { BadgeSoon } from "@/components/badge-soon";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@components/ui/button";
-import { Link } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { useQueryState } from "nuqs";
-import { Key } from "lucide-react";
-import type { SuccessContext } from "better-auth/react";
-import { BadgeSoon } from "@/components/badge-soon";
-import { useTranslations } from "next-intl";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations("public.auth");
-	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const t = useTranslations();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 	const [email, setEmail] = useQueryState("email", {
 		defaultValue: "",
@@ -41,8 +39,9 @@ export default function LoginPage() {
 
 	// Login form schema with Zod
 	const loginSchema = z.object({
-		email: z.string().email(t("invalidEmail")),
-		password: z.string().min(1, t("passwordRequired")),
+		email: z.string().email(t("public.auth.invalidEmail")),
+		password: z.string().min(1, t("public.auth.passwordRequired")),
+		turnstileToken: z.string().min(1, t("public.auth.captchaError")),
 	});
 
 	type LoginFormValues = z.infer<typeof loginSchema>;
@@ -53,6 +52,7 @@ export default function LoginPage() {
 		defaultValues: {
 			email: email || "",
 			password: "",
+			turnstileToken: "",
 		},
 		mode: "onChange",
 	});
@@ -78,13 +78,8 @@ export default function LoginPage() {
 	}
 
 	async function onSubmit(data: LoginFormValues) {
-		if (!turnstileToken) {
-			toast.error(t("captchaError"));
-			return;
-		}
-
 		const headers = new Headers();
-		headers.append("x-captcha-response", turnstileToken);
+		headers.append("x-captcha-response", data.turnstileToken);
 
 		await authClient.signIn.email({
 			email: data.email,
@@ -104,10 +99,10 @@ export default function LoginPage() {
 				onSuccess: handleSuccessfulLogin,
 				onError: (ctx) => {
 					if (ctx.error.status === 403) {
-						toast.error(t("unverified"));
+						toast.error(t("public.auth.unverified"));
 					} else {
 						if (ctx.error.message === "Missing CAPTCHA response") {
-							toast.error(t("captchaError"));
+							toast.error(t("public.auth.captchaError"));
 							router.refresh();
 						}
 						setIsError(true);
@@ -120,8 +115,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t("login")}</CardTitle>
-				<CardDescription>{t("loginDescription")}</CardDescription>
+				<CardTitle className="text-2xl">{t("public.auth.login")}</CardTitle>
+				<CardDescription>{t("public.auth.loginDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Form {...form}>
@@ -144,14 +139,14 @@ export default function LoginPage() {
 									</FormControl>
 									{!!email && (
 										<p className="text-sm text-gray-500">
-											{t("emailAutofilled")}{" "}
+											{t("public.auth.emailAutofilled")}{" "}
 											<span
 												className="text-foreground cursor-pointer inline"
 												onClick={() => {
 													setEmail("");
 												}}
 											>
-												{t("remove")}
+												{t("public.auth.remove")}
 											</span>
 										</p>
 									)}
@@ -166,7 +161,7 @@ export default function LoginPage() {
 							render={({ field }) => (
 								<FormItem>
 									<div className="flex items-center">
-										<Label htmlFor="password">{t("password")}</Label>
+										<Label htmlFor="password">{t("public.auth.password")}</Label>
 										<Button
 											type="button"
 											onClick={async () => {
@@ -176,7 +171,7 @@ export default function LoginPage() {
 												setIsForgotPasswordLoading(true);
 												const email = form.getValues("email");
 												if (!email) {
-													toast.error(t("forgotPasswordNoEmail"));
+													toast.error(t("public.auth.forgotPasswordNoEmail"));
 													setIsForgotPasswordLoading(false);
 													return;
 												}
@@ -185,7 +180,7 @@ export default function LoginPage() {
 													!form.formState.dirtyFields.email ||
 													form.getFieldState("email").invalid
 												) {
-													toast.error(t("forgotPasswordWrongEmail"));
+													toast.error(t("public.auth.forgotPasswordWrongEmail"));
 													setIsForgotPasswordLoading(false);
 													return;
 												}
@@ -194,14 +189,16 @@ export default function LoginPage() {
 													email,
 													redirectTo: "/reset-password",
 												});
-												toast.success(t("forgotPasswordSuccess"));
+												toast.success(t("public.auth.forgotPasswordSuccess"));
 												setIsForgotPasswordLoading(false);
 											}}
 											variant="ghost"
 											className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
 											disabled={isLoading || isForgotPasswordLoading}
 										>
-											{isForgotPasswordLoading ? t("loading") : t("forgotPassword")}
+											{isForgotPasswordLoading
+												? t("public.auth.loading")
+												: t("public.auth.forgotPassword")}
 										</Button>
 									</div>
 									<FormControl>
@@ -217,23 +214,23 @@ export default function LoginPage() {
 							)}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("invalidData")}</p>}
+						{isError && <p className="text-red-500 -mb-2">{t("public.auth.invalidData")}</p>}
 
 						<TurnstileWidget
 							ref={turnstileRef}
 							onVerify={(token) => {
 								if (token && token.length > 0) {
-									setTurnstileToken(token);
+									form.setValue("turnstileToken", token, { shouldValidate: true });
 								}
 							}}
 						/>
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							disabled={isForgotPasswordLoading || !turnstileToken || !form.formState.isValid}
+							disabled={isForgotPasswordLoading || !form.formState.isValid}
 							className="w-full plausible-event-name=login-button-click"
 						>
-							{t("login")}
+							{t("public.auth.login")}
 						</LoaderSubmitButton>
 
 						<div className="flex max-w-full items-center gap-2">
@@ -268,12 +265,12 @@ export default function LoginPage() {
 					</form>
 				</Form>
 				<div className="mt-4 text-center text-sm">
-					{t("noAccountQuestion")}{" "}
+					{t("public.auth.noAccountQuestion")}{" "}
 					<Link
 						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
 						className="underline"
 					>
-						{t("register")}
+						{t("public.auth.register")}
 					</Link>
 				</div>
 			</CardContent>

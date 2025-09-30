@@ -1,13 +1,13 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@generated/client";
+import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { AddManagerForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.form";
 import { ManagersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/managers-table";
-import { Role } from "@generated/client";
-import type { Prisma } from "@generated/client";
-import { getTranslations } from "next-intl/server";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { Suspense } from "react";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -122,13 +122,13 @@ export async function ManagersPageFetcher(props: PageProps) {
 }
 
 export default async function Page(props: PageProps) {
-	const t = await getTranslations("dashboard.club.members.managers");
+	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 
 	return (
 		<div className="space-y-8">
 			<div>
-				<h2 className="text-2xl font-bold mb-4">{t("title")}</h2>
+				<h2 className="text-2xl font-bold mb-4">{t("dashboard.club.members.managers.title")}</h2>
 				<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 					<ManagersPageFetcher {...props} />
 				</Suspense>

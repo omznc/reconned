@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { env } from "@/lib/env";
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
+import { env } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
 
 export const revalidate = 86_400; // 24 hours
 

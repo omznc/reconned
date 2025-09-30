@@ -1,7 +1,7 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
-import { env } from "@/lib/env";
-import { emailStyles } from "@/emails/styles";
 import { getTranslations } from "next-intl/server";
+import { emailStyles } from "@/emails/styles";
+import { env } from "@/lib/env";
 
 interface MembershipExpirationProps {
 	userName: string;
@@ -22,7 +22,7 @@ export const MembershipExpiration = async ({
 	renewUrl,
 	isExpired,
 }: MembershipExpirationProps) => {
-	const t = await getTranslations("emails.membershipExpiration");
+	const t = await getTranslations();
 
 	return (
 		<Html>
@@ -35,20 +35,24 @@ export const MembershipExpiration = async ({
 					<Section style={emailStyles.logoSection}>
 						<Img
 							src={clubLogo || `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/logo.png`}
-							alt="Logo Kluba"
+							alt={t("emails.membershipExpiration.clubLogo")}
 							width="100"
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>{isExpired ? t("expiredHeading") : t("expiringHeading")}</Heading>
-					<Text style={emailStyles.text}>{t("hello", { name: userName })}</Text>
+					<Heading style={emailStyles.h1}>
+						{isExpired
+							? t("emails.membershipExpiration.expiredHeading")
+							: t("emails.membershipExpiration.expiringHeading")}
+					</Heading>
+					<Text style={emailStyles.text}>{t("emails.membershipExpiration.hello", { name: userName })}</Text>
 					<Text style={emailStyles.text}>
 						{isExpired
-							? t("expiredMessage", {
+							? t("emails.membershipExpiration.expiredMessage", {
 									clubName,
 									date: expiryDate,
 								})
-							: t("expiringMessage", {
+							: t("emails.membershipExpiration.expiringMessage", {
 									clubName,
 									date: expiryDate,
 									days: daysUntilExpiry,
@@ -56,11 +60,11 @@ export const MembershipExpiration = async ({
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={renewUrl}>
-							{t("action")}
+							{t("emails.membershipExpiration.action")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("footer", { clubName })}</Text>
+					<Text style={emailStyles.footer}>{t("emails.membershipExpiration.footer", { clubName })}</Text>
 				</Container>
 			</Body>
 		</Html>

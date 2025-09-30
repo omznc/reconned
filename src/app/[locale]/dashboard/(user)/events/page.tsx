@@ -1,11 +1,11 @@
+import type { Prisma } from "@generated/client";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import type { Prisma } from "@generated/client";
-import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
-import { getTranslations } from "next-intl/server";
-import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { Suspense } from "react";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -84,13 +84,13 @@ export async function EventsPageFetcher(props: PageProps) {
 }
 
 export default async function Page(props: PageProps) {
-	const t = await getTranslations("dashboard.events");
+	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("title")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.events.title")}</h3>
 			</div>
 			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<EventsPageFetcher {...props} />

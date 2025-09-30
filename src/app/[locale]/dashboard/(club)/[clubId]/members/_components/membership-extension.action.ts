@@ -1,15 +1,15 @@
 "use server";
 
-import { safeActionClient } from "@/lib/safe-action";
-import { prisma } from "@/lib/prisma";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { addMonths } from "date-fns";
 import { membershipExtensionSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { logClubAudit } from "@/lib/audit-logger";
+import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
 
 export const extendMembership = safeActionClient
-	.schema(membershipExtensionSchema)
-	.action(async ({ parsedInput, ctx }) => {
+	.inputSchema(membershipExtensionSchema)
+	.action(async ({ parsedInput }) => {
 		const { memberId, clubId, duration } = parsedInput;
 		try {
 			// Find the membership
@@ -37,7 +37,7 @@ export const extendMembership = safeActionClient
 			}
 
 			// Convert duration string to number
-			const durationMonths = Number.parseInt(duration);
+			const durationMonths = Number.parseInt(duration, 10);
 
 			// Calculate new end date
 			const newEndDate = addMonths(baseDate, durationMonths);
@@ -76,7 +76,7 @@ export const extendMembership = safeActionClient
 				membership: updatedMembership,
 				message: `Membership extended by ${durationMonths} months`,
 			};
-		} catch (error) {
+		} catch {
 			return { error: "Failed to extend membership" };
 		}
 	});

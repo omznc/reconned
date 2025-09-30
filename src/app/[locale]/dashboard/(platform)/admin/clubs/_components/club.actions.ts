@@ -1,8 +1,8 @@
 "use server";
 
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { z } from "zod";
 
 // Define schema for club admin actions
 const clubAdminActionSchema = z.object({
@@ -10,7 +10,7 @@ const clubAdminActionSchema = z.object({
 	action: z.enum(["ban", "unban", "remove"]),
 });
 
-export const clubAdminAction = safeActionClient.schema(clubAdminActionSchema).action(async ({ parsedInput, ctx }) => {
+export const clubAdminAction = safeActionClient.inputSchema(clubAdminActionSchema).action(async ({ parsedInput }) => {
 	const { clubId, action } = parsedInput;
 
 	if (action === "ban") {

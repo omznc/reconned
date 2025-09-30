@@ -1,9 +1,7 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { LANGUAGE_TRANSLATIONS, VALID_LOCALES } from "@/i18n/valid-locales";
-import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
 import { Globe } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,9 +10,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { LANGUAGE_TRANSLATIONS, VALID_LOCALES } from "@/i18n/valid-locales";
 
 export function LanguageSwitcher() {
-	const t = useTranslations("components.languageSwitcher");
+	const t = useTranslations();
 	const router = useRouter();
 	const path = usePathname();
 	const locale = useLocale();
@@ -32,7 +32,7 @@ export function LanguageSwitcher() {
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="start">
-				<DropdownMenuLabel>{t("select")}</DropdownMenuLabel>
+				<DropdownMenuLabel>{t("components.languageSwitcher.select")}</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{VALID_LOCALES.map((localeOption) => (
 					<DropdownMenuItem

@@ -21,6 +21,7 @@ export const env = createEnv({
 		NTFY_ENDPOINT: z.string().url().optional(),
 		FACEBOOK_APP_ID: z.string().min(1),
 		FACEBOOK_APP_SECRET: z.string().min(1),
+		REDIS_URL: z.string().url(),
 		// POLAR_ACCESS_TOKEN: z.string().min(1), This is a surprise tool that will help us later
 	},
 	client: {

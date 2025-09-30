@@ -1,21 +1,21 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { House } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import type { ReactNode } from "react";
-import background from "./background-blur.webp";
-import backgroundLight from "./background-blur-light.webp";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { AnimationWrapper } from "@/app/[locale]/(auth)/_components/animation-wrapper";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import background from "./background-blur.webp";
+import backgroundLight from "./background-blur-light.webp";
 
 export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	const t = await getTranslations("public.auth");
+	const t = await getTranslations();
 
 	return (
 		<>
@@ -38,7 +38,7 @@ export default async function RootLayout({
 					<Button variant={"outline"} className="w-full" asChild={true}>
 						<Link href="/" className="flex items-center gap-2">
 							<House className="w-4 h-4" />
-							{t("home")}
+							{t("components.sidebar.home")}
 						</Link>
 					</Button>
 				</div>
@@ -49,12 +49,12 @@ export default async function RootLayout({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public");
+	const t = await getTranslations();
 
 	return {
-		title: t("auth.metadata.title"),
-		description: t("auth.metadata.description"),
-		keywords: t("layout.metadata.keywords")
+		title: t("public.auth.metadata.title"),
+		description: t("public.auth.metadata.description"),
+		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
 	};

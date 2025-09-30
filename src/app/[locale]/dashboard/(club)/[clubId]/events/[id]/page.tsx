@@ -1,11 +1,11 @@
-import { EventOverview } from "@/components/overviews/event-overview";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { EventOverview } from "@/components/overviews/event-overview";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{
@@ -17,7 +17,7 @@ interface PageProps {
 export default async function Page(props: PageProps) {
 	const params = await props.params;
 	const user = await isAuthenticated();
-	const t = await getTranslations("dashboard.club.events");
+	const t = await getTranslations();
 
 	if (!user) {
 		return notFound();
@@ -56,14 +56,14 @@ export default async function Page(props: PageProps) {
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("event")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.club.events.event")}</h3>
 				<Button disabled={disabledAttendence} variant="default" size="sm" asChild={!disabledAttendence}>
 					<Link
 						className="flex items-center gap-2"
 						href={`/dashboard/${params.clubId}/events/${params.id}/attendance`}
 					>
 						<Users className="h-4 w-4" />
-						{t("attendence")}
+						{t("dashboard.club.events.attendence")}
 					</Link>
 				</Button>
 			</div>

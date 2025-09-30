@@ -1,6 +1,6 @@
-import { isAuthenticated } from "@/lib/auth";
 import { PrismaClient } from "@generated/client";
 import { NextResponse } from "next/server";
+import { isAuthenticated } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: The prisma type is huge
 		const where: any = {
 			AND: [
 				{

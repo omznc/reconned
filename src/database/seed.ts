@@ -1,6 +1,4 @@
-import { PrismaClient } from "@generated/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 const API_BASE = "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/json/";
 
@@ -13,6 +11,7 @@ async function main() {
 	await prisma.$transaction(async (tx) => {
 		const countries = await fetchData("countries");
 		await tx.country.createMany({
+			// biome-ignore lint/suspicious/noExplicitAny: Seeding countries, idc
 			data: countries.map((country: any) => ({
 				name: country.name,
 				iso3: country.iso3,

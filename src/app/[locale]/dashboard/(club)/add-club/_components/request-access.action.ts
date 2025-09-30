@@ -1,10 +1,10 @@
 "use server";
 
-import { safeActionClient } from "@/lib/safe-action";
-import { requestAccessSchema } from "./request-access.schema";
 import { prisma } from "@/lib/prisma";
+import { safeActionClient } from "@/lib/safe-action";
+import { requestAccessSchema } from "./request-access.schema.ts";
 
-export const requestAccess = safeActionClient.schema(requestAccessSchema).action(async ({ parsedInput, ctx }) => {
+export const requestAccess = safeActionClient.inputSchema(requestAccessSchema).action(async ({ parsedInput, ctx }) => {
 	const existingRequest = await prisma.clubInvite.findFirst({
 		where: {
 			clubId: parsedInput.clubIdTarget,

@@ -1,5 +1,11 @@
 "use client";
+import type { User } from "better-auth";
+import { ArrowLeft, LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Logo } from "@/components/logos/logo";
+import { FontSwitcher } from "@/components/personalization/font/font-switcher";
+import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,17 +16,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { User } from "better-auth";
-import { ArrowLeft, LogOut } from "lucide-react";
-import { Link, useRouter, usePathname } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
-import { FontSwitcher } from "@/components/personalization/font/font-switcher";
-import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function Header({ user }: { user: User | null }) {
-	const t = useTranslations("components.header");
+	const t = useTranslations();
 	const path = usePathname();
 	const router = useRouter();
 
@@ -33,7 +33,7 @@ export function Header({ user }: { user: User | null }) {
 				<Button asChild variant="ghost" className="w-full hover:bg-transparent md:-mr-12 shadow-none">
 					<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 						<ArrowLeft className="w-6 h-6" />
-						{t("backToHome")}
+						{t("components.header.backToHome")}
 					</Link>
 				</Button>
 			)}
@@ -44,7 +44,7 @@ export function Header({ user }: { user: User | null }) {
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
 							<Link href="/dashboard" className="w-full">
-								{t("dashboard")}
+								{t("components.header.dashboard")}
 							</Link>
 						</Button>
 						<DropdownMenu>
@@ -57,7 +57,7 @@ export function Header({ user }: { user: User | null }) {
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="mr-4" sideOffset={12}>
-								<DropdownMenuLabel>{t("personalization")}</DropdownMenuLabel>
+								<DropdownMenuLabel>{t("components.header.personalization")}</DropdownMenuLabel>
 								<DropdownMenuItem asChild={true}>
 									<ThemeSwitcher />
 								</DropdownMenuItem>
@@ -83,7 +83,7 @@ export function Header({ user }: { user: User | null }) {
 										className="w-full items-center justify-start cursor-pointer"
 									>
 										<LogOut className="w-4 h-4" />
-										{t("logout")}
+										{t("components.header.logout")}
 									</Button>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -92,7 +92,7 @@ export function Header({ user }: { user: User | null }) {
 				) : (
 					<Button asChild={true} suppressHydrationWarning={true}>
 						<Link className="w-full md:w-fit" suppressHydrationWarning={true} href="/login">
-							{t("login")}
+							{t("components.header.login")}
 						</Link>
 					</Button>
 				)}

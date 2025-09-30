@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 			style={{ fontFamily: "Geist" }}
 		>
 			<div tw="flex flex-row items-start">
-				{/** biome-ignore lint/nursery/noImgElement: OG generation */}
+				{/** biome-ignore lint/performance/noImgElement: OG generation */}
 				{avatar && <img src={avatar} tw="w-32 h-32" alt={name ?? ""} />}
 				<div tw="flex flex-col flex-1 ml-8">
 					<div tw="text-6xl font-bold tracking-tight">{name ?? "Airsoft igrač"}</div>
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
 					<div tw="text-2xl mt-8 text-zinc-200">{bio?.slice(0, 100) ?? ""}</div>
 				</div>
 			</div>
-			{/** biome-ignore lint/nursery/noImgElement: OG generation */}
+			{/** biome-ignore lint/performance/noImgElement: OG generation */}
 			<img tw="w-[400px]" src={logoUrl} alt="Reconned" />
 		</div>,
 		{

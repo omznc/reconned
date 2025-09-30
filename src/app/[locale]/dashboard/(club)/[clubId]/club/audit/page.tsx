@@ -1,11 +1,11 @@
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";
 import { Suspense } from "react";
+import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{ clubId: string; locale: string }>;
@@ -20,10 +20,10 @@ interface PageProps {
 }
 
 export async function generateMetadata() {
-	const t = await getTranslations("dashboard.club.audit");
+	const t = await getTranslations();
 
 	return {
-		title: t("pageTitle"),
+		title: t("dashboard.club.audit.pageTitle"),
 	};
 }
 
@@ -107,14 +107,14 @@ async function AuditLogsPageFetcher(props: PageProps) {
 }
 
 export default async function AuditLogsPage(props: PageProps) {
-	const t = await getTranslations("dashboard.club.audit");
-	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
+	const t = await getTranslations();
+	const [_, searchParams] = await Promise.all([props.params, props.searchParams]);
 
 	return (
 		<div className="space-y-6">
 			<div>
-				<h2 className="text-3xl font-bold tracking-tight">{t("pageTitle")}</h2>
-				<p className="text-muted-foreground">{t("pageDescription")}</p>
+				<h2 className="text-3xl font-bold tracking-tight">{t("dashboard.club.audit.pageTitle")}</h2>
+				<p className="text-muted-foreground">{t("dashboard.club.audit.pageDescription")}</p>
 			</div>
 
 			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
