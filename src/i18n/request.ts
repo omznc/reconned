@@ -4,7 +4,7 @@ import { getRequestConfig } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 
 const DEFAULT_LANGUAGES: Record<(typeof routing.locales)[number], string[]> = {
-	bs: ["BS", "RS", "HR"],
+	bs: ["BA", "RS", "HR"],
 	en: [], // Default language is English
 };
 
