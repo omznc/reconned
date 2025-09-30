@@ -1,14 +1,14 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { logClubAudit } from "@/lib/audit-logger";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { leaveClubSchema, removeMemberSchema } from "./members.schema";
-import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
-import { redirect } from "@/i18n/navigation";
-import { getLocale } from "next-intl/server";
-import { logClubAudit } from "@/lib/audit-logger";
+import { leaveClubSchema, removeMemberSchema } from "./members.schema.ts";
 
-export const removeMember = safeActionClient.schema(removeMemberSchema).action(async ({ parsedInput, ctx }) => {
+export const removeMember = safeActionClient.inputSchema(removeMemberSchema).action(async ({ parsedInput }) => {
 	try {
 		const membership = await prisma.clubMembership.findFirst({
 			where: {
@@ -74,7 +74,7 @@ export const removeMember = safeActionClient.schema(removeMemberSchema).action(a
 	}
 });
 
-export const leaveClub = safeActionClient.schema(leaveClubSchema).action(async ({ parsedInput, ctx }) => {
+export const leaveClub = safeActionClient.inputSchema(leaveClubSchema).action(async ({ parsedInput, ctx }) => {
 	try {
 		// First check if the user is the club owner
 		const membership = await prisma.clubMembership.findFirst({

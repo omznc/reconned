@@ -1,10 +1,10 @@
-import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { getCountries } from "@/lib/cached-countries";
 import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
+import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
+import { isAuthenticated } from "@/lib/auth";
+import { getCountries } from "@/lib/cached-countries";
 import { getInstagramAuthUrl } from "@/lib/instagram";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{

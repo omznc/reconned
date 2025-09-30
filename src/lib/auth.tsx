@@ -1,18 +1,16 @@
-import { sendEmailVerificationAction } from "@/app/[locale]/(auth)/_actions/send-email-verification.action";
-import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
-import PasswordReset from "@/emails/password-reset";
-import { env } from "@/lib/env";
-import { sendEmail } from "@/lib/mail";
 import { render } from "@react-email/components";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, captcha, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
-import { getLocale } from "next-intl/server";
 import { emailHarmony } from "better-auth-harmony";
-
 import { headers } from "next/headers";
 import { cache } from "react";
+import { sendEmailVerificationAction } from "@/app/[locale]/(auth)/_actions/send-email-verification.action";
+import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
+import PasswordReset from "@/emails/password-reset";
+import { env } from "@/lib/env";
+import { sendEmail } from "@/lib/mail";
 import { prisma } from "@/lib/prisma";
 
 export const auth = betterAuth({
@@ -75,6 +73,11 @@ export const auth = betterAuth({
 		}),
 		twoFactor({
 			issuer: "Reconned",
+			backupCodeOptions: {
+				storeBackupCodes: "encrypted",
+				amount: 8,
+				length: 10,
+			},
 		}),
 		oneTap(),
 		admin({
@@ -212,11 +215,18 @@ export const auth = betterAuth({
 	},
 });
 
-export const isAuthenticated = cache(async () => {
+type IsAuthenticatedProps = {
+	bypassCache?: boolean;
+};
+
+export const isAuthenticated = cache(async (props?: IsAuthenticatedProps) => {
 	const allHeaders = await headers();
 
 	const session = await auth.api.getSession({
 		headers: allHeaders,
+		query: {
+			disableCookieCache: props?.bypassCache,
+		},
 	});
 
 	if (!session?.user.id) {

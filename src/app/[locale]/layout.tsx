@@ -1,23 +1,22 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { env } from "@/lib/env";
-import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
-import { Toaster } from "sonner";
-import { FontProvider } from "@/components/personalization/font/font-provider";
 
-import { Geist_Mono, Geist } from "next/font/google";
-import { FontBody } from "@/components/font-body";
-import type { ReactNode } from "react";
-import { isAuthenticated } from "@/lib/auth";
-import { ImpersonationAlert } from "@/components/impersonation-alert";
+import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "sonner";
 import notFound from "@/app/not-found";
+import { FontBody } from "@/components/font-body";
+import { ImpersonationAlert } from "@/components/impersonation-alert";
+import { FontProvider } from "@/components/personalization/font/font-provider";
+import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { routing } from "@/i18n/routing";
+import { isAuthenticated } from "@/lib/auth";
+import { env } from "@/lib/env";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -29,10 +28,15 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-async function LayoutContent({ children }: { children: ReactNode }) {
+type Props = {
+	children: React.ReactNode;
+	params: Promise<{ locale: string }>;
+};
+
+export default async function LocaleLayout({ children, params }: Props) {
 	const [messages, user] = await Promise.all([getMessages(), isAuthenticated()]);
 
-	const locale = "en";
+	const { locale } = await params;
 
 	if (!hasLocale(routing.locales, locale)) {
 		notFound();
@@ -85,12 +89,12 @@ async function LayoutContent({ children }: { children: ReactNode }) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations("public.layout.metadata");
+	const t = await getTranslations();
 	return {
-		title: t("title"),
-		description: t("description"),
+		title: t("public.layout.metadata.title"),
+		description: t("public.layout.metadata.description"),
 		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
-		keywords: t("keywords")
+		keywords: t("public.layout.metadata.keywords")
 			.split(", ")
 			.map((keyword) => keyword.trim()),
 	};
@@ -98,12 +102,4 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
-}
-
-export default function RootLayout({
-	children,
-}: Readonly<{
-	children: ReactNode;
-}>) {
-	return <LayoutContent>{children}</LayoutContent>;
 }

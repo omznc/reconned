@@ -1,12 +1,12 @@
-import { AddPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.form";
-import { PurchasesTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/purchases-table";
-import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@generated/client";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { ErrorPage } from "@/components/error-page";
 import { getTranslations } from "next-intl/server";
-import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Suspense } from "react";
+import { PurchasesTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/purchases-table";
+import { AddPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.form";
+import { ErrorPage } from "@/components/error-page";
+import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { prisma } from "@/lib/prisma";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -62,17 +62,17 @@ export async function SpendingPageFetcher(props: PageProps) {
 }
 
 export default async function SpendingPage(props: PageProps) {
-	const t = await getTranslations("dashboard.club.spending");
+	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 
 	if (!FEATURE_FLAGS.CLUBS_SPENDING) {
-		return <ErrorPage title={t("title")} />;
+		return <ErrorPage title={t("dashboard.club.spending.title")} />;
 	}
 
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("title")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.club.spending.title")}</h3>
 				<AddPurchaseModal />
 			</div>
 

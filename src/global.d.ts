@@ -1,11 +1,12 @@
 // global.d.ts
 
 import type { formats } from "@/i18n/request";
-import type ba from "./messages/bs.json";
+import type messages from "./messages/en.json";
 
 declare module "next-intl" {
 	interface AppConfig {
-		Messages: typeof ba;
+		Locale: (typeof routing.locales)[number];
+		Messages: typeof messages;
 		Formats: typeof formats;
 	}
 }

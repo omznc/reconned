@@ -1,10 +1,10 @@
-import { MembersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members-table";
-import { prisma } from "@/lib/prisma";
 import type { Prisma, Role } from "@generated/client";
 import { getTranslations } from "next-intl/server";
-import { isAuthenticated } from "@/lib/auth";
 import { Suspense } from "react";
+import { MembersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 interface PageProps {
 	params: Promise<{ clubId: string }>;
@@ -121,13 +121,13 @@ export async function MembersPageFetcher(props: PageProps) {
 }
 
 export default async function MembersPage(props: PageProps) {
-	const t = await getTranslations("dashboard.club.members");
-	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
+	const t = await getTranslations();
+	const searchParams = await props.searchParams;
 
 	return (
 		<>
 			<div>
-				<h3 className="text-lg font-semibold">{t("allMembers")}</h3>
+				<h3 className="text-lg font-semibold">{t("dashboard.club.members.allMembers")}</h3>
 			</div>
 			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<MembersPageFetcher {...props} />

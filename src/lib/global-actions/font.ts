@@ -1,11 +1,11 @@
 "use server";
 
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { z } from "zod";
 
 export const setFontAction = safeActionClient
-	.schema(
+	.inputSchema(
 		z.object({
 			font: z.union([z.literal("sans"), z.literal("mono")]),
 		}),

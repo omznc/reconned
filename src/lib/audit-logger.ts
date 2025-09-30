@@ -1,10 +1,10 @@
 import "server-only";
-import { prisma } from "@/lib/prisma";
-import { isAuthenticated } from "@/lib/auth";
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { captureException } from "@sentry/nextjs";
 import { headers } from "next/headers";
 import { after } from "next/server";
-import { captureException } from "@sentry/nextjs";
-import type { JsonValue } from "@prisma/client/runtime/client";
+import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 type ClubActionType =
 	| "CLUB_CREATE"

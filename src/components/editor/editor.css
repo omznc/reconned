@@ -6,9 +6,72 @@
 	margin-top: 0.75em;
 }
 
+.ProseMirror h1 {
+	font-size: 2rem;
+	font-weight: 700;
+	line-height: 1.2;
+	margin-top: 1.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.ProseMirror h2 {
+	font-size: 1.5rem;
+	font-weight: 600;
+	line-height: 1.3;
+	margin-top: 1.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.ProseMirror h3 {
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.4;
+	margin-top: 1rem;
+	margin-bottom: 0.5rem;
+}
+
+.ProseMirror h4 {
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.4;
+	margin-top: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.ProseMirror h5 {
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: 1.4;
+	margin-top: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.ProseMirror h6 {
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.4;
+	margin-top: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
 .ProseMirror ul,
 .ProseMirror ol {
 	padding: 0 1rem;
+	margin: 0.75rem 0;
+}
+
+.ProseMirror ul li {
+	list-style-type: disc;
+	margin: 0.25rem 0;
+}
+
+.ProseMirror ol li {
+	list-style-type: decimal;
+	margin: 0.25rem 0;
+}
+
+.ProseMirror li p {
+	margin: 0;
 }
 
 .ProseMirror blockquote {

@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import type { Club, ClubMembership, Post, User } from "@generated/client";
+import { SiInstagram } from "@icons-pack/react-simple-icons";
 import {
 	ArrowUpRight,
 	AtSign,
@@ -15,18 +15,18 @@ import {
 	ShieldBan,
 } from "lucide-react";
 import Image from "next/image";
-import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { getTranslations } from "next-intl/server";
+import { AdminIcon, ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
+import { LeaveClubButton } from "@/components/leave-club-button";
+import { ClubInstagram } from "@/components/overviews/club-instagram";
 import { ClubPost } from "@/components/overviews/club-post";
+import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
-import { getTranslations } from "next-intl/server";
-import { AdminIcon, ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
-import { cn } from "@/lib/utils";
-import { LeaveClubButton } from "@/components/leave-club-button";
 import { checkAndRefreshToken, getInstagramMedia, type InstagramMedia } from "@/lib/instagram";
-import { SiInstagram } from "@icons-pack/react-simple-icons";
-import { ClubInstagram } from "@/components/overviews/club-instagram";
+import { cn } from "@/lib/utils";
 
 interface ClubOverviewProps {
 	club: Club & {
@@ -58,7 +58,7 @@ async function fetchInstagramPhotos(clubId: string): Promise<{ photos: Instagram
 			photos: instagramMedia.data || [],
 			username: instagramMedia.data[0]?.username || null,
 		};
-	} catch (error) {
+	} catch {
 		return { photos: [], username: null };
 	}
 }
@@ -67,7 +67,7 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 	const [analyticsId, analyticsSlug, t, instagramData] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
-		getTranslations("components.clubOverview"),
+		getTranslations(),
 		club.instagramConnected
 			? fetchInstagramPhotos(club.id)
 			: Promise.resolve({
@@ -124,7 +124,7 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
 								<MapIcon className="h-4 w-4 mr-2" />
-								{t("map")}
+								{t("components.clubOverview.map")}
 							</Link>
 						</Button>
 					)}
@@ -132,7 +132,7 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/information`}>
 								<Cog className="h-4 w-4 mr-2" />
-								{t("edit")}
+								{t("components.clubOverview.edit")}
 							</Link>
 						</Button>
 					)}
@@ -146,12 +146,12 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 					{club.isPrivate ? (
 						<>
 							<EyeOff className="w-4 h-4" />
-							{t("private")}
+							{t("components.clubOverview.private")}
 						</>
 					) : (
 						<>
 							<Eye className="w-4 h-4" />
-							{t("public")}
+							{t("components.clubOverview.public")}
 						</>
 					)}
 				</Badge>
@@ -164,7 +164,7 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 				{club.isAllied && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
 						<Handshake className="w-4 h-4" />
-						{t("allied")}
+						{t("components.clubOverview.allied")}
 					</Badge>
 				)}
 				{club.contactEmail && (
@@ -188,7 +188,9 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 					</Link>
 				)}
 				{shouldShowStats && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">{t("views", { count: visitors })}</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						{t("components.clubOverview.views", { count: visitors })}
+					</Badge>
 				)}
 			</div>
 			<ReviewsOverview type="club" typeId={club.id} />
@@ -199,18 +201,20 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 			>
 				<div className="space-y-4 md:col-span-2">
 					<div className="flex h-10 items-center justify-between">
-						<h2 className="text-xl font-semibold flex items-center gap-2">{t("posts")}</h2>
+						<h2 className="text-xl font-semibold flex items-center gap-2">
+							{t("components.clubOverview.posts")}
+						</h2>
 						{isManager && (
 							<Button asChild size="sm">
 								<Link href={`/dashboard/${club.id}/club/posts`}>
 									<Pencil className="h-4 w-4" />
-									{t("createPost")}
+									{t("components.clubOverview.createPost")}
 								</Link>
 							</Button>
 						)}
 					</div>
 					{!posts || posts.length === 0 ? (
-						<p className="text-muted-foreground">{t("noPosts")}</p>
+						<p className="text-muted-foreground">{t("components.clubOverview.noPosts")}</p>
 					) : (
 						<div className="space-y-4">
 							{posts?.map((post) => (
@@ -221,7 +225,9 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 				</div>
 				{(club.members?.length ?? 0) > 0 && (
 					<div className="space-y-4">
-						<h2 className="text-xl h-10 font-semibold items-center flex">{t("members")}</h2>
+						<h2 className="text-xl h-10 font-semibold items-center flex">
+							{t("components.clubOverview.members")}
+						</h2>
 						<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
 							{club.members
 								?.sort((a, b) => {
@@ -282,9 +288,11 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 						<div className="flex flex-col gap-2">
 							<div className="flex gap-2 items-center">
 								<SiInstagram className="h-5 w-5 text-primary" />
-								<h2 className="text-xl font-semibold">{t("instagramGallery")}</h2>
+								<h2 className="text-xl font-semibold">
+									{t("components.clubOverview.instagramGallery")}
+								</h2>
 							</div>
-							<p>{t("instagramGalleryDescription")}</p>
+							<p>{t("components.clubOverview.instagramGalleryDescription")}</p>
 						</div>
 					</div>
 					<div className="p-4">

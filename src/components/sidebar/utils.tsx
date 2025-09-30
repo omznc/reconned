@@ -1,25 +1,25 @@
-import { BadgeSoon } from "@/components/badge-soon";
 import { ChevronRight } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import type { NavItem, NavSubItem } from "./types";
+import { BadgeNew } from "@/components/badge-new";
+import { BadgeSoon } from "@/components/badge-soon";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
-	DropdownMenuGroup,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	SidebarMenuItem,
 	SidebarMenuButton,
+	SidebarMenuItem,
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { BadgeNew } from "@/components/badge-new";
+import { Link } from "@/i18n/navigation";
+import type { NavItem, NavSubItem } from "./types.ts";
 
 interface AdditionalProps {
 	hasAccess?: (subItem: NavSubItem) => boolean;

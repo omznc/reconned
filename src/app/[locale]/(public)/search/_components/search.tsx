@@ -1,10 +1,10 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { Input } from "@/components/ui/input";
 
 export function Search() {
 	const [query, setQuery] = useQueryState("q", {
@@ -13,7 +13,7 @@ export function Search() {
 		defaultValue: "",
 	});
 	const [input, setInput] = useState(query);
-	const t = useTranslations("public.search");
+	const t = useTranslations();
 
 	const handleSearch = useDebouncedCallback((value: string) => {
 		setQuery(value);
@@ -26,7 +26,7 @@ export function Search() {
 				setInput(e.target.value);
 				handleSearch(e.target.value);
 			}}
-			placeholder={t("placeholder")}
+			placeholder={t("public.search.placeholder")}
 		/>
 	);
 }

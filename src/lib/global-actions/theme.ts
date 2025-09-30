@@ -1,11 +1,11 @@
 "use server";
 
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
-import { z } from "zod";
 
 export const setThemeAction = safeActionClient
-	.schema(
+	.inputSchema(
 		z.object({
 			theme: z.union([z.literal("light"), z.literal("dark")]),
 		}),

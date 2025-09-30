@@ -1,6 +1,6 @@
 "use client";
-import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 /**
  * A hook to handle scrolling to an element when a hash is present in the URL

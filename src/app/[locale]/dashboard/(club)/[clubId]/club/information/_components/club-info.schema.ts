@@ -10,7 +10,7 @@ export const clubInfoSchema = z.object({
 			message: "Ime kluba mora biti kraće od 50 znakova",
 		}),
 	countryId: z.number({
-		required_error: "Država je obavezna",
+		error: "Država je obavezna",
 	}),
 	location: z
 		.string()
@@ -26,7 +26,7 @@ export const clubInfoSchema = z.object({
 		message: "Opis kluba mora biti kraći od 5000 znakova",
 	}),
 	slug: z.string().optional(),
-	dateFounded: z.coerce.date(),
+	dateFounded: z.date(),
 	isAllied: z.boolean().optional(),
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),

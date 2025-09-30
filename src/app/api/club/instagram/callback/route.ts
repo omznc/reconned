@@ -1,17 +1,17 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getLocale } from "next-intl/server";
 import {
+	debugToken,
 	exchangeCodeForToken,
 	exchangeForLongLivedToken,
-	getUserPages,
 	getInstagramBusinessAccount,
-	debugToken,
 	getNonExpiringPageAccessToken,
+	getUserPages,
 } from "@/lib/instagram";
-import { redirect } from "next/navigation";
-import { getLocale } from "next-intl/server";
+import { prisma } from "@/lib/prisma";
 
 // Define error codes for more specific error handling
 const ERROR_CODES = {

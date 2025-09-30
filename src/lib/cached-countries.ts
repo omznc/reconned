@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import { cache } from "react";
 import type { Country as PrismaCountry } from "@generated/client";
+import { cache } from "react";
+import { prisma } from "@/lib/prisma";
 
 export const getCountries = cache(async () => {
 	const countries = await prisma.country.findMany({

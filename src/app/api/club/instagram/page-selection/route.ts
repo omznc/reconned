@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getInstagramBusinessAccount } from "@/lib/instagram";
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
+import { getInstagramBusinessAccount } from "@/lib/instagram";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url);
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 
 						// No Instagram business account found
 						return page;
-					} catch (error) {
+					} catch {
 						// Return the original page if there was an error
 						return page;
 					}
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({
 			pages: pagesWithInstagramInfo,
 		});
-	} catch (error) {
+	} catch {
 		return NextResponse.json({ error: "Failed to retrieve Facebook pages" }, { status: 500 });
 	}
 }
