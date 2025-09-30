@@ -1,7 +1,7 @@
 import { isAfter, isBefore } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.form";
 import { ErrorPage } from "@/components/error-page";
@@ -11,10 +11,12 @@ import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { generateHreflangAlternates } from "@/lib/utils";
 
 interface EventApplicationPageProps {
 	params: Promise<{
 		id: string;
+		locale: string;
 	}>;
 }
 
@@ -24,7 +26,8 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 		return <ErrorPage title={t("dashboard.club.events.attendenceTracking.unavailable")} />;
 	}
 
-	const [locale, user, params] = await Promise.all([getLocale(), isAuthenticated(), props.params]);
+	const [user, params] = await Promise.all([isAuthenticated(), props.params]);
+	const locale = params.locale;
 	if (!user) {
 		return redirect({
 			href: `/login?redirectTo=${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${params.id}/apply`,
@@ -200,6 +203,7 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 
 export async function generateMetadata(props: EventApplicationPageProps): Promise<Metadata> {
 	const params = await props.params;
+	const locale = params.locale;
 	const t = await getTranslations();
 
 	const event = await prisma.event.findFirst({
@@ -227,13 +231,15 @@ export async function generateMetadata(props: EventApplicationPageProps): Promis
 		};
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug || event.id}/apply`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug || event.id}/apply`;
+	const pathname = `/${locale}/events/${event.slug || event.id}/apply`;
 
 	return {
 		title: t("public.events.apply.applyToEvent", { eventName: event.name }),
 		description: t("public.events.apply.applyToParticipate", { eventName: event.name }),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternates(pathname, locale),
 		},
 	};
 }

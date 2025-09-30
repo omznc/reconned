@@ -8,6 +8,7 @@ import { EventOverview } from "@/components/overviews/event-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 interface PageProps {
 	params: Promise<{
@@ -171,13 +172,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("image", event.image);
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug || event.id}`;
+	const canonicalPathname = `/${params.locale}/events/${event.slug || event.id}`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
 		title: `${event.name} - RECONNED`,
 		description: event.description.slice(0, 160) ?? t("public.events.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, event.id, params.locale),
 		},
 		openGraph: {
 			images: [

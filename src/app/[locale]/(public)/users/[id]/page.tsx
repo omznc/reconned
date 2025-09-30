@@ -7,6 +7,7 @@ import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 interface PageProps {
 	params: Promise<{
@@ -59,9 +60,9 @@ export default async function Page(props: PageProps) {
 	const personSchema: WithContext<Person> = {
 		"@context": "https://schema.org",
 		"@type": "Person",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		name: user.name,
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		image: user.image || undefined,
 		description: user.bio || undefined,
 		address: user.location
@@ -74,7 +75,7 @@ export default async function Page(props: PageProps) {
 		sameAs: user.website ? [user.website] : undefined,
 		memberOf: user.clubMembership.map((membership) => ({
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${membership.club.slug ?? membership.club.id}`,
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${membership.club.slug ?? membership.club.id}`,
 			name: membership.club.name,
 			sport: "Airsoft",
 		})),
@@ -88,10 +89,10 @@ export default async function Page(props: PageProps) {
 	const profilePageSchema: WithContext<ProfilePage> = {
 		"@context": "https://schema.org",
 		"@type": "ProfilePage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		mainEntity: {
 			"@type": "Person",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 			name: user.name,
 			image: user.image || undefined,
 			description: user.bio || undefined,
@@ -138,13 +139,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("avatar", user.image);
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug || user.id}`;
+	const canonicalPathname = `/${params.locale}/users/${user.slug || user.id}`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
 		title: `${user.name} - RECONNED`,
 		description: user.bio?.slice(0, 160) ?? t("public.users.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, user.id, params.locale),
 		},
 		openGraph: {
 			images: [

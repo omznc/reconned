@@ -81,11 +81,20 @@ export default async function MapPage() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
 		title: t("public.map.metadata.title"),
 		description: t("public.map.metadata.description"),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/map`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/map`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/map`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/map`,
+			},
+		},
 	};
 }

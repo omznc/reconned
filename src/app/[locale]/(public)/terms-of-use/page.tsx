@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
@@ -9,9 +9,10 @@ const lastUpdated = new Date("2025-04-13");
 
 export const revalidate = 86_400; // 1 day
 
-export default async function TermsOfUsePage() {
+export default async function TermsOfUsePage(props: { params: Promise<{ locale: string }> }) {
+	const [params] = await Promise.all([props.params]);
 	const t = await getTranslations();
-	const locale = await getLocale();
+	const locale = params.locale;
 
 	const termsPageSchema: WithContext<WebPage> = {
 		"@context": "https://schema.org",
@@ -152,11 +153,20 @@ export default async function TermsOfUsePage() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
 		title: t("public.terms.metadata.title"),
 		description: t("public.terms.metadata.description"),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/terms-of-use`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/terms-of-use`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/terms-of-use`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/terms-of-use`,
+			},
+		},
 	};
 }

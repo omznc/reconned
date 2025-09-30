@@ -106,7 +106,8 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
@@ -116,7 +117,12 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword) => keyword.trim()),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs`,
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/clubs`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/clubs`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/clubs`,
+			},
 		},
 	};
 }

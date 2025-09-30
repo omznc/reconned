@@ -17,6 +17,7 @@ interface Props {
 		q?: string;
 		tab?: string;
 	}>;
+	params: Promise<{ locale: string }>;
 }
 
 async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
@@ -323,7 +324,7 @@ export default async function SearchPage(props: Props) {
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-	const { q } = await props.searchParams;
+	const [{ q }, params] = await Promise.all([props.searchParams, props.params]);
 	const t = await getTranslations();
 
 	return {
@@ -333,5 +334,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 		description: t("public.search.metadata.description", {
 			query: q,
 		}),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+			},
+		},
 	};
 }
