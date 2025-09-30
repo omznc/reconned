@@ -8,6 +8,7 @@ import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 interface PageProps {
 	params: Promise<{
@@ -167,13 +168,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("logo", club.logo);
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug || club.id}`;
+	const canonicalPathname = `/${params.locale}/clubs/${club.slug || club.id}`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
 		title: `${club.name} - RECONNED`,
 		description: club.description?.slice(0, 160) ?? t("public.clubs.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, club.id, params.locale),
 		},
 		openGraph: {
 			images: [

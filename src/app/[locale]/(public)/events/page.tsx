@@ -197,14 +197,20 @@ export default async function Page() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
 		title: t("public.events.metadata.title"),
 		description: t("public.events.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events`,
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/events`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/events`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/events`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/events`,
+			},
 		},
 	};
 }

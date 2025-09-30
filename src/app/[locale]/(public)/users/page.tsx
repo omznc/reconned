@@ -95,14 +95,20 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
 		title: t("public.users.metadata.title"),
 		description: t("public.users.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users`,
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/users`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/users`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/users`,
+			},
 		},
 	};
 }

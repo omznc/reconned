@@ -42,13 +42,15 @@ interface PageProps {
 	searchParams: Promise<{
 		month?: string;
 	}>;
+	params: Promise<{ locale: string }>;
 }
 
 export const revalidate = 3600; // 1 hour
 
-export default async function Home({ searchParams }: PageProps) {
+export default async function Home(props: PageProps) {
+	const searchParams = await props.searchParams;
 	const user = await isAuthenticated();
-	const { month } = await searchParams;
+	const { month } = searchParams;
 
 	const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
@@ -407,11 +409,20 @@ export default async function Home({ searchParams }: PageProps) {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
 		title: t("public.home.metadata.title"),
 		description: t("public.home.metadata.description"),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs`,
+			},
+		},
 	};
 }

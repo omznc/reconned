@@ -109,7 +109,8 @@ export default async function Home() {
 
 export const revalidate = 86_400; // 1 day
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
@@ -118,5 +119,13 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword) => keyword.trim()),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/about`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/about`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/about`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/about`,
+			},
+		},
 	};
 }

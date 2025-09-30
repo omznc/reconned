@@ -155,11 +155,20 @@ export default async function SponsorsPage() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+	const params = await props.params;
 	const t = await getTranslations();
 
 	return {
 		title: t("public.sponsors.metadata.title"),
 		description: t("public.sponsors.metadata.description"),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/sponsors`,
+			languages: {
+				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/sponsors`,
+				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/sponsors`,
+				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/sponsors`,
+			},
+		},
 	};
 }
