@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ItemList, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
@@ -7,6 +7,7 @@ import { AdminIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generatePageLanguages } from "@/lib/utils";
 
 type UserSearch = {
 	id: string;
@@ -95,20 +96,15 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 	);
 }
 
-export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.users.metadata.title"),
 		description: t("public.users.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/users`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/users`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/users`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/users`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/users", locale),
 		},
 	};
 }

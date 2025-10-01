@@ -113,8 +113,7 @@ export default async function Page(props: PageProps) {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const user = await prisma.user.findFirst({
 		where: {
@@ -139,7 +138,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("avatar", user.image);
 	}
 
-	const canonicalPathname = `/${params.locale}/users/${user.slug || user.id}`;
+	const canonicalPathname = `/${locale}/users/${user.slug || user.id}`;
 	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
@@ -147,7 +146,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		description: user.bio?.slice(0, 160) ?? t("public.users.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, user.id, params.locale),
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, user.id, locale),
 		},
 		openGraph: {
 			images: [

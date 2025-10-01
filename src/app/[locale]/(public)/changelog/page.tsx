@@ -2,7 +2,7 @@ import { SiGithub } from "@icons-pack/react-simple-icons";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { env } from "@/lib/env";
+import { generatePageLanguages } from "@/lib/utils";
 
 import "./markdown.css";
 import DOMPurify from "isomorphic-dompurify";
@@ -35,10 +36,8 @@ async function formatReleaseBody(body: string): Promise<string> {
 export const revalidate = 3600; // 1 hour
 
 // Main changelog page
-export default async function ChangelogPage(props: { params: Promise<{ locale: string }> }) {
-	const [params] = await Promise.all([props.params]);
-	const t = await getTranslations();
-	const locale = params.locale;
+export default async function ChangelogPage() {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	// Get the latest releases from GitHub
 	const response = await fetch("https://api.github.com/repos/omznc/reconned/releases", {
@@ -248,9 +247,8 @@ export default async function ChangelogPage(props: { params: Promise<{ locale: s
 	);
 }
 
-export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.changelog.metadata.title"),
@@ -259,12 +257,8 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
 			.split(",")
 			.map((keyword) => keyword.trim()),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/changelog`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/changelog`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/changelog`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/changelog`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/changelog`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
 		},
 	};
 }

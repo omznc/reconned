@@ -145,8 +145,7 @@ export default async function Page(props: PageProps) {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const club = await prisma.club.findFirst({
 		where: {
@@ -168,7 +167,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("logo", club.logo);
 	}
 
-	const canonicalPathname = `/${params.locale}/clubs/${club.slug || club.id}`;
+	const canonicalPathname = `/${locale}/clubs/${club.slug || club.id}`;
 	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
@@ -176,7 +175,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		description: club.description?.slice(0, 160) ?? t("public.clubs.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, club.id, params.locale),
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, club.id, locale),
 		},
 		openGraph: {
 			images: [

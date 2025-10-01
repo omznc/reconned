@@ -130,9 +130,12 @@ export default async function Page(props: PageProps) {
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
-	const params = await props.params;
-	const user = await isAuthenticated();
-	const t = await getTranslations();
+	const [params, user, t, locale] = await Promise.all([
+		props.params,
+		isAuthenticated(),
+		getTranslations(),
+		getLocale(),
+	]);
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -172,7 +175,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("image", event.image);
 	}
 
-	const canonicalPathname = `/${params.locale}/events/${event.slug || event.id}`;
+	const canonicalPathname = `/${locale}/events/${event.slug || event.id}`;
 	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
@@ -180,7 +183,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		description: event.description.slice(0, 160) ?? t("public.events.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, event.id, params.locale),
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, event.id, locale),
 		},
 		openGraph: {
 			images: [

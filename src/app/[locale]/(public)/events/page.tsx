@@ -3,7 +3,7 @@ import { bs } from "date-fns/locale";
 import { CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ItemList, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +13,10 @@ import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
-	const user = await isAuthenticated();
+	const [user, t] = await Promise.all([isAuthenticated(), getTranslations()]);
 	const upcomingEvents = await prisma.event.findMany({
 		where: {
 			dateStart: {
@@ -55,7 +56,6 @@ export default async function Page() {
 		// TODO: Add proper pagination
 		take: 100,
 	});
-	const t = await getTranslations();
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",
@@ -197,20 +197,15 @@ export default async function Page() {
 	);
 }
 
-export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.events.metadata.title"),
 		description: t("public.events.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/events`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/events`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/events`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/events`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
 		},
 	};
 }

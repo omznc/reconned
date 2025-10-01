@@ -1,26 +1,25 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { generatePageLanguages } from "@/lib/utils";
 
 const lastUpdated = new Date("2025-04-13");
 
 export const revalidate = 86_400; // 1 day
 
-export default async function TermsOfUsePage(props: { params: Promise<{ locale: string }> }) {
-	const [params] = await Promise.all([props.params]);
-	const t = await getTranslations();
-	const locale = params.locale;
+export default async function TermsOfUsePage() {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	const termsPageSchema: WithContext<WebPage> = {
 		"@context": "https://schema.org",
 		"@type": "WebPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/terms-of-use`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
 		name: t("public.terms.metadata.title"),
 		description: t("public.terms.metadata.description"),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/terms-of-use`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
 		dateModified: lastUpdated.toISOString(),
 		datePublished: lastUpdated.toISOString(),
 		publisher: {
@@ -153,20 +152,15 @@ export default async function TermsOfUsePage(props: { params: Promise<{ locale: 
 	);
 }
 
-export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.terms.metadata.title"),
 		description: t("public.terms.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/terms-of-use`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/terms-of-use`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/terms-of-use`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/terms-of-use`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
 		},
 	};
 }

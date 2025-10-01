@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import { EventCalendar } from "@/components/event-calendar";
@@ -37,6 +37,7 @@ import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generatePageLanguages } from "@/lib/utils";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -48,8 +49,7 @@ interface PageProps {
 export const revalidate = 3600; // 1 hour
 
 export default async function Home(props: PageProps) {
-	const searchParams = await props.searchParams;
-	const user = await isAuthenticated();
+	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
 
 	const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
@@ -409,20 +409,15 @@ export default async function Home(props: PageProps) {
 	);
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.home.metadata.title"),
 		description: t("public.home.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "", locale),
 		},
 	};
 }
