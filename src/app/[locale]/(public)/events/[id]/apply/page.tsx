@@ -11,7 +11,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { generateHreflangAlternates } from "@/lib/utils";
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 interface EventApplicationPageProps {
 	params: Promise<{
@@ -202,9 +202,7 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 }
 
 export async function generateMetadata(props: EventApplicationPageProps): Promise<Metadata> {
-	const params = await props.params;
-	const locale = params.locale;
-	const t = await getTranslations();
+	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -239,7 +237,7 @@ export async function generateMetadata(props: EventApplicationPageProps): Promis
 		description: t("public.events.apply.applyToParticipate", { eventName: event.name }),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternates(pathname, locale),
+			languages: generateHreflangAlternatesForSluggableEntity(pathname, event.id, locale),
 		},
 	};
 }

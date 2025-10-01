@@ -1,12 +1,13 @@
 import { ArrowUpRight, MailCheckIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { generatePageLanguages } from "@/lib/utils";
 
 const sponsors = [
 	{
@@ -32,15 +33,15 @@ const sponsors = [
 export const revalidate = 86_400; // 1 day
 
 export default async function SponsorsPage() {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	const sponsorPageSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sponsors`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
 		name: t("public.sponsors.metadata.title"),
 		description: t("public.sponsors.metadata.description"),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/sponsors`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
 		mainEntity: {
 			"@type": "ItemList",
 			name: "Reconned Sponsors",
@@ -155,20 +156,15 @@ export default async function SponsorsPage() {
 	);
 }
 
-export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.sponsors.metadata.title"),
 		description: t("public.sponsors.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/sponsors`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/sponsors`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/sponsors`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/sponsors`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
 		},
 	};
 }

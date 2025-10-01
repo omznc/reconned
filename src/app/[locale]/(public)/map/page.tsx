@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
 import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generatePageLanguages } from "@/lib/utils";
 
 export default async function MapPage() {
 	const clubs = await prisma.club.findMany({
@@ -81,20 +82,15 @@ export default async function MapPage() {
 	);
 }
 
-export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.map.metadata.title"),
 		description: t("public.map.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/map`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/map`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/map`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/map`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/map`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
 		},
 	};
 }

@@ -11,13 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generatePageLanguages } from "@/lib/utils";
 
 interface Props {
 	searchParams: Promise<{
 		q?: string;
 		tab?: string;
 	}>;
-	params: Promise<{ locale: string }>;
 }
 
 async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
@@ -131,8 +131,6 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 			take: 25,
 		}),
 	]);
-	const t = await getTranslations();
-	const locale = await getLocale();
 
 	// Determine the first non-empty tab
 	const defaultTab =
@@ -268,16 +266,15 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 }
 
 export default async function SearchPage(props: Props) {
-	const { q, tab } = await props.searchParams;
-	const t = await getTranslations();
+	const [{ q, tab }, locale, t] = await Promise.all([props.searchParams, getLocale(), getTranslations()]);
 
 	const searchSchema: WithContext<SearchResultsPage> = {
 		"@context": "https://schema.org",
 		"@type": "SearchResultsPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
 		name: t("public.search.metadata.title", { query: q }),
 		description: t("public.search.metadata.description", { query: q }),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
 		mainEntity: {
 			"@type": "WebSite",
 			"@id": env.NEXT_PUBLIC_BETTER_AUTH_URL,
@@ -324,8 +321,7 @@ export default async function SearchPage(props: Props) {
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-	const [{ q }, params] = await Promise.all([props.searchParams, props.params]);
-	const t = await getTranslations();
+	const [{ q }, locale, t] = await Promise.all([props.searchParams, getLocale(), getTranslations()]);
 
 	return {
 		title: t("public.search.metadata.title", {
@@ -335,12 +331,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 			query: q,
 		}),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-			languages: {
-				bs: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-				en: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/en/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-				"x-default": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/bs/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-			},
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+			languages: generatePageLanguages(
+				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				`/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+				locale,
+			),
 		},
 	};
 }
