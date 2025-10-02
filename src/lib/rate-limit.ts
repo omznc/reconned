@@ -1,7 +1,10 @@
 import Redis from "ioredis";
+import { Logger } from "next-axiom";
 import { env } from "@/lib/env";
 
 const redis = new Redis(env.REDIS_URL);
+
+const logger = new Logger({ source: "rate-limit" });
 
 interface RateLimitResult {
 	success: boolean;
@@ -29,6 +32,11 @@ export class RateLimit {
 
 			if (count >= this.maxRequests) {
 				const ttl = await redis.ttl(key);
+				logger.info("Rate limit exceeded", {
+					key,
+					count,
+					ttl,
+				});
 				return {
 					success: false,
 					remaining: 0,
@@ -49,7 +57,9 @@ export class RateLimit {
 				remaining,
 			};
 		} catch (error) {
-			console.error("Rate limit error:", error);
+			logger.info("Rate limit error", {
+				error,
+			});
 			return { success: true };
 		}
 	}

@@ -13,7 +13,6 @@ import { Link } from "@/i18n/navigation";
 
 // Helper function to create a custom icon from club logo
 function createClubIcon(logoUrl: string | null | undefined, size: number, t: ReturnType<typeof useTranslations>) {
-	console.log(t);
 	if (logoUrl) {
 		return (
 			<Image

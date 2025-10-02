@@ -1,3 +1,4 @@
+import { Logger } from "next-axiom";
 import { prisma } from "@/lib/prisma";
 import { extractSizeFromKey } from "@/lib/storage";
 
@@ -24,6 +25,8 @@ export const STORAGE_LIMITS = {
 	USER_DAILY: 50 * 1024 * 1024, // 50MB per user per day
 	SINGLE_FILE: 5 * 1024 * 1024, // 5MB per file
 } as const;
+
+const logger = new Logger({ source: "storage-quota" });
 
 export const checkClubStorageQuota = async (clubId: string, additionalSize: number): Promise<StorageQuotaResult> => {
 	try {
@@ -55,6 +58,12 @@ export const checkClubStorageQuota = async (clubId: string, additionalSize: numb
 		const remaining = Math.max(0, limit - currentUsage);
 
 		if (currentUsage + additionalSize > limit) {
+			logger.info("Club storage quota exceeded", {
+				clubId,
+				currentUsage,
+				limit,
+				remaining,
+			});
 			return {
 				allowed: false,
 				currentUsage,
@@ -70,7 +79,11 @@ export const checkClubStorageQuota = async (clubId: string, additionalSize: numb
 			limit,
 			remaining,
 		};
-	} catch (_) {
+	} catch (error) {
+		logger.info("Failed to check club storage quota", {
+			clubId,
+			error,
+		});
 		return {
 			allowed: false,
 			currentUsage: 0,
@@ -111,6 +124,12 @@ export const checkUserDailyQuota = async (userId: string, additionalSize: number
 		const remaining = Math.max(0, limit - estimatedDailyUsage);
 
 		if (estimatedDailyUsage + additionalSize > limit) {
+			logger.info("User daily upload quota exceeded", {
+				userId,
+				estimatedDailyUsage,
+				limit,
+				remaining,
+			});
 			return {
 				allowed: false,
 				currentUsage: estimatedDailyUsage,
@@ -126,7 +145,11 @@ export const checkUserDailyQuota = async (userId: string, additionalSize: number
 			limit,
 			remaining,
 		};
-	} catch (_) {
+	} catch (error) {
+		logger.info("Failed to check user daily upload quota", {
+			userId,
+			error,
+		});
 		return {
 			allowed: true, // Allow on error
 			currentUsage: 0,

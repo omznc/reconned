@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { AxiomWebVitals } from "next-axiom";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -55,6 +56,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 					src={`${env.PLAUSIBLE_HOST}/js/script.outbound-links.tagged-events.js`}
 				/>
 			</head>
+			<AxiomWebVitals />
 			<NextIntlClientProvider messages={messages}>
 				<FontProvider initial={font}>
 					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
