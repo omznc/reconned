@@ -7,7 +7,6 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-
 export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/invitations">) {
 	const params = await props.params;
 	const searchParams = await props.searchParams;
@@ -72,7 +71,7 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 
 	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
 		? {
-				[searchParams.sortBy as string]: searchParams.sortOrder ?? "asc" as "asc" | "desc",
+				[searchParams.sortBy as string]: searchParams.sortOrder ?? ("asc" as "asc" | "desc"),
 			}
 		: { createdAt: "desc" };
 

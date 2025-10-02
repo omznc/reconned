@@ -2,8 +2,6 @@ import { addMonths, endOfMonth, parse as parseDateFns, startOfMonth, subMonths }
 import { EventCalendar } from "@/components/event-calendar";
 import { prisma } from "@/lib/prisma";
 
-
-
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/calendar">) {
 	const params = await props.params;
 	const { month } = await props.searchParams;

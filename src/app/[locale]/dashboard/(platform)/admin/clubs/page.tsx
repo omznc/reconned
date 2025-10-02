@@ -6,8 +6,6 @@ import { prisma } from "@/lib/prisma";
 import { ClubsSheet } from "./_components/clubs.sheet.tsx";
 import { ClubsTable } from "./_components/clubs.table.tsx";
 
-
-
 export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
 	const searchParams = await props.searchParams;
 	const { search, sortBy, sortOrder, page, clubId, perPage } = await searchParams;
@@ -34,7 +32,7 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 		: {};
 
 	const orderBy: Prisma.ClubOrderByWithRelationInput = sortBy
-		? { [sortBy as string]: sortOrder ?? "asc" as "asc" | "desc" }
+		? { [sortBy as string]: sortOrder ?? ("asc" as "asc" | "desc") }
 		: { createdAt: "desc" };
 
 	const clubs = await prisma.club.findMany({

@@ -3,8 +3,6 @@ import CreateEventForm from "@/app/[locale]/dashboard/(club)/[clubId]/events/cre
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-
-
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/create">) {
 	const searchParams = await props.searchParams;
 	const params = await props.params;

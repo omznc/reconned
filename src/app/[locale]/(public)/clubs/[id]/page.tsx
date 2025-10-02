@@ -10,7 +10,6 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-
 export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();

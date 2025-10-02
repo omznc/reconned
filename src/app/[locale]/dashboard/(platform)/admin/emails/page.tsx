@@ -114,10 +114,9 @@ const emails = [
 	},
 ];
 
-
 export default async function Page(props: PageProps<"/[locale]/dashboard/admin/emails">) {
 	const searchParams = await props.searchParams;
-	const selectedEmail = emails.find((email) => email.id === searchParams.email as string);
+	const selectedEmail = emails.find((email) => email.id === (searchParams.email as string));
 
 	return (
 		<div className="container py-6">

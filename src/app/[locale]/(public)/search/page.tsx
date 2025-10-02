@@ -13,7 +13,6 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { generatePageLanguages } from "@/lib/utils";
 
-
 async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 	const [clubs, users, events] = await Promise.all([
 		prisma.club.findMany({
