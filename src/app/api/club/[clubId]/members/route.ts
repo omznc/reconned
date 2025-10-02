@@ -1,11 +1,12 @@
 import type { Role } from "@generated/client";
 import { PrismaClient } from "@generated/client";
 import { NextResponse } from "next/server";
+import { type AxiomRequest, withAxiom } from "next-axiom";
 import { isAuthenticated } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request, { params }: { params: Promise<{ clubId: string }> }) {
+export const GET = withAxiom(async (request: AxiomRequest, { params }: { params: Promise<{ clubId: string }> }) => {
 	const session = isAuthenticated();
 	if (!session) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -63,4 +64,4 @@ export async function GET(request: Request, { params }: { params: Promise<{ club
 	} catch (_error) {
 		return NextResponse.json({ error: "Neuspjela pretraga članova kluba" }, { status: 500 });
 	}
-}
+});

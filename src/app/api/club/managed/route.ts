@@ -1,8 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { withAxiom } from "next-axiom";
 import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
 import { isAuthenticated } from "@/lib/auth";
 
-export async function GET(_req: NextRequest) {
+export const GET = withAxiom(async (_req: NextRequest) => {
 	const user = await isAuthenticated();
 
 	if (!user) {
@@ -11,4 +12,4 @@ export async function GET(_req: NextRequest) {
 
 	const managedClubs = await fetchManagedClubs(user.id);
 	return NextResponse.json(managedClubs);
-}
+});

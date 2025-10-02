@@ -7,17 +7,8 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	searchParams: Promise<{
-		search?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		perPage?: string;
-	}>;
-}
 
-export async function EventsPageFetcher(props: PageProps) {
+export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/events">) {
 	const user = await isAuthenticated();
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
@@ -40,14 +31,14 @@ export async function EventsPageFetcher(props: PageProps) {
 		...(search
 			? {
 					OR: [
-						{ name: { contains: search, mode: "insensitive" } },
+						{ name: { contains: search as string, mode: "insensitive" } },
 						{
 							description: {
-								contains: search,
+								contains: search as string,
 								mode: "insensitive",
 							},
 						},
-						{ location: { contains: search, mode: "insensitive" } },
+						{ location: { contains: search as string, mode: "insensitive" } },
 					],
 				}
 			: {}),
@@ -55,7 +46,7 @@ export async function EventsPageFetcher(props: PageProps) {
 
 	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
 		? {
-				[sortBy]: sortOrder ?? "asc",
+				[sortBy as string]: sortOrder ?? "asc" as "asc" | "desc",
 			}
 		: { dateStart: "desc" };
 
@@ -83,7 +74,7 @@ export async function EventsPageFetcher(props: PageProps) {
 	return <EventsTable events={events} totalEvents={totalEvents} pageSize={pageSize} />;
 }
 
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/events">) {
 	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 

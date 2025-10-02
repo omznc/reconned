@@ -1,9 +1,10 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { type AxiomRequest, withAxiom } from "next-axiom";
 import { isAuthenticated } from "@/lib/auth";
 import { getInstagramAuthUrl } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req: NextRequest) {
+export const GET = withAxiom(async (req: AxiomRequest) => {
 	const user = await isAuthenticated();
 	if (!user) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -35,4 +36,4 @@ export async function GET(req: NextRequest) {
 	} catch {
 		return NextResponse.json({ error: "Failed to generate Instagram authorization URL" }, { status: 500 });
 	}
-}
+});

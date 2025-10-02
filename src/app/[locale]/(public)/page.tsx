@@ -39,20 +39,13 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { generatePageLanguages } from "@/lib/utils";
 
-interface PageProps {
-	searchParams: Promise<{
-		month?: string;
-	}>;
-	params: Promise<{ locale: string }>;
-}
-
 export const revalidate = 3600; // 1 hour
 
-export default async function Home(props: PageProps) {
+export default async function Home(props: PageProps<"/[locale]">) {
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
 
-	const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
+	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 

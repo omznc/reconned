@@ -1,10 +1,11 @@
 import { subDays, subMonths } from "date-fns";
 import { NextResponse } from "next/server";
+import { type AxiomRequest, withAxiom } from "next-axiom";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { deleteS3Files } from "@/lib/storage";
 
-export async function GET(request: Request) {
+export const GET = withAxiom(async (request: AxiomRequest) => {
 	// Verify admin webhook token
 	const authHeader = request.headers.get("authorization");
 	if (authHeader !== `Bearer ${env.ADMIN_WEBHOOK_TOKEN}`) {
@@ -117,4 +118,4 @@ export async function GET(request: Request) {
 	} catch {
 		return NextResponse.json({ error: "Čišćenje nije uspjelo" }, { status: 500 });
 	}
-}
+});

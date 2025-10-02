@@ -1,7 +1,7 @@
 import { isAfter, isBefore } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.form";
 import { ErrorPage } from "@/components/error-page";
@@ -13,14 +13,7 @@ import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-interface EventApplicationPageProps {
-	params: Promise<{
-		id: string;
-		locale: string;
-	}>;
-}
-
-export default async function EventApplicationPage(props: EventApplicationPageProps) {
+export default async function EventApplicationPage(props: PageProps<"/[locale]/events/[id]/apply">) {
 	const t = await getTranslations();
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
 		return <ErrorPage title={t("dashboard.club.events.attendenceTracking.unavailable")} />;
@@ -201,7 +194,7 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 	);
 }
 
-export async function generateMetadata(props: EventApplicationPageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/apply">): Promise<Metadata> {
 	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const event = await prisma.event.findFirst({

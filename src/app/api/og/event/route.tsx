@@ -1,9 +1,10 @@
 import { ImageResponse } from "@vercel/og";
+import { withAxiom } from "next-axiom";
 import { env } from "@/lib/env";
 
 export const runtime = "edge";
 
-export async function GET(request: Request) {
+export const GET = withAxiom(async (request: Request) => {
 	const { searchParams } = new URL(request.url);
 	const title = searchParams.get("title");
 	const description = searchParams.get("description");
@@ -38,4 +39,4 @@ export async function GET(request: Request) {
 			height: 630,
 		},
 	);
-}
+});

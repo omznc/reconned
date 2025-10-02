@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
@@ -9,14 +9,7 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-interface PageProps {
-	params: Promise<{
-		id: string;
-		locale: string;
-	}>;
-}
-
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
 
 	const user = await prisma.user.findFirst({
@@ -112,7 +105,7 @@ export default async function Page(props: PageProps) {
 	);
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">): Promise<Metadata> {
 	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const user = await prisma.user.findFirst({

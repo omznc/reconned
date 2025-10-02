@@ -6,18 +6,10 @@ import { prisma } from "@/lib/prisma";
 import { ClubsSheet } from "./_components/clubs.sheet.tsx";
 import { ClubsTable } from "./_components/clubs.table.tsx";
 
-interface PageProps {
-	searchParams: Promise<{
-		search?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		clubId?: string;
-		perPage?: string;
-	}>;
-}
 
-export async function ClubsPageFetcher({ searchParams }: PageProps) {
+
+export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
+	const searchParams = await props.searchParams;
 	const { search, sortBy, sortOrder, page, clubId, perPage } = await searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
@@ -27,13 +19,13 @@ export async function ClubsPageFetcher({ searchParams }: PageProps) {
 				OR: [
 					{
 						name: {
-							contains: search,
+							contains: search as string,
 							mode: "insensitive" as const,
 						},
 					},
 					{
 						location: {
-							contains: search,
+							contains: search as string,
 							mode: "insensitive" as const,
 						},
 					},
@@ -42,7 +34,7 @@ export async function ClubsPageFetcher({ searchParams }: PageProps) {
 		: {};
 
 	const orderBy: Prisma.ClubOrderByWithRelationInput = sortBy
-		? { [sortBy]: sortOrder ?? "asc" }
+		? { [sortBy as string]: sortOrder ?? "asc" as "asc" | "desc" }
 		: { createdAt: "desc" };
 
 	const clubs = await prisma.club.findMany({
@@ -69,9 +61,10 @@ export async function ClubsPageFetcher({ searchParams }: PageProps) {
 	);
 }
 
-export default async function ClubsPage({ searchParams }: PageProps) {
+export default async function ClubsPage(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
+	const searchParams = await props.searchParams;
 	const t = await getTranslations();
-	const params = await searchParams;
+	const params = await props.params;
 
 	return (
 		<>
@@ -79,7 +72,7 @@ export default async function ClubsPage({ searchParams }: PageProps) {
 				<h3 className="text-lg font-semibold">{t("dashboard.admin.clubs.allClubs")}</h3>
 			</div>
 			<Suspense key={JSON.stringify(params)} fallback={<GenericDataTableSkeleton />}>
-				<ClubsPageFetcher searchParams={searchParams} />
+				<ClubsPageFetcher {...props} />
 			</Suspense>
 		</>
 	);

@@ -13,12 +13,6 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { generatePageLanguages } from "@/lib/utils";
 
-interface Props {
-	searchParams: Promise<{
-		q?: string;
-		tab?: string;
-	}>;
-}
 
 async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 	const [clubs, users, events] = await Promise.all([
@@ -131,6 +125,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 			take: 25,
 		}),
 	]);
+
+	const t = await getTranslations();
+	const locale = await getLocale();
 
 	// Determine the first non-empty tab
 	const defaultTab =
@@ -265,8 +262,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 	);
 }
 
-export default async function SearchPage(props: Props) {
-	const [{ q, tab }, locale, t] = await Promise.all([props.searchParams, getLocale(), getTranslations()]);
+export default async function SearchPage(props: PageProps<"/[locale]/search">) {
+	const [{ q, tab }, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const t = await getTranslations();
 
 	const searchSchema: WithContext<SearchResultsPage> = {
 		"@context": "https://schema.org",
@@ -320,8 +318,9 @@ export default async function SearchPage(props: Props) {
 	);
 }
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
-	const [{ q }, locale, t] = await Promise.all([props.searchParams, getLocale(), getTranslations()]);
+export async function generateMetadata(props: PageProps<"/[locale]/search">): Promise<Metadata> {
+	const [{ q }, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const t = await getTranslations();
 
 	return {
 		title: t("public.search.metadata.title", {

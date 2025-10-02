@@ -7,18 +7,6 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{ clubId: string; locale: string }>;
-	searchParams: Promise<{
-		search?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		perPage?: string;
-		actionType?: string;
-	}>;
-}
-
 export async function generateMetadata() {
 	const t = await getTranslations();
 
@@ -27,7 +15,7 @@ export async function generateMetadata() {
 	};
 }
 
-async function AuditLogsPageFetcher(props: PageProps) {
+async function AuditLogsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/club/audit">) {
 	const { params, searchParams } = props;
 	const { clubId } = await params;
 	const { search, sortBy, sortOrder, page, perPage, actionType } = await searchParams;
@@ -63,23 +51,23 @@ async function AuditLogsPageFetcher(props: PageProps) {
 		...(search
 			? {
 					OR: [
-						{ actionType: { contains: search, mode: "insensitive" as const } },
-						{ user: { name: { contains: search, mode: "insensitive" as const } } },
-						{ user: { email: { contains: search, mode: "insensitive" as const } } },
-						{ ipAddress: { contains: search, mode: "insensitive" as const } },
+						{ actionType: { contains: search as string, mode: "insensitive" as const } },
+						{ user: { name: { contains: search as string, mode: "insensitive" as const } } },
+						{ user: { email: { contains: search as string, mode: "insensitive" as const } } },
+						{ ipAddress: { contains: search as string, mode: "insensitive" as const } },
 					],
 				}
 			: {}),
 		...(actionType && actionType !== "all"
 			? {
-					actionType: actionType,
+					actionType: actionType as string,
 				}
 			: {}),
 	};
 
 	const orderBy = sortBy
 		? ({
-				[sortBy]: sortOrder ?? "desc",
+				[sortBy as string]: sortOrder ?? "desc",
 			} as const)
 		: ({ createdAt: "desc" } as const);
 
@@ -106,7 +94,7 @@ async function AuditLogsPageFetcher(props: PageProps) {
 	return <AuditLogsTable logs={logs} totalLogs={totalLogs} pageSize={pageSize} />;
 }
 
-export default async function AuditLogsPage(props: PageProps) {
+export default async function AuditLogsPage(props: PageProps<"/[locale]/dashboard/[clubId]/club/audit">) {
 	const t = await getTranslations();
 	const [_, searchParams] = await Promise.all([props.params, props.searchParams]);
 

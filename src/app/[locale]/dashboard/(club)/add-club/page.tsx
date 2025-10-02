@@ -6,17 +6,12 @@ import { Link } from "@/i18n/navigation";
 import { getCountries } from "@/lib/cached-countries";
 import { RequestAccessForm } from "./_components/request-access.form.tsx";
 
-interface PageProps {
-	searchParams: Promise<{
-		type?: "invite" | "new" | string;
-	}>;
-}
 
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/add-club">) {
 	const searchParams = await props.searchParams;
 	const countries = await getCountries();
 	const t = await getTranslations();
-	const type = searchParams.type;
+	const type = searchParams.type as "invite" | "new" | string;
 
 	if (type === "invite") {
 		return (
