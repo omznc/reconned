@@ -29,12 +29,8 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-type Props = {
-	children: React.ReactNode;
-	params: Promise<{ locale: string }>;
-};
 
-export default async function LocaleLayout({ children, params }: Props) {
+export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
 	const [messages, user] = await Promise.all([getMessages(), isAuthenticated()]);
 
 	const { locale } = await params;

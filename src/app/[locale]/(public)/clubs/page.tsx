@@ -22,7 +22,7 @@ type ClubSearch = {
 	member_count: number;
 };
 
-export default async function Page(props: { searchParams: Promise<{ page?: string }> }) {
+export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	const searchParams = await props.searchParams;
 	const t = await getTranslations();
 	const page = Number(searchParams.page) || 1;

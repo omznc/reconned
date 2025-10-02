@@ -10,18 +10,8 @@ import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{ clubId: string }>;
-	searchParams: Promise<{
-		search?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		perPage?: string;
-	}>;
-}
 
-export async function EventsPageFetcher(props: PageProps) {
+export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
@@ -44,14 +34,14 @@ export async function EventsPageFetcher(props: PageProps) {
 		...(search
 			? {
 					OR: [
-						{ name: { contains: search, mode: "insensitive" } },
+						{ name: { contains: search as string, mode: "insensitive" } },
 						{
 							description: {
-								contains: search,
+								contains: search as string,
 								mode: "insensitive",
 							},
 						},
-						{ location: { contains: search, mode: "insensitive" } },
+						{ location: { contains: search as string, mode: "insensitive" } },
 					],
 				}
 			: {}),
@@ -59,7 +49,7 @@ export async function EventsPageFetcher(props: PageProps) {
 
 	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
 		? {
-				[sortBy]: sortOrder ?? "asc",
+				[sortBy as string]: sortOrder ?? "asc",
 			}
 		: { dateStart: "desc" };
 
@@ -90,7 +80,7 @@ export async function EventsPageFetcher(props: PageProps) {
 	);
 }
 
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
 	const t = await getTranslations();
 	const { clubId } = await props.params;
 	const searchParams = await props.searchParams;

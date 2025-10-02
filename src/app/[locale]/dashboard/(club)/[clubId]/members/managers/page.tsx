@@ -9,18 +9,9 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{ clubId: string }>;
-	searchParams: Promise<{
-		search?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		perPage?: string;
-	}>;
-}
 
-export async function ManagersPageFetcher(props: PageProps) {
+
+export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/managers">) {
 	const params = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
@@ -60,13 +51,13 @@ export async function ManagersPageFetcher(props: PageProps) {
 					OR: [
 						{
 							user: {
-								name: { contains: search, mode: "insensitive" },
+								name: { contains: search as string, mode: "insensitive" },
 							},
 						},
 						{
 							user: {
 								email: {
-									contains: search,
+									contains: search as string,
 									mode: "insensitive",
 								},
 							},
@@ -74,7 +65,7 @@ export async function ManagersPageFetcher(props: PageProps) {
 						{
 							user: {
 								callsign: {
-									contains: search,
+									contains: search as string,
 									mode: "insensitive",
 								},
 							},
@@ -87,13 +78,13 @@ export async function ManagersPageFetcher(props: PageProps) {
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
 				...(sortBy === "user.name" && {
-					user: { name: sortOrder ?? "asc" },
+					user: { name: (sortOrder === "desc" ? "desc" : "asc") },
 				}),
 				...(sortBy === "user.email" && {
-					user: { email: sortOrder ?? "asc" },
+					user: { email: (sortOrder === "desc" ? "desc" : "asc") },
 				}),
 				...(sortBy === "createdAt" && {
-					createdAt: sortOrder ?? "asc",
+					createdAt: (sortOrder === "desc" ? "desc" : "asc"),
 				}),
 			}
 		: { createdAt: "desc" };
@@ -121,7 +112,7 @@ export async function ManagersPageFetcher(props: PageProps) {
 	return <ManagersTable managers={managers} totalManagers={totalManagers} pageSize={pageSize} />;
 }
 
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/members/managers">) {
 	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 

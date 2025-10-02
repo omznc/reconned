@@ -1,10 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { RulesForm } from "./_components/rules.form.tsx";
 
-export default async function Page(props: {
-	params: Promise<{ clubId: string }>;
-	searchParams: Promise<{ [key: string]: string | undefined }>;
-}) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/rules">) {
 	const params = await props.params;
 	const searchParams = await props.searchParams;
 
@@ -15,7 +12,7 @@ export default async function Page(props: {
 		}),
 		searchParams?.ruleId
 			? prisma.clubRule.findUnique({
-					where: { id: searchParams.ruleId, clubId: params.clubId },
+					where: { id: searchParams.ruleId as string, clubId: params.clubId },
 				})
 			: null,
 	]);

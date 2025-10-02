@@ -5,18 +5,10 @@ import { UserTable } from "@/app/[locale]/dashboard/(platform)/admin/users/_comp
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	searchParams: Promise<{
-		search?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		userId?: string;
-		perPage?: string;
-	}>;
-}
 
-export async function UsersPageFetcher(props: PageProps) {
+
+
+export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/admin/users">) {
 	const searchParams = await props.searchParams;
 	const { search, sortBy, sortOrder, page, userId, perPage } = searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
@@ -25,7 +17,7 @@ export async function UsersPageFetcher(props: PageProps) {
 	// Fetch selected user separately if userId is present
 	const selectedUser = userId
 		? await prisma.user.findUnique({
-				where: { id: userId },
+				where: { id: userId as string },
 				include: {
 					clubMembership: {
 						include: {
@@ -44,9 +36,9 @@ export async function UsersPageFetcher(props: PageProps) {
 		...(search
 			? {
 					OR: [
-						{ name: { contains: search, mode: "insensitive" } },
-						{ email: { contains: search, mode: "insensitive" } },
-						{ callsign: { contains: search, mode: "insensitive" } },
+						{ name: { contains: search as string, mode: "insensitive" } },
+						{ email: { contains: search as string, mode: "insensitive" } },
+						{ callsign: { contains: search as string, mode: "insensitive" } },
 					],
 				}
 			: {}),
@@ -54,11 +46,11 @@ export async function UsersPageFetcher(props: PageProps) {
 
 	const orderBy: Prisma.UserOrderByWithRelationInput = sortBy
 		? {
-				...(sortBy === "name" && { name: sortOrder ?? "asc" }),
-				...(sortBy === "email" && { email: sortOrder ?? "asc" }),
-				...(sortBy === "callsign" && { callsign: sortOrder ?? "asc" }),
+				...(sortBy === "name" && { name: (sortOrder === "desc" ? "desc" : "asc") }),
+				...(sortBy === "email" && { email: (sortOrder === "desc" ? "desc" : "asc") }),
+				...(sortBy === "callsign" && { callsign: (sortOrder === "desc" ? "desc" : "asc") }),
 				...(sortBy === "createdAt" && {
-					createdAt: sortOrder ?? "asc",
+					createdAt: (sortOrder === "desc" ? "desc" : "asc"),
 				}),
 			}
 		: { createdAt: "desc" };
@@ -91,7 +83,7 @@ export async function UsersPageFetcher(props: PageProps) {
 	);
 }
 
-export default async function UsersPage(props: PageProps) {
+export default async function UsersPage(props: PageProps<"/[locale]/dashboard/admin/users">) {
 	const searchParams = await props.searchParams;
 	return (
 		<>

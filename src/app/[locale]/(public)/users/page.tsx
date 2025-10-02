@@ -21,7 +21,7 @@ type UserSearch = {
 
 const ITEMS_PER_PAGE = 12;
 
-export default async function Page(props: { searchParams: Promise<{ page?: string }> }) {
+export default async function Page(props: PageProps<"/[locale]/users">) {
 	const searchParams = await props.searchParams;
 	const t = await getTranslations();
 	const page = Number(searchParams.page) || 1;

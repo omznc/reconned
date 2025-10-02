@@ -18,6 +18,7 @@ const localesString = routing.locales.map((locale) => `${locale}`).join("|");
 
 const nextConfig = {
 	reactStrictMode: true,
+	typedRoutes: true,
 	experimental: {
 		reactCompiler: true,
 		staleTimes: {

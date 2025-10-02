@@ -7,16 +7,8 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{
-		clubId: string;
-	}>;
-	searchParams: Promise<{
-		[key: string]: string;
-	}>;
-}
 
-export async function InvitationsPageFetcher(props: PageProps) {
+export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/invitations">) {
 	const params = await props.params;
 	const searchParams = await props.searchParams;
 	const user = await isAuthenticated();
@@ -56,14 +48,14 @@ export async function InvitationsPageFetcher(props: PageProps) {
 					OR: [
 						{
 							email: {
-								contains: searchParams.search,
+								contains: searchParams.search as string,
 								mode: "insensitive",
 							},
 						},
 						{
 							user: {
 								name: {
-									contains: searchParams.search,
+									contains: searchParams.search as string,
 									mode: "insensitive",
 								},
 							},
@@ -80,7 +72,7 @@ export async function InvitationsPageFetcher(props: PageProps) {
 
 	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
 		? {
-				[searchParams.sortBy]: searchParams.sortOrder ?? "asc",
+				[searchParams.sortBy as string]: searchParams.sortOrder ?? "asc" as "asc" | "desc",
 			}
 		: { createdAt: "desc" };
 
@@ -114,7 +106,7 @@ export async function InvitationsPageFetcher(props: PageProps) {
 	return <InvitationsTable invites={formattedInvites} totalPages={Math.ceil(invitesCount / pageSize)} />;
 }
 
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/members/invitations">) {
 	const searchParams = await props.searchParams;
 
 	return (

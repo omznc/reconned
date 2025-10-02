@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { type AxiomRequest, withAxiom } from "next-axiom";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(request: Request) {
+export const GET = withAxiom(async (request: AxiomRequest) => {
 	const user = await isAuthenticated();
 	if (user?.role !== "admin") {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -36,4 +37,4 @@ export async function GET(request: Request) {
 	} catch (_error) {
 		return NextResponse.json({ error: "Neuspjela pretraga korisnika" }, { status: 500 });
 	}
-}
+});
