@@ -6,7 +6,6 @@ import { Link } from "@/i18n/navigation";
 import { getCountries } from "@/lib/cached-countries";
 import { RequestAccessForm } from "./_components/request-access.form.tsx";
 
-
 export default async function Page(props: PageProps<"/[locale]/dashboard/add-club">) {
 	const searchParams = await props.searchParams;
 	const countries = await getCountries();

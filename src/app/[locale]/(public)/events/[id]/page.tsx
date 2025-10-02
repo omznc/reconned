@@ -10,7 +10,6 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-
 export const dynamic = "force-dynamic";
 
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {

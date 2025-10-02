@@ -7,7 +7,6 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/events">) {
 	const user = await isAuthenticated();
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
@@ -46,7 +45,7 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/ev
 
 	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
 		? {
-				[sortBy as string]: sortOrder ?? "asc" as "asc" | "desc",
+				[sortBy as string]: sortOrder ?? ("asc" as "asc" | "desc"),
 			}
 		: { dateStart: "desc" };
 

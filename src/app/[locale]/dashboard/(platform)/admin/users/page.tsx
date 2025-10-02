@@ -5,9 +5,6 @@ import { UserTable } from "@/app/[locale]/dashboard/(platform)/admin/users/_comp
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
 
-
-
-
 export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/admin/users">) {
 	const searchParams = await props.searchParams;
 	const { search, sortBy, sortOrder, page, userId, perPage } = searchParams;
@@ -46,11 +43,11 @@ export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 
 	const orderBy: Prisma.UserOrderByWithRelationInput = sortBy
 		? {
-				...(sortBy === "name" && { name: (sortOrder === "desc" ? "desc" : "asc") }),
-				...(sortBy === "email" && { email: (sortOrder === "desc" ? "desc" : "asc") }),
-				...(sortBy === "callsign" && { callsign: (sortOrder === "desc" ? "desc" : "asc") }),
+				...(sortBy === "name" && { name: sortOrder === "desc" ? "desc" : "asc" }),
+				...(sortBy === "email" && { email: sortOrder === "desc" ? "desc" : "asc" }),
+				...(sortBy === "callsign" && { callsign: sortOrder === "desc" ? "desc" : "asc" }),
 				...(sortBy === "createdAt" && {
-					createdAt: (sortOrder === "desc" ? "desc" : "asc"),
+					createdAt: sortOrder === "desc" ? "desc" : "asc",
 				}),
 			}
 		: { createdAt: "desc" };

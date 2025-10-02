@@ -6,10 +6,11 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-
-
 export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members">) {
-	const [params, { search, role, sortBy, sortOrder, page, perPage }] = await Promise.all([props.params, props.searchParams]);
+	const [params, { search, role, sortBy, sortOrder, page, perPage }] = await Promise.all([
+		props.params,
+		props.searchParams,
+	]);
 
 	const { clubId } = params;
 	const currentPage = Math.max(1, Number(page ?? 1));
@@ -52,16 +53,16 @@ export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
 				...(sortBy === "userName" && {
-					user: { name: (sortOrder === "desc" ? "desc" : "asc") },
+					user: { name: sortOrder === "desc" ? "desc" : "asc" },
 				}),
 				...(sortBy === "userCallsign" && {
-					user: { callsign: (sortOrder === "desc" ? "desc" : "asc") },
+					user: { callsign: sortOrder === "desc" ? "desc" : "asc" },
 				}),
 				...(sortBy === "createdAt" && {
-					createdAt: (sortOrder === "desc" ? "desc" : "asc"),
+					createdAt: sortOrder === "desc" ? "desc" : "asc",
 				}),
 				...(sortBy === "role" && {
-					role: (sortOrder === "desc" ? "desc" : "asc"),
+					role: sortOrder === "desc" ? "desc" : "asc",
 				}),
 			}
 		: { createdAt: "desc" };

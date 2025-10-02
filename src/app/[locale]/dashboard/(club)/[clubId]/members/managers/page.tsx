@@ -9,8 +9,6 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-
-
 export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/managers">) {
 	const params = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
@@ -78,13 +76,13 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
 				...(sortBy === "user.name" && {
-					user: { name: (sortOrder === "desc" ? "desc" : "asc") },
+					user: { name: sortOrder === "desc" ? "desc" : "asc" },
 				}),
 				...(sortBy === "user.email" && {
-					user: { email: (sortOrder === "desc" ? "desc" : "asc") },
+					user: { email: sortOrder === "desc" ? "desc" : "asc" },
 				}),
 				...(sortBy === "createdAt" && {
-					createdAt: (sortOrder === "desc" ? "desc" : "asc"),
+					createdAt: sortOrder === "desc" ? "desc" : "asc",
 				}),
 			}
 		: { createdAt: "desc" };

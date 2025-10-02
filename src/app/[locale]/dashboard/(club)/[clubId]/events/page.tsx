@@ -10,7 +10,6 @@ import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
