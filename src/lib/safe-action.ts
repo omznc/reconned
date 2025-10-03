@@ -1,4 +1,5 @@
 import type { Club } from "@generated/client";
+import { Logger } from "next-axiom";
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { isAuthenticated } from "@/lib/auth";
@@ -10,6 +11,8 @@ const clubIdSchema = z.object({
 	clubId: z.string(),
 });
 
+const logger = new Logger({ source: "server-action" });
+
 /**
  * If the underyling schema requires a clubId, this action will check if the user is authenticated and if they manage the club.
  * If the user is authenticated and manages the club, the action will proceed.
@@ -20,12 +23,19 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 	// 1. Check if the user is logged in
 	const user = await isAuthenticated();
 	if (!user) {
-		throw new Error("Session is not valid!");
+		logger.info("User not authenticated", {
+			input: clientInput,
+		});
+		throw new Error("User not authenticated");
 	}
 
 	// 2. Check if a clubId is provided. If not, allow the action to proceed
 	const clubIdInput = clientInput as { clubId?: string };
 	if (!clubIdInput?.clubId) {
+		logger.info("No clubId provided", {
+			input: clientInput,
+			user,
+		});
 		return next({ ctx: { user, club: undefined as unknown as Club } });
 	}
 
@@ -34,6 +44,10 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 	// 3. Validate the clubId
 	const resp = clubIdSchema.safeParse(clientInput);
 	if (!resp.success) {
+		logger.info("Invalid clubId provided", {
+			input: clientInput,
+			user,
+		});
 		throw new Error("Invalid clubId provided");
 	}
 
@@ -42,6 +56,10 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 		where: { id: resp.data.clubId },
 	});
 	if (!club) {
+		logger.info("Club not found", {
+			input: clientInput,
+			user,
+		});
 		throw new Error("Club not found");
 	}
 
@@ -51,5 +69,10 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 	}
 
 	// 6. If the user is not an admin and does not manage the club, throw an error
+	logger.info("User does not manage this club", {
+		input: clientInput,
+		user,
+		club,
+	});
 	throw new Error("User does not manage this club");
 });

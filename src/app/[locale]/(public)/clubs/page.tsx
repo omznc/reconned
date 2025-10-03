@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ItemList, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
@@ -7,6 +7,7 @@ import { VerifiedClubIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -21,7 +22,7 @@ type ClubSearch = {
 	member_count: number;
 };
 
-export default async function Page(props: { searchParams: Promise<{ page?: string }> }) {
+export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	const searchParams = await props.searchParams;
 	const t = await getTranslations();
 	const page = Number(searchParams.page) || 1;
@@ -107,16 +108,17 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.clubs.metadata.title"),
 		description: t("public.clubs.metadata.description"),
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs`,
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
 		},
 	};
 }

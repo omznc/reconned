@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { env } from "@/lib/env";
+import { generatePageLanguages } from "@/lib/utils";
 
 import "./markdown.css";
 import DOMPurify from "isomorphic-dompurify";
@@ -36,8 +37,7 @@ export const revalidate = 3600; // 1 hour
 
 // Main changelog page
 export default async function ChangelogPage() {
-	const t = await getTranslations();
-	const locale = await getLocale();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	// Get the latest releases from GitHub
 	const response = await fetch("https://api.github.com/repos/omznc/reconned/releases", {
@@ -248,13 +248,17 @@ export default async function ChangelogPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.changelog.metadata.title"),
 		description: t("public.changelog.metadata.description"),
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/changelog`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
+		},
 	};
 }

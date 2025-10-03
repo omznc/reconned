@@ -11,20 +11,16 @@ import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-interface EventApplicationPageProps {
-	params: Promise<{
-		id: string;
-	}>;
-}
-
-export default async function EventApplicationPage(props: EventApplicationPageProps) {
+export default async function EventApplicationPage(props: PageProps<"/[locale]/events/[id]/apply">) {
 	const t = await getTranslations();
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
 		return <ErrorPage title={t("dashboard.club.events.attendenceTracking.unavailable")} />;
 	}
 
-	const [locale, user, params] = await Promise.all([getLocale(), isAuthenticated(), props.params]);
+	const [user, params] = await Promise.all([isAuthenticated(), props.params]);
+	const locale = params.locale;
 	if (!user) {
 		return redirect({
 			href: `/login?redirectTo=${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${params.id}/apply`,
@@ -198,9 +194,8 @@ export default async function EventApplicationPage(props: EventApplicationPagePr
 	);
 }
 
-export async function generateMetadata(props: EventApplicationPageProps): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/apply">): Promise<Metadata> {
+	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -227,13 +222,15 @@ export async function generateMetadata(props: EventApplicationPageProps): Promis
 		};
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug || event.id}/apply`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug || event.id}/apply`;
+	const pathname = `/${locale}/events/${event.slug || event.id}/apply`;
 
 	return {
 		title: t("public.events.apply.applyToEvent", { eventName: event.name }),
 		description: t("public.events.apply.applyToParticipate", { eventName: event.name }),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternatesForSluggableEntity(pathname, event.id, locale),
 		},
 	};
 }

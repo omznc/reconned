@@ -1,8 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { withAxiom } from "next-axiom";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(request: NextRequest) {
+export const GET = withAxiom(async (request: NextRequest) => {
 	const user = await isAuthenticated();
 
 	if (!user) {
@@ -31,4 +32,5 @@ export async function GET(request: NextRequest) {
 	});
 
 	return NextResponse.json(clubs);
-}
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

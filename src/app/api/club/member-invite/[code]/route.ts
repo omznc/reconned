@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { withAxiom } from "next-axiom";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
@@ -10,7 +11,7 @@ interface RouteParams {
 	}>;
 }
 
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export const GET = withAxiom(async (req: NextRequest, { params }: RouteParams) => {
 	const { code } = await params;
 	const { searchParams } = new URL(req.url);
 	const action = searchParams.get("action");
@@ -181,4 +182,5 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 		href: `/register?email=${invite.email}`,
 		locale,
 	});
-}
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

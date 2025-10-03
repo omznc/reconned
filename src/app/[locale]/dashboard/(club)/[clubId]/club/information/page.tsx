@@ -6,13 +6,7 @@ import { getCountries } from "@/lib/cached-countries";
 import { getInstagramAuthUrl } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{
-		clubId: string;
-	}>;
-}
-
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/information">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 	if (!user) {

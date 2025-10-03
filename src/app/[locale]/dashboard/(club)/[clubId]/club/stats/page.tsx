@@ -81,7 +81,7 @@ async function getClubStats(clubId: string) {
 	};
 }
 
-export default async function Page(props: { params: Promise<{ clubId: string }> }) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/stats">) {
 	const params = await props.params;
 	const stats = await getClubStats(params.clubId);
 

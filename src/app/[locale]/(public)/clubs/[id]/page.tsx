@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
@@ -8,15 +8,9 @@ import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-interface PageProps {
-	params: Promise<{
-		id: string;
-		locale: string;
-	}>;
-}
-
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 	const userMembership = user
@@ -143,9 +137,8 @@ export default async function Page(props: PageProps) {
 	);
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">): Promise<Metadata> {
+	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const club = await prisma.club.findFirst({
 		where: {
@@ -167,13 +160,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("logo", club.logo);
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug || club.id}`;
+	const canonicalPathname = `/${locale}/clubs/${club.slug || club.id}`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
 		title: `${club.name} - RECONNED`,
 		description: club.description?.slice(0, 160) ?? t("public.clubs.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, club.id, locale),
 		},
 		openGraph: {
 			images: [

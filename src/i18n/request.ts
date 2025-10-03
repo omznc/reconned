@@ -10,7 +10,7 @@ const DEFAULT_LANGUAGES: Record<(typeof routing.locales)[number], string[]> = {
 
 export default getRequestConfig(async ({ requestLocale }) => {
 	const allHeaders = await headers();
-	const country = allHeaders.get("cf-ipcountry");
+	const country = allHeaders.get("CF-IPCountry");
 	const defaultLanguage = Object.entries(DEFAULT_LANGUAGES).find(([_, countries]) =>
 		countries.includes(country as string),
 	)?.[0];

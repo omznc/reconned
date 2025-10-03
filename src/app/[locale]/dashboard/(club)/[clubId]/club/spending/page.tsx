@@ -8,18 +8,7 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 
-interface PageProps {
-	params: Promise<{ clubId: string }>;
-	searchParams: Promise<{
-		search?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		perPage?: string;
-	}>;
-}
-
-export async function SpendingPageFetcher(props: PageProps) {
+export async function SpendingPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/club/spending">) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 
@@ -31,10 +20,10 @@ export async function SpendingPageFetcher(props: PageProps) {
 		...(search
 			? {
 					OR: [
-						{ title: { contains: search, mode: "insensitive" } },
+						{ title: { contains: search as string, mode: "insensitive" } },
 						{
 							description: {
-								contains: search,
+								contains: search as string,
 								mode: "insensitive",
 							},
 						},
@@ -45,7 +34,7 @@ export async function SpendingPageFetcher(props: PageProps) {
 
 	const orderBy: Prisma.ClubPurchaseOrderByWithRelationInput = sortBy
 		? {
-				[sortBy]: sortOrder ?? "asc",
+				[sortBy as string]: sortOrder ?? "asc",
 			}
 		: { createdAt: "desc" };
 
@@ -61,7 +50,7 @@ export async function SpendingPageFetcher(props: PageProps) {
 	return <PurchasesTable purchases={purchases} totalPurchases={totalPurchases} pageSize={pageSize} />;
 }
 
-export default async function SpendingPage(props: PageProps) {
+export default async function SpendingPage(props: PageProps<"/[locale]/dashboard/[clubId]/club/spending">) {
 	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 

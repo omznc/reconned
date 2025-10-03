@@ -1,10 +1,11 @@
 import { PrismaClient } from "@generated/client";
 import { NextResponse } from "next/server";
+import { withAxiom } from "next-axiom";
 import { isAuthenticated } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+export const GET = withAxiom(async (request: Request) => {
 	const user = await isAuthenticated();
 	if (!user) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -110,4 +111,5 @@ export async function GET(request: Request) {
 	} catch (_error) {
 		return NextResponse.json({ error: "Failed to search users" }, { status: 500 });
 	}
-}
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

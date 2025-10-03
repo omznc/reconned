@@ -6,14 +6,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 
-interface PageProps {
-	params: Promise<{
-		clubId: string;
-		id: string;
-	}>;
-}
-
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]/attendance">) {
 	const t = await getTranslations();
 
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {

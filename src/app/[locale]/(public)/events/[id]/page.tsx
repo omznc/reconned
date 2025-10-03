@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { SportsEvent, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
@@ -8,17 +8,11 @@ import { EventOverview } from "@/components/overviews/event-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-
-interface PageProps {
-	params: Promise<{
-		id: string;
-		locale: string;
-	}>;
-}
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const user = await isAuthenticated();
 	const params = await props.params;
 
@@ -128,10 +122,13 @@ export default async function Page(props: PageProps) {
 	);
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
-	const params = await props.params;
-	const user = await isAuthenticated();
-	const t = await getTranslations();
+export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">): Promise<Metadata> {
+	const [params, user, t, locale] = await Promise.all([
+		props.params,
+		isAuthenticated(),
+		getTranslations(),
+		getLocale(),
+	]);
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -171,13 +168,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("image", event.image);
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug || event.id}`;
+	const canonicalPathname = `/${locale}/events/${event.slug || event.id}`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
 		title: `${event.name} - RECONNED`,
 		description: event.description.slice(0, 160) ?? t("public.events.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, event.id, locale),
 		},
 		openGraph: {
 			images: [

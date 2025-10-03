@@ -1,21 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-interface PageProps {
-	params: Promise<{
-		id: string;
-		locale: string;
-	}>;
-}
-
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
 
 	const user = await prisma.user.findFirst({
@@ -59,9 +53,9 @@ export default async function Page(props: PageProps) {
 	const personSchema: WithContext<Person> = {
 		"@context": "https://schema.org",
 		"@type": "Person",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		name: user.name,
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		image: user.image || undefined,
 		description: user.bio || undefined,
 		address: user.location
@@ -74,7 +68,7 @@ export default async function Page(props: PageProps) {
 		sameAs: user.website ? [user.website] : undefined,
 		memberOf: user.clubMembership.map((membership) => ({
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${membership.club.slug ?? membership.club.id}`,
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${membership.club.slug ?? membership.club.id}`,
 			name: membership.club.name,
 			sport: "Airsoft",
 		})),
@@ -88,10 +82,10 @@ export default async function Page(props: PageProps) {
 	const profilePageSchema: WithContext<ProfilePage> = {
 		"@context": "https://schema.org",
 		"@type": "ProfilePage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		mainEntity: {
 			"@type": "Person",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 			name: user.name,
 			image: user.image || undefined,
 			description: user.bio || undefined,
@@ -111,9 +105,8 @@ export default async function Page(props: PageProps) {
 	);
 }
 
-export async function generateMetadata(props: PageProps): Promise<Metadata> {
-	const params = await props.params;
-	const t = await getTranslations();
+export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">): Promise<Metadata> {
+	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
 
 	const user = await prisma.user.findFirst({
 		where: {
@@ -138,13 +131,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 		ogUrl.searchParams.set("avatar", user.image);
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug || user.id}`;
+	const canonicalPathname = `/${locale}/users/${user.slug || user.id}`;
+	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
 
 	return {
 		title: `${user.name} - RECONNED`,
 		description: user.bio?.slice(0, 160) ?? t("public.users.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
+			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, user.id, locale),
 		},
 		openGraph: {
 			images: [

@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { Logger } from "next-axiom";
 import createMiddleware from "next-intl/middleware";
 import { getLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -9,6 +10,11 @@ import { env } from "@/lib/env";
 const handleI18nRouting = createMiddleware(routing);
 
 export default async function authMiddleware(request: NextRequest) {
+	after(async () => {
+		const logger = new Logger({ source: "middleware" });
+		logger.middleware(request);
+	});
+
 	const resp = handleI18nRouting(request);
 	if (request.nextUrl.pathname.includes("/dashboard")) {
 		const resp = await fetch(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/auth/get-session`, {

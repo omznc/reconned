@@ -1,10 +1,11 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { withAxiom } from "next-axiom";
 import { isAuthenticated } from "@/lib/auth";
 import { getInstagramBusinessAccount } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req: NextRequest) {
+export const GET = withAxiom(async (req: NextRequest) => {
 	const { searchParams } = new URL(req.url);
 	const sessionId = searchParams.get("sessionId");
 	const clubId = searchParams.get("clubId");
@@ -76,4 +77,5 @@ export async function GET(req: NextRequest) {
 	} catch {
 		return NextResponse.json({ error: "Failed to retrieve Facebook pages" }, { status: 500 });
 	}
-}
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

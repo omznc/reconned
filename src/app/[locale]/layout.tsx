@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { AxiomWebVitals } from "next-axiom";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -28,12 +29,7 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-type Props = {
-	children: React.ReactNode;
-	params: Promise<{ locale: string }>;
-};
-
-export default async function LocaleLayout({ children, params }: Props) {
+export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
 	const [messages, user] = await Promise.all([getMessages(), isAuthenticated()]);
 
 	const { locale } = await params;
@@ -55,6 +51,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 					src={`${env.PLAUSIBLE_HOST}/js/script.outbound-links.tagged-events.js`}
 				/>
 			</head>
+			<AxiomWebVitals />
 			<NextIntlClientProvider messages={messages}>
 				<FontProvider initial={font}>
 					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
@@ -96,7 +93,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
 		keywords: t("public.layout.metadata.keywords")
 			.split(", ")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
 	};
 }
 

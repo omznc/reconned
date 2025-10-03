@@ -4,6 +4,7 @@ import type { Prisma } from "@generated/client";
 import { render } from "@react-email/components";
 import { addDays, endOfDay, format, startOfDay } from "date-fns";
 import { NextResponse } from "next/server";
+import { type AxiomRequest, withAxiom } from "next-axiom";
 import { MembershipExpiration } from "@/emails/membership-expiration";
 import { MembershipExpirationOwner } from "@/emails/membership-expiration-owner";
 import { env } from "@/lib/env";
@@ -121,7 +122,7 @@ async function processNotifications(membership: MembershipWithRelations, isExpir
 	};
 }
 
-export async function GET(request: Request) {
+export const GET = withAxiom(async (request: AxiomRequest) => {
 	// Verify admin webhook token
 	const authHeader = request.headers.get("authorization");
 	if (authHeader !== `Bearer ${env.ADMIN_WEBHOOK_TOKEN}`) {
@@ -240,4 +241,5 @@ export async function GET(request: Request) {
 	} catch {
 		return NextResponse.json({ error: "Membership reminder failed" }, { status: 500 });
 	}
-}
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;
