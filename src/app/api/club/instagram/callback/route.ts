@@ -101,7 +101,8 @@ export const GET = withAxiom(async (req: AxiomRequest) => {
 			`/${locale}/dashboard/${state}/club/information?instagramError=${ERROR_CODES.AUTH_FAILED}#instagram`,
 		);
 	}
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;
 
 // Helper function to process a page selection
 async function handlePageSelection(pageId: string, accessToken: string, clubId: string, locale: string) {

@@ -255,7 +255,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		description: t("public.changelog.metadata.description"),
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/changelog`,
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),

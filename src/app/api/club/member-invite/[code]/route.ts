@@ -182,4 +182,5 @@ export const GET = withAxiom(async (req: NextRequest, { params }: RouteParams) =
 		href: `/register?email=${invite.email}`,
 		locale,
 	});
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

@@ -64,4 +64,5 @@ export const GET = withAxiom(async (request: AxiomRequest, { params }: { params:
 	} catch (_error) {
 		return NextResponse.json({ error: "Neuspjela pretraga članova kluba" }, { status: 500 });
 	}
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		description: t("public.notFound.metadata.description"),
 		keywords: t("public.notFound.layout.metadata.keywords")
 			.split(",")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
 	};
 }
 

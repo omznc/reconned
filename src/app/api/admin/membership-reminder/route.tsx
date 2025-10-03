@@ -241,4 +241,5 @@ export const GET = withAxiom(async (request: AxiomRequest) => {
 	} catch {
 		return NextResponse.json({ error: "Membership reminder failed" }, { status: 500 });
 	}
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

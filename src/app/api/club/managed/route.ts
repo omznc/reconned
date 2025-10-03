@@ -12,4 +12,5 @@ export const GET = withAxiom(async (_req: NextRequest) => {
 
 	const managedClubs = await fetchManagedClubs(user.id);
 	return NextResponse.json(managedClubs);
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;
