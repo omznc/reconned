@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import { EventCalendar } from "@/components/event-calendar";
@@ -37,20 +37,15 @@ import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-
-interface PageProps {
-	searchParams: Promise<{
-		month?: string;
-	}>;
-}
+import { generatePageLanguages } from "@/lib/utils";
 
 export const revalidate = 3600; // 1 hour
 
-export default async function Home({ searchParams }: PageProps) {
-	const user = await isAuthenticated();
-	const { month } = await searchParams;
+export default async function Home(props: PageProps<"/[locale]">) {
+	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
+	const { month } = searchParams;
 
-	const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
+	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 
@@ -408,10 +403,14 @@ export default async function Home({ searchParams }: PageProps) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.home.metadata.title"),
 		description: t("public.home.metadata.description"),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "", locale),
+		},
 	};
 }

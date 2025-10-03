@@ -3,13 +3,7 @@ import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{
-		clubId: string;
-	}>;
-}
-
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 	if (!user) {

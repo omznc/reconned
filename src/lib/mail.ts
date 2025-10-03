@@ -1,3 +1,4 @@
+import { Logger } from "next-axiom";
 import { env } from "@/lib/env";
 
 type SendEmailParams = {
@@ -6,6 +7,8 @@ type SendEmailParams = {
 	html: string;
 	from?: string;
 };
+
+const logger = new Logger({ source: "mail" });
 
 export async function sendEmail({ to, subject, html }: SendEmailParams) {
 	const recipients = Array.isArray(to) ? to : [to];
@@ -26,8 +29,17 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 	});
 
 	if (!response.ok) {
+		logger.info("OneSignal API error", {
+			error: response.statusText,
+		});
 		throw new Error(`OneSignal API error: ${response.statusText}`);
 	}
+
+	logger.info("Email sent", {
+		to,
+		subject,
+		html,
+	});
 
 	return response.json();
 }

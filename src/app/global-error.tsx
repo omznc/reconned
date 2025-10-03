@@ -4,19 +4,28 @@ import Error500 from "@public/errors/500.webp";
 import * as Sentry from "@sentry/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useLogger } from "next-axiom";
 import { useLocale, useMessages } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import type { Route } from "next";
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
-	useEffect(() => {
-		Sentry.captureException(error);
-	}, [error]);
 	const locale = useLocale();
 	const theme = useTheme();
 	const messages = useMessages();
+	const logger = useLogger({ source: "global-error" });
 	const t = messages["public.notFound"];
+
+	useEffect(() => {
+		if (!logger) return;
+
+		Sentry.captureException(error);
+		logger.error("Global error", {
+			error,
+		});
+	}, [error, logger]);
 
 	return (
 		<html lang={locale} className={theme.theme === "dark" ? "dark" : ""}>
@@ -27,7 +36,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
 					<p className="text-lg mb-8 text-center">{t.message}</p>
 					<Button asChild={true}>
 						<Link
-							href="/"
+						href={"/" as Route}
 							className="text-lg text-center hover:bg-accent transition-all bg-background px-4 py-2 rounded-md border"
 						>
 							{t.backHome}

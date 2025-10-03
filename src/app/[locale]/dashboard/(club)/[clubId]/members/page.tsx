@@ -6,23 +6,13 @@ import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{ clubId: string }>;
-	searchParams: Promise<{
-		search?: string;
-		role?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
-		page?: string;
-		perPage?: string;
-	}>;
-}
-
-export async function MembersPageFetcher(props: PageProps) {
-	const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
+export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members">) {
+	const [params, { search, role, sortBy, sortOrder, page, perPage }] = await Promise.all([
+		props.params,
+		props.searchParams,
+	]);
 
 	const { clubId } = params;
-	const { search, role, sortBy, sortOrder, page, perPage } = searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
@@ -36,13 +26,13 @@ export async function MembersPageFetcher(props: PageProps) {
 					OR: [
 						{
 							user: {
-								name: { contains: search, mode: "insensitive" },
+								name: { contains: search as string, mode: "insensitive" },
 							},
 						},
 						{
 							user: {
 								email: {
-									contains: search,
+									contains: search as string,
 									mode: "insensitive",
 								},
 							},
@@ -50,7 +40,7 @@ export async function MembersPageFetcher(props: PageProps) {
 						{
 							user: {
 								callsign: {
-									contains: search,
+									contains: search as string,
 									mode: "insensitive",
 								},
 							},
@@ -63,16 +53,16 @@ export async function MembersPageFetcher(props: PageProps) {
 	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
 		? {
 				...(sortBy === "userName" && {
-					user: { name: sortOrder ?? "asc" },
+					user: { name: sortOrder === "desc" ? "desc" : "asc" },
 				}),
 				...(sortBy === "userCallsign" && {
-					user: { callsign: sortOrder ?? "asc" },
+					user: { callsign: sortOrder === "desc" ? "desc" : "asc" },
 				}),
 				...(sortBy === "createdAt" && {
-					createdAt: sortOrder ?? "asc",
+					createdAt: sortOrder === "desc" ? "desc" : "asc",
 				}),
 				...(sortBy === "role" && {
-					role: sortOrder ?? "asc",
+					role: sortOrder === "desc" ? "desc" : "asc",
 				}),
 			}
 		: { createdAt: "desc" };
@@ -120,7 +110,7 @@ export async function MembersPageFetcher(props: PageProps) {
 	);
 }
 
-export default async function MembersPage(props: PageProps) {
+export default async function MembersPage(props: PageProps<"/[locale]/dashboard/[clubId]/members">) {
 	const t = await getTranslations();
 	const searchParams = await props.searchParams;
 

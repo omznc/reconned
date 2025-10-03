@@ -1,5 +1,9 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import { withAxiom } from "next-axiom";
 import createNextIntlPlugin from "next-intl/plugin";
+import { routing } from "@/i18n/routing";
+import { env } from "@/lib/env";
 
 const withNextIntl = createNextIntlPlugin({
 	experimental: {
@@ -7,13 +11,14 @@ const withNextIntl = createNextIntlPlugin({
 	},
 });
 
-import { withSentryConfig } from "@sentry/nextjs";
-import { routing } from "@/i18n/routing";
+process.env.NEXT_PUBLIC_AXIOM_DATASET = env.NEXT_PUBLIC_AXIOM_DATASET;
+process.env.NEXT_PUBLIC_AXIOM_TOKEN = env.NEXT_PUBLIC_AXIOM_TOKEN;
 
 const localesString = routing.locales.map((locale) => `${locale}`).join("|");
 
 const nextConfig = {
 	reactStrictMode: true,
+	typedRoutes: true,
 	experimental: {
 		reactCompiler: true,
 		staleTimes: {
@@ -83,4 +88,4 @@ const nextConfig = {
 	},
 } as NextConfig;
 
-export default withSentryConfig(withNextIntl(nextConfig));
+export default withAxiom(withSentryConfig(withNextIntl(nextConfig)));

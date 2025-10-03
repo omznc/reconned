@@ -4,22 +4,22 @@ import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { generatePageLanguages } from "@/lib/utils";
 
 const lastUpdated = new Date("2025-04-13");
 
 export const revalidate = 86_400; // 1 day
 
 export default async function TermsOfUsePage() {
-	const t = await getTranslations();
-	const locale = await getLocale();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	const termsPageSchema: WithContext<WebPage> = {
 		"@context": "https://schema.org",
 		"@type": "WebPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/terms-of-use`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
 		name: t("public.terms.metadata.title"),
 		description: t("public.terms.metadata.description"),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/terms-of-use`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
 		dateModified: lastUpdated.toISOString(),
 		datePublished: lastUpdated.toISOString(),
 		publisher: {
@@ -153,10 +153,14 @@ export default async function TermsOfUsePage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.terms.metadata.title"),
 		description: t("public.terms.metadata.description"),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
+		},
 	};
 }

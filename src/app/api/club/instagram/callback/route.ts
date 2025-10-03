@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { type AxiomRequest, withAxiom } from "next-axiom";
 import { getLocale } from "next-intl/server";
 import {
 	debugToken,
@@ -25,7 +25,7 @@ const ERROR_CODES = {
 	PERSONAL_ACCOUNT: "personal_account", // New error code for personal accounts
 };
 
-export async function GET(req: NextRequest) {
+export const GET = withAxiom(async (req: AxiomRequest) => {
 	const { searchParams } = new URL(req.url);
 	const code = searchParams.get("code");
 	const state = searchParams.get("clubId") || searchParams.get("state");
@@ -101,7 +101,8 @@ export async function GET(req: NextRequest) {
 			`/${locale}/dashboard/${state}/club/information?instagramError=${ERROR_CODES.AUTH_FAILED}#instagram`,
 		);
 	}
-}
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;
 
 // Helper function to process a page selection
 async function handlePageSelection(pageId: string, accessToken: string, clubId: string, locale: string) {

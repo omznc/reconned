@@ -1,5 +1,6 @@
 import { DeleteObjectCommand, DeleteObjectsCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Logger } from "next-axiom";
 import { env } from "@/lib/env";
 import {
 	type FileValidationResult,
@@ -19,6 +20,8 @@ const s3 = new S3Client({
 		secretAccessKey: env.S3_SECRET_ACCESS_KEY as string,
 	},
 });
+
+const logger = new Logger({ source: "storage" });
 
 const allowedFileTypes: string[] = env.NEXT_PUBLIC_ALLOWED_FILE_TYPES
 	? env.NEXT_PUBLIC_ALLOWED_FILE_TYPES.split(",")
@@ -63,14 +66,27 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 
 	// Basic validation
 	if (!(type && size && key)) {
+		logger.info("File type, size, and key are required", {
+			type,
+			size,
+			key,
+		});
 		throw new Error("File type, size, and key are required");
 	}
 
 	if (!allowedFileTypes.includes(type)) {
+		logger.info("Unsupported file type", {
+			type,
+			allowedFileTypes,
+		});
 		throw new Error(`Unsupported file type: ${type}. Allowed: ${allowedFileTypes.join(", ")}`);
 	}
 
 	if (size > maxFileSize) {
+		logger.info("File size exceeds the maximum allowed size", {
+			size,
+			maxFileSize,
+		});
 		throw new Error(`File size exceeds the maximum allowed size of ${Math.round(maxFileSize / 1024 / 1024)}MB`);
 	}
 
@@ -150,6 +166,12 @@ export const processFileForUpload = async (
 	// Validate file
 	const validation = await validateFileBuffer(buffer, expectedMimeType, maxFileSize);
 	if (!validation.isValid) {
+		logger.info("File validation failed", {
+			validation,
+			originalFilename,
+			expectedMimeType,
+			maxFileSize,
+		});
 		throw new Error(validation.error || "File validation failed");
 	}
 
@@ -161,7 +183,12 @@ export const processFileForUpload = async (
 			processedBuffer = await optimizeImage(buffer);
 		} catch (error) {
 			// If optimization fails, use original buffer
-			console.warn("Image optimization failed:", error);
+			logger.info("Image optimization failed", {
+				error,
+				originalFilename,
+				expectedMimeType,
+				maxFileSize,
+			});
 		}
 	}
 

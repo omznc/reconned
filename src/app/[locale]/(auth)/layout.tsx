@@ -56,6 +56,6 @@ export async function generateMetadata(): Promise<Metadata> {
 		description: t("public.auth.metadata.description"),
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
 	};
 }

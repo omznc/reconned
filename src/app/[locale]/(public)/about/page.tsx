@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { AboutPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Logo } from "@/components/logos/logo";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { generatePageLanguages } from "@/lib/utils";
 
 export default async function Home() {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	const aboutPageSchema: WithContext<AboutPage> = {
 		"@context": "https://schema.org",
 		"@type": "AboutPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/about`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/about`,
 		name: t("public.about.metadata.title"),
 		description: t("public.about.metadata.description"),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/about`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/about`,
 		mainEntity: {
 			"@type": "SportsOrganization",
 			name: "Reconned",
@@ -110,13 +111,17 @@ export default async function Home() {
 export const revalidate = 86_400; // 1 day
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.about.metadata.title"),
 		description: t("public.about.metadata.description"),
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/about`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/about", locale),
+		},
 	};
 }

@@ -7,14 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
-	params: Promise<{
-		clubId: string;
-		id: string;
-	}>;
-}
-
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 	const t = await getTranslations();

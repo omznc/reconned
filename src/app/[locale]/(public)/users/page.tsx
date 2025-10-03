@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ItemList, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
@@ -7,6 +7,7 @@ import { AdminIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { generatePageLanguages } from "@/lib/utils";
 
 type UserSearch = {
 	id: string;
@@ -20,7 +21,7 @@ type UserSearch = {
 
 const ITEMS_PER_PAGE = 12;
 
-export default async function Page(props: { searchParams: Promise<{ page?: string }> }) {
+export default async function Page(props: PageProps<"/[locale]/users">) {
 	const searchParams = await props.searchParams;
 	const t = await getTranslations();
 	const page = Number(searchParams.page) || 1;
@@ -96,13 +97,14 @@ export default async function Page(props: { searchParams: Promise<{ page?: strin
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	return {
 		title: t("public.users.metadata.title"),
 		description: t("public.users.metadata.description"),
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users`,
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/users`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/users", locale),
 		},
 	};
 }

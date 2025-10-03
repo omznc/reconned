@@ -1,9 +1,10 @@
 import { ImageResponse } from "@vercel/og";
+import { withAxiom } from "next-axiom";
 import { env } from "@/lib/env";
 
 export const runtime = "edge";
 
-export async function GET(request: Request) {
+export const GET = withAxiom(async (request: Request) => {
 	const { searchParams } = new URL(request.url);
 	const name = searchParams.get("name");
 	const bio = searchParams.get("bio");
@@ -49,4 +50,5 @@ export async function GET(request: Request) {
 			height: 630,
 		},
 	);
-}
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;
