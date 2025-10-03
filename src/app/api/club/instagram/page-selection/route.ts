@@ -77,4 +77,5 @@ export const GET = withAxiom(async (req: NextRequest) => {
 	} catch {
 		return NextResponse.json({ error: "Failed to retrieve Facebook pages" }, { status: 500 });
 	}
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

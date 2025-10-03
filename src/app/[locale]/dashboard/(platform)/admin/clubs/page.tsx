@@ -47,7 +47,7 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 	// Fetch selected club separately if clubId is present
 	const selectedClub = clubId
 		? await prisma.club.findUnique({
-				where: { id: clubId },
+				where: { id: clubId as string },
 			})
 		: null;
 
@@ -60,7 +60,6 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 }
 
 export default async function ClubsPage(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
-	const searchParams = await props.searchParams;
 	const t = await getTranslations();
 	const params = await props.params;
 

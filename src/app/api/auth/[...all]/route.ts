@@ -4,5 +4,7 @@ import { auth } from "@/lib/auth"; // path to your auth file
 
 const { POST: POSTHandler, GET: GETHandler } = toNextJsHandler(auth);
 
-export const POST = withAxiom(POSTHandler);
-export const GET = withAxiom(GETHandler);
+// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+export const POST = withAxiom(POSTHandler) as any;
+// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+export const GET = withAxiom(GETHandler) as any;

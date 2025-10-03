@@ -93,7 +93,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
 		keywords: t("public.layout.metadata.keywords")
 			.split(", ")
-			.map((keyword) => keyword.trim()),
+			.map((keyword: string) => keyword.trim()),
 	};
 }
 

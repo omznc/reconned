@@ -50,4 +50,5 @@ export const GET = withAxiom(async (request: Request) => {
 			height: 630,
 		},
 	);
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

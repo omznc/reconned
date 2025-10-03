@@ -111,4 +111,5 @@ export const GET = withAxiom(async (request: Request) => {
 	} catch (_error) {
 		return NextResponse.json({ error: "Failed to search users" }, { status: 500 });
 	}
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

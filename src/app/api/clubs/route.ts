@@ -32,4 +32,5 @@ export const GET = withAxiom(async (request: NextRequest) => {
 	});
 
 	return NextResponse.json(clubs);
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

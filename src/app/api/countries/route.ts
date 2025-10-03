@@ -14,4 +14,5 @@ export const GET = withAxiom(async () => {
 			"Cache-Control": "public, s-maxage=86400, stale-while-revalidate=43200",
 		},
 	});
-});
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;
