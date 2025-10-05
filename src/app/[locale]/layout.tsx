@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { Geist, Geist_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
 import Script from "next/script";
 import { AxiomWebVitals } from "next-axiom";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
-import notFound from "@/app/not-found";
 import { FontBody } from "@/components/font-body";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import { FontProvider } from "@/components/personalization/font/font-provider";

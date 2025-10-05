@@ -229,7 +229,8 @@
 			"metadata": {
 				"title": "Autentikacija - RECONNED",
 				"description": "Prijava, registracija, i resetovanje lozinke. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
-			}
+			},
+			"lastUsed": "Zadnje korišteno"
 		},
 		"clubs": {
 			"title": "Klubovi",
