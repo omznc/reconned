@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -33,9 +34,9 @@ export default function LoginPage() {
 		clearOnDefault: true,
 		shallow: true,
 	});
-
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
+	const lastMethod = authClient.getLastUsedLoginMethod();
 
 	// Login form schema with Zod
 	const loginSchema = z.object({
@@ -228,9 +229,16 @@ export default function LoginPage() {
 						<LoaderSubmitButton
 							isLoading={isLoading}
 							disabled={isForgotPasswordLoading || !form.formState.isValid}
-							className="w-full plausible-event-name=login-button-click"
+							className={cn("relative w-full plausible-event-name=login-button-click", {
+								"mb-4": lastMethod === "email",
+							})}
 						>
 							{t("public.auth.login")}
+							{lastMethod === "email" && (
+								<span className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold">
+									{t("public.auth.lastUsed")}
+								</span>
+							)}
 						</LoaderSubmitButton>
 
 						<div className="flex max-w-full items-center gap-2">
@@ -260,11 +268,11 @@ export default function LoginPage() {
 								<Key className="w-4 h-4 inline-block" /> Passkey
 								<BadgeSoon />
 							</Button>
-							<GoogleLoginButton redirectTo={redirectTo} />
+							<GoogleLoginButton redirectTo={redirectTo} wasLastMethod={lastMethod === "google"} />
 						</div>
 					</form>
 				</Form>
-				<div className="mt-4 text-center text-sm">
+				<div className="mt-8 text-center text-sm">
 					{t("public.auth.noAccountQuestion")}{" "}
 					<Link
 						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
