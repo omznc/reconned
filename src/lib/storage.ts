@@ -1,5 +1,5 @@
-import { DeleteObjectCommand, DeleteObjectsCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client } from "bun";
+
 import { Logger } from "next-axiom";
 import { env } from "@/lib/env";
 import {
@@ -15,10 +15,8 @@ import { checkClubStorageQuota, checkUserDailyQuota, STORAGE_LIMITS } from "@/li
 const s3 = new S3Client({
 	endpoint: env.S3_ENDPOINT as string,
 	region: env.S3_REGION as string,
-	credentials: {
-		accessKeyId: env.S3_ACCESS_KEY_ID as string,
-		secretAccessKey: env.S3_SECRET_ACCESS_KEY as string,
-	},
+	accessKeyId: env.S3_ACCESS_KEY_ID as string,
+	secretAccessKey: env.S3_SECRET_ACCESS_KEY as string,
 });
 
 const logger = new Logger({ source: "storage" });
@@ -109,15 +107,9 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 	// Generate key with size information for accurate quota tracking
 	const keyWithSize = generateKeyWithSize(key, size);
 
-	const command = new PutObjectCommand({
-		Bucket: env.S3_BUCKET_NAME as string,
-		Key: keyWithSize,
-		ContentType: type,
-		ContentLength: size,
-		CacheControl: "public, max-age=31536000", // 1 year cache
-	});
-
-	const url = await getSignedUrl(s3, command, {
+	const url = s3.presign(keyWithSize, {
+		method: "PUT",
+		type: type,
 		expiresIn: 60 * 5, // 5 minutes
 	});
 
@@ -128,25 +120,13 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 };
 
 export const deleteS3File = async (key: string) => {
-	const command = new DeleteObjectCommand({
-		Bucket: env.S3_BUCKET_NAME as string,
-		Key: key,
-	});
-
-	await s3.send(command);
+	await s3.delete(key);
 };
 
 export const deleteS3Files = async (keys: string[]) => {
 	if (keys.length === 0) return;
 
-	const command = new DeleteObjectsCommand({
-		Bucket: env.S3_BUCKET_NAME as string,
-		Delete: {
-			Objects: keys.map((key) => ({ Key: key })),
-		},
-	});
-
-	await s3.send(command);
+	await Promise.all(keys.map((key) => s3.delete(key)));
 };
 
 /**

@@ -1,34 +1,33 @@
 {
 	"compilerOptions": {
-		// Modern JS Features
-		"target": "ES2022",
+		// Environment setup & latest features
 		"lib": ["dom", "dom.iterable", "esnext"],
+
+		"target": "ESNext",
+		"module": "Preserve",
 		"moduleDetection": "force",
-
-		// Modules
-		"module": "esnext",
+		"jsx": "preserve",
+		"allowJs": true,
+		// Bundler mode
 		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-
-		// Strict Type Checking
+		"noEmit": true,
+		// Best practices
 		"strict": true,
+		"skipLibCheck": true,
+		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
-		"noImplicitReturns": true,
-
-		// Type Declaration Settings
-		"declaration": false,
-		"inlineSources": true,
-		"sourceMap": true,
-
-		// For next-intl
-		"allowArbitraryExtensions": true,
-
-		// Next.js Specific
-		"jsx": "preserve",
-		"plugins": [{ "name": "next" }],
+		// Some stricter flags (disabled by default)
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noPropertyAccessFromIndexSignature": false,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
 		"paths": {
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
@@ -38,15 +37,8 @@
 			"@generated/*": ["./generated/*"]
 		},
 		"incremental": true,
-
 		// Interop Constraints
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"allowJs": true,
-		"noEmit": true,
-
-		// ETC
-		"allowImportingTsExtensions": true
+		"esModuleInterop": true
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]
