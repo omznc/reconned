@@ -28,7 +28,7 @@ export default function RegisterPage() {
 	});
 	const t = useTranslations();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
-
+	const lastMethod = authClient.getLastUsedLoginMethod();
 	// Register form schema with Zod
 	const registerSchema = z.object({
 		name: z.string().min(1, t("public.auth.nameRequired")),
@@ -213,15 +213,20 @@ export default function RegisterPage() {
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							className="w-full plausible-event-name=register-button-click"
+							className="relative w-full plausible-event-name=register-button-click"
 							disabled={!form.formState.isValid}
 						>
 							{t("public.auth.register")}
+							{lastMethod === "email" && (
+								<span className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold">
+									{t("public.auth.lastUsed")}
+								</span>
+							)}
 						</LoaderSubmitButton>
-						<GoogleLoginButton />
+						<GoogleLoginButton wasLastMethod={lastMethod === "google"} />
 					</form>
 				</Form>
-				<div className="mt-4 text-center text-sm">
+				<div className="mt-8 text-center text-sm">
 					{t("public.auth.haveAccountQuestion")}{" "}
 					<Link suppressHydrationWarning={true} href="/login" className="underline">
 						{t("public.auth.login")}

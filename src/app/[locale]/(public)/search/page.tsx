@@ -281,7 +281,7 @@ export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 				"@type": "SearchAction",
 				target: {
 					"@type": "EntryPoint",
-					urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search?q={search_term_string}`,
+					urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search?q={search_term_string}`,
 				},
 				"query-input": "required name=search_term_string",
 				// biome-ignore lint/suspicious/noExplicitAny: Idk how else to get this to work

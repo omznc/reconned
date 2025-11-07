@@ -16,7 +16,7 @@ import { prisma } from "@/lib/prisma";
 import { generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
-	const [user, t] = await Promise.all([isAuthenticated(), getTranslations()]);
+	const [user, t, locale] = await Promise.all([isAuthenticated(), getTranslations(), getLocale()]);
 	const upcomingEvents = await prisma.event.findMany({
 		where: {
 			dateStart: {
@@ -68,13 +68,13 @@ export default async function Page() {
 			position: index + 1,
 			item: {
 				"@type": "SportsEvent",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
 				name: event.name,
 				description: event.description,
 				sport: "Airsoft",
 				startDate: event.dateStart.toISOString(),
 				endDate: event.dateEnd.toISOString(),
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
 				image: event.image || undefined,
 				location: {
 					"@type": "Place",

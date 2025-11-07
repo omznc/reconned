@@ -79,20 +79,16 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		},
 	};
 
+	const userUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`;
 	const profilePageSchema: WithContext<ProfilePage> = {
 		"@context": "https://schema.org",
 		"@type": "ProfilePage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
+		"@id": `${userUrl}#profile`,
 		mainEntity: {
-			"@type": "Person",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
-			name: user.name,
-			image: user.image || undefined,
-			description: user.bio || undefined,
+			"@id": userUrl,
 		},
 		about: {
-			"@type": "Person",
-			name: user.name,
+			"@id": userUrl,
 		},
 	};
 

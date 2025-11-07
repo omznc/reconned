@@ -1,12 +1,21 @@
+import { useTranslations } from "next-intl";
 import { GoogleLogo } from "@/components/logos/google-logo";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
-export function GoogleLoginButton({ redirectTo }: { redirectTo?: string | null }) {
+export function GoogleLoginButton({
+	redirectTo,
+	wasLastMethod,
+}: {
+	redirectTo?: string | null;
+	wasLastMethod?: boolean;
+}) {
+	const t = useTranslations();
+
 	return (
 		<Button
 			variant="outline"
-			className="w-full plausible-event-name=google-button-click"
+			className="relative w-full plausible-event-name=google-button-click"
 			type="button"
 			onClick={async () => {
 				await authClient.signIn.social(
@@ -19,6 +28,11 @@ export function GoogleLoginButton({ redirectTo }: { redirectTo?: string | null }
 			}}
 		>
 			<GoogleLogo /> Google
+			{wasLastMethod && (
+				<span className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold">
+					{t("public.auth.lastUsed")}
+				</span>
+			)}
 		</Button>
 	);
 }
