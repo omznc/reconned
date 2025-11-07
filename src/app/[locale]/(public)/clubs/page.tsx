@@ -23,8 +23,7 @@ type ClubSearch = {
 };
 
 export default async function Page(props: PageProps<"/[locale]/clubs">) {
-	const searchParams = await props.searchParams;
-	const t = await getTranslations();
+	const [searchParams, t, locale] = await Promise.all([props.searchParams, getTranslations(), getLocale()]);
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -56,11 +55,11 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 			position: index + 1 + skip,
 			item: {
 				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${club.slug ?? club.id}`,
 				name: club.name,
 				description: club.description,
 				sport: "Airsoft",
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${club.slug ?? club.id}`,
 				logo: club.logo || undefined,
 				address: club.location
 					? {

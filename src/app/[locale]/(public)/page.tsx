@@ -109,9 +109,9 @@ export default async function Home(props: PageProps<"/[locale]">) {
 		take: 3,
 	});
 
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
-	const websiteSchema = {
+	const websiteSchema: WithContext<{ "@type": "WebSite" }> = {
 		"@context": "https://schema.org",
 		"@type": "WebSite",
 		name: "Reconned",
@@ -123,10 +123,11 @@ export default async function Home(props: PageProps<"/[locale]">) {
 			"@type": "SearchAction",
 			target: {
 				"@type": "EntryPoint",
-				urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search?q={search_term_string}`,
+				urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search?q={search_term_string}`,
 			},
 			"query-input": "required name=search_term_string",
-		},
+			// biome-ignore lint/suspicious/noExplicitAny: Idk how else to get this to work
+		} as any,
 		about: {
 			"@type": "SportsOrganization",
 			name: "Airsoft Community",
