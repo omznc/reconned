@@ -67,16 +67,17 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		return <NotFoundTemporary />;
 	}
 
+	const locale = await getLocale();
 	const sportsEventSchema: WithContext<SportsEvent> = {
 		"@context": "https://schema.org",
 		"@type": "SportsEvent",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
 		name: event.name,
 		description: event.description,
 		sport: "Airsoft",
 		startDate: event.dateStart.toISOString(),
 		endDate: event.dateEnd.toISOString(),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
 		image: event.image || undefined,
 		location: {
 			"@type": "Place",
@@ -85,10 +86,10 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		},
 		organizer: {
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${event.club.slug ?? event.club.id}`,
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
 			name: event.club.name,
 			sport: "Airsoft",
-			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${event.club.slug ?? event.club.id}`,
+			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
 			logo: event.club.logo || undefined,
 		},
 		offers:
@@ -98,8 +99,12 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 						price: event.costPerPerson,
 						priceCurrency: "BAM",
 						availability: "https://schema.org/InStock",
-						validFrom: event.dateRegistrationsOpen.toISOString(),
-						validThrough: event.dateRegistrationsClose.toISOString(),
+						...(event.dateRegistrationsOpen
+							? { validFrom: event.dateRegistrationsOpen.toISOString() }
+							: {}),
+						...(event.dateRegistrationsClose
+							? { validThrough: event.dateRegistrationsClose.toISOString() }
+							: {}),
 					}
 				: undefined,
 		eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",

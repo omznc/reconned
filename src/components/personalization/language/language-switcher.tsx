@@ -1,7 +1,7 @@
 "use client";
 import { Globe } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,8 +12,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { LANGUAGE_TRANSLATIONS, VALID_LOCALES } from "@/i18n/valid-locales";
+import { cn } from "@/lib/utils";
 
-export function LanguageSwitcher() {
+export interface LanguageSwitcherProps extends ButtonProps {}
+export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitcherProps) {
 	const t = useTranslations();
 	const router = useRouter();
 	const path = usePathname();
@@ -23,9 +25,10 @@ export function LanguageSwitcher() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button
-					variant="ghost"
+					variant={variant || "ghost"}
 					suppressHydrationWarning
-					className="items-center w-full justify-start cursor-pointer shadow-none"
+					className={cn("items-center w-full justify-start cursor-pointer shadow-none", className)}
+					{...props}
 				>
 					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}

@@ -1,7 +1,7 @@
 import { render } from "@react-email/components";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin, captcha, oneTap, twoFactor } from "better-auth/plugins";
+import { admin, captcha, lastLoginMethod, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { emailHarmony } from "better-auth-harmony";
 import { headers } from "next/headers";
@@ -91,6 +91,7 @@ export const auth = betterAuth({
 			secretKey: env.TURNSTILE_SECRET_KEY,
 			endpoints: ["/sign-up/email", "/sign-in/email", "/forget-password"],
 		}),
+		lastLoginMethod(),
 	],
 	user: {
 		additionalFields: {

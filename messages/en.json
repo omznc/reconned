@@ -229,7 +229,8 @@
 			"metadata": {
 				"title": "Authentication - RECONNED",
 				"description": "Login, register, and reset your password. The first universal platform for airsoft clubs, events, and players."
-			}
+			},
+			"lastUsed": "Last used"
 		},
 		"clubs": {
 			"title": "Clubs",

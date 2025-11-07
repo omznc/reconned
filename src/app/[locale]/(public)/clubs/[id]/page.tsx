@@ -69,7 +69,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const sportsOrganizationSchema: WithContext<SportsOrganization> = {
 		"@context": "https://schema.org",
 		"@type": "SportsOrganization",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
 		name: club.name,
 		numberOfEmployees: {
 			"@type": "QuantitativeValue",
@@ -77,7 +77,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		},
 		description: club.description || undefined,
 		sport: "Airsoft",
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
 		logo: club.logo || undefined,
 		foundingDate: club.dateFounded?.toISOString() || undefined,
 		address: club.location
@@ -109,7 +109,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		member: club.members.map((member) => ({
 			"@type": "Person",
 			name: member.user.name,
-			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${member.user.slug ?? member.user.id}`,
+			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${member.user.slug ?? member.user.id}`,
 			image: member.user.image || undefined,
 			additionalName: member.user.callsign || undefined,
 		})),
