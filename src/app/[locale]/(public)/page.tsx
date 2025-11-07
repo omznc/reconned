@@ -25,10 +25,8 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
-import type { SportsOrganization, WithContext } from "schema-dts";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import { EventCalendar } from "@/components/event-calendar";
-import JsonLdScript from "@/components/json-ld-script";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -109,53 +107,10 @@ export default async function Home(props: PageProps<"/[locale]">) {
 		take: 3,
 	});
 
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
-
-	const websiteSchema: WithContext<{ "@type": "WebSite" }> = {
-		"@context": "https://schema.org",
-		"@type": "WebSite",
-		name: "Reconned",
-		description: t("public.home.metadata.description"),
-		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
-		sameAs: ["https://github.com/omznc/reconned"],
-		potentialAction: {
-			"@type": "SearchAction",
-			target: {
-				"@type": "EntryPoint",
-				urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search?q={search_term_string}`,
-			},
-			"query-input": "required name=search_term_string",
-			// biome-ignore lint/suspicious/noExplicitAny: Idk how else to get this to work
-		} as any,
-		about: {
-			"@type": "SportsOrganization",
-			name: "Airsoft Community",
-			sport: "Airsoft",
-			description: "Platform connecting airsoft clubs and players",
-		},
-	};
-
-	const organizationSchema: WithContext<SportsOrganization> = {
-		"@context": "https://schema.org",
-		"@type": "SportsOrganization",
-		name: "Reconned",
-		sport: "Airsoft",
-		description: t("public.home.metadata.description"),
-		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
-		foundingDate: "2024",
-		address: {
-			"@type": "PostalAddress",
-			addressCountry: "BA",
-		},
-		sameAs: ["https://github.com/omznc/reconned"],
-	};
+	const t = await getTranslations();
 
 	return (
 		<>
-			<JsonLdScript data={websiteSchema} />
-			<JsonLdScript data={organizationSchema} />
 			<MessageHandler />
 			<div className="overflow-hidden flex items-center justify-center w-full">
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
