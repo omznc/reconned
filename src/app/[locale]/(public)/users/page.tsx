@@ -22,8 +22,7 @@ type UserSearch = {
 const ITEMS_PER_PAGE = 12;
 
 export default async function Page(props: PageProps<"/[locale]/users">) {
-	const searchParams = await props.searchParams;
-	const t = await getTranslations();
+	const [searchParams, t, locale] = await Promise.all([props.searchParams, getTranslations(), getLocale()]);
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -53,9 +52,9 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 			position: index + 1 + skip,
 			item: {
 				"@type": "Person",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/users/${user.slug ?? user.id}`,
 				name: user.name,
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/users/${user.slug ?? user.id}`,
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/users/${user.slug ?? user.id}`,
 				image: user.image || undefined,
 				address: user.location
 					? {
