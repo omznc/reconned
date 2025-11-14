@@ -30,7 +30,7 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 					className={cn("items-center w-full justify-start cursor-pointer shadow-none", className)}
 					{...props}
 				>
-					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 ml-2 scale-100 transition-all" />
 					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}
 				</Button>
 			</DropdownMenuTrigger>

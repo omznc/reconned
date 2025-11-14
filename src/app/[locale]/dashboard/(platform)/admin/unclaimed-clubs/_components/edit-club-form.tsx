@@ -1,36 +1,22 @@
 "use client";
+
 import type { Club } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { format } from "date-fns";
-import {
-	AlertCircle,
-	ArrowUpRight,
-	Calendar as CalendarIcon,
-	Check,
-	CheckCircle,
-	ChevronsUpDown,
-	Loader,
-	Trash,
-} from "lucide-react";
+import { ArrowUpRight, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import {
-	deleteClub,
-	disconnectInstagramAccount,
 	getClubImageUploadUrl,
 	saveClubInformation,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
@@ -47,35 +33,27 @@ import { Link, useRouter } from "@/i18n/navigation";
 import type { Country } from "@/lib/cached-countries";
 import { cn } from "@/lib/utils";
 
-// Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
 	ssr: false,
 });
 
-interface ClubInfoFormProps {
-	club?: Club | null;
-	isClubOwner?: boolean;
+interface EditClubFormProps {
+	club: Club;
 	countries: Country[];
-	instagramConnectionUrl?: string;
 }
 
-export function ClubInfoForm(props: ClubInfoFormProps) {
+export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [open, setOpen] = useState(false);
-	const [instagramSuccess, setInstagramSuccess] = useState(false);
-	const [instagramError, setInstagramError] = useState<string | null>(null);
-	const [instagramErrorMessage, setInstagramErrorMessage] = useState<string | null>(null);
-	const [isDisconnectingInstagram, setIsDisconnectingInstagram] = useState(false);
-	const confirm = useConfirm();
 	const t = useTranslations();
+	const router = useRouter();
 
-	// Initialize file upload system for logo
-	const initialFiles: FileUploadItem[] = props.club?.logo
+	const initialFiles: FileUploadItem[] = club?.logo
 		? [
 				{
-					id: `existing-${props.club.id}`,
-					url: props.club.logo,
+					id: `existing-${club.id}`,
+					url: club.logo,
 					name: "Club logo",
 					type: "image/jpeg",
 					isExisting: true,
@@ -85,7 +63,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 	const logoUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			if (!props.club?.id) {
+			if (!club?.id) {
 				throw new Error("Must save club first");
 			}
 
@@ -94,7 +72,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					type: file.type,
 					size: file.size,
 				},
-				clubId: props.club.id,
+				clubId: club.id,
 			});
 
 			if (!resp?.data?.url) {
@@ -116,139 +94,48 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		initialFiles,
 	});
 
-	const router = useRouter();
-	const searchParams = useSearchParams();
-
-	// Add hash navigation support
 	useHash();
-
-	// Check for Instagram connection messages
-	const instagramSuccessParam = searchParams.get("instagramSuccess");
-	const instagramErrorParam = searchParams.get("instagramError");
-	const errorMessageParam = searchParams.get("errorMessage");
-
-	useEffect(() => {
-		if (instagramSuccessParam) {
-			setInstagramSuccess(true);
-		}
-
-		if (instagramErrorParam) {
-			setInstagramError(instagramErrorParam);
-		}
-
-		if (errorMessageParam) {
-			setInstagramErrorMessage(errorMessageParam);
-		}
-
-		// Delete the URL parameters after setting the state
-		const newUrl = new URL(window.location.href);
-		newUrl.searchParams.delete("instagramSuccess");
-		newUrl.searchParams.delete("instagramError");
-		newUrl.searchParams.delete("errorMessage");
-		window.history.replaceState({}, document.title, newUrl.toString());
-	}, [instagramSuccessParam, instagramErrorParam, errorMessageParam]);
 
 	const form = useForm<z.infer<typeof clubInfoSchema>>({
 		resolver: zodResolver(clubInfoSchema),
 		defaultValues: {
-			clubId: props.club?.id || "",
-			name: props.club?.name || "",
-			location: props.club?.location || "",
-			description: props.club?.description || "",
-			dateFounded: props.club?.dateFounded || new Date(),
-			isAllied: props.club?.isAllied,
-			isPrivate: props.club?.isPrivate,
-			isPrivateStats: props.club?.isPrivateStats,
-			logo: props.club?.logo || undefined,
-			contactPhone: props.club?.contactPhone || undefined,
-			contactEmail: props.club?.contactEmail || undefined,
-			slug: props.club?.slug || undefined,
-			latitude: props.club?.latitude || undefined,
-			longitude: props.club?.longitude || undefined,
-			countryId: props.club?.countryId || undefined,
-			website: props.club?.website || undefined,
+			clubId: club?.id || "",
+			name: club?.name || "",
+			location: club?.location || "",
+			description: club?.description || "",
+			dateFounded: club?.dateFounded || new Date(),
+			isAllied: club?.isAllied,
+			isPrivate: club?.isPrivate,
+			isPrivateStats: club?.isPrivateStats,
+			logo: club?.logo || undefined,
+			contactPhone: club?.contactPhone || undefined,
+			contactEmail: club?.contactEmail || undefined,
+			slug: club?.slug || undefined,
+			latitude: club?.latitude || undefined,
+			longitude: club?.longitude || undefined,
+			countryId: club?.countryId || undefined,
+			website: club?.website || undefined,
 		},
 		mode: "onBlur",
 	});
 
-	// Add this handler for map location selection
 	const handleLocationSelect = (lat: number, lng: number) => {
 		form.setValue("latitude", lat, { shouldDirty: true });
 		form.setValue("longitude", lng, { shouldDirty: true });
 	};
 
 	const handleLocationReset = () => {
-		if (!props.club) {
+		if (!club) {
 			return;
 		}
 
-		form.setValue("latitude", props.club.latitude ?? undefined, { shouldDirty: true });
-		form.setValue("longitude", props.club.longitude ?? undefined, { shouldDirty: true });
-	};
-
-	// Add this function to handle Instagram disconnection
-	const handleDisconnectInstagram = async () => {
-		if (!props.club?.id) {
-			return;
-		}
-
-		const confirmed = await confirm({
-			title: t("dashboard.club.info.instagramDisconnect.title"),
-			body: t("dashboard.club.info.instagramDisconnect.body"),
-			actionButtonVariant: "destructive",
-			actionButton: t("common.actions.confirm"),
-			cancelButton: t("common.actions.cancel"),
-		});
-
-		if (!confirmed) {
-			return;
-		}
-
-		setIsDisconnectingInstagram(true);
-		try {
-			const result = await disconnectInstagramAccount({
-				clubId: props.club.id,
-			});
-
-			if (!result?.data?.success) {
-				throw new Error(result?.serverError);
-			}
-
-			toast.success(t("dashboard.club.info.instagramDisconnectSuccess"));
-			router.refresh();
-		} catch (_) {
-			toast.error(t("dashboard.club.info.instagramDisconnectError"));
-		} finally {
-			setIsDisconnectingInstagram(false);
-		}
-	};
-
-	// Helper function to get error message translation key
-	const getInstagramErrorTranslationKey = (errorCode: string): string => {
-		switch (errorCode) {
-			case "no_facebook_pages":
-				return "dashboard.club.info.instagramError.noFacebookPages";
-			case "no_instagram_business_account":
-				return "dashboard.club.info.instagramError.noInstagramAccount";
-			case "not_connected_to_instagram":
-				return "dashboard.club.info.instagramError.notConnected";
-			case "missing_params":
-				return "dashboard.club.info.instagramError.missingParams";
-			case "auth_failed":
-				return "dashboard.club.info.instagramError.authFailed";
-			case "page_not_found":
-				return "dashboard.club.info.instagramError.pageNotFound";
-			case "personal_account":
-				return "dashboard.club.info.instagramError.personalAccount";
-			default:
-				return "dashboard.club.info.instagramError.connectionFailed";
-		}
+		form.setValue("latitude", club.latitude ?? undefined, { shouldDirty: true });
+		form.setValue("longitude", club.longitude ?? undefined, { shouldDirty: true });
 	};
 
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
-			// Upload logo and handle deletion
 			const uploadedUrls = await logoUpload.uploadAllFiles();
 			values.logo = uploadedUrls.length > 0 ? uploadedUrls[0] : undefined;
 
@@ -257,6 +144,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			if (result?.data?.id) {
 				logoUpload.markAsSaved();
 				toast.success(t("dashboard.club.info.success"));
+				router.push("/dashboard/admin/unclaimed-clubs");
 			}
 		} catch {
 			toast.error(t("dashboard.club.info.error"));
@@ -267,48 +155,6 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl">
-				{props.club && (
-					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
-						<div className="flex flex-col">
-							<AlertTitle>{t("dashboard.club.info.clubEditTitle")}</AlertTitle>
-							<AlertDescription>{t("dashboard.club.info.clubEditDescription")}</AlertDescription>
-						</div>
-						<div className="flex gap-1">
-							{props.isClubOwner && (
-								<Button
-									variant={"destructive"}
-									type="button"
-									disabled={isLoading}
-									className="w-fit"
-									onClick={async () => {
-										const resp = await confirm({
-											title: t("dashboard.club.info.clubDelete.title"),
-											body: t("dashboard.club.info.clubDelete.body"),
-											actionButtonVariant: "destructive",
-											actionButton: t("dashboard.club.info.clubDelete.confirm"),
-											cancelButton: t("dashboard.club.info.clubDelete.cancel"),
-										});
-										if (resp) {
-											setIsLoading(true);
-											await deleteClub({
-												clubId: props.club?.id ?? "",
-											});
-											setIsLoading(false);
-										}
-									}}
-								>
-									<Trash className="size-4" />
-
-									{isLoading ? (
-										<Loader className="animate-spin size-4" />
-									) : (
-										t("dashboard.club.info.clubDelete.confirm")
-									)}
-								</Button>
-							)}
-						</div>
-					</Alert>
-				)}
 				<div>
 					<h3 className="text-lg font-semibold">{t("dashboard.club.info.general")}</h3>
 				</div>
@@ -348,7 +194,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											)}
 										>
 											{field.value
-												? props.countries.find((country) => country.id === field.value)?.name
+												? countries.find((country) => country.id === field.value)?.name
 												: t("dashboard.club.info.pickCountry")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -359,7 +205,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										<CommandInput placeholder={t("dashboard.club.info.searchCountry")} />
 										<CommandEmpty>{t("dashboard.club.info.noResults")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
-											{props.countries.map((country) => (
+											{countries.map((country) => (
 												<CommandItem
 													key={country.id}
 													value={country.name}
@@ -411,8 +257,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							size="sm"
 							onClick={handleLocationReset}
 							data-hidden={
-								form.watch("latitude") === props.club?.latitude &&
-								form.watch("longitude") === props.club?.longitude
+								form.watch("latitude") === club?.latitude && form.watch("longitude") === club?.longitude
 							}
 							className="h-6 px-2 text-xs data-[hidden=true]:opacity-0"
 						>
@@ -424,12 +269,12 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<MapSelector
 								clubs={[
 									{
-										id: props.club?.id ?? "new",
+										id: club?.id ?? "new",
 										name: form.watch("name") || "",
 										latitude: form.watch("latitude") || null,
 										longitude: form.watch("longitude") || null,
 										location: form.watch("location"),
-										logo: props.club?.logo,
+										logo: club?.logo,
 									},
 								]}
 								interactive={true}
@@ -454,7 +299,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					name="slug"
 					render={({ field }) => (
 						<SlugInput
-							currentSlug={props.club?.slug}
+							currentSlug={club?.slug}
 							defaultSlug={field.value}
 							type="club"
 							onValid={(slug) => {
@@ -647,86 +492,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 				/>
 
-				{/* Instagram integration section with alerts */}
-				{(props.club?.instagramConnected || props.instagramConnectionUrl) && (
-					<div id="instagram" className="border rounded-lg p-4 space-y-4">
-						<div className="flex sm:flex-row flex-col gap-2 items-center justify-between">
-							<div className="flex items-center gap-2">
-								<SiInstagram className="h-5 w-5" />
-								<h4 className="font-medium">{t("dashboard.club.info.instagramConnection")}</h4>
-							</div>
-
-							{props.club?.instagramConnected ? (
-								<Button
-									type="button"
-									variant="destructive"
-									size="sm"
-									onClick={handleDisconnectInstagram}
-									disabled={isDisconnectingInstagram}
-								>
-									{isDisconnectingInstagram ? (
-										<>
-											<Loader className="mr-2 h-4 w-4 animate-spin" />
-											{t("dashboard.club.info.instagramDisconnecting")}
-										</>
-									) : (
-										t("dashboard.club.info.instagramDisconnect.action")
-									)}
-								</Button>
-							) : (
-								<Link href={props.instagramConnectionUrl ?? ""}>
-									<Button type="button" variant="outline" size="sm" disabled={!props.club?.id}>
-										{t("dashboard.club.info.instagramConnect")}
-									</Button>
-								</Link>
-							)}
-						</div>
-
-						{/* Instagram success message */}
-						{instagramSuccess && (
-							<Alert>
-								<CheckCircle className="h-4 w-4" />
-								<AlertTitle>{t("dashboard.club.info.instagramConnectSuccess")}</AlertTitle>
-							</Alert>
-						)}
-
-						{/* Instagram error message */}
-						{instagramError && (
-							<Alert variant="destructive">
-								<AlertCircle className="h-4 w-4" />
-								<AlertTitle>{t("dashboard.club.info.instagramError.title")}</AlertTitle>
-								<AlertDescription>
-									{instagramErrorMessage || t(getInstagramErrorTranslationKey(instagramError))}
-								</AlertDescription>
-							</Alert>
-						)}
-
-						{props.club?.instagramConnected && props.club?.instagramUsername && (
-							<div className="text-sm inline-flex items-center gap-1">
-								<p className="text-muted-foreground">
-									{t("dashboard.club.info.instagramConnectedMessage")}
-								</p>
-								<Link
-									href={`https://instagram.com/${props.club.instagramUsername}`}
-									target="_blank"
-									className="text-blue-500 hover:underline flex items-center gap-1"
-								>
-									@{props.club.instagramUsername}
-									<ArrowUpRight className="h-3 w-3" />
-								</Link>
-							</div>
-						)}
-
-						{!props.club?.instagramConnected && (
-							<div className="text-sm">
-								<p className="text-muted-foreground">{t("dashboard.club.info.instagramDescription")}</p>
-							</div>
-						)}
-					</div>
-				)}
-
 				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
-					{props.club ? t("common.actions.save") : t("common.actions.create")}
+					{t("common.actions.save")}
 				</LoaderSubmitButton>
 			</form>
 		</Form>

@@ -10,7 +10,8 @@
 			"saving": "Spašavanje...",
 			"reset": "Resetuj",
 			"enable": "Omogući",
-			"disable": "Onemogući"
+			"disable": "Onemogući",
+			"edit": "Uredi"
 		},
 		"fields": {
 			"email": "Email"
@@ -97,6 +98,17 @@
 			"message": "Da resetujete lozinku, kliknite na dugme ispod",
 			"action": "Resetuj lozinku",
 			"footer": "Ako ste neočekivano primili ovaj email i niste tražili resetovanje lozinke, samo ga ignorišite."
+		},
+		"clubClaimRequest": {
+			"title": "Zahtjev za preuzimanje kluba: {clubName}",
+			"message": "Korisnik je zatražio preuzimanje nepreuzetog kluba. Pregledajte detalje ispod i dodijelite vlasnika ako je prikladno.",
+			"action": "Pogledaj klub u admin panelu",
+			"requesterName": "Ime podnosioca zahtjeva",
+			"requesterEmail": "Email podnosioca zahtjeva",
+			"club": "Klub",
+			"clubId": "ID kluba",
+			"messageLabel": "Poruka",
+			"footer": "Ovo je automatska obavijest od RECONNED-a."
 		}
 	},
 	"public": {
@@ -728,7 +740,7 @@
 				},
 				"activeSessions": "Aktivne sesije",
 				"activeSessionsDescription": "Ovdje možete vidjeti sve aktivne sesije na vašem računu. Ako primjetite nešto sumnjivo, odjavite se sa svih uređaja.",
-				"logoutAll": "Odjavi se sa svih uređaja, osim ovog",
+				"logoutAll": "Odjavi se sa svih uređaja, osim ovog.",
 				"logoutAllAction": "Odjavi se",
 				"logoutAllSuccess": "Odjavljeni ste sa svih ostalih uređaja",
 				"logoutAllError": "Došlo je do greške prilikom odjavljivanja sa ostalih uređaja.",
@@ -772,6 +784,29 @@
 			"clubs": {
 				"allClubs": "Svi klubovi",
 				"notFound": "Klub nije pronađen."
+			},
+			"unclaimedClubs": {
+				"title": "Nepreuzeti klubovi",
+				"create": "Kreiraj nepreuzeti klub",
+				"createTitle": "Kreiraj nepreuzeti klub",
+				"createDescription": "Kreirajte klub koji korisnici mogu preuzeti. Klub će se pojaviti na javnoj stranici ali neće imati vlasnika dok ga neko ne preuzme.",
+				"editTitle": "Uredi nepreuzeti klub",
+				"editDescription": "Uredi informacije za ovaj nepreuzeti klub.",
+				"notFound": "Klub nije pronađen.",
+				"createdAt": "Kreiran",
+				"members": "Članovi",
+				"assignOwner": "Dodijeli vlasnika kluba",
+				"selectUser": "Izaberi korisnika",
+				"searchUsers": "Pretraži korisnike...",
+				"noUsersFound": "Korisnici nisu pronađeni.",
+				"assign": "Dodijeli vlasnika",
+				"assignedSuccess": "Vlasnik kluba uspješno dodijeljen",
+				"assignedError": "Greška pri dodjeljivanju vlasnika kluba",
+				"createdSuccess": "Nepreuzeti klub uspješno kreiran",
+				"createdError": "Greška pri kreiranju nepreuzetog kluba",
+				"searchPlaceholder": "Pretraži klubove",
+				"info": "Info",
+				"actions": "Akcije"
 			},
 			"users": {
 				"notFound": "Korisnik nije pronađen.",
@@ -1302,6 +1337,7 @@
 			"rules": "Pravila",
 			"admin": "Administracija",
 			"users": "Korisnici",
+			"unclaimedClubs": "Nepreuzeti klubovi",
 			"emails": "Emailovi",
 			"personalization": "Personalizacija",
 			"logout": "Odjava",
@@ -1521,7 +1557,20 @@
 			"posts": "Objave kluba",
 			"createPost": "Nova objava",
 			"noPosts": "Nema objava",
-			"members": "Članovi"
+			"members": "Članovi",
+			"claimClub": "Preuzmi ovaj klub"
+		},
+		"claimClubForm": {
+			"disclaimer": "Ovaj klub je dodan od strane RECONNED tima i još nije u vlasništvu. Ako ste vlasnik ili predstavnik ovog kluba, možete ga preuzeti popunjavanjem forme ispod.",
+			"loginRequired": "Morate biti prijavljeni da biste poslali zahtjev za preuzimanje. Molimo prijavite se da biste nastavili.",
+			"login": "Prijavi se",
+			"message": "Poruka",
+			"messagePlaceholder": "Recite nam zašto biste trebali biti vlasnik ovog kluba...",
+			"messageDescription": "Opciono: Dodajte dodatne informacije o vašoj vezi sa ovim klubom.",
+			"submit": "Pošalji zahtjev za preuzimanje",
+			"success": "Zahtjev za preuzimanje uspješno poslan. Pregledat ćemo vaš zahtjev i javit ćemo vam se uskoro.",
+			"error": "Greška pri slanju zahtjeva za preuzimanje. Molimo pokušajte ponovo.",
+			"submitted": "Vaš zahtjev za preuzimanje je poslan. Pregledat ćemo ga i javit ćemo vam se uskoro."
 		},
 		"leaveClubButton": {
 			"title": "Napuštanje kluba",
@@ -1559,7 +1608,9 @@
 				"invites": "Pozivnice",
 				"users": "Korisnici",
 				"instagram": "Instagram",
-				"audit": "Zapis"
+				"audit": "Zapis",
+				"unclaimed-clubs": "Nepreuzeti klubovi",
+				"edit": "Uredi"
 			}
 		},
 		"icons": {

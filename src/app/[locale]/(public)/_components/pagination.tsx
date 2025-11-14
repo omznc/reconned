@@ -64,7 +64,6 @@ export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1 }: Pagi
 
 			{pages.map((pageNum, i) =>
 				pageNum === "dots" ? (
-					// biome-ignore lint/suspicious/noArrayIndexKey: It's pagination
 					<Button key={`dots-${i}`} variant="outline" size="icon" disabled>
 						<MoreHorizontal className="h-4 w-4" />
 					</Button>

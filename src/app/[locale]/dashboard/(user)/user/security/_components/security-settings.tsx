@@ -54,6 +54,15 @@ export function SecuritySettings({
 		return Laptop;
 	};
 
+	console.log({
+		passkeys,
+		backupCodes,
+		displayBackupCodes,
+		hasBackupCodes,
+		regeneratedBackupCodes,
+		sessions,
+	});
+
 	return (
 		<>
 			{hasPassword ? (

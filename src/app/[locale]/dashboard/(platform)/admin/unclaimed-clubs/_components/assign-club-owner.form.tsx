@@ -1,0 +1,145 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { assignClubOwner } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
+import { Button } from "@/components/ui/button";
+import { LoaderIcon } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useRouter } from "@/i18n/navigation";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface AssignClubOwnerFormProps {
+	clubId: string;
+}
+
+export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
+	const [open, setOpen] = useState(false);
+	const [selectedUserId, setSelectedUserId] = useState<string>("");
+	const [users, setUsers] = useState<Array<{ id: string; name: string; email: string; callsign: string | null }>>([]);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const t = useTranslations();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (searchQuery.length > 2) {
+			fetch(`/api/admin/users?query=${encodeURIComponent(searchQuery)}&includeCurrentUser=true`)
+				.then((res) => {
+					if (!res.ok) {
+						throw new Error("Failed to fetch users");
+					}
+					return res.json();
+				})
+				.then((data) => {
+					if (Array.isArray(data)) {
+						setUsers(data);
+					}
+				})
+				.catch(() => {
+					setUsers([]);
+				});
+		} else {
+			setUsers([]);
+		}
+	}, [searchQuery]);
+
+	const handleAssign = async () => {
+		if (!selectedUserId) {
+			toast.error(t("dashboard.admin.unclaimedClubs.selectUser"));
+			return;
+		}
+
+		setIsLoading(true);
+		try {
+			const result = await assignClubOwner({
+				clubId,
+				userId: selectedUserId,
+			});
+
+			if (result?.data?.success) {
+				toast.success(t("dashboard.admin.unclaimedClubs.assignedSuccess"));
+				const params = new URLSearchParams(window.location.search);
+				params.delete("clubId");
+				router.replace(`?${params.toString()}`);
+			} else {
+				throw new Error();
+			}
+		} catch {
+			toast.error(t("dashboard.admin.unclaimedClubs.assignedError"));
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const selectedUser = users.find((u) => u.id === selectedUserId);
+
+	return (
+		<div className="space-y-4">
+			<div className="space-y-2">
+				<label htmlFor="assign-club-owner-select" className="text-sm font-medium">
+					{t("dashboard.admin.unclaimedClubs.assignOwner")}
+				</label>
+				<Popover open={open} onOpenChange={setOpen}>
+					<PopoverTrigger asChild>
+						<Button
+							id="assign-club-owner-select"
+							variant="outline"
+							role="combobox"
+							aria-expanded={open}
+							className="w-full justify-between"
+						>
+							{selectedUser
+								? `${selectedUser.name}${selectedUser.callsign ? ` (${selectedUser.callsign})` : ""}`
+								: t("dashboard.admin.unclaimedClubs.selectUser")}
+							<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent className="w-full p-0" align="start">
+						<Command shouldFilter={false}>
+							<CommandInput
+								placeholder={t("dashboard.admin.unclaimedClubs.searchUsers")}
+								value={searchQuery}
+								onValueChange={setSearchQuery}
+							/>
+							<CommandList>
+								<CommandEmpty>{t("dashboard.admin.unclaimedClubs.noUsersFound")}</CommandEmpty>
+								<CommandGroup>
+									{users.map((user) => (
+										<CommandItem
+											key={user.id}
+											value={user.id}
+											onSelect={() => {
+												setSelectedUserId(user.id === selectedUserId ? "" : user.id);
+												setOpen(false);
+											}}
+										>
+											<Check
+												className={cn(
+													"mr-2 h-4 w-4",
+													selectedUserId === user.id ? "opacity-100" : "opacity-0",
+												)}
+											/>
+											{user.name}
+											{user.callsign && (
+												<span className="text-muted-foreground ml-2">({user.callsign})</span>
+											)}
+											<span className="text-muted-foreground ml-2">({user.email})</span>
+										</CommandItem>
+									))}
+								</CommandGroup>
+							</CommandList>
+						</Command>
+					</PopoverContent>
+				</Popover>
+			</div>
+			<Button onClick={handleAssign} disabled={isLoading || !selectedUserId}>
+				{isLoading && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
+				{t("dashboard.admin.unclaimedClubs.assign")}
+			</Button>
+		</div>
+	);
+}

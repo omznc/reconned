@@ -11,13 +11,18 @@ export const GET = withAxiom(async (request: AxiomRequest) => {
 
 	const { searchParams } = new URL(request.url);
 	const query = searchParams.get("query") ?? "";
+	const includeCurrentUser = searchParams.get("includeCurrentUser") === "true";
 
 	try {
 		const users = await prisma.user.findMany({
 			where: {
-				id: {
-					not: user.id,
-				},
+				...(!includeCurrentUser
+					? {
+							id: {
+								not: user.id,
+							},
+						}
+					: {}),
 				OR: [
 					{ name: { contains: query, mode: "insensitive" } },
 					{ email: { contains: query, mode: "insensitive" } },
@@ -32,7 +37,6 @@ export const GET = withAxiom(async (request: AxiomRequest) => {
 			},
 			take: 5,
 		});
-
 		return NextResponse.json(users);
 	} catch (_error) {
 		return NextResponse.json({ error: "Neuspjela pretraga korisnika" }, { status: 500 });

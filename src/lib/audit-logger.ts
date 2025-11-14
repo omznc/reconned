@@ -31,7 +31,8 @@ type ClubActionType =
 	| "EVENT_DELETE"
 	| "CLUB_RULE_UPDATE"
 	| "CLUB_RULE_CREATE"
-	| "CLUB_RULE_DELETE";
+	| "CLUB_RULE_DELETE"
+	| "CLUB_OWNER_ASSIGNED";
 
 interface AuditLogOptions {
 	clubId: string;
