@@ -10,7 +10,8 @@
 			"saving": "Saving...",
 			"reset": "Reset",
 			"enable": "Enable",
-			"disable": "Disable"
+			"disable": "Disable",
+			"edit": "Edit"
 		},
 		"fields": {
 			"email": "Email"
@@ -97,6 +98,17 @@
 			"message": "To reset your password, please click on the button below",
 			"action": "Reset my password",
 			"footer": "If this email is unexpected, and you didn't request a password reset, simply ignore it."
+		},
+		"clubClaimRequest": {
+			"title": "Club Claim Request: {clubName}",
+			"message": "A user has requested to claim an unclaimed club. Review the details below and assign an owner if appropriate.",
+			"action": "View Club in Admin Panel",
+			"requesterName": "Requester Name",
+			"requesterEmail": "Requester Email",
+			"club": "Club",
+			"clubId": "Club ID",
+			"messageLabel": "Message",
+			"footer": "This is an automated notification from RECONNED."
 		}
 	},
 	"public": {
@@ -670,6 +682,29 @@
 				"allClubs": "All clubs",
 				"notFound": "Club not found."
 			},
+			"unclaimedClubs": {
+				"title": "Unclaimed clubs",
+				"create": "Create unclaimed club",
+				"createTitle": "Create unclaimed club",
+				"createDescription": "Create a club that can be claimed by users. The club will appear on the public page but won't have an owner until someone claims it.",
+				"editTitle": "Edit unclaimed club",
+				"editDescription": "Edit the information for this unclaimed club.",
+				"notFound": "Club not found.",
+				"createdAt": "Created at",
+				"members": "Members",
+				"assignOwner": "Assign club owner",
+				"selectUser": "Select a user",
+				"searchUsers": "Search users...",
+				"noUsersFound": "No users found.",
+				"assign": "Assign owner",
+				"assignedSuccess": "Club owner assigned successfully",
+				"assignedError": "Failed to assign club owner",
+				"createdSuccess": "Unclaimed club created successfully",
+				"createdError": "Failed to create unclaimed club",
+				"searchPlaceholder": "Search for clubs...",
+				"info": "Info",
+				"actions": "Actions"
+			},
 			"users": {
 				"notFound": "User not found.",
 				"memberSince": "Member since:"
@@ -739,7 +774,7 @@
 				},
 				"activeSessions": "Active sessions",
 				"activeSessionsDescription": "Here you can see all active sessions on your account. ",
-				"logoutAll": "Sign out of all devices except this one",
+				"logoutAll": "Sign out of all devices except this one.",
 				"logoutAllAction": "Sign out",
 				"logoutAllSuccess": "You are signed out of all other devices",
 				"logoutAllError": "An error occurred while signing out from other devices.",
@@ -1303,6 +1338,7 @@
 			"admin": "Administration",
 			"auditLogs": "Audit",
 			"users": "Users",
+			"unclaimedClubs": "Unclaimed clubs",
 			"emails": "Emails",
 			"personalization": "Personalization",
 			"logout": "Sign out",
@@ -1521,7 +1557,20 @@
 			"noPosts": "There are no posts",
 			"allied": "Allied with ASK FBIH",
 			"instagramGallery": "Instagram photos",
-			"instagramGalleryDescription": "View our latest posts on Instagram"
+			"instagramGalleryDescription": "View our latest posts on Instagram",
+			"claimClub": "Claim this club"
+		},
+		"claimClubForm": {
+			"disclaimer": "This club was added by the RECONNED team and is not owned by anyone yet. If you are the owner or representative of this club, you can claim it by filling out the form below.",
+			"loginRequired": "You must be logged in to submit a claim request. Please log in to continue.",
+			"login": "Log in",
+			"message": "Message",
+			"messagePlaceholder": "Tell us why you should be the owner of this club...",
+			"messageDescription": "Optional: Provide additional information about your relationship with this club.",
+			"submit": "Submit claim request",
+			"success": "Claim request submitted successfully. We'll review your request and get back to you soon.",
+			"error": "Failed to submit claim request. Please try again.",
+			"submitted": "Your claim request has been submitted. We'll review it and get back to you soon."
 		},
 		"breadcrumbs": {
 			"currentClub": "Current club",
@@ -1552,7 +1601,9 @@
 				"audit": "Audit",
 				"invites": "Invitations",
 				"users": "Users",
-				"instagram": "Instagram"
+				"instagram": "Instagram",
+				"unclaimed-clubs": "Unclaimed clubs",
+				"edit": "Edit"
 			}
 		},
 		"icons": {

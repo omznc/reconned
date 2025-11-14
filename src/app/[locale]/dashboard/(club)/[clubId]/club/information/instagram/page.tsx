@@ -192,7 +192,10 @@ export default function InstagramPageSelection() {
 						const isEligible = page.has_instagram_business_account;
 
 						return (
+							// biome-ignore lint/a11y/useSemanticElements: Style stuff
 							<div
+								role="button"
+								tabIndex={0}
 								key={page.id}
 								className={cn(
 									"border rounded-md p-4 flex items-center gap-4 transition-colors",

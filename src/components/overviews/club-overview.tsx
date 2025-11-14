@@ -24,6 +24,7 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { ClaimClubForm } from "@/components/claim-club-form";
 import { getPageViews } from "@/lib/analytics";
 import { checkAndRefreshToken, getInstagramMedia, type InstagramMedia } from "@/lib/instagram";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,8 @@ interface ClubOverviewProps {
 	isManager?: boolean;
 	isMember?: boolean;
 	currentUserMembership?: ClubMembership | null;
+	hasOwner?: boolean;
+	user?: { id: string; name: string; email: string; callsign?: string | null } | null;
 }
 
 async function fetchInstagramPhotos(clubId: string): Promise<{ photos: InstagramMedia[]; username: string | null }> {
@@ -63,7 +66,14 @@ async function fetchInstagramPhotos(clubId: string): Promise<{ photos: Instagram
 	}
 }
 
-export async function ClubOverview({ club, isManager, isMember, currentUserMembership }: ClubOverviewProps) {
+export async function ClubOverview({
+	club,
+	isManager,
+	isMember,
+	currentUserMembership,
+	hasOwner = true,
+	user,
+}: ClubOverviewProps) {
 	const [analyticsId, analyticsSlug, t, instagramData] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
@@ -193,115 +203,130 @@ export async function ClubOverview({ club, isManager, isMember, currentUserMembe
 					</Badge>
 				)}
 			</div>
-			<ReviewsOverview type="club" typeId={club.id} />
-			<div
-				className={cn("grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none", {
-					"md:grid-cols-3": (club.members?.length ?? 0) > 0,
-				})}
-			>
-				<div className="space-y-4 md:col-span-2">
-					<div className="flex h-10 items-center justify-between">
-						<h2 className="text-xl font-semibold flex items-center gap-2">
-							{t("components.clubOverview.posts")}
-						</h2>
-						{isManager && (
-							<Button asChild size="sm">
-								<Link href={`/dashboard/${club.id}/club/posts`}>
-									<Pencil className="h-4 w-4" />
-									{t("components.clubOverview.createPost")}
-								</Link>
-							</Button>
+			{!hasOwner && (
+				<div className="border rounded-lg bg-card p-6 space-y-4">
+					<h2 className="text-xl font-semibold">{t("components.clubOverview.claimClub")}</h2>
+					<ClaimClubForm clubId={club.id} clubName={club.name} user={user} />
+				</div>
+			)}
+			{hasOwner && (
+				<>
+					<ReviewsOverview type="club" typeId={club.id} />
+					<div
+						className={cn(
+							"grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none",
+							{
+								"md:grid-cols-3": (club.members?.length ?? 0) > 0,
+							},
+						)}
+					>
+						<div className="space-y-4 md:col-span-2">
+							<div className="flex h-10 items-center justify-between">
+								<h2 className="text-xl font-semibold flex items-center gap-2">
+									{t("components.clubOverview.posts")}
+								</h2>
+								{isManager && (
+									<Button asChild size="sm">
+										<Link href={`/dashboard/${club.id}/club/posts`}>
+											<Pencil className="h-4 w-4" />
+											{t("components.clubOverview.createPost")}
+										</Link>
+									</Button>
+								)}
+							</div>
+							{!posts || posts.length === 0 ? (
+								<p className="text-muted-foreground">{t("components.clubOverview.noPosts")}</p>
+							) : (
+								<div className="space-y-4">
+									{posts?.map((post) => (
+										<ClubPost key={post.id} post={post} clubId={club.id} isManager={isManager} />
+									))}
+								</div>
+							)}
+						</div>
+						{(club.members?.length ?? 0) > 0 && (
+							<div className="space-y-4">
+								<h2 className="text-xl h-10 font-semibold items-center flex">
+									{t("components.clubOverview.members")}
+								</h2>
+								<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
+									{club.members
+										?.sort((a, b) => {
+											if (a.role === "CLUB_OWNER") {
+												return -1;
+											}
+											if (b.role === "CLUB_OWNER") {
+												return 1;
+											}
+											if (a.role === "MANAGER") {
+												return -1;
+											}
+											if (b.role === "MANAGER") {
+												return 1;
+											}
+											return 0;
+										})
+										?.map((membership) => (
+											<Link
+												className="relative flex group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10"
+												key={membership.user.id}
+												href={`/users/${membership.user.slug ?? membership.user.id}`}
+											>
+												<ArrowUpRight className="h-4 w-4 hidden group-hover:block text-red-500 right-2 top-2 absolute" />
+												{membership.user.image ? (
+													<Image
+														src={membership.user.image}
+														alt={membership.user.name}
+														width={32}
+														height={32}
+														className="size-8"
+													/>
+												) : (
+													<div className="size-8 bg-muted flex items-center justify-center">
+														<span className="text-xs text-muted-foreground">
+															{membership.user.name.charAt(0)}
+														</span>
+													</div>
+												)}
+												<div className="flex flex-col gap-0">
+													<h3 className="flex items-center gap-2 font-semibold">
+														{membership.user.name}{" "}
+														{membership.user.role === "admin" && <AdminIcon />}{" "}
+														{membership.role === "CLUB_OWNER" && <ClubOwnerIcon />}
+														{membership.role === "MANAGER" && <ClubManagerIcon />}
+													</h3>
+													<p className="text-muted-foreground -mt-2">
+														{membership.user.callsign}
+													</p>
+												</div>
+											</Link>
+										))}
+								</div>
+							</div>
 						)}
 					</div>
-					{!posts || posts.length === 0 ? (
-						<p className="text-muted-foreground">{t("components.clubOverview.noPosts")}</p>
-					) : (
-						<div className="space-y-4">
-							{posts?.map((post) => (
-								<ClubPost key={post.id} post={post} clubId={club.id} isManager={isManager} />
-							))}
+					{club.instagramUsername && (
+						<div className="rounded-lg border bg-sidebar">
+							<div className="flex items-start justify-between border-b p-4">
+								<div className="flex flex-col gap-2">
+									<div className="flex gap-2 items-center">
+										<SiInstagram className="h-5 w-5 text-primary" />
+										<h2 className="text-xl font-semibold">
+											{t("components.clubOverview.instagramGallery")}
+										</h2>
+									</div>
+									<p>{t("components.clubOverview.instagramGalleryDescription")}</p>
+								</div>
+							</div>
+							<div className="p-4">
+								<ClubInstagram
+									photos={instagramData.photos}
+									username={instagramData.username || club.instagramUsername || undefined}
+								/>
+							</div>
 						</div>
 					)}
-				</div>
-				{(club.members?.length ?? 0) > 0 && (
-					<div className="space-y-4">
-						<h2 className="text-xl h-10 font-semibold items-center flex">
-							{t("components.clubOverview.members")}
-						</h2>
-						<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
-							{club.members
-								?.sort((a, b) => {
-									if (a.role === "CLUB_OWNER") {
-										return -1;
-									}
-									if (b.role === "CLUB_OWNER") {
-										return 1;
-									}
-									if (a.role === "MANAGER") {
-										return -1;
-									}
-									if (b.role === "MANAGER") {
-										return 1;
-									}
-									return 0;
-								})
-								?.map((membership) => (
-									<Link
-										className="relative flex group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10"
-										key={membership.user.id}
-										href={`/users/${membership.user.slug ?? membership.user.id}`}
-									>
-										<ArrowUpRight className="h-4 w-4 hidden group-hover:block text-red-500 right-2 top-2 absolute" />
-										{membership.user.image ? (
-											<Image
-												src={membership.user.image}
-												alt={membership.user.name}
-												width={32}
-												height={32}
-												className="size-8"
-											/>
-										) : (
-											<div className="size-8 bg-muted flex items-center justify-center">
-												<span className="text-xs text-muted-foreground">
-													{membership.user.name.charAt(0)}
-												</span>
-											</div>
-										)}
-										<div className="flex flex-col gap-0">
-											<h3 className="flex items-center gap-2 font-semibold">
-												{membership.user.name}{" "}
-												{membership.user.role === "admin" && <AdminIcon />}{" "}
-												{membership.role === "CLUB_OWNER" && <ClubOwnerIcon />}
-												{membership.role === "MANAGER" && <ClubManagerIcon />}
-											</h3>
-											<p className="text-muted-foreground -mt-2">{membership.user.callsign}</p>
-										</div>
-									</Link>
-								))}
-						</div>
-					</div>
-				)}
-			</div>
-			{club.instagramUsername && (
-				<div className="rounded-lg border bg-sidebar">
-					<div className="flex items-start justify-between border-b p-4">
-						<div className="flex flex-col gap-2">
-							<div className="flex gap-2 items-center">
-								<SiInstagram className="h-5 w-5 text-primary" />
-								<h2 className="text-xl font-semibold">
-									{t("components.clubOverview.instagramGallery")}
-								</h2>
-							</div>
-							<p>{t("components.clubOverview.instagramGalleryDescription")}</p>
-						</div>
-					</div>
-					<div className="p-4">
-						<ClubInstagram
-							photos={instagramData.photos}
-							username={instagramData.username || club.instagramUsername || undefined}
-						/>
-					</div>
-				</div>
+				</>
 			)}
 		</div>
 	);

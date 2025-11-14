@@ -19,8 +19,8 @@ const localesString = routing.locales.map((locale) => `${locale}`).join("|");
 const nextConfig = {
 	reactStrictMode: true,
 	typedRoutes: true,
+	reactCompiler: true,
 	experimental: {
-		reactCompiler: true,
 		staleTimes: {
 			staleTimes: {
 				dynamic: 30,
@@ -29,6 +29,7 @@ const nextConfig = {
 		},
 		webpackMemoryOptimizations: true,
 		viewTransition: true,
+		serverComponentsHmrCache: true,
 	},
 	images: {
 		remotePatterns: [
