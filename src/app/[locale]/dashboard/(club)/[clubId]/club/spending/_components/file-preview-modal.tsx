@@ -2,11 +2,11 @@
 
 import { Download, ExternalLink } from "lucide-react";
 import Image from "next/image";
+import { useLogger } from "next-axiom";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Credenza, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
-import { useLogger } from "next-axiom";
 
 interface FilePreviewModalProps {
 	isOpen: boolean;

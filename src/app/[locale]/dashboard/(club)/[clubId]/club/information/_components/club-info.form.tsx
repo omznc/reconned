@@ -16,7 +16,7 @@ import {
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -69,6 +69,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [isDisconnectingInstagram, setIsDisconnectingInstagram] = useState(false);
 	const confirm = useConfirm();
 	const t = useTranslations();
+	const clubIdRef = useRef<string | null>(props.club?.id || null);
 
 	// Initialize file upload system for logo
 	const initialFiles: FileUploadItem[] = props.club?.logo
@@ -85,7 +86,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 	const logoUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			if (!props.club?.id) {
+			const currentClubId = clubIdRef.current;
+			if (!currentClubId) {
 				throw new Error("Must save club first");
 			}
 
@@ -94,7 +96,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					type: file.type,
 					size: file.size,
 				},
-				clubId: props.club.id,
+				clubId: currentClubId,
 			});
 
 			if (!resp?.data?.url) {
@@ -248,15 +250,45 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
 		try {
-			// Upload logo and handle deletion
-			const uploadedUrls = await logoUpload.uploadAllFiles();
-			values.logo = uploadedUrls.length > 0 ? uploadedUrls[0] : undefined;
+			const isCreating = !props.club?.id;
+			let clubId = props.club?.id;
 
-			const result = await saveClubInformation(values);
+			if (isCreating) {
+				values.logo = undefined;
+				const result = await saveClubInformation(values);
 
-			if (result?.data?.id) {
-				logoUpload.markAsSaved();
-				toast.success(t("dashboard.club.info.success"));
+				if (!result?.data?.id) {
+					throw new Error("Failed to create club");
+				}
+
+				clubId = result.data.id;
+				clubIdRef.current = clubId;
+			}
+
+			const filesToUpload = logoUpload.files.filter((f) => f.file && !f.isExisting);
+			if (filesToUpload.length > 0 && clubId) {
+				const uploadedUrls = await logoUpload.uploadAllFiles();
+				const logoUrl = uploadedUrls[0];
+				if (logoUrl) {
+					values.logo = logoUrl;
+				}
+			} else {
+				const existingUrls = logoUpload.files
+					.filter((f) => f.isExisting && f.url)
+					.map((f) => f.url)
+					.filter((url): url is string => url !== undefined);
+				values.logo = existingUrls.length > 0 ? existingUrls[0] : undefined;
+			}
+
+			if (!isCreating || filesToUpload.length > 0) {
+				await saveClubInformation(values);
+			}
+
+			logoUpload.markAsSaved();
+			toast.success(t("dashboard.club.info.success"));
+
+			if (isCreating && clubId) {
+				router.push(`/dashboard/${clubId}/club`);
 			}
 		} catch {
 			toast.error(t("dashboard.club.info.error"));
