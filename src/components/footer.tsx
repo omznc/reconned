@@ -1,5 +1,5 @@
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-import { ArrowUpRightIcon, BarChart2, Calendar, ExternalLinkIcon, LayoutDashboard, MapIcon, Search, ShieldQuestion } from "lucide-react";
+import { ArrowUpRightIcon, BarChart2, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { BadgeNew } from "@/components/badge-new";
 import { BadgeSoon } from "@/components/badge-soon";
@@ -146,21 +146,21 @@ export async function Footer() {
 						{t("components.footer.sponsors")}
 					</Link>
 					{CURRENT_COMMIT && body.commit?.committer?.date && (
-							<Link
-								href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
-								target="_blank"
-								className="font-mono mt-4 w-fit opacity-30 hover:opacity-60 flex items-center gap-1 transition-opacity"
-							>
-								{t("components.footer.version", {
-									commit: CURRENT_COMMIT.slice(0, 7),
-									date: new Date(body.commit.committer.date).toLocaleDateString(locale, {
-										year: "numeric",
-										month: "long",
-										day: "numeric",
-									}),
-								})}
-								<ArrowUpRightIcon className="w-4 h-4 -mt-0.5" />
-							</Link>
+						<Link
+							href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
+							target="_blank"
+							className="font-mono mt-4 w-fit opacity-30 hover:opacity-60 flex items-center gap-1 transition-opacity"
+						>
+							{t("components.footer.version", {
+								commit: CURRENT_COMMIT.slice(0, 7),
+								date: new Date(body.commit.committer.date).toLocaleDateString(locale, {
+									year: "numeric",
+									month: "long",
+									day: "numeric",
+								}),
+							})}
+							<ArrowUpRightIcon className="w-4 h-4 -mt-0.5" />
+						</Link>
 					)}
 				</div>
 			</div>
