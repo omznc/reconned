@@ -175,7 +175,6 @@ export function StatsCharts({ memberData, roleData, eventData, registrationData 
 						<>
 							<DialogTitle>{fullscreenChart.title}</DialogTitle>
 							<ChartContainer config={chartConfig} className="p-4 w-full h-full">
-								{/* @ts-expect-error */}
 								{fullscreenChart.renderChart(fullscreenChart.data)}
 							</ChartContainer>
 						</>

@@ -1,13 +1,13 @@
 import type { Prisma } from "@generated/client";
+import { Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/prisma";
 import { UnclaimedClubsSheet } from "./_components/unclaimed-clubs.sheet.tsx";
 import { UnclaimedClubsTable } from "./_components/unclaimed-clubs.table.tsx";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 
 export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs">) {
 	const searchParams = await props.searchParams;

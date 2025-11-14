@@ -1,5 +1,5 @@
 import { render } from "@react-email/components";
-import { betterAuth } from "better-auth";
+import { betterAuth, logger } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, captcha, lastLoginMethod, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
@@ -171,7 +171,7 @@ export const auth = betterAuth({
 									}
 								});
 							} catch (error) {
-								console.error(`Failed to process invite ${invite.id}:`, error);
+								logger.error(`Failed to process invite ${invite.id}:`, { error });
 							}
 						}
 					}

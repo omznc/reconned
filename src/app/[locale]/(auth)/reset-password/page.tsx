@@ -60,7 +60,7 @@ export default function LoginPage() {
 
 		await authClient.resetPassword({
 			newPassword: data.password,
-			token,
+			token: token || undefined,
 			fetchOptions: {
 				headers: headers,
 				onRequest: () => {

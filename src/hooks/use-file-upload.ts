@@ -1,5 +1,6 @@
 "use client";
 
+import { useLogger } from "next-axiom";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { FileUploadItem } from "@/components/ui/file-upload";
@@ -23,6 +24,7 @@ export function useFileUpload({
 }: UseFileUploadOptions) {
 	const [files, setFiles] = useState<FileUploadItem[]>(initialFiles);
 	const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
+	const logger = useLogger();
 
 	const updateFiles = useCallback(
 		(newFiles: FileUploadItem[]) => {
@@ -84,7 +86,7 @@ export function useFileUpload({
 
 			return [...existingUrls, ...successfulUploads];
 		} catch (error) {
-			console.error(error);
+			logger.error("Some files failed to upload", { error });
 			throw new Error("Some files failed to upload");
 		}
 	}, [files, uploadFunction]);

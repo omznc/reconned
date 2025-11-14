@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { ClaimClubForm } from "@/components/claim-club-form";
 import { AdminIcon, ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
@@ -24,7 +25,6 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { ClaimClubForm } from "@/components/claim-club-form";
 import { getPageViews } from "@/lib/analytics";
 import { checkAndRefreshToken, getInstagramMedia, type InstagramMedia } from "@/lib/instagram";
 import { cn } from "@/lib/utils";

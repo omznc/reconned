@@ -181,8 +181,6 @@ export default function LoginPage() {
 												}
 
 												if (form.getFieldState("email").invalid) {
-													console.log(form.formState.dirtyFields.email);
-													console.log(form.getFieldState("email").invalid);
 													toast.error(t("public.auth.forgotPasswordWrongEmail"));
 													setIsForgotPasswordLoading(false);
 													return;

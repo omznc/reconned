@@ -6,7 +6,7 @@ import { getCountries } from "@/lib/cached-countries";
 import { prisma } from "@/lib/prisma";
 
 export default async function EditUnclaimedClubPage(
-	props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs/edit/[clubId]">,
+	props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs/edit">,
 ) {
 	const searchParams = await props.searchParams;
 	const { clubId } = searchParams;

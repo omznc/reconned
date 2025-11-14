@@ -8,6 +8,7 @@ import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
+import { useLogger } from "next-axiom";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -57,6 +58,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
 	const t = useTranslations();
+	const logger = useLogger();
 
 	// Initialize file upload system
 	const initialFiles: FileUploadItem[] = props.event?.image
@@ -235,7 +237,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 				form.reset(parsedData);
 			} catch (error) {
-				console.error("Error parsing saved form data:", error);
+				logger.error("Error parsing saved form data:", { error });
 				sessionStorage.removeItem("createEventForm");
 			}
 		}

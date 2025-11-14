@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Check, ChevronsUpDown, LoaderIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { assignClubOwner } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
 import { Button } from "@/components/ui/button";
-import { LoaderIcon } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRouter } from "@/i18n/navigation";
-import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AssignClubOwnerFormProps {
