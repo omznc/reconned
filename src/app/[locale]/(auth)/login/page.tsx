@@ -141,7 +141,10 @@ export default function LoginPage() {
 									{!!email && (
 										<p className="text-sm text-gray-500">
 											{t("public.auth.emailAutofilled")}{" "}
+											{/* biome-ignore lint/a11y/useSemanticElements: Style stuff */}
 											<span
+												role="button"
+												tabIndex={0}
 												className="text-foreground cursor-pointer inline"
 												onClick={() => {
 													setEmail("");
@@ -177,10 +180,7 @@ export default function LoginPage() {
 													return;
 												}
 
-												if (
-													!form.formState.dirtyFields.email ||
-													form.getFieldState("email").invalid
-												) {
+												if (form.getFieldState("email").invalid) {
 													toast.error(t("public.auth.forgotPasswordWrongEmail"));
 													setIsForgotPasswordLoading(false);
 													return;

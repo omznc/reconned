@@ -156,7 +156,7 @@ export function AlertDialogProvider({
                         }
                     }}
                 >
-                    <AlertDialogContent asChild>
+                    <AlertDialogContent>
                         {children}
                     </AlertDialogContent>
                 </AlertDialog>
@@ -216,6 +216,7 @@ export function AlertDialogProvider({
                         event.preventDefault();
                         confirm(event.currentTarget.prompt?.value);
                     }}
+                    className="flex flex-col gap-4"
                 >
                     <DialogHeader>
                         <DialogTitle>{state.title}</DialogTitle>

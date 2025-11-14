@@ -238,6 +238,8 @@
 	animation: fade-in 0.3s ease-out;
 }
 
+/* biome-ignore lint/style/noDescendingSpecificity: I need it, don't ask */
 .leaflet-popup-content-wrapper {
+	/* biome-ignore lint/complexity/noImportantStyles: I need it, don't ask */
 	border-radius: 0px !important;
 }

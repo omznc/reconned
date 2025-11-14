@@ -165,7 +165,10 @@ export default function RegisterPage() {
 									{!!email && (
 										<p className="text-sm text-gray-500">
 											{t("public.auth.emailAutofilled")}{" "}
+											{/* biome-ignore lint/a11y/useSemanticElements: Style stuff */}
 											<span
+												role="button"
+												tabIndex={0}
 												className="text-foreground cursor-pointer inline"
 												onClick={() => {
 													setEmail("");

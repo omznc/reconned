@@ -10,7 +10,10 @@ export function LoadChildOnClick(props: HTMLAttributes<HTMLDivElement>) {
 		return props.children;
 	}
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: Style stuff
 		<div
+			role="button"
+			tabIndex={0}
 			className="w-full h-[200px] flex items-center justify-center border bg-sidebar"
 			onClick={() => setIsLoaded(true)}
 			{...props}

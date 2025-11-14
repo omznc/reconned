@@ -157,13 +157,7 @@ export function StatsCharts({ memberData, roleData, eventData, registrationData 
 		<>
 			<div className="grid gap-4 grid-cols-2">
 				{charts.map((chart, index) => (
-					// @ts-expect-error
-					<ChartContainer
-						// biome-ignore lint/suspicious/noArrayIndexKey: It's irrelevant
-						key={index}
-						config={chartConfig}
-						className="p-4 min-h-[300px] w-full relative"
-					>
+					<ChartContainer key={index} config={chartConfig} className="p-4 min-h-[300px] w-full relative">
 						<div className="flex justify-between items-center mb-4">
 							<h3 className="text-lg font-semibold">{chart.title}</h3>
 							<Button variant="ghost" size="icon" onClick={() => setFullscreenChart(chart)}>
@@ -181,7 +175,6 @@ export function StatsCharts({ memberData, roleData, eventData, registrationData 
 						<>
 							<DialogTitle>{fullscreenChart.title}</DialogTitle>
 							<ChartContainer config={chartConfig} className="p-4 w-full h-full">
-								{/* @ts-expect-error */}
 								{fullscreenChart.renderChart(fullscreenChart.data)}
 							</ChartContainer>
 						</>

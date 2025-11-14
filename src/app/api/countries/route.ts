@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { withAxiom } from "next-axiom";
 import { getCountries } from "@/lib/cached-countries";
 
-export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
 export const fetchCache = "force-cache";
 

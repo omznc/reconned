@@ -4,25 +4,28 @@
 		"lib": ["dom", "dom.iterable", "esnext"],
 
 		"target": "ESNext",
-		"module": "Preserve",
 		"moduleDetection": "force",
-		"jsx": "preserve",
-		"allowJs": true,
-		// Bundler mode
+		// Modules
+		"module": "esnext",
 		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
-		"noEmit": true,
-		// Best practices
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		// Strict Type Checking
 		"strict": true,
 		"skipLibCheck": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
-		// Some stricter flags (disabled by default)
-		"noUnusedLocals": false,
-		"noUnusedParameters": false,
-		"noPropertyAccessFromIndexSignature": false,
+		"noImplicitReturns": true,
+		// Type Declaration Settings
+		"declaration": false,
+		"inlineSources": true,
+		"sourceMap": true,
+		// For next-intl
+		"allowArbitraryExtensions": true,
+		// Next.js Specific
+		"jsx": "react-jsx",
 		"plugins": [
 			{
 				"name": "next"
@@ -38,8 +41,12 @@
 		},
 		"incremental": true,
 		// Interop Constraints
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"allowJs": true,
+		"noEmit": true,
+		// ETC
+		"allowImportingTsExtensions": true
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
 	"exclude": ["node_modules"]
 }

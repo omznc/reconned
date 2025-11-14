@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Script from "next/script";
+import { useLogger } from "next-axiom";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { env } from "@/lib/env";
 
@@ -25,6 +26,7 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
 	const [isScriptReady, setIsScriptReady] = useState(isTurnstileScriptLoaded);
 	const widgetId = useRef<string | null>(null);
 	const pathname = usePathname();
+	const logger = useLogger();
 
 	// Create a unique ID for this instance
 	const instanceId = useRef(`turnstile-${Math.random().toString(36).substring(2, 9)}`);
@@ -40,7 +42,7 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
 			try {
 				window.turnstile.remove(widgetId.current);
 			} catch (e) {
-				console.error("Error removing existing widget:", e);
+				logger.error("Error removing existing widget:", { error: e });
 			}
 			widgetId.current = null;
 		}
@@ -65,7 +67,7 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
 				execution: "render",
 			});
 		} catch (error) {
-			console.error("Error rendering turnstile widget:", error);
+			logger.error("Error rendering turnstile widget:", { error });
 		}
 	};
 

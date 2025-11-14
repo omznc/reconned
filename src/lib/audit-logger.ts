@@ -1,10 +1,10 @@
 import "server-only";
 import type { JsonValue } from "@prisma/client/runtime/client";
-import { captureException } from "@sentry/nextjs";
 import { headers } from "next/headers";
 import { after } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { logger } from "./logger";
 
 type ClubActionType =
 	| "CLUB_CREATE"
@@ -31,7 +31,8 @@ type ClubActionType =
 	| "EVENT_DELETE"
 	| "CLUB_RULE_UPDATE"
 	| "CLUB_RULE_CREATE"
-	| "CLUB_RULE_DELETE";
+	| "CLUB_RULE_DELETE"
+	| "CLUB_OWNER_ASSIGNED";
 
 interface AuditLogOptions {
 	clubId: string;
@@ -51,15 +52,12 @@ export async function logClubAudit({ clubId, actionType, actionData }: AuditLogO
 		try {
 			const user = await isAuthenticated();
 			if (!user) {
-				captureException(new Error("User not authenticated"));
 				return;
 			}
 
-			// Get IP and user agent from request headers
 			const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "unknown";
 			const userAgent = headersList.get("user-agent") || "unknown";
 
-			// Create audit log entry
 			await prisma.clubAuditLog.create({
 				data: {
 					userId: user.id,
@@ -71,7 +69,7 @@ export async function logClubAudit({ clubId, actionType, actionData }: AuditLogO
 				},
 			});
 		} catch (error) {
-			captureException(error);
+			logger.error("Failed to create audit log", { error, actionType, clubId, actionData });
 		}
 	});
 }

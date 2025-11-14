@@ -76,3 +76,22 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 	});
 	throw new Error("User does not manage this club");
 });
+
+/**
+ * If the underyling schema requires a admin role, this action will check if the user is authenticated and if they are an admin.
+ * If the user is authenticated and is an admin, the action will proceed.
+ * Functionally similar to safeActionClient, but this enforces the admin role instead of the admin role bypassing the club check.
+ * Otherwise, it will throw an error.
+ */
+export const adminActionClient = unsafeActionClient.use(async ({ next }) => {
+	const user = await isAuthenticated();
+	if (!user) {
+		throw new Error("User not authenticated");
+	}
+
+	if (user.role !== "admin") {
+		throw new Error("User is not an admin");
+	}
+
+	return next({ ctx: { user } });
+});

@@ -5,12 +5,14 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { AxiomWebVitals } from "next-axiom";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { hasLocale } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
 import { FontBody } from "@/components/font-body";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
+import JsonLdScript from "@/components/json-ld-script";
 import { FontProvider } from "@/components/personalization/font/font-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
@@ -30,7 +32,7 @@ const geistMono = Geist_Mono({
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const [messages, user] = await Promise.all([getMessages(), isAuthenticated()]);
+	const [user, t] = await Promise.all([isAuthenticated(), getTranslations()]);
 
 	const { locale } = await params;
 
@@ -41,6 +43,46 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	const font = user?.font ? (user.font as "sans" | "mono") : "sans";
 	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
 
+	const websiteSchema = {
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		name: "Reconned",
+		description: t("public.home.metadata.description"),
+		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		sameAs: ["https://github.com/omznc/reconned"],
+		potentialAction: {
+			"@type": "SearchAction",
+			target: {
+				"@type": "EntryPoint",
+				urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search?q={search_term_string}`,
+			},
+			"query-input": "required name=search_term_string",
+		},
+		about: {
+			"@type": "SportsOrganization",
+			name: "Airsoft Community",
+			sport: "Airsoft",
+			description: "Platform connecting airsoft clubs and players",
+		},
+	} as WithContext<WebSite>;
+
+	const organizationSchema: WithContext<SportsOrganization> = {
+		"@context": "https://schema.org",
+		"@type": "SportsOrganization",
+		name: "Reconned",
+		sport: "Airsoft",
+		description: t("public.home.metadata.description"),
+		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		foundingDate: "2024",
+		address: {
+			"@type": "PostalAddress",
+			addressCountry: "BA",
+		},
+		sameAs: ["https://github.com/omznc/reconned"],
+	};
+
 	return (
 		<html lang={locale} suppressHydrationWarning>
 			<head>
@@ -50,37 +92,37 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 					data-domain={env.PLAUSIBLE_SITE_ID}
 					src={`${env.PLAUSIBLE_HOST}/js/script.outbound-links.tagged-events.js`}
 				/>
+				<JsonLdScript data={websiteSchema} />
+				<JsonLdScript data={organizationSchema} />
 			</head>
 			<AxiomWebVitals />
-			<NextIntlClientProvider messages={messages}>
-				<FontProvider initial={font}>
-					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
-						<ThemeProvider
-							attribute="class"
-							defaultTheme={theme}
-							enableSystem={false}
-							disableTransitionOnChange
-						>
-							{/* TODO: Do we even need this? */}
-							<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-							<Toaster
-								richColors
-								toastOptions={{
-									classNames: {
-										toast: "rounded-none",
-									},
-								}}
-							/>
-							<NuqsAdapter>
-								<TooltipProvider>
-									{user?.session?.impersonatedBy && <ImpersonationAlert />}
-									<AlertDialogProvider>{children}</AlertDialogProvider>
-								</TooltipProvider>
-							</NuqsAdapter>
-						</ThemeProvider>
-					</FontBody>
-				</FontProvider>
-			</NextIntlClientProvider>
+			<FontProvider initial={font}>
+				<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme={theme}
+						enableSystem={false}
+						disableTransitionOnChange
+					>
+						{/* TODO: Do we even need this? */}
+						<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+						<Toaster
+							richColors
+							toastOptions={{
+								classNames: {
+									toast: "rounded-none",
+								},
+							}}
+						/>
+						<NuqsAdapter>
+							<TooltipProvider>
+								{user?.session?.impersonatedBy && <ImpersonationAlert />}
+								<AlertDialogProvider>{children}</AlertDialogProvider>
+							</TooltipProvider>
+						</NuqsAdapter>
+					</ThemeProvider>
+				</FontBody>
+			</FontProvider>
 		</html>
 	);
 }
