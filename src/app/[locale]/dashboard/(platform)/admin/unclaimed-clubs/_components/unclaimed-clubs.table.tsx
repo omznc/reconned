@@ -3,10 +3,10 @@
 import type { Club } from "@generated/client";
 import { ExternalLink, Pencil, Settings } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
 
 interface UnclaimedClubsTableProps {
 	clubs: (Club & {

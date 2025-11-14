@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Credenza, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
+import { useLogger } from "next-axiom";
 
 interface FilePreviewModalProps {
 	isOpen: boolean;
@@ -18,7 +19,7 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 	const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
 	const t = useTranslations();
 	const [isDownloading, setIsDownloading] = useState(false);
-
+	const logger = useLogger();
 	const handleDownload = async () => {
 		setIsDownloading(true);
 		try {
@@ -31,7 +32,7 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 			link.click();
 			document.body.removeChild(link);
 		} catch (error) {
-			console.error("Download failed:", error);
+			logger.error("Download failed:", { error });
 		} finally {
 			setIsDownloading(false);
 		}

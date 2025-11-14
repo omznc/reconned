@@ -4,17 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
+import { createUnclaimedClubSchema } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-club.schema";
 import {
 	createUnclaimedClub,
 	getUnclaimedClubLogoUploadUrl,
 	updateUnclaimedClubLogo,
 } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
-import { createUnclaimedClubSchema } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-club.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
@@ -27,6 +26,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
+import { useRouter } from "@/i18n/navigation";
 import type { Country } from "@/lib/cached-countries";
 import { cn } from "@/lib/utils";
 

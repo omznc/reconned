@@ -1,7 +1,6 @@
 "use client";
 
 import Error500 from "@public/errors/500.webp";
-import * as Sentry from "@sentry/nextjs";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +17,6 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
 	useEffect(() => {
 		if (!logger) return;
 
-		Sentry.captureException(error);
 		logger.error("Global error", {
 			error,
 		});
