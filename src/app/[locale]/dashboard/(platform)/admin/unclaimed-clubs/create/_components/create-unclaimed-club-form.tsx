@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -43,12 +43,12 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 	const [open, setOpen] = useState(false);
 	const t = useTranslations();
 	const router = useRouter();
-
-	const [clubId, setClubId] = useState<string | null>(null);
+	const clubIdRef = useRef<string | null>(null);
 
 	const logoUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			if (!clubId) {
+			const currentClubId = clubIdRef.current;
+			if (!currentClubId) {
 				throw new Error("Must create club first");
 			}
 
@@ -57,7 +57,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					type: file.type,
 					size: file.size,
 				},
-				clubId,
+				clubId: currentClubId,
 			});
 
 			if (!resp?.data?.url) {
@@ -135,9 +135,10 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			}
 
 			const newClubId = result.data.id;
-			setClubId(newClubId);
+			clubIdRef.current = newClubId;
 
-			if (logoUpload.files.length > 0) {
+			const filesToUpload = logoUpload.files.filter((f) => f.file && !f.isExisting);
+			if (filesToUpload.length > 0) {
 				const uploadedUrls = await logoUpload.uploadAllFiles();
 				const logoUrl = uploadedUrls[0];
 				if (logoUrl) {

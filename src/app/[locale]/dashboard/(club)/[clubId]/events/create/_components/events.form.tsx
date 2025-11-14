@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useLogger } from "next-axiom";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
@@ -59,6 +59,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const confirm = useConfirm();
 	const t = useTranslations();
 	const logger = useLogger();
+	const eventIdRef = useRef<string | null>(props.event?.id || null);
 
 	// Initialize file upload system
 	const initialFiles: FileUploadItem[] = props.event?.image
@@ -75,7 +76,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 	const eventImageUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			if (!props.event?.id) {
+			const currentEventId = eventIdRef.current;
+			if (!currentEventId) {
 				throw new Error("Must save event first");
 			}
 
@@ -84,7 +86,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					type: file.type,
 					size: file.size,
 				},
-				eventId: props.event.id,
+				eventId: currentEventId,
 				clubId: clubId,
 			});
 
@@ -284,15 +286,20 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				return;
 			}
 
+			eventIdRef.current = event.data.id;
+
 			// Then upload any new files and handle deletion
-			const uploadedUrls = await eventImageUpload.uploadAllFiles();
-			if (uploadedUrls.length > 0 || eventImageUpload.files.length === 0) {
-				// Update the event with the image URL (or undefined if deleted)
-				await createEvent({
-					...values,
-					eventId: event.data.id,
-					image: uploadedUrls.length > 0 ? uploadedUrls[0] : undefined,
-				});
+			const filesToUpload = eventImageUpload.files.filter((f) => f.file && !f.isExisting);
+			if (filesToUpload.length > 0) {
+				const uploadedUrls = await eventImageUpload.uploadAllFiles();
+				if (uploadedUrls.length > 0) {
+					// Update the event with the image URL
+					await createEvent({
+						...values,
+						eventId: event.data.id,
+						image: uploadedUrls[0],
+					});
+				}
 			}
 
 			// Mark files as saved
