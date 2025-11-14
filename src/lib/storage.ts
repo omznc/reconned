@@ -17,6 +17,7 @@ const s3 = new S3Client({
 	region: env.S3_REGION as string,
 	accessKeyId: env.S3_ACCESS_KEY_ID as string,
 	secretAccessKey: env.S3_SECRET_ACCESS_KEY as string,
+	bucket: env.S3_BUCKET_NAME as string,
 });
 
 const logger = new Logger({ source: "storage" });
