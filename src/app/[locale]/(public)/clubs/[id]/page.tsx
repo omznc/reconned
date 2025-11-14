@@ -60,6 +60,15 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		},
 	});
 
+	const hasOwner = club
+		? await prisma.clubMembership.findFirst({
+				where: {
+					clubId: club.id,
+					role: "CLUB_OWNER",
+				},
+			})
+		: null;
+
 	if (!club) {
 		// TODO https://github.com/vercel/next.js/issues/63388
 		// notFound();
@@ -132,6 +141,8 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 				isManager={user?.managedClubs.includes(club.id)}
 				isMember={isMemberOfClub}
 				currentUserMembership={userMembership}
+				hasOwner={!!hasOwner}
+				user={user}
 			/>
 		</div>
 	);

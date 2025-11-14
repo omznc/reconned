@@ -5,8 +5,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { AxiomWebVitals } from "next-axiom";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { hasLocale } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
@@ -32,7 +32,7 @@ const geistMono = Geist_Mono({
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const [messages, user, t] = await Promise.all([getMessages(), isAuthenticated(), getTranslations()]);
+	const [user, t] = await Promise.all([isAuthenticated(), getTranslations()]);
 
 	const { locale } = await params;
 
@@ -96,35 +96,33 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 				<JsonLdScript data={organizationSchema} />
 			</head>
 			<AxiomWebVitals />
-			<NextIntlClientProvider messages={messages}>
-				<FontProvider initial={font}>
-					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
-						<ThemeProvider
-							attribute="class"
-							defaultTheme={theme}
-							enableSystem={false}
-							disableTransitionOnChange
-						>
-							{/* TODO: Do we even need this? */}
-							<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-							<Toaster
-								richColors
-								toastOptions={{
-									classNames: {
-										toast: "rounded-none",
-									},
-								}}
-							/>
-							<NuqsAdapter>
-								<TooltipProvider>
-									{user?.session?.impersonatedBy && <ImpersonationAlert />}
-									<AlertDialogProvider>{children}</AlertDialogProvider>
-								</TooltipProvider>
-							</NuqsAdapter>
-						</ThemeProvider>
-					</FontBody>
-				</FontProvider>
-			</NextIntlClientProvider>
+			<FontProvider initial={font}>
+				<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme={theme}
+						enableSystem={false}
+						disableTransitionOnChange
+					>
+						{/* TODO: Do we even need this? */}
+						<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+						<Toaster
+							richColors
+							toastOptions={{
+								classNames: {
+									toast: "rounded-none",
+								},
+							}}
+						/>
+						<NuqsAdapter>
+							<TooltipProvider>
+								{user?.session?.impersonatedBy && <ImpersonationAlert />}
+								<AlertDialogProvider>{children}</AlertDialogProvider>
+							</TooltipProvider>
+						</NuqsAdapter>
+					</ThemeProvider>
+				</FontBody>
+			</FontProvider>
 		</html>
 	);
 }

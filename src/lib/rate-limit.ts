@@ -1,8 +1,8 @@
-import Redis from "ioredis";
+import { RedisClient } from "bun";
 import { Logger } from "next-axiom";
 import { env } from "@/lib/env";
 
-const redis = new Redis(env.REDIS_URL);
+const redis = new RedisClient(env.REDIS_URL);
 
 const logger = new Logger({ source: "rate-limit" });
 
@@ -44,12 +44,10 @@ export class RateLimit {
 				};
 			}
 
-			const pipeline = redis.pipeline();
-			pipeline.incr(key);
+			await redis.incr(key);
 			if (count === 0) {
-				pipeline.expire(key, this.window);
+				await redis.expire(key, this.window);
 			}
-			await pipeline.exec();
 
 			const remaining = Math.max(0, this.maxRequests - count - 1);
 			return {

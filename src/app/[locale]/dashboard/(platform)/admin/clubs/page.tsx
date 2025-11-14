@@ -12,24 +12,31 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const where = search
-		? {
-				OR: [
-					{
-						name: {
-							contains: search as string,
-							mode: "insensitive" as const,
+	const where = {
+		...(search
+			? {
+					OR: [
+						{
+							name: {
+								contains: search as string,
+								mode: "insensitive" as const,
+							},
 						},
-					},
-					{
-						location: {
-							contains: search as string,
-							mode: "insensitive" as const,
+						{
+							location: {
+								contains: search as string,
+								mode: "insensitive" as const,
+							},
 						},
-					},
-				],
-			}
-		: {};
+					],
+				}
+			: {}),
+		members: {
+			some: {
+				role: "CLUB_OWNER" as const,
+			},
+		},
+	};
 
 	const orderBy: Prisma.ClubOrderByWithRelationInput = sortBy
 		? { [sortBy as string]: sortOrder ?? ("asc" as "asc" | "desc") }
@@ -47,7 +54,14 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 	// Fetch selected club separately if clubId is present
 	const selectedClub = clubId
 		? await prisma.club.findUnique({
-				where: { id: clubId as string },
+				where: {
+					id: clubId as string,
+					members: {
+						some: {
+							role: "CLUB_OWNER" as const,
+						},
+					},
+				},
 			})
 		: null;
 

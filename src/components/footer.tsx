@@ -1,5 +1,5 @@
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-import { BarChart2, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion } from "lucide-react";
+import { ArrowUpRightIcon, BarChart2, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { BadgeNew } from "@/components/badge-new";
 import { BadgeSoon } from "@/components/badge-soon";
@@ -140,13 +140,17 @@ export async function Footer() {
 						</ul>
 					</div>
 				</div>
-				<div className="mt-8 pt-8 border-t border-border/10 text-center text-sm ">
+				<div className="mt-8 pt-8 border-t border-border/10 text-center text-sm flex flex-col items-center">
 					<p>© RECONNED, {new Date().getFullYear()} </p>
 					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
 						{t("components.footer.sponsors")}
 					</Link>
 					{CURRENT_COMMIT && body.commit?.committer?.date && (
-						<p className="font-mono mt-4 opacity-30">
+						<Link
+							href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
+							target="_blank"
+							className="font-mono mt-4 w-fit opacity-30 hover:opacity-60 flex items-center gap-1 transition-opacity"
+						>
 							{t("components.footer.version", {
 								commit: CURRENT_COMMIT.slice(0, 7),
 								date: new Date(body.commit.committer.date).toLocaleDateString(locale, {
@@ -155,7 +159,8 @@ export async function Footer() {
 									day: "numeric",
 								}),
 							})}
-						</p>
+							<ArrowUpRightIcon className="w-4 h-4 -mt-0.5" />
+						</Link>
 					)}
 				</div>
 			</div>

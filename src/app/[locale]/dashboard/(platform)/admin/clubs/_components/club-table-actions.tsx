@@ -69,7 +69,7 @@ export function ClubActions({ club }: { club: Club }) {
 				}}
 			>
 				<TrashIcon />
-				"Izbriši klub"
+				Izbriši klub
 			</Button>
 		</div>
 	);
