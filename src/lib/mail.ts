@@ -41,5 +41,5 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 		html,
 	});
 
-	return response.json();
+	return (await response.json()) as { MessageId: string };
 }
