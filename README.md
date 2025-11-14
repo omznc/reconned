@@ -3,6 +3,10 @@
 
 A Next.js 15+ application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
 
+> [!IMPORTANT]  
+> The prebuilt Docker images you can find under **packages** are for official deployment which will not work for you. You'll need to build it yourself if you want to run RECONNED on your own.
+
+
 ## Tech Stack
 
 - **Framework:** Next.js 15+ (App Router)
