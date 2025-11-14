@@ -42,7 +42,8 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 						key={localeOption}
 						onClick={async () => {
 							if (localeOption !== locale) {
-								await router.replace(path, { locale: localeOption });
+								router.push(path, { locale: localeOption });
+								router.refresh();
 							}
 						}}
 						className={locale === localeOption ? "bg-accent" : ""}
