@@ -1,4 +1,4 @@
-![Image](/public/reconned-logo-light.svg)
+![Image](logo.svg)
 
 
 A Next.js 15+ application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
