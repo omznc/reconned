@@ -601,7 +601,6 @@ export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: 
 					<TableHeader>
 						<TableRow>
 							{Array.from({ length: columns }, (_, idx) => (
-								// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton component doesn't need stable keys
 								<TableHead key={`skeleton-header-col-${idx}`}>
 									<div className="h-4 w-24 bg-muted-foreground/20 rounded-sm animate-pulse" />
 								</TableHead>
@@ -610,10 +609,8 @@ export function GenericDataTableSkeleton({ columns = 5, rows = 5 }: { columns?: 
 					</TableHeader>
 					<TableBody>
 						{Array.from({ length: rows }, (_, rowIdx) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton component doesn't need stable keys
 							<TableRow key={`skeleton-row-${rowIdx}`}>
 								{Array.from({ length: columns }, (_, colIdx) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: Skeleton component doesn't need stable keys
 									<TableCell key={`skeleton-cell-row-${rowIdx}-col-${colIdx}`}>
 										<div className="h-4 w-full bg-muted-foreground/20 rounded-sm animate-pulse" />
 									</TableCell>

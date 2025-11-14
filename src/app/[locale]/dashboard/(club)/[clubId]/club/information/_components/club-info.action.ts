@@ -109,7 +109,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 		});
 	}
 
-	revalidateTag("managed-clubs");
+	revalidateTag("managed-clubs", "max");
 	revalidateLocalizedPaths(`/dashboard/${club.id}`, "layout");
 	if (!club?.isPrivate) {
 		revalidateLocalizedPaths(`/clubs/${club.slug ?? club.id}`);
@@ -233,7 +233,7 @@ export const deleteClub = safeActionClient.inputSchema(deleteClubSchema).action(
 		},
 	});
 
-	revalidateTag("managed-clubs");
+	revalidateTag("managed-clubs", "max");
 	revalidateLocalizedPaths(`/dashboard/${ctx.club.id}`, "layout");
 	if (!ctx.club.isPrivate) {
 		revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);

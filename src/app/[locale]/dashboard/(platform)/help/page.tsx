@@ -64,8 +64,10 @@ function HelpItem({ title, children, id }: { title: string; children: ReactNode;
 			<AccordionTrigger className="group">
 				<div className="flex items-center gap-2">
 					{title}
-
+					{/* biome-ignore lint/a11y/useSemanticElements: Style stuff */}
 					<div
+						role="button"
+						tabIndex={0}
 						className="opacity-0 group-hover:opacity-100 transition-opacity"
 						onClick={(e) => {
 							e.stopPropagation();

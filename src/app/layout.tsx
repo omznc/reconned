@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
 import type { ReactNode } from "react";
 import { env } from "@/lib/env";
 
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 
 // is required, even if it's just passing children through.
 export default function RootLayout({ children }: { children: ReactNode }) {
-	return children;
+	return <NextIntlClientProvider>{children}</NextIntlClientProvider>;
 }

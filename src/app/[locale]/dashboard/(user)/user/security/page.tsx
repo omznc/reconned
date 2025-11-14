@@ -51,7 +51,7 @@ export default async function Page() {
 			passkeys={passkeys}
 			hasPassword={hasPassword}
 			hasTwoFactor={user.twoFactorEnabled}
-			backupCodes={backupCodes.backupCodes}
+			backupCodes={backupCodes.backupCodes as string}
 			sessions={sessions.map((session) => ({
 				...session,
 				isCurrentSession: session.id === user.session.id,

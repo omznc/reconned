@@ -95,6 +95,11 @@ export function getAppNavigationItems(isAdmin: boolean, pendingInvites: number, 
 					icon: Building2,
 				},
 				{
+					title: t("components.sidebar.unclaimedClubs"),
+					url: "/dashboard/admin/unclaimed-clubs",
+					icon: Building2,
+				},
+				{
 					title: t("components.sidebar.emails"),
 					url: "/dashboard/admin/emails",
 					icon: Mail,

@@ -40,8 +40,14 @@ export function PasswordChangeForm({
 					onRequest: () => {
 						setIsLoading(true);
 					},
-					onError: () => {
+					onError: (e) => {
 						setIsLoading(false);
+						if (e.error?.code === "INVALID_PASSWORD") {
+							toast.error(
+								t("dashboard.security.securitySettings.twoFactorDisablePrompt.invalidPassword"),
+							);
+							return;
+						}
 						toast.error(t("dashboard.security.passwordChange.error"));
 					},
 					onSuccess: () => {
