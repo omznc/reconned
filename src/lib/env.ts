@@ -2,7 +2,7 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
-	skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
+	skipValidation: process.env.CI === "true",
 	server: {
 		DATABASE_URL: z.url(),
 		BETTER_AUTH_SECRET: z.string().min(1),
@@ -23,6 +23,7 @@ export const env = createEnv({
 		FACEBOOK_APP_ID: z.string().min(1),
 		FACEBOOK_APP_SECRET: z.string().min(1),
 		REDIS_URL: z.url(),
+		CI: z.string().optional(),
 		// POLAR_ACCESS_TOKEN: z.string().min(1), This is a surprise tool that will help us later
 	},
 	client: {
@@ -33,7 +34,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_MAX_FILE_SIZE: z.string().optional(), // 5 MB
 		NEXT_PUBLIC_SOURCE_COMMIT: z.string().optional(),
 		NEXT_PUBLIC_IMGUR_CLIENT_ID: z.string().min(1),
-		NEXT_PUBLIC_CI: z.string().optional(),
 		NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1),
 		NEXT_PUBLIC_AXIOM_DATASET: z.string().min(1),
 		NEXT_PUBLIC_AXIOM_TOKEN: z.string().min(1),
@@ -46,7 +46,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_MAX_FILE_SIZE: process.env.NEXT_PUBLIC_MAX_FILE_SIZE,
 		NEXT_PUBLIC_SOURCE_COMMIT: process.env.SOURCE_COMMIT,
 		NEXT_PUBLIC_IMGUR_CLIENT_ID: process.env.NEXT_PUBLIC_IMGUR_CLIENT_ID,
-		NEXT_PUBLIC_CI: process.env.NEXT_PUBLIC_CI,
 		NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 		NEXT_PUBLIC_AXIOM_TOKEN: process.env.NEXT_PUBLIC_AXIOM_TOKEN,

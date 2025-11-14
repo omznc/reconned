@@ -11,7 +11,7 @@ const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	// In CI, return an empty sitemap
-	if (env.NEXT_PUBLIC_CI === "true") {
+	if (env.CI === "true") {
 		return [];
 	}
 
