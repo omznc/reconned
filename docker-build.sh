@@ -29,5 +29,7 @@ while IFS= read -r line || [ -n "$line" ]; do
 	fi
 done < .env
 
+BUILD_ARGS+=("--build-arg" "CI=true")
+
 docker build "${BUILD_ARGS[@]}" "$@"
 

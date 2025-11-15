@@ -1,59 +1,70 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
+import { getCached } from "@/lib/cache";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
-export const revalidate = 1800; // 30 minutes
+export const dynamic = "force-dynamic";
 
 const locales = routing.locales;
 const defaultLocale = routing.defaultLocale;
 const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	// In CI, return an empty sitemap
-	if (env.CI === "true") {
-		return [];
-	}
-
-	// Get all data concurrently
+	// Get all data concurrently with caching
 	const [clubs, events, users] = await Promise.all([
-		// Get public clubs
-		prisma.club.findMany({
-			where: {
-				isPrivate: false,
-				OR: [{ banned: false }, { banned: null }],
-			},
-			select: {
-				id: true,
-				slug: true,
-				updatedAt: true,
-			},
-		}),
+		// Get public clubs (cached for 30 minutes)
+		getCached(
+			"sitemap:clubs",
+			() =>
+				prisma.club.findMany({
+					where: {
+						isPrivate: false,
+						OR: [{ banned: false }, { banned: null }],
+					},
+					select: {
+						id: true,
+						slug: true,
+						updatedAt: true,
+					},
+				}),
+			{ ttl: 1800 }, // 30 minutes
+		),
 
-		// Get public events
-		prisma.event.findMany({
-			where: {
-				isPrivate: false,
-			},
-			select: {
-				id: true,
-				slug: true,
-				updatedAt: true,
-			},
-		}),
+		// Get public events (cached for 30 minutes)
+		getCached(
+			"sitemap:events",
+			() =>
+				prisma.event.findMany({
+					where: {
+						isPrivate: false,
+					},
+					select: {
+						id: true,
+						slug: true,
+						updatedAt: true,
+					},
+				}),
+			{ ttl: 1800 }, // 30 minutes
+		),
 
-		// Get public user profiles
-		prisma.user.findMany({
-			where: {
-				isPrivate: false,
-				OR: [{ banned: false }, { banned: null }],
-			},
-			select: {
-				id: true,
-				slug: true,
-				updatedAt: true,
-			},
-		}),
+		// Get public user profiles (cached for 30 minutes)
+		getCached(
+			"sitemap:users",
+			() =>
+				prisma.user.findMany({
+					where: {
+						isPrivate: false,
+						OR: [{ banned: false }, { banned: null }],
+					},
+					select: {
+						id: true,
+						slug: true,
+						updatedAt: true,
+					},
+				}),
+			{ ttl: 1800 }, // 30 minutes
+		),
 	]);
 
 	// Static routes with their properties
