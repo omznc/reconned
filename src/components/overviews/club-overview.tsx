@@ -143,7 +143,14 @@ export async function ClubOverview({
 						<Button asChild variant="default">
 							<Link href={club.website} target="_blank" rel="noopener noreferrer">
 								<Globe className="h-4 w-4 mr-2" />
-								{club.website.length > 25 ? `${club.website.slice(0, 25)}...` : club.website}
+								{(() => {
+									try {
+										const url = new URL(club.website);
+										return url.hostname;
+									} catch {
+										return club.website.length > 25 ? `${club.website.slice(0, 25)}...` : club.website;
+									}
+								})()}
 							</Link>
 						</Button>
 					)}
@@ -199,14 +206,6 @@ export async function ClubOverview({
 						<Phone className="w-4 h-4" />
 						{club.contactPhone}
 					</Badge>
-				)}
-				{club.website && (
-					<Link href={club.website} target="_blank" rel="noopener noreferrer" className="md:grow-0 grow">
-						<Badge className="flex items-center gap-1 hover:cursor-pointer">
-							<Globe className="w-4 h-4" />
-							{club.website}
-						</Badge>
-					</Link>
 				)}
 				{shouldShowStats && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
