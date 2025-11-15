@@ -27,8 +27,8 @@ export default function Page() {
 							<li>{t("dashboard.help.googleMaps.steps.step3")}</li>
 							<li>{t("dashboard.help.googleMaps.steps.step4")}</li>
 							<Image
-																width={IMAGE_SIZES.MEDIUM}
-																height={IMAGE_SIZES.MEDIUM}
+								width={IMAGE_SIZES.MEDIUM}
+								height={IMAGE_SIZES.MEDIUM}
 								src={GoogleMap1Image}
 								alt={t("dashboard.help.googleMaps.shareDialog")}
 								className="w-full border md:w-1/2 dark:invert"

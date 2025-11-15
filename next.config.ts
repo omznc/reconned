@@ -62,8 +62,8 @@ const nextConfig = {
 		// 		hostname: "*.fbcdn.net",
 		// 	},
 		// ],
-		loader: 'custom',
-		loaderFile: './image-loader.ts',
+		loader: "custom",
+		loaderFile: "./image-loader.ts",
 		qualities: [50, 75, 100],
 	},
 	async redirects() {

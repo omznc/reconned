@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRouter } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
+import { cn } from "@/lib/utils";
 
 interface FacebookPage {
 	id: string;

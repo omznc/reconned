@@ -37,12 +37,12 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 						variant: "custom",
 						component: (_, club) =>
 							club.logo ? (
-								<Image 
-								src={club.logo} 
-								alt="Logo"					
-								width={IMAGE_SIZES.THUMBNAIL}
-								height={IMAGE_SIZES.THUMBNAIL}
-								className="object-contain max-h-12"
+								<Image
+									src={club.logo}
+									alt="Logo"
+									width={IMAGE_SIZES.THUMBNAIL}
+									height={IMAGE_SIZES.THUMBNAIL}
+									className="object-contain max-h-12"
 								/>
 							) : (
 								<div className="w-8 h-8 bg-gray-200" />

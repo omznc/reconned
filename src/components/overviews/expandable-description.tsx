@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,12 @@ export function ExpandableDescription({ description, translationNamespace = "com
 
 	return (
 		<div className="space-y-2">
-			<p className={cn("text-accent-foreground/80 whitespace-pre-wrap", !isExpanded && shouldShowButton && "line-clamp-6")}>
+			<p
+				className={cn(
+					"text-accent-foreground/80 whitespace-pre-wrap",
+					!isExpanded && shouldShowButton && "line-clamp-6",
+				)}
+			>
 				{description}
 			</p>
 			{shouldShowButton && (

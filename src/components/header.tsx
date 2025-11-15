@@ -36,9 +36,11 @@ export function Header({ user }: { user: User | null }) {
 			{path !== "/" && (
 				<Button
 					onClick={handleBack}
-				 variant="ghost" className="w-full hover:bg-transparent md:-mr-12 shadow-none">
-						<ArrowLeft className="w-6 h-6" />
-						{t("components.header.back")}
+					variant="ghost"
+					className="w-full hover:bg-transparent md:-mr-12 shadow-none"
+				>
+					<ArrowLeft className="w-6 h-6" />
+					{t("components.header.back")}
 				</Button>
 			)}
 			<div className="flex gap-2 md:w-fit w-full" suppressHydrationWarning={true}>

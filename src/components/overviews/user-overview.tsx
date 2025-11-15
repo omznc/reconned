@@ -144,7 +144,10 @@ export async function UserOverview({ user }: UserOverviewProps) {
 												</span>
 											</div>
 										)}
-										<Link href={`/clubs/${membership.club.slug ?? membership.club.id}`} className="hover:underline">
+										<Link
+											href={`/clubs/${membership.club.slug ?? membership.club.id}`}
+											className="hover:underline"
+										>
 											{membership.club.name}
 										</Link>
 									</li>

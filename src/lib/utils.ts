@@ -90,3 +90,22 @@ export function generateHreflangAlternatesForSluggableEntity(
 
 	return alternates;
 }
+
+/**
+ * Adds or updates a version parameter to an image URL.
+ * Removes any existing v? parameters first to prevent stacking.
+ * @param imageUrl - The image URL to modify
+ * @param version - The version string to use (defaults to current timestamp)
+ */
+export function addImageVersion(imageUrl: string, version?: string): string {
+	if (!imageUrl) return imageUrl;
+
+	// Remove existing v? parameter and anything after it
+	const urlWithoutVersion = imageUrl.replace(/[?&]v=[^&]*/, "");
+
+	// Add new version parameter
+	const versionParam = version || Date.now().toString();
+	const separator = urlWithoutVersion.includes("?") ? "&" : "?";
+
+	return `${urlWithoutVersion}${separator}v=${versionParam}`;
+}

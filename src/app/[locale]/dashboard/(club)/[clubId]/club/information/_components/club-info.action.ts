@@ -17,6 +17,7 @@ import { disconnectInstagramAPI } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
+import { addImageVersion } from "@/lib/utils";
 
 export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
@@ -46,7 +47,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			isAllied: parsedInput.isAllied,
 			isPrivate: parsedInput.isPrivate,
 			isPrivateStats: parsedInput.isPrivateStats,
-			logo: parsedInput.logo ? `${parsedInput.logo}?v=${Date.now()}` : null,
+			logo: parsedInput.logo ? addImageVersion(parsedInput.logo) : null,
 			contactPhone: parsedInput.contactPhone,
 			contactEmail: parsedInput.contactEmail,
 			slug: parsedInput.slug ? parsedInput.slug : null,
@@ -64,7 +65,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			isAllied: parsedInput.isAllied,
 			isPrivate: parsedInput.isPrivate,
 			isPrivateStats: parsedInput.isPrivateStats,
-			logo: parsedInput.logo ? `${parsedInput.logo}?v=${Date.now()}` : undefined,
+			logo: parsedInput.logo ? addImageVersion(parsedInput.logo) : undefined,
 			contactPhone: parsedInput.contactPhone,
 			contactEmail: parsedInput.contactEmail,
 			latitude: parsedInput.latitude,

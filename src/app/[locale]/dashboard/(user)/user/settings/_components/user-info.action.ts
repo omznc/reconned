@@ -10,6 +10,7 @@ import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
+import { addImageVersion } from "@/lib/utils";
 
 export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).action(async ({ parsedInput, ctx }) => {
 	const t = await getTranslations();
@@ -33,7 +34,7 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 		data: {
 			name: parsedInput.name,
 			isPrivate: parsedInput.isPrivate,
-			image: parsedInput.image ? `${parsedInput.image}?v=${Date.now()}` : null,
+			image: parsedInput.image ? addImageVersion(parsedInput.image) : null,
 			bio: parsedInput.bio,
 			location: parsedInput.location,
 			website: parsedInput.website,
