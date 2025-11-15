@@ -7,8 +7,8 @@ import JsonLdScript from "@/components/json-ld-script";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
-import { generatePageLanguages } from "@/lib/utils";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
+import { generatePageLanguages } from "@/lib/utils";
 
 const sponsors = [
 	{

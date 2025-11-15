@@ -14,6 +14,7 @@ import { sendEmail } from "@/lib/mail";
 import { prisma } from "@/lib/prisma";
 import { adminActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
+import { addImageVersion } from "@/lib/utils";
 
 const clubLogoUploadSchema = z.object({
 	file: z.object({
@@ -148,7 +149,7 @@ export const updateUnclaimedClubLogo = adminActionClient
 		const club = await prisma.club.update({
 			where: { id: parsedInput.clubId },
 			data: {
-				logo: `${parsedInput.logo}?v=${Date.now()}`,
+				logo: addImageVersion(parsedInput.logo),
 			},
 		});
 

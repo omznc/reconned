@@ -13,6 +13,7 @@ import { logClubAudit } from "@/lib/audit-logger";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
+import { addImageVersion } from "@/lib/utils";
 
 export const createEvent = safeActionClient.inputSchema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
 	// Validate slug
@@ -38,7 +39,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 		dateEnd: parsedInput.dateEnd,
 		dateRegistrationsOpen: parsedInput.dateRegistrationsOpen,
 		dateRegistrationsClose: parsedInput.dateRegistrationsClose,
-		image: parsedInput.image ? `${parsedInput.image}?v=${Date.now()}` : null,
+		image: parsedInput.image ? addImageVersion(parsedInput.image) : null,
 		isPrivate: parsedInput.isPrivate,
 		allowFreelancers: parsedInput.allowFreelancers,
 		hasBreakfast: parsedInput.hasBreakfast,

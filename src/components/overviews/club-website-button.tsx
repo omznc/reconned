@@ -67,17 +67,13 @@ export function ClubWebsiteButton({ website, isVerified = false }: ClubWebsiteBu
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>
-						{t("components.clubOverview.leavingReconned")}
-					</AlertDialogTitle>
+					<AlertDialogTitle>{t("components.clubOverview.leavingReconned")}</AlertDialogTitle>
 					<AlertDialogDescription>
 						{t("components.clubOverview.leavingReconnedDescription")}
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>
-						{t("components.clubOverview.cancel")}
-					</AlertDialogCancel>
+					<AlertDialogCancel>{t("components.clubOverview.cancel")}</AlertDialogCancel>
 					<AlertDialogAction onClick={handleContinue}>
 						{t("components.clubOverview.continue")}
 					</AlertDialogAction>

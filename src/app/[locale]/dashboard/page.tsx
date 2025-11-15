@@ -5,8 +5,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
 import { Link, redirect } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

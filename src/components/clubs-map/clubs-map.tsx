@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, useMapEvents, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Marker } from "@adamscybot/react-leaflet-component-marker";
 import { MapPin, Search } from "lucide-react";
@@ -8,8 +8,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
-import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 // Helper function to create a custom icon from club logo
@@ -18,7 +18,7 @@ function createClubIcon(
 	size: number,
 	clubName: string,
 	isHovered: boolean,
-	t: ReturnType<typeof useTranslations>
+	t: ReturnType<typeof useTranslations>,
 ) {
 	const iconContent = logoUrl ? (
 		<Image
@@ -38,9 +38,7 @@ function createClubIcon(
 
 	return (
 		<div className="relative flex flex-col items-center">
-			<div className="transition-transform hover:scale-125">
-				{iconContent}
-			</div>
+			<div className="transition-transform hover:scale-125">{iconContent}</div>
 			{isHovered && (
 				<div className="absolute top-full mt-1 bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
 					{clubName}
@@ -115,10 +113,11 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
 
-	const filteredClubs = clubs.filter((club) =>
-		searchQuery === "" ||
-		club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-		club.location?.toLowerCase().includes(searchQuery.toLowerCase())
+	const filteredClubs = clubs.filter(
+		(club) =>
+			searchQuery === "" ||
+			club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			club.location?.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
 
 	useEffect(() => {
@@ -161,12 +160,12 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 										placeholder={t("components.clubsMap.searchClubs")}
 										value={searchQuery}
 										onChange={(e) => setSearchQuery(e.target.value)}
-											onKeyDown={(e) => {
-												if (e.key === 'Enter' && filteredClubs.length > 0) {
-													setTargetClub(filteredClubs[0] || null);
-													setSearchQuery("");
-												}
-											}}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" && filteredClubs.length > 0) {
+												setTargetClub(filteredClubs[0] || null);
+												setSearchQuery("");
+											}
+										}}
 										className="pl-10 pr-4"
 									/>
 								</div>
@@ -196,7 +195,9 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 											<div className="flex-1 min-w-0">
 												<div className="font-medium truncate">{club.name}</div>
 												{club.location && (
-													<div className="text-sm text-gray-500 dark:text-gray-400 truncate">{club.location}</div>
+													<div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+														{club.location}
+													</div>
 												)}
 											</div>
 										</button>
@@ -235,7 +236,9 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 										<div className="flex-1 min-w-0">
 											<div className="font-medium truncate">{club.name}</div>
 											{club.location && (
-												<div className="text-sm text-gray-500 dark:text-gray-400 truncate">{club.location}</div>
+												<div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+													{club.location}
+												</div>
 											)}
 										</div>
 									</button>
@@ -252,7 +255,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 									value={searchQuery}
 									onChange={(e) => setSearchQuery(e.target.value)}
 									onKeyDown={(e) => {
-										if (e.key === 'Enter' && filteredClubs.length > 0) {
+										if (e.key === "Enter" && filteredClubs.length > 0) {
 											setTargetClub(filteredClubs[0] || null);
 											setSearchQuery("");
 										}
@@ -265,20 +268,20 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 				</>
 			)}
 
-				<MapContainer
-					center={[prefilledClub?.latitude || 43.8563, prefilledClub?.longitude || 18.4131]}
-					zoom={prefilledClub ? 14 : 8}
-					scrollWheelZoom={false}
-					className="h-full w-full z-0"
-				>
-					<TileLayer
-						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-						url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-					/>
+			<MapContainer
+				center={[prefilledClub?.latitude || 43.8563, prefilledClub?.longitude || 18.4131]}
+				zoom={prefilledClub ? 14 : 8}
+				scrollWheelZoom={false}
+				className="h-full w-full z-0"
+			>
+				<TileLayer
+					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+					url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+				/>
 
-					<MapController targetClub={targetClub} />
+				<MapController targetClub={targetClub} />
 
-					{interactive && <MapEventHandler onLocationSelect={onLocationSelect} />}
+				{interactive && <MapEventHandler onLocationSelect={onLocationSelect} />}
 
 				{interactive && selectedLocation && (
 					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} t={t} />
@@ -295,7 +298,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 								eventHandlers={{
 									mouseover: () => setHoveredClubId(club.id),
 									mouseout: () => setHoveredClubId(null),
-									click: () => window.open(`/clubs/${club.slug || club.id}`, '_blank'),
+									click: () => window.open(`/clubs/${club.slug || club.id}`, "_blank"),
 								}}
 							/>
 						) : null,
