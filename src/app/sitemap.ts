@@ -3,7 +3,7 @@ import { routing } from "@/i18n/routing";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
-export const revalidate = 86_400; // 24 hours
+export const revalidate = 1800; // 30 minutes
 
 const locales = routing.locales;
 const defaultLocale = routing.defaultLocale;
