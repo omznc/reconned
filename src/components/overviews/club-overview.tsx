@@ -2,12 +2,12 @@ import type { Club, ClubMembership, Post, User } from "@generated/client";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import {
 	ArrowUpRight,
-	AtSign,
 	Cog,
 	Eye,
 	EyeOff,
 	Globe,
 	Handshake,
+	MailOpenIcon,
 	MapIcon,
 	MapPin,
 	Pencil,
@@ -129,12 +129,21 @@ export async function ClubOverview({
 						<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">{club.description}</p>
 					</div>
 				</div>
+
 				<div className="flex flex-col md:flex-row gap-2">
 					{club.latitude && club.longitude && (
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
 								<MapIcon className="h-4 w-4 mr-2" />
 								{t("components.clubOverview.map")}
+							</Link>
+						</Button>
+					)}
+					{club.website && (
+						<Button asChild variant="default">
+							<Link href={club.website} target="_blank" rel="noopener noreferrer">
+								<Globe className="h-4 w-4 mr-2" />
+								{club.website.length > 25 ? `${club.website.slice(0, 25)}...` : club.website}
 							</Link>
 						</Button>
 					)}
@@ -178,10 +187,12 @@ export async function ClubOverview({
 					</Badge>
 				)}
 				{club.contactEmail && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						<AtSign className="w-4 h-4" />
-						{club.contactEmail}
-					</Badge>
+					<Link href={`mailto:${club.contactEmail}`} className="md:grow-0 grow flex items-center gap-1">
+						<Badge className="md:grow-0 grow flex items-center gap-1">
+							<MailOpenIcon className="w-4 h-4" />
+							{club.contactEmail}
+						</Badge>
+					</Link>
 				)}
 				{club.contactPhone && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">

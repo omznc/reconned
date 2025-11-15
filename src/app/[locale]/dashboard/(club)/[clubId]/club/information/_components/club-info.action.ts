@@ -54,6 +54,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			longitude: parsedInput.longitude,
 			countryId: parsedInput.countryId,
 			instagramUsername: parsedInput.instagramUsername,
+			website: parsedInput.website,
 		},
 		create: {
 			name: parsedInput.name,
@@ -71,6 +72,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			slug: parsedInput.slug ? parsedInput.slug : undefined,
 			countryId: parsedInput.countryId,
 			instagramUsername: parsedInput.instagramUsername,
+			website: parsedInput.website,
 			members: {
 				create: {
 					userId: ctx.user.id,
