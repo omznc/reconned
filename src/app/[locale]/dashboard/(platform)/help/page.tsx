@@ -9,6 +9,7 @@ import DeleteClubPhoto1 from "@/../public/help/delete-club-photo-1.png";
 import DeleteClubPhoto2 from "@/../public/help/delete-club-photo-2.png";
 import GoogleMap1Image from "@/../public/help/google-map-1.png";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 export default function Page() {
 	const t = useTranslations();
@@ -26,6 +27,8 @@ export default function Page() {
 							<li>{t("dashboard.help.googleMaps.steps.step3")}</li>
 							<li>{t("dashboard.help.googleMaps.steps.step4")}</li>
 							<Image
+																width={IMAGE_SIZES.MEDIUM}
+																height={IMAGE_SIZES.MEDIUM}
 								src={GoogleMap1Image}
 								alt={t("dashboard.help.googleMaps.shareDialog")}
 								className="w-full border md:w-1/2 dark:invert"
@@ -43,12 +46,20 @@ export default function Page() {
 							<li>{t("dashboard.help.deleteClub.steps.step2")}</li>
 							<li>{t("dashboard.help.deleteClub.steps.step3")}</li>
 							<Image
+								width={IMAGE_SIZES.MEDIUM}
+								height={IMAGE_SIZES.MEDIUM}
 								src={DeleteClubPhoto1}
 								alt="Navigation to club information page"
 								className="w-full border md:w-2/3"
 							/>
 							<li>{t("dashboard.help.deleteClub.steps.step4")}</li>
-							<Image src={DeleteClubPhoto2} alt="Delete club button" className="w-full border md:w-2/3" />
+							<Image
+								width={IMAGE_SIZES.MEDIUM}
+								height={IMAGE_SIZES.MEDIUM}
+								src={DeleteClubPhoto2}
+								alt="Delete club button"
+								className="w-full border md:w-2/3"
+							/>
 						</ol>
 						<p className="mt-4 text-sm italic">{t("dashboard.help.deleteClub.notes")}</p>
 					</div>

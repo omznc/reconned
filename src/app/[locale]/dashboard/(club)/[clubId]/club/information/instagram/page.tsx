@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 interface FacebookPage {
 	id: string;
@@ -210,6 +211,8 @@ export default function InstagramPageSelection() {
 											<Image
 												src={page.picture.data.url}
 												alt={page.name}
+												width={IMAGE_SIZES.THUMBNAIL}
+												height={IMAGE_SIZES.THUMBNAIL}
 												fill
 												className="object-cover"
 											/>

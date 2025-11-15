@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { Globe, MapPin } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,26 +44,28 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col md:flex-row gap-4">
-				{/* TODO: Handle if unset */}
-				{user.image && (
-					<Image
-						suppressHydrationWarning={true}
-						src={user.image}
-						alt={user.name}
-						width={300}
-						height={300}
-						className="h-[400px] md:h-[200px] w-auto aspect-square object-cover"
-						draggable={false}
-					/>
-				)}
-				<div className="flex select-none flex-col gap-1">
-					<div className="flex items-center gap-2">
-						<h1 className="text-2xl font-semibold">
-							{user.name} {user.callsign && `(${user.callsign})`}
-						</h1>
+			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between bg-background p-4">
+				<div className="flex flex-col md:flex-row gap-4">
+					{/* TODO: Handle if unset */}
+					{user.image && (
+						<Image
+							suppressHydrationWarning={true}
+							src={user.image}
+							alt={user.name}
+							width={300}
+							height={300}
+							className="h-[150px] md:h-[150px] w-auto mx-auto md:mx-0"
+							draggable={false}
+						/>
+					)}
+					<div className="flex flex-col gap-1 text-center md:text-left">
+						<div className="flex items-center justify-center md:justify-start gap-2">
+							<h1 className="text-2xl font-semibold">
+								{user.name} {user.callsign && `(${user.callsign})`}
+							</h1>
+						</div>
+						<ExpandableDescription description={user.bio || ""} />
 					</div>
-					<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">{user.bio}</p>
 				</div>
 			</div>
 			{/* New Additional User Information Card */}
@@ -83,7 +86,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</CardContent>
 			</Card> */}
 			<div className="flex flex-wrap gap-2">
-				{shouldShowStats && (
+				{shouldShowStats && visitors > 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
 						{t("components.userOverview.views", { count: visitors })}
 					</Badge>
@@ -141,7 +144,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 												</span>
 											</div>
 										)}
-										<Link href={`/clubs/${membership.club.id}`} className="hover:underline">
+										<Link href={`/clubs/${membership.club.slug ?? membership.club.id}`} className="hover:underline">
 											{membership.club.name}
 										</Link>
 									</li>

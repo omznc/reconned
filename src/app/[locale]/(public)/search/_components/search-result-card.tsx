@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 interface SearchResultCardProps {
 	title: ReactNode;
@@ -28,18 +29,13 @@ export function SearchResultCard({ title, description, href, badges, meta, image
 						)}
 					>
 						{image ? (
-							<>
 								<Image
 									src={image}
 									alt={typeof title === "string" ? title : "Image"}
-									fill
-									className={cn({
-										"object-cover h-full": type !== "club",
-										"object-contain": type === "club",
-									})}
+									width={IMAGE_SIZES.THUMBNAIL}
+									height={IMAGE_SIZES.THUMBNAIL}
+									className="object-contain h-full"
 								/>
-								<div className="absolute inset-0 bg-linear-to-t from-background/60 to-transparent" />
-							</>
 						) : (
 							<div className="w-full h-full bg-muted grid place-items-center">
 								{

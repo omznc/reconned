@@ -24,14 +24,14 @@ export default async function RootLayout({
 				src={background}
 				alt="Background"
 				className="absolute dark:block hidden inset-0 object-cover w-full h-full blur-md"
-				quality={100}
+				quality={50}
 				priority
 			/>
 			<Image
 				src={backgroundLight}
 				alt="Background"
 				className="block dark:hidden absolute inset-0 object-cover w-full h-full blur-md"
-				quality={100}
+				quality={50}
 				priority
 			/>
 			<Card className="w-full z-10 border-0 mx-auto md:border flex flex-col items-center justify-start min-h-dvh md:min-h-auto shadow-none md:max-w-sm overflow-y-auto md:overflow-hidden md:h-fit">
