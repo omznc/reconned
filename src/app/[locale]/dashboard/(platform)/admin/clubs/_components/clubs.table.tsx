@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 interface ClubsTableProps {
 	clubs: Club[];
@@ -36,7 +37,13 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 						variant: "custom",
 						component: (_, club) =>
 							club.logo ? (
-								<Image src={club.logo} alt="Logo" width={32} height={32} />
+								<Image 
+								src={club.logo} 
+								alt="Logo"					
+								width={IMAGE_SIZES.THUMBNAIL}
+								height={IMAGE_SIZES.THUMBNAIL}
+								className="object-contain max-h-12"
+								/>
 							) : (
 								<div className="w-8 h-8 bg-gray-200" />
 							),

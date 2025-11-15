@@ -32,36 +32,39 @@ const nextConfig = {
 		serverComponentsHmrCache: true,
 	},
 	images: {
-		remotePatterns: [
-			{
-				protocol: "https",
-				hostname: "s3-airsoft.omarzunic.com",
-			},
-			{
-				protocol: "https",
-				hostname: "cdn.reconned.com",
-			},
-			{
-				protocol: "https",
-				hostname: "cdn-beta.reconned.com",
-			},
-			{
-				protocol: "https",
-				hostname: "lh3.googleusercontent.com",
-			},
-			{
-				protocol: "https",
-				hostname: "i.imgur.com",
-			},
-			{
-				protocol: "https",
-				hostname: "*.cdninstagram.com",
-			},
-			{
-				protocol: "https",
-				hostname: "*.fbcdn.net",
-			},
-		],
+		// remotePatterns: [
+		// 	{
+		// 		protocol: "https",
+		// 		hostname: "s3-airsoft.omarzunic.com",
+		// 	},
+		// 	{
+		// 		protocol: "https",
+		// 		hostname: "cdn.reconned.com",
+		// 	},
+		// 	{
+		// 		protocol: "https",
+		// 		hostname: "cdn-beta.reconned.com",
+		// 	},
+		// 	{
+		// 		protocol: "https",
+		// 		hostname: "lh3.googleusercontent.com",
+		// 	},
+		// 	{
+		// 		protocol: "https",
+		// 		hostname: "i.imgur.com",
+		// 	},
+		// 	{
+		// 		protocol: "https",
+		// 		hostname: "*.cdninstagram.com",
+		// 	},
+		// 	{
+		// 		protocol: "https",
+		// 		hostname: "*.fbcdn.net",
+		// 	},
+		// ],
+		loader: 'custom',
+		loaderFile: './image-loader.ts',
+		qualities: [50, 75, 100],
 	},
 	async redirects() {
 		return [

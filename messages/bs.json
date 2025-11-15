@@ -18,6 +18,10 @@
 		},
 		"states": {},
 		"messages": {},
+		"ui": {
+			"readMore": "Pročitaj više",
+			"showLess": "Prikaži manje"
+		},
 		"words": {
 			"breakfast": "Doručak",
 			"lunch": "Ručak",
@@ -1398,6 +1402,7 @@
 		},
 		"header": {
 			"backToHome": "Nazad na početnu",
+			"back": "Nazad",
 			"dashboard": "Aplikacija",
 			"login": "Prijava",
 			"logout": "Odjava",
@@ -1414,7 +1419,8 @@
 		},
 		"clubsMap": {
 			"viewProfile": "Pogledaj profil",
-			"clubLogo": "Club logo"
+			"clubLogo": "Club logo",
+			"searchClubs": "Pretraži klubove..."
 		},
 		"calendar": {
 			"today": "Danas",
@@ -1558,7 +1564,11 @@
 			"createPost": "Nova objava",
 			"noPosts": "Nema objava",
 			"members": "Članovi",
-			"claimClub": "Preuzmi ovaj klub"
+			"claimClub": "Preuzmi ovaj klub",
+			"leavingReconned": "Napuštate RECONNED",
+			"leavingReconnedDescription": "Upravo ćete posjetiti vanjsku web stranicu. Jeste li sigurni da želite nastaviti?",
+			"continue": "Nastavi",
+			"cancel": "Otkaži"
 		},
 		"claimClubForm": {
 			"disclaimer": "Ovaj klub je dodan od strane RECONNED tima i još nije u vlasništvu. Ako ste vlasnik ili predstavnik ovog kluba, možete ga preuzeti popunjavanjem forme ispod.",

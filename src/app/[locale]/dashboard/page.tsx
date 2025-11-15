@@ -6,6 +6,7 @@ import { ErrorPage } from "@/components/error-page";
 import { Link, redirect } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -131,8 +132,8 @@ export default async function DashboardPage() {
 											{membership.club.logo ? (
 												<Image
 													suppressHydrationWarning
-													width={48}
-													height={48}
+													width={IMAGE_SIZES.THUMBNAIL}
+													height={IMAGE_SIZES.THUMBNAIL}
 													src={membership.club.logo}
 													alt={membership.club.name}
 													className="h-full w-full object-contain"

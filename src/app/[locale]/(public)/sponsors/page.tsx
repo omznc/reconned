@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
 import { generatePageLanguages } from "@/lib/utils";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 const sponsors = [
 	{
@@ -88,16 +89,16 @@ export default async function SponsorsPage() {
 											src={sponsor.logo || "/placeholder.svg"}
 											alt={sponsor.name}
 											data-has-dark={!!sponsor.logoDark}
-											width={200}
-											height={100}
+											width={IMAGE_SIZES.THUMBNAIL}
+											height={IMAGE_SIZES.THUMBNAIL}
 											className="mb-4 size-[200px] object-contain block dark:data-[has-dark=true]:hidden"
 										/>
 										{sponsor.logoDark && (
 											<Image
 												src={sponsor.logoDark}
 												alt={sponsor.name}
-												width={200}
-												height={100}
+												width={IMAGE_SIZES.THUMBNAIL}
+												height={IMAGE_SIZES.THUMBNAIL}
 												className="mb-4 size-[200px] object-contain hidden dark:block"
 											/>
 										)}
@@ -117,15 +118,15 @@ export default async function SponsorsPage() {
 										src={"/reconned-logo-light.svg"}
 										alt={"Vi"}
 										data-has-dark={true}
-										width={200}
-										height={100}
+										width={IMAGE_SIZES.THUMBNAIL}
+										height={IMAGE_SIZES.THUMBNAIL}
 										className="mb-4 size-[200px] object-contain block dark:data-[has-dark=true]:hidden"
 									/>
 									<Image
 										src={"/reconned-logo-dark.svg"}
 										alt={"Vi"}
-										width={200}
-										height={100}
+										width={IMAGE_SIZES.THUMBNAIL}
+										height={IMAGE_SIZES.THUMBNAIL}
 										className="mb-4 size-[200px] object-contain hidden dark:block"
 									/>
 								</CardHeader>

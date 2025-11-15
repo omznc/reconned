@@ -18,6 +18,10 @@
 		},
 		"states": {},
 		"messages": {},
+		"ui": {
+			"readMore": "Read more",
+			"showLess": "Show less"
+		},
 		"words": {
 			"breakfast": "Breakfast",
 			"lunch": "Lunch",
@@ -1398,6 +1402,7 @@
 		},
 		"header": {
 			"backToHome": "Back to homepage",
+			"back": "Back",
 			"dashboard": "Dashboard",
 			"login": "Login",
 			"logout": "Sign out",
@@ -1414,7 +1419,8 @@
 		},
 		"clubsMap": {
 			"viewProfile": "View profile",
-			"clubLogo": "Club logo"
+			"clubLogo": "Club logo",
+			"searchClubs": "Search clubs..."
 		},
 		"calendar": {
 			"today": "Today",
@@ -1558,7 +1564,11 @@
 			"allied": "Allied with ASK FBIH",
 			"instagramGallery": "Instagram photos",
 			"instagramGalleryDescription": "View our latest posts on Instagram",
-			"claimClub": "Claim this club"
+			"claimClub": "Claim this club",
+			"leavingReconned": "You're leaving RECONNED",
+			"leavingReconnedDescription": "You're about to visit an external website. Are you sure you want to continue?",
+			"continue": "Continue",
+			"cancel": "Cancel"
 		},
 		"claimClubForm": {
 			"disclaimer": "This club was added by the RECONNED team and is not owned by anyone yet. If you are the owner or representative of this club, you can claim it by filling out the form below.",

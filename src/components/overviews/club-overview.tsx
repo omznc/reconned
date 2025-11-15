@@ -5,7 +5,6 @@ import {
 	Cog,
 	Eye,
 	EyeOff,
-	Globe,
 	Handshake,
 	MailOpenIcon,
 	MapIcon,
@@ -20,7 +19,9 @@ import { ClaimClubForm } from "@/components/claim-club-form";
 import { AdminIcon, ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
+import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ClubPost } from "@/components/overviews/club-post";
+import { ClubWebsiteButton } from "@/components/overviews/club-website-button";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -103,7 +104,7 @@ export async function ClubOverview({
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between">
+			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between bg-background p-4">
 				<div className="flex flex-col md:flex-row gap-4">
 					{club.logo ? (
 						<Image
@@ -120,13 +121,13 @@ export async function ClubOverview({
 							<ShieldBan className="size-[50px] text-foreground" />
 						</div>
 					)}
-					<div className="flex select-none flex-col gap-1 text-center md:text-left">
+					<div className="flex flex-col gap-1 text-center md:text-left">
 						<div className="flex items-center justify-center md:justify-start gap-2">
 							<h1 className="text-2xl flex gap-2 items-center font-semibold">
 								{club.name} {club.verified && <VerifiedClubIcon />}
 							</h1>
 						</div>
-						<p className="text-accent-foreground/80 whitespace-pre-wrap line-clamp-6">{club.description}</p>
+						<ExpandableDescription description={club.description || ""} />
 					</div>
 				</div>
 
@@ -139,21 +140,7 @@ export async function ClubOverview({
 							</Link>
 						</Button>
 					)}
-					{club.website && (
-						<Button asChild variant="default">
-							<Link href={club.website} target="_blank" rel="noopener noreferrer">
-								<Globe className="h-4 w-4 mr-2" />
-								{(() => {
-									try {
-										const url = new URL(club.website);
-										return url.hostname;
-									} catch {
-										return club.website.length > 25 ? `${club.website.slice(0, 25)}...` : club.website;
-									}
-								})()}
-							</Link>
-						</Button>
-					)}
+					{club.website && <ClubWebsiteButton website={club.website} isVerified={club.verified} />}
 					{isManager && (
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/information`}>
@@ -207,7 +194,7 @@ export async function ClubOverview({
 						{club.contactPhone}
 					</Badge>
 				)}
-				{shouldShowStats && (
+				{shouldShowStats && visitors > 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
 						{t("components.clubOverview.views", { count: visitors })}
 					</Badge>
