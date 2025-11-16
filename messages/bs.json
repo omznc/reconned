@@ -162,7 +162,8 @@
 			},
 			"metadata": {
 				"title": "RECONNED - Airsoft klubovi, susreti, i igrači",
-				"description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+				"description": "Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
+				"keywords": "airsoft platforma, airsoft zajednica, airsoft susreti, airsoft klubovi, airsoft igrači, airsoft BiH, airsoft Bosna, nađi airsoft susrete, pridruži se airsoft klubovima, airsoft platforma zajednice"
 			}
 		},
 		"sponsors": {
@@ -177,7 +178,8 @@
 			},
 			"metadata": {
 				"title": "Sponzori - RECONNED",
-				"description": "Naši trenutni sponzori i partneri. Hvala vam na podršci."
+				"description": "Naši trenutni sponzori i partneri. Hvala vam na podršci.",
+				"keywords": "airsoft sponzori, airsoft partneri, podrži airsoft, airsoft donacije, airsoft finansiranje, sponzori airsoft zajednice, airsoft BiH sponzori"
 			}
 		},
 		"about": {
@@ -252,7 +254,8 @@
 			"title": "Klubovi",
 			"metadata": {
 				"title": "Airsoft klubovi - RECONNED",
-				"description": "Lista svih airsoft klubova na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+				"description": "Lista svih airsoft klubova na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
+				"keywords": "airsoft klubovi, airsoft timovi, airsoft klub direktorij, pronađi airsoft klub, pridruži se airsoft klubu, airsoft klub BiH, airsoft klub Bosna, airsoft klub Sarajevo, airsoft klub članovi, airsoft klub registracija"
 			},
 			"member": "član",
 			"members": "članova"
@@ -261,13 +264,15 @@
 			"title": "Igrači",
 			"metadata": {
 				"title": "Igrači - RECONNED",
-				"description": "Lista svih airsoft igrača na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+				"description": "Lista svih airsoft igrača na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
+				"keywords": "airsoft igrači, airsoft gejmers, članovi airsoft zajednice, pronađi airsoft igrača, profili airsoft igrača, airsoft igrač BiH, airsoft igrač Bosna, airsoft igrač direktorij"
 			}
 		},
 		"events": {
 			"metadata": {
 				"title": "Airsoft susreti - RECONNED",
-				"description": "Lista svih airsoft susreta na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+				"description": "Lista svih airsoft susreta na platformi. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
+				"keywords": "airsoft susreti, airsoft mečevi, airsoft turniri, airsoft igre, airsoft takmičenja, pronađi airsoft susret, pridruži se airsoft susretu, airsoft susret BiH, airsoft susret Bosna, airsoft susret registracija"
 			},
 			"title": "Nadolazeći susreti",
 			"none": "Nema nadolazećih susreta",
@@ -448,7 +453,8 @@
 			},
 			"metadata": {
 				"title": "Politika privatnosti - RECONNED",
-				"description": "Politika privatnosti platforme RECONNED. Kako štitimo vašu privatnost i koje podatke prikupljamo."
+				"description": "Politika privatnosti platforme RECONNED. Kako štitimo vašu privatnost i koje podatke prikupljamo.",
+				"keywords": "politika privatnosti, zaštita podataka, lični podaci, airsoft privatnost, korisnički podaci, GDPR usklađenost, prava privatnosti"
 			}
 		},
 		"terms": {
@@ -529,7 +535,8 @@
 			},
 			"metadata": {
 				"title": "Uslovi korištenja - RECONNED",
-				"description": "Uslovi korištenja platforme RECONNED. Kako koristiti našu platformu i šta očekivati."
+				"description": "Uslovi korištenja platforme RECONNED. Kako koristiti našu platformu i šta očekivati.",
+				"keywords": "uslovi korištenja, uslovi i odredbe, korisnički ugovor, airsoft uslovi, pravila platforme, ugovor o usluzi, pravni uslovi"
 			}
 		},
 		"changelog": {
@@ -562,20 +569,23 @@
 			"members": "članova",
 			"metadata": {
 				"title": "Pretraga za {query} - RECONNED",
-				"description": "Rezultati pretrage za {query}. Pretražujte klubove, igrače i susrete na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini."
+				"description": "Rezultati pretrage za {query}. Pretražujte klubove, igrače i susrete na platformi RECONNED. Prva univerzalna platforma za airsoft klubove, susrete, i igrače u Bosni i Hercegovini.",
+				"keywords": "pretraga airsoft, pronađi airsoft klubove, pronađi airsoft igrače, pronađi airsoft susrete, airsoft pretraga, airsoft direktorij, airsoft zajednica pretraga"
 			}
 		},
 		"map": {
 			"metadata": {
 				"title": "Mapa klubova - RECONNED",
-				"description": "Pronađite gdje se nalaze airsoft klubovi. Istražite i pronađite zajednice u vašoj blizini. Prva univerzalna platforma za airsoft klubove, susrete, i igrače."
+				"description": "Pronađite gdje se nalaze airsoft klubovi. Istražite i pronađite zajednice u vašoj blizini. Prva univerzalna platforma za airsoft klubove, susrete, i igrače.",
+				"keywords": "mapa airsoft klubova bih,mapa airsoft klubova, airsoft klubovi Bosna i Hercegovina, airsoft klubovi BiH, airsoft klubovi Sarajevo, airsoft mapa, airsoft timovi, airsoft zajednice, airsoft federacija, airsoft savezi, airsoft udruženja, airsoft lokacije, pronađi airsoft klub, airsoft društva, airsoft klub u blizini, airsoft bh, airsoft republika srpska, airsoft federacija bih, airsoft igrači, airsoft, airsoft klubovi, airsoft klub locator, airsoft klub registration, airsoft klub mapa, airsoft klub join"
 			}
 		},
 		"supportUs": {
 			"title": "Podržite nas (uskoro)",
 			"metadata": {
 				"title": "Podržite nas - RECONNED",
-				"description": "Podržite RECONNED platformu i pomozite nam da izgradimo najbolju airsoft zajednicu. Prva univerzalna platforma za airsoft klubove, susrete, i igrače."
+				"description": "Podržite RECONNED platformu i pomozite nam da izgradimo najbolju airsoft zajednicu. Prva univerzalna platforma za airsoft klubove, susrete, i igrače.",
+				"keywords": "podrži airsoft platformu, doniraj airsoft, finansiraj airsoft zajednicu, airsoft sponzorstvo, pomozi airsoft razvoj, airsoft platforma finansiranje"
 			}
 		}
 	},
@@ -1420,12 +1430,15 @@
 		"clubsMap": {
 			"viewProfile": "Pogledaj profil",
 			"clubLogo": "Club logo",
-			"searchClubs": "Pretraži klubove..."
+			"searchClubs": "Pretraži klubove...",
+			"enableClustering": "Grupiraj"
 		},
 		"calendar": {
 			"today": "Danas",
 			"alreadyToday": "Već je danas",
 			"goToToday": "Idi na trenutni mjesec",
+			"previousMonth": "Prethodni mjesec",
+			"nextMonth": "Sljedeći mjesec",
 			"days": {
 				"mon": "Pon",
 				"tue": "Uto",

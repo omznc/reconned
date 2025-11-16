@@ -112,7 +112,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.clubs.metadata.title"),
 		description: t("public.clubs.metadata.description"),
-		keywords: t("public.layout.metadata.keywords")
+		keywords: t("public.clubs.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		alternates: {

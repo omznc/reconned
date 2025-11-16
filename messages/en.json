@@ -162,7 +162,8 @@
 			},
 			"metadata": {
 				"title": "RECONNED - Airsoft clubs, events, and players",
-				"description": "The first universal platform for airsoft clubs, events, and players."
+				"description": "The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "airsoft platform, airsoft community, airsoft events, airsoft clubs, airsoft players, airsoft BiH, airsoft Bosnia, find airsoft events, join airsoft clubs, airsoft community platform"
 			}
 		},
 		"sponsors": {
@@ -177,7 +178,8 @@
 			},
 			"metadata": {
 				"title": "Sponsors - RECONNED",
-				"description": "Our current sponsors and partners. Thank you for your support!"
+				"description": "Our current sponsors and partners. Thank you for your support!",
+				"keywords": "airsoft sponsors, airsoft partners, support airsoft, airsoft donations, airsoft funding, airsoft community sponsors, airsoft BiH sponsors"
 			}
 		},
 		"about": {
@@ -252,7 +254,8 @@
 			"title": "Clubs",
 			"metadata": {
 				"title": "Airsoft clubs - RECONNED",
-				"description": "The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players."
+				"description": "The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "airsoft clubs, airsoft teams, airsoft club directory, find airsoft club, join airsoft club, airsoft club BiH, airsoft club Bosnia, airsoft club Sarajevo, airsoft club members, airsoft club registration"
 			},
 			"member": "member",
 			"members": "members"
@@ -261,13 +264,15 @@
 			"title": "Players",
 			"metadata": {
 				"title": "Airsoft players - RECONNED",
-				"description": "The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players."
+				"description": "The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "airsoft players, airsoft gamers, airsoft community members, find airsoft player, airsoft player profiles, airsoft player BiH, airsoft player Bosnia, airsoft player directory"
 			}
 		},
 		"events": {
 			"metadata": {
 				"title": "Airsoft events - RECONNED",
-				"description": "The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players."
+				"description": "The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "airsoft events, airsoft matches, airsoft tournaments, airsoft games, airsoft competitions, find airsoft event, join airsoft event, airsoft event BiH, airsoft event Bosnia, airsoft event registration"
 			},
 			"title": "Upcoming events",
 			"none": "There are no upcomig events",
@@ -448,7 +453,8 @@
 			},
 			"metadata": {
 				"title": "Privacy Policy - RECONNED",
-				"description": "Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players."
+				"description": "Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "privacy policy, data protection, personal information, airsoft privacy, user data, GDPR compliance, privacy rights"
 			}
 		},
 		"terms": {
@@ -529,7 +535,8 @@
 			},
 			"metadata": {
 				"title": "Terms of Use - RECONNED",
-				"description": "Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
+				"description": "Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "terms of use, terms and conditions, user agreement, airsoft terms, platform rules, service agreement, legal terms"
 			}
 		},
 		"changelog": {
@@ -562,20 +569,23 @@
 			"members": "members",
 			"metadata": {
 				"title": "Search for {query} - RECONNED",
-				"description": "Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players."
+				"description": "Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "search airsoft, find airsoft clubs, find airsoft players, find airsoft events, airsoft search, airsoft directory, airsoft community search"
 			}
 		},
 		"map": {
 			"metadata": {
 				"title": "Club Map - RECONNED",
-				"description": "Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players."
+				"description": "Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "airsoft clubs map bih,airsoft clubs map, airsoft clubs Bosnia and Herzegovina, airsoft clubs BiH, airsoft clubs Sarajevo, airsoft map, airsoft teams, airsoft communities, airsoft federation, airsoft savez, airsoft associations, airsoft locations, find airsoft club, airsoft clubs, airsoft club locator, airsoft club registration, airsoft club map, airsoft club join"
 			}
 		},
 		"supportUs": {
 			"title": "Support us (coming soon)",
 			"metadata": {
 				"title": "Support us - RECONNED",
-				"description": "Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players."
+				"description": "Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players.",
+				"keywords": "support airsoft platform, donate to airsoft, fund airsoft community, airsoft sponsorship, help airsoft development, airsoft platform funding"
 			}
 		}
 	},
@@ -1420,12 +1430,15 @@
 		"clubsMap": {
 			"viewProfile": "View profile",
 			"clubLogo": "Club logo",
-			"searchClubs": "Search clubs..."
+			"searchClubs": "Search clubs...",
+			"enableClustering": "Clustering"
 		},
 		"calendar": {
 			"today": "Today",
 			"alreadyToday": "It's already today",
 			"goToToday": "Go to today",
+			"previousMonth": "Previous month",
+			"nextMonth": "Next month",
 			"days": {
 				"mon": "Mon",
 				"tue": "Tue",

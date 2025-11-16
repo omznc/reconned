@@ -239,10 +239,10 @@ export function EventCalendar(props: EventCalendarProps) {
 					</Button>
 					<div className="flex">
 						<Button variant="outline" className="border-r-0" onClick={handlePreviousMonth}>
-							<ChevronLeft className="h-4 w-4" />
+							<ChevronLeft className="h-4 w-4" aria-label={t("components.calendar.previousMonth")} />
 						</Button>
 						<Button variant="outline" onClick={handleNextMonth}>
-							<ChevronRight className="h-4 w-4" />
+							<ChevronRight className="h-4 w-4" aria-label={t("components.calendar.nextMonth")} />
 						</Button>
 					</div>
 				</div>

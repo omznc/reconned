@@ -92,5 +92,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/map`,
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
 		},
+		keywords: t("public.map.metadata.keywords")
+			.split(",")
+			.map((keyword: string) => keyword.trim()),
 	};
 }
