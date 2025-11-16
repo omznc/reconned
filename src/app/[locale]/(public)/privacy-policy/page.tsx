@@ -162,6 +162,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.privacy.metadata.title"),
 		description: t("public.privacy.metadata.description"),
+		keywords: t("public.privacy.metadata.keywords")
+			.split(",")
+			.map((keyword: string) => keyword.trim()),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/privacy-policy`,
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/privacy-policy", locale),

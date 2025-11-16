@@ -1,4 +1,5 @@
 export const IMAGE_SIZES = {
+	ICON: 32,
 	THUMBNAIL: 150,
 	SMALL: 300,
 	MEDIUM: 600,

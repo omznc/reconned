@@ -203,6 +203,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.events.metadata.title"),
 		description: t("public.events.metadata.description"),
+		keywords: t("public.events.metadata.keywords")
+			.split(",")
+			.map((keyword: string) => keyword.trim()),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events`,
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),

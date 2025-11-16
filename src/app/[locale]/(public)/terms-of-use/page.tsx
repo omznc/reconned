@@ -158,6 +158,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.terms.metadata.title"),
 		description: t("public.terms.metadata.description"),
+		keywords: t("public.terms.metadata.keywords")
+			.split(",")
+			.map((keyword: string) => keyword.trim()),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),

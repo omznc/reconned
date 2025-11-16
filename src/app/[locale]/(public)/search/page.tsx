@@ -328,6 +328,9 @@ export async function generateMetadata(props: PageProps<"/[locale]/search">): Pr
 		description: t("public.search.metadata.description", {
 			query: q,
 		}),
+		keywords: t("public.search.metadata.keywords")
+			.split(",")
+			.map((keyword: string) => keyword.trim()),
 		alternates: {
 			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
 			languages: generatePageLanguages(

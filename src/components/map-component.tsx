@@ -13,12 +13,57 @@ import {
 	Rectangle,
 } from "leaflet";
 import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import L from "leaflet";
 import { Pin } from "lucide-react";
 import reactDomServer from "react-dom/server";
+
+// Custom TileLayer with LCP optimization
+class OptimizedTileLayer extends L.TileLayer {
+	private _isInitialLoad = true;
+
+	override createTile(coords: L.Coords, done: L.DoneCallback): HTMLElement {
+		const tile = super.createTile(coords, done) as HTMLImageElement;
+
+		// Apply fetchpriority=high to initial viewport tiles
+		if (this._isInitialLoad && tile instanceof HTMLImageElement) {
+			tile.setAttribute("fetchpriority", "high");
+		}
+
+		// Mark initial load as complete after first batch of tiles
+		if (this._isInitialLoad) {
+			setTimeout(() => {
+				this._isInitialLoad = false;
+			}, 100);
+		}
+
+		return tile;
+	}
+}
+
+// Factory function to create optimized tile layer
+const createOptimizedTileLayer = (url: string, options?: L.TileLayerOptions) => {
+	return new OptimizedTileLayer(url, options);
+};
+
+// React component for optimized tile layer
+function OptimizedTileLayerComponent({ url, ...options }: { url: string } & L.TileLayerOptions) {
+	const map = useMap();
+
+	useEffect(() => {
+		const tileLayer = createOptimizedTileLayer(url, options);
+		map.addLayer(tileLayer);
+
+		return () => {
+			map.removeLayer(tileLayer);
+		};
+	}, [map, url, options]);
+
+	return null;
+}
 
 interface Poi {
 	lat: number;
@@ -197,7 +242,11 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 			whenReady={() => setIsMapReady(true)}
 			style={{ height: "500px", width: "100%" }}
 		>
-			<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+			<OptimizedTileLayerComponent
+				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+				updateWhenZooming={false}
+				updateWhenIdle={true}
+			/>
 		</MapContainer>
 	);
 };

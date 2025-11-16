@@ -84,36 +84,44 @@ export async function Footer() {
 					<div>
 						<h3 className="font-bold mb-4">{t("components.footer.community.title")}</h3>
 						<ul className="space-y-2 text-sm">
-							<Link
-								target="_blank"
-								href="https://discord.gg/fANDrYmFSy"
-								className="hover:text-red-500 transition-all flex items-center gap-2"
-							>
-								<SiDiscord className="size-4" />
-								<span>Discord</span>
-							</Link>
-							<Link
-								target="_blank"
-								href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
-								className="hover:text-red-500 transition-all flex items-center gap-2"
-							>
-								<SiInstagram className="size-4" />
-								<span>Instagram</span>
-							</Link>
-							<Link
-								target="_blank"
-								href="https://github.com/omznc/reconned?utm_source=reconned.com"
-								className="hover:text-red-500 transition-all flex items-center gap-2"
-							>
-								<SiGithub className="size-4" />
-								<span>Github</span>
-								<BadgeNew className="-mb-0.5" />
-							</Link>
-							<Link href="#" className="hover:text-red-500 transition-all flex items-center gap-2">
-								<SiFacebook className="size-4" />
-								<span>Facebook</span>
-								<BadgeSoon className="-mb-0.5" />
-							</Link>
+							<li>
+								<Link
+									target="_blank"
+									href="https://discord.gg/fANDrYmFSy"
+									className="hover:text-red-500 transition-all flex items-center gap-2"
+								>
+									<SiDiscord className="size-4" />
+									<span>Discord</span>
+								</Link>
+							</li>
+							<li>
+								<Link
+									target="_blank"
+									href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
+									className="hover:text-red-500 transition-all flex items-center gap-2"
+								>
+									<SiInstagram className="size-4" />
+									<span>Instagram</span>
+								</Link>
+							</li>
+							<li>
+								<Link
+									target="_blank"
+									href="https://github.com/omznc/reconned?utm_source=reconned.com"
+									className="hover:text-red-500 transition-all flex items-center gap-2"
+								>
+									<SiGithub className="size-4" />
+									<span>Github</span>
+									<BadgeNew className="-mb-0.5" />
+								</Link>
+							</li>
+							<li>
+								<Link href="#" className="hover:text-red-500 transition-all flex items-center gap-2">
+									<SiFacebook className="size-4" />
+									<span>Facebook</span>
+									<BadgeSoon className="-mb-0.5" />
+								</Link>
+							</li>
 						</ul>
 					</div>
 					<div>

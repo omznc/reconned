@@ -1,22 +1,24 @@
 import { Button } from "@components/ui/button";
-import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ContactPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { generatePageLanguages } from "@/lib/utils";
 
 export const revalidate = 86_400; // 1 day
 
 export default async function Page() {
-	const t = await getTranslations();
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
 	const supportPageSchema: WithContext<ContactPage> = {
 		"@context": "https://schema.org",
 		"@type": "ContactPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/support-us`,
+		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/support-us`,
 		name: t("public.supportUs.metadata.title"),
 		description: t("public.supportUs.metadata.description"),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/support-us`,
+		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/support-us`,
 		mainEntity: {
 			"@type": "Organization",
 			name: "Reconned",
@@ -44,4 +46,20 @@ export default async function Page() {
 			</Button>
 		</div>
 	);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+
+	return {
+		title: t("public.supportUs.metadata.title"),
+		description: t("public.supportUs.metadata.description"),
+		keywords: t("public.supportUs.metadata.keywords")
+			.split(",")
+			.map((keyword: string) => keyword.trim()),
+		alternates: {
+			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/support-us`,
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/support-us", locale),
+		},
+	};
 }
