@@ -1,4 +1,5 @@
 import { Logger } from "next-axiom";
+import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { extractSizeFromKey } from "@/lib/storage";
 
@@ -29,6 +30,8 @@ export const STORAGE_LIMITS = {
 const logger = new Logger({ source: "storage-quota" });
 
 export const checkClubStorageQuota = async (clubId: string, additionalSize: number): Promise<StorageQuotaResult> => {
+	const t = await getTranslations("errors.storageQuota");
+
 	try {
 		// Calculate current usage from posts and spending receipts
 		const [postsUsage, receiptsUsage] = await Promise.all([
@@ -69,7 +72,10 @@ export const checkClubStorageQuota = async (clubId: string, additionalSize: numb
 				currentUsage,
 				limit,
 				remaining,
-				error: `Storage quota exceeded. Current: ${Math.round(currentUsage / 1024 / 1024)}MB, Limit: ${Math.round(limit / 1024 / 1024)}MB`,
+				error: t("storageQuotaExceededWithDetails", {
+					currentUsage: Math.round(currentUsage / 1024 / 1024),
+					limit: Math.round(limit / 1024 / 1024),
+				}),
 			};
 		}
 
@@ -89,7 +95,7 @@ export const checkClubStorageQuota = async (clubId: string, additionalSize: numb
 			currentUsage: 0,
 			limit: STORAGE_LIMITS.CLUB_TOTAL,
 			remaining: 0,
-			error: "Failed to check storage quota",
+			error: t("failedToCheckStorageQuota"),
 		};
 	}
 };
@@ -97,6 +103,8 @@ export const checkClubStorageQuota = async (clubId: string, additionalSize: numb
 export const checkUserDailyQuota = async (userId: string, additionalSize: number): Promise<StorageQuotaResult> => {
 	// Since Post and ClubPurchase models don't track individual users,
 	// we'll use a simplified approach based on audit logs for now
+	const t = await getTranslations("errors.storageQuota");
+
 	try {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
@@ -135,7 +143,7 @@ export const checkUserDailyQuota = async (userId: string, additionalSize: number
 				currentUsage: estimatedDailyUsage,
 				limit,
 				remaining,
-				error: "Daily upload quota exceeded. Try again tomorrow.",
+				error: t("dailyUploadQuotaExceededTryTomorrow"),
 			};
 		}
 

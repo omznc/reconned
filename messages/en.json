@@ -1480,6 +1480,9 @@
 		},
 		"addToCalendar": {
 			"addToCalendar": "Add to calendar",
+			"location": "Location:",
+			"cost": "Cost: ${amount}",
+			"calendarOptions": ["Apple", "Google", "Outlook.com"],
 			"features": {
 				"breakfast": "Breakfast",
 				"lunch": "Lunch",
@@ -1680,5 +1683,51 @@
 			"rateLimit": "Too many attempts. Please wait a few minutes.",
 			"generic": "Error uploading image."
 		}
+	},
+	"errors": {
+		"fileSecurity": {
+			"emptyFile": "Empty file",
+			"unknownFileType": "Unknown file type",
+			"fileValidationFailed": "File validation failed",
+			"fileTooLarge": "File too large. Max size: {maxSize} bytes",
+			"invalidFileType": "Invalid file type. Expected: {expectedType}, Got: {actualType}"
+		},
+		"safeAction": {
+			"userNotAuthenticated": "User not authenticated",
+			"invalidClubIdProvided": "Invalid clubId provided",
+			"clubNotFound": "Club not found",
+			"userDoesNotManageClub": "User does not manage this club",
+			"userIsNotAdmin": "User is not an admin"
+		},
+		"storage": {
+			"fileTypeSizeKeyRequired": "File type, size, and key are required",
+			"unsupportedFileType": "Unsupported file type: {type}. Allowed: {allowedTypes}",
+			"fileSizeExceedsMaximum": "File size exceeds the maximum allowed size of {maxSize}MB",
+			"clubStorageQuotaExceeded": "Club storage quota exceeded",
+			"dailyUploadQuotaExceeded": "Daily upload quota exceeded"
+		},
+		"storageQuota": {
+			"failedToCheckStorageQuota": "Failed to check storage quota",
+			"dailyUploadQuotaExceededTryTomorrow": "Daily upload quota exceeded. Try again tomorrow.",
+			"storageQuotaExceededWithDetails": "Storage quota exceeded. Current: {currentUsage}MB, Limit: {limit}MB"
+		},
+		"fileUpload": {
+			"uploadFailed": "Upload failed",
+			"someFilesFailedToUpload": "Some files failed to upload",
+			"maximumNumberOfFilesExceeded": "Maximum number of files exceeded: {maxFiles}"
+		},
+		"events": {
+			"slugAlreadyTaken": "Selected link is already taken.",
+			"cannotUpdateFinishedEvent": "You cannot update an event that has already finished.",
+			"cannotDeleteFinishedEvent": "You cannot delete an event that has already finished.",
+			"eventDoesNotBelongToClub": "Event does not belong to your club"
+		},
+		"instagram": {
+			"unknownError": "Unknown error"
+		}
+	},
+	"auth": {
+		"resetPasswordSubject": "Reset your password",
+		"newUserSignedUp": "New user signed up"
 	}
 }

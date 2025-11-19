@@ -1,6 +1,7 @@
 import { S3Client } from "bun";
 
 import { Logger } from "next-axiom";
+import { getTranslations } from "next-intl/server";
 import { env } from "@/lib/env";
 import {
 	type FileValidationResult,
@@ -62,6 +63,7 @@ export interface SecureUploadResult {
  */
 export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<SecureUploadResult> => {
 	const { type, size, key, clubId, userId } = props;
+	const t = await getTranslations("errors.storage");
 
 	// Basic validation
 	if (!(type && size && key)) {
@@ -70,7 +72,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			size,
 			key,
 		});
-		throw new Error("File type, size, and key are required");
+		throw new Error(t("fileTypeSizeKeyRequired"));
 	}
 
 	if (!allowedFileTypes.includes(type)) {
@@ -78,7 +80,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			type,
 			allowedFileTypes,
 		});
-		throw new Error(`Unsupported file type: ${type}. Allowed: ${allowedFileTypes.join(", ")}`);
+		throw new Error(t("unsupportedFileType", { type, allowedTypes: allowedFileTypes.join(", ") }));
 	}
 
 	if (size > maxFileSize) {
@@ -86,14 +88,14 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			size,
 			maxFileSize,
 		});
-		throw new Error(`File size exceeds the maximum allowed size of ${Math.round(maxFileSize / 1024 / 1024)}MB`);
+		throw new Error(t("fileSizeExceedsMaximum", { maxSize: Math.round(maxFileSize / 1024 / 1024) }));
 	}
 
 	// Check storage quotas if clubId provided
 	if (clubId) {
 		const clubQuota = await checkClubStorageQuota(clubId, size);
 		if (!clubQuota.allowed) {
-			throw new Error(clubQuota.error || "Club storage quota exceeded");
+			throw new Error(clubQuota.error || t("clubStorageQuotaExceeded"));
 		}
 	}
 
@@ -101,7 +103,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 	if (userId) {
 		const userQuota = await checkUserDailyQuota(userId, size);
 		if (!userQuota.allowed) {
-			throw new Error(userQuota.error || "Daily upload quota exceeded");
+			throw new Error(userQuota.error || t("dailyUploadQuotaExceeded"));
 		}
 	}
 
@@ -153,7 +155,8 @@ export const processFileForUpload = async (
 			expectedMimeType,
 			maxFileSize,
 		});
-		throw new Error(validation.error || "File validation failed");
+		const t = await getTranslations("errors.storage");
+		throw new Error(validation.error || t("fileValidationFailed"));
 	}
 
 	let processedBuffer = buffer;

@@ -1480,6 +1480,9 @@
 		},
 		"addToCalendar": {
 			"addToCalendar": "Dodaj u kalendar",
+			"location": "Lokacija:",
+			"cost": "Kotizacija: ${amount}",
+			"calendarOptions": ["Apple", "Google", "Outlook.com"],
 			"features": {
 				"breakfast": "Doručak",
 				"lunch": "Ručak",
@@ -1680,5 +1683,51 @@
 			"rateLimit": "Previše pokušaja. Molimo sačekajte nekoliko minuta.",
 			"generic": "Greška pri otpremanju slike."
 		}
+	},
+	"errors": {
+		"fileSecurity": {
+			"emptyFile": "Prazna datoteka",
+			"unknownFileType": "Nepoznata vrsta datoteke",
+			"fileValidationFailed": "Validacija datoteke nije uspjela",
+			"fileTooLarge": "Datoteka je prevelika. Maksimalna veličina: {maxSize} bajtova",
+			"invalidFileType": "Pogrešna vrsta datoteke. Očekivano: {expectedType}, Dobijeno: {actualType}"
+		},
+		"safeAction": {
+			"userNotAuthenticated": "Korisnik nije autentificiran",
+			"invalidClubIdProvided": "Nevažeći clubId je pružen",
+			"clubNotFound": "Klub nije pronađen",
+			"userDoesNotManageClub": "Korisnik ne upravlja ovim klubom",
+			"userIsNotAdmin": "Korisnik nije administrator"
+		},
+		"storage": {
+			"fileTypeSizeKeyRequired": "Vrsta datoteke, veličina i ključ su obavezni",
+			"unsupportedFileType": "Nepodržana vrsta datoteke: {type}. Dozvoljeno: {allowedTypes}",
+			"fileSizeExceedsMaximum": "Veličina datoteke prelazi maksimalnu dozvoljenu veličinu od {maxSize}MB",
+			"clubStorageQuotaExceeded": "Kvota skladištenja kluba je premašena",
+			"dailyUploadQuotaExceeded": "Dnevna kvota otpremanja je premašena"
+		},
+		"storageQuota": {
+			"failedToCheckStorageQuota": "Nije uspjela provjera kvote skladištenja",
+			"dailyUploadQuotaExceededTryTomorrow": "Dnevna kvota otpremanja je premašena. Pokušajte sutra.",
+			"storageQuotaExceededWithDetails": "Kvota skladištenja je premašena. Trenutno: {currentUsage}MB, Limit: {limit}MB"
+		},
+		"fileUpload": {
+			"uploadFailed": "Otpremanje nije uspjelo",
+			"someFilesFailedToUpload": "Neke datoteke nisu uspješno otpremljene",
+			"maximumNumberOfFilesExceeded": "Maksimalan broj datoteka je premašen: {maxFiles}"
+		},
+		"events": {
+			"slugAlreadyTaken": "Izabrani link je već zauzet.",
+			"cannotUpdateFinishedEvent": "Ne možete ažurirati susret koji je već završio.",
+			"cannotDeleteFinishedEvent": "Ne možete obrisati susret koji je već završio.",
+			"eventDoesNotBelongToClub": "Susret ne pripada vašem klubu"
+		},
+		"instagram": {
+			"unknownError": "Nepoznata greška"
+		}
+	},
+	"auth": {
+		"resetPasswordSubject": "Resetujte svoju lozinku",
+		"newUserSignedUp": "Novi korisnik se registrovao"
 	}
 }
