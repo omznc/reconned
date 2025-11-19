@@ -2,158 +2,159 @@
 
 import { logClubAudit } from "@/lib/audit-logger";
 import { env } from "@/lib/env";
+import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 
 export interface InstagramMedia {
-	id: string;
-	caption: string | null;
-	media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
-	media_url: string;
-	permalink: string;
-	thumbnail_url?: string;
-	timestamp: string;
-	username: string;
+    id: string;
+    caption: string | null;
+    media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
+    media_url: string;
+    permalink: string;
+    thumbnail_url?: string;
+    timestamp: string;
+    username: string;
 }
 
 interface FacebookAuthResponse {
-	access_token: string;
-	token_type: string;
-	expires_in: number;
+    access_token: string;
+    token_type: string;
+    expires_in: number;
 }
 
 interface InstagramMediaResponse {
-	data: InstagramMedia[];
-	paging?: {
-		cursors: {
-			before: string;
-			after: string;
-		};
-		next?: string;
-	};
+    data: InstagramMedia[];
+    paging?: {
+        cursors: {
+            before: string;
+            after: string;
+        };
+        next?: string;
+    };
 }
 
 interface FacebookPageResponse {
-	data: Array<{
-		id: string;
-		name: string;
-		access_token: string;
-	}>;
+    data: Array<{
+        id: string;
+        name: string;
+        access_token: string;
+    }>;
 }
 
 interface FacebookLongLivedTokenResponse {
-	access_token: string;
-	token_type: string;
-	expires_in: number; // Typically ~5,184,000 seconds (60 days)
+    access_token: string;
+    token_type: string;
+    expires_in: number; // Typically ~5,184,000 seconds (60 days)
 }
 
 interface FacebookDebugTokenResponse {
-	data: {
-		app_id: string;
-		type: string;
-		application: string;
-		data_access_expires_at: number;
-		expires_at: number | null; // null for never-expiring tokens
-		is_valid: boolean;
-		scopes: string[];
-		user_id: string;
-	};
+    data: {
+        app_id: string;
+        type: string;
+        application: string;
+        data_access_expires_at: number;
+        expires_at: number | null; // null for never-expiring tokens
+        is_valid: boolean;
+        scopes: string[];
+        user_id: string;
+    };
 }
 
 /**
  * Get the Facebook authorization URL for a specific club
  */
 export async function getInstagramAuthUrl(clubId: string): Promise<string> {
-	const baseUrl = new URL("https://www.facebook.com/v19.0/dialog/oauth");
-	const redirectUri = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/instagram/callback`;
+    const baseUrl = new URL("https://www.facebook.com/v19.0/dialog/oauth");
+    const redirectUri = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/instagram/callback`;
 
-	const params = new URLSearchParams({
-		client_id: env.FACEBOOK_APP_ID,
-		redirect_uri: redirectUri,
-		scope: "pages_show_list,instagram_basic,pages_read_engagement",
-		state: clubId,
-	});
+    const params = new URLSearchParams({
+        client_id: env.FACEBOOK_APP_ID,
+        redirect_uri: redirectUri,
+        scope: "pages_show_list,instagram_basic,pages_read_engagement",
+        state: clubId,
+    });
 
-	baseUrl.search = params.toString();
-	return baseUrl.toString();
+    baseUrl.search = params.toString();
+    return baseUrl.toString();
 }
 
 /**
  * Exchange Facebook authorization code for a short-lived access token
  */
 export async function exchangeCodeForToken(code: string): Promise<FacebookAuthResponse> {
-	const redirectUri = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/instagram/callback`;
+    const redirectUri = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/club/instagram/callback`;
 
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${env.FACEBOOK_APP_ID}&client_secret=${
-			env.FACEBOOK_APP_SECRET
-		}&redirect_uri=${encodeURIComponent(redirectUri)}&code=${code}`,
-	);
+    const response = await fetch(
+        `https://graph.facebook.com/v19.0/oauth/access_token?client_id=${env.FACEBOOK_APP_ID}&client_secret=${
+            env.FACEBOOK_APP_SECRET
+        }&redirect_uri=${encodeURIComponent(redirectUri)}&code=${code}`,
+    );
 
-	if (!response.ok) {
-		throw new Error(`Failed to exchange code for token: ${await response.text()}`);
-	}
+    if (!response.ok) {
+        throw new Error(`Failed to exchange code for token: ${await response.text()}`);
+    }
 
-	return await response.json();
+    return await response.json();
 }
 
 /**
  * Exchange a short-lived user token for a long-lived user token
  */
 export async function exchangeForLongLivedToken(shortLivedToken: string): Promise<FacebookLongLivedTokenResponse> {
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${env.FACEBOOK_APP_ID}&client_secret=${env.FACEBOOK_APP_SECRET}&fb_exchange_token=${shortLivedToken}`,
-	);
+    const response = await fetch(
+        `https://graph.facebook.com/v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${env.FACEBOOK_APP_ID}&client_secret=${env.FACEBOOK_APP_SECRET}&fb_exchange_token=${shortLivedToken}`,
+    );
 
-	if (!response.ok) {
-		throw new Error(`Failed to exchange for long-lived token: ${await response.text()}`);
-	}
+    if (!response.ok) {
+        throw new Error(`Failed to exchange for long-lived token: ${await response.text()}`);
+    }
 
-	return await response.json();
+    return await response.json();
 }
 
 /**
  * Debug a Facebook token to check its validity and expiration
  */
 export async function debugToken(accessToken: string): Promise<FacebookDebugTokenResponse> {
-	const appAccessToken = `${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`;
+    const appAccessToken = `${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`;
 
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/debug_token?input_token=${accessToken}&access_token=${appAccessToken}`,
-		{
-			next: {
-				revalidate: 3600, // Cache for 1 hour
-			},
-		},
-	);
+    const response = await fetch(
+        `https://graph.facebook.com/v19.0/debug_token?input_token=${accessToken}&access_token=${appAccessToken}`,
+        {
+            next: {
+                revalidate: 3600, // Cache for 1 hour
+            },
+        },
+    );
 
-	if (!response.ok) {
-		throw new Error(`Failed to debug token: ${await response.text()}`);
-	}
+    if (!response.ok) {
+        throw new Error(`Failed to debug token: ${await response.text()}`);
+    }
 
-	return await response.json();
+    return await response.json();
 }
 
 /**
  * Get Facebook pages associated with a user
  */
 export async function getUserPages(accessToken: string): Promise<FacebookPageResponse> {
-	const response = await fetch(`https://graph.facebook.com/v19.0/me/accounts?access_token=${accessToken}`);
+    const response = await fetch(`https://graph.facebook.com/v19.0/me/accounts?access_token=${accessToken}`);
 
-	if (!response.ok) {
-		throw new Error(`Failed to get user pages: ${await response.text()}`);
-	}
+    if (!response.ok) {
+        throw new Error(`Failed to get user pages: ${await response.text()}`);
+    }
 
-	return await response.json();
+    return await response.json();
 }
 
 interface InstagramBusinessAccountResponse {
-	instagram_business_account: {
-		id: string;
-		name?: string;
-		username: string;
-		profile_picture_url?: string;
-	};
-	id: string;
+    instagram_business_account: {
+        id: string;
+        name?: string;
+        username: string;
+        profile_picture_url?: string;
+    };
+    id: string;
 }
 
 /**
@@ -161,61 +162,61 @@ interface InstagramBusinessAccountResponse {
  * This function tries multiple approaches to find the Instagram business account
  */
 export async function getInstagramBusinessAccount(
-	pageId: string,
-	pageAccessToken: string,
+    pageId: string,
+    pageAccessToken: string,
 ): Promise<InstagramBusinessAccountResponse | undefined> {
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${pageAccessToken}`,
-	);
+    const response = await fetch(
+        `https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${pageAccessToken}`,
+    );
 
-	if (response.ok) {
-		const data = await response.json();
-		if (data.instagram_business_account?.id) {
-			// Get Instagram details using the business account ID
-			const igDetailsResponse = await fetch(
-				`https://graph.facebook.com/v19.0/${data.instagram_business_account.id}?fields=id,username,profile_picture_url&access_token=${pageAccessToken}`,
-			);
+    if (response.ok) {
+        const data = await response.json();
+        if (data.instagram_business_account?.id) {
+            // Get Instagram details using the business account ID
+            const igDetailsResponse = await fetch(
+                `https://graph.facebook.com/v19.0/${data.instagram_business_account.id}?fields=id,username,profile_picture_url&access_token=${pageAccessToken}`,
+            );
 
-			if (igDetailsResponse.ok) {
-				const igDetails = await igDetailsResponse.json();
+            if (igDetailsResponse.ok) {
+                const igDetails = await igDetailsResponse.json();
 
-				return {
-					id: pageId,
-					instagram_business_account: {
-						id: data.instagram_business_account.id,
-						username: igDetails.username,
-						profile_picture_url: igDetails.profile_picture_url,
-					},
-				};
-			}
-		}
-	}
+                return {
+                    id: pageId,
+                    instagram_business_account: {
+                        id: data.instagram_business_account.id,
+                        username: igDetails.username,
+                        profile_picture_url: igDetails.profile_picture_url,
+                    },
+                };
+            }
+        }
+    }
 
-	return undefined;
+    return undefined;
 }
 
 /**
  * Get media from Instagram Business Account using the Graph API
  */
 export async function getInstagramMedia(
-	igBusinessId: string,
-	accessToken: string,
-	limit = 12,
+    igBusinessId: string,
+    accessToken: string,
+    limit = 12,
 ): Promise<InstagramMediaResponse> {
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/${igBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${accessToken}`,
-		{
-			next: {
-				revalidate: 3600, // Cache for 1 hour
-			},
-		},
-	);
+    const response = await fetch(
+        `https://graph.facebook.com/v19.0/${igBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${accessToken}`,
+        {
+            next: {
+                revalidate: 3600, // Cache for 1 hour
+            },
+        },
+    );
 
-	if (!response.ok) {
-		throw new Error(`Failed to get media: ${await response.text()}`);
-	}
+    if (!response.ok) {
+        throw new Error(`Failed to get media: ${await response.text()}`);
+    }
 
-	return await response.json();
+    return await response.json();
 }
 
 /**
@@ -225,52 +226,52 @@ export async function getInstagramMedia(
  * 3. This page access token is essentially non-expiring
  */
 export async function getNonExpiringPageAccessToken(userAccessToken: string, pageId: string): Promise<string> {
-	// When we already have pageId and accessToken from page selection
-	if (pageId) {
-		// Try to directly exchange the access token
-		// First, check if this token is directly usable as a page token
-		// This happens when we're directly passing a page token from page selection
-		const debugResponse = await fetch(
-			`https://graph.facebook.com/v19.0/debug_token?input_token=${userAccessToken}&access_token=${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`,
-		);
+    // When we already have pageId and accessToken from page selection
+    if (pageId) {
+        // Try to directly exchange the access token
+        // First, check if this token is directly usable as a page token
+        // This happens when we're directly passing a page token from page selection
+        const debugResponse = await fetch(
+            `https://graph.facebook.com/v19.0/debug_token?input_token=${userAccessToken}&access_token=${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`,
+        );
 
-		const debugData = await debugResponse.json();
+        const debugData = await debugResponse.json();
 
-		// If token has page scopes, we can use it directly
-		if (debugResponse.ok && debugData?.data?.type === "PAGE" && debugData?.data?.is_valid) {
-			return userAccessToken;
-		}
+        // If token has page scopes, we can use it directly
+        if (debugResponse.ok && debugData?.data?.type === "PAGE" && debugData?.data?.is_valid) {
+            return userAccessToken;
+        }
 
-		// Otherwise, get the page token directly
-		const response = await fetch(
-			`https://graph.facebook.com/v19.0/${pageId}?fields=access_token&access_token=${userAccessToken}`,
-		);
+        // Otherwise, get the page token directly
+        const response = await fetch(
+            `https://graph.facebook.com/v19.0/${pageId}?fields=access_token&access_token=${userAccessToken}`,
+        );
 
-		if (!response.ok) {
-			throw new Error(`Failed to get page access token: ${await response.text()}`);
-		}
+        if (!response.ok) {
+            throw new Error(`Failed to get page access token: ${await response.text()}`);
+        }
 
-		const data = await response.json();
-		if (data.access_token) {
-			return data.access_token;
-		}
-	}
+        const data = await response.json();
+        if (data.access_token) {
+            return data.access_token;
+        }
+    }
 
-	// Step 1: Get long-lived user access token
-	const longLivedTokenResponse = await exchangeForLongLivedToken(userAccessToken);
+    // Step 1: Get long-lived user access token
+    const longLivedTokenResponse = await exchangeForLongLivedToken(userAccessToken);
 
-	// Step 2: Get pages with the long-lived token
-	const pagesResponse = await getUserPages(longLivedTokenResponse.access_token);
+    // Step 2: Get pages with the long-lived token
+    const pagesResponse = await getUserPages(longLivedTokenResponse.access_token);
 
-	// Step 3: Find the requested page and return its access token
-	const page = pagesResponse.data.find((p) => p.id === pageId);
+    // Step 3: Find the requested page and return its access token
+    const page = pagesResponse.data.find((p) => p.id === pageId);
 
-	if (!page) {
-		throw new Error(`Page with ID ${pageId} not found`);
-	}
+    if (!page) {
+        throw new Error(`Page with ID ${pageId} not found`);
+    }
 
-	// This page token is essentially non-expiring when obtained this way
-	return page.access_token;
+    // This page token is essentially non-expiring when obtained this way
+    return page.access_token;
 }
 
 /**
@@ -282,134 +283,135 @@ export async function getNonExpiringPageAccessToken(userAccessToken: string, pag
  * - For expiring tokens, we attempt to convert to non-expiring if possible
  */
 export async function checkAndRefreshToken(
-	clubId: string,
+    clubId: string,
 ): Promise<{ token: string | null; igBusinessId: string | null }> {
-	const club = await prisma.club.findUnique({
-		where: { id: clubId },
-		select: {
-			instagramAccessToken: true,
-			instagramBusinessId: true,
-			instagramTokenExpiry: true,
-			facebookPageId: true,
-			instagramTokenType: true, // Add this field to identify token types
-		},
-	});
+    const club = await prisma.club.findUnique({
+        where: { id: clubId },
+        select: {
+            instagramAccessToken: true,
+            instagramBusinessId: true,
+            instagramTokenExpiry: true,
+            facebookPageId: true,
+            instagramTokenType: true, // Add this field to identify token types
+        },
+    });
 
-	if (!(club?.instagramAccessToken && club?.instagramBusinessId)) {
-		return { token: null, igBusinessId: null };
-	}
+    if (!(club?.instagramAccessToken && club?.instagramBusinessId)) {
+        return { token: null, igBusinessId: null };
+    }
 
-	try {
-		// Check if we have a permanent token
-		if (club.instagramTokenType === "PERMANENT") {
-			// Non-expiring token, just verify it's still valid
-			const debugResponse = await debugToken(club.instagramAccessToken);
+    try {
+        // Check if we have a permanent token
+        if (club.instagramTokenType === "PERMANENT") {
+            // Non-expiring token, just verify it's still valid
+            const debugResponse = await debugToken(club.instagramAccessToken);
 
-			if (!debugResponse.data.is_valid) {
-				return { token: null, igBusinessId: null };
-			}
+            if (!debugResponse.data.is_valid) {
+                return { token: null, igBusinessId: null };
+            }
 
-			return {
-				token: club.instagramAccessToken,
-				igBusinessId: club.instagramBusinessId,
-			};
-		}
+            return {
+                token: club.instagramAccessToken,
+                igBusinessId: club.instagramBusinessId,
+            };
+        }
 
-		// For normal tokens, check expiration
-		const shouldRefreshToken =
-			!club.instagramTokenExpiry ||
-			new Date(club.instagramTokenExpiry) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        // For normal tokens, check expiration
+        const shouldRefreshToken =
+            !club.instagramTokenExpiry ||
+            new Date(club.instagramTokenExpiry) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-		if (shouldRefreshToken && club.facebookPageId) {
-			// Try to get a non-expiring token
-			const nonExpiringToken = await getNonExpiringPageAccessToken(
-				club.instagramAccessToken,
-				club.facebookPageId,
-			);
+        if (shouldRefreshToken && club.facebookPageId) {
+            // Try to get a non-expiring token
+            const nonExpiringToken = await getNonExpiringPageAccessToken(
+                club.instagramAccessToken,
+                club.facebookPageId,
+            );
 
-			// Update the club with the non-expiring token
-			await prisma.club.update({
-				where: { id: clubId },
-				data: {
-					instagramAccessToken: nonExpiringToken,
-					instagramTokenExpiry: null, // No expiry for non-expiring tokens
-					instagramTokenType: "PERMANENT",
-				},
-			});
+            // Update the club with the non-expiring token
+            await prisma.club.update({
+                where: { id: clubId },
+                data: {
+                    instagramAccessToken: nonExpiringToken,
+                    instagramTokenExpiry: null, // No expiry for non-expiring tokens
+                    instagramTokenType: "PERMANENT",
+                },
+            });
 
-			return {
-				token: nonExpiringToken,
-				igBusinessId: club.instagramBusinessId,
-			};
-		}
+            return {
+                token: nonExpiringToken,
+                igBusinessId: club.instagramBusinessId,
+            };
+        }
 
-		// If token refresh wasn't attempted or failed, check if existing token is valid
-		const debugResponse = await debugToken(club.instagramAccessToken);
+        // If token refresh wasn't attempted or failed, check if existing token is valid
+        const debugResponse = await debugToken(club.instagramAccessToken);
 
-		if (!debugResponse.data.is_valid) {
-			// Token is invalid, we need to re-authenticate
-			return { token: null, igBusinessId: null };
-		}
+        if (!debugResponse.data.is_valid) {
+            // Token is invalid, we need to re-authenticate
+            return { token: null, igBusinessId: null };
+        }
 
-		// Update expiration if there is one
-		if (debugResponse.data.expires_at) {
-			await prisma.club.update({
-				where: { id: clubId },
-				data: {
-					instagramTokenExpiry: new Date(debugResponse.data.expires_at * 1000),
-				},
-			});
-		}
+        // Update expiration if there is one
+        if (debugResponse.data.expires_at) {
+            await prisma.club.update({
+                where: { id: clubId },
+                data: {
+                    instagramTokenExpiry: new Date(debugResponse.data.expires_at * 1000),
+                },
+            });
+        }
 
-		return {
-			token: club.instagramAccessToken,
-			igBusinessId: club.instagramBusinessId,
-		};
-	} catch {
-		// In case of any error, we return the existing token and let the API call handle any issues
-		return {
-			token: club.instagramAccessToken,
-			igBusinessId: club.instagramBusinessId,
-		};
-	}
+        return {
+            token: club.instagramAccessToken,
+            igBusinessId: club.instagramBusinessId,
+        };
+    } catch {
+        // In case of any error, we return the existing token and let the API call handle any issues
+        return {
+            token: club.instagramAccessToken,
+            igBusinessId: club.instagramBusinessId,
+        };
+    }
 }
 
 /**
  * Disconnect Instagram from a club
  */
 export async function disconnectInstagramAPI(clubId: string): Promise<boolean> {
-	try {
-		await prisma.club.update({
-			where: { id: clubId },
-			data: {
-				instagramAccessToken: null,
-				instagramUsername: null,
-				instagramConnected: false,
-				instagramTokenExpiry: null,
-				instagramBusinessId: null,
-				facebookPageId: null,
-				instagramTokenType: null,
-			},
-		});
+    try {
+        await prisma.club.update({
+            where: { id: clubId },
+            data: {
+                instagramAccessToken: null,
+                instagramUsername: null,
+                instagramConnected: false,
+                instagramTokenExpiry: null,
+                instagramBusinessId: null,
+                facebookPageId: null,
+                instagramTokenType: null,
+            },
+        });
 
-		await logClubAudit({
-			clubId,
-			actionType: "INSTAGRAM_DISCONNECT",
-			actionData: {
-				success: true,
-			},
-		});
+        await logClubAudit({
+            clubId,
+            actionType: "INSTAGRAM_DISCONNECT",
+            actionData: {
+                success: true,
+            },
+        });
 
-		return true;
-	} catch (error) {
-		await logClubAudit({
-			clubId,
-			actionType: "INSTAGRAM_DISCONNECT",
-			actionData: {
-				success: false,
-				error: error instanceof Error ? error.message : "Unknown error",
-			},
-		});
-		return false;
-	}
+        return true;
+    } catch (error) {
+        const t = await getTranslations("errors.instagram");
+        await logClubAudit({
+            clubId,
+            actionType: "INSTAGRAM_DISCONNECT",
+            actionData: {
+                success: false,
+                error: error instanceof Error ? error.message : t("unknownError"),
+            },
+        });
+        return false;
+    }
 }
