@@ -67,9 +67,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [instagramError, setInstagramError] = useState<string | null>(null);
 	const [instagramErrorMessage, setInstagramErrorMessage] = useState<string | null>(null);
 	const [isDisconnectingInstagram, setIsDisconnectingInstagram] = useState(false);
+	const [mapCenter, setMapCenter] = useState<[number, number] | undefined>(undefined);
+	const [mapZoom, setMapZoom] = useState<number>(8);
 	const confirm = useConfirm();
 	const t = useTranslations();
 	const clubIdRef = useRef<string | null>(props.club?.id || null);
+	const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const geocodeAbortRef = useRef<AbortController | null>(null);
 
 	// Initialize file upload system for logo
 	const initialFiles: FileUploadItem[] = props.club?.logo
@@ -173,19 +177,38 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		mode: "onBlur",
 	});
 
+	const selectedCountryId = form.watch("countryId");
+	const locationValue = form.watch("location");
+	const latitudeValue = form.watch("latitude");
+	const longitudeValue = form.watch("longitude");
+	const nameValue = form.watch("name");
+	const descriptionValue = form.watch("description");
+	const slugValue = form.watch("slug");
+
 	// Add this handler for map location selection
 	const handleLocationSelect = (lat: number, lng: number) => {
 		form.setValue("latitude", lat, { shouldDirty: true });
 		form.setValue("longitude", lng, { shouldDirty: true });
+		setMapCenter([lat, lng]);
+		setMapZoom(14);
 	};
 
 	const handleLocationReset = () => {
-		if (!props.club) {
-			return;
+		if (props.club) {
+			form.setValue("latitude", props.club.latitude ?? undefined, { shouldDirty: true });
+			form.setValue("longitude", props.club.longitude ?? undefined, { shouldDirty: true });
+			if (props.club.latitude && props.club.longitude) {
+				setMapCenter([props.club.latitude, props.club.longitude]);
+				setMapZoom(14);
+				return;
+			}
 		}
 
-		form.setValue("latitude", props.club.latitude ?? undefined, { shouldDirty: true });
-		form.setValue("longitude", props.club.longitude ?? undefined, { shouldDirty: true });
+		const selectedCountry = props.countries.find((country) => country.id === selectedCountryId);
+		if (selectedCountry?.latitude && selectedCountry?.longitude) {
+			setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
+			setMapZoom(6);
+		}
 	};
 
 	// Add this function to handle Instagram disconnection
@@ -224,6 +247,91 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			setIsDisconnectingInstagram(false);
 		}
 	};
+
+	// Handle country selection - center map on country
+	useEffect(() => {
+		if (typeof latitudeValue === "number" && typeof longitudeValue === "number") {
+			return;
+		}
+		if (selectedCountryId) {
+			const selectedCountry = props.countries.find((c) => c.id === selectedCountryId);
+			if (selectedCountry?.latitude && selectedCountry?.longitude) {
+				setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
+				setMapZoom(6);
+			}
+		}
+	}, [selectedCountryId, props.countries, latitudeValue, longitudeValue]);
+
+	// Keep map centered on precise coordinates when available
+	useEffect(() => {
+		if (typeof latitudeValue === "number" && typeof longitudeValue === "number") {
+			setMapCenter([latitudeValue, longitudeValue]);
+			setMapZoom(14);
+		}
+	}, [latitudeValue, longitudeValue]);
+
+	// Handle location/city geocoding
+	useEffect(() => {
+		if (geocodeTimeoutRef.current) {
+			clearTimeout(geocodeTimeoutRef.current);
+		}
+
+		if (geocodeAbortRef.current) {
+			geocodeAbortRef.current.abort();
+		}
+
+		if (!locationValue || locationValue.length < 3 || !selectedCountryId) {
+			return;
+		}
+
+		const selectedCountry = props.countries.find((c) => c.id === selectedCountryId);
+		if (!selectedCountry) {
+			return;
+		}
+
+		geocodeTimeoutRef.current = setTimeout(async () => {
+			try {
+				geocodeAbortRef.current = new AbortController();
+				const query = encodeURIComponent(`${locationValue}, ${selectedCountry.name}`);
+				const response = await fetch(
+					`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`,
+					{
+						signal: geocodeAbortRef.current.signal,
+						headers: {
+							"User-Agent": "AirsoftClubManagement/1.0",
+						},
+					},
+				);
+				const data = await response.json();
+
+				if (data && data.length > 0) {
+					const result = data[0];
+					const lat = Number.parseFloat(result.lat);
+					const lng = Number.parseFloat(result.lon);
+
+					if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+						form.setValue("latitude", lat, { shouldDirty: true });
+						form.setValue("longitude", lng, { shouldDirty: true });
+						setMapCenter([lat, lng]);
+						setMapZoom(12);
+					}
+				}
+			} catch (error) {
+				if (error instanceof Error && error.name !== "AbortError") {
+					console.error("Geocoding error:", error);
+				}
+			}
+		}, 1000);
+
+		return () => {
+			if (geocodeTimeoutRef.current) {
+				clearTimeout(geocodeTimeoutRef.current);
+			}
+			if (geocodeAbortRef.current) {
+				geocodeAbortRef.current.abort();
+			}
+		};
+	}, [locationValue, selectedCountryId, props.countries, form]);
 
 	// Helper function to get error message translation key
 	const getInstagramErrorTranslationKey = (errorCode: string): string => {
@@ -350,7 +458,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("dashboard.club.info.name")}* ({form.watch("name")?.length}/
+								{t("dashboard.club.info.name")}* ({nameValue?.length ?? 0}/
 								{clubInfoSchema.shape.name.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -443,29 +551,32 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							size="sm"
 							onClick={handleLocationReset}
 							data-hidden={
-								form.watch("latitude") === props.club?.latitude &&
-								form.watch("longitude") === props.club?.longitude
+								latitudeValue === props.club?.latitude && longitudeValue === props.club?.longitude
 							}
 							className="h-6 px-2 text-xs data-[hidden=true]:opacity-0"
 						>
 							{t("dashboard.club.info.reset")}
 						</Button>
 					</FormLabel>
+					<FormDescription>{t("dashboard.club.info.mapClickToMark")}</FormDescription>
 					<FormControl>
 						<div className="h-[400px] w-full rounded-lg overflow-hidden border">
 							<MapSelector
 								clubs={[
 									{
 										id: props.club?.id ?? "new",
-										name: form.watch("name") || "",
-										latitude: form.watch("latitude") || null,
-										longitude: form.watch("longitude") || null,
-										location: form.watch("location"),
+										name: nameValue || "",
+										latitude: latitudeValue || null,
+										longitude: longitudeValue || null,
+										location: locationValue,
 										logo: props.club?.logo,
 									},
 								]}
 								interactive={true}
 								onLocationSelect={handleLocationSelect}
+								focusPoint={
+									mapCenter ? { lat: mapCenter[0], lng: mapCenter[1], zoom: mapZoom } : undefined
+								}
 							/>
 						</div>
 					</FormControl>
@@ -504,7 +615,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("dashboard.club.info.description")}* ({form.watch("description")?.length}/
+								{t("dashboard.club.info.description")}* ({descriptionValue?.length ?? 0}/
 								{clubInfoSchema.shape.description.maxLength})
 							</FormLabel>
 							<FormControl>
@@ -757,7 +868,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					</div>
 				)}
 
-				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
+				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!slugValue}>
 					{props.club ? t("common.actions.save") : t("common.actions.create")}
 				</LoaderSubmitButton>
 			</form>

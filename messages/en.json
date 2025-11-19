@@ -826,7 +826,10 @@
 			"searchClubs": "Search clubs...",
 			"enterTwoChars": "Enter at least two characters",
 			"noClubsFound": "No clubs found",
-			"or": "or"
+			"or": "or",
+			"unclaimedTitle": "Your club exists but you didn't add it?",
+			"unclaimedDescription": "If your club is on RECONNED but it's not claimed, you can claim it by going to its page.",
+			"unclaimedCta": "Go to search page"
 		},
 		"club": {
 			"info": {
@@ -856,6 +859,7 @@
 				"exactLocation": "Exact location",
 				"exactLocationDescription": "Click on the map to mark the exact location of your club. If your club is public, you'll be able to see it on the <link></link>",
 				"exactLocationLink": "airsoft clubs map",
+				"mapClickToMark": "Click anywhere on the map to mark where your club is located.",
 				"reset": "Reset",
 				"description": "Description",
 				"descriptionDescription": "Describe your club in a few sentences",

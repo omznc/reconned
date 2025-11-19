@@ -792,7 +792,10 @@
 			"searchClubs": "Pretraži klubove...",
 			"enterTwoChars": "Unesite najmanje dva slova",
 			"noClubsFound": "Nema pronađenih klubova",
-			"or": "ili"
+			"or": "ili",
+			"unclaimedTitle": "Vaš klub postoji ali ga niste dodali?",
+			"unclaimedDescription": "Ako je vaš klub na RECONNED-u, ali nije preuzet, možete ga preuzeti odlaskom na njegovu stranicu.",
+			"unclaimedCta": "Idi na stranicu za pretragu"
 		},
 		"admin": {
 			"clubs": {
@@ -856,6 +859,7 @@
 				"exactLocation": "Tačna lokacija",
 				"exactLocationDescription": "Kliknite na mapu da označite tačnu lokaciju vašeg kluba. Ako vam je klub javan, biti će prikazan na <link></link>",
 				"exactLocationLink": "mapi airsoft klubova",
+				"mapClickToMark": "Kliknite bilo gdje na mapi da označite gdje se nalazi vaš klub.",
 				"reset": "Resetuj",
 				"description": "Opis",
 				"descriptionDescription": "Opišite svoj klub u nekoliko rečenica",

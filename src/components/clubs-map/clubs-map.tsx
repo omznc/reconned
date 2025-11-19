@@ -418,10 +418,17 @@ interface Club {
 	location?: string;
 }
 
+interface MapFocusPoint {
+	lat: number;
+	lng: number;
+	zoom?: number;
+}
+
 interface ClubsMapProps {
 	clubs: Club[];
 	onLocationSelect?: (lat: number, lng: number) => void;
 	interactive?: boolean;
+	focusPoint?: MapFocusPoint | null;
 }
 
 function LocationMarker({
@@ -448,16 +455,26 @@ function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number
 	return null;
 }
 
-function MapController({ targetClub }: { targetClub: Club | null }) {
+function MapController({ targetClub, focusPoint }: { targetClub: Club | null; focusPoint?: MapFocusPoint | null }) {
 	const map = useMap();
+	const focusLat = focusPoint?.lat;
+	const focusLng = focusPoint?.lng;
+	const focusZoom = focusPoint?.zoom;
 
 	useEffect(() => {
 		if (targetClub?.latitude && targetClub?.longitude) {
 			map.flyTo([targetClub.latitude, targetClub.longitude], 16, {
 				duration: 1.5,
 			});
+			return;
 		}
-	}, [targetClub, map]);
+
+		if (typeof focusLat === "number" && typeof focusLng === "number") {
+			map.flyTo([focusLat, focusLng], focusZoom ?? 12, {
+				duration: 1.5,
+			});
+		}
+	}, [targetClub, focusLat, focusLng, focusZoom, map]);
 
 	return null;
 }
@@ -472,7 +489,7 @@ function MapInstanceCapturer({ onMapReady }: { onMapReady: (map: L.Map) => void 
 	return null;
 }
 
-export function ClubsMap({ clubs, onLocationSelect, interactive = false }: ClubsMapProps) {
+export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPoint }: ClubsMapProps) {
 	const [mounted, setMounted] = useState(false);
 	const [logoSize, setLogoSize] = useState(32); // Default size
 	const [clubId] = useQueryState("clubId");
@@ -485,6 +502,11 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 	const t = useTranslations();
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
+
+	const defaultCenter: [number, number] = focusPoint
+		? [focusPoint.lat, focusPoint.lng]
+		: [prefilledClub?.latitude || 43.8563, prefilledClub?.longitude || 18.4131];
+	const defaultZoom = focusPoint?.zoom ?? (prefilledClub ? 14 : 8);
 
 	const filteredClubs = clubs.filter(
 		(club) =>
@@ -690,8 +712,8 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 			)}
 
 			<MapContainer
-				center={[prefilledClub?.latitude || 43.8563, prefilledClub?.longitude || 18.4131]}
-				zoom={prefilledClub ? 14 : 8}
+				center={defaultCenter}
+				zoom={defaultZoom}
 				scrollWheelZoom={false}
 				className="h-full w-full z-0"
 			>
@@ -701,7 +723,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false }: Clubs
 				/>
 
 				<MapInstanceCapturer onMapReady={setMapInstance} />
-				<MapController targetClub={targetClub} />
+				<MapController targetClub={targetClub} focusPoint={focusPoint} />
 
 				{interactive && <MapEventHandler onLocationSelect={onLocationSelect} />}
 
