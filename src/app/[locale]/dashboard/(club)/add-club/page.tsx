@@ -1,4 +1,4 @@
-import { CirclePlus, MailPlus } from "lucide-react";
+import { CirclePlus, MailPlus, Search } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,23 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/add-clu
 						</Link>
 					</Button>
 					<span className="text-gray-500">{t("dashboard.addClub.joinClubDescription")}</span>
+				</div>
+				<div className="flex gap-1 items-center">
+					<hr className="flex-1 border-t-2 border-gray-300" />
+					<span className="text-gray-500">{t("dashboard.addClub.or")}</span>
+					<hr className="flex-1 border-t-2 border-gray-300" />
+				</div>
+				<div className="flex flex-col gap-2 rounded-lg border border-dashed border-gray-300 p-4">
+					<div className="flex items-center gap-2 text-lg font-medium">
+						<Search className="h-5 w-5" />
+						{t("dashboard.addClub.unclaimedTitle")}
+					</div>
+					<p className="text-sm text-muted-foreground">{t("dashboard.addClub.unclaimedDescription")}</p>
+					<Button asChild={true} variant="outline">
+						<Link href="/search" className="flex items-center gap-2">
+							{t("dashboard.addClub.unclaimedCta")}
+						</Link>
+					</Button>
 				</div>
 			</div>
 		</>

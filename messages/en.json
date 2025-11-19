@@ -826,7 +826,10 @@
 			"searchClubs": "Search clubs...",
 			"enterTwoChars": "Enter at least two characters",
 			"noClubsFound": "No clubs found",
-			"or": "or"
+			"or": "or",
+			"unclaimedTitle": "Your club exists but you didn't add it?",
+			"unclaimedDescription": "If your club is on RECONNED but it's not claimed, you can claim it by going to its page.",
+			"unclaimedCta": "Go to search page"
 		},
 		"club": {
 			"info": {
