@@ -1728,7 +1728,6 @@
 	},
 	"auth": {
 		"resetPasswordSubject": "Resetujte svoju lozinku",
-		"appName": "Reconned",
 		"newUserSignedUp": "Novi korisnik se registrovao"
 	}
 }

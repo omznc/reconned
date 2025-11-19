@@ -1728,7 +1728,6 @@
 	},
 	"auth": {
 		"resetPasswordSubject": "Reset your password",
-		"appName": "Reconned",
 		"newUserSignedUp": "New user signed up"
 	}
 }

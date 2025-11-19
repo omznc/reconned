@@ -71,10 +71,10 @@ export const auth = betterAuth({
 	plugins: [
 		passkey({
 			rpID: "reconned.com",
-			rpName: (await getTranslations("auth")).appName,
+			rpName: "Reconned",
 		}),
 		twoFactor({
-			issuer: (await getTranslations("auth")).appName,
+			issuer: "Reconned",
 			backupCodeOptions: {
 				storeBackupCodes: "encrypted",
 				amount: 8,
@@ -188,7 +188,7 @@ export const auth = betterAuth({
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
-							"User-Agent": t("appName"),
+							"User-Agent": "Reconned",
 							Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`,
 						},
 						body: JSON.stringify({
