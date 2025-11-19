@@ -4,6 +4,7 @@ import {
 	createEventFormSchema,
 	deleteEventImageSchema,
 	deleteEventSchema,
+	eventBadgeImageFileSchema,
 	eventImageFileSchema,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
@@ -118,11 +119,48 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 	});
 
 	// create or update event
-	return await prisma.event.upsert({
+	const event = await prisma.event.upsert({
 		where: { id: parsedInput.eventId, clubId: ctx.club.id },
 		update: data,
 		create: data,
 	});
+
+	// Handle badge creation/update for verified clubs
+	if (parsedInput.eventBadge?.enabled && ctx.club.verified) {
+		const badgeData = {
+			type: "EVENT" as const,
+			name: parsedInput.eventBadge.name || parsedInput.name,
+			customImage: parsedInput.eventBadge.image ? addImageVersion(parsedInput.eventBadge.image) : null,
+		};
+
+		// Check if event already has a badge
+		const existingBadge = await prisma.badge.findUnique({
+			where: { eventId: event.id },
+		});
+
+		if (existingBadge) {
+			// Update existing badge
+			await prisma.badge.update({
+				where: { id: existingBadge.id },
+				data: badgeData,
+			});
+		} else {
+			// Create new badge
+			await prisma.badge.create({
+				data: {
+					...badgeData,
+					eventId: event.id,
+				},
+			});
+		}
+	} else if (!parsedInput.eventBadge?.enabled && parsedInput.eventId) {
+		// Delete badge if it was disabled
+		await prisma.badge.deleteMany({
+			where: { eventId: event.id },
+		});
+	}
+
+	return event;
 });
 
 export const getEventImageUploadUrl = safeActionClient
@@ -145,6 +183,30 @@ export const getEventImageUploadUrl = safeActionClient
 			type: parsedInput.file.type,
 			size: parsedInput.file.size,
 			key: `event/${parsedInput.eventId}/cover`,
+		});
+		return resp;
+	});
+
+export const getEventBadgeImageUploadUrl = safeActionClient
+	.inputSchema(eventBadgeImageFileSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const t = await getTranslations("errors.events");
+
+		const belongsToClub = await prisma.event.findFirst({
+			where: {
+				id: parsedInput.eventId,
+				clubId: ctx.club.id,
+			},
+		});
+
+		if (!belongsToClub) {
+			throw new Error(t("eventDoesNotBelongToClub"));
+		}
+
+		const resp = await getS3FileUploadUrl({
+			type: parsedInput.file.type,
+			size: parsedInput.file.size,
+			key: `event/${parsedInput.eventId}/badge`,
 		});
 		return resp;
 	});

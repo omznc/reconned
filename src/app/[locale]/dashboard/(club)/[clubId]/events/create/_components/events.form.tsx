@@ -1,6 +1,6 @@
 "use client";
 
-import type { ClubRule, Event } from "@generated/client";
+import type { Badge, ClubRule, Event } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { differenceInDays, format } from "date-fns";
 import { bs } from "date-fns/locale";
@@ -17,6 +17,7 @@ import type * as z from "zod";
 import {
 	createEvent,
 	deleteEvent,
+	getEventBadgeImageUploadUrl,
 	getEventImageUploadUrl,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action";
 import { createEventFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
@@ -48,8 +49,18 @@ const MapComponent = dynamic(() => import("@/components/map-component").then((m)
 });
 
 interface CreateEventFormProps {
-	event: Event | null;
+	event:
+		| (Event & {
+				badge?: {
+					id: string;
+					name: string | null;
+					description: string | null;
+					customImage: string | null;
+				} | null;
+		  })
+		| null;
 	rules: ClubRule[];
+	isVerifiedClub: boolean;
 }
 
 export default function CreateEventForm(props: CreateEventFormProps) {
@@ -107,6 +118,54 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		},
 		maxFiles: 1,
 		initialFiles,
+	});
+
+	// Initialize badge image upload for verified clubs
+	const badgeImageInitialFiles: FileUploadItem[] = props.event?.badge?.customImage
+		? [
+				{
+					id: `existing-badge-${props.event.badge.id}`,
+					url: props.event.badge.customImage,
+					name: "Badge image",
+					type: "image/png",
+					isExisting: true,
+				},
+			]
+		: [];
+
+	const badgeImageUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			const currentEventId = eventIdRef.current;
+			if (!currentEventId) {
+				throw new Error("Must save event first");
+			}
+
+			const resp = await getEventBadgeImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+				eventId: currentEventId,
+				clubId: clubId,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 1,
+		initialFiles: badgeImageInitialFiles,
 	});
 
 	function EventTimelineDescription({
@@ -211,6 +270,19 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		hasPrizes: props.event?.hasPrizes,
 		// biome-ignore lint/suspicious/noExplicitAny: I'll eventually handle this
 		mapData: (props.event?.mapData as any) || { areas: [], pois: [] },
+		eventBadge: props.event?.badge
+			? {
+					enabled: true,
+					name: props.event.badge.name ?? props.event.name ?? "",
+					image: props.event.badge.customImage ?? undefined,
+				}
+			: props.isVerifiedClub
+				? {
+						enabled: false,
+						name: "",
+						image: undefined,
+					}
+				: undefined,
 	};
 	const form = useForm<z.infer<typeof createEventFormSchema>>({
 		resolver: zodResolver(createEventFormSchema),
@@ -302,8 +374,28 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				}
 			}
 
+			// Upload badge image if enabled and has new files
+			if (values.eventBadge?.enabled && props.isVerifiedClub) {
+				const badgeFilesToUpload = badgeImageUpload.files.filter((f) => f.file && !f.isExisting);
+				if (badgeFilesToUpload.length > 0) {
+					const badgeUploadedUrls = await badgeImageUpload.uploadAllFiles();
+					if (badgeUploadedUrls.length > 0) {
+						// Update the event with the badge image URL
+						await createEvent({
+							...values,
+							eventId: event.data.id,
+							eventBadge: {
+								...values.eventBadge,
+								image: badgeUploadedUrls[0],
+							},
+						});
+					}
+				}
+			}
+
 			// Mark files as saved
 			eventImageUpload.markAsSaved();
+			badgeImageUpload.markAsSaved();
 
 			if (!props.event) {
 				sessionStorage.removeItem("createEventForm");
@@ -514,6 +606,90 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									</FormItem>
 								)}
 							/>
+
+							{/* Event Badge Section - Only for Verified Clubs */}
+							{props.isVerifiedClub && (
+								<div className="pt-4 border-t space-y-4">
+									<FormField
+										control={form.control}
+										name="eventBadge.enabled"
+										render={({ field }) => (
+											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+												<div className="space-y-0.5">
+													<FormLabel>
+														{t("dashboard.club.events.create.badge.enable")}
+													</FormLabel>
+													<FormDescription>
+														{t("dashboard.club.events.create.badge.enableDescription")}
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch checked={field.value} onCheckedChange={field.onChange} />
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+
+									{form.watch("eventBadge.enabled") && (
+										<div className="space-y-4 pl-4 border-l-2">
+											<FormField
+												control={form.control}
+												name="eventBadge.name"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>
+															{t("dashboard.club.events.create.badge.name")}
+															<RequiredFieldMarker />
+														</FormLabel>
+														<FormControl>
+															<Input
+																placeholder={t(
+																	"dashboard.club.events.create.badge.namePlaceholder",
+																)}
+																{...field}
+															/>
+														</FormControl>
+														<FormDescription>
+															{t("dashboard.club.events.create.badge.nameDescription")}
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+
+											<FormField
+												control={form.control}
+												name="eventBadge.image"
+												render={() => (
+													<FormItem>
+														<FormLabel>
+															{t("dashboard.club.events.create.badge.image")}
+														</FormLabel>
+														<FormControl>
+															<FileUpload
+																value={badgeImageUpload.files}
+																onChange={badgeImageUpload.setFiles}
+																maxFiles={1}
+																maxFileSize={2 * 1024 * 1024}
+																accept={{
+																	"image/png": [".png"],
+																	"image/jpeg": [".jpg", ".jpeg"],
+																	"image/webp": [".webp"],
+																}}
+																multiple={false}
+																showPreview={true}
+															/>
+														</FormControl>
+														<FormDescription>
+															{t("dashboard.club.events.create.badge.imageDescription")}
+														</FormDescription>
+													</FormItem>
+												)}
+											/>
+										</div>
+									)}
+								</div>
+							)}
 						</div>
 					</CardContent>
 				</Card>

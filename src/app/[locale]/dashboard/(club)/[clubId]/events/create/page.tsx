@@ -12,19 +12,31 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return notFound();
 	}
 
-	const existingEvent = searchParams?.id
-		? await prisma.event.findFirst({
-				where: {
-					id: searchParams.id as string,
-				},
-			})
-		: null;
+	const [existingEvent, rules, club] = await Promise.all([
+		searchParams?.id
+			? prisma.event.findFirst({
+					where: {
+						id: searchParams.id as string,
+					},
+					include: {
+						badge: true,
+					},
+				})
+			: null,
+		prisma.clubRule.findMany({
+			where: {
+				clubId: params.clubId,
+			},
+		}),
+		prisma.club.findUnique({
+			where: {
+				id: params.clubId,
+			},
+			select: {
+				verified: true,
+			},
+		}),
+	]);
 
-	const rules = await prisma.clubRule.findMany({
-		where: {
-			clubId: params.clubId,
-		},
-	});
-
-	return <CreateEventForm event={existingEvent} rules={rules} />;
+	return <CreateEventForm event={existingEvent} rules={rules} isVerifiedClub={club?.verified ?? false} />;
 }

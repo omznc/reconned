@@ -1141,6 +1141,15 @@
 					},
 					"price": "Kotizacija/cijena",
 					"priceDescription": "Koliko košta učešće na susretu? Ako je besplatno, stavite 0.",
+					"badge": {
+						"enable": "Značka susreta",
+						"enableDescription": "Kreiraj kolekcionarsku značku za učesnike. Dostupno samo verifikovanim klubovima.",
+						"name": "Naziv značke",
+						"namePlaceholder": "Operacija Zimski Štit",
+						"nameDescription": "Ovaj naziv će se prikazivati na profilima učesnika.",
+						"image": "Slika značke",
+						"imageDescription": "Dodaj kvadratnu PNG, JPG ili WEBP sliku do 2MB."
+					},
 					"time": "Vrijeme",
 					"start": "Početak",
 					"startDescription": "Kada susret počinje?",

@@ -1092,6 +1092,15 @@
 					},
 					"price": "Registration fee/price",
 					"priceDescription": "How much does it cost to participate in the event? ",
+					"badge": {
+						"enable": "Event badge",
+						"enableDescription": "Create a collectible badge for attendees. Available only to verified clubs.",
+						"name": "Badge name",
+						"namePlaceholder": "Operation Winter Shield",
+						"nameDescription": "This name will be shown on attendee profiles.",
+						"image": "Badge image",
+						"imageDescription": "Upload a square PNG, JPG, or WEBP up to 2MB."
+					},
 					"time": "Time",
 					"start": "Start",
 					"startDescription": "When does the event start?",

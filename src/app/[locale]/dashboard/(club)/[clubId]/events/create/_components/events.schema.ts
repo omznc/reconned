@@ -65,11 +65,30 @@ export const createEventFormSchema = z
 				}),
 			),
 		}),
+		eventBadge: z
+			.object({
+				enabled: z.boolean(),
+				name: z.string().optional(),
+				image: z.string().optional(),
+			})
+			.optional(),
 	})
 	.refine((data) => data.dateEnd > data.dateStart, {
 		message: "Datum završetka mora biti nakon datuma početka",
 		path: ["dateEnd"],
 	})
+	.refine(
+		(data) => {
+			if (data.eventBadge?.enabled) {
+				return Boolean(data.eventBadge.name?.trim());
+			}
+			return true;
+		},
+		{
+			message: "Značka mora imati naziv",
+			path: ["eventBadge", "name"],
+		},
+	)
 	.refine(
 		(data) => {
 			const duration = data.dateEnd.getTime() - data.dateStart.getTime();
@@ -131,6 +150,15 @@ export const eventImageFileSchema = z.object({
 	file: z.object({
 		type: z.string().regex(/^image\//),
 		size: z.number().max(1024 * 1024 * 4),
+	}),
+	eventId: z.string(),
+	clubId: z.string(),
+});
+
+export const eventBadgeImageFileSchema = z.object({
+	file: z.object({
+		type: z.string().regex(/^image\//),
+		size: z.number().max(1024 * 1024 * 2),
 	}),
 	eventId: z.string(),
 	clubId: z.string(),
