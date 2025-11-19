@@ -1,5 +1,5 @@
 "use server";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
 	createEventFormSchema,
 	deleteEventImageSchema,
@@ -16,6 +16,8 @@ import { getS3FileUploadUrl } from "@/lib/storage";
 import { addImageVersion } from "@/lib/utils";
 
 export const createEvent = safeActionClient.inputSchema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
+	const t = await getTranslations("errors.events");
+
 	// Validate slug
 	if (parsedInput.slug) {
 		const valid = await validateSlug({
@@ -23,7 +25,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 			slug: parsedInput.slug,
 		});
 		if (!valid) {
-			throw new Error("Izabrani link je već zauzet.");
+			throw new Error(t("slugAlreadyTaken"));
 		}
 	}
 
@@ -68,7 +70,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 	});
 
 	if (eventFinished) {
-		throw new Error("Ne možete ažurirati susret koji je već završio.");
+		throw new Error(t("cannotUpdateFinishedEvent"));
 	}
 
 	// If the event has an image and the image is being deleted, delete the image.
@@ -126,6 +128,8 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 export const getEventImageUploadUrl = safeActionClient
 	.inputSchema(eventImageFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
+		const t = await getTranslations("errors.events");
+
 		const belongsToClub = await prisma.event.findFirst({
 			where: {
 				id: parsedInput.eventId,
@@ -134,7 +138,7 @@ export const getEventImageUploadUrl = safeActionClient
 		});
 
 		if (!belongsToClub) {
-			throw new Error("Event does not belong to your club");
+			throw new Error(t("eventDoesNotBelongToClub"));
 		}
 
 		const resp = await getS3FileUploadUrl({
@@ -169,6 +173,8 @@ export const deleteEventImage = safeActionClient
 	});
 
 export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
+	const t = await getTranslations("errors.events");
+
 	// If the event is in the past, you can't delete it.
 	const eventFinished = await prisma.event.findFirst({
 		where: {
@@ -182,7 +188,7 @@ export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).actio
 	const locale = await getLocale();
 
 	if (eventFinished) {
-		throw new Error("Ne možete obrisati susret koji je već završio.");
+		throw new Error(t("cannotDeleteFinishedEvent"));
 	}
 
 	const [event, _] = await Promise.all([

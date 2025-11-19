@@ -13,11 +13,11 @@ export default function AddEventToCalendarButton({ event }: { event: Event & { r
 	let description = `${event.description}\n\n`;
 
 	if (event.googleMapsLink) {
-		description += `Lokacija: ${event.googleMapsLink}\n\n`;
+		description += `${t("components.addToCalendar.location")} ${event.googleMapsLink}\n\n`;
 	}
 
 	if (event.costPerPerson > 0) {
-		description += `Kotizacija: $${event.costPerPerson.toFixed(2)}\n\n`;
+		description += `${t("components.addToCalendar.cost", { amount: `${event.costPerPerson.toFixed(2)}` })}\n\n`;
 	}
 
 	const features = [
@@ -65,7 +65,7 @@ export default function AddEventToCalendarButton({ event }: { event: Event & { r
 			startDate={startDate}
 			timeZone="Europe/Sarajevo"
 			location={event.location}
-			options={["Apple", "Google", "Outlook.com"]}
+			options={t("components.addToCalendar.calendarOptions")}
 			label={t("components.addToCalendar.addToCalendar")}
 			hideBackground={true}
 			hideBranding={true}

@@ -80,7 +80,8 @@
 			"!**/.next",
 			"!**/src/components/ui",
 			"!**/.unlighthouse",
-			"!**/generated"
+			"!**/generated",
+			"!**/*.d.json.ts"
 		],
 		"maxSize": 10000000
 	}

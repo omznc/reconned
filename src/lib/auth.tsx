@@ -5,6 +5,7 @@ import { admin, captcha, lastLoginMethod, oneTap, twoFactor } from "better-auth/
 import { passkey } from "better-auth/plugins/passkey";
 import { emailHarmony } from "better-auth-harmony";
 import { headers } from "next/headers";
+import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { sendEmailVerificationAction } from "@/app/[locale]/(auth)/_actions/send-email-verification.action";
 import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
@@ -35,9 +36,10 @@ export const auth = betterAuth({
 		enabled: true,
 		requireEmailVerification: true,
 		sendResetPassword: async ({ user, url }) => {
+			const t = await getTranslations("auth");
 			await sendEmail({
 				to: user.email,
-				subject: "Resetujte svoju lozinku",
+				subject: t("resetPasswordSubject"),
 				html: await render(<PasswordReset userName={user.name} resetUrl={url} />, {
 					pretty: true,
 				}),
@@ -180,6 +182,8 @@ export const auth = betterAuth({
 			// On create send an event to plausible
 			create: {
 				after: async (user) => {
+					const t = await getTranslations("auth");
+
 					await fetch(`${env.PLAUSIBLE_HOST}/api/event`, {
 						method: "POST",
 						headers: {
@@ -205,7 +209,7 @@ export const auth = betterAuth({
 								"Content-Type": "application/json",
 							},
 							body: JSON.stringify({
-								title: "New user signed up",
+								title: t("newUserSignedUp"),
 								message: `User ${user.name} (${user.email}) signed up.`,
 							}),
 						});

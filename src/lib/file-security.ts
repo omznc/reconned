@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { fileTypeFromBuffer } from "file-type";
+import { getTranslations } from "next-intl/server";
 import sharp from "sharp";
 
 export interface FileValidationResult {
@@ -33,13 +34,15 @@ export const validateFileBuffer = async (
 	expectedMimeType: string,
 	maxSize: number,
 ): Promise<FileValidationResult> => {
+	const t = await getTranslations("errors.fileSecurity");
+
 	// Check file size
 	if (buffer.length === 0) {
-		return { isValid: false, error: "Empty file" };
+		return { isValid: false, error: t("emptyFile") };
 	}
 
 	if (buffer.length > maxSize) {
-		return { isValid: false, error: `File too large. Max size: ${maxSize} bytes` };
+		return { isValid: false, error: t("fileTooLarge", { maxSize }) };
 	}
 
 	// Magic number validation
@@ -47,19 +50,19 @@ export const validateFileBuffer = async (
 		const fileType = await fileTypeFromBuffer(buffer);
 
 		if (!fileType) {
-			return { isValid: false, error: "Unknown file type" };
+			return { isValid: false, error: t("unknownFileType") };
 		}
 
 		if (fileType.mime !== expectedMimeType) {
 			return {
 				isValid: false,
-				error: `Invalid file type. Expected: ${expectedMimeType}, Got: ${fileType.mime}`,
+				error: t("invalidFileType", { expectedType: expectedMimeType, actualType: fileType.mime }),
 			};
 		}
 
 		return { isValid: true, mimeType: fileType.mime };
 	} catch {
-		return { isValid: false, error: "File validation failed" };
+		return { isValid: false, error: t("fileValidationFailed") };
 	}
 };
 

@@ -1,5 +1,6 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
 import { logClubAudit } from "@/lib/audit-logger";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
@@ -402,12 +403,13 @@ export async function disconnectInstagramAPI(clubId: string): Promise<boolean> {
 
 		return true;
 	} catch (error) {
+		const t = await getTranslations("errors.instagram");
 		await logClubAudit({
 			clubId,
 			actionType: "INSTAGRAM_DISCONNECT",
 			actionData: {
 				success: false,
-				error: error instanceof Error ? error.message : "Unknown error",
+				error: error instanceof Error ? error.message : t("unknownError"),
 			},
 		});
 		return false;

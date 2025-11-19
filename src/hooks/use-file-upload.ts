@@ -1,6 +1,7 @@
 "use client";
 
 import { useLogger } from "next-axiom";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { FileUploadItem } from "@/components/ui/file-upload";
@@ -25,6 +26,7 @@ export function useFileUpload({
 	const [files, setFiles] = useState<FileUploadItem[]>(initialFiles);
 	const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
 	const logger = useLogger();
+	const t = useTranslations("errors.fileUpload");
 
 	const updateFiles = useCallback(
 		(newFiles: FileUploadItem[]) => {
@@ -44,7 +46,7 @@ export function useFileUpload({
 		}
 
 		if (filesToUpload.length > maxFiles) {
-			throw new Error(`Maximum number of files exceeded: ${maxFiles}`);
+			throw new Error(t("maximumNumberOfFilesExceeded", { maxFiles }));
 		}
 
 		const uploadPromises = filesToUpload.map(async (fileItem) => {
@@ -63,7 +65,7 @@ export function useFileUpload({
 					);
 					return url;
 				}
-				throw new Error("Upload failed");
+				throw new Error(t("uploadFailed"));
 			} catch (error) {
 				toast.error(`Failed to upload ${fileItem.name}`);
 				throw error;
@@ -87,9 +89,9 @@ export function useFileUpload({
 			return [...existingUrls, ...successfulUploads];
 		} catch (error) {
 			logger.error("Some files failed to upload", { error });
-			throw new Error("Some files failed to upload");
+			throw new Error(t("someFilesFailedToUpload"));
 		}
-	}, [files, uploadFunction]);
+	}, [files, uploadFunction, t, maxFiles]);
 
 	const resetToInitial = useCallback(() => {
 		setFiles(initialFiles);
