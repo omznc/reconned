@@ -1541,6 +1541,79 @@
 				"noEvents": "Nema prošlih susreta"
 			}
 		},
+		"badges": {
+			"tier": "Rang",
+			"achievementBadges": {
+				"title": "Postignuća"
+			},
+			"eventBadges": {
+				"title": "Značke sa događaja",
+				"viewEvent": "Pogledaj događaj",
+				"untitled": "Neimenovana značka"
+			},
+			"achievements": {
+				"first-event": {
+					"name": "Prvi nastup",
+					"description": "Prisustvuj prvom susretu."
+				},
+				"event-enthusiast": {
+					"name": "Vikend ratnik",
+					"description": "Prisustvuj pet susreta."
+				},
+				"event-veteran": {
+					"name": "Iskusni operater",
+					"description": "Prisustvuj deset susreta."
+				},
+				"event-legend": {
+					"name": "Legenda terena",
+					"description": "Prisustvuj dvadeset pet susreta."
+				},
+				"event-master": {
+					"name": "Majstor ratišta",
+					"description": "Prisustvuj pedeset susreta."
+				},
+				"club-member": {
+					"name": "Regrutovan u klub",
+					"description": "Pridruži se prvom klubu."
+				},
+				"club-networker": {
+					"name": "Klubski mrežar",
+					"description": "Budi član najmanje dva kluba."
+				},
+				"club-ambassador": {
+					"name": "Klubski ambasador",
+					"description": "Budi član tri ili više klubova."
+				},
+				"first-review": {
+					"name": "Početni kritičar",
+					"description": "Objavi prvu ocjenu."
+				},
+				"critic": {
+					"name": "Borbeni kritičar",
+					"description": "Objavi pet ocjena."
+				},
+				"super-critic": {
+					"name": "Elitni kritičar",
+					"description": "Objavi deset ocjena."
+				},
+				"one-year-member": {
+					"name": "Jednogodišnji veteran",
+					"description": "Ostani aktivan najmanje godinu dana."
+				},
+				"two-year-member": {
+					"name": "Dvogodišnji veteran",
+					"description": "Ostani aktivan najmanje dvije godine."
+				},
+				"five-year-member": {
+					"name": "Petogodišnji veteran",
+					"description": "Ostani aktivan najmanje pet godina."
+				},
+				"early-adopter": {
+					"name": "Rani korisnik",
+					"description": "Pridruži se RECONNED-u prije 2025."
+				}
+			}
+		},
 		"reviews": {
 			"title": "Ocjene",
 			"latestReviews": "Najnovije ocjene",

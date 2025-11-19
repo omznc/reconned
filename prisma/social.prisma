@@ -35,13 +35,34 @@ model Post {
   @@index([clubId])
 }
 
-model Achievement {
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  description String? // Only used to identify in the database. The actual description is in the i18n files, using the slug as the key.
+model Badge {
+  id          String    @id @default(cuid())
+  type        BadgeType
+  slug        String?   @unique
+  name        String?
+  description String?
+  icon        String?
+  tier        BadgeTier?
+  customImage String?
+  event       Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId     String?   @unique
 
-  achievedBy User[]
+  earnedBy  UserBadge[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@index([type])
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
 }

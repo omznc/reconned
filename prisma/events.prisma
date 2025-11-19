@@ -32,6 +32,7 @@ model Event {
   eventRegistration EventRegistration[]
   eventInvite       EventInvite[]
   reviews           Review[]
+  badge             Badge?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

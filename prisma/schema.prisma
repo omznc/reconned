@@ -29,3 +29,16 @@ enum ReviewType {
   CLUB
   EVENT
 }
+
+enum BadgeType {
+  EVENT
+  ACHIEVEMENT
+}
+
+enum BadgeTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}

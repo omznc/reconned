@@ -1,8 +1,9 @@
-import type { Club, Event, User } from "@generated/client";
+import type { Badge as BadgeType, Club, Event, User, UserBadge } from "@generated/client";
 import { format } from "date-fns";
 import { Globe, MapPin } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { UserBadges } from "@/components/badges/user-badges";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ interface ExtendedUser extends User {
 		event: Event;
 		attended: boolean;
 	}[];
+	badges?: (UserBadge & { badge: BadgeType })[];
 }
 
 interface UserOverviewProps {
@@ -68,23 +70,6 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</div>
 				</div>
 			</div>
-			{/* New Additional User Information Card */}
-			{/* <Card>
-				<CardHeader>
-					<CardTitle>{t("components.userOverview.additionalInfo.title")}</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<ul className="space-y-2">
-						<li>{t("components.userOverview.email")}: {user.email}</li>
-						{user.location && (
-							<li>{t("components.userOverview.location")}: {user.location}</li>
-						)}
-						{user.phone && !user.isPrivatePhone && (
-							<li>{t("components.userOverview.phone")}: {user.phone}</li>
-						)}
-					</ul>
-				</CardContent>
-			</Card> */}
 			<div className="flex flex-wrap gap-2">
 				{shouldShowStats && visitors > 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
@@ -117,6 +102,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					<Badge className="md:grow-0 grow flex items-center gap-1">{user.email}</Badge>
 				)}
 			</div>
+			{user.badges && user.badges.length > 0 && <UserBadges badges={user.badges} />}
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>

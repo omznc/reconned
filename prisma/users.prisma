@@ -36,11 +36,11 @@ model User {
   reviewsReceived Review[] @relation("UserReviews")
   reviewsWritten  Review[] @relation("ReviewAuthor")
 
-  sessions     Session[]
-  accounts     Account[]
-  passkeys     Passkey[]
-  twofactors   TwoFactor[]
-  achievements Achievement[]
+  sessions   Session[]
+  accounts   Account[]
+  passkeys   Passkey[]
+  twofactors TwoFactor[]
+  badges     UserBadge[]
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

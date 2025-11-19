@@ -37,6 +37,14 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 					},
 				},
 			},
+			badges: {
+				include: {
+					badge: true,
+				},
+				orderBy: {
+					earnedAt: "desc",
+				},
+			},
 		},
 	});
 

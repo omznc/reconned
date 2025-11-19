@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { awardEventBadgeForRegistration } from "@/lib/badges/badge-utils";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { toggleAttendanceSchema } from "./attendance.schema.ts";
@@ -33,6 +34,11 @@ export const toggleAttendance = safeActionClient
 				attended: parsedInput.attended,
 			},
 		});
+
+		// If attendance is marked as true, award badges
+		if (parsedInput.attended) {
+			await awardEventBadgeForRegistration(parsedInput.registrationId);
+		}
 
 		revalidateLocalizedPaths(`/dashboard/${ctx.club.id}/events/${parsedInput.eventId}/attendance`);
 		return updated;

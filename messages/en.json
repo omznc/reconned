@@ -1541,6 +1541,79 @@
 				"noEvents": "No previous events"
 			}
 		},
+		"badges": {
+			"tier": "Tier",
+			"achievementBadges": {
+				"title": "Achievement badges"
+			},
+			"eventBadges": {
+				"title": "Event badges",
+				"viewEvent": "View event",
+				"untitled": "Untitled badge"
+			},
+			"achievements": {
+				"first-event": {
+					"name": "First Deployment",
+					"description": "Attend your first event."
+				},
+				"event-enthusiast": {
+					"name": "Weekend Warrior",
+					"description": "Attend five events."
+				},
+				"event-veteran": {
+					"name": "Seasoned Operator",
+					"description": "Attend ten events."
+				},
+				"event-legend": {
+					"name": "Field Legend",
+					"description": "Attend twenty-five events."
+				},
+				"event-master": {
+					"name": "Warzone Master",
+					"description": "Attend fifty events."
+				},
+				"club-member": {
+					"name": "Club Recruit",
+					"description": "Join your first club."
+				},
+				"club-networker": {
+					"name": "Club Networker",
+					"description": "Be a member of at least two clubs."
+				},
+				"club-ambassador": {
+					"name": "Club Ambassador",
+					"description": "Be a member of three or more clubs."
+				},
+				"first-review": {
+					"name": "Rookie Critic",
+					"description": "Publish your first review."
+				},
+				"critic": {
+					"name": "Battle Critic",
+					"description": "Publish five reviews."
+				},
+				"super-critic": {
+					"name": "Elite Critic",
+					"description": "Publish ten reviews."
+				},
+				"one-year-member": {
+					"name": "One Year Veteran",
+					"description": "Stay active for at least one year."
+				},
+				"two-year-member": {
+					"name": "Two Year Veteran",
+					"description": "Stay active for at least two years."
+				},
+				"five-year-member": {
+					"name": "Five Year Veteran",
+					"description": "Stay active for at least five years."
+				},
+				"early-adopter": {
+					"name": "Early Adopter",
+					"description": "Joined RECONNED before 2025."
+				}
+			}
+		},
 		"reviews": {
 			"title": "Ratings",
 			"latestReviews": "Latest ratings",
