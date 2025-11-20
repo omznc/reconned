@@ -11,6 +11,7 @@ model Club {
   isPrivate      Boolean   @default(false)
   isPrivateStats Boolean   @default(false)
   logo           String?
+  headerImage    String?
   contactPhone   String?
   contactEmail   String?
   verified       Boolean   @default(false)
