@@ -1,6 +1,6 @@
 "use client";
 
-import type { Badge, ClubRule, Event } from "@generated/client";
+import type { ClubRule, Event } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { differenceInDays, format } from "date-fns";
 import { bs } from "date-fns/locale";

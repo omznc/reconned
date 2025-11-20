@@ -37,7 +37,7 @@
 			"@auth/client": ["./src/lib/auth-client"],
 			"@auth/server": ["./src/lib/auth"],
 			"@public/*": ["./public/*"],
-			"@generated/*": ["./generated/*"]
+			"@generated/*": ["./generated/client/*"]
 		},
 		"incremental": true,
 		// Interop Constraints
