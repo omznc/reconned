@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import {
+	getClubHeaderImageUploadUrl,
 	getClubImageUploadUrl,
 	saveClubInformation,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
@@ -20,11 +21,12 @@ import { SlugInput } from "@/components/slug/slug-input";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
+import type { FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SingleImageUpload } from "@/components/ui/single-image-upload";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
@@ -94,6 +96,51 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 		initialFiles,
 	});
 
+	const initialHeaderFiles: FileUploadItem[] = club?.headerImage
+		? [
+				{
+					id: `existing-header-${club.id}`,
+					url: club.headerImage,
+					name: "Club header image",
+					type: "image/jpeg",
+					isExisting: true,
+				},
+			]
+		: [];
+
+	const headerUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			if (!club?.id) {
+				throw new Error("Must save club first");
+			}
+
+			const resp = await getClubHeaderImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+				clubId: club.id,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data?.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 1,
+		initialFiles: initialHeaderFiles,
+	});
+
 	useHash();
 
 	const form = useForm<z.infer<typeof clubInfoSchema>>({
@@ -108,6 +155,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			isPrivate: club?.isPrivate,
 			isPrivateStats: club?.isPrivateStats,
 			logo: club?.logo || undefined,
+			headerImage: club?.headerImage || undefined,
 			contactPhone: club?.contactPhone || undefined,
 			contactEmail: club?.contactEmail || undefined,
 			slug: club?.slug || undefined,
@@ -139,10 +187,14 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			const uploadedUrls = await logoUpload.uploadAllFiles();
 			values.logo = uploadedUrls.length > 0 ? uploadedUrls[0] : undefined;
 
+			const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
+			values.headerImage = uploadedHeaderUrls.length > 0 ? uploadedHeaderUrls[0] : undefined;
+
 			const result = await saveClubInformation(values);
 
 			if (result?.data?.id) {
 				logoUpload.markAsSaved();
+				headerUpload.markAsSaved();
 				toast.success(t("dashboard.club.info.success"));
 				router.push("/dashboard/admin/unclaimed-clubs");
 			}
@@ -418,23 +470,46 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 
 				<FormField
 					control={form.control}
+					name="headerImage"
+					render={() => (
+						<FormItem>
+							<FormLabel>{t("dashboard.club.info.headerImage")}</FormLabel>
+							<FormControl>
+								<SingleImageUpload
+									variant="banner"
+									value={headerUpload.files}
+									onChange={headerUpload.setFiles}
+									maxFileSize={8 * 1024 * 1024}
+									accept={{
+										"image/jpeg": [".jpg", ".jpeg"],
+										"image/png": [".png"],
+										"image/webp": [".webp"],
+									}}
+								/>
+							</FormControl>
+							<FormDescription>{t("dashboard.club.info.headerImageDescription")}</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
 					name="logo"
 					render={() => (
 						<FormItem>
 							<FormLabel>{t("dashboard.club.info.logo")}</FormLabel>
 							<FormControl>
-								<FileUpload
+								<SingleImageUpload
+									variant="logo"
 									value={logoUpload.files}
 									onChange={logoUpload.setFiles}
-									maxFiles={1}
 									maxFileSize={4 * 1024 * 1024}
 									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],
 										"image/webp": [".webp"],
 									}}
-									multiple={false}
-									showPreview={true}
 								/>
 							</FormControl>
 							<FormDescription>{t("dashboard.club.info.logoDescription")}</FormDescription>

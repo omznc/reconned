@@ -2,6 +2,7 @@
 import { revalidateTag } from "next/cache";
 import { getLocale } from "next-intl/server";
 import {
+	clubHeaderFileSchema,
 	clubInfoSchema,
 	clubLogoFileSchema,
 	deleteClubImageSchema,
@@ -34,6 +35,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 	const isCreate = !ctx.club?.id;
 	const actionType = isCreate ? "CLUB_CREATE" : "CLUB_UPDATE";
 	const shouldDeleteLogo = parsedInput.logo === undefined;
+	const shouldDeleteHeaderImage = parsedInput.headerImage === undefined;
 
 	const club = await prisma.club.upsert({
 		where: {
@@ -48,6 +50,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			isPrivate: parsedInput.isPrivate,
 			isPrivateStats: parsedInput.isPrivateStats,
 			logo: parsedInput.logo ? addImageVersion(parsedInput.logo) : null,
+			headerImage: parsedInput.headerImage ? addImageVersion(parsedInput.headerImage) : null,
 			contactPhone: parsedInput.contactPhone,
 			contactEmail: parsedInput.contactEmail,
 			slug: parsedInput.slug ? parsedInput.slug : null,
@@ -66,6 +69,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			isPrivate: parsedInput.isPrivate,
 			isPrivateStats: parsedInput.isPrivateStats,
 			logo: parsedInput.logo ? addImageVersion(parsedInput.logo) : undefined,
+			headerImage: parsedInput.headerImage ? addImageVersion(parsedInput.headerImage) : undefined,
 			contactPhone: parsedInput.contactPhone,
 			contactEmail: parsedInput.contactEmail,
 			latitude: parsedInput.latitude,
@@ -85,6 +89,12 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 
 	if (shouldDeleteLogo) {
 		await deleteClubImage({
+			clubId: club.id,
+		});
+	}
+
+	if (shouldDeleteHeaderImage) {
+		await deleteClubHeaderImage({
 			clubId: club.id,
 		});
 	}
@@ -137,6 +147,20 @@ export const getClubImageUploadUrl = safeActionClient
 		return resp;
 	});
 
+export const getClubHeaderImageUploadUrl = safeActionClient
+	.inputSchema(clubHeaderFileSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		const key = `club/${ctx.club.id}/header`;
+
+		const resp = await getS3FileUploadUrl({
+			type: parsedInput.file.type,
+			size: parsedInput.file.size,
+			key,
+		});
+
+		return resp;
+	});
+
 export const deleteClubImage = safeActionClient.inputSchema(deleteClubImageSchema).action(async ({ ctx }) => {
 	await prisma.club.update({
 		where: {
@@ -155,6 +179,32 @@ export const deleteClubImage = safeActionClient.inputSchema(deleteClubImageSchem
 		actionType: "CLUB_UPDATE",
 		actionData: {
 			logoRemoved: true,
+		},
+	});
+
+	revalidateLocalizedPaths(`/dashboard/club/information?club=${ctx.club.id}`);
+
+	return { success: true };
+});
+
+export const deleteClubHeaderImage = safeActionClient.inputSchema(deleteClubImageSchema).action(async ({ ctx }) => {
+	await prisma.club.update({
+		where: {
+			id: ctx.club.id,
+		},
+		data: {
+			headerImage: null,
+		},
+	});
+
+	await deleteS3File(`club/${ctx.club.id}/header`);
+
+	// Log the audit event
+	await logClubAudit({
+		clubId: ctx.club.id,
+		actionType: "CLUB_UPDATE",
+		actionData: {
+			headerImageRemoved: true,
 		},
 	});
 

@@ -44,6 +44,20 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 	return (
 		<div className="space-y-6">
+			{/* Header Image */}
+			{user.headerImage && (
+				<div className="w-full h-48 md:h-64 rounded-xl overflow-hidden relative">
+					<Image
+						suppressHydrationWarning={true}
+						src={user.headerImage}
+						alt={`${user.name} header`}
+						fill
+						className="object-cover"
+						draggable={false}
+					/>
+				</div>
+			)}
+
 			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between bg-background p-4">
 				<div className="flex flex-col md:flex-row gap-4">
 					{/* TODO: Handle if unset */}
@@ -70,21 +84,21 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			</div>
 			{/* New Additional User Information Card */}
 			{/* <Card>
-				<CardHeader>
-					<CardTitle>{t("components.userOverview.additionalInfo.title")}</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<ul className="space-y-2">
-						<li>{t("components.userOverview.email")}: {user.email}</li>
-						{user.location && (
-							<li>{t("components.userOverview.location")}: {user.location}</li>
-						)}
-						{user.phone && !user.isPrivatePhone && (
-							<li>{t("components.userOverview.phone")}: {user.phone}</li>
-						)}
-					</ul>
-				</CardContent>
-			</Card> */}
+                <CardHeader>
+                    <CardTitle>{t("components.userOverview.additionalInfo.title")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-2">
+                        <li>{t("components.userOverview.email")}: {user.email}</li>
+                        {user.location && (
+                            <li>{t("components.userOverview.location")}: {user.location}</li>
+                        )}
+                        {user.phone && !user.isPrivatePhone && (
+                            <li>{t("components.userOverview.phone")}: {user.phone}</li>
+                        )}
+                    </ul>
+                </CardContent>
+            </Card> */}
 			<div className="flex flex-wrap gap-2">
 				{shouldShowStats && visitors > 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">

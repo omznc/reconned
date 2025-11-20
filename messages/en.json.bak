@@ -656,8 +656,6 @@
 				"general": "General",
 				"avatar": "Profile picture",
 				"avatarDescription": "We recommend that you upload a profile picture.",
-				"headerImage": "Header image",
-				"headerImageDescription": "Add a wide cover photo to personalize your profile.",
 				"saving": "Saving...",
 				"uploadAvatar": "Upload avatar",
 				"replaceAvatar": "Replace avatar",
@@ -876,8 +874,6 @@
 				"privateStatsDescription": "Only club members can see how many views the club has",
 				"logo": "Logo",
 				"logoDescription": "Add a club logo. ",
-				"headerImage": "Header image",
-				"headerImageDescription": "Add a wide banner image for your club page.",
 				"uploadLogo": "Upload logo",
 				"replaceLogo": "Replace logo",
 				"removeLogo": "Remove logo",
@@ -1327,13 +1323,6 @@
 		}
 	},
 	"components": {
-		"singleImageUpload": {
-			"uploadImage": "Upload image",
-			"changeImage": "Change image",
-			"dragOrClick": "Click or drag to upload",
-			"maxFile": "Up to {size}MB per image",
-			"removeImage": "Remove image"
-		},
 		"sidebar": {
 			"mobileToggle": "Displays the mobile sidebar.",
 			"betaMessage": "Beta version - Changes and errors are possible.",

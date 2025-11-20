@@ -104,6 +104,20 @@ export async function ClubOverview({
 
 	return (
 		<div className="space-y-6">
+			{/* Header Image */}
+			{club.headerImage && (
+				<div className="w-full h-48 md:h-64 rounded-xl overflow-hidden relative">
+					<Image
+						suppressHydrationWarning={true}
+						src={club.headerImage}
+						alt={`${club.name} header`}
+						fill
+						className="object-cover"
+						draggable={false}
+					/>
+				</div>
+			)}
+
 			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between bg-background p-4">
 				<div className="flex flex-col md:flex-row gap-4">
 					{club.logo ? (
