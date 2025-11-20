@@ -23,6 +23,7 @@ import type { z } from "zod";
 import {
 	deleteClub,
 	disconnectInstagramAccount,
+	getClubHeaderImageUploadUrl,
 	getClubImageUploadUrl,
 	saveClubInformation,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
@@ -34,11 +35,12 @@ import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
+import type { FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SingleImageUpload } from "@/components/ui/single-image-upload";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
@@ -122,6 +124,53 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		initialFiles,
 	});
 
+	// Initialize file upload system for header image
+	const initialHeaderFiles: FileUploadItem[] = props.club?.headerImage
+		? [
+				{
+					id: `existing-header-${props.club.id}`,
+					url: props.club.headerImage,
+					name: "Club header image",
+					type: "image/jpeg",
+					isExisting: true,
+				},
+			]
+		: [];
+
+	const headerUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			const currentClubId = clubIdRef.current;
+			if (!currentClubId) {
+				throw new Error("Must save club first");
+			}
+
+			const resp = await getClubHeaderImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+				clubId: currentClubId,
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data?.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 1,
+		initialFiles: initialHeaderFiles,
+	});
+
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -166,6 +215,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			isPrivate: props.club?.isPrivate,
 			isPrivateStats: props.club?.isPrivateStats,
 			logo: props.club?.logo || undefined,
+			headerImage: props.club?.headerImage || undefined,
 			contactPhone: props.club?.contactPhone || undefined,
 			contactEmail: props.club?.contactEmail || undefined,
 			slug: props.club?.slug || undefined,
@@ -374,6 +424,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			}
 
 			const filesToUpload = logoUpload.files.filter((f) => f.file && !f.isExisting);
+			const headerFilesToUpload = headerUpload.files.filter((f) => f.file && !f.isExisting);
+
 			if (filesToUpload.length > 0 && clubId) {
 				const uploadedUrls = await logoUpload.uploadAllFiles();
 				const logoUrl = uploadedUrls[0];
@@ -388,11 +440,26 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				values.logo = existingUrls.length > 0 ? existingUrls[0] : undefined;
 			}
 
-			if (!isCreating || filesToUpload.length > 0) {
+			if (headerFilesToUpload.length > 0 && clubId) {
+				const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
+				const headerUrl = uploadedHeaderUrls[0];
+				if (headerUrl) {
+					values.headerImage = headerUrl;
+				}
+			} else {
+				const existingHeaderUrls = headerUpload.files
+					.filter((f) => f.isExisting && f.url)
+					.map((f) => f.url)
+					.filter((url): url is string => url !== undefined);
+				values.headerImage = existingHeaderUrls.length > 0 ? existingHeaderUrls[0] : undefined;
+			}
+
+			if (!isCreating || filesToUpload.length > 0 || headerFilesToUpload.length > 0) {
 				await saveClubInformation(values);
 			}
 
 			logoUpload.markAsSaved();
+			headerUpload.markAsSaved();
 			toast.success(t("dashboard.club.info.success"));
 
 			if (isCreating && clubId) {
@@ -716,23 +783,46 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 				<FormField
 					control={form.control}
+					name="headerImage"
+					render={() => (
+						<FormItem>
+							<FormLabel>{t("dashboard.club.info.headerImage")}</FormLabel>
+							<FormControl>
+								<SingleImageUpload
+									variant="banner"
+									value={headerUpload.files}
+									onChange={headerUpload.setFiles}
+									maxFileSize={8 * 1024 * 1024}
+									accept={{
+										"image/jpeg": [".jpg", ".jpeg"],
+										"image/png": [".png"],
+										"image/webp": [".webp"],
+									}}
+								/>
+							</FormControl>
+							<FormDescription>{t("dashboard.club.info.headerImageDescription")}</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
 					name="logo"
 					render={() => (
 						<FormItem>
 							<FormLabel>{t("dashboard.club.info.logo")}</FormLabel>
 							<FormControl>
-								<FileUpload
+								<SingleImageUpload
+									variant="logo"
 									value={logoUpload.files}
 									onChange={logoUpload.setFiles}
-									maxFiles={1}
 									maxFileSize={4 * 1024 * 1024}
 									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],
 										"image/webp": [".webp"],
 									}}
-									multiple={false}
-									showPreview={true}
 								/>
 							</FormControl>
 							<FormDescription>{t("dashboard.club.info.logoDescription")}</FormDescription>

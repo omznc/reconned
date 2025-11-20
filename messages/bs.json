@@ -656,6 +656,8 @@
 				"general": "Općenito",
 				"avatar": "Profilna slika",
 				"avatarDescription": "Preporučujemo da postavite profilnu sliku.",
+				"headerImage": "Naslovna slika",
+				"headerImageDescription": "Dodajte široku naslovnu fotografiju da personalizujete profil.",
 				"saving": "Spašavanje...",
 				"uploadAvatar": "Učitaj avatar",
 				"replaceAvatar": "Zamijeni avatar",
@@ -874,6 +876,8 @@
 				"privateStatsDescription": "Samo članovi kluba mogu vidjeti koliko pregleda ima klub",
 				"logo": "Logo",
 				"logoDescription": "Dodajte logo kluba. Preporučujemo da koristite kvadratnu sliku sa providnom pozadinom.",
+				"headerImage": "Naslovna slika",
+				"headerImageDescription": "Dodajte široku naslovnu fotografiju za stranicu vašeg kluba.",
 				"uploadLogo": "Učitaj logo",
 				"replaceLogo": "Zamijeni logo",
 				"removeLogo": "Ukloni logo",
@@ -1323,6 +1327,13 @@
 		}
 	},
 	"components": {
+		"singleImageUpload": {
+			"uploadImage": "Dodaj sliku",
+			"changeImage": "Promijeni sliku",
+			"dragOrClick": "Klikni ili prevuci za upload",
+			"maxFile": "Do {size}MB po slici",
+			"removeImage": "Ukloni sliku"
+		},
 		"sidebar": {
 			"mobileToggle": "Prikazuje mobilni sidebar.",
 			"betaMessage": "Beta verzija aplikacije - Moguće su promjene i greške.",

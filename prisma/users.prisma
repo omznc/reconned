@@ -5,6 +5,7 @@ model User {
   emailVerified   Boolean
   normalizedEmail String? @unique
   image           String?
+  headerImage     String?
   slug            String? @unique
   bio             String?
   location        String?

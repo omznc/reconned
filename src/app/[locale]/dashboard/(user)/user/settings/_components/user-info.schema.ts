@@ -7,6 +7,7 @@ export const userInfoShema = z.object({
 	isPrivatePhone: z.boolean(),
 	isPrivateStats: z.boolean(),
 	image: z.string().optional(),
+	headerImage: z.string().optional(),
 	bio: z.string().max(200),
 	location: z.string().optional(),
 	website: z.string().optional(),
@@ -43,5 +44,12 @@ export const userAvatarFileSchema = z.object({
 			width: z.number(),
 			height: z.number(),
 		}),
+	}),
+});
+
+export const userHeaderFileSchema = z.object({
+	file: z.object({
+		type: z.string().regex(/^image\//),
+		size: z.number().max(1024 * 1024 * 8),
 	}),
 });

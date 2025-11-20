@@ -8,16 +8,18 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import {
+	getUserHeaderImageUploadUrl,
 	getUserImageUploadUrl,
 	saveUserInformation,
 } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action";
 import { userInfoShema } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
-import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
+import type { FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { SingleImageUpload } from "@/components/ui/single-image-upload";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
@@ -78,6 +80,47 @@ export function UserInfoForm(props: UserInfoFormProps) {
 		initialFiles,
 	});
 
+	// Initialize file upload system for header image
+	const initialHeaderFiles: FileUploadItem[] = props.user?.headerImage
+		? [
+				{
+					id: `existing-header-${props.user.id}`,
+					url: props.user.headerImage,
+					name: "User header image",
+					type: "image/jpeg",
+					isExisting: true,
+				},
+			]
+		: [];
+
+	const headerUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			const resp = await getUserHeaderImageUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+			});
+
+			if (!resp?.data?.url) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			await fetch(resp.data?.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 1,
+		initialFiles: initialHeaderFiles,
+	});
+
 	const form = useForm<z.infer<typeof userInfoShema>>({
 		resolver: zodResolver(userInfoShema),
 		defaultValues: {
@@ -91,6 +134,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			isPrivateEmail: props.user?.isPrivateEmail || false,
 			isPrivatePhone: props.user?.isPrivatePhone || false,
 			isPrivateStats: props.user?.isPrivateStats || false,
+			headerImage: props.user?.headerImage || undefined,
 			slug: props.user?.slug || "",
 		},
 		mode: "onChange",
@@ -121,10 +165,15 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			const uploadedUrls = await avatarUpload.uploadAllFiles();
 			values.image = uploadedUrls.length > 0 ? uploadedUrls[0] : undefined;
 
+			// Upload header image and handle deletion
+			const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
+			values.headerImage = uploadedHeaderUrls.length > 0 ? uploadedHeaderUrls[0] : undefined;
+
 			const result = await saveUserInformation(values);
 
 			if (result?.data) {
 				avatarUpload.markAsSaved();
+				headerUpload.markAsSaved();
 				form.reset(values);
 				toast.success(t("dashboard.user.settings.success"));
 			}
@@ -147,30 +196,52 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 					<FormField
 						control={form.control}
+						name="headerImage"
+						render={() => (
+							<FormItem>
+								<FormLabel>{t("dashboard.user.settings.headerImage")}</FormLabel>
+								<FormControl>
+									<SingleImageUpload
+										variant="banner"
+										value={headerUpload.files}
+										onChange={headerUpload.setFiles}
+										maxFileSize={8 * 1024 * 1024}
+										accept={{
+											"image/jpeg": [".jpg", ".jpeg"],
+											"image/png": [".png"],
+											"image/webp": [".webp"],
+										}}
+									/>
+								</FormControl>
+								<FormDescription>{t("dashboard.user.settings.headerImageDescription")}</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
 						name="image"
 						render={() => (
 							<FormItem>
 								<FormLabel>{t("dashboard.user.settings.avatar")}</FormLabel>
 								<FormControl>
-									<FileUpload
+									<SingleImageUpload
+										variant="avatar"
 										value={avatarUpload.files}
 										onChange={(files) => {
 											if (files.length > 0 && files[0]?.file) {
-												// Open crop dialog for new image files
 												setCropFile(files[0].file);
 											} else {
 												avatarUpload.setFiles(files);
 											}
 										}}
-										maxFiles={1}
 										maxFileSize={4 * 1024 * 1024}
 										accept={{
 											"image/jpeg": [".jpg", ".jpeg"],
 											"image/png": [".png"],
 											"image/webp": [".webp"],
 										}}
-										multiple={false}
-										showPreview={true}
 									/>
 								</FormControl>
 								<FormDescription>{t("dashboard.user.settings.avatarDescription")}</FormDescription>

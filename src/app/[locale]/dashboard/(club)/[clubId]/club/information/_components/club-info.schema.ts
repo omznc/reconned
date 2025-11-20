@@ -31,6 +31,7 @@ export const clubInfoSchema = z.object({
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().optional(),
+	headerImage: z.string().optional(),
 	contactPhone: z.string().optional(),
 	contactEmail: z.string().optional(),
 	clubId: z.string().optional(),
@@ -42,6 +43,14 @@ export const clubLogoFileSchema = z.object({
 	file: z.object({
 		type: z.string().regex(/^image\//),
 		size: z.number().max(1024 * 1024 * 4),
+	}),
+	clubId: z.string(),
+});
+
+export const clubHeaderFileSchema = z.object({
+	file: z.object({
+		type: z.string().regex(/^image\//),
+		size: z.number().max(1024 * 1024 * 8),
 	}),
 	clubId: z.string(),
 });
