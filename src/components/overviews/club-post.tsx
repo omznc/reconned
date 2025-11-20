@@ -26,7 +26,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 	const { ref, isOverflowing } = useOverflow();
 
 	return (
-		<div className="border bg-sidebar rounded-lg p-4 space-y-3">
+		<div className="border bg-sidebar p-4 space-y-3">
 			<div className="flex justify-between items-start gap-4">
 				<div className="space-y-1">
 					<h3 className="font-medium">{post.title}</h3>
@@ -61,7 +61,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 							alt={`${post.title} - Slika`}
 							width={800}
 							height={400}
-							className={cn("rounded-md object-cover w-full", !isExpanded && "max-h-[400px]")}
+							className={cn("object-cover w-full", !isExpanded && "max-h-[400px]")}
 						/>
 					</div>
 				)}

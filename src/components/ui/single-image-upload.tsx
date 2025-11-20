@@ -116,12 +116,15 @@ export function SingleImageUpload({
                 <input {...getInputProps()} />
                 {displayUrl ? (
                     <div className={cn("absolute inset-0 overflow-hidden")}>
-                        <img src={displayUrl} alt={file?.name || ""} className="h-full w-full object-cover" />
+                        <img src={displayUrl} alt={file?.name || ""} className={cn("h-full w-full", {
+                            "object-cover": variant !== 'logo',
+                            "object-contain": variant === 'logo',
+                        })} />
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/50 opacity-0 transition group-hover:opacity-100">
                             <Upload className="h-5 w-5 text-white" />
                             <p className="text-sm font-medium text-white">
                                 {t("components.singleImageUpload.changeImage")}
-                            </p> 
+                            </p>
                             <p className="text-xs text-white/70 text-center">
                                 {t("components.singleImageUpload.dragOrClick")}
                             </p>
