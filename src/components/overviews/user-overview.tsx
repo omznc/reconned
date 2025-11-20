@@ -44,43 +44,63 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 	return (
 		<div className="space-y-6">
-			{/* Header Image */}
-			{user.headerImage && (
-				<div className="w-full h-48 md:h-64 rounded-xl overflow-hidden relative">
-					<Image
-						suppressHydrationWarning={true}
-						src={user.headerImage}
-						alt={`${user.name} header`}
-						fill
-						className="object-cover"
-						draggable={false}
-					/>
-				</div>
-			)}
+			{/* Header Image and Profile Photo Container */}
+			{user.headerImage ? (
+				<div className="relative">
+					{/* Header Image */}
+					<div className="w-full h-48 md:h-64 overflow-hidden relative">
+						<Image
+							suppressHydrationWarning={true}
+							src={user.headerImage}
+							alt={`${user.name} header`}
+							fill
+							className="object-cover"
+							draggable={false}
+						/>
+					</div>
 
-			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between bg-background p-4">
-				<div className="flex flex-col md:flex-row gap-4">
-					{/* TODO: Handle if unset */}
-					{user.image && (
+					{/* Profile Photo positioned over header */}
+					<div className="absolute bottom-0 left-4 transform translate-y-1/2">
+						{user.image && (
+							<Image
+								suppressHydrationWarning={true}
+								src={user.image}
+								alt={user.name}
+								width={150}
+								height={150}
+								className="h-24 w-24 md:h-32 md:w-32 border-4 border-background bg-background object-cover shadow-lg"
+								draggable={false}
+							/>
+						)}
+					</div>
+				</div>
+			) : (
+				/* Profile Photo when no header */
+				user.image && (
+					<div className="flex justify-start mb-4">
 						<Image
 							suppressHydrationWarning={true}
 							src={user.image}
 							alt={user.name}
-							width={300}
-							height={300}
-							className="h-[150px] md:h-[150px] w-auto mx-auto md:mx-0"
+							width={150}
+							height={150}
+							className="h-32 w-32 object-cover"
 							draggable={false}
 						/>
-					)}
-					<div className="flex flex-col gap-1 text-center md:text-left">
-						<div className="flex items-center justify-center md:justify-start gap-2">
-							<h1 className="text-2xl font-semibold">
-								{user.name} {user.callsign && `(${user.callsign})`}
-							</h1>
-						</div>
-						<ExpandableDescription description={user.bio || ""} />
 					</div>
+				)
+			)}
+
+			{/* Profile Info Section */}
+			<div
+				className={`flex flex-col gap-1 ${user.image && user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : ""}`}
+			>
+				<div className="flex items-center gap-2">
+					<h1 className="text-3xl font-semibold">
+						{user.name} {user.callsign && `(${user.callsign})`}
+					</h1>
 				</div>
+				<ExpandableDescription description={user.bio || ""} />
 			</div>
 			{/* New Additional User Information Card */}
 			{/* <Card>
@@ -152,7 +172,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 												className="h-auto w-8"
 											/>
 										) : (
-											<div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+											<div className="h-8 w-8 bg-muted flex items-center justify-center">
 												<span className="text-xs text-muted-foreground">
 													{membership.club.name.charAt(0)}
 												</span>

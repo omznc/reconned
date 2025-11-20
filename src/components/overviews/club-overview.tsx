@@ -104,45 +104,84 @@ export async function ClubOverview({
 
 	return (
 		<div className="space-y-6">
-			{/* Header Image */}
-			{club.headerImage && (
-				<div className="w-full h-48 md:h-64 rounded-xl overflow-hidden relative">
-					<Image
-						suppressHydrationWarning={true}
-						src={club.headerImage}
-						alt={`${club.name} header`}
-						fill
-						className="object-cover"
-						draggable={false}
-					/>
-				</div>
-			)}
+			{/* Header Image and Club Logo Container */}
+			{club.headerImage ? (
+				<div className="relative">
+					{/* Header Image */}
+					<div className="w-full h-48 md:h-64 overflow-hidden relative">
+						<Image
+							suppressHydrationWarning={true}
+							src={club.headerImage}
+							alt={`${club.name} header`}
+							fill
+							className="object-cover"
+							draggable={false}
+						/>
+					</div>
 
-			<div className="flex flex-col-reverse gap-4 md:gap-2 md:flex-row justify-between bg-background p-4">
-				<div className="flex flex-col md:flex-row gap-4">
+					{/* Edit Button positioned over header */}
+					{isManager && (
+						<div className="absolute top-4 right-4">
+							<Button asChild>
+								<Link href={`/dashboard/${club.id}/club/information`}>
+									<Cog className="h-4 w-4 mr-2" />
+									{t("components.clubOverview.edit")}
+								</Link>
+							</Button>
+						</div>
+					)}
+
+					{/* Club Logo positioned over header */}
+					<div className="absolute bottom-0 left-4 transform translate-y-1/2">
+						{club.logo ? (
+							<Image
+								suppressHydrationWarning={true}
+								src={club.logo}
+								alt={club.name}
+								width={120}
+								height={120}
+								className="h-24 w-24 md:h-32 md:w-32 border-4 border-background bg-background object-cover shadow-lg"
+								draggable={false}
+							/>
+						) : (
+							<div className="h-24 w-24 md:h-32 md:w-32 bg-sidebar border-4 border-background flex items-center justify-center shadow-lg">
+								<ShieldBan className="size-8 md:size-12 text-foreground" />
+							</div>
+						)}
+					</div>
+				</div>
+			) : (
+				/* Club Logo when no header */
+				<div className="flex justify-start mb-4">
 					{club.logo ? (
 						<Image
 							suppressHydrationWarning={true}
 							src={club.logo}
 							alt={club.name}
-							width={150}
-							height={150}
-							className="h-[150px] md:h-[150px] w-auto mx-auto md:mx-0"
+							width={120}
+							height={120}
+							className="h-32 w-32 object-cover"
 							draggable={false}
 						/>
 					) : (
-						<div className="h-[150px] md:h-[150px] aspect-square bg-sidebar flex items-center justify-center border mx-auto md:mx-0">
-							<ShieldBan className="size-[50px] text-foreground" />
+						<div className="h-32 w-32 bg-sidebar border flex items-center justify-center">
+							<ShieldBan className="size-12 text-foreground" />
 						</div>
 					)}
-					<div className="flex flex-col gap-1 text-center md:text-left">
-						<div className="flex items-center justify-center md:justify-start gap-2">
-							<h1 className="text-2xl flex gap-2 items-center font-semibold">
-								{club.name} {club.verified && <VerifiedClubIcon />}
-							</h1>
-						</div>
-						<ExpandableDescription description={club.description || ""} />
+				</div>
+			)}
+
+			{/* Club Info Section */}
+			<div
+				className={`flex flex-col gap-4 ${club.logo && club.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : ""}`}
+			>
+				<div className="flex flex-col gap-1">
+					<div className="flex items-center gap-2">
+						<h1 className="text-3xl flex gap-2 items-center font-semibold">
+							{club.name} {club.verified && <VerifiedClubIcon />}
+						</h1>
 					</div>
+					<ExpandableDescription description={club.description || ""} />
 				</div>
 
 				<div className="flex flex-col md:flex-row gap-2">
@@ -155,7 +194,7 @@ export async function ClubOverview({
 						</Button>
 					)}
 					{club.website && <ClubWebsiteButton website={club.website} isVerified={club.verified} />}
-					{isManager && (
+					{isManager && !club.headerImage && (
 						<Button asChild>
 							<Link href={`/dashboard/${club.id}/club/information`}>
 								<Cog className="h-4 w-4 mr-2" />
@@ -215,7 +254,7 @@ export async function ClubOverview({
 				)}
 			</div>
 			{!hasOwner && (
-				<div className="border rounded-lg bg-card p-6 space-y-4">
+				<div className="border bg-card p-6 space-y-4">
 					<h2 className="text-xl font-semibold">{t("components.clubOverview.claimClub")}</h2>
 					<ClaimClubForm clubId={club.id} clubName={club.name} user={user} />
 				</div>
@@ -317,7 +356,7 @@ export async function ClubOverview({
 						)}
 					</div>
 					{club.instagramUsername && (
-						<div className="rounded-lg border bg-sidebar">
+						<div className="border bg-sidebar">
 							<div className="flex items-start justify-between border-b p-4">
 								<div className="flex flex-col gap-2">
 									<div className="flex gap-2 items-center">
