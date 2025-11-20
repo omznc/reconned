@@ -103,87 +103,67 @@ export async function ClubOverview({
 	const shouldShowStats = !club.isPrivateStats || isManager || isMember;
 
 	return (
-		<div className="space-y-6">
-			{/* Header Image and Club Logo Container */}
-			{club.headerImage ? (
-				<div className="relative">
-					{/* Header Image */}
-					<div className="w-full h-48 md:h-64 overflow-hidden relative">
+		<div>
+			{/* Unified Banner Section - Always Present */}
+			<div className="relative w-full mb-6">
+				<div className="w-full h-full max-h-[300px] bg-sidebar">
+					{club.headerImage ? (
 						<Image
 							suppressHydrationWarning={true}
 							src={club.headerImage}
 							alt={`${club.name} header`}
-							fill
-							className="object-cover"
+							className="object-contain w-full h-full"
 							draggable={false}
+							height={300}
+							width={1200}
 						/>
-					</div>
-
-					{/* Edit Button positioned over header */}
-					{isManager && (
-						<div className="absolute top-4 right-4">
-							<Button asChild>
-								<Link href={`/dashboard/${club.id}/club/information`}>
-									<Cog className="h-4 w-4 mr-2" />
-									{t("components.clubOverview.edit")}
-								</Link>
-							</Button>
-						</div>
+					) : (
+						<div className="w-full h-full bg-gradient-to-br from-sidebar to-muted" />
 					)}
+				</div>
 
-					{/* Club Logo positioned over header */}
-					<div className="absolute bottom-0 left-4 transform translate-y-1/2">
+				{/* Edit Button - Always Top Right */}
+				{isManager && (
+					<div className="absolute top-4 right-4">
+						<Button asChild size="sm">
+							<Link href={`/dashboard/${club.id}/club/information`}>
+								<Cog className="h-4 w-4 mr-2" />
+								{t("components.clubOverview.edit")}
+							</Link>
+						</Button>
+					</div>
+				)}
+			</div>
+
+			<div className="flex flex-col gap-6">
+				<div className="flex gap-6 items-start">
+					<div className="shrink-0 w-32 h-32 flex items-center justify-center">
 						{club.logo ? (
 							<Image
 								suppressHydrationWarning={true}
 								src={club.logo}
 								alt={club.name}
-								width={120}
-								height={120}
-								className="h-24 w-24 md:h-32 md:w-32 border-4 border-background bg-background object-cover shadow-lg"
+								width={128}
+								height={128}
+								className="w-full h-full object-contain"
 								draggable={false}
 							/>
 						) : (
-							<div className="h-24 w-24 md:h-32 md:w-32 bg-sidebar border-4 border-background flex items-center justify-center shadow-lg">
-								<ShieldBan className="size-8 md:size-12 text-foreground" />
+							<div className="w-full h-full border-4 border-background bg-sidebar shadow-lg flex items-center justify-center">
+								<ShieldBan className="size-16 text-muted-foreground" />
 							</div>
 						)}
 					</div>
-				</div>
-			) : (
-				/* Club Logo when no header */
-				<div className="flex justify-start mb-4">
-					{club.logo ? (
-						<Image
-							suppressHydrationWarning={true}
-							src={club.logo}
-							alt={club.name}
-							width={120}
-							height={120}
-							className="h-32 w-32 object-cover"
-							draggable={false}
-						/>
-					) : (
-						<div className="h-32 w-32 bg-sidebar border flex items-center justify-center">
-							<ShieldBan className="size-12 text-foreground" />
-						</div>
-					)}
-				</div>
-			)}
 
-			{/* Club Info Section */}
-			<div
-				className={`flex flex-col gap-4 ${club.logo && club.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : ""}`}
-			>
-				<div className="flex flex-col gap-1">
-					<div className="flex items-center gap-2">
-						<h1 className="text-3xl flex gap-2 items-center font-semibold">
+					<div className="flex-1 min-w-0 pt-2">
+						<h1 className="text-3xl flex gap-2 items-center font-semibold mb-2">
 							{club.name} {club.verified && <VerifiedClubIcon />}
 						</h1>
+						<ExpandableDescription description={club.description || ""} />
 					</div>
-					<ExpandableDescription description={club.description || ""} />
 				</div>
 
+				{/* Action Buttons Row */}
 				<div className="flex flex-col md:flex-row gap-2">
 					{club.latitude && club.longitude && (
 						<Button asChild variant="outline">
@@ -194,64 +174,58 @@ export async function ClubOverview({
 						</Button>
 					)}
 					{club.website && <ClubWebsiteButton website={club.website} isVerified={club.verified} />}
-					{isManager && !club.headerImage && (
-						<Button asChild>
-							<Link href={`/dashboard/${club.id}/club/information`}>
-								<Cog className="h-4 w-4 mr-2" />
-								{t("components.clubOverview.edit")}
-							</Link>
-						</Button>
-					)}
 					{isMember && !isClubOwner && (
 						<LeaveClubButton clubId={club.id} isClubOwner={isClubOwner ?? false} variant="destructive" />
 					)}
 				</div>
-			</div>
-			<div className="flex flex-wrap gap-2">
-				<Badge className="md:grow-0 grow flex items-center gap-1">
-					{club.isPrivate ? (
-						<>
-							<EyeOff className="w-4 h-4" />
-							{t("components.clubOverview.private")}
-						</>
-					) : (
-						<>
-							<Eye className="w-4 h-4" />
-							{t("components.clubOverview.public")}
-						</>
-					)}
-				</Badge>
-				{club.location && (
+
+				{/* Badges Row */}
+				<div className="flex flex-wrap gap-2 mb-4">
 					<Badge className="md:grow-0 grow flex items-center gap-1">
-						<MapPin className="w-4 h-4" />
-						{club.location}
+						{club.isPrivate ? (
+							<>
+								<EyeOff className="w-4 h-4" />
+								{t("components.clubOverview.private")}
+							</>
+						) : (
+							<>
+								<Eye className="w-4 h-4" />
+								{t("components.clubOverview.public")}
+							</>
+						)}
 					</Badge>
-				)}
-				{club.isAllied && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						<Handshake className="w-4 h-4" />
-						{t("components.clubOverview.allied")}
-					</Badge>
-				)}
-				{club.contactEmail && (
-					<Link href={`mailto:${club.contactEmail}`} className="md:grow-0 grow flex items-center gap-1">
+					{club.location && (
 						<Badge className="md:grow-0 grow flex items-center gap-1">
-							<MailOpenIcon className="w-4 h-4" />
-							{club.contactEmail}
+							<MapPin className="w-4 h-4" />
+							{club.location}
 						</Badge>
-					</Link>
-				)}
-				{club.contactPhone && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						<Phone className="w-4 h-4" />
-						{club.contactPhone}
-					</Badge>
-				)}
-				{shouldShowStats && visitors > 0 && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{t("components.clubOverview.views", { count: visitors })}
-					</Badge>
-				)}
+					)}
+					{club.isAllied && (
+						<Badge className="md:grow-0 grow flex items-center gap-1">
+							<Handshake className="w-4 h-4" />
+							{t("components.clubOverview.allied")}
+						</Badge>
+					)}
+					{club.contactEmail && (
+						<Link href={`mailto:${club.contactEmail}`} className="md:grow-0 grow flex items-center gap-1">
+							<Badge className="md:grow-0 grow flex items-center gap-1">
+								<MailOpenIcon className="w-4 h-4" />
+								{club.contactEmail}
+							</Badge>
+						</Link>
+					)}
+					{club.contactPhone && (
+						<Badge className="md:grow-0 grow flex items-center gap-1">
+							<Phone className="w-4 h-4" />
+							{club.contactPhone}
+						</Badge>
+					)}
+					{shouldShowStats && visitors > 0 && (
+						<Badge className="md:grow-0 grow flex items-center gap-1">
+							{t("components.clubOverview.views", { count: visitors })}
+						</Badge>
+					)}
+				</div>
 			</div>
 			{!hasOwner && (
 				<div className="border bg-card p-6 space-y-4">
@@ -262,44 +236,24 @@ export async function ClubOverview({
 			{hasOwner && (
 				<>
 					<ReviewsOverview type="club" typeId={club.id} />
+
 					<div
-						className={cn(
-							"grid grid-cols-1 gap-4 [&>*:last-child]:order-first md:[&>*:last-child]:order-none",
-							{
-								"md:grid-cols-3": (club.members?.length ?? 0) > 0,
-							},
-						)}
+						className={cn("grid grid-cols-1 gap-4", {
+							"md:grid-cols-3": (club.members?.length ?? 0) > 0 && club.instagramUsername,
+						})}
 					>
-						<div className="space-y-4 md:col-span-2">
-							<div className="flex h-10 items-center justify-between">
-								<h2 className="text-xl font-semibold flex items-center gap-2">
-									{t("components.clubOverview.posts")}
-								</h2>
-								{isManager && (
-									<Button asChild size="sm">
-										<Link href={`/dashboard/${club.id}/club/posts`}>
-											<Pencil className="h-4 w-4" />
-											{t("components.clubOverview.createPost")}
-										</Link>
-									</Button>
-								)}
-							</div>
-							{!posts || posts.length === 0 ? (
-								<p className="text-muted-foreground">{t("components.clubOverview.noPosts")}</p>
-							) : (
-								<div className="space-y-4">
-									{posts?.map((post) => (
-										<ClubPost key={post.id} post={post} clubId={club.id} isManager={isManager} />
-									))}
-								</div>
-							)}
-						</div>
 						{(club.members?.length ?? 0) > 0 && (
-							<div className="space-y-4">
-								<h2 className="text-xl h-10 font-semibold items-center flex">
-									{t("components.clubOverview.members")}
-								</h2>
-								<div className="grid gap-2 bg-sidebar border p-4 max-h-[400px] overflow-auto">
+							<div className="space-y-4 h-full bg-sidebar border p-4 order-1 md:order-2 md:col-span-1">
+								<div className="flex flex-col gap-2">
+									<div className="flex gap-2 items-center">
+										<h2 className="text-xl font-semibold">
+											{t("components.clubOverview.members")}
+										</h2>
+									</div>
+									<p>{t("components.clubOverview.membersDescription")}</p>
+								</div>
+								<hr />
+								<div className="grid gap-2 max-h-[400px] overflow-auto">
 									{club.members
 										?.sort((a, b) => {
 											if (a.role === "CLUB_OWNER") {
@@ -354,28 +308,61 @@ export async function ClubOverview({
 								</div>
 							</div>
 						)}
-					</div>
-					{club.instagramUsername && (
-						<div className="border bg-sidebar">
-							<div className="flex items-start justify-between border-b p-4">
-								<div className="flex flex-col gap-2">
-									<div className="flex gap-2 items-center">
-										<SiInstagram className="h-5 w-5 text-primary" />
-										<h2 className="text-xl font-semibold">
-											{t("components.clubOverview.instagramGallery")}
-										</h2>
+
+						{club.instagramUsername && (
+							<div
+								className={cn("order-2 md:order-1 h-full", {
+									"md:col-span-2": (club.members?.length ?? 0) > 0,
+									"md:col-span-3": (club.members?.length ?? 0) === 0,
+								})}
+							>
+								<div className="border bg-sidebar h-full">
+									<div className="flex items-start justify-between border-b p-4">
+										<div className="flex flex-col gap-2">
+											<div className="flex gap-2 items-center">
+												<SiInstagram className="h-5 w-5 text-primary" />
+												<h2 className="text-xl font-semibold">
+													{t("components.clubOverview.instagramGallery")}
+												</h2>
+											</div>
+											<p>{t("components.clubOverview.instagramGalleryDescription")}</p>
+										</div>
 									</div>
-									<p>{t("components.clubOverview.instagramGalleryDescription")}</p>
+									<div className="p-4">
+										<ClubInstagram
+											photos={instagramData.photos}
+											username={instagramData.username || club.instagramUsername || undefined}
+										/>
+									</div>
 								</div>
 							</div>
-							<div className="p-4">
-								<ClubInstagram
-									photos={instagramData.photos}
-									username={instagramData.username || club.instagramUsername || undefined}
-								/>
-							</div>
+						)}
+					</div>
+
+					<div className="space-y-4 mt-8">
+						<div className="flex h-10 items-center justify-between">
+							<h2 className="text-xl font-semibold flex items-center gap-2">
+								{t("components.clubOverview.posts")}
+							</h2>
+							{isManager && (
+								<Button asChild size="sm">
+									<Link href={`/dashboard/${club.id}/club/posts`}>
+										<Pencil className="h-4 w-4" />
+										{t("components.clubOverview.createPost")}
+									</Link>
+								</Button>
+							)}
 						</div>
-					)}
+						{!posts || posts.length === 0 ? (
+							<p className="text-muted-foreground">{t("components.clubOverview.noPosts")}</p>
+						) : (
+							<div className="space-y-4">
+								{posts?.map((post) => (
+									<ClubPost key={post.id} post={post} clubId={club.id} isManager={isManager} />
+								))}
+							</div>
+						)}
+					</div>
 				</>
 			)}
 		</div>

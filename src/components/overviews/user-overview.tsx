@@ -48,12 +48,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			{user.headerImage ? (
 				<div className="relative">
 					{/* Header Image */}
-					<div className="w-full h-48 md:h-64 overflow-hidden relative">
+					<div className="w-full h-full max-h-[300px] overflow-hidden relative">
 						<Image
 							suppressHydrationWarning={true}
 							src={user.headerImage}
 							alt={`${user.name} header`}
-							fill
+							width={1200}
+							height={300}
 							className="object-cover"
 							draggable={false}
 						/>
@@ -68,7 +69,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 								alt={user.name}
 								width={150}
 								height={150}
-								className="h-24 w-24 md:h-32 md:w-32 border-4 border-background bg-background object-cover shadow-lg"
+								className="h-24 w-24 md:h-32 md:w-32 bg-background object-cover shadow-lg"
 								draggable={false}
 							/>
 						)}

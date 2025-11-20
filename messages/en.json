@@ -657,7 +657,7 @@
 				"avatar": "Profile picture",
 				"avatarDescription": "We recommend that you upload a profile picture.",
 				"headerImage": "Header image",
-				"headerImageDescription": "Add a wide cover photo to personalize your profile.",
+				"headerImageDescription": "Add a wide cover photo to personalize your profile (1200x300).",
 				"saving": "Saving...",
 				"uploadAvatar": "Upload avatar",
 				"replaceAvatar": "Replace avatar",
@@ -877,7 +877,7 @@
 				"logo": "Logo",
 				"logoDescription": "Add a club logo. ",
 				"headerImage": "Header image",
-				"headerImageDescription": "Add a wide banner image for your club page.",
+				"headerImageDescription": "Add a wide banner image for your club page (1200x300).",
 				"uploadLogo": "Upload logo",
 				"replaceLogo": "Replace logo",
 				"removeLogo": "Remove logo",
@@ -947,7 +947,9 @@
 					"personalAccount": "The Instagram account connected to the selected Facebook page is not a Business account. You need to use an Instagram Business account to connect."
 				},
 				"descriptionPlaceholder": "This is a cool description",
-				"mustSaveClubFirst": "Please save the club information before uploading a logo"
+				"mustSaveClubFirst": "Please save the club information before uploading a logo",
+				"cropBannerTitle": "Crop banner image",
+				"cropBannerDescription": "Adjust the crop area for your banner (3:1 ratio) and click save to apply changes"
 			},
 			"posts": {
 				"successEdited": "Post successfully modified",
@@ -1587,6 +1589,7 @@
 			"map": "Map",
 			"edit": "Edit club",
 			"members": "Members",
+			"membersDescription": "All members of this club",
 			"private": "Private club",
 			"public": "Public club",
 			"posts": "Announcements",

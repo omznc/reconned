@@ -38,7 +38,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 				href={photo.permalink}
 				target="_blank"
 				rel="noopener noreferrer"
-				className="group overflow-hidden rounded-md aspect-square relative group hover:opacity-90 transition-opacity"
+				className="group overflow-hidden aspect-square relative group hover:opacity-90 transition-opacity"
 			>
 				<Image
 					src={imageUrl}
@@ -55,7 +55,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 					</div>
 				)}
 				{photo.media_type === "CAROUSEL_ALBUM" && (
-					<div className="absolute top-2 right-2 bg-black/40 aspect-square rounded-full size-6 p-1">
+					<div className="absolute top-2 right-2 bg-black/40 aspect-square size-6 p-1">
 						<PlusIcon className="h-4 w-4 text-white" />
 					</div>
 				)}
@@ -64,7 +64,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 				{photo.timestamp && (
 					<div
 						suppressHydrationWarning
-						className="absolute top-2 left-2 bg-black/40 text-white text-xs px-1.5 py-0.5 rounded"
+						className="absolute top-2 left-2 bg-black/40 text-white text-xs px-1.5 py-0.5"
 					>
 						{new Date(photo.timestamp).toLocaleDateString(locale)}
 					</div>
@@ -91,7 +91,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 					href={`https://instagram.com/${username}`}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="overflow-hidden rounded-md aspect-square relative group hover:opacity-70 transition-opacity flex flex-col items-center justify-center bg-sidebar border border-border"
+					className="overflow-hidden aspect-square relative group hover:opacity-70 transition-opacity flex flex-col items-center justify-center bg-sidebar border border-border"
 				>
 					<SiInstagram className="h-8 w-8 mb-2" />
 					<p className="text-sm text-center font-medium">{t("components.instagramGallery.viewMore")}</p>
