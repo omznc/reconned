@@ -1,6 +1,5 @@
 "use client";
 
-import { Role } from "@generated/client";
 import { MoreHorizontal, UserMinus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -15,6 +14,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { demoteFromManager } from "./manager.action.tsx";
+
+type Role = "CLUB_OWNER" | "MANAGER" | "USER";
 
 type Manager = {
 	id: string;
@@ -112,7 +113,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => {
-							const isOwner = row.role === Role.CLUB_OWNER;
+							const isOwner = row.role === "CLUB_OWNER";
 							return (
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>

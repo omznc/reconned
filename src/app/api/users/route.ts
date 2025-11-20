@@ -1,9 +1,7 @@
-import { PrismaClient } from "@generated/client";
 import { NextResponse } from "next/server";
 import { withAxiom } from "next-axiom";
 import { isAuthenticated } from "@/lib/auth";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export const GET = withAxiom(async (request: Request) => {
 	const user = await isAuthenticated();
