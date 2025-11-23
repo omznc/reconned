@@ -797,7 +797,13 @@
 				"logoutSingleSuccess": "You are signed out of this device",
 				"logoutSingleError": "An error occurred while logging out of this device.",
 				"currentSession": "Current session",
-				"sessionLastUsed": "Last used on {date}"
+				"sessionLastUsed": "Last used on {date}",
+				"defaultPasskeyName": "Passkey",
+				"unknownDevice": "Unknown Device",
+				"copiedToClipboard": "Copied to clipboard.",
+				"backupCodesFilename": "backup-codes.txt",
+				"invalidPasswordTryAgain": "Invalid password, please try again.",
+				"enable": "Enable"
 			}
 		},
 		"events": {
