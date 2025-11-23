@@ -1,227 +1,252 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
-import { getCached } from "@/lib/cache";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
-
-const locales = routing.locales;
-const defaultLocale = routing.defaultLocale;
-const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	// Get all data concurrently with caching
-	const [clubs, events, users] = await Promise.all([
-		// Get public clubs (cached for 30 minutes)
-		getCached(
-			"sitemap:clubs",
-			() =>
-				prisma.club.findMany({
-					where: {
-						isPrivate: false,
-						OR: [{ banned: false }, { banned: null }],
-					},
-					select: {
-						id: true,
-						slug: true,
-						updatedAt: true,
-					},
-				}),
-			{ ttl: 1800 }, // 30 minutes
-		),
+    const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL || "https://reconned.com";
 
-		// Get public events (cached for 30 minutes)
-		getCached(
-			"sitemap:events",
-			() =>
-				prisma.event.findMany({
-					where: {
-						isPrivate: false,
-					},
-					select: {
-						id: true,
-						slug: true,
-						updatedAt: true,
-					},
-				}),
-			{ ttl: 1800 }, // 30 minutes
-		),
+    // Static pages
+    const staticPages = [
+        {
+            url: baseUrl,
+            lastModified: new Date(),
+            changeFrequency: "daily" as const,
+            priority: 1,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale ? baseUrl : `${baseUrl}/${locale}`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/about`,
+            lastModified: new Date(),
+            changeFrequency: "monthly" as const,
+            priority: 0.8,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/about`
+                            : `${baseUrl}/${locale}/about`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/clubs`,
+            lastModified: new Date(),
+            changeFrequency: "daily" as const,
+            priority: 0.9,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/clubs`
+                            : `${baseUrl}/${locale}/clubs`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/events`,
+            lastModified: new Date(),
+            changeFrequency: "daily" as const,
+            priority: 0.9,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/events`
+                            : `${baseUrl}/${locale}/events`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/users`,
+            lastModified: new Date(),
+            changeFrequency: "weekly" as const,
+            priority: 0.7,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/users`
+                            : `${baseUrl}/${locale}/users`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/map`,
+            lastModified: new Date(),
+            changeFrequency: "weekly" as const,
+            priority: 0.8,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/map`
+                            : `${baseUrl}/${locale}/map`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/search`,
+            lastModified: new Date(),
+            changeFrequency: "daily" as const,
+            priority: 0.6,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/search`
+                            : `${baseUrl}/${locale}/search`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/sponsors`,
+            lastModified: new Date(),
+            changeFrequency: "monthly" as const,
+            priority: 0.5,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/sponsors`
+                            : `${baseUrl}/${locale}/sponsors`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/terms-of-use`,
+            lastModified: new Date("2025-04-13"),
+            changeFrequency: "yearly" as const,
+            priority: 0.3,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/terms-of-use`
+                            : `${baseUrl}/${locale}/terms-of-use`,
+                    ]),
+                ),
+            },
+        },
+        {
+            url: `${baseUrl}/privacy-policy`,
+            lastModified: new Date("2025-04-13"),
+            changeFrequency: "yearly" as const,
+            priority: 0.3,
+            alternates: {
+                languages: Object.fromEntries(
+                    routing.locales.map((locale) => [
+                        locale,
+                        locale === routing.defaultLocale
+                            ? `${baseUrl}/privacy-policy`
+                            : `${baseUrl}/${locale}/privacy-policy`,
+                    ]),
+                ),
+            },
+        },
+    ];
 
-		// Get public user profiles (cached for 30 minutes)
-		getCached(
-			"sitemap:users",
-			() =>
-				prisma.user.findMany({
-					where: {
-						isPrivate: false,
-						OR: [{ banned: false }, { banned: null }],
-					},
-					select: {
-						id: true,
-						slug: true,
-						updatedAt: true,
-					},
-				}),
-			{ ttl: 1800 }, // 30 minutes
-		),
-	]);
+    // Dynamic club pages
+    const clubs = await prisma.club.findMany({
+        where: { isPrivate: false },
+        select: {
+            id: true,
+            slug: true,
+            updatedAt: true,
+        },
+    });
 
-	// Static routes with their properties
-	const staticRoutes: MetadataRoute.Sitemap = [
-		{
-			url: getCanonicalUrl(""),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 1,
-			alternates: generateAlternates(""),
-		},
-		{
-			url: getCanonicalUrl("/about"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.8,
-			alternates: generateAlternates("/about"),
-		},
-		{
-			url: getCanonicalUrl("/events"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/events"),
-		},
-		{
-			url: getCanonicalUrl("/users"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/users"),
-		},
-		{
-			url: getCanonicalUrl("/clubs"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/clubs"),
-		},
-		{
-			url: getCanonicalUrl("/search"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/search"),
-		},
-		{
-			url: getCanonicalUrl("/sponsors"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.6,
-			alternates: generateAlternates("/sponsors"),
-		},
-		{
-			url: getCanonicalUrl("/login"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.6,
-			alternates: generateAlternates("/login"),
-		},
-		{
-			url: getCanonicalUrl("/register"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.6,
-			alternates: generateAlternates("/register"),
-		},
-		{
-			url: getCanonicalUrl("/changelog"),
-			lastModified: new Date(),
-			changeFrequency: "weekly",
-			priority: 0.6,
-			alternates: generateAlternates("/changelog"),
-		},
-		{
-			url: getCanonicalUrl("/map"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.8,
-			alternates: generateAlternates("/map"),
-		},
-		{
-			url: getCanonicalUrl("/privacy-policy"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.5,
-			alternates: generateAlternates("/privacy-policy"),
-		},
-		{
-			url: getCanonicalUrl("/terms-of-use"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.5,
-			alternates: generateAlternates("/terms-of-use"),
-		},
-		{
-			url: getCanonicalUrl("/support-us"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.2,
-			alternates: generateAlternates("/support-us"),
-		},
-	];
+    const clubPages = clubs.map((club) => ({
+        url: `${baseUrl}/clubs/${club.slug || club.id}`,
+        lastModified: club.updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+        alternates: {
+            languages: Object.fromEntries(
+                routing.locales.map((locale) => [
+                    locale,
+                    locale === routing.defaultLocale
+                        ? `${baseUrl}/clubs/${club.slug || club.id}`
+                        : `${baseUrl}/${locale}/clubs/${club.slug || club.id}`,
+                ]),
+            ),
+        },
+    }));
 
-	// Generate dynamic routes with language alternates
-	const clubRoutes = clubs.map((club) => {
-		const path = `/clubs/${club.slug ?? club.id}`;
-		return {
-			url: getCanonicalUrl(path),
-			lastModified: club.updatedAt,
-			changeFrequency: "daily" as const,
-			priority: club.slug ? 0.8 : 0.7,
-			alternates: generateAlternates(path),
-		};
-	});
+    // Dynamic event pages
+    const events = await prisma.event.findMany({
+        where: { isPrivate: false },
+        select: {
+            id: true,
+            slug: true,
+            updatedAt: true,
+        },
+    });
 
-	const eventRoutes = events.map((event) => {
-		const path = `/events/${event.slug ?? event.id}`;
-		return {
-			url: getCanonicalUrl(path),
-			lastModified: event.updatedAt,
-			changeFrequency: "daily" as const,
-			priority: event.slug ? 0.7 : 0.6,
-			alternates: generateAlternates(path),
-		};
-	});
+    const eventPages = events.map((event) => ({
+        url: `${baseUrl}/events/${event.slug || event.id}`,
+        lastModified: event.updatedAt,
+        changeFrequency: "daily" as const,
+        priority: 0.7,
+        alternates: {
+            languages: Object.fromEntries(
+                routing.locales.map((locale) => [
+                    locale,
+                    locale === routing.defaultLocale
+                        ? `${baseUrl}/events/${event.slug || event.id}`
+                        : `${baseUrl}/${locale}/events/${event.slug || event.id}`,
+                ]),
+            ),
+        },
+    }));
 
-	const userRoutes = users.map((user) => {
-		const path = `/users/${user.slug ?? user.id}`;
-		return {
-			url: getCanonicalUrl(path),
-			lastModified: user.updatedAt,
-			changeFrequency: "weekly" as const,
-			priority: user.slug ? 0.6 : 0.5,
-			alternates: generateAlternates(path),
-		};
-	});
+    // Dynamic user pages
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            slug: true,
+            updatedAt: true,
+        },
+    });
 
-	// Combine all routes
-	return [...staticRoutes, ...clubRoutes, ...eventRoutes, ...userRoutes];
-}
+    const userPages = users.map((user) => ({
+        url: `${baseUrl}/users/${user.slug || user.id}`,
+        lastModified: user.updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+        alternates: {
+            languages: Object.fromEntries(
+                routing.locales.map((locale) => [
+                    locale,
+                    locale === routing.defaultLocale
+                        ? `${baseUrl}/users/${user.slug || user.id}`
+                        : `${baseUrl}/${locale}/users/${user.slug || user.id}`,
+                ]),
+            ),
+        },
+    }));
 
-// Helper function to generate language alternates for each route
-function generateAlternates(path: string) {
-	const languages: Record<string, string> = {};
-
-	for (const locale of locales) {
-		// Only include non-default locales in alternates
-		if (locale !== defaultLocale) {
-			languages[locale] = `${baseUrl}/${locale}${path}`;
-		}
-	}
-
-	return { languages };
-}
-
-// Helper function to get the canonical URL (with default locale)
-function getCanonicalUrl(path: string) {
-	return `${baseUrl}/${defaultLocale}${path}`;
+    return [...staticPages, ...clubPages, ...eventPages, ...userPages];
 }

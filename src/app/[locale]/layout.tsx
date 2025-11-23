@@ -22,123 +22,123 @@ import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 
 const geistSans = Geist({
-	fallback: ["sans-serif"],
-	subsets: ["latin"],
+    fallback: ["sans-serif"],
+    subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-	fallback: ["monospace"],
-	subsets: ["latin"],
+    fallback: ["monospace"],
+    subsets: ["latin"],
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const [user, t] = await Promise.all([isAuthenticated(), getTranslations()]);
+    const [user, t] = await Promise.all([isAuthenticated(), getTranslations()]);
 
-	const { locale } = await params;
+    const { locale } = await params;
 
-	if (!hasLocale(routing.locales, locale)) {
-		notFound();
-	}
+    if (!hasLocale(routing.locales, locale)) {
+        notFound();
+    }
 
-	const font = user?.font ? (user.font as "sans" | "mono") : "sans";
-	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
+    const font = user?.font ? (user.font as "sans" | "mono") : "sans";
+    const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
 
-	const websiteSchema = {
-		"@context": "https://schema.org",
-		"@type": "WebSite",
-		name: "Reconned",
-		description: t("public.home.metadata.description"),
-		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
-		sameAs: ["https://github.com/omznc/reconned"],
-		potentialAction: {
-			"@type": "SearchAction",
-			target: {
-				"@type": "EntryPoint",
-				urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search?q={search_term_string}`,
-			},
-			"query-input": "required name=search_term_string",
-		},
-		about: {
-			"@type": "SportsOrganization",
-			name: "Airsoft Community",
-			sport: "Airsoft",
-			description: "Platform connecting airsoft clubs and players",
-		},
-	} as WithContext<WebSite>;
+    const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Reconned",
+        description: t("public.home.metadata.description"),
+        url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+        logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+        sameAs: ["https://github.com/omznc/reconned"],
+        potentialAction: {
+            "@type": "SearchAction",
+            target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/search?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+        },
+        about: {
+            "@type": "SportsOrganization",
+            name: "Airsoft Community",
+            sport: "Airsoft",
+            description: "Platform connecting airsoft clubs and players",
+        },
+    } as WithContext<WebSite>;
 
-	const organizationSchema: WithContext<SportsOrganization> = {
-		"@context": "https://schema.org",
-		"@type": "SportsOrganization",
-		name: "Reconned",
-		sport: "Airsoft",
-		description: t("public.home.metadata.description"),
-		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
-		foundingDate: "2024",
-		address: {
-			"@type": "PostalAddress",
-			addressCountry: "BA",
-		},
-		sameAs: ["https://github.com/omznc/reconned"],
-	};
+    const organizationSchema: WithContext<SportsOrganization> = {
+        "@context": "https://schema.org",
+        "@type": "SportsOrganization",
+        name: "Reconned",
+        sport: "Airsoft",
+        description: t("public.home.metadata.description"),
+        url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+        logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+        foundingDate: "2024",
+        address: {
+            "@type": "PostalAddress",
+            addressCountry: "BA",
+        },
+        sameAs: ["https://github.com/omznc/reconned"],
+    };
 
-	return (
-		<html lang={locale} suppressHydrationWarning>
-			<head>
-				<meta name="darkreader-lock" />
-				<Script
-					defer
-					data-domain={env.PLAUSIBLE_SITE_ID}
-					src={`${env.PLAUSIBLE_HOST}/js/script.outbound-links.tagged-events.js`}
-				/>
-				<JsonLdScript data={websiteSchema} />
-				<JsonLdScript data={organizationSchema} />
-			</head>
-			<AxiomWebVitals />
-			<FontProvider initial={font}>
-				<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme={theme}
-						enableSystem={false}
-						disableTransitionOnChange
-					>
-						{/* TODO: Do we even need this? */}
-						<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-						<Toaster
-							richColors
-							toastOptions={{
-								classNames: {
-									toast: "rounded-none",
-								},
-							}}
-						/>
-						<NuqsAdapter>
-							<TooltipProvider>
-								{user?.session?.impersonatedBy && <ImpersonationAlert />}
-								<AlertDialogProvider>{children}</AlertDialogProvider>
-							</TooltipProvider>
-						</NuqsAdapter>
-					</ThemeProvider>
-				</FontBody>
-			</FontProvider>
-		</html>
-	);
+    return (
+        <html lang={locale} suppressHydrationWarning>
+            <head>
+                <meta name="darkreader-lock" />
+                <Script
+                    defer
+                    data-domain={env.PLAUSIBLE_SITE_ID}
+                    src={`${env.PLAUSIBLE_HOST}/js/script.outbound-links.tagged-events.js`}
+                />
+                <JsonLdScript data={websiteSchema} />
+                <JsonLdScript data={organizationSchema} />
+            </head>
+            <AxiomWebVitals />
+            <FontProvider initial={font}>
+                <FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme={theme}
+                        enableSystem={false}
+                        disableTransitionOnChange
+                    >
+                        {/* TODO: Do we even need this? */}
+                        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+                        <Toaster
+                            richColors
+                            toastOptions={{
+                                classNames: {
+                                    toast: "rounded-none",
+                                },
+                            }}
+                        />
+                        <NuqsAdapter>
+                            <TooltipProvider>
+                                {user?.session?.impersonatedBy && <ImpersonationAlert />}
+                                <AlertDialogProvider>{children}</AlertDialogProvider>
+                            </TooltipProvider>
+                        </NuqsAdapter>
+                    </ThemeProvider>
+                </FontBody>
+            </FontProvider>
+        </html>
+    );
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
-	return {
-		title: t("public.layout.metadata.title"),
-		description: t("public.layout.metadata.description"),
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
-		keywords: t("public.layout.metadata.keywords")
-			.split(", ")
-			.map((keyword: string) => keyword.trim()),
-	};
+    const t = await getTranslations();
+    return {
+        title: t("public.layout.metadata.title"),
+        description: t("public.layout.metadata.description"),
+        metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
+        keywords: t("public.layout.metadata.keywords")
+            .split(", ")
+            .map((keyword: string) => keyword.trim()),
+    };
 }
 
 export function generateStaticParams() {
-	return routing.locales.map((locale) => ({ locale }));
+    return routing.locales.map((locale) => ({ locale }));
 }

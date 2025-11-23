@@ -7,117 +7,117 @@ import { VerifiedClubIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generatePageLanguages } from "@/lib/utils";
+import { generateCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
 
 type ClubSearch = {
-	id: string;
-	name: string;
-	slug: string;
-	description: string;
-	logo: string;
-	verified: boolean;
-	location: string;
-	member_count: number;
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    logo: string;
+    verified: boolean;
+    location: string;
+    member_count: number;
 };
 
 export default async function Page(props: PageProps<"/[locale]/clubs">) {
-	const [searchParams, t, locale] = await Promise.all([props.searchParams, getTranslations(), getLocale()]);
-	const page = Number(searchParams.page) || 1;
-	const skip = (page - 1) * ITEMS_PER_PAGE;
+    const [searchParams, t, _locale] = await Promise.all([props.searchParams, getTranslations(), getLocale()]);
+    const page = Number(searchParams.page) || 1;
+    const skip = (page - 1) * ITEMS_PER_PAGE;
 
-	const total = await prisma.club.count({
-		where: { isPrivate: false },
-	});
+    const total = await prisma.club.count({
+        where: { isPrivate: false },
+    });
 
-	const clubs: ClubSearch[] = await prisma.$queryRaw`
-		SELECT c.id, c.name, c.slug, c.description, c.logo, c.verified, c.location, COUNT(cm.id) as member_count
-		FROM "Club" c
-		LEFT JOIN "ClubMembership" cm ON c.id = cm."clubId"
-		WHERE c."isPrivate" = false
-		GROUP BY c.id
-		ORDER BY 
-			c.verified DESC,
-			COUNT(cm.id) DESC
-		LIMIT ${ITEMS_PER_PAGE}
-		OFFSET ${skip}
-	`;
+    const clubs: ClubSearch[] = await prisma.$queryRaw`
+        SELECT c.id, c.name, c.slug, c.description, c.logo, c.verified, c.location, COUNT(cm.id) as member_count
+        FROM "Club" c
+        LEFT JOIN "ClubMembership" cm ON c.id = cm."clubId"
+        WHERE c."isPrivate" = false
+        GROUP BY c.id
+        ORDER BY 
+            c.verified DESC,
+            COUNT(cm.id) DESC
+        LIMIT ${ITEMS_PER_PAGE}
+        OFFSET ${skip}
+    `;
 
-	const itemListSchema: WithContext<ItemList> = {
-		"@context": "https://schema.org",
-		"@type": "ItemList",
-		name: t("public.clubs.metadata.title"),
-		description: t("public.clubs.metadata.description"),
-		numberOfItems: total,
-		itemListElement: clubs.map((club, index) => ({
-			"@type": "ListItem",
-			position: index + 1 + skip,
-			item: {
-				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${club.slug ?? club.id}`,
-				name: club.name,
-				description: club.description,
-				sport: "Airsoft",
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${club.slug ?? club.id}`,
-				logo: club.logo || undefined,
-				address: club.location
-					? {
-							"@type": "PostalAddress",
-							addressLocality: club.location,
-						}
-					: undefined,
-				memberOf: club.verified
-					? {
-							"@type": "Organization",
-							name: "Verified Airsoft Clubs",
-						}
-					: undefined,
-			},
-		})),
-	};
+    const itemListSchema: WithContext<ItemList> = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: t("public.clubs.metadata.title"),
+        description: t("public.clubs.metadata.description"),
+        numberOfItems: total,
+        itemListElement: clubs.map((club, index) => ({
+            "@type": "ListItem",
+            position: index + 1 + skip,
+            item: {
+                "@type": "SportsOrganization",
+                "@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+                name: club.name,
+                description: club.description,
+                sport: "Airsoft",
+                url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+                logo: club.logo || undefined,
+                address: club.location
+                    ? {
+                            "@type": "PostalAddress",
+                            addressLocality: club.location,
+                        }
+                    : undefined,
+                memberOf: club.verified
+                    ? {
+                            "@type": "Organization",
+                            name: "Verified Airsoft Clubs",
+                        }
+                    : undefined,
+            },
+        })),
+    };
 
-	return (
-		<div className="container max-w-4xl py-8 space-y-8 px-4">
-			<JsonLdScript data={itemListSchema} />
-			<h1 className="text-2xl font-bold">{t("public.clubs.title")}</h1>
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{clubs.map((club) => (
-					<SearchResultCard
-						key={club.id}
-						type="club"
-						image={club.logo}
-						title={
-							<span className="flex gap-2 items-center">
-								{club.name} {club.verified && <VerifiedClubIcon />}
-							</span>
-						}
-						description={club.description}
-						href={`/clubs/${club.slug ?? club.id}`}
-						badges={[
-							`${club.member_count} ${club.member_count === 1 ? t("public.clubs.member") : t("public.clubs.members")}`,
-						]}
-						meta={club.location || undefined}
-					/>
-				))}
-			</div>
-			<Pagination totalItems={total} itemsPerPage={ITEMS_PER_PAGE} />
-		</div>
-	);
+    return (
+        <div className="container max-w-4xl py-8 space-y-8 px-4">
+            <JsonLdScript data={itemListSchema} />
+            <h1 className="text-2xl font-bold">{t("public.clubs.title")}</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {clubs.map((club) => (
+                    <SearchResultCard
+                        key={club.id}
+                        type="club"
+                        image={club.logo}
+                        title={
+                            <span className="flex gap-2 items-center">
+                                {club.name} {club.verified && <VerifiedClubIcon />}
+                            </span>
+                        }
+                        description={club.description}
+                        href={`/clubs/${club.slug ?? club.id}`}
+                        badges={[
+                            `${club.member_count} ${club.member_count === 1 ? t("public.clubs.member") : t("public.clubs.members")}`,
+                        ]}
+                        meta={club.location || undefined}
+                    />
+                ))}
+            </div>
+            <Pagination totalItems={total} itemsPerPage={ITEMS_PER_PAGE} />
+        </div>
+    );
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+    const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
 
-	return {
-		title: t("public.clubs.metadata.title"),
-		description: t("public.clubs.metadata.description"),
-		keywords: t("public.clubs.metadata.keywords")
-			.split(",")
-			.map((keyword: string) => keyword.trim()),
-		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs`,
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
-		},
-	};
+    return {
+        title: t("public.clubs.metadata.title"),
+        description: t("public.clubs.metadata.description"),
+        keywords: t("public.clubs.metadata.keywords")
+            .split(",")
+            .map((keyword: string) => keyword.trim()),
+        alternates: {
+            canonical: generateCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
+            languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
+        },
+    };
 }
