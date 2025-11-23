@@ -68,11 +68,13 @@ export function SecuritySettings({
 				{passkeys.map((passkey) => (
 					<Alert key={passkey.id} className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>{passkey.name ?? "Passkey"}</AlertTitle>
+							<AlertTitle>
+								{passkey.name ?? t("dashboard.security.securitySettings.defaultPasskeyName")}
+							</AlertTitle>
 							<AlertDescription>
 								{/* Kreiran{" "}
-								{passkey.createdAt &&
-									formatDate(passkey.createdAt, "dd.MM.yyyy")} */}
+                                {passkey.createdAt &&
+                                    formatDate(passkey.createdAt, "dd.MM.yyyy")} */}
 								{t("createdAt", {
 									date: passkey.createdAt && formatDate(passkey.createdAt, "dd.MM.yyyy"),
 								})}
@@ -298,7 +300,9 @@ export function SecuritySettings({
 													const url = window.URL.createObjectURL(blob);
 													const a = document.createElement("a");
 													a.href = url;
-													a.download = "rezervni-kodovi.txt";
+													a.download = t(
+														"dashboard.security.securitySettings.backupCodesFilename",
+													);
 													a.click();
 													window.URL.revokeObjectURL(url);
 												}}
@@ -374,7 +378,9 @@ export function SecuritySettings({
 											<code
 												onClick={() => {
 													navigator.clipboard.writeText(code);
-													toast.success("Kopirano u clipboard.");
+													toast.success(
+														t("dashboard.security.securitySettings.copiedToClipboard"),
+													);
 												}}
 												key={code}
 												className="grow cursor-pointer text-center bg-sidebar blur-sm hover:blur-none transition-all p-2 font-mono"
@@ -429,7 +435,9 @@ export function SecuritySettings({
 											},
 											onError: () => {
 												setIsLoading(false);
-												toast.error("Neispavna lozinka, pokušajte ponovo.");
+												toast.error(
+													t("dashboard.security.securitySettings.invalidPasswordTryAgain"),
+												);
 											},
 										},
 									);
@@ -560,7 +568,8 @@ export function SecuritySettings({
 									<Icon className="w-8 h-8" />
 									<div className="flex flex-col">
 										<AlertTitle className="flex items-center gap-2">
-											{session.userAgent?.split("/")[0] || "Nepoznat uređaj"}
+											{session.userAgent?.split("/")[0] ||
+												t("dashboard.security.securitySettings.unknownDevice")}
 											{session.isCurrentSession && (
 												<span className="text-xs border bg-background text-primary px-2 py-1">
 													{t("dashboard.security.securitySettings.currentSession")}
