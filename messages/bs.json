@@ -763,7 +763,13 @@
 				"logoutSingleSuccess": "Odjavljeni ste sa ovog uređaja",
 				"logoutSingleError": "Došlo je do greške prilikom odjavljivanja sa ovog uređaja.",
 				"currentSession": "Trenutna sesija",
-				"sessionLastUsed": "Posljednji put korištena {date}"
+				"sessionLastUsed": "Posljednji put korištena {date}",
+				"defaultPasskeyName": "Pristupni ključ",
+				"unknownDevice": "Nepoznat uređaj",
+				"copiedToClipboard": "Kopirano u clipboard.",
+				"backupCodesFilename": "rezervni-kodovi.txt",
+				"invalidPasswordTryAgain": "Neispravna lozinka, pokušajte ponovo.",
+				"enable": "Omogući"
 			}
 		},
 		"events": {
