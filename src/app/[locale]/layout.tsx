@@ -3,7 +3,6 @@ import "./globals.css";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 import { AxiomWebVitals } from "next-axiom";
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -87,11 +86,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		<html lang={locale} suppressHydrationWarning>
 			<head>
 				<meta name="darkreader-lock" />
-				<Script
-					defer
-					data-domain={env.PLAUSIBLE_SITE_ID}
-					src={`${env.PLAUSIBLE_HOST}/js/script.outbound-links.tagged-events.js`}
-				/>
 				<JsonLdScript data={websiteSchema} />
 				<JsonLdScript data={organizationSchema} />
 			</head>

@@ -2,6 +2,7 @@
 import type { User } from "better-auth";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
+import posthog from "posthog-js";
 import { Logo } from "@/components/logos/logo";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
@@ -81,6 +82,7 @@ export function Header({ user }: { user: User | null }) {
 												fetchOptions: {
 													onSuccess: () => {
 														router.push("/login");
+														posthog.reset();
 													},
 												},
 											});

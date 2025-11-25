@@ -2,6 +2,7 @@
 import type { User } from "better-auth";
 import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
 import { useTranslations } from "next-intl";
+import posthog from "posthog-js";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
@@ -105,6 +106,7 @@ export function UserSwitcher(props: { user: User }) {
 										fetchOptions: {
 											onSuccess: () => {
 												router.push("/login");
+												posthog.reset();
 											},
 										},
 									});
