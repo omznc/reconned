@@ -19,6 +19,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
+import PosthogIdentify from "@/components/posthog-identify";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -89,6 +90,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 				<JsonLdScript data={websiteSchema} />
 				<JsonLdScript data={organizationSchema} />
 			</head>
+			<PosthogIdentify />
 			<AxiomWebVitals />
 			<FontProvider initial={font}>
 				<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
