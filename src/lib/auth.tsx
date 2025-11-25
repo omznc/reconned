@@ -1,12 +1,11 @@
 import { render } from "@react-email/components";
 import { betterAuth, logger } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin, captcha, createAuthMiddleware, lastLoginMethod, oneTap, twoFactor } from "better-auth/plugins";
+import { admin, captcha, lastLoginMethod, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { emailHarmony } from "better-auth-harmony";
 import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
-import posthog from "posthog-js";
 import { cache } from "react";
 import { sendEmailVerificationAction } from "@/app/[locale]/(auth)/_actions/send-email-verification.action";
 import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
@@ -199,18 +198,6 @@ export const auth = betterAuth({
 				},
 			},
 		},
-	},
-	hooks: {
-		after: createAuthMiddleware(async (ctx) => {
-			if (!ctx.context.newSession?.user) {
-				return;
-			}
-
-			posthog.identify(ctx.context.newSession?.user.id, {
-				email: ctx.context.newSession?.user.email,
-				name: ctx.context.newSession?.user.name,
-			});
-		}),
 	},
 });
 
