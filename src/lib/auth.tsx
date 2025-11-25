@@ -1,11 +1,12 @@
 import { render } from "@react-email/components";
 import { betterAuth, logger } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin, captcha, lastLoginMethod, oneTap, twoFactor } from "better-auth/plugins";
+import { admin, captcha, createAuthMiddleware, lastLoginMethod, oneTap, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { emailHarmony } from "better-auth-harmony";
 import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
+import posthog from "posthog-js";
 import { cache } from "react";
 import { sendEmailVerificationAction } from "@/app/[locale]/(auth)/_actions/send-email-verification.action";
 import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
@@ -179,29 +180,10 @@ export const auth = betterAuth({
 					}
 				},
 			},
-			// On create send an event to plausible
 			create: {
 				after: async (user) => {
 					const t = await getTranslations("auth");
 
-					await fetch(`${env.PLAUSIBLE_HOST}/api/event`, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-							"User-Agent": "Reconned",
-							Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`,
-						},
-						body: JSON.stringify({
-							name: "signup",
-							url: "https://reconned.com/register",
-							domain: "reconned.com",
-							properties: {
-								distinct_id: user.id,
-								email: user.email,
-								name: user.name,
-							},
-						}),
-					});
 					if (env.NTFY_ENDPOINT) {
 						await fetch(env.NTFY_ENDPOINT, {
 							method: "POST",
@@ -217,6 +199,18 @@ export const auth = betterAuth({
 				},
 			},
 		},
+	},
+	hooks: {
+		after: createAuthMiddleware(async (ctx) => {
+			if (!ctx.context.newSession?.user) {
+				return;
+			}
+
+			posthog.identify(ctx.context.newSession?.user.id, {
+				email: ctx.context.newSession?.user.email,
+				name: ctx.context.newSession?.user.name,
+			});
+		}),
 	},
 });
 

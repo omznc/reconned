@@ -32,36 +32,7 @@ const nextConfig = {
 		serverComponentsHmrCache: true,
 	},
 	images: {
-		// remotePatterns: [
-		// 	{
-		// 		protocol: "https",
-		// 		hostname: "s3-airsoft.omarzunic.com",
-		// 	},
-		// 	{
-		// 		protocol: "https",
-		// 		hostname: "cdn.reconned.com",
-		// 	},
-		// 	{
-		// 		protocol: "https",
-		// 		hostname: "cdn-beta.reconned.com",
-		// 	},
-		// 	{
-		// 		protocol: "https",
-		// 		hostname: "lh3.googleusercontent.com",
-		// 	},
-		// 	{
-		// 		protocol: "https",
-		// 		hostname: "i.imgur.com",
-		// 	},
-		// 	{
-		// 		protocol: "https",
-		// 		hostname: "*.cdninstagram.com",
-		// 	},
-		// 	{
-		// 		protocol: "https",
-		// 		hostname: "*.fbcdn.net",
-		// 	},
-		// ],
+		// remotePatterns: [ ... ],
 		loader: "custom",
 		loaderFile: "./image-loader.ts",
 		qualities: [50, 75, 100],
@@ -90,6 +61,19 @@ const nextConfig = {
 			},
 		];
 	},
+	async rewrites() {
+		return [
+			{
+				source: "/prophecy/static/:path*",
+				destination: "https://eu-assets.i.posthog.com/static/:path*",
+			},
+			{
+				source: "/prophecy/:path*",
+				destination: "https://eu.i.posthog.com/:path*",
+			},
+		];
+	},
+	skipTrailingSlashRedirect: true,
 } as NextConfig;
 
 export default withAxiom(withNextIntl(nextConfig));
