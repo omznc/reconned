@@ -1,9 +1,9 @@
 "use client";
 
 import { authClient } from "@auth/client";
+import type { Passkey } from "@better-auth/passkey";
 import { Button } from "@components/ui/button";
 import type { Session } from "@generated/client";
-import type { Passkey } from "better-auth/plugins/passkey";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { bs } from "date-fns/locale";
 import { Dice5, Download, KeyRound, Laptop, ShieldQuestion, Smartphone, Tablet, Trash2 } from "lucide-react";

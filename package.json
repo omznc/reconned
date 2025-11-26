@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"@adamscybot/react-leaflet-component-marker": "^2.0.3",
+		"@better-auth/passkey": "^1.4.1",
 		"@geoman-io/leaflet-geoman-free": "^2.18.3",
 		"@hookform/resolvers": "^5.2.2",
 		"@icons-pack/react-simple-icons": "^13.8.0",
