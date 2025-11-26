@@ -105,11 +105,13 @@ jobs:
         run: |
           curl -s -X POST "https://coolify.omarzunic.com/api/v1/deploy?uuid=c4w40o4wgsgkc4ck40skgw8k&force=false" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
 
       - name: Trigger Coolify deployment for main
         if: github.ref_name == 'main'
         run: |
           curl -s -X POST "https://coolify.omarzunic.com/api/v1/deploy?uuid=h40oksokkcgs40k00osk4ccw&force=false" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
