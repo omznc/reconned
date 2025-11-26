@@ -59,25 +59,25 @@ const nextConfig = {
 				destination: "https://scout.reconned.com/share/reconned.com?auth=Z_HrtmMkcNRQ1zcVm4iky",
 				permanent: true,
 			},
+		];
+	},
+	async rewrites() {
+		return [
 			{
 				source: `/:locale(${localesString})/warmind/static/:path*`,
 				destination: "https://eu-assets.i.posthog.com/static/:path*",
-				permanent: true,
 			},
 			{
 				source: `/:locale(${localesString})/warmind/:path*`,
 				destination: "https://eu.i.posthog.com/:path*",
-				permanent: true,
 			},
 			{
 				source: "/warmind/static/:path*",
 				destination: "https://eu-assets.i.posthog.com/static/:path*",
-				permanent: true,
 			},
 			{
 				source: "/warmind/:path*",
 				destination: "https://eu.i.posthog.com/:path*",
-				permanent: true,
 			},
 		];
 	},
