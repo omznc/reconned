@@ -1462,6 +1462,7 @@
 			"goToToday": "Go to today",
 			"previousMonth": "Previous month",
 			"nextMonth": "Next month",
+			"createEventOnDate": "Create event on {date}",
 			"days": {
 				"mon": "Mon",
 				"tue": "Tue",

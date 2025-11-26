@@ -24,7 +24,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
-import { Fragment, useEffect, useMemo } from "react";
+import { Fragment, type KeyboardEvent, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 import { VerifiedClubIcon } from "@/components/icons";
@@ -55,6 +55,7 @@ export function EventCalendar(props: EventCalendarProps) {
 	});
 	const [message, setMessage] = useQueryState("message");
 	const session = useIsAuthenticated();
+	const isDashboardCalendar = Boolean(params.clubId);
 
 	useEffect(() => {
 		if (!(session.loading || session?.user)) {
@@ -207,6 +208,25 @@ export function EventCalendar(props: EventCalendarProps) {
 	const handlePreviousMonth = () => setCurrentDate(subMonths(currentDate, 1));
 	const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
 	const handleToday = () => setCurrentDate(new Date());
+
+	const handleDayClick = (day: Date) => {
+		if (!isDashboardCalendar || !params.clubId) {
+			return;
+		}
+
+		router.push(`/dashboard/${params.clubId}/events/create?date=${formatDateFns(day, "yyyy-MM-dd")}`);
+	};
+
+	const handleDayKeyDown = (event: KeyboardEvent<HTMLDivElement>, day: Date) => {
+		if (!isDashboardCalendar) {
+			return;
+		}
+
+		if (event.key === "Enter" || event.key === " ") {
+			event.preventDefault();
+			handleDayClick(day);
+		}
+	};
 
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();

@@ -1460,6 +1460,7 @@
 			"goToToday": "Idi na trenutni mjesec",
 			"previousMonth": "Prethodni mjesec",
 			"nextMonth": "Sljedeći mjesec",
+			"createEventOnDate": "Kreiraj susret za {date}",
 			"days": {
 				"mon": "Pon",
 				"tue": "Uto",
