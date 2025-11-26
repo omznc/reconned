@@ -36,6 +36,8 @@ on:
         required: false
       NEXT_PUBLIC_AXIOM_TOKEN:
         required: false
+      COOLIFY_API_KEY:
+        required: false
 
 env:
   REGISTRY: ghcr.io
@@ -105,3 +107,19 @@ jobs:
             NEXT_PUBLIC_AXIOM_DATASET=${{ secrets.NEXT_PUBLIC_AXIOM_DATASET }}
             NEXT_PUBLIC_AXIOM_TOKEN=${{ secrets.NEXT_PUBLIC_AXIOM_TOKEN }}
             CI=true
+
+      - name: Trigger Coolify deployment (ARM builds only)
+        if: success() && inputs.tag-suffix == 'arm64'
+        run: |
+          if [ "${{ github.ref_name }}" = "dev" ]; then
+            COOLIFY_URL="https://coolify.omarzunic.com/api/v1/deploy?uuid=c4w40o4wgsgkc4ck40skgw8k&force=false"
+          elif [ "${{ github.ref_name }}" = "main" ]; then
+            COOLIFY_URL="https://coolify.omarzunic.com/api/v1/deploy?uuid=h40oksokkcgs40k00osk4ccw&force=false"
+          else
+            echo "Skipping Coolify deployment for branch: ${{ github.ref_name }}"
+            exit 0
+          fi
+
+          curl -s -X POST "$COOLIFY_URL" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}" \
+            -H "Content-Type: application/json" > /dev/null

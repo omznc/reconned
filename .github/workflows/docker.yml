@@ -48,6 +48,7 @@ jobs:
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
       NEXT_PUBLIC_AXIOM_DATASET: ${{ secrets.NEXT_PUBLIC_AXIOM_DATASET }}
       NEXT_PUBLIC_AXIOM_TOKEN: ${{ secrets.NEXT_PUBLIC_AXIOM_TOKEN }}
+      COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
 
   create-manifest:
     runs-on: ubuntu-latest
