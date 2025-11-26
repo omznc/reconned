@@ -60,12 +60,22 @@ const nextConfig = {
 				permanent: true,
 			},
 			{
-				source: `/:locale(${localesString})/ingest/static/:path*`,
+				source: `/:locale(${localesString})/warmind/static/:path*`,
 				destination: "https://eu-assets.i.posthog.com/static/:path*",
 				permanent: true,
 			},
 			{
-				source: `/:locale(${localesString})/ingest/:path*`,
+				source: `/:locale(${localesString})/warmind/:path*`,
+				destination: "https://eu.i.posthog.com/:path*",
+				permanent: true,
+			},
+			{
+				source: "/warmind/static/:path*",
+				destination: "https://eu-assets.i.posthog.com/static/:path*",
+				permanent: true,
+			},
+			{
+				source: "/warmind/:path*",
 				destination: "https://eu.i.posthog.com/:path*",
 				permanent: true,
 			},
