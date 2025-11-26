@@ -62,10 +62,12 @@ const nextConfig = {
 			{
 				source: `/:locale(${localesString})/ingest/static/:path*`,
 				destination: "https://eu-assets.i.posthog.com/static/:path*",
+				permanent: true,
 			},
 			{
 				source: `/:locale(${localesString})/ingest/:path*`,
 				destination: "https://eu.i.posthog.com/:path*",
+				permanent: true,
 			},
 		];
 	},

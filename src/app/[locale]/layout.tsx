@@ -14,12 +14,12 @@ import { ImpersonationAlert } from "@/components/impersonation-alert";
 import JsonLdScript from "@/components/json-ld-script";
 import { FontProvider } from "@/components/personalization/font/font-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
+import PosthogIdentify from "@/components/posthog-identify";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
-import PosthogIdentify from "@/components/posthog-identify";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
