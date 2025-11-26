@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     with:
       platform: linux/arm64
-      runner: ubuntu-latest-arm64
+      runner: ubuntu-24.04-arm64
       tag-suffix: arm64
     secrets:
       REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
