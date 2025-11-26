@@ -48,7 +48,6 @@ jobs:
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
       NEXT_PUBLIC_AXIOM_DATASET: ${{ secrets.NEXT_PUBLIC_AXIOM_DATASET }}
       NEXT_PUBLIC_AXIOM_TOKEN: ${{ secrets.NEXT_PUBLIC_AXIOM_TOKEN }}
-      COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
 
   create-manifest:
     runs-on: ubuntu-latest
@@ -94,3 +93,23 @@ jobs:
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-amd64 \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-arm64
           fi
+
+  trigger-coolify:
+    runs-on: ubuntu-latest
+    needs: [create-manifest]
+    if: success()
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: Trigger Coolify deployment for dev
+        if: github.ref_name == 'dev'
+        run: |
+          curl -s -X POST "https://coolify.omarzunic.com/api/v1/deploy?uuid=c4w40o4wgsgkc4ck40skgw8k&force=false" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}" \
+            -H "Content-Type: application/json"
+
+      - name: Trigger Coolify deployment for main
+        if: github.ref_name == 'main'
+        run: |
+          curl -s -X POST "https://coolify.omarzunic.com/api/v1/deploy?uuid=h40oksokkcgs40k00osk4ccw&force=false" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}" \
+            -H "Content-Type: application/json"
