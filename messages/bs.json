@@ -953,7 +953,9 @@
 					"personalAccount": "Instagram račun povezan sa odabranom Facebook stranicom nije Business račun. Potrebno je koristiti Instagram Business račun za povezivanje."
 				},
 				"descriptionPlaceholder": "Ovo je kul opis",
-				"mustSaveClubFirst": "Spremite informacije o klubu prije dodavanja logo-a."
+				"mustSaveClubFirst": "Spremite informacije o klubu prije dodavanja logo-a.",
+				"cropBannerTitle": "Izreži banner sliku",
+				"cropBannerDescription": "Podesite oblast rezanja za vaš banner (odnos 3:1) i kliknite sačuvaj da primijenite promjene"
 			},
 			"posts": {
 				"successEdited": "Objava uspješno izmjenjena",
