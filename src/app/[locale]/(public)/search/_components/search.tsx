@@ -12,11 +12,16 @@ export function Search() {
 		clearOnDefault: true,
 		defaultValue: "",
 	});
+	const [, setPage] = useQueryState("page", {
+		shallow: false,
+		clearOnDefault: true,
+	});
 	const [input, setInput] = useState(query);
 	const t = useTranslations();
 
-	const handleSearch = useDebouncedCallback((value: string) => {
-		setQuery(value);
+	const handleSearch = useDebouncedCallback(async (value: string) => {
+		await setQuery(value);
+		await setPage(null);
 	}, 300);
 
 	return (
@@ -27,6 +32,7 @@ export function Search() {
 				handleSearch(e.target.value);
 			}}
 			placeholder={t("public.search.placeholder")}
+			className="bg-background"
 		/>
 	);
 }
