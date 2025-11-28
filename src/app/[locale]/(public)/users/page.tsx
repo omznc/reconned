@@ -21,6 +21,8 @@ type UserSearch = {
 
 const ITEMS_PER_PAGE = 12;
 
+export const dynamic = "force-dynamic";
+
 export default async function Page(props: PageProps<"/[locale]/users">) {
 	const [searchParams, t, locale] = await Promise.all([props.searchParams, getTranslations(), getLocale()]);
 	const page = Number(searchParams.page) || 1;
@@ -31,15 +33,15 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 	});
 
 	const users: UserSearch[] = await prisma.$queryRaw`
-		SELECT *
-		FROM "User"
-		WHERE "isPrivate" = false
-		ORDER BY 
-			CASE WHEN role = 'admin' THEN 0 ELSE 1 END,
-			"createdAt" DESC
-		LIMIT ${ITEMS_PER_PAGE}
-		OFFSET ${skip}
-	`;
+        SELECT *
+        FROM "User"
+        WHERE "isPrivate" = false
+        ORDER BY 
+            CASE WHEN role = 'admin' THEN 0 ELSE 1 END,
+            "createdAt" DESC
+        LIMIT ${ITEMS_PER_PAGE}
+        OFFSET ${skip}
+    `;
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",

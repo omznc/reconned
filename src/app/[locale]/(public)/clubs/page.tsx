@@ -11,6 +11,8 @@ import { generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
 
+export const dynamic = "force-dynamic";
+
 type ClubSearch = {
 	id: string;
 	name: string;
@@ -32,17 +34,17 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	});
 
 	const clubs: ClubSearch[] = await prisma.$queryRaw`
-		SELECT c.id, c.name, c.slug, c.description, c.logo, c.verified, c.location, COUNT(cm.id) as member_count
-		FROM "Club" c
-		LEFT JOIN "ClubMembership" cm ON c.id = cm."clubId"
-		WHERE c."isPrivate" = false
-		GROUP BY c.id
-		ORDER BY 
-			c.verified DESC,
-			COUNT(cm.id) DESC
-		LIMIT ${ITEMS_PER_PAGE}
-		OFFSET ${skip}
-	`;
+        SELECT c.id, c.name, c.slug, c.description, c.logo, c.verified, c.location, COUNT(cm.id) as member_count
+        FROM "Club" c
+        LEFT JOIN "ClubMembership" cm ON c.id = cm."clubId"
+        WHERE c."isPrivate" = false
+        GROUP BY c.id
+        ORDER BY 
+            c.verified DESC,
+            COUNT(cm.id) DESC
+        LIMIT ${ITEMS_PER_PAGE}
+        OFFSET ${skip}
+    `;
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",
