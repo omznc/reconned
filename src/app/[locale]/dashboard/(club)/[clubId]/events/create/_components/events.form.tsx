@@ -2,7 +2,7 @@
 
 import type { ClubRule, Event } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { differenceInDays, format } from "date-fns";
+import { addDays, differenceInDays, format, subHours } from "date-fns";
 import { bs } from "date-fns/locale";
 import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
@@ -50,6 +50,7 @@ const MapComponent = dynamic(() => import("@/components/map-component").then((m)
 interface CreateEventFormProps {
 	event: Event | null;
 	rules: ClubRule[];
+	prefillDate?: Date | null;
 }
 
 export default function CreateEventForm(props: CreateEventFormProps) {
@@ -178,14 +179,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const router = useRouter();
 	const clubId = useParams<{ clubId: string }>().clubId;
 
-	const startDate = new Date();
-	startDate.setDate(startDate.getDate() + 15);
-
-	const endDate = new Date(startDate);
-	endDate.setDate(endDate.getDate() + 1);
-
-	const registrationCloseDate = new Date(startDate);
-	registrationCloseDate.setHours(registrationCloseDate.getHours() - 2);
+	const defaultStartDate = props.event?.dateStart ?? props.prefillDate ?? addDays(new Date(), 15);
+	const defaultEndDate = props.event?.dateEnd ?? addDays(defaultStartDate, 1);
+	const defaultRegistrationCloseDate = props.event?.dateRegistrationsClose ?? subHours(defaultStartDate, 2);
 
 	const defaultFormValues = {
 		eventId: props.event?.id || "",
@@ -195,10 +191,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		costPerPerson: props.event?.costPerPerson || 0,
 		location: props.event?.location || "",
 		googleMapsLink: props.event?.googleMapsLink || "",
-		dateStart: props.event?.dateStart || startDate,
-		dateEnd: props.event?.dateEnd || endDate,
+		dateStart: defaultStartDate,
+		dateEnd: defaultEndDate,
 		dateRegistrationsOpen: props.event?.dateRegistrationsOpen || new Date(),
-		dateRegistrationsClose: props.event?.dateRegistrationsClose || registrationCloseDate,
+		dateRegistrationsClose: defaultRegistrationCloseDate,
 		image: props.event?.image || "",
 		isPrivate: props.event?.isPrivate,
 		allowFreelancers: props.event?.allowFreelancers,
@@ -224,6 +220,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			sessionStorage.removeItem("createEventForm");
 			return;
 		}
+
+		if (props.prefillDate) {
+			return;
+		}
+
 		const savedFormData = sessionStorage.getItem("createEventForm");
 		if (savedFormData) {
 			try {
@@ -243,7 +244,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				sessionStorage.removeItem("createEventForm");
 			}
 		}
-	}, []);
+	}, [form, logger, props.event?.id, props.prefillDate]);
 
 	useEffect(() => {
 		const subscription = form.watch((value, { name }) => {
@@ -257,11 +258,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					return;
 				}
 
-				const newEndDate = new Date(startDate);
-				newEndDate.setDate(newEndDate.getDate() + 1);
-
-				const newRegistrationCloseDate = new Date(startDate);
-				newRegistrationCloseDate.setHours(newRegistrationCloseDate.getHours() - 2);
+				const newEndDate = addDays(startDate, 1);
+				const newRegistrationCloseDate = subHours(startDate, 2);
 
 				form.setValue("dateEnd", newEndDate, { shouldValidate: true });
 				form.setValue("dateRegistrationsClose", newRegistrationCloseDate, {
