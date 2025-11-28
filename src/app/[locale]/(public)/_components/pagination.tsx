@@ -8,11 +8,12 @@ interface PaginationOptions {
 	totalItems: number;
 	itemsPerPage: number;
 	siblingsCount?: number;
+	paramKey?: string;
 }
 
-export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1 }: PaginationOptions) {
+export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1, paramKey = "page" }: PaginationOptions) {
 	const [currentPage, setPage] = useQueryState(
-		"page",
+		paramKey,
 		parseAsInteger.withDefault(1).withOptions({
 			shallow: false,
 		}),
