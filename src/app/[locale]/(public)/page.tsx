@@ -26,6 +26,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
+import { getManagedClubsWithNames } from "@/app/api/club/managed/get-managed-clubs-with-names";
 import { EventCalendar } from "@/components/event-calendar";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,8 @@ export const revalidate = 3600; // 1 hour
 export default async function Home(props: PageProps<"/[locale]">) {
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
+
+	const managedClubs = user ? await getManagedClubsWithNames(user.id) : [];
 
 	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
@@ -352,7 +355,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 						))}
 					</div>
 				</div>
-				<EventCalendar events={events} />
+				<EventCalendar events={events} managedClubs={managedClubs.length > 0 ? managedClubs : undefined} />
 			</div>
 		</>
 	);

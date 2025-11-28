@@ -1463,6 +1463,10 @@
 			"previousMonth": "Previous month",
 			"nextMonth": "Next month",
 			"createEventOnDate": "Create event on {date}",
+			"selectClub": {
+				"title": "Select a club",
+				"description": "Choose which club should create this event."
+			},
 			"days": {
 				"mon": "Mon",
 				"tue": "Tue",
