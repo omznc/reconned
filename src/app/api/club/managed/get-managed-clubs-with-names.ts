@@ -14,6 +14,7 @@ export const getManagedClubsWithNames = async (userId: string) => {
 			club: {
 				select: {
 					name: true,
+					logo: true,
 				},
 			},
 		},
@@ -22,5 +23,6 @@ export const getManagedClubsWithNames = async (userId: string) => {
 	return clubs.map((club) => ({
 		id: club.clubId,
 		name: club.club.name,
+		logo: club.club.logo,
 	}));
 };

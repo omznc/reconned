@@ -19,7 +19,7 @@ import {
 	subMonths,
 } from "date-fns";
 import { bs, enUS } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Square } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -28,8 +28,17 @@ import { Fragment, type KeyboardEvent, useEffect, useMemo, useState } from "reac
 import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 import { VerifiedClubIcon } from "@/components/icons";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Credenza,
+	CredenzaBody,
+	CredenzaContent,
+	CredenzaDescription,
+	CredenzaHeader,
+	CredenzaTitle,
+} from "@/components/ui/credenza";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -39,7 +48,7 @@ interface EventCalendarProps {
 		club: { name: string; verified: boolean };
 		image?: string | null;
 	})[];
-	managedClubs?: Array<{ id: string; name: string }>;
+	managedClubs?: Array<{ id: string; name: string; logo: string | null }>;
 }
 
 type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "sep" | "oct" | "nov" | "dec";
@@ -60,8 +69,22 @@ export function EventCalendar(props: EventCalendarProps) {
 	const isDashboardCalendar = Boolean(params.clubId);
 	const [clubSelectorOpen, setClubSelectorOpen] = useState(false);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+	const [searchQuery, setSearchQuery] = useState("");
 
 	const canCreateEvent = isDashboardCalendar || (props.managedClubs && props.managedClubs.length > 0);
+
+	const filteredClubs = useMemo(() => {
+		if (!props.managedClubs) {
+			return [];
+		}
+
+		if (!searchQuery.trim()) {
+			return props.managedClubs;
+		}
+
+		const query = searchQuery.toLowerCase();
+		return props.managedClubs.filter((club) => club.name.toLowerCase().includes(query));
+	}, [props.managedClubs, searchQuery]);
 
 	useEffect(() => {
 		if (!(session.loading || session?.user)) {
@@ -258,6 +281,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		setClubSelectorOpen(open);
 		if (!open) {
 			setSelectedDate(null);
+			setSearchQuery("");
 		}
 	};
 
@@ -269,6 +293,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		router.push(`/dashboard/${clubId}/events/create?date=${formatDateFns(selectedDate, "yyyy-MM-dd")}`);
 		setClubSelectorOpen(false);
 		setSelectedDate(null);
+		setSearchQuery("");
 	};
 
 	return (
@@ -550,26 +575,60 @@ export function EventCalendar(props: EventCalendarProps) {
 			</div>
 
 			{props.managedClubs && props.managedClubs.length > 1 && (
-				<Dialog open={clubSelectorOpen} onOpenChange={handleClubSelectorOpenChange}>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>{t("components.calendar.selectClub.title")}</DialogTitle>
-							<DialogDescription>{t("components.calendar.selectClub.description")}</DialogDescription>
-						</DialogHeader>
-						<div className="flex flex-col gap-2 mt-4">
-							{props.managedClubs.map((club) => (
-								<Button
-									key={club.id}
-									variant="outline"
-									onClick={() => handleClubSelection(club.id)}
-									className="justify-start"
-								>
-									{club.name}
-								</Button>
-							))}
-						</div>
-					</DialogContent>
-				</Dialog>
+				<Credenza open={clubSelectorOpen} onOpenChange={handleClubSelectorOpenChange}>
+					<CredenzaContent className="max-w-md">
+						<CredenzaHeader>
+							<CredenzaTitle>{t("components.calendar.selectClub.title")}</CredenzaTitle>
+							<CredenzaDescription>{t("components.calendar.selectClub.description")}</CredenzaDescription>
+						</CredenzaHeader>
+						<CredenzaBody className="space-y-4">
+							<Input
+								type="text"
+								placeholder={t("components.calendar.selectClub.searchPlaceholder")}
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								className="w-full"
+							/>
+							<ScrollArea className={cn("w-full", props.managedClubs.length > 4 && "h-[300px]")}>
+								<div className="flex flex-col gap-2">
+									{filteredClubs.length === 0 ? (
+										<div className="text-center text-sm text-muted-foreground py-8">
+											{t("components.calendar.selectClub.noResults")}
+										</div>
+									) : (
+										filteredClubs.map((club) => (
+											<Button
+												key={club.id}
+												variant="outline"
+												onClick={() => handleClubSelection(club.id)}
+												className="justify-start h-auto py-3 px-4"
+											>
+												<div className="flex items-center gap-3 w-full">
+													<div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-muted shrink-0">
+														{club.logo ? (
+															<Image
+																width={40}
+																height={40}
+																src={club.logo}
+																alt={club.name}
+																className="rounded-lg object-cover"
+															/>
+														) : (
+															<Square className="size-5 text-muted-foreground" />
+														)}
+													</div>
+													<span className="text-left font-medium truncate flex-1">
+														{club.name}
+													</span>
+												</div>
+											</Button>
+										))
+									)}
+								</div>
+							</ScrollArea>
+						</CredenzaBody>
+					</CredenzaContent>
+				</Credenza>
 			)}
 		</div>
 	);

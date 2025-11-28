@@ -1463,7 +1463,9 @@
 			"createEventOnDate": "Kreiraj susret za {date}",
 			"selectClub": {
 				"title": "Odaberi klub",
-				"description": "Odaberi koji klub treba da kreira ovaj susret."
+				"description": "Odaberi koji klub treba da kreira ovaj susret.",
+				"searchPlaceholder": "Pretraži klubove...",
+				"noResults": "Nema klubova"
 			},
 			"days": {
 				"mon": "Pon",
