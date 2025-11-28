@@ -378,8 +378,7 @@ export function EventCalendar(props: EventCalendarProps) {
 												isSameMonth(day, currentDate) ? "" : "text-muted-foreground",
 												getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
 												isSameDay(day, new Date()) ? "bg-accent" : "",
-												canCreateEvent &&
-													"cursor-pointer hover:bg-sidebar/50 transition-colors",
+												canCreateEvent && "cursor-pointer hover:bg-sidebar transition-colors",
 											)}
 											style={{
 												minHeight: `${weekHeight}rem`,
@@ -576,7 +575,7 @@ export function EventCalendar(props: EventCalendarProps) {
 
 			{props.managedClubs && props.managedClubs.length > 1 && (
 				<Credenza open={clubSelectorOpen} onOpenChange={handleClubSelectorOpenChange}>
-					<CredenzaContent className="max-w-md">
+					<CredenzaContent className="md:max-w-md">
 						<CredenzaHeader>
 							<CredenzaTitle>{t("components.calendar.selectClub.title")}</CredenzaTitle>
 							<CredenzaDescription>{t("components.calendar.selectClub.description")}</CredenzaDescription>
@@ -604,7 +603,7 @@ export function EventCalendar(props: EventCalendarProps) {
 												className="justify-start h-auto py-3 px-4"
 											>
 												<div className="flex items-center gap-3 w-full">
-													<div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-muted shrink-0">
+													<div className="flex aspect-square size-10 items-center justify-center rounded-lgshrink-0">
 														{club.logo ? (
 															<Image
 																width={40}
