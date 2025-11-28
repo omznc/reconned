@@ -1,3 +1,4 @@
+import { parse as parseDateFns } from "date-fns";
 import { notFound } from "next/navigation";
 import CreateEventForm from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.form";
 import { isAuthenticated } from "@/lib/auth";
@@ -26,5 +27,9 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		},
 	});
 
-	return <CreateEventForm event={existingEvent} rules={rules} />;
+	// Parse initial date from search params if provided
+	const parsedDate = searchParams?.date ? parseDateFns(searchParams.date as string, "yyyy-MM-dd", new Date()) : null;
+	const prefillDate = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate : null;
+
+	return <CreateEventForm event={existingEvent} rules={rules} prefillDate={prefillDate} />;
 }

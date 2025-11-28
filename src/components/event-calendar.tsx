@@ -19,16 +19,26 @@ import {
 	subMonths,
 } from "date-fns";
 import { bs, enUS } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Square } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
-import { Fragment, useEffect, useMemo } from "react";
+import { Fragment, type KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 import { VerifiedClubIcon } from "@/components/icons";
+import {
+	Credenza,
+	CredenzaBody,
+	CredenzaContent,
+	CredenzaDescription,
+	CredenzaHeader,
+	CredenzaTitle,
+} from "@/components/ui/credenza";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -38,6 +48,7 @@ interface EventCalendarProps {
 		club: { name: string; verified: boolean };
 		image?: string | null;
 	})[];
+	managedClubs?: Array<{ id: string; name: string; logo: string | null }>;
 }
 
 type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "sep" | "oct" | "nov" | "dec";
@@ -55,6 +66,25 @@ export function EventCalendar(props: EventCalendarProps) {
 	});
 	const [message, setMessage] = useQueryState("message");
 	const session = useIsAuthenticated();
+	const isDashboardCalendar = Boolean(params.clubId);
+	const [clubSelectorOpen, setClubSelectorOpen] = useState(false);
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const canCreateEvent = isDashboardCalendar || (props.managedClubs && props.managedClubs.length > 0);
+
+	const filteredClubs = useMemo(() => {
+		if (!props.managedClubs) {
+			return [];
+		}
+
+		if (!searchQuery.trim()) {
+			return props.managedClubs;
+		}
+
+		const query = searchQuery.toLowerCase();
+		return props.managedClubs.filter((club) => club.name.toLowerCase().includes(query));
+	}, [props.managedClubs, searchQuery]);
 
 	useEffect(() => {
 		if (!(session.loading || session?.user)) {
@@ -208,11 +238,62 @@ export function EventCalendar(props: EventCalendarProps) {
 	const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
 	const handleToday = () => setCurrentDate(new Date());
 
+	const handleDayClick = (day: Date) => {
+		const formattedDate = formatDateFns(day, "yyyy-MM-dd");
+
+		if (isDashboardCalendar && params.clubId) {
+			router.push(`/dashboard/${params.clubId}/events/create?date=${formattedDate}`);
+			return;
+		}
+
+		if (!props.managedClubs || props.managedClubs.length === 0) {
+			return;
+		}
+
+		if (props.managedClubs.length === 1) {
+			router.push(`/dashboard/${props.managedClubs[0]?.id}/events/create?date=${formattedDate}`);
+			return;
+		}
+
+		setSelectedDate(day);
+		setClubSelectorOpen(true);
+	};
+
+	const handleDayKeyDown = (event: KeyboardEvent<HTMLDivElement>, day: Date) => {
+		if (!isDashboardCalendar && !(props.managedClubs && props.managedClubs.length > 0)) {
+			return;
+		}
+
+		if (event.key === "Enter" || event.key === " ") {
+			event.preventDefault();
+			handleDayClick(day);
+		}
+	};
+
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();
 		return (
 			isAfter(now, new Date(event.dateRegistrationsOpen)) && isBefore(now, new Date(event.dateRegistrationsClose))
 		);
+	};
+
+	const handleClubSelectorOpenChange = (open: boolean) => {
+		setClubSelectorOpen(open);
+		if (!open) {
+			setSelectedDate(null);
+			setSearchQuery("");
+		}
+	};
+
+	const handleClubSelection = (clubId: string) => {
+		if (!selectedDate) {
+			return;
+		}
+
+		router.push(`/dashboard/${clubId}/events/create?date=${formatDateFns(selectedDate, "yyyy-MM-dd")}`);
+		setClubSelectorOpen(false);
+		setSelectedDate(null);
+		setSearchQuery("");
 	};
 
 	return (
@@ -274,197 +355,280 @@ export function EventCalendar(props: EventCalendarProps) {
 
 						return (
 							<Fragment key={week.map((day) => day.toISOString()).join()}>
-								{week.map((day) => (
-									<div
-										key={day.toISOString()}
-										className={cn(
-											"border-b border-r p-1",
-											"flex flex-col",
-											isSameMonth(day, currentDate) ? "" : "text-muted-foreground",
-											getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
-											isSameDay(day, new Date()) ? "bg-accent" : "", // Add this line to highlight today
-										)}
-										style={{
-											minHeight: `${weekHeight}rem`,
-										}}
-									>
+								{week.map((day) => {
+									const interactiveProps = canCreateEvent
+										? {
+												role: "button" as const,
+												tabIndex: 0,
+												onClick: () => handleDayClick(day),
+												onKeyDown: (event: KeyboardEvent<HTMLDivElement>) =>
+													handleDayKeyDown(event, day),
+												"aria-label": t("components.calendar.createEventOnDate", {
+													date: format(day, "d. MMMM yyyy", { locale: bs }),
+												}),
+											}
+										: {};
+
+									return (
 										<div
+											key={day.toISOString()}
 											className={cn(
-												"font-medium mb-1",
-												isSameDay(day, new Date()) ? "text-accent-foreground" : "", // Add this line to style today's text
+												"border-b border-r p-1",
+												"flex flex-col",
+												isSameMonth(day, currentDate) ? "" : "text-muted-foreground",
+												getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
+												isSameDay(day, new Date()) ? "bg-accent" : "",
+												canCreateEvent && "cursor-pointer hover:bg-sidebar transition-colors",
 											)}
+											style={{
+												minHeight: `${weekHeight}rem`,
+											}}
+											{...interactiveProps}
 										>
-											{format(day, "d", { locale: bs })}
-										</div>
-										<div className="flex-1 relative">
-											{Array.from(new Set(getEventsForDay(day))).map((event) => {
-												const display = getEventDisplayProperties(event, day, week);
-												if (!display || !display.shouldRender) {
-													return null;
-												}
+											<div
+												className={cn(
+													"font-medium mb-1",
+													isSameDay(day, new Date()) ? "text-accent-foreground" : "",
+												)}
+											>
+												{format(day, "d", { locale: bs })}
+											</div>
+											<div className="flex-1 relative">
+												{Array.from(new Set(getEventsForDay(day))).map((event) => {
+													const display = getEventDisplayProperties(event, day, week);
+													if (!display || !display.shouldRender) {
+														return null;
+													}
 
-												return (
-													<HoverCard key={event.id} openDelay={300}>
-														<HoverCardTrigger>
-															<Button
-																onClick={() => {
-																	router.push(getEventUrl(event));
-																}}
-																variant="ghost"
-																style={{
-																	position: "absolute",
-																	zIndex: eventPositions.get(event.id) ?? 1,
-																	left: 0,
-																	width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
-																	top: `${(eventPositions.get(event.id) ?? 0) * 32}px`,
-																	height: "28px",
-																}}
-																className={cn(
-																	"text-left px-2 py-1 text-xs font-medium text-background",
-																	"bg-primary hover:bg-primary/90 hover:text-background",
-																	{
-																		"rounded-l-none": !display.isStart,
-																		"rounded-r-none": !display.isEnd,
-																	},
-																)}
-															>
-																{format(event.dateStart, "HH:mm", {
-																	locale: bs,
-																})}
-																{event.dateEnd &&
-																	` - ${format(event.dateEnd, "HH:mm", {
+													return (
+														<HoverCard key={event.id} openDelay={300}>
+															<HoverCardTrigger>
+																<Button
+																	onClick={(clickEvent) => {
+																		clickEvent.stopPropagation();
+																		router.push(getEventUrl(event));
+																	}}
+																	variant="ghost"
+																	style={{
+																		position: "absolute",
+																		zIndex: eventPositions.get(event.id) ?? 1,
+																		left: 0,
+																		width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
+																		top: `${(eventPositions.get(event.id) ?? 0) * 32}px`,
+																		height: "28px",
+																	}}
+																	className={cn(
+																		"text-left px-2 py-1 text-xs font-medium text-background",
+																		"bg-primary hover:bg-primary/90 hover:text-background",
+																		{
+																			"rounded-l-none": !display.isStart,
+																			"rounded-r-none": !display.isEnd,
+																		},
+																	)}
+																>
+																	{format(event.dateStart, "HH:mm", {
 																		locale: bs,
-																	})}`}{" "}
-																{event.name}
-															</Button>
-														</HoverCardTrigger>
-														<HoverCardContent
-															align="center"
-															side="left"
-															className="w-80 bg-sidebar"
-														>
-															{event.image && (
-																<Image
-																	width={200}
-																	height={200}
-																	src={event.image}
-																	alt={event.name}
-																	className="object-cover w-full h-auto mb-2"
-																/>
-															)}
-															<div className="space-y-3">
-																<div>
-																	<h4 className="font-semibold">{event.name}</h4>
-																	<p className="text-sm flex items-center gap-2 text-muted-foreground">
-																		{event.club.name}{" "}
-																		{event.club.verified && <VerifiedClubIcon />}
-																	</p>
-																</div>
-
-																<div className="text-sm space-y-1">
-																	<div className="grid grid-cols-[auto_1fr] gap-2">
-																		<span className="font-medium">
-																			{t(
-																				"components.calendar.eventDetails.start",
+																	})}
+																	{event.dateEnd &&
+																		` - ${format(event.dateEnd, "HH:mm", {
+																			locale: bs,
+																		})}`}{" "}
+																	{event.name}
+																</Button>
+															</HoverCardTrigger>
+															<HoverCardContent
+																align="center"
+																side="left"
+																className="w-80 bg-sidebar"
+															>
+																{event.image && (
+																	<Image
+																		width={200}
+																		height={200}
+																		src={event.image}
+																		alt={event.name}
+																		className="object-cover w-full h-auto mb-2"
+																	/>
+																)}
+																<div className="space-y-3">
+																	<div>
+																		<h4 className="font-semibold">{event.name}</h4>
+																		<p className="text-sm flex items-center gap-2 text-muted-foreground">
+																			{event.club.name}{" "}
+																			{event.club.verified && (
+																				<VerifiedClubIcon />
 																			)}
-																			:
-																		</span>
-																		<span>
-																			{format(
-																				event.dateStart,
-																				"d. MMMM yyyy. HH:mm",
-																				{
-																					locale: bs,
-																				},
-																			)}
-																		</span>
-
-																		{event.dateEnd && (
-																			<>
-																				<span className="font-medium">
-																					{t(
-																						"components.calendar.eventDetails.end",
-																					)}
-																					:
-																				</span>
-																				<span>
-																					{format(
-																						event.dateEnd,
-																						"d. MMMM yyyy. HH:mm",
-																						{
-																							locale: bs,
-																						},
-																					)}
-																				</span>
-																			</>
-																		)}
-
-																		{event.location && (
-																			<>
-																				<span className="font-medium">
-																					{t(
-																						"components.calendar.eventDetails.location",
-																					)}
-																					:
-																				</span>
-																				<span>{event.location}</span>
-																			</>
-																		)}
-
-																		{event?.costPerPerson && (
-																			<>
-																				<span className="font-medium">
-																					{t(
-																						"components.calendar.eventDetails.cost",
-																					)}
-																					:
-																				</span>
-																				<span>{event.costPerPerson} KM</span>
-																			</>
-																		)}
-																	</div>
-																</div>
-
-																{event.description && (
-																	<div className="text-sm border-t pt-2">
-																		<p className="text-muted-foreground">
-																			{event.description}
 																		</p>
 																	</div>
-																)}
 
-																{canApplyToEvent(event) ? (
-																	<Button
-																		variant="default"
-																		className="w-full mt-2"
-																		onClick={() => {
-																			router.push(`/events/${event.id}/apply`);
-																		}}
-																	>
-																		<Plus className="h-4 w-4 mr-2" />
-																		{t("components.calendar.eventDetails.apply")}
-																		<BadgeSoon className="ml-2" />
-																	</Button>
-																) : (
-																	<p className="text-sm text-muted-foreground text-center mt-2">
-																		{t(
-																			"components.calendar.eventDetails.registrationsClosed",
-																		)}
-																	</p>
-																)}
-															</div>
-														</HoverCardContent>
-													</HoverCard>
-												);
-											})}
+																	<div className="text-sm space-y-1">
+																		<div className="grid grid-cols-[auto_1fr] gap-2">
+																			<span className="font-medium">
+																				{t(
+																					"components.calendar.eventDetails.start",
+																				)}
+																				:
+																			</span>
+																			<span>
+																				{format(
+																					event.dateStart,
+																					"d. MMMM yyyy. HH:mm",
+																					{
+																						locale: bs,
+																					},
+																				)}
+																			</span>
+
+																			{event.dateEnd && (
+																				<>
+																					<span className="font-medium">
+																						{t(
+																							"components.calendar.eventDetails.end",
+																						)}
+																						:
+																					</span>
+																					<span>
+																						{format(
+																							event.dateEnd,
+																							"d. MMMM yyyy. HH:mm",
+																							{
+																								locale: bs,
+																							},
+																						)}
+																					</span>
+																				</>
+																			)}
+
+																			{event.location && (
+																				<>
+																					<span className="font-medium">
+																						{t(
+																							"components.calendar.eventDetails.location",
+																						)}
+																						:
+																					</span>
+																					<span>{event.location}</span>
+																				</>
+																			)}
+
+																			{event?.costPerPerson && (
+																				<>
+																					<span className="font-medium">
+																						{t(
+																							"components.calendar.eventDetails.cost",
+																						)}
+																						:
+																					</span>
+																					<span>
+																						{event.costPerPerson} KM
+																					</span>
+																				</>
+																			)}
+																		</div>
+																	</div>
+
+																	{event.description && (
+																		<div className="text-sm border-t pt-2">
+																			<p className="text-muted-foreground">
+																				{event.description}
+																			</p>
+																		</div>
+																	)}
+
+																	{canApplyToEvent(event) ? (
+																		<Button
+																			variant="default"
+																			className="w-full mt-2"
+																			onClick={() => {
+																				router.push(
+																					`/events/${event.id}/apply`,
+																				);
+																			}}
+																		>
+																			<Plus className="h-4 w-4 mr-2" />
+																			{t(
+																				"components.calendar.eventDetails.apply",
+																			)}
+																			<BadgeSoon className="ml-2" />
+																		</Button>
+																	) : (
+																		<p className="text-sm text-muted-foreground text-center mt-2">
+																			{t(
+																				"components.calendar.eventDetails.registrationsClosed",
+																			)}
+																		</p>
+																	)}
+																</div>
+															</HoverCardContent>
+														</HoverCard>
+													);
+												})}
+											</div>
 										</div>
-									</div>
-								))}
+									);
+								})}
 							</Fragment>
 						);
 					})}
 				</div>
 			</div>
+
+			{props.managedClubs && props.managedClubs.length > 1 && (
+				<Credenza open={clubSelectorOpen} onOpenChange={handleClubSelectorOpenChange}>
+					<CredenzaContent className="md:max-w-md">
+						<CredenzaHeader>
+							<CredenzaTitle>{t("components.calendar.selectClub.title")}</CredenzaTitle>
+							<CredenzaDescription>{t("components.calendar.selectClub.description")}</CredenzaDescription>
+						</CredenzaHeader>
+						<CredenzaBody className="space-y-4">
+							<Input
+								type="text"
+								placeholder={t("components.calendar.selectClub.searchPlaceholder")}
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								className="w-full"
+							/>
+							<ScrollArea className={cn("w-full", props.managedClubs.length > 4 && "h-[300px]")}>
+								<div className="flex flex-col gap-2">
+									{filteredClubs.length === 0 ? (
+										<div className="text-center text-sm text-muted-foreground py-8">
+											{t("components.calendar.selectClub.noResults")}
+										</div>
+									) : (
+										filteredClubs.map((club) => (
+											<Button
+												key={club.id}
+												variant="outline"
+												onClick={() => handleClubSelection(club.id)}
+												className="justify-start h-auto py-3 px-4"
+											>
+												<div className="flex items-center gap-3 w-full">
+													<div className="flex aspect-square size-10 items-center justify-center rounded-lgshrink-0">
+														{club.logo ? (
+															<Image
+																width={40}
+																height={40}
+																src={club.logo}
+																alt={club.name}
+																className="rounded-lg object-cover"
+															/>
+														) : (
+															<Square className="size-5 text-muted-foreground" />
+														)}
+													</div>
+													<span className="text-left font-medium truncate flex-1">
+														{club.name}
+													</span>
+												</div>
+											</Button>
+										))
+									)}
+								</div>
+							</ScrollArea>
+						</CredenzaBody>
+					</CredenzaContent>
+				</Credenza>
+			)}
 		</div>
 	);
 }
