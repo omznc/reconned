@@ -1,3 +1,4 @@
+import { Role } from "@generated/client";
 import {
 	addMonths,
 	endOfMonth,
@@ -42,6 +43,34 @@ export const revalidate = 3600; // 1 hour
 export default async function Home(props: PageProps<"/[locale]">) {
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
+
+	const managedClubs = user
+		? await prisma.clubMembership
+				.findMany({
+					where: {
+						userId: user.id,
+						role: {
+							in: [Role.CLUB_OWNER, Role.MANAGER],
+						},
+					},
+					select: {
+						clubId: true,
+						club: {
+							select: {
+								name: true,
+								logo: true,
+							},
+						},
+					},
+				})
+				.then((clubs) =>
+					clubs.map((club) => ({
+						id: club.clubId,
+						name: club.club.name,
+						logo: club.club.logo,
+					})),
+				)
+		: [];
 
 	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
@@ -352,7 +381,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 						))}
 					</div>
 				</div>
-				<EventCalendar events={events} />
+				<EventCalendar events={events} managedClubs={managedClubs.length > 0 ? managedClubs : undefined} />
 			</div>
 		</>
 	);

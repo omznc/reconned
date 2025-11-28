@@ -1462,6 +1462,13 @@
 			"goToToday": "Go to today",
 			"previousMonth": "Previous month",
 			"nextMonth": "Next month",
+			"createEventOnDate": "Create event on {date}",
+			"selectClub": {
+				"title": "Select a club",
+				"description": "Choose which club should create this event.",
+				"searchPlaceholder": "Search clubs...",
+				"noResults": "No clubs found"
+			},
 			"days": {
 				"mon": "Mon",
 				"tue": "Tue",
