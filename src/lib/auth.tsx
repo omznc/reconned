@@ -117,7 +117,11 @@ export const auth = betterAuth({
 			},
 			theme: {
 				type: "string",
-				default: "dark",
+				required: false,
+			},
+			style: {
+				type: "string",
+				default: "relaxed",
 				input: true,
 				required: false,
 			},

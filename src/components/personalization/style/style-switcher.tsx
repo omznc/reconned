@@ -2,21 +2,21 @@
 
 import { Square, SquareRoundCorner } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRoundness } from "@/components/personalization/roundness/roundness-provider";
+import { useStyle } from "@/components/personalization/style/style-provider";
 import { Button } from "@/components/ui/button";
 
-export function RoundnessSwitcher() {
-	const { roundness, setRoundness } = useRoundness();
+export function StyleSwitcher() {
+	const { style, setStyle } = useStyle();
 	const t = useTranslations();
 
 	return (
 		<Button
 			variant="ghost"
-			onClick={() => setRoundness(roundness === "relaxed" ? "sharp" : "relaxed")}
+			onClick={() => setStyle(style === "relaxed" ? "sharp" : "relaxed")}
 			suppressHydrationWarning
 			className="w-full items-center justify-start cursor-pointer shadow-none"
 		>
-			{roundness === "relaxed" ? (
+			{style === "relaxed" ? (
 				<SquareRoundCorner className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 			) : (
 				<Square className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />

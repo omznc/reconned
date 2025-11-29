@@ -13,7 +13,7 @@ import { FontBody } from "@/components/font-body";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import JsonLdScript from "@/components/json-ld-script";
 import { FontProvider } from "@/components/personalization/font/font-provider";
-import { RoundnessProvider } from "@/components/personalization/roundness/roundness-provider";
+import { StyleProvider } from "@/components/personalization/style/style-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import PosthogIdentify from "@/components/posthog-identify";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
@@ -42,7 +42,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	}
 
 	const font = user?.font ? (user.font as "sans" | "mono") : "mono";
-	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
+	const style = user?.style ? (user.style as "sharp" | "relaxed") : "relaxed";
 
 	const websiteSchema = {
 		"@context": "https://schema.org",
@@ -94,7 +94,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 			<PosthogIdentify />
 			<AxiomWebVitals />
 			<FontProvider initial={font}>
-				<RoundnessProvider>
+				<StyleProvider initial={style}>
 					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
 						<ThemeProvider
 							attribute="class"
@@ -120,7 +120,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 							</NuqsAdapter>
 						</ThemeProvider>
 					</FontBody>
-				</RoundnessProvider>
+				</StyleProvider>
 			</FontProvider>
 		</html>
 	);
