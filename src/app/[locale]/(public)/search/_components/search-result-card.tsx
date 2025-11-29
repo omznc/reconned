@@ -19,17 +19,22 @@ interface SearchResultCardProps {
 
 export function SearchResultCard({ title, description, href, badges, meta, image, type }: SearchResultCardProps) {
 	return (
-		<Link href={href} className="block group">
-			<Card className="relative overflow-hidden transition-all hover:border-red-500 border bg-sidebar">
-				<div className="flex flex-col md:flex-row gap-4">
+		<Link href={href} className="block group h-full">
+			<Card className="relative overflow-hidden transition-all hover:border-red-500 border bg-sidebar h-full flex flex-col">
+				<div
+					className={cn("flex gap-4 flex-1", {
+						"flex-col md:flex-row": type === "club" || type === "event",
+						"flex-row": type === "user",
+					})}
+				>
 					<div
-						className={cn(
-							"relative w-full md:w-[150px] h-[200px] md:h-[150px] shrink-0 md:border-r overflow-hidden",
-							{
-								"bg-muted": !image,
-								"p-2": type === "club",
-							},
-						)}
+						className={cn("relative shrink-0 overflow-hidden", {
+							"w-[100px] md:w-[150px] h-[100px] md:h-[150px] rounded-md md:border-r": type === "user",
+							"w-full md:w-[150px] h-[200px] md:h-full md:border-r": type === "club" || type === "event",
+							"bg-muted": !image,
+							"p-2": type === "club",
+							"flex items-center justify-center": type === "club",
+						})}
 					>
 						{image ? (
 							<Image
@@ -37,7 +42,10 @@ export function SearchResultCard({ title, description, href, badges, meta, image
 								alt={typeof title === "string" ? title : "Image"}
 								width={IMAGE_SIZES.THUMBNAIL}
 								height={IMAGE_SIZES.THUMBNAIL}
-								className="object-contain h-full"
+								className={cn({
+									"object-contain h-full w-full": type === "club",
+									"object-cover w-full h-full": type === "event" || type === "user",
+								})}
 							/>
 						) : (
 							<div className="w-full h-full bg-muted grid place-items-center">
@@ -52,18 +60,20 @@ export function SearchResultCard({ title, description, href, badges, meta, image
 						)}
 					</div>
 
-					<div className="flex-1 p-4 pr-12">
-						<CardTitle className="text-lg mb-2">{title}</CardTitle>
+					<div className="flex-1 p-4 pr-12 flex flex-col min-w-0 overflow-hidden">
+						<CardTitle className="text-lg mb-2 line-clamp-2 break-all">{title}</CardTitle>
 						{description && (
-							<CardDescription className="line-clamp-2 mb-3 text-ellipsis">{description}</CardDescription>
+							<CardDescription className="line-clamp-2 mb-3 break-all overflow-hidden">
+								{description}
+							</CardDescription>
 						)}
-						<div className="flex flex-wrap items-center gap-2">
+						<div className="flex flex-wrap items-center gap-2 mt-auto">
 							{badges?.map((badge) => (
 								<Badge key={badge} variant="outline" className="bg-background/50">
 									{badge}
 								</Badge>
 							))}
-							{meta && <span className="text-sm text-muted-foreground">{meta}</span>}
+							{meta && <span className="text-sm text-muted-foreground break-all">{meta}</span>}
 						</div>
 					</div>
 

@@ -54,7 +54,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 						alt={event.name}
 						width={680}
 						height={380}
-						className="absolute aspect-video top-0 object-cover transition-all w-full h-auto"
+						className="absolute aspect-video rounded-md top-0 object-cover transition-all w-full h-auto"
 						draggable={false}
 						priority={true}
 					/>
@@ -62,7 +62,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 			)}
 			<div
 				className={cn({
-					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
+					"peer-hover:opacity-25 peer-hover:mt-[50%] rounded-md z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
 						event.image,
 					"border p-4 bg-background w-full flex flex-col gap-1": !event.image,
 				})}
@@ -101,7 +101,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							{event.name}
 						</h1>
 					</div>
-					<div className="flex flex-wrap -mt-2">
+					<div className="flex flex-wrap -mt-2 gap-2">
 						<Badge className="flex h-fit items-center gap-1">
 							<UserIcon className="size-4" />
 							{t("components.eventOverview.registeredCount", {
@@ -138,7 +138,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 									src={event.googleMapsLink}
 									loading="lazy"
 									referrerPolicy="no-referrer-when-downgrade"
-									className="w-full h-96 border"
+									className="w-full h-96 border rounded-md"
 									title="Google Maps"
 								/>
 							</LoadChildOnClick>
