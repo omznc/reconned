@@ -14,7 +14,7 @@ export default async function RootLayout({
 	const user = await isAuthenticated({ bypassCache: true });
 	const t = await getTranslations();
 
-	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta");
+	const isBeta = env.NEXT_PUBLIC_BETA ?? false;
 
 	return (
 		<>
