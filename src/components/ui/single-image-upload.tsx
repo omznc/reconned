@@ -105,7 +105,7 @@ export function SingleImageUpload({
             <div
                 {...getRootProps()}
                 className={cn(
-                    "group relative flex cursor-pointer items-center justify-center border-2 border-dashed bg-muted transition hover:border-primary hover:bg-primary/5",
+                    "group relative rounded-md flex cursor-pointer items-center justify-center border-2 border-dashed bg-muted transition hover:border-primary hover:bg-primary/5",
                     variantStyles[variant],
                     {
                         "ring-2 ring-primary": isDragActive,
@@ -115,8 +115,8 @@ export function SingleImageUpload({
             >
                 <input {...getInputProps()} />
                 {displayUrl ? (
-                    <div className={cn("absolute inset-0 overflow-hidden")}>
-                        <img src={displayUrl} alt={file?.name || ""} className={cn("h-full w-full", {
+                    <div className={cn("absolute inset-0 overflow-hidden rounded-md")}>
+                        <img src={displayUrl} alt={file?.name || ""} className={cn("h-full w-full rounded-md", {
                             "object-cover": variant !== 'logo',
                             "object-contain": variant === 'logo',
                         })} />
@@ -131,7 +131,7 @@ export function SingleImageUpload({
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center text-center text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center text-center text-muted-foreground rounded-md">
                         <Upload className="mb-2 h-6 w-6" />
                         <p className="text-sm font-medium text-foreground">
                             {t("components.singleImageUpload.uploadImage")}
@@ -152,7 +152,7 @@ export function SingleImageUpload({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="h-8 p-0 bg-transparent hover:bg-transparent w-fit gap-1  text-muted-foreground hover:text-destructive"
+                    className="h-8 p-0 shadow-none! bg-transparent hover:bg-transparent w-fit gap-1 text-muted-foreground hover:text-destructive"
                     onClick={handleRemove}
                     disabled={disabled}
                 >

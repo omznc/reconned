@@ -16,6 +16,7 @@ import { SetupPasswordForm } from "@/app/[locale]/dashboard/(user)/user/security
 import { BadgeSoon } from "@/components/badge-soon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePrompt } from "@/components/ui/alert-dialog-provider";
+import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -553,7 +554,7 @@ export function SecuritySettings({
 					</AlertDescription>
 				</Alert>
 			)}
-			<ScrollArea className="max-h-[400px] border overflow-y-auto">
+			<ScrollArea className="max-h-[400px] border rounded-md overflow-y-auto">
 				<div className="p-4 space-y-2">
 					{sessions.map((session) => {
 						const Icon = getDeviceIcon(session.userAgent ?? undefined);
@@ -561,19 +562,17 @@ export function SecuritySettings({
 							<Alert
 								key={session.id}
 								className={cn("flex flex-col md:flex-row gap-1 justify-between -z-0", {
-									"bg-primary/10": session.isCurrentSession,
+									"bg-sidebar": session.isCurrentSession,
 								})}
 							>
 								<div className="flex gap-4 items-center">
 									<Icon className="w-8 h-8" />
-									<div className="flex flex-col">
-										<AlertTitle className="flex items-center gap-2">
+									<div className="flex flex-col gap-1">
+										<AlertTitle className="flex items-center gap-4 w-full ">
 											{session.userAgent?.split("/")[0] ||
 												t("dashboard.security.securitySettings.unknownDevice")}
 											{session.isCurrentSession && (
-												<span className="text-xs border bg-background text-primary px-2 py-1">
-													{t("dashboard.security.securitySettings.currentSession")}
-												</span>
+												<Badge>{t("dashboard.security.securitySettings.currentSession")}</Badge>
 											)}
 										</AlertTitle>
 										<AlertDescription>

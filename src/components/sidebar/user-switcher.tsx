@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import posthog from "posthog-js";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { RoundnessSwitcher } from "@/components/personalization/roundness/roundness-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,13 +36,11 @@ export function UserSwitcher(props: { user: User }) {
 							size="lg"
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
-							<Avatar key={user?.image} className="h-8 w-8 rounded-lg">
+							<Avatar key={user?.image} className="h-8 w-8">
 								{user?.image && user.image.length > 0 && (
 									<AvatarImage src={user?.image} alt={user?.name} />
 								)}
-								<AvatarFallback className="rounded-lg">
-									{user?.name?.charAt(0).toUpperCase()}
-								</AvatarFallback>
+								<AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-semibold">{user?.name}</span>
@@ -95,6 +94,9 @@ export function UserSwitcher(props: { user: User }) {
 							<FontSwitcher />
 						</DropdownMenuItem>
 						<DropdownMenuItem asChild={true}>
+							<RoundnessSwitcher />
+						</DropdownMenuItem>
+						<DropdownMenuItem asChild={true}>
 							<LanguageSwitcher />
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
@@ -112,7 +114,7 @@ export function UserSwitcher(props: { user: User }) {
 									});
 								}}
 								suppressHydrationWarning
-								className="w-full items-center justify-start cursor-pointer"
+								className="w-full items-center justify-start pl-4 cursor-pointer"
 							>
 								<LogOut className="w-4 h-4" />
 								{t("components.sidebar.logout")}

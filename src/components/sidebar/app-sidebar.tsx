@@ -89,7 +89,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const invites = props.inviteRequestsCount.filter((invite) => invite.id === clubId)[0];
 
 	return (
-		<Sidebar collapsible="icon" variant="floating">
+		<Sidebar collapsible="icon" variant="inset">
 			<SidebarHeader>
 				<ClubSwitcher clubs={props.clubs} user={props.user} />
 				<SearchButton isMac={isMac} />

@@ -6,6 +6,7 @@ import posthog from "posthog-js";
 import { Logo } from "@/components/logos/logo";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { RoundnessSwitcher } from "@/components/personalization/roundness/roundness-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -56,11 +57,9 @@ export function Header({ user }: { user: User | null }) {
 						</Button>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild={true}>
-								<Avatar className="size-10 cursor-pointer border rounded-none select-none">
+								<Avatar className="size-10 cursor-pointer border select-none">
 									<AvatarImage src={user?.image ?? ""} alt={user?.name} />
-									<AvatarFallback className="rounded-none">
-										{user?.name?.charAt(0).toUpperCase()}
-									</AvatarFallback>
+									<AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="mr-4" sideOffset={12}>
@@ -71,6 +70,9 @@ export function Header({ user }: { user: User | null }) {
 
 								<DropdownMenuItem asChild={true}>
 									<FontSwitcher />
+								</DropdownMenuItem>
+								<DropdownMenuItem asChild={true}>
+									<RoundnessSwitcher />
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 

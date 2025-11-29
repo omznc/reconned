@@ -13,6 +13,7 @@ import { FontBody } from "@/components/font-body";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import JsonLdScript from "@/components/json-ld-script";
 import { FontProvider } from "@/components/personalization/font/font-provider";
+import { RoundnessProvider } from "@/components/personalization/roundness/roundness-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import PosthogIdentify from "@/components/posthog-identify";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
@@ -40,7 +41,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		notFound();
 	}
 
-	const font = user?.font ? (user.font as "sans" | "mono") : "sans";
+	const font = user?.font ? (user.font as "sans" | "mono") : "mono";
 	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
 
 	const websiteSchema = {
@@ -93,31 +94,33 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 			<PosthogIdentify />
 			<AxiomWebVitals />
 			<FontProvider initial={font}>
-				<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme={theme}
-						enableSystem={false}
-						disableTransitionOnChange
-					>
-						{/* TODO: Do we even need this? */}
-						<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-						<Toaster
-							richColors
-							toastOptions={{
-								classNames: {
-									toast: "rounded-none",
-								},
-							}}
-						/>
-						<NuqsAdapter>
-							<TooltipProvider>
-								{user?.session?.impersonatedBy && <ImpersonationAlert />}
-								<AlertDialogProvider>{children}</AlertDialogProvider>
-							</TooltipProvider>
-						</NuqsAdapter>
-					</ThemeProvider>
-				</FontBody>
+				<RoundnessProvider>
+					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme={theme}
+							enableSystem={false}
+							disableTransitionOnChange
+						>
+							{/* TODO: Do we even need this? */}
+							<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+							<Toaster
+								richColors
+								toastOptions={{
+									classNames: {
+										toast: "rounded-none",
+									},
+								}}
+							/>
+							<NuqsAdapter>
+								<TooltipProvider>
+									{user?.session?.impersonatedBy && <ImpersonationAlert />}
+									<AlertDialogProvider>{children}</AlertDialogProvider>
+								</TooltipProvider>
+							</NuqsAdapter>
+						</ThemeProvider>
+					</FontBody>
+				</RoundnessProvider>
 			</FontProvider>
 		</html>
 	);
