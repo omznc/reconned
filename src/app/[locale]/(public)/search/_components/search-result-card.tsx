@@ -25,7 +25,10 @@ export function SearchResultCard({ title, description, href, badges, meta, image
 					<div
 						className={cn(
 							"relative w-full md:w-[150px] h-[200px] md:h-[150px] shrink-0 md:border-r overflow-hidden",
-							!image && "bg-muted",
+							{
+								"bg-muted": !image,
+								"p-2": type === "club",
+							},
 						)}
 					>
 						{image ? (

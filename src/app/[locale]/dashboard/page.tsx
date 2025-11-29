@@ -115,7 +115,7 @@ export default async function DashboardPage() {
 							<Link
 								key={membership.club.id}
 								href={`/dashboard/${membership.club.id}/club`}
-								className="relative overflow-hidden bg-sidebar border border-transparent transition-all hover:border-accent"
+								className="relative overflow-hidden bg-sidebar hover:bg-accent  rounded-md border transition-all"
 							>
 								<div className="relative space-y-4 p-6">
 									{/* Club Header */}

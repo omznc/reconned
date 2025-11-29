@@ -305,7 +305,7 @@ export function GenericDataTable<T>({
 			const badgeClass =
 				config.badgeVariants?.[value as string] ?? config.badgeVariants?.default ?? "bg-primary/10";
 			return (
-				<span className={`px-2 py-1 text-xs ${badgeClass}`}>
+				<span className={`px-2 py-1 text-xs rounded-md ${badgeClass}`}>
 					{config.valueMap?.[value as string] ?? config.valueMap?.default ?? value}
 				</span>
 			);

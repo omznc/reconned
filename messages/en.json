@@ -1403,7 +1403,8 @@
 				"map": "Map",
 				"search": "Search",
 				"about": "About us",
-				"stats": "Statistics"
+				"stats": "Statistics",
+				"sponsors": "Sponsors"
 			},
 			"community": {
 				"title": "Community"
@@ -1446,6 +1447,9 @@
 		},
 		"fontSwitcher": {
 			"toggle": "Change font"
+		},
+		"roundnessSwitcher": {
+			"toggle": "Change style"
 		},
 		"languageSwitcher": {
 			"select": "Choose a language"

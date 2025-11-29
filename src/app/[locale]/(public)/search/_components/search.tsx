@@ -26,6 +26,7 @@ export function Search() {
 				setInput(e.target.value);
 				handleSearch(e.target.value);
 			}}
+			className="bg-background"
 			placeholder={t("public.search.placeholder")}
 		/>
 	);

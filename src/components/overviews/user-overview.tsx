@@ -44,10 +44,8 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 	return (
 		<div className="space-y-6">
-			{/* Header Image and Profile Photo Container */}
 			{user.headerImage ? (
 				<div className="relative">
-					{/* Header Image */}
 					<div className="w-full h-full max-h-[300px] overflow-hidden relative">
 						<Image
 							suppressHydrationWarning={true}
@@ -55,12 +53,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							alt={`${user.name} header`}
 							width={1200}
 							height={300}
-							className="object-cover"
+							className="object-cover rounded-md"
 							draggable={false}
 						/>
 					</div>
 
-					{/* Profile Photo positioned over header */}
 					<div className="absolute bottom-0 left-4 transform translate-y-1/2">
 						{user.image && (
 							<Image
@@ -69,14 +66,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 								alt={user.name}
 								width={150}
 								height={150}
-								className="h-24 w-24 md:h-32 md:w-32 bg-background object-cover shadow-lg"
+								className="h-24 w-24 md:h-32 md:w-32 bg-background object-cover shadow-lg rounded-md"
 								draggable={false}
 							/>
 						)}
 					</div>
 				</div>
 			) : (
-				/* Profile Photo when no header */
 				user.image && (
 					<div className="flex justify-start mb-4">
 						<Image
@@ -85,14 +81,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							alt={user.name}
 							width={150}
 							height={150}
-							className="h-32 w-32 object-cover"
+							className="h-32 w-32 object-cover rounded-md"
 							draggable={false}
 						/>
 					</div>
 				)
 			)}
 
-			{/* Profile Info Section */}
 			<div
 				className={`flex flex-col gap-1 ${user.image && user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : ""}`}
 			>
