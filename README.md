@@ -1,5 +1,6 @@
 ![Image](logo.svg)
 
+[![Build and Push Docker Image](https://github.com/omznc/reconned/actions/workflows/docker.yml/badge.svg?branch=main)](https://github.com/omznc/reconned/actions/workflows/docker.yml)
 
 A Next.js 15+ application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
 
