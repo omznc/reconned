@@ -2,6 +2,7 @@ model Event {
   id          String  @id @default(ulid())
   name        String
   description String
+  descriptionJson Json?
   club        Club    @relation(fields: [clubId], references: [id], onDelete: Cascade)
   clubId      String
   image       String?

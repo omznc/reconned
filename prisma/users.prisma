@@ -8,6 +8,7 @@ model User {
   headerImage     String?
   slug            String? @unique
   bio             String?
+  bioJson         Json?
   location        String?
   website         String?
   phone           String?

@@ -7,6 +7,7 @@ import {
 } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
+import { queueDescriptionTranslation } from "@/lib/description-translator";
 import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
@@ -28,6 +29,17 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 
 	const shouldDeleteImage = parsedInput.image === undefined;
 	const shouldDeleteHeaderImage = parsedInput.headerImage === undefined;
+
+	const existingUser = await prisma.user.findUnique({
+		where: {
+			id: ctx.user.id,
+		},
+		select: {
+			bio: true,
+		},
+	});
+
+	const bioChanged = existingUser?.bio !== parsedInput.bio;
 
 	const user = await prisma.user.update({
 		where: {
@@ -56,6 +68,14 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 
 	if (shouldDeleteHeaderImage) {
 		await deleteUserHeaderImage();
+	}
+
+	if (bioChanged && parsedInput.bio) {
+		queueDescriptionTranslation({
+			entity: "user",
+			entityId: user.id,
+			text: parsedInput.bio,
+		});
 	}
 
 	revalidateLocalizedPaths("/dashboard/user/");

@@ -590,6 +590,9 @@
 		}
 	},
 	"dashboard": {
+		"shared": {
+			"translationNotice": "Ovaj sadržaj automatski prevodimo na sve podržane jezike nakon što ga sačuvaš."
+		},
 		"root": {
 			"welcome": "Dobrodošli, {name}",
 			"myClubs": "Moji klubovi",

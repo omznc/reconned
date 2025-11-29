@@ -426,8 +426,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 												{...field}
 											/>
 										</FormControl>
-										<FormDescription>
-											{t("dashboard.club.events.create.descriptionDescription")}
+										<FormDescription className="space-y-1">
+											<span className="block">
+												{t("dashboard.club.events.create.descriptionDescription")}
+											</span>
+											<span className="block text-muted-foreground">
+												{t("dashboard.shared.translationNotice")}
+											</span>
 										</FormDescription>
 										<FormMessage />
 									</FormItem>

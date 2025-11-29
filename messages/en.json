@@ -590,6 +590,9 @@
 		}
 	},
 	"dashboard": {
+		"shared": {
+			"translationNotice": "We automatically translate this content into all supported languages after you save."
+		},
 		"root": {
 			"welcome": "Welcome, {name}",
 			"myClubs": "My clubs",

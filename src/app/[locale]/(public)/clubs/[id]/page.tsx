@@ -7,6 +7,7 @@ import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
+import { getTranslatedText } from "@/lib/get-translated-text";
 import { prisma } from "@/lib/prisma";
 import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 

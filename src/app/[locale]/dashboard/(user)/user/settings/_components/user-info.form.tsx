@@ -294,7 +294,12 @@ export function UserInfoForm(props: UserInfoFormProps) {
 										{...field}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.user.settings.bioDescription")}</FormDescription>
+								<FormDescription className="space-y-1">
+									<span className="block">{t("dashboard.user.settings.bioDescription")}</span>
+									<span className="block text-muted-foreground">
+										{t("dashboard.shared.translationNotice")}
+									</span>
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}

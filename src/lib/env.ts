@@ -21,6 +21,7 @@ export const env = createEnv({
 		FACEBOOK_APP_SECRET: z.string().min(1),
 		REDIS_URL: z.url(),
 		CI: z.string().optional(),
+		OPENROUTER_API_KEY: z.string().optional(),
 		// POLAR_ACCESS_TOKEN: z.string().min(1), This is a surprise tool that will help us later
 	},
 	client: {

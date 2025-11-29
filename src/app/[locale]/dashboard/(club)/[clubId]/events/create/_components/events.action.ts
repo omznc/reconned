@@ -10,6 +10,7 @@ import { validateSlug } from "@/components/slug/validate-slug";
 import { redirect } from "@/i18n/navigation";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { logClubAudit } from "@/lib/audit-logger";
+import { queueDescriptionTranslation } from "@/lib/description-translator";
 import { prisma } from "@/lib/prisma";
 import { safeActionClient } from "@/lib/safe-action";
 import { getS3FileUploadUrl } from "@/lib/storage";
@@ -58,20 +59,20 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 		mapData: parsedInput.mapData ?? { areas: [], pois: [] },
 	};
 
-	// If the event has ended, you can't update it.
-	const eventFinished = await prisma.event.findFirst({
-		where: {
-			id: parsedInput.eventId,
-			clubId: ctx.club.id,
-			dateEnd: {
-				lte: new Date(),
-			},
-		},
-	});
+	const existingEvent = parsedInput.eventId
+		? await prisma.event.findFirst({
+				where: {
+					id: parsedInput.eventId,
+					clubId: ctx.club.id,
+				},
+			})
+		: null;
 
-	if (eventFinished) {
+	if (existingEvent && existingEvent.dateEnd <= new Date()) {
 		throw new Error(t("cannotUpdateFinishedEvent"));
 	}
+
+	const descriptionChanged = !existingEvent || existingEvent.description !== parsedInput.description;
 
 	// If the event has an image and the image is being deleted, delete the image.
 	if (shouldDeleteImage && parsedInput.eventId) {
@@ -118,11 +119,21 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 	});
 
 	// create or update event
-	return await prisma.event.upsert({
+	const event = await prisma.event.upsert({
 		where: { id: parsedInput.eventId, clubId: ctx.club.id },
 		update: data,
 		create: data,
 	});
+
+	if (descriptionChanged && parsedInput.description) {
+		queueDescriptionTranslation({
+			entity: "event",
+			entityId: event.id,
+			text: parsedInput.description,
+		});
+	}
+
+	return event;
 });
 
 export const getEventImageUploadUrl = safeActionClient

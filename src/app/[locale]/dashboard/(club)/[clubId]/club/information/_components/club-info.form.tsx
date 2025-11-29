@@ -780,7 +780,12 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										{...field}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.descriptionDescription")}</FormDescription>
+								<FormDescription className="space-y-1">
+									<span className="block">{t("dashboard.club.info.descriptionDescription")}</span>
+									<span className="block text-muted-foreground">
+										{t("dashboard.shared.translationNotice")}
+									</span>
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}

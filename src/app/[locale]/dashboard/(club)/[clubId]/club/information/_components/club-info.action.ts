@@ -1,5 +1,6 @@
 "use server";
 import { revalidateTag } from "next/cache";
+import { after } from "next/server";
 import { getLocale } from "next-intl/server";
 import {
 	clubHeaderFileSchema,
@@ -13,6 +14,7 @@ import { validateSlug } from "@/components/slug/validate-slug";
 import { redirect } from "@/i18n/navigation";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
 import { logClubAudit } from "@/lib/audit-logger";
+import { queueDescriptionTranslation } from "@/lib/description-translator";
 import { env } from "@/lib/env";
 import { disconnectInstagramAPI } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
@@ -36,6 +38,9 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 	const actionType = isCreate ? "CLUB_CREATE" : "CLUB_UPDATE";
 	const shouldDeleteLogo = parsedInput.logo === undefined;
 	const shouldDeleteHeaderImage = parsedInput.headerImage === undefined;
+
+	// Check if description has changed to determine if we need to translate
+	const descriptionChanged = isCreate || ctx.club?.description !== parsedInput.description;
 
 	const club = await prisma.club.upsert({
 		where: {
@@ -86,6 +91,14 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			},
 		},
 	});
+
+	if (descriptionChanged && parsedInput.description) {
+		queueDescriptionTranslation({
+			entity: "club",
+			entityId: club.id,
+			text: parsedInput.description,
+		});
+	}
 
 	if (shouldDeleteLogo) {
 		await deleteClubImage({
