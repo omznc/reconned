@@ -6,7 +6,7 @@ import posthog from "posthog-js";
 import { Logo } from "@/components/logos/logo";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
-import { RoundnessSwitcher } from "@/components/personalization/roundness/roundness-switcher";
+import { StyleSwitcher } from "@/components/personalization/style/style-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export function Header({ user }: { user: User | null }) {
 									<FontSwitcher />
 								</DropdownMenuItem>
 								<DropdownMenuItem asChild={true}>
-									<RoundnessSwitcher />
+									<StyleSwitcher />
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 

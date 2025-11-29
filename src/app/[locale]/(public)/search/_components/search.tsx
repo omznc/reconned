@@ -33,7 +33,6 @@ export function Search() {
 			}}
 			className="bg-background"
 			placeholder={t("public.search.placeholder")}
-			className="bg-background"
 		/>
 	);
 }
