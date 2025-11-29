@@ -80,10 +80,10 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	};
 
 	return (
-		<div className="container max-w-4xl py-8 space-y-8 px-4">
+		<div className="container py-8 space-y-8 px-4">
 			<JsonLdScript data={itemListSchema} />
 			<h1 className="text-2xl font-bold">{t("public.clubs.title")}</h1>
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{clubs.map((club) => (
 					<SearchResultCard
 						key={club.id}
