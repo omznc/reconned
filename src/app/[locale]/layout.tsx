@@ -43,6 +43,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
 	const font = user?.font ? (user.font as "sans" | "mono") : "mono";
 	const style = user?.style ? (user.style as "sharp" | "relaxed") : "relaxed";
+	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
 
 	const websiteSchema = {
 		"@context": "https://schema.org",
