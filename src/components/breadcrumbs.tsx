@@ -2,7 +2,7 @@
 
 import { Building2Icon, CalendarFoldIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -28,24 +28,9 @@ type BreadcrumbsProps = {
 };
 
 export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
-	const [isScrolled, setIsScrolled] = useState(false);
 	const path = usePathname();
 	const sections = path.split("/").filter(Boolean);
 	const t = useTranslations();
-
-	useEffect(() => {
-		const main = document.querySelector("main");
-		if (!main) {
-			return;
-		}
-
-		const handleScroll = () => {
-			setIsScrolled(main.scrollTop > 0);
-		};
-
-		main.addEventListener("scroll", handleScroll);
-		return () => main.removeEventListener("scroll", handleScroll);
-	}, []);
 
 	const getDisplayText = (section: string) => {
 		// Check if section is a club ID
@@ -96,11 +81,10 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	};
 
 	return (
-		<div className="sticky top-0 w-full z-10">
+		<div className="sticky top-4 left-4 w-full z-10 mb-4">
 			<header
 				className={cn(
-					"z-10 h-10 w-fit border border-transparent rounded-md flex items-center mb-4 transition-all bg-background/80 backdrop-blur-xs px-2 shrink-0 gap-2 ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8",
-					isScrolled && "border-border",
+					"z-10 h-10 w-fit border border-border rounded-md flex items-center transition-all bg-background/80 backdrop-blur-xs px-2 shrink-0 gap-2 ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8",
 				)}
 			>
 				<TooltipProvider>

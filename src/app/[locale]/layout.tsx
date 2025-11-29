@@ -21,6 +21,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -33,13 +34,21 @@ const geistMono = Geist_Mono({
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const [user, t] = await Promise.all([isAuthenticated(), getTranslations()]);
+	const [session, t] = await Promise.all([isAuthenticated(), getTranslations()]);
 
 	const { locale } = await params;
 
 	if (!hasLocale(routing.locales, locale)) {
 		notFound();
 	}
+
+	const user = session?.id
+		? await prisma.user.findUnique({
+				where: {
+					id: session.id,
+				},
+			})
+		: null;
 
 	const font = user?.font ? (user.font as "sans" | "mono") : "mono";
 	const style = user?.style ? (user.style as "sharp" | "relaxed") : "relaxed";
@@ -115,7 +124,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 							/>
 							<NuqsAdapter>
 								<TooltipProvider>
-									{user?.session?.impersonatedBy && <ImpersonationAlert />}
+									{session?.session?.impersonatedBy && <ImpersonationAlert />}
 									<AlertDialogProvider>{children}</AlertDialogProvider>
 								</TooltipProvider>
 							</NuqsAdapter>
