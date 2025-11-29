@@ -5,7 +5,7 @@ import type { ContactPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export const revalidate = 86_400; // 1 day
 
@@ -57,8 +57,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.supportUs.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.supportUs.metadata.title"),
+			description: t("public.supportUs.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/support-us", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.supportUs.metadata.title"),
+			description: t("public.supportUs.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/support-us`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/support-us", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/support-us", locale),
 		},
 	};

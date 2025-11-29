@@ -4,7 +4,7 @@ import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const lastUpdated = new Date("2025-04-13");
 
@@ -161,8 +161,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.terms.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.terms.metadata.title"),
+			description: t("public.terms.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.terms.metadata.title"),
+			description: t("public.terms.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
 		},
 	};

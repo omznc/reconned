@@ -5,7 +5,7 @@ import JsonLdScript from "@/components/json-ld-script";
 import { Logo } from "@/components/logos/logo";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Home() {
 	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
@@ -119,8 +119,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.about.metadata.title"),
+			description: t("public.about.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/about", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.about.metadata.title"),
+			description: t("public.about.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/about`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/about", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/about", locale),
 		},
 	};

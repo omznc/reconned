@@ -7,7 +7,7 @@ import { VerifiedClubIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -117,8 +117,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.clubs.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.clubs.metadata.title"),
+			description: t("public.clubs.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.clubs.metadata.title"),
+			description: t("public.clubs.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
 		},
 	};

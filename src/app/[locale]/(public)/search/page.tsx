@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -371,6 +371,8 @@ export async function generateMetadata(props: PageProps<"/[locale]/search">): Pr
 	const [{ q }, locale] = await Promise.all([props.searchParams, getLocale()]);
 	const t = await getTranslations();
 
+	const path = `/search${q ? `?q=${encodeURIComponent(q)}` : ""}`;
+
 	return {
 		title: t("public.search.metadata.title", {
 			query: q,
@@ -381,13 +383,20 @@ export async function generateMetadata(props: PageProps<"/[locale]/search">): Pr
 		keywords: t("public.search.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.search.metadata.title", { query: q }),
+			description: t("public.search.metadata.description", { query: q }),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.search.metadata.title", { query: q }),
+			description: t("public.search.metadata.description", { query: q }),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-			languages: generatePageLanguages(
-				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
-				`/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-				locale,
-			),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),
 		},
 	};
 }

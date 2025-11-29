@@ -6,6 +6,7 @@ export const routing = defineRouting({
 
 	// Used when no locale matches
 	defaultLocale: "bs",
+	localePrefix: "as-needed",
 	// pathnames: {
 	// 	// Public routes
 	// 	"/": "/",

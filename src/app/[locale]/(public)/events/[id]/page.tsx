@@ -8,7 +8,7 @@ import { EventOverview } from "@/components/overviews/event-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
+import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -173,15 +173,26 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 		ogUrl.searchParams.set("image", event.image);
 	}
 
-	const canonicalPathname = `/${locale}/events/${event.slug || event.id}`;
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
+	const pathPrefix = "/events";
+	const slugOrId = event.slug || event.id;
+	const canonicalUrl = constructCanonicalUrl(
+		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+		`${pathPrefix}/${slugOrId}`,
+		locale,
+	);
 
 	return {
 		title: `${event.name} - RECONNED`,
 		description: event.description.slice(0, 160) ?? t("public.events.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, event.id, locale),
+			languages: generateHreflangAlternatesForSluggableEntity(
+				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				pathPrefix,
+				event.id,
+				locale,
+				event.slug || undefined,
+			),
 		},
 		openGraph: {
 			images: [

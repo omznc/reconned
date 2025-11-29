@@ -13,7 +13,7 @@ import { Link } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
 	const [user, t, locale] = await Promise.all([isAuthenticated(), getTranslations(), getLocale()]);
@@ -206,8 +206,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.events.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.events.metadata.title"),
+			description: t("public.events.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.events.metadata.title"),
+			description: t("public.events.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
 		},
 	};

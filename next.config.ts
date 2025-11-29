@@ -45,8 +45,18 @@ const nextConfig = {
 				permanent: true,
 			},
 			{
+				source: "/u/:path*",
+				destination: "/users/:path*",
+				permanent: true,
+			},
+			{
 				source: `/:locale(${localesString})/e/:path*`,
 				destination: "/:locale/events/:path*",
+				permanent: true,
+			},
+			{
+				source: "/e/:path*",
+				destination: "/events/:path*",
 				permanent: true,
 			},
 			{
@@ -55,8 +65,8 @@ const nextConfig = {
 				permanent: true,
 			},
 			{
-				source: `/:locale(${localesString})/stats`,
-				destination: "https://scout.reconned.com/share/reconned.com?auth=Z_HrtmMkcNRQ1zcVm4iky",
+				source: "/c/:path*",
+				destination: "/clubs/:path*",
 				permanent: true,
 			},
 		];

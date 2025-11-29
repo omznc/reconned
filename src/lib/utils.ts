@@ -53,40 +53,62 @@ export function generatePageLanguages(baseUrl: string, pathname: string, _curren
 
 	// Add all supported locales
 	routing.locales.forEach((locale) => {
+		// For default locale (bs), we don't add the prefix because of localePrefix: 'as-needed'
 		const localePath = locale === routing.defaultLocale ? pathname : `/${locale}${pathname}`;
-		languages[locale] = `${baseUrl}${localePath}`;
+		// Ensure we don't have double slashes if pathname is just "/"
+		const cleanPath = localePath === "/" ? "" : localePath;
+		languages[locale] = `${baseUrl}${cleanPath}`;
 	});
 
 	// Add x-default (fallback to default locale)
-	languages["x-default"] = `${baseUrl}${pathname}`;
+	languages["x-default"] = `${baseUrl}${pathname === "/" ? "" : pathname}`;
 
 	return languages;
 }
 
 /**
+ * Constructs a canonical URL for a page
+ * @param baseUrl - The base URL
+ * @param pathname - The pathname (without locale prefix)
+ * @param locale - The current locale
+ */
+export function constructCanonicalUrl(baseUrl: string, pathname: string, locale: string) {
+	// For default locale (bs), we don't add the prefix because of localePrefix: 'as-needed'
+	const localePrefix = locale === routing.defaultLocale ? "" : `/${locale}`;
+	const path = pathname === "/" ? "" : pathname;
+	return `${baseUrl}${localePrefix}${path}`;
+}
+
+/**
  * Generates hreflang alternates for entities that can have custom slugs.
- * @param canonicalPathname - The canonical pathname (using slug if available, ID otherwise)
+ * @param baseUrl - The base URL
+ * @param pathPrefix - The path prefix (e.g., "/clubs")
  * @param entityId - The entity ID (used for alternate language URLs)
  * @param currentLocale - Current locale
+ * @param currentSlug - Current entity slug (optional, used for current locale URL)
  */
 export function generateHreflangAlternatesForSluggableEntity(
-	canonicalPathname: string,
+	baseUrl: string,
+	pathPrefix: string,
 	entityId: string,
-	_currentLocale: string,
+	currentLocale: string,
+	currentSlug?: string,
 ) {
 	const alternates: Record<string, string> = {};
+	const slugOrId = currentSlug || entityId;
 
-	// Add all supported locales using ID paths for alternates
+	// Add all supported locales
 	routing.locales.forEach((locale) => {
-		const localePath =
-			locale === routing.defaultLocale
-				? canonicalPathname
-				: `/${locale}${canonicalPathname.replace(/\/[^/]+$/, `/${entityId}`)}`;
-		alternates[`${locale}`] = localePath;
+		// If it's the current locale, we use the slug (if available).
+		// For other locales, we fallback to ID to ensure the link works
+		const idToUse = locale === currentLocale ? slugOrId : entityId;
+		alternates[locale] = constructCanonicalUrl(baseUrl, `${pathPrefix}/${idToUse}`, locale);
 	});
 
 	// Add x-default (fallback to default locale)
-	alternates["x-default"] = canonicalPathname;
+	// If default locale is current locale, use slug. Otherwise use ID.
+	const defaultLocaleId = routing.defaultLocale === currentLocale ? slugOrId : entityId;
+	alternates["x-default"] = constructCanonicalUrl(baseUrl, `${pathPrefix}/${defaultLocaleId}`, routing.defaultLocale);
 
 	return alternates;
 }
