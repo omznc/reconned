@@ -1,14 +1,5 @@
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-import {
-	ArrowUpRightIcon,
-	BarChart2,
-	Calendar,
-	LayoutDashboard,
-	MapIcon,
-	Search,
-	ShieldQuestion,
-	StarIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { BadgeNew } from "@/components/badge-new";
 import { BadgeSoon } from "@/components/badge-soon";
