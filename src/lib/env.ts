@@ -34,6 +34,10 @@ export const env = createEnv({
 		NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1),
 		NEXT_PUBLIC_AXIOM_DATASET: z.string().min(1),
 		NEXT_PUBLIC_AXIOM_TOKEN: z.string().min(1),
+		NEXT_PUBLIC_BETA: z
+			.string()
+			.optional()
+			.transform((val) => (val ?? "false") === "true"),
 	},
 	experimental__runtimeEnv: {
 		NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
@@ -46,5 +50,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 		NEXT_PUBLIC_AXIOM_TOKEN: process.env.NEXT_PUBLIC_AXIOM_TOKEN,
+		NEXT_PUBLIC_BETA: process.env.NEXT_PUBLIC_BETA,
 	},
 });

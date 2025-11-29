@@ -67,7 +67,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const t = useTranslations();
 	const [isMac, setIsMac] = useState(false);
 
-	const isBeta = env.NEXT_PUBLIC_BETTER_AUTH_URL?.includes("beta");
+	const isBeta = env.NEXT_PUBLIC_BETA ?? false;
 
 	useEffect(() => {
 		// Detect if user is on macOS

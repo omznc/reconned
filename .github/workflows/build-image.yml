@@ -72,6 +72,21 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Set beta flag
+        id: beta
+        run: |
+          if [ "${{ github.ref_name }}" = "dev" ]; then
+            echo "value=true" >> $GITHUB_OUTPUT
+          else
+            echo "value=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log build info
+        run: |
+          echo "Building for branch: ${{ github.ref_name }}"
+          echo "Beta mode: ${{ steps.beta.outputs.value }}"
+          echo "Platform: ${{ inputs.platform }}"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -94,4 +109,5 @@ jobs:
             NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
             NEXT_PUBLIC_AXIOM_DATASET=${{ secrets.NEXT_PUBLIC_AXIOM_DATASET }}
             NEXT_PUBLIC_AXIOM_TOKEN=${{ secrets.NEXT_PUBLIC_AXIOM_TOKEN }}
+            NEXT_PUBLIC_BETA=${{ steps.beta.outputs.value }}
             CI=true
