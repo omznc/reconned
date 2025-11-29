@@ -14,7 +14,7 @@ export function LoadChildOnClick(props: HTMLAttributes<HTMLDivElement>) {
 		<div
 			role="button"
 			tabIndex={0}
-			className="w-full h-[200px] flex items-center justify-center border bg-sidebar"
+			className="w-full h-[200px] flex items-center rounded-md justify-center border bg-sidebar"
 			onClick={() => setIsLoaded(true)}
 			{...props}
 		>

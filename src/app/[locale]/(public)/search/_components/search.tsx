@@ -31,7 +31,7 @@ export function Search() {
 				setInput(e.target.value);
 				handleSearch(e.target.value);
 			}}
-			className="bg-background"
+			className="dark:bg-white bg-black placeholder:text-black dark:placeholder:text-white text-white dark:text-black"
 			placeholder={t("public.search.placeholder")}
 		/>
 	);
