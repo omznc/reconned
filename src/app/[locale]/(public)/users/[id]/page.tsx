@@ -7,7 +7,7 @@ import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
+import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
@@ -127,15 +127,26 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 		ogUrl.searchParams.set("avatar", user.image);
 	}
 
-	const canonicalPathname = `/${locale}/users/${user.slug || user.id}`;
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
+	const pathPrefix = "/users";
+	const slugOrId = user.slug || user.id;
+	const canonicalUrl = constructCanonicalUrl(
+		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+		`${pathPrefix}/${slugOrId}`,
+		locale,
+	);
 
 	return {
 		title: `${user.name} - RECONNED`,
 		description: user.bio?.slice(0, 160) ?? t("public.users.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, user.id, locale),
+			languages: generateHreflangAlternatesForSluggableEntity(
+				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				pathPrefix,
+				user.id,
+				locale,
+				user.slug || undefined,
+			),
 		},
 		openGraph: {
 			images: [

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const sponsors = [
 	{
@@ -166,8 +166,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.sponsors.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.sponsors.metadata.title"),
+			description: t("public.sponsors.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.sponsors.metadata.title"),
+			description: t("public.sponsors.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
 		},
 	};

@@ -11,7 +11,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
+import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function EventApplicationPage(props: PageProps<"/[locale]/events/[id]/apply">) {
 	const t = await getTranslations();
@@ -222,15 +222,26 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/a
 		};
 	}
 
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug || event.id}/apply`;
-	const pathname = `/${locale}/events/${event.slug || event.id}/apply`;
+	const pathPrefix = "/events";
+	const slugOrId = event.slug || event.id;
+	const canonicalUrl = constructCanonicalUrl(
+		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+		`${pathPrefix}/${slugOrId}/apply`,
+		locale,
+	);
 
 	return {
 		title: t("public.events.apply.applyToEvent", { eventName: event.name }),
 		description: t("public.events.apply.applyToParticipate", { eventName: event.name }),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternatesForSluggableEntity(pathname, event.id, locale),
+			languages: generateHreflangAlternatesForSluggableEntity(
+				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				pathPrefix,
+				event.id,
+				locale,
+				event.slug || undefined,
+			),
 		},
 	};
 }

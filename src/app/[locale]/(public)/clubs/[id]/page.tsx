@@ -8,7 +8,7 @@ import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
+import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
@@ -171,15 +171,26 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 		ogUrl.searchParams.set("logo", club.logo);
 	}
 
-	const canonicalPathname = `/${locale}/clubs/${club.slug || club.id}`;
-	const canonicalUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${canonicalPathname}`;
+	const pathPrefix = "/clubs";
+	const slugOrId = club.slug || club.id;
+	const canonicalUrl = constructCanonicalUrl(
+		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+		`${pathPrefix}/${slugOrId}`,
+		locale,
+	);
 
 	return {
 		title: `${club.name} - RECONNED`,
 		description: club.description?.slice(0, 160) ?? t("public.clubs.metadata.description"),
 		alternates: {
 			canonical: canonicalUrl,
-			languages: generateHreflangAlternatesForSluggableEntity(canonicalPathname, club.id, locale),
+			languages: generateHreflangAlternatesForSluggableEntity(
+				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				pathPrefix,
+				club.id,
+				locale,
+				club.slug || undefined,
+			),
 		},
 		openGraph: {
 			images: [

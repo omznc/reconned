@@ -5,7 +5,7 @@ import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
 import JsonLdScript from "@/components/json-ld-script";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function MapPage() {
 	const clubs = await prisma.club.findMany({
@@ -88,8 +88,19 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("public.map.metadata.title"),
 		description: t("public.map.metadata.description"),
+		openGraph: {
+			title: t("public.map.metadata.title"),
+			description: t("public.map.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.map.metadata.title"),
+			description: t("public.map.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/map`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
 		},
 		keywords: t("public.map.metadata.keywords")

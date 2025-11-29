@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { env } from "@/lib/env";
-import { generatePageLanguages } from "@/lib/utils";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 import "./markdown.css";
 import DOMPurify from "isomorphic-dompurify";
@@ -256,8 +256,19 @@ export async function generateMetadata(): Promise<Metadata> {
 		keywords: t("public.layout.metadata.keywords")
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("public.changelog.metadata.title"),
+			description: t("public.changelog.metadata.description"),
+			type: "website",
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("public.changelog.metadata.title"),
+			description: t("public.changelog.metadata.description"),
+		},
 		alternates: {
-			canonical: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/changelog`,
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
 			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
 		},
 	};

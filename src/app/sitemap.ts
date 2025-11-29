@@ -3,10 +3,14 @@ import { routing } from "@/i18n/routing";
 import { getCached } from "@/lib/cache";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import {
+	constructCanonicalUrl,
+	generateHreflangAlternatesForSluggableEntity,
+	generatePageLanguages,
+} from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const locales = routing.locales;
 const defaultLocale = routing.defaultLocale;
 const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 
@@ -69,159 +73,91 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 	// Static routes with their properties
 	const staticRoutes: MetadataRoute.Sitemap = [
-		{
-			url: getCanonicalUrl(""),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 1,
-			alternates: generateAlternates(""),
+		"",
+		"/about",
+		"/events",
+		"/users",
+		"/clubs",
+		"/search",
+		"/sponsors",
+		"/login",
+		"/register",
+		"/changelog",
+		"/map",
+		"/privacy-policy",
+		"/terms-of-use",
+		"/support-us",
+	].map((route) => ({
+		url: constructCanonicalUrl(baseUrl || "", route, defaultLocale),
+		lastModified: new Date(),
+		changeFrequency: "daily",
+		priority: route === "" ? 1 : 0.8,
+		alternates: {
+			languages: generatePageLanguages(baseUrl || "", route, defaultLocale),
 		},
-		{
-			url: getCanonicalUrl("/about"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.8,
-			alternates: generateAlternates("/about"),
-		},
-		{
-			url: getCanonicalUrl("/events"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/events"),
-		},
-		{
-			url: getCanonicalUrl("/users"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/users"),
-		},
-		{
-			url: getCanonicalUrl("/clubs"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/clubs"),
-		},
-		{
-			url: getCanonicalUrl("/search"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.9,
-			alternates: generateAlternates("/search"),
-		},
-		{
-			url: getCanonicalUrl("/sponsors"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.6,
-			alternates: generateAlternates("/sponsors"),
-		},
-		{
-			url: getCanonicalUrl("/login"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.6,
-			alternates: generateAlternates("/login"),
-		},
-		{
-			url: getCanonicalUrl("/register"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.6,
-			alternates: generateAlternates("/register"),
-		},
-		{
-			url: getCanonicalUrl("/changelog"),
-			lastModified: new Date(),
-			changeFrequency: "weekly",
-			priority: 0.6,
-			alternates: generateAlternates("/changelog"),
-		},
-		{
-			url: getCanonicalUrl("/map"),
-			lastModified: new Date(),
-			changeFrequency: "daily",
-			priority: 0.8,
-			alternates: generateAlternates("/map"),
-		},
-		{
-			url: getCanonicalUrl("/privacy-policy"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.5,
-			alternates: generateAlternates("/privacy-policy"),
-		},
-		{
-			url: getCanonicalUrl("/terms-of-use"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.5,
-			alternates: generateAlternates("/terms-of-use"),
-		},
-		{
-			url: getCanonicalUrl("/support-us"),
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.2,
-			alternates: generateAlternates("/support-us"),
-		},
-	];
+	}));
 
 	// Generate dynamic routes with language alternates
 	const clubRoutes = clubs.map((club) => {
-		const path = `/clubs/${club.slug ?? club.id}`;
+		const pathPrefix = "/clubs";
+		const slugOrId = club.slug || club.id;
 		return {
-			url: getCanonicalUrl(path),
+			url: constructCanonicalUrl(baseUrl || "", `${pathPrefix}/${slugOrId}`, defaultLocale),
 			lastModified: club.updatedAt,
 			changeFrequency: "daily" as const,
 			priority: club.slug ? 0.8 : 0.7,
-			alternates: generateAlternates(path),
+			alternates: {
+				languages: generateHreflangAlternatesForSluggableEntity(
+					baseUrl || "",
+					pathPrefix,
+					club.id,
+					defaultLocale,
+					club.slug || undefined,
+				),
+			},
 		};
 	});
 
 	const eventRoutes = events.map((event) => {
-		const path = `/events/${event.slug ?? event.id}`;
+		const pathPrefix = "/events";
+		const slugOrId = event.slug || event.id;
 		return {
-			url: getCanonicalUrl(path),
+			url: constructCanonicalUrl(baseUrl || "", `${pathPrefix}/${slugOrId}`, defaultLocale),
 			lastModified: event.updatedAt,
 			changeFrequency: "daily" as const,
 			priority: event.slug ? 0.7 : 0.6,
-			alternates: generateAlternates(path),
+			alternates: {
+				languages: generateHreflangAlternatesForSluggableEntity(
+					baseUrl || "",
+					pathPrefix,
+					event.id,
+					defaultLocale,
+					event.slug || undefined,
+				),
+			},
 		};
 	});
 
 	const userRoutes = users.map((user) => {
-		const path = `/users/${user.slug ?? user.id}`;
+		const pathPrefix = "/users";
+		const slugOrId = user.slug || user.id;
 		return {
-			url: getCanonicalUrl(path),
+			url: constructCanonicalUrl(baseUrl || "", `${pathPrefix}/${slugOrId}`, defaultLocale),
 			lastModified: user.updatedAt,
 			changeFrequency: "weekly" as const,
 			priority: user.slug ? 0.6 : 0.5,
-			alternates: generateAlternates(path),
+			alternates: {
+				languages: generateHreflangAlternatesForSluggableEntity(
+					baseUrl || "",
+					pathPrefix,
+					user.id,
+					defaultLocale,
+					user.slug || undefined,
+				),
+			},
 		};
 	});
 
 	// Combine all routes
 	return [...staticRoutes, ...clubRoutes, ...eventRoutes, ...userRoutes];
-}
-
-// Helper function to generate language alternates for each route
-function generateAlternates(path: string) {
-	const languages: Record<string, string> = {};
-
-	for (const locale of locales) {
-		// Only include non-default locales in alternates
-		if (locale !== defaultLocale) {
-			languages[locale] = `${baseUrl}/${locale}${path}`;
-		}
-	}
-
-	return { languages };
-}
-
-// Helper function to get the canonical URL (with default locale)
-function getCanonicalUrl(path: string) {
-	return `${baseUrl}/${defaultLocale}${path}`;
 }
