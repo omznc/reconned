@@ -106,19 +106,19 @@ export async function ClubOverview({
 		<div>
 			{/* Unified Banner Section - Always Present */}
 			<div className="relative w-full mb-6">
-				<div className="w-full h-full max-h-[300px] bg-sidebar">
+				<div className="w-full h-full max-h-[300px] bg-sidebar rounded-md">
 					{club.headerImage ? (
 						<Image
 							suppressHydrationWarning={true}
 							src={club.headerImage}
 							alt={`${club.name} header`}
-							className="object-contain w-full h-full"
+							className="object-contain w-full h-full rounded-md"
 							draggable={false}
 							height={300}
 							width={1200}
 						/>
 					) : (
-						<div className="w-full h-full bg-gradient-to-br from-sidebar to-muted" />
+						<div className="w-full h-full bg-gradient-to-br from-sidebar to-muted rounded-md" />
 					)}
 				</div>
 
@@ -149,7 +149,7 @@ export async function ClubOverview({
 								draggable={false}
 							/>
 						) : (
-							<div className="w-full h-full border-4 border-background bg-sidebar shadow-lg flex items-center justify-center">
+							<div className="w-full h-full border-4 border-background rounded-md bg-sidebar shadow-lg flex items-center justify-center">
 								<ShieldBan className="size-16 text-muted-foreground" />
 							</div>
 						)}
@@ -228,7 +228,7 @@ export async function ClubOverview({
 				</div>
 			</div>
 			{!hasOwner && (
-				<div className="border bg-card p-6 space-y-4">
+				<div className="border bg-sidebar p-6 space-y-4 rounded-md">
 					<h2 className="text-xl font-semibold">{t("components.clubOverview.claimClub")}</h2>
 					<ClaimClubForm clubId={club.id} clubName={club.name} user={user} />
 				</div>
@@ -243,7 +243,7 @@ export async function ClubOverview({
 						})}
 					>
 						{(club.members?.length ?? 0) > 0 && (
-							<div className="space-y-4 h-full bg-sidebar border p-4 order-1 md:order-2 md:col-span-1">
+							<div className="space-y-4 h-full bg-sidebar border p-4 order-1 md:order-2 md:col-span-1 rounded-md">
 								<div className="flex flex-col gap-2">
 									<div className="flex gap-2 items-center">
 										<h2 className="text-xl font-semibold">
@@ -272,7 +272,7 @@ export async function ClubOverview({
 										})
 										?.map((membership) => (
 											<Link
-												className="relative flex group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10"
+												className="relative flex rounded-md group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10"
 												key={membership.user.id}
 												href={`/users/${membership.user.slug ?? membership.user.id}`}
 											>
@@ -283,10 +283,10 @@ export async function ClubOverview({
 														alt={membership.user.name}
 														width={32}
 														height={32}
-														className="size-8"
+														className="size-8 rounded-sm"
 													/>
 												) : (
-													<div className="size-8 bg-muted flex items-center justify-center">
+													<div className="size-8 bg-muted flex items-center justify-center rounded-sm">
 														<span className="text-xs text-muted-foreground">
 															{membership.user.name.charAt(0)}
 														</span>
@@ -311,12 +311,12 @@ export async function ClubOverview({
 
 						{club.instagramUsername && (
 							<div
-								className={cn("order-2 md:order-1 h-full", {
+								className={cn("h-full", {
 									"md:col-span-2": (club.members?.length ?? 0) > 0,
 									"md:col-span-3": (club.members?.length ?? 0) === 0,
 								})}
 							>
-								<div className="border bg-sidebar h-full">
+								<div className="border bg-sidebar h-full rounded-md">
 									<div className="flex items-start justify-between border-b p-4">
 										<div className="flex flex-col gap-2">
 											<div className="flex gap-2 items-center">
@@ -339,7 +339,7 @@ export async function ClubOverview({
 						)}
 					</div>
 
-					<div className="space-y-4 mt-8">
+					<div className="space-y-4 mt-8 ">
 						<div className="flex h-10 items-center justify-between">
 							<h2 className="text-xl font-semibold flex items-center gap-2">
 								{t("components.clubOverview.posts")}

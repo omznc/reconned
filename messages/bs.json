@@ -1403,7 +1403,8 @@
 				"map": "Mapa",
 				"search": "Pretraga",
 				"about": "O nama",
-				"stats": "Statistike"
+				"stats": "Statistike",
+				"sponsors": "Sponzori"
 			},
 			"community": {
 				"title": "Zajednica"
@@ -1446,6 +1447,9 @@
 		},
 		"fontSwitcher": {
 			"toggle": "Promijeni font"
+		},
+		"roundnessSwitcher": {
+			"toggle": "Promijeni stil"
 		},
 		"languageSwitcher": {
 			"select": "Odaberite jezik"

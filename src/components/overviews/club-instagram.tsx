@@ -38,7 +38,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 				href={photo.permalink}
 				target="_blank"
 				rel="noopener noreferrer"
-				className="group overflow-hidden aspect-square relative group hover:opacity-90 transition-opacity"
+				className="group overflow-hidden rounded-md aspect-square relative group hover:opacity-90 transition-opacity"
 			>
 				<Image
 					src={imageUrl}
@@ -81,7 +81,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 	};
 
 	return (
-		<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+		<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 ">
 			{/* Render all photos */}
 			{displayPhotos.map(renderMedia)}
 
@@ -91,7 +91,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 					href={`https://instagram.com/${username}`}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="overflow-hidden aspect-square relative group hover:opacity-70 transition-opacity flex flex-col items-center justify-center bg-sidebar border border-border"
+					className="overflow-hidden rounded-md aspect-square relative group hover:opacity-70 transition-opacity flex flex-col items-center justify-center bg-sidebar border border-border"
 				>
 					<SiInstagram className="h-8 w-8 mb-2" />
 					<p className="text-sm text-center font-medium">{t("components.instagramGallery.viewMore")}</p>

@@ -298,7 +298,7 @@ export function EventCalendar(props: EventCalendarProps) {
 
 	return (
 		<div className="flex flex-col h-full w-full text-foreground">
-			<header className="flex py-4 items-center justify-between border-b">
+			<header className="flex py-4 items-center justify-between">
 				<h2 className="text-2xl font-bold">
 					{t(
 						`components.calendar.months.${format(currentDate, "MMM", { locale: enUS }).toLowerCase() as Months}`,
@@ -318,8 +318,8 @@ export function EventCalendar(props: EventCalendarProps) {
 					>
 						{t("components.calendar.today")}
 					</Button>
-					<div className="flex">
-						<Button variant="outline" className="border-r-0" onClick={handlePreviousMonth}>
+					<div className="flex gap-2">
+						<Button variant="outline" onClick={handlePreviousMonth}>
 							<ChevronLeft className="h-4 w-4" aria-label={t("components.calendar.previousMonth")} />
 						</Button>
 						<Button variant="outline" onClick={handleNextMonth}>
@@ -329,8 +329,8 @@ export function EventCalendar(props: EventCalendarProps) {
 				</div>
 			</header>
 
-			<div className="flex-1 overflow-auto">
-				<div className="grid grid-cols-7 border-l">
+			<div className="flex-1 overflow-auto border-t rounded-t-md">
+				<div className="grid grid-cols-7 ">
 					{/* Day headers */}
 					{[
 						t("components.calendar.days.mon"),
@@ -340,22 +340,32 @@ export function EventCalendar(props: EventCalendarProps) {
 						t("components.calendar.days.fri"),
 						t("components.calendar.days.sat"),
 						t("components.calendar.days.sun"),
-					].map((day) => (
-						<div key={day} className="h-12 border-b border-r px-2 py-1 font-medium">
+					].map((day, index) => (
+						<div
+							key={day}
+							className={cn(
+								"h-12 border-b bg-sidebar flex justify-center items-center border-r px-2 py-1 font-medium",
+								index === 0 && "border-l rounded-tl-md",
+								index === 6 && "rounded-tr-md",
+							)}
+						>
 							{day}
 						</div>
 					))}
 
-					{weeks.map((week) => {
+					{weeks.map((week, weekIndex) => {
 						const weekEvents = props.events.filter((event) =>
 							week.some((day) => getEventsForDay(day).includes(event)),
 						);
 						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents);
 						const weekHeight = Math.max(8, (maxLayer + 1) * 2); // 8rem minimum, 2rem per layer
+						const isLastWeek = weekIndex === weeks.length - 1;
 
 						return (
 							<Fragment key={week.map((day) => day.toISOString()).join()}>
-								{week.map((day) => {
+								{week.map((day, dayIndex) => {
+									const isFirstDay = dayIndex === 0;
+									const isLastDay = dayIndex === week.length - 1;
 									const interactiveProps = canCreateEvent
 										? {
 												role: "button" as const,
@@ -373,12 +383,16 @@ export function EventCalendar(props: EventCalendarProps) {
 										<div
 											key={day.toISOString()}
 											className={cn(
-												"border-b border-r p-1",
+												"border-r border-b p-1",
+												isFirstDay && "border-l",
 												"flex flex-col",
 												isSameMonth(day, currentDate) ? "" : "text-muted-foreground",
 												getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
 												isSameDay(day, new Date()) ? "bg-accent" : "",
 												canCreateEvent && "cursor-pointer hover:bg-sidebar transition-colors",
+												canCreateEvent && "hover:rounded-md",
+												isLastWeek && isFirstDay && "rounded-bl-md",
+												isLastWeek && isLastDay && "rounded-br-md",
 											)}
 											style={{
 												minHeight: `${weekHeight}rem`,

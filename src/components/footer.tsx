@@ -1,5 +1,14 @@
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-import { ArrowUpRightIcon, BarChart2, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion } from "lucide-react";
+import {
+	ArrowUpRightIcon,
+	BarChart2,
+	Calendar,
+	LayoutDashboard,
+	MapIcon,
+	Search,
+	ShieldQuestion,
+	StarIcon,
+} from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { BadgeNew } from "@/components/badge-new";
 import { BadgeSoon } from "@/components/badge-soon";
@@ -68,8 +77,14 @@ export async function Footer() {
 									<Search className="w-5 h-5 mr-2" />
 									{t("components.footer.quickLinks.search")}
 								</Link>
-							</li>
+							</li>{" "}
 							<li>
+								<Link href="/sponsors" className="flex items-center hover:text-red-500 transition-all">
+									<StarIcon className="w-5 h-5 mr-2" />
+									{t("components.footer.quickLinks.sponsors")}
+								</Link>
+							</li>
+							{/* <li>
 								<Link
 									href="/stats"
 									target="_blank"
@@ -78,7 +93,7 @@ export async function Footer() {
 									<BarChart2 className="w-5 h-5 mr-2" />
 									{t("components.footer.quickLinks.stats")}
 								</Link>
-							</li>
+							</li> */}
 						</ul>
 					</div>
 					<div>

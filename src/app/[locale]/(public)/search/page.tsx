@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { SearchResultsPage, WithContext } from "schema-dts";
+import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { Search } from "@/app/[locale]/(public)/search/_components/search";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
@@ -13,66 +14,120 @@ import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { generatePageLanguages } from "@/lib/utils";
 
-async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
-	const [clubs, users, events] = await Promise.all([
+const ITEMS_PER_PAGE = 10;
+
+export const dynamic = "force-dynamic";
+
+async function SearchResults({
+	query,
+	tab,
+	clubsPage,
+	usersPage,
+	eventsPage,
+}: {
+	query?: string;
+	tab?: string;
+	clubsPage: number;
+	usersPage: number;
+	eventsPage: number;
+}) {
+	const clubsSkip = (clubsPage - 1) * ITEMS_PER_PAGE;
+	const usersSkip = (usersPage - 1) * ITEMS_PER_PAGE;
+	const eventsSkip = (eventsPage - 1) * ITEMS_PER_PAGE;
+
+	const clubWhere = {
+		...(query
+			? {
+					OR: [
+						{
+							name: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+						{
+							description: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+					],
+				}
+			: {}),
+		isPrivate: false,
+	};
+
+	const userWhere = {
+		...(query
+			? {
+					OR: [
+						{
+							callsign: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+						{
+							name: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+						{
+							location: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+					],
+				}
+			: {}),
+		isPrivate: false,
+	};
+
+	const eventWhere = {
+		...(query
+			? {
+					OR: [
+						{
+							name: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+						{
+							description: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+						{
+							location: {
+								contains: query,
+								mode: "insensitive" as const,
+							},
+						},
+					],
+				}
+			: {}),
+		isPrivate: false,
+	};
+
+	const [clubs, clubsTotal, users, usersTotal, events, eventsTotal] = await Promise.all([
 		prisma.club.findMany({
-			where: {
-				...(query
-					? {
-							OR: [
-								{
-									name: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-								{
-									description: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-							],
-						}
-					: {}),
-				AND: { isPrivate: false },
-			},
+			where: clubWhere,
 			include: {
 				_count: {
 					select: { members: true },
 				},
 			},
-			take: 25,
+			orderBy: [{ verified: "desc" }, { members: { _count: "desc" } }, { name: "asc" }],
+			skip: clubsSkip,
+			take: ITEMS_PER_PAGE,
 		}),
+		prisma.club.count({ where: clubWhere }),
 		prisma.user.findMany({
-			where: {
-				...(query
-					? {
-							OR: [
-								{
-									callsign: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-								{
-									name: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-								{
-									location: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-							],
-						}
-					: {}),
-				AND: { isPrivate: false },
-			},
-			take: 25,
+			where: userWhere,
 			include: {
 				clubMembership: {
 					include: {
@@ -89,40 +144,21 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 					},
 				},
 			},
+			orderBy: [{ role: "asc" }, { createdAt: "desc" }],
+			skip: usersSkip,
+			take: ITEMS_PER_PAGE,
 		}),
+		prisma.user.count({ where: userWhere }),
 		prisma.event.findMany({
-			where: {
-				...(query
-					? {
-							OR: [
-								{
-									name: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-								{
-									description: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-								{
-									location: {
-										contains: query,
-										mode: "insensitive",
-									},
-								},
-							],
-						}
-					: {}),
-				AND: { isPrivate: false },
-			},
+			where: eventWhere,
 			include: {
 				club: true,
 			},
-			take: 25,
+			orderBy: { dateStart: "asc" },
+			skip: eventsSkip,
+			take: ITEMS_PER_PAGE,
 		}),
+		prisma.event.count({ where: eventWhere }),
 	]);
 
 	const t = await getTranslations();
@@ -132,13 +168,13 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 	const defaultTab =
 		tab ||
 		(() => {
-			if (clubs.length > 0) {
+			if (clubsTotal > 0) {
 				return "clubs";
 			}
-			if (users.length > 0) {
+			if (usersTotal > 0) {
 				return "users";
 			}
-			if (events.length > 0) {
+			if (eventsTotal > 0) {
 				return "events";
 			}
 			return "clubs"; // fallback to clubs if all empty
@@ -150,15 +186,15 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 				<TabsList className="grid w-full grid-cols-3 mb-8">
 					<TabsTrigger value="clubs" className="text-xs flex gap-2">
 						<Shield className="h-4 w-4 hidden md:block" />
-						{t("public.search.clubs")} ({clubs.length})
+						{t("public.search.clubs")} ({clubsTotal})
 					</TabsTrigger>
 					<TabsTrigger value="users" className="text-xs flex gap-2">
 						<Users className="h-4 w-4 hidden md:block" />
-						{t("public.search.users")} ({users.length})
+						{t("public.search.users")} ({usersTotal})
 					</TabsTrigger>
 					<TabsTrigger value="events" className="text-xs flex gap-2">
 						<Calendar className="h-4 w-4 hidden md:block" />
-						{t("public.search.events")} ({events.length})
+						{t("public.search.events")} ({eventsTotal})
 					</TabsTrigger>
 				</TabsList>
 
@@ -166,9 +202,8 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 					{clubs.length === 0 ? (
 						<div className="text-center text-muted-foreground py-12">{t("public.search.noResults")}</div>
 					) : (
-						clubs
-							.sort((a, b) => b._count.members - a._count.members)
-							.map((club) => (
+						<>
+							{clubs.map((club) => (
 								<SearchResultCard
 									image={club.logo}
 									key={club.id}
@@ -186,7 +221,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									}`}
 									type="club"
 								/>
-							))
+							))}
+							<Pagination totalItems={clubsTotal} itemsPerPage={ITEMS_PER_PAGE} paramKey="clubsPage" />
+						</>
 					)}
 				</TabsContent>
 
@@ -194,17 +231,8 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 					{users.length === 0 ? (
 						<div className="text-center text-muted-foreground py-12">{t("public.search.noResults")}</div>
 					) : (
-						users
-							.sort((a, b) => {
-								if (a.role === "admin") {
-									return -1;
-								}
-								if (b.role === "admin") {
-									return 1;
-								}
-								return 0;
-							})
-							.map((user) => (
+						<>
+							{users.map((user) => (
 								<SearchResultCard
 									image={user.image}
 									key={user.id}
@@ -224,7 +252,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									meta={user.location || undefined}
 									type="user"
 								/>
-							))
+							))}
+							<Pagination totalItems={usersTotal} itemsPerPage={ITEMS_PER_PAGE} paramKey="usersPage" />
+						</>
 					)}
 				</TabsContent>
 
@@ -232,9 +262,8 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 					{events.length === 0 ? (
 						<div className="text-center text-muted-foreground py-12">{t("public.search.noResults")}</div>
 					) : (
-						events
-							.sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime())
-							.map((event) => (
+						<>
+							{events.map((event) => (
 								<SearchResultCard
 									image={event.image}
 									key={event.id}
@@ -253,7 +282,9 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 									meta={event.location || undefined}
 									type="event"
 								/>
-							))
+							))}
+							<Pagination totalItems={eventsTotal} itemsPerPage={ITEMS_PER_PAGE} paramKey="eventsPage" />
+						</>
 					)}
 				</TabsContent>
 			</Tabs>
@@ -262,8 +293,21 @@ async function SearchResults({ query, tab }: { query?: string; tab?: string }) {
 }
 
 export default async function SearchPage(props: PageProps<"/[locale]/search">) {
-	const [{ q, tab }, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const [{ q, tab, clubsPage, usersPage, eventsPage }, locale] = await Promise.all([props.searchParams, getLocale()]);
 	const t = await getTranslations();
+
+	const parsePageParam = (value?: string | string[]) => {
+		const rawValue = Array.isArray(value) ? value[0] : value;
+		const parsed = Number(rawValue);
+		if (Number.isInteger(parsed) && parsed > 0) {
+			return parsed;
+		}
+		return 1;
+	};
+
+	const clubsPageNumber = parsePageParam(clubsPage);
+	const usersPageNumber = parsePageParam(usersPage);
+	const eventsPageNumber = parsePageParam(eventsPage);
 
 	const searchSchema: WithContext<SearchResultsPage> = {
 		"@context": "https://schema.org",
@@ -311,7 +355,13 @@ export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 			<Suspense
 				fallback={<div className="text-center text-muted-foreground py-12">{t("public.search.loading")}</div>}
 			>
-				<SearchResults query={q} tab={tab} />
+				<SearchResults
+					query={q}
+					tab={tab}
+					clubsPage={clubsPageNumber}
+					usersPage={usersPageNumber}
+					eventsPage={eventsPageNumber}
+				/>
 			</Suspense>
 		</div>
 	);
