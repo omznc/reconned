@@ -33,10 +33,18 @@ export const removeMember = safeActionClient.inputSchema(removeMemberSchema).act
 			throw new Error("Član nije pronađen ili je vlasnik kluba.");
 		}
 
-		await prisma.clubMembership.delete({
-			where: {
-				id: parsedInput.memberId,
-			},
+		await prisma.$transaction(async (tx) => {
+			await tx.deletedEntity.create({
+				data: {
+					entityId: parsedInput.memberId,
+					entityType: "MEMBER",
+				},
+			});
+			await tx.clubMembership.delete({
+				where: {
+					id: parsedInput.memberId,
+				},
+			});
 		});
 
 		await logClubAudit({

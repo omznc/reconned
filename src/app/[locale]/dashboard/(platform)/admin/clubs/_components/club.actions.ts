@@ -24,8 +24,16 @@ export const clubAdminAction = safeActionClient.inputSchema(clubAdminActionSchem
 			data: { banned: false, banReason: null, banExpires: null },
 		});
 	} else if (action === "remove") {
-		await prisma.club.delete({
-			where: { id: clubId },
+		await prisma.$transaction(async (tx) => {
+			await tx.deletedEntity.create({
+				data: {
+					entityId: clubId,
+					entityType: "CLUB",
+				},
+			});
+			await tx.club.delete({
+				where: { id: clubId },
+			});
 		});
 	}
 

@@ -137,3 +137,76 @@ export const deleteUserHeaderImage = safeActionClient.action(async ({ ctx }) => 
 		revalidateLocalizedPaths("/search");
 	}
 });
+
+export const deleteAccount = safeActionClient.action(async ({ ctx }) => {
+	const userId = ctx.user.id;
+
+	const clubsWhereUserIsOwner = await prisma.club.findMany({
+		where: {
+			members: {
+				some: {
+					userId,
+					role: "CLUB_OWNER",
+				},
+			},
+		},
+		include: {
+			members: {
+				where: {
+					role: "CLUB_OWNER",
+				},
+			},
+		},
+	});
+
+	const orphanedClubs = clubsWhereUserIsOwner.filter((club) => club.members.length === 1);
+
+	await prisma.$transaction(async (tx) => {
+		for (const club of orphanedClubs) {
+			await tx.clubMembership.deleteMany({
+				where: {
+					clubId: club.id,
+					userId,
+				},
+			});
+		}
+
+		await tx.deletedEntity.create({
+			data: {
+				entityId: userId,
+				entityType: "USER",
+			},
+		});
+
+		const user = await tx.user.findUnique({
+			where: { id: userId },
+			select: { image: true, headerImage: true },
+		});
+
+		if (user?.image) {
+			try {
+				await deleteS3File(`user/${userId}/image`);
+			} catch (error) {
+				logger.warn("Failed to delete user image from S3:", { error });
+			}
+		}
+
+		if (user?.headerImage) {
+			try {
+				await deleteS3File(`user/${userId}/header`);
+			} catch (error) {
+				logger.warn("Failed to delete user header image from S3:", { error });
+			}
+		}
+
+		await tx.user.delete({
+			where: { id: userId },
+		});
+	});
+
+	const locale = await getLocale();
+	return redirect({
+		href: "/",
+		locale,
+	});
+});

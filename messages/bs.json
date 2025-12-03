@@ -130,6 +130,15 @@
 				"description": "Stranica nije pronađena"
 			}
 		},
+		"deleted": {
+			"title": "Ova stranica je obrisana",
+			"message": "Sadržaj koji tražite je obrisan i više nije dostupan.",
+			"backHome": "Vrati se na početnu stranicu",
+			"metadata": {
+				"title": "Obrisano - RECONNED",
+				"description": "Ovaj sadržaj je obrisan i više nije dostupan."
+			}
+		},
 		"home": {
 			"hero": {
 				"button": "Pogledajte listu izmjena",
@@ -689,7 +698,15 @@
 				"save": "Spasi promjene",
 				"bioPlaceholder": "Nešto o meni je to da...",
 				"phoneDescription": "Ovako vas ljudi mogu kontaktirati",
-				"linkTaken": "Link je zauzet"
+				"linkTaken": "Link je zauzet",
+				"deleteAccount": {
+					"title": "Obriši račun",
+					"description": "Jednom kada obrišete račun, nema povratka. Molimo budite sigurni.",
+					"button": "Obriši račun",
+					"confirmTitle": "Jeste li potpuno sigurni?",
+					"confirmDescription": "Ova radnja se ne može poništiti. Ovo će trajno obrisati vaš račun i ukloniti vaše podatke sa naših servera. Ako ste posljednji član bilo kojeg kluba, oni će postati nepreuzeti.",
+					"confirmButton": "Da, obriši moj račun"
+				}
 			},
 			"security": {}
 		},

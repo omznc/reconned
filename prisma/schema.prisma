@@ -28,3 +28,10 @@ enum ReviewType {
   CLUB
   EVENT
 }
+
+enum EntityType {
+  USER
+  CLUB
+  EVENT
+  MEMBER
+}

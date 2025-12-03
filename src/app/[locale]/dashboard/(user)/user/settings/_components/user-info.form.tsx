@@ -1,13 +1,14 @@
 "use client";
 import type { User } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader, Phone, Shield, User as UserIcon } from "lucide-react";
+import { Loader, Phone, Shield, Trash2, User as UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import {
+	deleteAccount,
 	getUserHeaderImageUploadUrl,
 	getUserImageUploadUrl,
 	saveUserInformation,
@@ -15,6 +16,18 @@ import {
 import { userInfoShema } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import type { FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -454,6 +467,47 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					</LoaderSubmitButton>
 				</form>
 			</Form>
+
+			<div className="mt-8 pt-8 border-t">
+				<div>
+					<h3 className="text-lg font-semibold flex items-center gap-2 text-destructive">
+						<Trash2 className="h-5 w-5" />
+						{t("dashboard.user.settings.deleteAccount.title")}
+					</h3>
+					<p className="text-sm text-muted-foreground mt-2 mb-4">
+						{t("dashboard.user.settings.deleteAccount.description")}
+					</p>
+					<AlertDialog>
+						<AlertDialogTrigger asChild>
+							<Button variant="destructive">{t("dashboard.user.settings.deleteAccount.button")}</Button>
+						</AlertDialogTrigger>
+						<AlertDialogContent>
+							<AlertDialogHeader>
+								<AlertDialogTitle>
+									{t("dashboard.user.settings.deleteAccount.confirmTitle")}
+								</AlertDialogTitle>
+								<AlertDialogDescription>
+									{t("dashboard.user.settings.deleteAccount.confirmDescription")}
+								</AlertDialogDescription>
+							</AlertDialogHeader>
+							<AlertDialogFooter>
+								<AlertDialogCancel>{t("common.actions.cancel")}</AlertDialogCancel>
+								<AlertDialogAction
+									onClick={async () => {
+										const result = await deleteAccount();
+										if (result?.serverError) {
+											toast.error(result.serverError);
+										}
+									}}
+									className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+								>
+									{t("dashboard.user.settings.deleteAccount.confirmButton")}
+								</AlertDialogAction>
+							</AlertDialogFooter>
+						</AlertDialogContent>
+					</AlertDialog>
+				</div>
+			</div>
 
 			<ImageCropDialog file={cropFile} onClose={handleCloseCrop} onCrop={handleCrop} />
 		</>

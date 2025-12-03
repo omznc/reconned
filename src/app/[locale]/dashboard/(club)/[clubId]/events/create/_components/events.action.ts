@@ -192,11 +192,19 @@ export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).actio
 	}
 
 	const [event, _] = await Promise.all([
-		prisma.event.delete({
-			where: {
-				id: parsedInput.eventId,
-				clubId: ctx.club.id,
-			},
+		prisma.$transaction(async (tx) => {
+			await tx.deletedEntity.create({
+				data: {
+					entityId: parsedInput.eventId,
+					entityType: "EVENT",
+				},
+			});
+			return await tx.event.delete({
+				where: {
+					id: parsedInput.eventId,
+					clubId: ctx.club.id,
+				},
+			});
 		}),
 		await deleteEventImage({
 			eventId: parsedInput.eventId,

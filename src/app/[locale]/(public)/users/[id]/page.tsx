@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
-import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { env } from "@/lib/env";
@@ -41,9 +40,31 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	});
 
 	if (!user) {
-		// TODO https://github.com/vercel/next.js/issues/63388
-		// notFound();
-		return <NotFoundTemporary />;
+		const deletedEntity = await prisma.deletedEntity.findFirst({
+			where: {
+				entityType: "USER",
+				entityId: params.id,
+			},
+		});
+
+		if (deletedEntity) {
+			const DeletedPage = (await import("@/components/deleted-page")).default;
+			return <DeletedPage />;
+		}
+
+		notFound();
+	}
+
+	const deletedEntity = await prisma.deletedEntity.findFirst({
+		where: {
+			entityType: "USER",
+			entityId: user.id,
+		},
+	});
+
+	if (deletedEntity) {
+		const DeletedPage = (await import("@/components/deleted-page")).default;
+		return <DeletedPage />;
 	}
 
 	// Filter out private events and private clubs

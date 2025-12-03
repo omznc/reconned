@@ -264,14 +264,23 @@ export const disconnectInstagramAccount = safeActionClient
 	});
 
 export const deleteClub = safeActionClient.inputSchema(deleteClubSchema).action(async ({ ctx }) => {
+	const clubId = ctx.club.id;
 	const [, , locale] = await Promise.all([
-		prisma.club.delete({
-			where: {
-				id: ctx.club.id,
-			},
+		prisma.$transaction(async (tx) => {
+			await tx.deletedEntity.create({
+				data: {
+					entityId: clubId,
+					entityType: "CLUB",
+				},
+			});
+			await tx.club.delete({
+				where: {
+					id: clubId,
+				},
+			});
 		}),
 		deleteClubImage({
-			clubId: ctx.club.id,
+			clubId,
 		}),
 		getLocale(),
 	]);
@@ -287,9 +296,9 @@ export const deleteClub = safeActionClient.inputSchema(deleteClubSchema).action(
 	});
 
 	revalidateTag("managed-clubs", "max");
-	revalidateLocalizedPaths(`/dashboard/${ctx.club.id}`, "layout");
+	revalidateLocalizedPaths(`/dashboard/${clubId}`, "layout");
 	if (!ctx.club.isPrivate) {
-		revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? ctx.club.id}`);
+		revalidateLocalizedPaths(`/clubs/${ctx.club.slug ?? clubId}`);
 		revalidateLocalizedPaths("/clubs");
 		revalidateLocalizedPaths("/search");
 	}

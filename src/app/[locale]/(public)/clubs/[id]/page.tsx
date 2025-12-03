@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
-import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
 import { isAuthenticated } from "@/lib/auth";
@@ -70,9 +69,31 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		: null;
 
 	if (!club) {
-		// TODO https://github.com/vercel/next.js/issues/63388
-		// notFound();
-		return <NotFoundTemporary />;
+		const deletedEntity = await prisma.deletedEntity.findFirst({
+			where: {
+				entityType: "CLUB",
+				entityId: params.id,
+			},
+		});
+
+		if (deletedEntity) {
+			const DeletedPage = (await import("@/components/deleted-page")).default;
+			return <DeletedPage />;
+		}
+
+		notFound();
+	}
+
+	const deletedEntity = await prisma.deletedEntity.findFirst({
+		where: {
+			entityType: "CLUB",
+			entityId: club.id,
+		},
+	});
+
+	if (deletedEntity) {
+		const DeletedPage = (await import("@/components/deleted-page")).default;
+		return <DeletedPage />;
 	}
 
 	const sportsOrganizationSchema: WithContext<SportsOrganization> = {

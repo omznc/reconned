@@ -130,6 +130,15 @@
 				"description": "The page you are looking for does not exist."
 			}
 		},
+		"deleted": {
+			"title": "This page has been deleted",
+			"message": "The content you are looking for has been deleted and is no longer available.",
+			"backHome": "Return to homepage",
+			"metadata": {
+				"title": "Deleted - RECONNED",
+				"description": "This content has been deleted and is no longer available."
+			}
+		},
 		"home": {
 			"hero": {
 				"button": "View the changelog",
@@ -689,7 +698,15 @@
 				"save": "Save changes",
 				"bioPlaceholder": "Something about me is that...",
 				"phoneDescription": "This is how people can reach you",
-				"linkTaken": "Link taken"
+				"linkTaken": "Link taken",
+				"deleteAccount": {
+					"title": "Delete account",
+					"description": "Once you delete your account, there is no going back. Please be certain.",
+					"button": "Delete account",
+					"confirmTitle": "Are you absolutely sure?",
+					"confirmDescription": "This action cannot be undone. This will permanently delete your account and remove your data from our servers. If you are the last member of any clubs, they will become unclaimed.",
+					"confirmButton": "Yes, delete my account"
+				}
 			},
 			"security": {}
 		},

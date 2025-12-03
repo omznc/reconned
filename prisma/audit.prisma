@@ -24,3 +24,15 @@ model ClubAuditLog {
   @@index([actionType])
   @@index([createdAt])
 }
+
+// Track deleted entities to show "deleted" pages instead of 404
+model DeletedEntity {
+  id        String     @id @default(ulid())
+  entityId  String
+  entityType EntityType
+  deletedAt DateTime   @default(now())
+
+  @@unique([entityId, entityType])
+  @@index([entityId])
+  @@index([entityType])
+}
