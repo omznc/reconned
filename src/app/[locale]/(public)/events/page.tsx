@@ -79,16 +79,25 @@ export default async function Page() {
 				location: {
 					"@type": "Place",
 					name: event.location,
+					address: event.location,
 				},
 				organizer: {
 					"@type": "SportsOrganization",
 					name: event.club?.name,
 					sport: "Airsoft",
 				},
+				performer: event.club
+					? {
+							"@type": "SportsOrganization",
+							name: event.club.name,
+							sport: "Airsoft",
+						}
+					: undefined,
 				offers:
 					event.costPerPerson > 0
 						? {
 								"@type": "Offer",
+								url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
 								price: event.costPerPerson,
 								priceCurrency: "BAM",
 							}

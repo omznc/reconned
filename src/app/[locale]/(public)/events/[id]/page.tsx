@@ -82,6 +82,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		location: {
 			"@type": "Place",
 			name: event.location,
+			address: event.location,
 			hasMap: event.googleMapsLink || undefined,
 		},
 		organizer: {
@@ -92,10 +93,17 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
 			logo: event.club.logo || undefined,
 		},
+		performer: {
+			"@type": "SportsOrganization",
+			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
+			name: event.club.name,
+			sport: "Airsoft",
+		},
 		offers:
 			event.costPerPerson > 0
 				? {
 						"@type": "Offer",
+						url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
 						price: event.costPerPerson,
 						priceCurrency: "BAM",
 						availability: "https://schema.org/InStock",
