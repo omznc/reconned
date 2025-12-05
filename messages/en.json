@@ -1761,6 +1761,197 @@
 			"unknownError": "Unknown error"
 		}
 	},
+	"testMap": {
+		"meta": {
+			"title": "Test Map Editor",
+			"description": "Work in progress"
+		},
+		"controls": "Controls",
+		"modes": {
+			"select": "Select",
+			"move": "Move",
+			"point": "Point",
+			"line": "Line",
+			"polygon": "Polygon",
+			"rectangle": "Rectangle",
+			"circle": "Circle",
+			"freehand": "Freehand"
+		},
+		"fields": {
+			"stroke": "Stroke",
+			"fill": "Fill",
+			"strokeWidth": "Stroke Width",
+			"fillOpacity": "Fill Opacity",
+			"grid": "Grid",
+			"gridLabels": "Grid labels",
+			"basemap": "Basemap",
+			"selection": "Selection",
+			"label": "Label",
+			"features": "Features",
+			"noFeatures": "No features yet",
+			"icon": "Icon",
+			"searchIcon": "Search icons",
+			"iconBackground": "Icon background",
+			"iconSize": "Icon size",
+			"playArea": "Play area",
+			"gridOpacity": "Grid opacity",
+			"labelOpacity": "Label opacity"
+		},
+		"actions": {
+			"title": "Actions",
+			"undo": "Undo",
+			"redo": "Redo",
+			"export": "Export JSON",
+			"import": "Import JSON",
+			"delete": "Delete",
+			"duplicate": "Duplicate",
+			"finish": "Finish shape",
+			"clear": "Clear all",
+			"setPlayArea": "Set area",
+			"resetPlayArea": "Edit area",
+			"confirmPlayArea": "Confirm area",
+			"cancelPlayArea": "Cancel"
+		},
+		"dialogs": {
+			"newMap": {
+				"title": "Start a new map?",
+				"body": "The current map will be overwritten. Download it first if you want to keep it.",
+				"download": "Download current map",
+				"confirm": "Start new map",
+				"cancel": "Cancel"
+			}
+		},
+		"canvas": {
+			"title": "Canvas",
+			"modeLabel": "Mode:",
+			"instructions": "Click to add points. Double click to finish lines/polygons."
+		},
+		"overlay": {
+			"setPlayArea": "Click two corners to set the play area (square)."
+		},
+		"status": {
+			"line": "Line drawing",
+			"polygon": "Polygon drawing",
+			"rectangle": "Rectangle sizing",
+			"circle": "Circle sizing",
+			"freehand": "Freehand drawing"
+		},
+		"gridRef": {
+			"title": "Grid ref",
+			"cell": "Cell",
+			"lat": "Lat",
+			"lng": "Lng"
+		},
+		"basemap": {
+			"osm": "Street",
+			"satellite": "Satellite"
+		},
+		"keybinds": {
+			"open": "Keybinds",
+			"title": "Keyboard shortcuts",
+			"description": "Keyboard shortcuts available in the editor.",
+			"columns": {
+				"action": "Action",
+				"shortcut": "Shortcut"
+			},
+			"items": {
+				"undo": {
+					"action": "Undo",
+					"shortcut": "Ctrl/Cmd + Z"
+				},
+				"redo": {
+					"action": "Redo",
+					"shortcut": "Ctrl/Cmd + Shift + Z"
+				},
+				"delete": {
+					"action": "Delete selection",
+					"shortcut": "Delete / Backspace"
+				},
+				"duplicate": {
+					"action": "Duplicate selection",
+					"shortcut": "Ctrl/Cmd + D"
+				},
+				"finish": {
+					"action": "Finish shape",
+					"shortcut": "Enter"
+				},
+				"cancel": {
+					"action": "Cancel draft",
+					"shortcut": "Esc"
+				},
+				"shiftDrag": {
+					"action": "Move selection",
+					"shortcut": "Ctrl + Drag"
+				}
+			}
+		},
+		"stats": {
+			"title": "Stats",
+			"description": "Quick metrics for the current map.",
+			"open": "Open stats",
+			"empty": "Add a play area or draw something to see stats.",
+			"sections": {
+				"size": {
+					"title": "Map size",
+					"width": "Width",
+					"height": "Height",
+					"diagonal": "Diagonal",
+					"area": "Area"
+				},
+				"features": {
+					"title": "Features",
+					"total": "Total",
+					"points": "Points",
+					"lines": "Lines",
+					"areas": "Areas",
+					"freehand": "Freehand"
+				},
+				"distance": {
+					"title": "Distances",
+					"lineLength": "Linework length",
+					"crossingWalk": "Walk end-to-end (5 km/h)",
+					"crossingDrive": "Drive end-to-end (50 km/h)"
+				}
+			},
+			"units": {
+				"meters": "{value} m",
+				"kilometers": "{value} km",
+				"squareMeters": "{value} m²",
+				"squareKilometers": "{value} km²",
+				"minutes": "{value} min",
+				"hours": "{value} h",
+				"hoursMinutes": "{hours} h {minutes} min"
+			},
+			"notAvailable": "Not available"
+		},
+		"menubar": {
+			"file": "File",
+			"edit": "Edit",
+			"view": "View",
+			"stats": "Stats",
+			"playArea": "Play area",
+			"help": "Help",
+			"close": "Close",
+			"newMap": "New map",
+			"save": "Save",
+			"saveAs": "Save as…",
+			"exportPng": "Export PNG",
+			"selectAll": "Select all",
+			"clearSelection": "Clear selection",
+			"deleteSelection": "Delete selection",
+			"duplicateSelection": "Duplicate selection",
+			"group": "Group",
+			"ungroup": "Ungroup",
+			"resetView": "Reset view to play area",
+			"toggleMarkers": "Show markers",
+			"toggleLabelSize": "Large grid labels",
+			"recenterOverlay": "Re-center overlay",
+			"fitToFeatures": "Fit to features",
+			"lockPlayArea": "Lock play area",
+			"about": "About",
+			"reportIssue": "Report issue"
+		}
+	},
 	"auth": {
 		"resetPasswordSubject": "Reset your password",
 		"newUserSignedUp": "New user signed up"
