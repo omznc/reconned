@@ -1761,6 +1761,197 @@
 			"unknownError": "Nepoznata greška"
 		}
 	},
+	"testMap": {
+		"meta": {
+			"title": "Test editor mape",
+			"description": "U toku"
+		},
+		"controls": "Kontrole",
+		"modes": {
+			"select": "Odaberi",
+			"move": "Pomjeri",
+			"point": "Tačka",
+			"line": "Linija",
+			"polygon": "Poligon",
+			"rectangle": "Pravougaonik",
+			"circle": "Krug",
+			"freehand": "Crtanje"
+		},
+		"fields": {
+			"stroke": "Obrub",
+			"fill": "Ispuna",
+			"strokeWidth": "Debljina obruba",
+			"fillOpacity": "Prozirnost ispune",
+			"grid": "Mreža",
+			"gridLabels": "Oznake mreže",
+			"basemap": "Podloga",
+			"selection": "Selektovano",
+			"label": "Oznaka",
+			"features": "Elementi",
+			"noFeatures": "Još nema elemenata",
+			"icon": "Ikona",
+			"searchIcon": "Pretraži ikone",
+			"iconBackground": "Pozadina ikone",
+			"iconSize": "Veličina ikone",
+			"playArea": "Zona igre",
+			"gridOpacity": "Prozirnost mreže",
+			"labelOpacity": "Prozirnost oznaka"
+		},
+		"actions": {
+			"title": "Akcije",
+			"undo": "Poništi",
+			"redo": "Vrati",
+			"export": "Izvezi JSON",
+			"import": "Uvezi JSON",
+			"delete": "Obriši",
+			"duplicate": "Dupliciraj",
+			"finish": "Završi oblik",
+			"clear": "Izbriši sve",
+			"setPlayArea": "Postavi zonu",
+			"resetPlayArea": "Uredi zonu",
+			"confirmPlayArea": "Potvrdi zonu",
+			"cancelPlayArea": "Otkaži"
+		},
+		"dialogs": {
+			"newMap": {
+				"title": "Pokrenuti novu mapu?",
+				"body": "Trenutna mapa će biti zamijenjena. Preuzmite je ako je želite sačuvati.",
+				"download": "Preuzmi trenutnu mapu",
+				"confirm": "Pokreni novu mapu",
+				"cancel": "Otkaži"
+			}
+		},
+		"canvas": {
+			"title": "Platno",
+			"modeLabel": "Alat:",
+			"instructions": "Kliknite za dodavanje tačaka. Dvokliknite za završetak linije/poligona."
+		},
+		"overlay": {
+			"setPlayArea": "Kliknite dva ugla da postavite zonu (kvadrat)."
+		},
+		"status": {
+			"line": "Crtanje linije",
+			"polygon": "Crtanje poligona",
+			"rectangle": "Podešavanje pravougaonika",
+			"circle": "Podešavanje kruga",
+			"freehand": "Crtanje slobodnom rukom"
+		},
+		"gridRef": {
+			"title": "Grid ref",
+			"cell": "Ćelija",
+			"lat": "Lat",
+			"lng": "Long"
+		},
+		"basemap": {
+			"osm": "Ulice",
+			"satellite": "Satelit"
+		},
+		"keybinds": {
+			"open": "Prečice",
+			"title": "Tastaturne prečice",
+			"description": "Prečice tastature dostupne u editoru.",
+			"columns": {
+				"action": "Akcija",
+				"shortcut": "Prečica"
+			},
+			"items": {
+				"undo": {
+					"action": "Poništi",
+					"shortcut": "Ctrl/Cmd + Z"
+				},
+				"redo": {
+					"action": "Vrati",
+					"shortcut": "Ctrl/Cmd + Shift + Z"
+				},
+				"delete": {
+					"action": "Obriši selekciju",
+					"shortcut": "Delete / Backspace"
+				},
+				"duplicate": {
+					"action": "Dupliciraj selekciju",
+					"shortcut": "Ctrl/Cmd + D"
+				},
+				"finish": {
+					"action": "Završi oblik",
+					"shortcut": "Enter"
+				},
+				"cancel": {
+					"action": "Prekini nacrt",
+					"shortcut": "Esc"
+				},
+				"shiftDrag": {
+					"action": "Pomjeri selekciju",
+					"shortcut": "Ctrl + Povlačenje"
+				}
+			}
+		},
+		"stats": {
+			"title": "Statistika",
+			"description": "Brzi pregled metrika za mapu.",
+			"open": "Otvori statistiku",
+			"empty": "Dodaj zonu ili nacrtaj nešto da vidiš statistiku.",
+			"sections": {
+				"size": {
+					"title": "Veličina mape",
+					"width": "Širina",
+					"height": "Visina",
+					"diagonal": "Dijagonala",
+					"area": "Površina"
+				},
+				"features": {
+					"title": "Elementi",
+					"total": "Ukupno",
+					"points": "Tačke",
+					"lines": "Linije",
+					"areas": "Površine",
+					"freehand": "Slobodno crtanje"
+				},
+				"distance": {
+					"title": "Distance",
+					"lineLength": "Dužina linija",
+					"crossingWalk": "Pješke s kraja na kraj (5 km/h)",
+					"crossingDrive": "Autom s kraja na kraj (50 km/h)"
+				}
+			},
+			"units": {
+				"meters": "{value} m",
+				"kilometers": "{value} km",
+				"squareMeters": "{value} m²",
+				"squareKilometers": "{value} km²",
+				"minutes": "{value} min",
+				"hours": "{value} h",
+				"hoursMinutes": "{hours} h {minutes} min"
+			},
+			"notAvailable": "Nedostupno"
+		},
+		"menubar": {
+			"file": "Datoteka",
+			"edit": "Uredi",
+			"view": "Prikaz",
+			"stats": "Statistika",
+			"playArea": "Zona igre",
+			"help": "Pomoć",
+			"close": "Zatvori",
+			"newMap": "Nova mapa",
+			"save": "Sačuvaj",
+			"saveAs": "Sačuvaj kao…",
+			"exportPng": "Izvezi PNG",
+			"selectAll": "Selektuj sve",
+			"clearSelection": "Očisti selekciju",
+			"deleteSelection": "Obriši selekciju",
+			"duplicateSelection": "Dupliciraj selekciju",
+			"group": "Grupiši",
+			"ungroup": "Razgrupiši",
+			"resetView": "Resetuj prikaz na zonu",
+			"toggleMarkers": "Prikaži markere",
+			"toggleLabelSize": "Velike oznake mreže",
+			"recenterOverlay": "Centriraj overlay",
+			"fitToFeatures": "Prilagodi elementima",
+			"lockPlayArea": "Zaključaj zonu",
+			"about": "O aplikaciji",
+			"reportIssue": "Prijavi problem"
+		}
+	},
 	"auth": {
 		"resetPasswordSubject": "Resetujte svoju lozinku",
 		"newUserSignedUp": "Novi korisnik se registrovao"
