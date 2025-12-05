@@ -342,7 +342,6 @@ export function GenericDataTable<T>({
 				</div>
 
 				<DropdownMenu>
-					e
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" className="h-10 shadow-none">
 							{t("components.table.showColumns")}
