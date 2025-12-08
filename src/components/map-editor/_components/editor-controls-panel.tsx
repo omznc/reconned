@@ -7,6 +7,7 @@ import type { ComponentType } from "react";
 import { PointMarker } from "@/components/map-editor/_components/point-marker";
 import type { EditorMode } from "@/components/map-editor/types";
 import { useMapEditorStore } from "@/components/map-editor/use-map-editor-store";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -101,8 +102,8 @@ export function EditorControlsPanel({
 				</div>
 				<div className="flex min-h-0 flex-1 flex-col gap-2">
 					<div className="flex items-center justify-between">
-						<span className="font-semibold text-sm">{translations("testMap.fields.features")}</span>
-						<span className="text-xs text-muted-foreground">{features.length}</span>
+						<span className="font-semibold text-sm">translations("testMap.fields.features")</span>
+						<span className="text-xs text-muted-foreground">features.length</span>
 					</div>
 					{features.length > 0 ? (
 						<ScrollArea className="flex-1 min-h-0 rounded-md border">

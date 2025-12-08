@@ -4,6 +4,7 @@ import { FileDown, Loader } from "lucide-react";
 import maplibregl, { type GeoJSONSource, type LngLat, type Map as MapLibreMap, type MapMouseEvent } from "maplibre-gl";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { BBox, FeatureCollection } from "geojson";
 import { useTranslations } from "next-intl";
@@ -20,7 +21,9 @@ import {
 	featuresToCollection,
 	featureToGeoJSON,
 } from "@/components/map-editor/geometry";
+
 import type { EditorMode, LngLatTuple, MapFeature, MapFeatureKind, MapGeometry } from "@/components/map-editor/types";
+
 import { useMapEditorStore } from "@/components/map-editor/use-map-editor-store";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";

@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+
 import { iconNames } from "lucide-react/dynamic";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -8,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { getIconComponent, PointMarker } from "@/components/map-editor/_components/point-marker";
 import type { FeatureStyle } from "@/components/map-editor/types";
 import { useMapEditorStore } from "@/components/map-editor/use-map-editor-store";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
