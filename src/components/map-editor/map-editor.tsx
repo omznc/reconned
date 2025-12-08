@@ -1,11 +1,10 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
-import { Circle, FileDown, Loader, MousePointer2, Move3d, PencilLine, Shapes, Square, X } from "lucide-react";
-import { iconNames } from "lucide-react/dynamic";
+import { FileDown, Loader } from "lucide-react";
 import maplibregl, { type GeoJSONSource, type LngLat, type Map as MapLibreMap, type MapMouseEvent } from "maplibre-gl";
 import type { ChangeEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { BBox, FeatureCollection } from "geojson";
 import { useTranslations } from "next-intl";
@@ -22,25 +21,14 @@ import {
 	featuresToCollection,
 	featureToGeoJSON,
 } from "@/components/map-editor/geometry";
-import type {
-	BasemapId,
-	EditorMode,
-	FeatureStyle,
-	LngLatTuple,
-	MapFeature,
-	MapFeatureKind,
-} from "@/components/map-editor/types";
+
+import type { EditorMode, LngLatTuple, MapFeature, MapFeatureKind, MapGeometry } from "@/components/map-editor/types";
+
 import { useMapEditorStore } from "@/components/map-editor/use-map-editor-store";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
-type ModeButton = {
-	mode: EditorMode;
-	icon: LucideIcon;
-	label: string;
-};
 
 const baseStyle = {
 	version: 8,
@@ -72,29 +60,77 @@ type MapEditorProps = {
 	onClose?: () => void;
 };
 
+type HandleMeta =
+	| { kind: "line-vertex"; index: number }
+	| { kind: "polygon-vertex"; ring: number; index: number }
+	| { kind: "polygon-midpoint"; ring: number; after: number }
+	| { kind: "rectangle-corner"; corner: "nw" | "ne" | "sw" | "se" }
+	| { kind: "circle-edge"; direction: "north" | "south" | "east" | "west" };
+
+type EditorHandle = {
+	id: string;
+	lngLat: LngLatTuple;
+	position: { x: number; y: number };
+	meta: HandleMeta;
+};
+
+type HandleDragState = {
+	featureId: string;
+	meta: HandleMeta;
+	origin: MapGeometry;
+	pointerId: number;
+};
+
+const cloneMapGeometry = (geometry: MapGeometry): MapGeometry => {
+	if (geometry.type === "Point") {
+		return { type: "Point", coordinates: [geometry.coordinates[0], geometry.coordinates[1]] };
+	}
+	if (geometry.type === "LineString") {
+		const coords: LngLatTuple[] = [];
+		for (const coord of geometry.coordinates) {
+			coords.push([coord[0], coord[1]]);
+		}
+		return { type: "LineString", coordinates: coords };
+	}
+	if (geometry.type === "Polygon") {
+		const rings: LngLatTuple[][] = [];
+		for (const ring of geometry.coordinates) {
+			const next: LngLatTuple[] = [];
+			for (const coord of ring) {
+				next.push([coord[0], coord[1]]);
+			}
+			rings.push(next);
+		}
+		return { type: "Polygon", coordinates: rings };
+	}
+	if (geometry.type === "Rectangle") {
+		return {
+			type: "Rectangle",
+			start: [geometry.start[0], geometry.start[1]],
+			end: [geometry.end[0], geometry.end[1]],
+		};
+	}
+	if (geometry.type === "Circle") {
+		return {
+			type: "Circle",
+			center: [geometry.center[0], geometry.center[1]],
+			edge: geometry.edge ? [geometry.edge[0], geometry.edge[1]] : null,
+			radius: geometry.radius,
+		};
+	}
+	const coords: LngLatTuple[] = [];
+	for (const coord of geometry.coordinates) {
+		coords.push([coord[0], coord[1]]);
+	}
+	return { type: "Freehand", coordinates: coords, closed: geometry.closed };
+};
+
 export function MapEditor({ visible = false, onClose }: MapEditorProps) {
-	const t = useTranslations();
-	const {
-		features,
-		addFeature,
-		updateFeature,
-		deleteFeature,
-		duplicateSelected,
-		undo,
-		redo,
-		setMode,
-		mode,
-		selectedId,
-		setSelectedId,
-		gridVisible,
-		setGridVisible,
-		style,
-		setStyle,
-		clear,
-		replaceFeatures,
-		history,
-		future,
-	} = useMapEditorStore();
+	const translations = useTranslations();
+	const mapEditorStore = useMapEditorStore();
+	const { features, selectedId, gridVisible, basemap, gridLabelsVisible, gridOpacity, labelOpacity, mode } =
+		mapEditorStore;
+	const appliedStyle = mapEditorStore.style;
 	const mapRef = useRef<MapLibreMap | null>(null);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const gridCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -102,10 +138,6 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 	const [draft, setDraft] = useState<DraftState>(null);
 	const [hoverPoint, setHoverPoint] = useState<LngLatTuple | null>(null);
 	const [snapPoint, setSnapPoint] = useState<LngLatTuple | null>(null);
-	const [gridLabelsVisible, setGridLabelsVisible] = useState(true);
-	const [gridOpacity, setGridOpacity] = useState(1);
-	const [labelOpacity, setLabelOpacity] = useState(1);
-	const [helpOpen, setHelpOpen] = useState(false);
 	const [statsOpen, setStatsOpen] = useState(false);
 	const [gridRef, setGridRef] = useState<{ cell: string; lat: string; lng: string }>({
 		cell: "",
@@ -131,71 +163,49 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 	const [mapReady, setMapReady] = useState(false);
 	const [isFreehandDrawing, setIsFreehandDrawing] = useState(false);
 	const importRef = useRef<HTMLInputElement | null>(null);
-	const pointIconRef = useRef<string>("map-pin");
 	const markersRef = useRef<Map<string, { marker: maplibregl.Marker; root: Root; size: number }>>(new Map());
 	const previousPlayAreaRef = useRef<{ minLng: number; maxLng: number; minLat: number; maxLat: number } | null>(null);
 	const draggingRef = useRef<{
 		id: string;
 		last: LngLatTuple;
 	} | null>(null);
-	const strokeRafRef = useRef<number | null>(null);
-	const fillRafRef = useRef<number | null>(null);
-	const appliedStyle = useMemo(() => {
-		return style;
-	}, [style]);
-	const [strokeColorInput, setStrokeColorInput] = useState<string>(appliedStyle.strokeColor);
-	const [fillColorInput, setFillColorInput] = useState<string>(appliedStyle.fillColor);
-	const [iconSizeInput, setIconSizeInput] = useState<number>(22);
+	const [handleDrag, setHandleDrag] = useState<HandleDragState | null>(null);
+	const handleDragRef = useRef<HandleDragState | null>(null);
 	const [overlaySize, setOverlaySize] = useState<number>(0);
+	const [projectionTick, setProjectionTick] = useState(0);
+	const temporaryModeRef = useRef<EditorMode | null>(null);
 	const sidebarIconSize = 22;
-	const basemapOptions = useMemo<{ id: BasemapId; label: string }[]>(
-		() => [
-			{ id: "osm", label: t("testMap.basemap.osm") },
-			{ id: "satellite", label: t("testMap.basemap.satellite") },
-		],
-		[t],
-	);
-	const [basemap, setBasemap] = useState<BasemapId>("osm");
 	const confirm = useConfirm();
-	const modeButtons = useMemo<ModeButton[]>(() => {
-		return [
-			{ mode: "select", icon: MousePointer2, label: t("testMap.modes.select") },
-			{ mode: "move", icon: Move3d, label: t("testMap.modes.move") },
-			{ mode: "point", icon: X, label: t("testMap.modes.point") },
-			{ mode: "line", icon: PencilLine, label: t("testMap.modes.line") },
-			{ mode: "polygon", icon: Shapes, label: t("testMap.modes.polygon") },
-			{ mode: "rectangle", icon: Square, label: t("testMap.modes.rectangle") },
-			{ mode: "circle", icon: Circle, label: t("testMap.modes.circle") },
-			{ mode: "freehand", icon: PencilLine, label: t("testMap.modes.freehand") },
-		];
-	}, [t]);
-	const keybinds = useMemo(
-		() => [
-			{ action: t("testMap.keybinds.items.undo.action"), shortcut: t("testMap.keybinds.items.undo.shortcut") },
-			{ action: t("testMap.keybinds.items.redo.action"), shortcut: t("testMap.keybinds.items.redo.shortcut") },
-			{
-				action: t("testMap.keybinds.items.delete.action"),
-				shortcut: t("testMap.keybinds.items.delete.shortcut"),
-			},
-			{
-				action: t("testMap.keybinds.items.duplicate.action"),
-				shortcut: t("testMap.keybinds.items.duplicate.shortcut"),
-			},
-			{
-				action: t("testMap.keybinds.items.finish.action"),
-				shortcut: t("testMap.keybinds.items.finish.shortcut"),
-			},
-			{
-				action: t("testMap.keybinds.items.cancel.action"),
-				shortcut: t("testMap.keybinds.items.cancel.shortcut"),
-			},
-			{
-				action: t("testMap.keybinds.items.shiftDrag.action"),
-				shortcut: t("testMap.keybinds.items.shiftDrag.shortcut"),
-			},
-		],
-		[t],
-	);
+
+	const subLinesThresholdPx = 90;
+	const subLabelsThresholdPx = 150;
+	const subSubLinesThresholdPx = 240;
+	const subSubLabelsThresholdPx = 320;
+
+	useEffect(() => {
+		handleDragRef.current = handleDrag;
+	}, [handleDrag]);
+
+	useEffect(() => {
+		if (!mapReady) {
+			return;
+		}
+		const map = mapRef.current;
+		if (!map) {
+			return;
+		}
+		const tick = () => {
+			setProjectionTick((value) => value + 1);
+		};
+		map.on("move", tick);
+		map.on("zoom", tick);
+		map.on("resize", tick);
+		return () => {
+			map.off("move", tick);
+			map.off("zoom", tick);
+			map.off("resize", tick);
+		};
+	}, [mapReady]);
 
 	const updateDraft = (next: DraftState) => {
 		draftRef.current = next;
@@ -211,20 +221,31 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		return { x: point.x, y: point.y };
 	};
 
+	const pointerEventToLngLat = useCallback((event: PointerEvent): LngLatTuple | null => {
+		const map = mapRef.current;
+		const container = mapContainerRef.current;
+		if (!map || !container) {
+			return null;
+		}
+		const rect = container.getBoundingClientRect();
+		const lngLat = map.unproject([event.clientX - rect.left, event.clientY - rect.top]);
+		return [lngLat.lng, lngLat.lat];
+	}, []);
+
 	const createFeature = (kind: MapFeatureKind, geometry: MapFeature["geometry"]): MapFeature => {
 		return {
 			id: crypto.randomUUID(),
 			kind,
 			geometry,
 			style: appliedStyle,
-			iconName: pointIconRef.current,
+			iconName: mapEditorStore.pointIconName,
 			iconBackground: true,
 			iconSize: 22,
 		};
 	};
 
 	const addGeometryFeature = (kind: MapFeatureKind, geometry: MapFeature["geometry"]) => {
-		addFeature(createFeature(kind, geometry));
+		mapEditorStore.addFeature(createFeature(kind, geometry));
 	};
 
 	const finalizeLine = (points: LngLatTuple[]) => {
@@ -260,19 +281,19 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			layers: ["editor-fill", "editor-line", "editor-point", "editor-point-hit"],
 		});
 		if (featuresAtPoint.length === 0) {
-			setSelectedId(undefined);
+			mapEditorStore.setSelectedId(undefined);
 			return;
 		}
 		const first = featuresAtPoint[0];
 		if (!first) {
-			setSelectedId(undefined);
+			mapEditorStore.setSelectedId(undefined);
 			return;
 		}
 		if (typeof first.properties?.id !== "string") {
-			setSelectedId(undefined);
+			mapEditorStore.setSelectedId(undefined);
 			return;
 		}
-		setSelectedId(first.properties.id);
+		mapEditorStore.setSelectedId(first.properties.id);
 	};
 
 	const handleClick = (event: MapMouseEvent) => {
@@ -282,15 +303,16 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		if (isSettingPlayArea) {
 			return;
 		}
-		if (mode === "select") {
+		const currentMode = mapEditorStore.mode;
+		if (currentMode === "select") {
 			handleSelect(event);
 			return;
 		}
-		if (mode === "point") {
+		if (currentMode === "point") {
 			addGeometryFeature("point", { type: "Point", coordinates: finalCoordinate });
 			return;
 		}
-		if (mode === "line") {
+		if (currentMode === "line") {
 			if (!draft || draft.type !== "line") {
 				updateDraft({ type: "line", points: [finalCoordinate] });
 				return;
@@ -303,7 +325,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			updateDraft({ type: "line", points: nextPoints });
 			return;
 		}
-		if (mode === "polygon") {
+		if (currentMode === "polygon") {
 			if (!draft || draft.type !== "polygon") {
 				updateDraft({ type: "polygon", points: [finalCoordinate] });
 				return;
@@ -316,7 +338,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			updateDraft({ type: "polygon", points: [...draft.points, finalCoordinate] });
 			return;
 		}
-		if (mode === "rectangle") {
+		if (currentMode === "rectangle") {
 			if (!draft || draft.type !== "rectangle") {
 				updateDraft({ type: "rectangle", start: coordinate, end: coordinate });
 				return;
@@ -325,7 +347,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			updateDraft(null);
 			return;
 		}
-		if (mode === "circle") {
+		if (currentMode === "circle") {
 			if (!draft || draft.type !== "circle") {
 				updateDraft({ type: "circle", center: coordinate, edge: coordinate });
 				return;
@@ -338,12 +360,12 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 
 	const handleDoubleClick = (event: MapMouseEvent) => {
 		const coordinate: LngLatTuple = [event.lngLat.lng, event.lngLat.lat];
-		if (mode === "line" && draft && draft.type === "line") {
+		if (mapEditorStore.mode === "line" && draft && draft.type === "line") {
 			event.preventDefault();
 			finalizeLine(draft.points);
 			return;
 		}
-		if (mode === "polygon" && draft && draft.type === "polygon") {
+		if (mapEditorStore.mode === "polygon" && draft && draft.type === "polygon") {
 			event.preventDefault();
 			const points = [...draft.points];
 			points.push(coordinate);
@@ -368,30 +390,59 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			const bottom = top + sizePx;
 			const cellPx = sizePx / 10;
 			const subPx = cellPx / 3;
+			const subSubPx = subPx / 3;
+			const showSubGrid = cellPx >= subLinesThresholdPx;
+			const showSubSubGrid = cellPx >= subSubLinesThresholdPx;
 			const pt = map.project(event.lngLat);
 			const inBounds = pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom;
 			if (inBounds) {
 				const col = Math.floor((pt.x - left) / cellPx);
 				const row = Math.floor((pt.y - top) / cellPx);
-				const subCol = Math.floor(((pt.x - left) % cellPx) / subPx);
-				const subRow = Math.floor(((pt.y - top) % cellPx) / subPx);
-				if (
-					row >= 0 &&
-					row < 10 &&
-					col >= 0 &&
-					col < 10 &&
-					subRow >= 0 &&
-					subRow < 3 &&
-					subCol >= 0 &&
-					subCol < 3
-				) {
+				if (row >= 0 && row < 10 && col >= 0 && col < 10) {
 					const cellLabel = `${toLetters(row)}${col + 1}`;
-					const subIndex = subRow * 3 + subCol + 1;
-					setGridRef({
-						cell: `${cellLabel}-${subIndex}`,
-						lat: formatCoordShort(coordinate[1], true),
-						lng: formatCoordShort(coordinate[0], false),
-					});
+					if (showSubGrid) {
+						const subCol = Math.floor(((pt.x - left) % cellPx) / subPx);
+						const subRow = Math.floor(((pt.y - top) % cellPx) / subPx);
+						if (subRow >= 0 && subRow < 3 && subCol >= 0 && subCol < 3) {
+							const subIndex = subRow * 3 + subCol + 1;
+							if (showSubSubGrid) {
+								const subSubCol = Math.floor((((pt.x - left) % cellPx) % subPx) / subSubPx);
+								const subSubRow = Math.floor((((pt.y - top) % cellPx) % subPx) / subSubPx);
+								if (subSubRow >= 0 && subSubRow < 3 && subSubCol >= 0 && subSubCol < 3) {
+									const subSubIndex = subSubRow * 3 + subSubCol + 1;
+									setGridRef({
+										cell: `${cellLabel}-${subIndex}-${subSubIndex}`,
+										lat: formatCoordShort(coordinate[1], true),
+										lng: formatCoordShort(coordinate[0], false),
+									});
+								} else {
+									setGridRef({
+										cell: `${cellLabel}-${subIndex}`,
+										lat: formatCoordShort(coordinate[1], true),
+										lng: formatCoordShort(coordinate[0], false),
+									});
+								}
+							} else {
+								setGridRef({
+									cell: `${cellLabel}-${subIndex}`,
+									lat: formatCoordShort(coordinate[1], true),
+									lng: formatCoordShort(coordinate[0], false),
+								});
+							}
+						} else {
+							setGridRef({
+								cell: cellLabel,
+								lat: formatCoordShort(coordinate[1], true),
+								lng: formatCoordShort(coordinate[0], false),
+							});
+						}
+					} else {
+						setGridRef({
+							cell: cellLabel,
+							lat: formatCoordShort(coordinate[1], true),
+							lng: formatCoordShort(coordinate[0], false),
+						});
+					}
 				} else {
 					setGridRef({ cell: "", lat: "", lng: "" });
 				}
@@ -404,11 +455,17 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		if (isSettingPlayArea) {
 			return;
 		}
+		if (handleDragRef.current) {
+			return;
+		}
 		if (draggingRef.current) {
 			const drag = draggingRef.current;
 			const delta: LngLatTuple = [coordinate[0] - drag.last[0], coordinate[1] - drag.last[1]];
-			applyTranslation(drag.id, delta);
-			draggingRef.current = { ...drag, last: coordinate };
+			if (mapEditorStore.mode === "move") {
+				applyTranslation(drag.id, delta);
+				draggingRef.current = { ...drag, last: coordinate };
+				return;
+			}
 			return;
 		}
 		if (draft && (draft.type === "rectangle" || draft.type === "circle")) {
@@ -425,7 +482,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			setHoverPoint(snapped ?? coordinate);
 			return;
 		}
-		if (mode === "freehand" && isFreehandDrawing && draft && draft.type === "freehand") {
+		if (mapEditorStore.mode === "freehand" && isFreehandDrawing && draft && draft.type === "freehand") {
 			const lastPoint = draft.points[draft.points.length - 1];
 			if (!lastPoint) {
 				return;
@@ -449,6 +506,9 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		if (isSettingPlayArea) {
 			return;
 		}
+		if (handleDragRef.current) {
+			return;
+		}
 		if (isSettingPlayArea) {
 			const map = mapRef.current;
 			if (map) {
@@ -456,7 +516,9 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			}
 			return;
 		}
-		if (playAreaConfirmed && mode === "freehand") {
+		const original = event.originalEvent as MouseEvent | undefined;
+		const moveOverride = Boolean(original && (original.button === 1 || original.ctrlKey || original.metaKey));
+		if (playAreaConfirmed && mapEditorStore.mode === "freehand") {
 			const coordinate: LngLatTuple = [event.lngLat.lng, event.lngLat.lat];
 			updateDraft({ type: "freehand", points: [coordinate] });
 			setIsFreehandDrawing(true);
@@ -466,10 +528,21 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			}
 			return;
 		}
-		if (mode === "select" || mode === "move") {
+		if (mapEditorStore.mode === "select" && !moveOverride) {
 			const hitId = hitTest(event.point);
 			if (hitId) {
-				setSelectedId(hitId);
+				mapEditorStore.setSelectedId(hitId);
+			}
+			return;
+		}
+		if (mapEditorStore.mode === "move" || moveOverride) {
+			const hitId = hitTest(event.point);
+			if (hitId) {
+				mapEditorStore.setSelectedId(hitId);
+				if (moveOverride && mapEditorStore.mode !== "move") {
+					temporaryModeRef.current = mapEditorStore.mode;
+					mapEditorStore.setMode("move");
+				}
 				draggingRef.current = { id: hitId, last: [event.lngLat.lng, event.lngLat.lat] };
 				const map = mapRef.current;
 				if (map) {
@@ -483,7 +556,10 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		if (isSettingPlayArea) {
 			return;
 		}
-		if (mode === "freehand") {
+		if (handleDragRef.current) {
+			return;
+		}
+		if (mapEditorStore.mode === "freehand") {
 			if (draft && draft.type === "freehand" && draft.points.length > 1) {
 				const closeToStart = isCloseToStart(draft.points);
 				addGeometryFeature("freehand", { type: "Freehand", coordinates: draft.points, closed: closeToStart });
@@ -495,6 +571,10 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		}
 		if (draggingRef.current) {
 			draggingRef.current = null;
+		}
+		if (temporaryModeRef.current) {
+			mapEditorStore.setMode(temporaryModeRef.current);
+			temporaryModeRef.current = null;
 		}
 		const map = mapRef.current;
 		if (map) {
@@ -543,7 +623,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 	};
 
 	const applyTranslation = (id: string, delta: LngLatTuple) => {
-		updateFeature(id, (feature) => {
+		mapEditorStore.updateFeature(id, (feature) => {
 			const { geometry: current } = feature;
 			if (current.type === "Point") {
 				return {
@@ -595,6 +675,248 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			return { ...feature, geometry: { type: "Freehand", coordinates: coords } };
 		});
 	};
+
+	const removeLineVertex = (featureId: string, removeIndex: number) => {
+		mapEditorStore.updateFeature(featureId, (feature) => {
+			const geometry = feature.geometry;
+			if (geometry.type !== "LineString") {
+				return feature;
+			}
+			if (geometry.coordinates.length <= 2) {
+				return feature;
+			}
+			const coords: LngLatTuple[] = [];
+			for (let index = 0; index < geometry.coordinates.length; index += 1) {
+				if (index === removeIndex) {
+					continue;
+				}
+				const coord = geometry.coordinates[index];
+				if (coord) {
+					coords.push([coord[0], coord[1]]);
+				}
+			}
+			if (coords.length < 2) {
+				return feature;
+			}
+			return { ...feature, geometry: { type: "LineString", coordinates: coords } };
+		});
+	};
+
+	const removePolygonVertex = (featureId: string, ringIndex: number, removeIndex: number) => {
+		mapEditorStore.updateFeature(featureId, (feature) => {
+			const geometry = feature.geometry;
+			if (geometry.type !== "Polygon") {
+				return feature;
+			}
+			const rings: LngLatTuple[][] = [];
+			for (let index = 0; index < geometry.coordinates.length; index += 1) {
+				const ring = geometry.coordinates[index];
+				if (!ring) {
+					rings.push([]);
+					continue;
+				}
+				if (index !== ringIndex) {
+					rings.push(ring);
+					continue;
+				}
+				const first = ring[0];
+				const last = ring[ring.length - 1];
+				const withoutClosing =
+					ring.length > 1 && first && last && first[0] === last[0] && first[1] === last[1]
+						? ring.slice(0, ring.length - 1)
+						: [...ring];
+				if (withoutClosing.length <= 3) {
+					rings.push(ring);
+					continue;
+				}
+				const next: LngLatTuple[] = [];
+				for (let vertex = 0; vertex < withoutClosing.length; vertex += 1) {
+					if (vertex === removeIndex) {
+						continue;
+					}
+					const current = withoutClosing[vertex];
+					if (current) {
+						next.push([current[0], current[1]]);
+					}
+				}
+				if (next.length < 3) {
+					rings.push(ring);
+					continue;
+				}
+				const firstNext = next[0];
+				if (firstNext) {
+					next.push([firstNext[0], firstNext[1]]);
+				}
+				rings.push(next);
+			}
+			return { ...feature, geometry: { type: "Polygon", coordinates: rings } };
+		});
+	};
+
+	const insertPolygonMidpoint = (
+		featureId: string,
+		ringIndex: number,
+		afterIndex: number,
+		coordinate: LngLatTuple,
+	) => {
+		mapEditorStore.updateFeature(featureId, (feature) => {
+			const geometry = feature.geometry;
+			if (geometry.type !== "Polygon") {
+				return feature;
+			}
+			const rings: LngLatTuple[][] = [];
+			for (let index = 0; index < geometry.coordinates.length; index += 1) {
+				const ring = geometry.coordinates[index];
+				if (!ring) {
+					rings.push([]);
+					continue;
+				}
+				if (index !== ringIndex) {
+					rings.push(ring);
+					continue;
+				}
+				const first = ring[0];
+				const last = ring[ring.length - 1];
+				const withoutClosing =
+					ring.length > 1 && first && last && first[0] === last[0] && first[1] === last[1]
+						? ring.slice(0, ring.length - 1)
+						: [...ring];
+				const next: LngLatTuple[] = [];
+				for (let vertex = 0; vertex < withoutClosing.length; vertex += 1) {
+					const current = withoutClosing[vertex];
+					if (current) {
+						next.push([current[0], current[1]]);
+					}
+					if (vertex === afterIndex) {
+						next.push([coordinate[0], coordinate[1]]);
+					}
+				}
+				if (next.length > 0) {
+					const first = next[0];
+					if (first) {
+						next.push([first[0], first[1]]);
+					}
+				}
+				rings.push(next);
+			}
+			return { ...feature, geometry: { type: "Polygon", coordinates: rings } };
+		});
+	};
+
+	const applyHandleUpdate = useCallback(
+		(position: LngLatTuple, state: HandleDragState) => {
+			mapEditorStore.updateFeature(state.featureId, (feature) => {
+				const geometry = state.origin;
+				if (geometry.type === "LineString" && state.meta.kind === "line-vertex") {
+					const coords: LngLatTuple[] = [];
+					for (let index = 0; index < geometry.coordinates.length; index += 1) {
+						const coord = geometry.coordinates[index];
+						if (!coord) {
+							coords.push(position);
+							continue;
+						}
+						if (index === state.meta.index) {
+							coords.push(position);
+							continue;
+						}
+						coords.push([coord[0], coord[1]]);
+					}
+					return { ...feature, geometry: { type: "LineString", coordinates: coords } };
+				}
+				if (geometry.type === "Polygon" && state.meta.kind === "polygon-vertex") {
+					const rings: LngLatTuple[][] = [];
+					for (let ringIndex = 0; ringIndex < geometry.coordinates.length; ringIndex += 1) {
+						const ring = geometry.coordinates[ringIndex];
+						if (!ring) {
+							rings.push([]);
+							continue;
+						}
+						const nextRing: LngLatTuple[] = [];
+						const lastIndex = ring.length - 1;
+						for (let index = 0; index < ring.length; index += 1) {
+							const coord = ring[index];
+							if (!coord) {
+								nextRing.push(position);
+								continue;
+							}
+							if (
+								ringIndex === state.meta.ring &&
+								(index === state.meta.index || (index === lastIndex && state.meta.index === 0))
+							) {
+								nextRing.push(position);
+								continue;
+							}
+							nextRing.push([coord[0], coord[1]]);
+						}
+						rings.push(nextRing);
+					}
+					return { ...feature, geometry: { type: "Polygon", coordinates: rings } };
+				}
+				if (geometry.type === "Rectangle" && state.meta.kind === "rectangle-corner") {
+					const minLng = Math.min(geometry.start[0], geometry.end[0]);
+					const maxLng = Math.max(geometry.start[0], geometry.end[0]);
+					const minLat = Math.min(geometry.start[1], geometry.end[1]);
+					const maxLat = Math.max(geometry.start[1], geometry.end[1]);
+					let anchor: LngLatTuple = [geometry.end[0], geometry.end[1]];
+					if (state.meta.corner === "nw") {
+						anchor = [maxLng, minLat];
+					} else if (state.meta.corner === "ne") {
+						anchor = [minLng, minLat];
+					} else if (state.meta.corner === "sw") {
+						anchor = [maxLng, maxLat];
+					} else {
+						anchor = [minLng, maxLat];
+					}
+					const nextStart: LngLatTuple = [Math.min(position[0], anchor[0]), Math.min(position[1], anchor[1])];
+					const nextEnd: LngLatTuple = [Math.max(position[0], anchor[0]), Math.max(position[1], anchor[1])];
+					return { ...feature, geometry: { type: "Rectangle", start: nextStart, end: nextEnd } };
+				}
+				if (geometry.type === "Circle" && state.meta.kind === "circle-edge") {
+					const radius = distanceMeters(geometry.center, position);
+					return {
+						...feature,
+						geometry: { type: "Circle", center: geometry.center, edge: position, radius },
+					};
+				}
+				return feature;
+			});
+		},
+		[mapEditorStore],
+	);
+
+	useEffect(() => {
+		if (!handleDrag) {
+			return;
+		}
+		const onMove = (event: PointerEvent) => {
+			if (event.pointerId !== handleDrag.pointerId) {
+				return;
+			}
+			const lngLat = pointerEventToLngLat(event);
+			if (!lngLat) {
+				return;
+			}
+			applyHandleUpdate(lngLat, handleDrag);
+		};
+		const onUp = (event: PointerEvent) => {
+			if (event.pointerId !== handleDrag.pointerId) {
+				return;
+			}
+			setHandleDrag(null);
+			const map = mapRef.current;
+			if (map) {
+				map.dragPan.enable();
+			}
+		};
+		window.addEventListener("pointermove", onMove);
+		window.addEventListener("pointerup", onUp);
+		window.addEventListener("pointercancel", onUp);
+		return () => {
+			window.removeEventListener("pointermove", onMove);
+			window.removeEventListener("pointerup", onUp);
+			window.removeEventListener("pointercancel", onUp);
+		};
+	}, [applyHandleUpdate, handleDrag, pointerEventToLngLat]);
 
 	const lengthOfCoordinates = (coordinates: LngLatTuple[]): number => {
 		let total = 0;
@@ -830,7 +1152,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			map.off("mousedown", onDown);
 			map.off("mouseup", onUp);
 		};
-	}, [mapReady, mode, draft, hoverPoint, isFreehandDrawing, appliedStyle, isSettingPlayArea]);
+	}, [mapReady, mapEditorStore.mode, draft, hoverPoint, isFreehandDrawing, appliedStyle, isSettingPlayArea]);
 
 	useEffect(() => {
 		if (!mapReady) {
@@ -1040,10 +1362,15 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		const bottom = top + sizePx;
 		const cellPx = sizePx / 10;
 		const subPx = cellPx / 3;
-		const showSubLabels = cellPx >= 162;
+		const subSubPx = subPx / 3;
+		const showSubLines = cellPx >= subLinesThresholdPx;
+		const showSubLabels = cellPx >= subLabelsThresholdPx;
+		const showSubSubLines = cellPx >= subSubLinesThresholdPx;
+		const showSubSubLabels = cellPx >= subSubLabelsThresholdPx;
 		const primaryAlpha = Math.max(0, Math.min(1, 0.5 * gridOpacity));
 		const borderAlpha = Math.max(0, Math.min(1, 0.8 * gridOpacity));
 		const subAlpha = Math.max(0, Math.min(1, 0.2 * gridOpacity));
+		const subSubAlpha = Math.max(0, Math.min(1, 0.14 * gridOpacity));
 		const labelBgAlpha = labelOpacity >= 0.5 ? Math.max(0, Math.min(1, labelOpacity)) : 0;
 		const labelTextAlpha = Math.max(0, Math.min(1, labelOpacity));
 		const labelStrokeAlpha = Math.max(0, Math.min(1, 0.9 * labelOpacity));
@@ -1070,20 +1397,39 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		context.strokeStyle = `rgba(0,0,0,${borderAlpha})`;
 		context.lineWidth = 2;
 		context.strokeRect(left, top, sizePx, sizePx);
-		context.strokeStyle = `rgba(0,0,0,${subAlpha})`;
-		for (let i = 0; i <= 30; i += 1) {
-			const x = left + subPx * i;
-			context.beginPath();
-			context.moveTo(x, top);
-			context.lineTo(x, bottom);
-			context.stroke();
+		if (showSubLines) {
+			context.strokeStyle = `rgba(0,0,0,${subAlpha})`;
+			for (let i = 0; i <= 30; i += 1) {
+				const x = left + subPx * i;
+				context.beginPath();
+				context.moveTo(x, top);
+				context.lineTo(x, bottom);
+				context.stroke();
+			}
+			for (let i = 0; i <= 30; i += 1) {
+				const y = top + subPx * i;
+				context.beginPath();
+				context.moveTo(left, y);
+				context.lineTo(right, y);
+				context.stroke();
+			}
 		}
-		for (let i = 0; i <= 30; i += 1) {
-			const y = top + subPx * i;
-			context.beginPath();
-			context.moveTo(left, y);
-			context.lineTo(right, y);
-			context.stroke();
+		if (showSubSubLines) {
+			context.strokeStyle = `rgba(0,0,0,${subSubAlpha})`;
+			for (let i = 0; i <= 90; i += 1) {
+				const x = left + subSubPx * i;
+				context.beginPath();
+				context.moveTo(x, top);
+				context.lineTo(x, bottom);
+				context.stroke();
+			}
+			for (let i = 0; i <= 90; i += 1) {
+				const y = top + subSubPx * i;
+				context.beginPath();
+				context.moveTo(left, y);
+				context.lineTo(right, y);
+				context.stroke();
+			}
 		}
 		const drawLabel = (px: number, py: number, label: string, size: number) => {
 			const padding = 3;
@@ -1112,12 +1458,15 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 				for (let col = 0; col < 10; col += 1) {
 					const px = left + cellPx * (col + 0.5);
 					const py = top + cellPx * (row + 0.5);
+					if (px < 0 || px > canvas.width || py < 0 || py > canvas.height) {
+						continue;
+					}
 					const label = `${toLetters(row)}${col + 1}`;
 					drawLabel(px, py, label, 12);
 				}
 			}
 		}
-		if (gridLabelsVisible && showSubLabels) {
+		if (gridLabelsVisible && showSubLabels && !showSubSubLabels) {
 			context.textBaseline = "middle";
 			for (let row = 0; row < 10; row += 1) {
 				for (let col = 0; col < 10; col += 1) {
@@ -1125,8 +1474,35 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 						for (let sc = 0; sc < 3; sc += 1) {
 							const px = left + cellPx * col + subPx * (sc + 0.5);
 							const py = top + cellPx * row + subPx * (sr + 0.5);
+							if (px < 0 || px > canvas.width || py < 0 || py > canvas.height) {
+								continue;
+							}
 							const label = `${toLetters(row)}${col + 1}-${sr * 3 + sc + 1}`;
 							drawLabel(px, py, label, 10);
+						}
+					}
+				}
+			}
+		}
+		if (gridLabelsVisible && showSubSubLabels) {
+			context.textBaseline = "middle";
+			for (let row = 0; row < 10; row += 1) {
+				for (let col = 0; col < 10; col += 1) {
+					for (let sr = 0; sr < 3; sr += 1) {
+						for (let sc = 0; sc < 3; sc += 1) {
+							for (let ssr = 0; ssr < 3; ssr += 1) {
+								for (let ssc = 0; ssc < 3; ssc += 1) {
+									const px = left + cellPx * col + subPx * sc + subSubPx * (ssc + 0.5);
+									const py = top + cellPx * row + subPx * sr + subSubPx * (ssr + 0.5);
+									if (px < 0 || px > canvas.width || py < 0 || py > canvas.height) {
+										continue;
+									}
+									const subIndex = sr * 3 + sc + 1;
+									const subSubIndex = ssr * 3 + ssc + 1;
+									const label = `${toLetters(row)}${col + 1}-${subIndex}-${subSubIndex}`;
+									drawLabel(px, py, label, 9);
+								}
+							}
 						}
 					}
 				}
@@ -1162,20 +1538,12 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		drawGrid();
 	}, [mapReady, gridOpacity, labelOpacity]);
 
-	const canFinish = useMemo(() => {
-		if (!draft) {
-			return false;
-		}
-		if (draft.type === "line") {
-			return draft.points.length >= 2;
-		}
-		if (draft.type === "polygon") {
-			return draft.points.length >= 3;
-		}
-		return false;
-	}, [draft]);
+	const canFinish =
+		Boolean(draft) &&
+		((draft?.type === "line" && draft.points.length >= 2) ||
+			(draft?.type === "polygon" && draft.points.length >= 3));
 
-	const stats = useMemo(() => {
+	const stats = (() => {
 		const coords: LngLatTuple[] = [];
 		if (playArea) {
 			const { minLng, maxLng, minLat, maxLat } = playArea;
@@ -1282,67 +1650,197 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			totalLineLength,
 			travel: { walkSeconds, driveSeconds },
 		};
-	}, [features, playArea]);
+	})();
 
 	const formatDistance = (meters: number) => {
 		if (meters <= 0) {
-			return t("testMap.stats.notAvailable");
+			return translations("testMap.stats.notAvailable");
 		}
 		if (meters >= 1000) {
-			return t("testMap.stats.units.kilometers", { value: (meters / 1000).toFixed(1) });
+			return translations("testMap.stats.units.kilometers", { value: (meters / 1000).toFixed(1) });
 		}
-		return t("testMap.stats.units.meters", { value: Math.round(meters) });
+		return translations("testMap.stats.units.meters", { value: Math.round(meters) });
 	};
 
 	const formatArea = (squareMeters: number) => {
 		if (squareMeters <= 0) {
-			return t("testMap.stats.notAvailable");
+			return translations("testMap.stats.notAvailable");
 		}
 		if (squareMeters >= 1_000_000) {
-			return t("testMap.stats.units.squareKilometers", { value: (squareMeters / 1_000_000).toFixed(2) });
+			return translations("testMap.stats.units.squareKilometers", {
+				value: (squareMeters / 1_000_000).toFixed(2),
+			});
 		}
-		return t("testMap.stats.units.squareMeters", { value: Math.round(squareMeters) });
+		return translations("testMap.stats.units.squareMeters", { value: Math.round(squareMeters) });
 	};
 
 	const formatDuration = (seconds: number) => {
 		if (seconds <= 0) {
-			return t("testMap.stats.notAvailable");
+			return translations("testMap.stats.notAvailable");
 		}
 		const minutes = Math.max(1, Math.round(seconds / 60));
 		if (minutes < 60) {
-			return t("testMap.stats.units.minutes", { value: minutes });
+			return translations("testMap.stats.units.minutes", { value: minutes });
 		}
 		const hours = Math.floor(minutes / 60);
 		const remainder = minutes % 60;
 		if (remainder === 0) {
-			return t("testMap.stats.units.hours", { value: hours });
+			return translations("testMap.stats.units.hours", { value: hours });
 		}
-		return t("testMap.stats.units.hoursMinutes", { hours, minutes: remainder });
+		return translations("testMap.stats.units.hoursMinutes", { hours, minutes: remainder });
 	};
 
-	const selectedFeature = useMemo(() => {
-		if (!selectedId) {
-			return undefined;
+	const selectedFeature = selectedId ? features.find((feature) => feature.id === selectedId) : undefined;
+
+	const handles = useMemo<EditorHandle[]>(() => {
+		if (!mapReady || !selectedFeature) {
+			return [];
 		}
-		for (const feature of features) {
-			if (feature.id === selectedId) {
-				return feature;
+		if (mode !== "select" && mode !== "move") {
+			return [];
+		}
+		const map = mapRef.current;
+		if (!map) {
+			return [];
+		}
+		const items: EditorHandle[] = [];
+		const geometry = selectedFeature.geometry;
+		if (geometry.type === "LineString") {
+			for (let index = 0; index < geometry.coordinates.length; index += 1) {
+				const coord = geometry.coordinates[index];
+				if (!coord) {
+					continue;
+				}
+				const projected = map.project({ lng: coord[0], lat: coord[1] });
+				items.push({
+					id: `${selectedFeature.id}-line-${index}`,
+					lngLat: coord,
+					position: { x: projected.x, y: projected.y },
+					meta: { kind: "line-vertex", index },
+				});
+			}
+		} else if (geometry.type === "Polygon") {
+			for (let ringIndex = 0; ringIndex < geometry.coordinates.length; ringIndex += 1) {
+				const ring = geometry.coordinates[ringIndex];
+				if (!ring) {
+					continue;
+				}
+				const limit = ring.length > 1 ? ring.length - 1 : ring.length;
+				for (let index = 0; index < limit; index += 1) {
+					const coord = ring[index];
+					if (!coord) {
+						continue;
+					}
+					const projected = map.project({ lng: coord[0], lat: coord[1] });
+					items.push({
+						id: `${selectedFeature.id}-polygon-${ringIndex}-${index}`,
+						lngLat: coord,
+						position: { x: projected.x, y: projected.y },
+						meta: { kind: "polygon-vertex", ring: ringIndex, index },
+					});
+				}
+				for (let index = 0; index < limit; index += 1) {
+					const current = ring[index];
+					const next = ring[(index + 1) % limit];
+					if (!current || !next) {
+						continue;
+					}
+					const mid: LngLatTuple = [(current[0] + next[0]) / 2, (current[1] + next[1]) / 2];
+					const projected = map.project({ lng: mid[0], lat: mid[1] });
+					items.push({
+						id: `${selectedFeature.id}-polygon-mid-${ringIndex}-${index}`,
+						lngLat: mid,
+						position: { x: projected.x, y: projected.y },
+						meta: { kind: "polygon-midpoint", ring: ringIndex, after: index },
+					});
+				}
+			}
+		} else if (geometry.type === "Rectangle") {
+			const minLng = Math.min(geometry.start[0], geometry.end[0]);
+			const maxLng = Math.max(geometry.start[0], geometry.end[0]);
+			const minLat = Math.min(geometry.start[1], geometry.end[1]);
+			const maxLat = Math.max(geometry.start[1], geometry.end[1]);
+			const corners: { corner: "nw" | "ne" | "sw" | "se"; coord: LngLatTuple }[] = [
+				{ corner: "nw", coord: [minLng, maxLat] },
+				{ corner: "ne", coord: [maxLng, maxLat] },
+				{ corner: "sw", coord: [minLng, minLat] },
+				{ corner: "se", coord: [maxLng, minLat] },
+			];
+			for (const entry of corners) {
+				const projected = map.project({ lng: entry.coord[0], lat: entry.coord[1] });
+				items.push({
+					id: `${selectedFeature.id}-rect-${entry.corner}`,
+					lngLat: entry.coord,
+					position: { x: projected.x, y: projected.y },
+					meta: { kind: "rectangle-corner", corner: entry.corner },
+				});
+			}
+		} else if (geometry.type === "Circle") {
+			const centerPoint = map.project({ lng: geometry.center[0], lat: geometry.center[1] });
+			const edge = geometry.edge ?? geometry.center;
+			const edgePoint = map.project({ lng: edge[0], lat: edge[1] });
+			const dx = edgePoint.x - centerPoint.x;
+			const dy = edgePoint.y - centerPoint.y;
+			const radiusPx = Math.max(12, Math.sqrt(dx * dx + dy * dy));
+			const handlePoints: { direction: "north" | "south" | "east" | "west"; x: number; y: number }[] = [
+				{ direction: "east", x: centerPoint.x + radiusPx, y: centerPoint.y },
+				{ direction: "west", x: centerPoint.x - radiusPx, y: centerPoint.y },
+				{ direction: "north", x: centerPoint.x, y: centerPoint.y - radiusPx },
+				{ direction: "south", x: centerPoint.x, y: centerPoint.y + radiusPx },
+			];
+			for (const handle of handlePoints) {
+				const lngLat = map.unproject([handle.x, handle.y]);
+				items.push({
+					id: `${selectedFeature.id}-circle-${handle.direction}`,
+					lngLat: [lngLat.lng, lngLat.lat],
+					position: { x: handle.x, y: handle.y },
+					meta: { kind: "circle-edge", direction: handle.direction },
+				});
 			}
 		}
-		return undefined;
-	}, [features, selectedId]);
+		return items;
+	}, [mapReady, mode, projectionTick, selectedFeature]);
+
+	const startHandleDrag = (handle: EditorHandle, event: React.PointerEvent<HTMLElement>) => {
+		event.preventDefault();
+		event.stopPropagation();
+		if (!selectedFeature) {
+			return;
+		}
+		if (handle.meta.kind === "polygon-midpoint") {
+			insertPolygonMidpoint(selectedFeature.id, handle.meta.ring, handle.meta.after, handle.lngLat);
+			return;
+		}
+		if (event.shiftKey) {
+			if (handle.meta.kind === "line-vertex") {
+				removeLineVertex(selectedFeature.id, handle.meta.index);
+				return;
+			}
+			if (handle.meta.kind === "polygon-vertex") {
+				removePolygonVertex(selectedFeature.id, handle.meta.ring, handle.meta.index);
+				return;
+			}
+		}
+		const map = mapRef.current;
+		if (!map) {
+			return;
+		}
+		const origin = cloneMapGeometry(selectedFeature.geometry);
+		draggingRef.current = null;
+		setHandleDrag({ featureId: selectedFeature.id, meta: handle.meta, origin, pointerId: event.pointerId });
+		map.dragPan.disable();
+		event.currentTarget.setPointerCapture(event.pointerId);
+	};
 
 	useEffect(() => {
-		if (selectedFeature) {
-			setStrokeColorInput(selectedFeature.style.strokeColor);
-			setFillColorInput(selectedFeature.style.fillColor);
-			setIconSizeInput(selectedFeature.iconSize ?? 22);
-		} else {
-			setStrokeColorInput(appliedStyle.strokeColor);
-			setFillColorInput(appliedStyle.fillColor);
-			setIconSizeInput(22);
+		if (handleDragRef.current && handleDragRef.current.featureId !== selectedId) {
+			setHandleDrag(null);
+			const map = mapRef.current;
+			if (map) {
+				map.dragPan.enable();
+			}
 		}
-	}, [selectedFeature, appliedStyle.strokeColor, appliedStyle.fillColor]);
+	}, [selectedId]);
 
 	useEffect(() => {
 		const handleKey = (event: KeyboardEvent) => {
@@ -1353,20 +1851,20 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
 				event.preventDefault();
 				if (event.shiftKey) {
-					redo();
+					mapEditorStore.redo();
 					return;
 				}
-				undo();
+				mapEditorStore.undo();
 				return;
 			}
 			if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "d") {
 				event.preventDefault();
-				duplicateSelected();
+				mapEditorStore.duplicateSelected();
 				return;
 			}
 			if ((event.key === "Delete" || event.key === "Backspace") && selectedFeature) {
 				event.preventDefault();
-				deleteFeature(selectedFeature.id);
+				mapEditorStore.deleteFeature(selectedFeature.id);
 				return;
 			}
 			if (event.key === "Escape") {
@@ -1384,78 +1882,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		return () => {
 			window.removeEventListener("keydown", handleKey);
 		};
-	}, [selectedFeature, duplicateSelected, deleteFeature, undo, redo, canFinish, finishDraft, updateDraft]);
-
-	const scheduleStrokeUpdate = (value: string) => {
-		if (strokeRafRef.current) {
-			cancelAnimationFrame(strokeRafRef.current);
-		}
-		strokeRafRef.current = requestAnimationFrame(() => {
-			setStyle({ ...appliedStyle, strokeColor: value });
-			if (selectedFeature) {
-				updateFeature(selectedFeature.id, (feature) => ({
-					...feature,
-					style: { ...feature.style, strokeColor: value },
-				}));
-			}
-		});
-	};
-
-	const scheduleFillUpdate = (value: string) => {
-		if (fillRafRef.current) {
-			cancelAnimationFrame(fillRafRef.current);
-		}
-		fillRafRef.current = requestAnimationFrame(() => {
-			setStyle({ ...appliedStyle, fillColor: value });
-			if (selectedFeature) {
-				updateFeature(selectedFeature.id, (feature) => ({
-					...feature,
-					style: { ...feature.style, fillColor: value },
-				}));
-			}
-		});
-	};
-
-	const setIconSize = (value: number) => {
-		setIconSizeInput(value);
-		if (selectedFeature) {
-			updateFeature(selectedFeature.id, (feature) => ({
-				...feature,
-				iconSize: value,
-			}));
-		}
-	};
-
-	const onStrokeWidthChange = (value: number[]) => {
-		const width = value[0] ?? appliedStyle.strokeWidth;
-		const nextStyle: FeatureStyle = { ...appliedStyle, strokeWidth: width };
-		setStyle(nextStyle);
-		if (selectedFeature) {
-			updateFeature(selectedFeature.id, (feature) => ({
-				...feature,
-				style: { ...feature.style, strokeWidth: width },
-			}));
-		}
-	};
-
-	const onFillOpacityChange = (value: number[]) => {
-		const opacity = (value[0] ?? appliedStyle.fillOpacity * 100) / 100;
-		const nextStyle: FeatureStyle = { ...appliedStyle, fillOpacity: opacity };
-		setStyle(nextStyle);
-		if (selectedFeature) {
-			updateFeature(selectedFeature.id, (feature) => ({
-				...feature,
-				style: { ...feature.style, fillOpacity: opacity },
-			}));
-		}
-	};
-
-	const onLabelChange = (value: string) => {
-		if (!selectedFeature) {
-			return;
-		}
-		updateFeature(selectedFeature.id, (feature) => ({ ...feature, label: value }));
-	};
+	}, [selectedFeature, mapEditorStore, canFinish, finishDraft, updateDraft]);
 
 	const exportPlayAreaPng = async () => {
 		const map = mapRef.current;
@@ -1536,7 +1963,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 	};
 
 	const handleNewMap = () => {
-		clear();
+		mapEditorStore.clear();
 		setPlayArea(null);
 		setPlayAreaConfirmed(false);
 		setIsSettingPlayArea(true);
@@ -1576,14 +2003,14 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		}
 		const imported = collectionToFeatures(collection, {
 			style: appliedStyle,
-			iconName: pointIconRef.current ?? "map-pin",
+			iconName: mapEditorStore.pointIconName ?? "map-pin",
 			iconBackground: true,
 			iconSize: 22,
 		});
 		if (imported.length === 0) {
 			return;
 		}
-		replaceFeatures(imported);
+		mapEditorStore.replaceFeatures(imported);
 	};
 
 	const onImportChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -1596,36 +2023,10 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 	};
 
 	const handleClear = () => {
-		clear();
+		mapEditorStore.clear();
 		updateDraft(null);
 		setHoverPoint(null);
 	};
-
-	const hasSelection = Boolean(selectedFeature);
-	const canUndo = history.length > 0;
-	const canRedo = future.length > 0;
-	const modeLabel = useMemo(() => {
-		for (const button of modeButtons) {
-			if (button.mode === mode) {
-				return button.label;
-			}
-		}
-		return mode;
-	}, [modeButtons, mode]);
-	const [iconSearch, setIconSearch] = useState("");
-	const filteredIcons = useMemo(() => {
-		const query = iconSearch.trim().toLowerCase();
-		if (!query) {
-			return iconNames;
-		}
-		const results: string[] = [];
-		for (const name of iconNames) {
-			if (name.includes(query)) {
-				results.push(name);
-			}
-		}
-		return results.slice(0, 120);
-	}, [iconSearch]);
 
 	const findSnapPoint = (lngLat: LngLat): LngLatTuple | null => {
 		const map = mapRef.current;
@@ -1678,9 +2079,9 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 	useEffect(() => {
 		setSnapPoint(null);
 		setHoverPoint(null);
-	}, [mode]);
+	}, [mapEditorStore.mode]);
 
-	const allVertices = useMemo<LngLatTuple[]>(() => {
+	const allVertices: LngLatTuple[] = (() => {
 		const verts: LngLatTuple[] = [];
 		for (const feature of features) {
 			const { geometry } = feature;
@@ -1704,17 +2105,30 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			}
 		}
 		return verts;
-	}, [features]);
+	})();
+
+	const handlesOverlay =
+		mapReady && handles.length > 0 ? (
+			<div className="pointer-events-none absolute inset-0">
+				{handles.map((handle) => (
+					<button
+						type="button"
+						key={handle.id}
+						className={
+							handle.meta.kind === "polygon-midpoint"
+								? "pointer-events-auto absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-sm border border-background bg-primary/50 shadow"
+								: "pointer-events-auto absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-sm border border-background bg-primary shadow"
+						}
+						style={{ left: `${handle.position.x}px`, top: `${handle.position.y}px` }}
+						onPointerDown={(event) => startHandleDrag(handle, event)}
+					/>
+				))}
+			</div>
+		) : null;
 
 	const containerClass = visible
 		? "fixed inset-0 z-50 flex h-screen w-screen flex-col bg-background p-4"
 		: "flex h-[calc(100vh-64px)] w-full flex-col gap-4 p-4";
-
-	const handleModeChange = (nextMode: EditorMode) => {
-		setMode(nextMode);
-		updateDraft(null);
-		setHoverPoint(null);
-	};
 
 	const setPlayAreaFromOverlay = () => {
 		const map = mapRef.current;
@@ -1778,35 +2192,12 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		}
 	};
 
-	const handleClearSelection = () => {
-		setSelectedId(undefined);
-	};
-
-	const handleDeleteSelection = () => {
-		if (!selectedId) {
-			return;
-		}
-		deleteFeature(selectedId);
-	};
-
-	const handleDuplicateSelection = () => {
-		if (!selectedId) {
-			return;
-		}
-		handleDuplicateFeature(selectedId);
-	};
-
-	const handleDuplicateFeature = (id: string) => {
-		setSelectedId(id);
-		duplicateSelected();
-	};
-
 	const handleConfirmNewMap = async () => {
 		const result = await confirm({
-			title: t("testMap.dialogs.newMap.title"),
+			title: translations("testMap.dialogs.newMap.title"),
 			body: (
 				<div className="flex flex-col gap-2 text-sm">
-					<p>{t("testMap.dialogs.newMap.body")}</p>
+					<p>{translations("testMap.dialogs.newMap.body")}</p>
 					<Button
 						type="button"
 						variant="outline"
@@ -1816,13 +2207,13 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 						}}
 					>
 						<FileDown className="mr-2 size-4" />
-						{t("testMap.dialogs.newMap.download")}
+						{translations("testMap.dialogs.newMap.download")}
 					</Button>
 				</div>
 			),
-			actionButton: t("testMap.dialogs.newMap.confirm"),
+			actionButton: translations("testMap.dialogs.newMap.confirm"),
 			cancelButtonVariant: "outline",
-			cancelButton: t("testMap.dialogs.newMap.cancel"),
+			cancelButton: translations("testMap.dialogs.newMap.cancel"),
 		});
 		if (!result) {
 			return;
@@ -1830,167 +2221,103 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		handleNewMap();
 	};
 
-	const handleIconBackgroundChange = (checked: boolean) => {
-		if (!selectedFeature) {
-			return;
-		}
-		updateFeature(selectedFeature.id, (feature) => ({
-			...feature,
-			iconBackground: checked,
-		}));
-	};
-
-	const handleIconSelect = (name: string) => {
-		pointIconRef.current = name;
-		setIconSearch("");
-		if (!selectedFeature) {
-			return;
-		}
-		updateFeature(selectedFeature.id, (feature) => ({
-			...feature,
-			iconName: name,
-		}));
-	};
-
-	const handleIconSizeChange = (value: number[]) => {
-		setIconSize(value[0] ?? 22);
-	};
-
-	const handleBasemapChange = (value: BasemapId) => {
-		setBasemap(value);
-	};
-
 	return (
 		<div className={containerClass}>
 			<Dialog open={statsOpen} onOpenChange={setStatsOpen}>
 				<DialogContent className="sm:max-w-2xl">
 					<DialogHeader>
-						<DialogTitle>{t("testMap.stats.title")}</DialogTitle>
-						<DialogDescription>{t("testMap.stats.description")}</DialogDescription>
+						<DialogTitle>{translations("testMap.stats.title")}</DialogTitle>
+						<DialogDescription>{translations("testMap.stats.description")}</DialogDescription>
 					</DialogHeader>
 					{stats.hasBounds ? (
 						<div className="grid gap-3">
 							<div className="rounded-md border p-3">
-								<div className="text-sm font-semibold">{t("testMap.stats.sections.size.title")}</div>
+								<div className="text-sm font-semibold">
+									{translations("testMap.stats.sections.size.title")}
+								</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.size.width")}</span>
+										<span>{translations("testMap.stats.sections.size.width")}</span>
 										<span className="font-mono">{formatDistance(stats.width)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.size.height")}</span>
+										<span>{translations("testMap.stats.sections.size.height")}</span>
 										<span className="font-mono">{formatDistance(stats.height)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.size.diagonal")}</span>
+										<span>{translations("testMap.stats.sections.size.diagonal")}</span>
 										<span className="font-mono">{formatDistance(stats.diagonal)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.size.area")}</span>
+										<span>{translations("testMap.stats.sections.size.area")}</span>
 										<span className="font-mono">{formatArea(stats.area)}</span>
 									</div>
 								</div>
 							</div>
 							<div className="rounded-md border p-3">
 								<div className="text-sm font-semibold">
-									{t("testMap.stats.sections.features.title")}
+									{translations("testMap.stats.sections.features.title")}
 								</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.features.total")}</span>
+										<span>{translations("testMap.stats.sections.features.total")}</span>
 										<span className="font-mono">{stats.counts.total}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.features.points")}</span>
+										<span>{translations("testMap.stats.sections.features.points")}</span>
 										<span className="font-mono">{stats.counts.points}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.features.lines")}</span>
+										<span>{translations("testMap.stats.sections.features.lines")}</span>
 										<span className="font-mono">{stats.counts.lines}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.features.areas")}</span>
+										<span>{translations("testMap.stats.sections.features.areas")}</span>
 										<span className="font-mono">{stats.counts.areas}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.features.freehand")}</span>
+										<span>{translations("testMap.stats.sections.features.freehand")}</span>
 										<span className="font-mono">{stats.counts.freehand}</span>
 									</div>
 								</div>
 							</div>
 							<div className="rounded-md border p-3">
 								<div className="text-sm font-semibold">
-									{t("testMap.stats.sections.distance.title")}
+									{translations("testMap.stats.sections.distance.title")}
 								</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.distance.lineLength")}</span>
+										<span>{translations("testMap.stats.sections.distance.lineLength")}</span>
 										<span className="font-mono">{formatDistance(stats.totalLineLength)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.distance.crossingWalk")}</span>
+										<span>{translations("testMap.stats.sections.distance.crossingWalk")}</span>
 										<span className="font-mono">{formatDuration(stats.travel.walkSeconds)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("testMap.stats.sections.distance.crossingDrive")}</span>
+										<span>{translations("testMap.stats.sections.distance.crossingDrive")}</span>
 										<span className="font-mono">{formatDuration(stats.travel.driveSeconds)}</span>
 									</div>
 								</div>
 							</div>
 						</div>
 					) : (
-						<p className="text-sm text-muted-foreground">{t("testMap.stats.empty")}</p>
+						<p className="text-sm text-muted-foreground">{translations("testMap.stats.empty")}</p>
 					)}
 				</DialogContent>
 			</Dialog>
 			<EditorTopbar
-				t={t}
-				basemap={basemap}
-				basemapOptions={basemapOptions}
-				onBasemapChange={handleBasemapChange}
-				gridVisible={gridVisible}
-				onGridToggle={(value) => {
-					setGridVisible(value);
-					drawGrid();
-				}}
-				gridLabelsVisible={gridLabelsVisible}
-				onGridLabelsToggle={(value) => {
-					setGridLabelsVisible(value);
-					drawGrid();
-				}}
-				gridOpacity={gridOpacity}
-				labelOpacity={labelOpacity}
-				onGridOpacityChange={(value) => {
-					setGridOpacity(value);
-					drawGrid();
-				}}
-				onLabelOpacityChange={(value) => {
-					setLabelOpacity(value);
-					drawGrid();
-				}}
 				playAreaConfirmed={playAreaConfirmed}
 				isSettingPlayArea={isSettingPlayArea}
 				onTogglePlayArea={handlePlayAreaToggle}
-				onUndo={undo}
-				onRedo={redo}
 				onExport={handleExport}
 				onExportPng={exportPlayAreaPng}
 				onNewMap={handleConfirmNewMap}
 				onResetView={handleResetView}
 				onImportClick={handleImportClick}
-				onClearSelection={handleClearSelection}
-				onDeleteSelection={handleDeleteSelection}
-				onDuplicateSelection={handleDuplicateSelection}
-				canUndo={canUndo}
-				canRedo={canRedo}
-				helpOpen={helpOpen}
-				onHelpOpenChange={setHelpOpen}
 				onOpenStats={() => setStatsOpen(true)}
-				keybinds={keybinds}
 				visible={visible}
 				onClose={onClose}
-				dimmed={false}
-				modeLabel={modeLabel}
 			/>
 			<input
 				ref={importRef}
@@ -2002,18 +2329,9 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			{hasPlayArea && playAreaConfirmed ? (
 				<div className="flex flex-1 min-h-0 gap-4 overflow-hidden">
 					<EditorControlsPanel
-						t={t}
-						modeButtons={modeButtons}
-						mode={mode}
-						onModeChange={handleModeChange}
 						onFinishDraft={finishDraft}
 						canFinish={canFinish}
 						onClear={handleClear}
-						features={features}
-						selectedId={selectedId}
-						onSelectFeature={setSelectedId}
-						onDuplicateFeature={handleDuplicateFeature}
-						onDeleteFeature={deleteFeature}
 						sidebarIconSize={sidebarIconSize}
 						dimmed={false}
 					/>
@@ -2022,6 +2340,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 							<div className="relative h-full w-full overflow-hidden rounded-lg border">
 								<div ref={mapContainerRef} className="h-full w-full" />
 								<canvas ref={gridCanvasRef} className="pointer-events-none absolute inset-0" />
+								{handlesOverlay}
 								{!mapReady ? (
 									<div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
 										<Loader className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -2029,61 +2348,40 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 								) : null}
 								{gridRef.cell ? (
 									<div className="absolute right-4 top-4 rounded-md bg-background/90 backdrop-blur px-3 py-2 text-xs shadow space-y-1">
-										<div className="font-semibold">{t("testMap.gridRef.title")}</div>
+										<div className="font-semibold">{translations("testMap.gridRef.title")}</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">{t("testMap.gridRef.cell")}</span>
+											<span className="text-muted-foreground">
+												{translations("testMap.gridRef.cell")}
+											</span>
 											<span className="font-mono text-sm">{gridRef.cell}</span>
 										</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">{t("testMap.gridRef.lat")}</span>
+											<span className="text-muted-foreground">
+												{translations("testMap.gridRef.lat")}
+											</span>
 											<span className="font-mono text-sm">{gridRef.lat}</span>
 										</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">{t("testMap.gridRef.lng")}</span>
+											<span className="text-muted-foreground">
+												{translations("testMap.gridRef.lng")}
+											</span>
 											<span className="font-mono text-sm">{gridRef.lng}</span>
 										</div>
 									</div>
 								) : null}
 								{draft ? (
 									<div className="absolute left-4 bottom-4 rounded-md bg-background/90 backdrop-blur px-3 py-2 text-xs shadow">
-										{draft.type === "line" ? t("testMap.status.line") : null}
-										{draft.type === "polygon" ? t("testMap.status.polygon") : null}
-										{draft.type === "rectangle" ? t("testMap.status.rectangle") : null}
-										{draft.type === "circle" ? t("testMap.status.circle") : null}
-										{draft.type === "freehand" ? t("testMap.status.freehand") : null}
+										{draft.type === "line" ? translations("testMap.status.line") : null}
+										{draft.type === "polygon" ? translations("testMap.status.polygon") : null}
+										{draft.type === "rectangle" ? translations("testMap.status.rectangle") : null}
+										{draft.type === "circle" ? translations("testMap.status.circle") : null}
+										{draft.type === "freehand" ? translations("testMap.status.freehand") : null}
 									</div>
 								) : null}
 							</div>
 						</CardContent>
 					</Card>
-					<EditorSelectionPanel
-						t={t}
-						selectedFeature={selectedFeature}
-						hasSelection={hasSelection}
-						strokeColorInput={strokeColorInput}
-						fillColorInput={fillColorInput}
-						appliedStyle={appliedStyle}
-						iconSizeInput={iconSizeInput}
-						iconSearch={iconSearch}
-						filteredIcons={filteredIcons}
-						sidebarIconSize={sidebarIconSize}
-						onLabelChange={onLabelChange}
-						onStrokeColorChange={(value) => {
-							setStrokeColorInput(value);
-							scheduleStrokeUpdate(value);
-						}}
-						onFillColorChange={(value) => {
-							setFillColorInput(value);
-							scheduleFillUpdate(value);
-						}}
-						onStrokeWidthChange={onStrokeWidthChange}
-						onFillOpacityChange={onFillOpacityChange}
-						onIconBackgroundChange={handleIconBackgroundChange}
-						onIconSizeChange={handleIconSizeChange}
-						onIconSearchChange={setIconSearch}
-						onIconSelect={handleIconSelect}
-						dimmed={false}
-					/>
+					<EditorSelectionPanel sidebarIconSize={sidebarIconSize} dimmed={false} />
 				</div>
 			) : (
 				<div className="flex flex-1 min-h-0">
@@ -2092,6 +2390,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 							<div className="relative h-full w-full overflow-hidden rounded-lg border">
 								<div ref={mapContainerRef} className="h-full w-full" />
 								<canvas ref={gridCanvasRef} className="pointer-events-none absolute inset-0" />
+								{handlesOverlay}
 								{!mapReady ? (
 									<div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
 										<Loader className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -2113,7 +2412,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 											<div className="absolute inset-0 z-10 flex items-end justify-center pb-6">
 												<div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-md shadow-lg">
 													<Button size="sm" onClick={setPlayAreaFromOverlay}>
-														{t("testMap.actions.confirmPlayArea")}
+														{translations("testMap.actions.confirmPlayArea")}
 													</Button>
 													{previousPlayAreaRef.current ? (
 														<Button
@@ -2121,7 +2420,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 															size="sm"
 															onClick={cancelPlayAreaEdit}
 														>
-															{t("testMap.actions.cancelPlayArea")}
+															{translations("testMap.actions.cancelPlayArea")}
 														</Button>
 													) : null}
 												</div>
