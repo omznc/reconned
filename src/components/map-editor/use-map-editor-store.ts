@@ -4,7 +4,7 @@ import type { Patch } from "immer";
 import { applyPatches, enablePatches, produceWithPatches } from "immer";
 import { create } from "zustand";
 
-import type { EditorMode, FeatureStyle, LngLatTuple, MapFeature } from "@/components/map-editor/types";
+import type { BasemapId, EditorMode, FeatureStyle, LngLatTuple, MapFeature } from "@/components/map-editor/types";
 
 enablePatches();
 
@@ -22,10 +22,20 @@ type EditorState = {
 	selectedId?: string;
 	mode: EditorMode;
 	gridVisible: boolean;
+	gridLabelsVisible: boolean;
+	gridOpacity: number;
+	labelOpacity: number;
+	basemap: BasemapId;
+	pointIconName: string;
 	style: FeatureStyle;
 	setMode: (mode: EditorMode) => void;
 	setStyle: (style: FeatureStyle) => void;
 	setGridVisible: (value: boolean) => void;
+	setGridLabelsVisible: (value: boolean) => void;
+	setGridOpacity: (value: number) => void;
+	setLabelOpacity: (value: number) => void;
+	setBasemap: (value: BasemapId) => void;
+	setPointIconName: (value: string) => void;
 	setSelectedId: (id?: string) => void;
 	addFeature: (feature: MapFeature) => void;
 	updateFeature: (id: string, updater: MapFeatureUpdater) => void;
@@ -124,6 +134,11 @@ export const useMapEditorStore = create<EditorState>((set, get) => ({
 	selectedId: undefined,
 	mode: "select",
 	gridVisible: true,
+	gridLabelsVisible: true,
+	gridOpacity: 0.5,
+	labelOpacity: 0.45,
+	basemap: "osm",
+	pointIconName: "map-pin",
 	style: defaultStyle,
 	setMode: (mode) => {
 		set({ mode });
@@ -133,6 +148,21 @@ export const useMapEditorStore = create<EditorState>((set, get) => ({
 	},
 	setGridVisible: (value) => {
 		set({ gridVisible: value });
+	},
+	setGridLabelsVisible: (value) => {
+		set({ gridLabelsVisible: value });
+	},
+	setGridOpacity: (value) => {
+		set({ gridOpacity: value });
+	},
+	setLabelOpacity: (value) => {
+		set({ labelOpacity: value });
+	},
+	setBasemap: (value) => {
+		set({ basemap: value });
+	},
+	setPointIconName: (value) => {
+		set({ pointIconName: value });
 	},
 	setSelectedId: (id) => {
 		set({ selectedId: id });
