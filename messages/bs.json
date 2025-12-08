@@ -1773,7 +1773,7 @@
 			"point": "Tačka",
 			"line": "Linija",
 			"polygon": "Poligon",
-			"rectangle": "Pravougaonik",
+			"rectangle": "Kocka",
 			"circle": "Krug",
 			"freehand": "Crtanje"
 		},
@@ -1832,7 +1832,7 @@
 		"status": {
 			"line": "Crtanje linije",
 			"polygon": "Crtanje poligona",
-			"rectangle": "Podešavanje pravougaonika",
+			"rectangle": "Podešavanje kocke",
 			"circle": "Podešavanje kruga",
 			"freehand": "Crtanje slobodnom rukom"
 		},
@@ -1882,6 +1882,22 @@
 				"shiftDrag": {
 					"action": "Pomjeri selekciju",
 					"shortcut": "Ctrl + Povlačenje"
+				},
+				"moveOverride": {
+					"action": "Privremeno pomjeri",
+					"shortcut": "Srednji drag / Ctrl/Cmd + Povlačenje"
+				},
+				"insertMidpoint": {
+					"action": "Dodaj tačku na ivicu",
+					"shortcut": "Klik na srednji marker"
+				},
+				"deleteVertex": {
+					"action": "Obriši tačku",
+					"shortcut": "Shift + Klik tačke"
+				},
+				"resizeHandles": {
+					"action": "Promijeni veličinu oblika",
+					"shortcut": "Povuci ručke oblika"
 				}
 			}
 		},

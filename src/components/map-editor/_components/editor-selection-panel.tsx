@@ -2,8 +2,14 @@
 
 import { Search } from "lucide-react";
 
+import { iconNames } from "lucide-react/dynamic";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+
 import { getIconComponent, PointMarker } from "@/components/map-editor/_components/point-marker";
-import type { FeatureStyle, MapFeature } from "@/components/map-editor/types";
+import type { FeatureStyle } from "@/components/map-editor/types";
+import { useMapEditorStore } from "@/components/map-editor/use-map-editor-store";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,84 +19,183 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 type EditorSelectionPanelProps = {
-	t: (key: string) => string;
-	selectedFeature?: MapFeature;
-	hasSelection: boolean;
-	strokeColorInput: string;
-	fillColorInput: string;
-	appliedStyle: FeatureStyle;
-	iconSizeInput: number;
-	iconSearch: string;
-	filteredIcons: string[];
 	sidebarIconSize: number;
-	onLabelChange: (value: string) => void;
-	onStrokeColorChange: (value: string) => void;
-	onFillColorChange: (value: string) => void;
-	onStrokeWidthChange: (value: number[]) => void;
-	onFillOpacityChange: (value: number[]) => void;
-	onIconBackgroundChange: (checked: boolean) => void;
-	onIconSizeChange: (value: number[]) => void;
-	onIconSearchChange: (value: string) => void;
-	onIconSelect: (name: string) => void;
 	dimmed: boolean;
 };
 
-export function EditorSelectionPanel({
-	t,
-	selectedFeature,
-	hasSelection,
-	strokeColorInput,
-	fillColorInput,
-	appliedStyle,
-	iconSizeInput,
-	iconSearch,
-	filteredIcons,
-	sidebarIconSize,
-	onLabelChange,
-	onStrokeColorChange,
-	onFillColorChange,
-	onStrokeWidthChange,
-	onFillOpacityChange,
-	onIconBackgroundChange,
-	onIconSizeChange,
-	onIconSearchChange,
-	onIconSelect,
-	dimmed,
-}: EditorSelectionPanelProps) {
+export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectionPanelProps) {
+	const translations = useTranslations();
+	const mapEditorStore = useMapEditorStore();
+	const selectedFeature = mapEditorStore.features.find((feature) => feature.id === mapEditorStore.selectedId);
+	const hasSelection = Boolean(selectedFeature);
+	const appliedStyle = mapEditorStore.style;
+	const [strokeColorInput, setStrokeColorInput] = useState<string>(appliedStyle.strokeColor);
+	const [fillColorInput, setFillColorInput] = useState<string>(appliedStyle.fillColor);
+	const [iconSizeInput, setIconSizeInput] = useState<number>(22);
+	const [iconSearch, setIconSearch] = useState("");
+	const strokeRafRef = useRef<number | null>(null);
+	const fillRafRef = useRef<number | null>(null);
+
+	useEffect(() => {
+		if (selectedFeature) {
+			setStrokeColorInput(selectedFeature.style.strokeColor);
+			setFillColorInput(selectedFeature.style.fillColor);
+			setIconSizeInput(selectedFeature.iconSize ?? 22);
+			return;
+		}
+		setStrokeColorInput(appliedStyle.strokeColor);
+		setFillColorInput(appliedStyle.fillColor);
+		setIconSizeInput(22);
+	}, [selectedFeature, appliedStyle.strokeColor, appliedStyle.fillColor]);
+
+	const filteredIcons = (() => {
+		const query = iconSearch.trim().toLowerCase();
+		if (!query) {
+			return iconNames.slice(0, 120);
+		}
+		const results: string[] = [];
+		for (const name of iconNames) {
+			if (name.includes(query)) {
+				results.push(name);
+			}
+			if (results.length >= 120) {
+				break;
+			}
+		}
+		return results;
+	})();
+
+	const handleLabelChange = (value: string) => {
+		if (!selectedFeature) {
+			return;
+		}
+		mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({ ...feature, label: value }));
+	};
+
+	const handleStrokeColorChange = (value: string) => {
+		setStrokeColorInput(value);
+		if (strokeRafRef.current) {
+			cancelAnimationFrame(strokeRafRef.current);
+		}
+		strokeRafRef.current = requestAnimationFrame(() => {
+			mapEditorStore.setStyle({ ...mapEditorStore.style, strokeColor: value });
+			if (selectedFeature) {
+				mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({
+					...feature,
+					style: { ...feature.style, strokeColor: value },
+				}));
+			}
+		});
+	};
+
+	const handleFillColorChange = (value: string) => {
+		setFillColorInput(value);
+		if (fillRafRef.current) {
+			cancelAnimationFrame(fillRafRef.current);
+		}
+		fillRafRef.current = requestAnimationFrame(() => {
+			mapEditorStore.setStyle({ ...mapEditorStore.style, fillColor: value });
+			if (selectedFeature) {
+				mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({
+					...feature,
+					style: { ...feature.style, fillColor: value },
+				}));
+			}
+		});
+	};
+
+	const handleStrokeWidthChange = (value: number[]) => {
+		const width = value[0] ?? appliedStyle.strokeWidth;
+		const nextStyle: FeatureStyle = { ...appliedStyle, strokeWidth: width };
+		mapEditorStore.setStyle(nextStyle);
+		if (selectedFeature) {
+			mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({
+				...feature,
+				style: { ...feature.style, strokeWidth: width },
+			}));
+		}
+	};
+
+	const handleFillOpacityChange = (value: number[]) => {
+		const opacity = (value[0] ?? appliedStyle.fillOpacity * 100) / 100;
+		const nextStyle: FeatureStyle = { ...appliedStyle, fillOpacity: opacity };
+		mapEditorStore.setStyle(nextStyle);
+		if (selectedFeature) {
+			mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({
+				...feature,
+				style: { ...feature.style, fillOpacity: opacity },
+			}));
+		}
+	};
+
+	const handleIconBackgroundChange = (checked: boolean) => {
+		if (!selectedFeature) {
+			return;
+		}
+		mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({
+			...feature,
+			iconBackground: checked,
+		}));
+	};
+
+	const handleIconSizeChange = (value: number[]) => {
+		const size = value[0] ?? 22;
+		setIconSizeInput(size);
+		if (!selectedFeature) {
+			return;
+		}
+		mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({
+			...feature,
+			iconSize: size,
+		}));
+	};
+
+	const handleIconSelect = (name: string) => {
+		mapEditorStore.setPointIconName(name);
+		setIconSearch("");
+		if (!selectedFeature) {
+			return;
+		}
+		mapEditorStore.updateFeature(selectedFeature.id, (feature) => ({
+			...feature,
+			iconName: name,
+		}));
+	};
+
 	return (
 		<Card className={cn("flex h-full w-[320px] shrink-0 flex-col", dimmed && "opacity-70")}>
 			<CardHeader>
-				<CardTitle>{t("testMap.fields.selection")}</CardTitle>
+				<CardTitle>{translations("testMap.fields.selection")}</CardTitle>
 			</CardHeader>
 			<CardContent className="flex-1 space-y-3 overflow-auto">
 				<Input
-					placeholder={t("testMap.fields.label")}
+					placeholder={translations("testMap.fields.label")}
 					value={selectedFeature?.label ?? ""}
-					onChange={(event) => onLabelChange(event.target.value)}
+					onChange={(event) => handleLabelChange(event.target.value)}
 					disabled={!hasSelection}
 				/>
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<Label htmlFor="stroke">{t("testMap.fields.stroke")}</Label>
+						<Label htmlFor="stroke">{translations("testMap.fields.stroke")}</Label>
 						<Input
 							id="stroke"
 							type="color"
 							value={strokeColorInput}
 							onChange={(event) => {
-								onStrokeColorChange(event.target.value);
+								handleStrokeColorChange(event.target.value);
 							}}
 							className="h-9 w-20 p-1"
 						/>
 					</div>
 					{selectedFeature?.kind !== "point" || selectedFeature?.iconBackground ? (
 						<div className="flex items-center justify-between">
-							<Label htmlFor="fill">{t("testMap.fields.fill")}</Label>
+							<Label htmlFor="fill">{translations("testMap.fields.fill")}</Label>
 							<Input
 								id="fill"
 								type="color"
 								value={fillColorInput}
 								onChange={(event) => {
-									onFillColorChange(event.target.value);
+									handleFillColorChange(event.target.value);
 								}}
 								className="h-9 w-20 p-1"
 							/>
@@ -98,7 +203,7 @@ export function EditorSelectionPanel({
 					) : null}
 					<div className="space-y-1">
 						<div className="flex items-center justify-between">
-							<Label>{t("testMap.fields.strokeWidth")}</Label>
+							<Label>{translations("testMap.fields.strokeWidth")}</Label>
 							<span className="text-xs text-muted-foreground">
 								{selectedFeature ? selectedFeature.style.strokeWidth : appliedStyle.strokeWidth}px
 							</span>
@@ -107,12 +212,12 @@ export function EditorSelectionPanel({
 							min={1}
 							max={12}
 							value={[selectedFeature ? selectedFeature.style.strokeWidth : appliedStyle.strokeWidth]}
-							onValueChange={onStrokeWidthChange}
+							onValueChange={handleStrokeWidthChange}
 						/>
 					</div>
 					<div className="space-y-1">
 						<div className="flex items-center justify-between">
-							<Label>{t("testMap.fields.fillOpacity")}</Label>
+							<Label>{translations("testMap.fields.fillOpacity")}</Label>
 							<span className="text-xs text-muted-foreground">
 								{(selectedFeature ? selectedFeature.style.fillOpacity : appliedStyle.fillOpacity) * 100}
 								%
@@ -127,13 +232,13 @@ export function EditorSelectionPanel({
 										100,
 								),
 							]}
-							onValueChange={onFillOpacityChange}
+							onValueChange={handleFillOpacityChange}
 						/>
 					</div>
 					{selectedFeature?.kind === "point" ? (
 						<div className="space-y-3">
 							<div className="flex items-center justify-between pt-1">
-								<Label>{t("testMap.fields.icon")}</Label>
+								<Label>{translations("testMap.fields.icon")}</Label>
 								<PointMarker
 									name={selectedFeature.iconName ?? "map-pin"}
 									color={selectedFeature.style.strokeColor}
@@ -145,16 +250,16 @@ export function EditorSelectionPanel({
 								/>
 							</div>
 							<div className="flex items-center justify-between">
-								<Label htmlFor="icon-bg">{t("testMap.fields.iconBackground")}</Label>
+								<Label htmlFor="icon-bg">{translations("testMap.fields.iconBackground")}</Label>
 								<Switch
 									id="icon-bg"
 									checked={selectedFeature.iconBackground ?? true}
-									onCheckedChange={onIconBackgroundChange}
+									onCheckedChange={handleIconBackgroundChange}
 								/>
 							</div>
 							<div className="space-y-1">
 								<div className="flex items-center justify-between">
-									<Label>{t("testMap.fields.iconSize")}</Label>
+									<Label>{translations("testMap.fields.iconSize")}</Label>
 									<span className="text-xs text-muted-foreground">
 										{selectedFeature.iconSize ?? iconSizeInput}px
 									</span>
@@ -163,14 +268,14 @@ export function EditorSelectionPanel({
 									min={12}
 									max={48}
 									value={[selectedFeature.iconSize ?? iconSizeInput]}
-									onValueChange={onIconSizeChange}
+									onValueChange={handleIconSizeChange}
 								/>
 							</div>
 							<div className="flex items-center gap-2">
 								<Input
 									value={iconSearch}
-									onChange={(event) => onIconSearchChange(event.target.value)}
-									placeholder={t("testMap.fields.searchIcon")}
+									onChange={(event) => setIconSearch(event.target.value)}
+									placeholder={translations("testMap.fields.searchIcon")}
 									className="h-9"
 								/>
 								<Search className="size-4 text-muted-foreground" />
@@ -192,7 +297,7 @@ export function EditorSelectionPanel({
 												className={`flex items-center justify-center rounded border px-1 py-1 ${
 													active ? "border-primary bg-primary/10" : "border-border"
 												}`}
-												onClick={() => onIconSelect(name)}
+												onClick={() => handleIconSelect(name)}
 											>
 												<IconComp className="h-5 w-5" color={iconColor} />
 											</button>

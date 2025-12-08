@@ -1,10 +1,13 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
-import { Copy, Shapes, Trash2 } from "lucide-react";
+import { Circle, Copy, MousePointer2, Move3d, PencilLine, Shapes, Square, Trash2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { ComponentType } from "react";
 
 import { PointMarker } from "@/components/map-editor/_components/point-marker";
-import type { EditorMode, MapFeature } from "@/components/map-editor/types";
+import type { EditorMode } from "@/components/map-editor/types";
+import { useMapEditorStore } from "@/components/map-editor/use-map-editor-store";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,47 +15,58 @@ import { cn } from "@/lib/utils";
 
 type ModeButton = {
 	mode: EditorMode;
-	icon: LucideIcon;
+	icon: ComponentType<{ className?: string }>;
 	label: string;
 };
 
 type EditorControlsPanelProps = {
-	t: (key: string) => string;
-	modeButtons: ModeButton[];
-	mode: EditorMode;
-	onModeChange: (mode: EditorMode) => void;
 	onFinishDraft: () => void;
 	canFinish: boolean;
 	onClear: () => void;
-	features: MapFeature[];
-	selectedId?: string;
-	onSelectFeature: (id: string) => void;
-	onDuplicateFeature: (id: string) => void;
-	onDeleteFeature: (id: string) => void;
 	sidebarIconSize: number;
 	dimmed: boolean;
 };
 
 export function EditorControlsPanel({
-	t,
-	modeButtons,
-	mode,
-	onModeChange,
 	onFinishDraft,
 	canFinish,
 	onClear,
-	features,
-	selectedId,
-	onSelectFeature,
-	onDuplicateFeature,
-	onDeleteFeature,
 	sidebarIconSize,
 	dimmed,
 }: EditorControlsPanelProps) {
+	const translations = useTranslations();
+	const mapEditorStore = useMapEditorStore();
+	const features = mapEditorStore.features;
+	const selectedId = mapEditorStore.selectedId;
+	const mode = mapEditorStore.mode;
+
+	const modeButtons: ModeButton[] = [
+		{ mode: "select", icon: MousePointer2, label: translations("testMap.modes.select") },
+		{ mode: "move", icon: Move3d, label: translations("testMap.modes.move") },
+		{ mode: "point", icon: X, label: translations("testMap.modes.point") },
+		{ mode: "line", icon: PencilLine, label: translations("testMap.modes.line") },
+		{ mode: "polygon", icon: Shapes, label: translations("testMap.modes.polygon") },
+		{ mode: "rectangle", icon: Square, label: translations("testMap.modes.rectangle") },
+		{ mode: "circle", icon: Circle, label: translations("testMap.modes.circle") },
+		{ mode: "freehand", icon: PencilLine, label: translations("testMap.modes.freehand") },
+	];
+
+	const sortedFeatures = [...features].sort((a, b) => {
+		const aLabel = a.label ?? a.kind;
+		const bLabel = b.label ?? b.kind;
+		if (aLabel < bLabel) {
+			return -1;
+		}
+		if (aLabel > bLabel) {
+			return 1;
+		}
+		return 0;
+	});
+
 	return (
 		<Card className={cn("flex h-full w-[320px] shrink-0 flex-col", dimmed && "opacity-70")}>
 			<CardHeader>
-				<CardTitle>{t("testMap.controls")}</CardTitle>
+				<CardTitle>{translations("testMap.controls")}</CardTitle>
 			</CardHeader>
 			<CardContent className="flex h-full min-h-0 flex-col space-y-4">
 				<div className="grid grid-cols-2 gap-2">
@@ -65,7 +79,7 @@ export function EditorControlsPanel({
 								variant={isActive ? "default" : "outline"}
 								size="sm"
 								className="justify-start gap-2"
-								onClick={() => onModeChange(item.mode)}
+								onClick={() => mapEditorStore.setMode(item.mode)}
 							>
 								<Icon className="size-4" />
 								{item.label}
@@ -75,26 +89,26 @@ export function EditorControlsPanel({
 				</div>
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<span className="font-semibold text-sm">{t("testMap.actions.title")}</span>
+						<span className="font-semibold text-sm">{translations("testMap.actions.title")}</span>
 					</div>
 					<div className="flex flex-wrap gap-2">
 						<Button variant="secondary" size="sm" onClick={onFinishDraft} disabled={!canFinish}>
-							{t("testMap.actions.finish")}
+							{translations("testMap.actions.finish")}
 						</Button>
 						<Button variant="destructive" size="sm" onClick={onClear}>
-							{t("testMap.actions.clear")}
+							{translations("testMap.actions.clear")}
 						</Button>
 					</div>
 				</div>
 				<div className="flex min-h-0 flex-1 flex-col gap-2">
 					<div className="flex items-center justify-between">
-						<span className="font-semibold text-sm">{t("testMap.fields.features")}</span>
-						<span className="text-xs text-muted-foreground">{features.length}</span>
+						<span className="font-semibold text-sm">translations("testMap.fields.features")</span>
+						<span className="text-xs text-muted-foreground">features.length</span>
 					</div>
 					{features.length > 0 ? (
 						<ScrollArea className="flex-1 min-h-0 rounded-md border">
 							<div className="p-2 grid grid-cols-1 gap-2">
-								{features.map((feature) => {
+								{sortedFeatures.map((feature) => {
 									const isActive = feature.id === selectedId;
 									const icon = feature.kind === "point" ? (feature.iconName ?? "map-pin") : undefined;
 									const size = sidebarIconSize;
@@ -107,7 +121,7 @@ export function EditorControlsPanel({
 													? "border-primary bg-primary/10"
 													: "border-border bg-background"
 											}`}
-											onClick={() => onSelectFeature(feature.id)}
+											onClick={() => mapEditorStore.setSelectedId(feature.id)}
 										>
 											<div className="flex items-center gap-2">
 												{icon ? (
@@ -140,8 +154,8 @@ export function EditorControlsPanel({
 														className="rounded p-1 text-muted-foreground hover:text-primary"
 														onClick={(event) => {
 															event.stopPropagation();
-															onSelectFeature(feature.id);
-															onDuplicateFeature(feature.id);
+															mapEditorStore.setSelectedId(feature.id);
+															mapEditorStore.duplicateSelected();
 														}}
 													>
 														<Copy className="h-4 w-4" />
@@ -151,7 +165,7 @@ export function EditorControlsPanel({
 														className="rounded p-1 text-muted-foreground hover:text-destructive"
 														onClick={(event) => {
 															event.stopPropagation();
-															onDeleteFeature(feature.id);
+															mapEditorStore.deleteFeature(feature.id);
 														}}
 													>
 														<Trash2 className="h-4 w-4" />
