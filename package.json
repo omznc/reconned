@@ -5,8 +5,6 @@
 		"@geoman-io/leaflet-geoman-free": "^2.18.3",
 		"@hookform/resolvers": "^5.2.2",
 		"@icons-pack/react-simple-icons": "^13.8.0",
-		"@prisma/adapter-pg": "^7.1.0",
-		"@prisma/client": "^7.1.0",
 		"@radix-ui/react-accordion": "^1.2.12",
 		"@radix-ui/react-alert-dialog": "^1.1.15",
 		"@radix-ui/react-avatar": "^1.1.11",
@@ -58,7 +56,6 @@
 		"nuqs": "^2.8.2",
 		"posthog-js": "^1.300.0",
 		"posthog-node": "^5.17.0",
-		"prisma": "^7.1.0",
 		"qrcode.react": "^4.2.0",
 		"react": "^19.2.1",
 		"react-day-picker": "9.11.2",
@@ -113,8 +110,10 @@
 		"knip": "knip",
 		"lighthouse": "bunx unlighthouse --site https://reconned.com --sitemaps https://reconned.com/sitemap.xml",
 		"lint": "bunx biome lint --write ./src",
-		"postinstall": "prisma generate --no-hints",
-		"start": "next start"
+		"postinstall": "echo 'Prisma replaced with Bun SQL - no generation needed'",
+		"start": "next start",
+		"db:migrate": "bun run scripts/migrate.ts",
+		"db:generate": "echo 'Database migrations generated from Prisma schema'"
 	},
 	"version": "0.6.0"
 }

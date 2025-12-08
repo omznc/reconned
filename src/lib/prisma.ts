@@ -1,24 +1,62 @@
 import "server-only";
 
-import { PrismaClient } from "@generated/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { env } from "./env";
+// Import our new Prisma-like abstraction
+import {
+	$transaction,
+	account,
+	achievement,
+	club,
+	clubAuditLog,
+	clubInvite,
+	clubMembership,
+	clubPurchase,
+	clubRule,
+	country,
+	event,
+	eventInvite,
+	eventRegistration,
+	instagramPageSelection,
+	passkey,
+	post,
+	prisma,
+	review,
+	session,
+	twofactor,
+	user,
+	verification,
+} from "./prisma-models";
 
-const prismaClientSingleton = () => {
-	const adapter = new PrismaPg({
-		connectionString: env.DATABASE_URL,
-	});
-	return new PrismaClient({ adapter });
+/**
+ * This file now exports our custom Bun SQL database abstraction
+ * that maintains the same API as Prisma but uses Bun's SQL engine
+ * underneath for better performance.
+ */
+
+// Re-export everything from our new abstraction
+export {
+	prisma,
+	user,
+	club,
+	event,
+	eventRegistration,
+	clubMembership,
+	clubInvite,
+	session,
+	account,
+	passkey,
+	twofactor,
+	review,
+	post,
+	achievement,
+	clubAuditLog,
+	country,
+	clubRule,
+	clubPurchase,
+	eventInvite,
+	instagramPageSelection,
+	verification,
+	$transaction,
 };
 
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
-
-/*global globalThis*/
-const globalForPrisma = globalThis as unknown as {
-	prisma: PrismaClientSingleton | undefined;
-};
-
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
-if (process.env.NODE_ENV !== "production") {
-	globalForPrisma.prisma = prisma;
-}
+// Export types that might be used
+export type { JsonValue } from "./prisma-abstraction";
