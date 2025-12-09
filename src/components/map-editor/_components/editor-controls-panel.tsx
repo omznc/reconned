@@ -34,21 +34,21 @@ export function EditorControlsPanel({
 	sidebarIconSize,
 	dimmed,
 }: EditorControlsPanelProps) {
-	const translations = useTranslations();
+	const t = useTranslations();
 	const mapEditorStore = useMapEditorStore();
 	const features = mapEditorStore.features;
 	const selectedId = mapEditorStore.selectedId;
 	const mode = mapEditorStore.mode;
 
 	const modeButtons: ModeButton[] = [
-		{ mode: "select", icon: MousePointer2, label: translations("testMap.modes.select") },
-		{ mode: "move", icon: Move3d, label: translations("testMap.modes.move") },
-		{ mode: "point", icon: X, label: translations("testMap.modes.point") },
-		{ mode: "line", icon: PencilLine, label: translations("testMap.modes.line") },
-		{ mode: "polygon", icon: Shapes, label: translations("testMap.modes.polygon") },
-		{ mode: "rectangle", icon: Square, label: translations("testMap.modes.rectangle") },
-		{ mode: "circle", icon: Circle, label: translations("testMap.modes.circle") },
-		{ mode: "freehand", icon: PencilLine, label: translations("testMap.modes.freehand") },
+		{ mode: "select", icon: MousePointer2, label: t("mapEditor.modes.select") },
+		{ mode: "move", icon: Move3d, label: t("mapEditor.modes.move") },
+		{ mode: "point", icon: X, label: t("mapEditor.modes.point") },
+		{ mode: "line", icon: PencilLine, label: t("mapEditor.modes.line") },
+		{ mode: "polygon", icon: Shapes, label: t("mapEditor.modes.polygon") },
+		{ mode: "rectangle", icon: Square, label: t("mapEditor.modes.rectangle") },
+		{ mode: "circle", icon: Circle, label: t("mapEditor.modes.circle") },
+		{ mode: "freehand", icon: PencilLine, label: t("mapEditor.modes.freehand") },
 	];
 
 	const sortedFeatures = [...features].sort((a, b) => {
@@ -66,7 +66,7 @@ export function EditorControlsPanel({
 	return (
 		<Card className={cn("flex h-full w-[320px] shrink-0 flex-col", dimmed && "opacity-70")}>
 			<CardHeader>
-				<CardTitle>{translations("testMap.controls")}</CardTitle>
+				<CardTitle>{t("mapEditor.controls")}</CardTitle>
 			</CardHeader>
 			<CardContent className="flex h-full min-h-0 flex-col space-y-4">
 				<div className="grid grid-cols-2 gap-2">
@@ -89,21 +89,21 @@ export function EditorControlsPanel({
 				</div>
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<span className="font-semibold text-sm">{translations("testMap.actions.title")}</span>
+						<span className="font-semibold text-sm">{t("mapEditor.actions.title")}</span>
 					</div>
 					<div className="flex flex-wrap gap-2">
 						<Button variant="secondary" size="sm" onClick={onFinishDraft} disabled={!canFinish}>
-							{translations("testMap.actions.finish")}
+							{t("mapEditor.actions.finish")}
 						</Button>
 						<Button variant="destructive" size="sm" onClick={onClear}>
-							{translations("testMap.actions.clear")}
+							{t("mapEditor.actions.clear")}
 						</Button>
 					</div>
 				</div>
 				<div className="flex min-h-0 flex-1 flex-col gap-2">
 					<div className="flex items-center justify-between">
-						<span className="font-semibold text-sm">translations("testMap.fields.features")</span>
-						<span className="text-xs text-muted-foreground">features.length</span>
+						<span className="font-semibold text-sm">{t("mapEditor.fields.features")}</span>
+						<span className="text-xs text-muted-foreground">{features.length}</span>
 					</div>
 					{features.length > 0 ? (
 						<ScrollArea className="flex-1 min-h-0 rounded-md border">

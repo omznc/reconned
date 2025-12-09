@@ -24,7 +24,7 @@ type EditorSelectionPanelProps = {
 };
 
 export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectionPanelProps) {
-	const translations = useTranslations();
+	const t = useTranslations();
 	const mapEditorStore = useMapEditorStore();
 	const selectedFeature = mapEditorStore.features.find((feature) => feature.id === mapEditorStore.selectedId);
 	const hasSelection = Boolean(selectedFeature);
@@ -165,18 +165,18 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 	return (
 		<Card className={cn("flex h-full w-[320px] shrink-0 flex-col", dimmed && "opacity-70")}>
 			<CardHeader>
-				<CardTitle>{translations("testMap.fields.selection")}</CardTitle>
+				<CardTitle>{t("mapEditor.fields.selection")}</CardTitle>
 			</CardHeader>
 			<CardContent className="flex-1 space-y-3 overflow-auto">
 				<Input
-					placeholder={translations("testMap.fields.label")}
+					placeholder={t("mapEditor.fields.label")}
 					value={selectedFeature?.label ?? ""}
 					onChange={(event) => handleLabelChange(event.target.value)}
 					disabled={!hasSelection}
 				/>
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<Label htmlFor="stroke">{translations("testMap.fields.stroke")}</Label>
+						<Label htmlFor="stroke">{t("mapEditor.fields.stroke")}</Label>
 						<Input
 							id="stroke"
 							type="color"
@@ -189,7 +189,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 					</div>
 					{selectedFeature?.kind !== "point" || selectedFeature?.iconBackground ? (
 						<div className="flex items-center justify-between">
-							<Label htmlFor="fill">{translations("testMap.fields.fill")}</Label>
+							<Label htmlFor="fill">{t("mapEditor.fields.fill")}</Label>
 							<Input
 								id="fill"
 								type="color"
@@ -203,7 +203,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 					) : null}
 					<div className="space-y-1">
 						<div className="flex items-center justify-between">
-							<Label>{translations("testMap.fields.strokeWidth")}</Label>
+							<Label>{t("mapEditor.fields.strokeWidth")}</Label>
 							<span className="text-xs text-muted-foreground">
 								{selectedFeature ? selectedFeature.style.strokeWidth : appliedStyle.strokeWidth}px
 							</span>
@@ -217,7 +217,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 					</div>
 					<div className="space-y-1">
 						<div className="flex items-center justify-between">
-							<Label>{translations("testMap.fields.fillOpacity")}</Label>
+							<Label>{t("mapEditor.fields.fillOpacity")}</Label>
 							<span className="text-xs text-muted-foreground">
 								{(selectedFeature ? selectedFeature.style.fillOpacity : appliedStyle.fillOpacity) * 100}
 								%
@@ -238,7 +238,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 					{selectedFeature?.kind === "point" ? (
 						<div className="space-y-3">
 							<div className="flex items-center justify-between pt-1">
-								<Label>{translations("testMap.fields.icon")}</Label>
+								<Label>{t("mapEditor.fields.icon")}</Label>
 								<PointMarker
 									name={selectedFeature.iconName ?? "map-pin"}
 									color={selectedFeature.style.strokeColor}
@@ -250,7 +250,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 								/>
 							</div>
 							<div className="flex items-center justify-between">
-								<Label htmlFor="icon-bg">{translations("testMap.fields.iconBackground")}</Label>
+								<Label htmlFor="icon-bg">{t("mapEditor.fields.iconBackground")}</Label>
 								<Switch
 									id="icon-bg"
 									checked={selectedFeature.iconBackground ?? true}
@@ -259,7 +259,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 							</div>
 							<div className="space-y-1">
 								<div className="flex items-center justify-between">
-									<Label>{translations("testMap.fields.iconSize")}</Label>
+									<Label>{t("mapEditor.fields.iconSize")}</Label>
 									<span className="text-xs text-muted-foreground">
 										{selectedFeature.iconSize ?? iconSizeInput}px
 									</span>
@@ -275,7 +275,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 								<Input
 									value={iconSearch}
 									onChange={(event) => setIconSearch(event.target.value)}
-									placeholder={translations("testMap.fields.searchIcon")}
+									placeholder={t("mapEditor.fields.searchIcon")}
 									className="h-9"
 								/>
 								<Search className="size-4 text-muted-foreground" />

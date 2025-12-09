@@ -59,7 +59,7 @@ export function EditorTopbar({
 	onClose,
 	isSettingPlayArea,
 }: EditorTopbarProps) {
-	const translations = useTranslations();
+	const t = useTranslations();
 	const mapEditorStore = useMapEditorStore();
 	const [helpOpen, setHelpOpen] = useState(false);
 	const formatPercent = (value: number) => {
@@ -69,81 +69,81 @@ export function EditorTopbar({
 	const playAreaSelecting = isSettingPlayArea && !playAreaConfirmed;
 
 	const basemapOptions: BasemapOption[] = [
-		{ id: "osm", label: translations("testMap.basemap.osm") },
-		{ id: "satellite", label: translations("testMap.basemap.satellite") },
+		{ id: "osm", label: t("mapEditor.basemap.osm") },
+		{ id: "satellite", label: t("mapEditor.basemap.satellite") },
 	];
 
 	const keybinds: KeybindItem[] = [
 		{
-			action: translations("testMap.keybinds.items.undo.action"),
-			shortcut: translations("testMap.keybinds.items.undo.shortcut"),
+			action: t("mapEditor.keybinds.items.undo.action"),
+			shortcut: t("mapEditor.keybinds.items.undo.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.redo.action"),
-			shortcut: translations("testMap.keybinds.items.redo.shortcut"),
+			action: t("mapEditor.keybinds.items.redo.action"),
+			shortcut: t("mapEditor.keybinds.items.redo.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.delete.action"),
-			shortcut: translations("testMap.keybinds.items.delete.shortcut"),
+			action: t("mapEditor.keybinds.items.delete.action"),
+			shortcut: t("mapEditor.keybinds.items.delete.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.duplicate.action"),
-			shortcut: translations("testMap.keybinds.items.duplicate.shortcut"),
+			action: t("mapEditor.keybinds.items.duplicate.action"),
+			shortcut: t("mapEditor.keybinds.items.duplicate.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.finish.action"),
-			shortcut: translations("testMap.keybinds.items.finish.shortcut"),
+			action: t("mapEditor.keybinds.items.finish.action"),
+			shortcut: t("mapEditor.keybinds.items.finish.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.cancel.action"),
-			shortcut: translations("testMap.keybinds.items.cancel.shortcut"),
+			action: t("mapEditor.keybinds.items.cancel.action"),
+			shortcut: t("mapEditor.keybinds.items.cancel.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.shiftDrag.action"),
-			shortcut: translations("testMap.keybinds.items.shiftDrag.shortcut"),
+			action: t("mapEditor.keybinds.items.shiftDrag.action"),
+			shortcut: t("mapEditor.keybinds.items.shiftDrag.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.moveOverride.action"),
-			shortcut: translations("testMap.keybinds.items.moveOverride.shortcut"),
+			action: t("mapEditor.keybinds.items.moveOverride.action"),
+			shortcut: t("mapEditor.keybinds.items.moveOverride.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.insertMidpoint.action"),
-			shortcut: translations("testMap.keybinds.items.insertMidpoint.shortcut"),
+			action: t("mapEditor.keybinds.items.insertMidpoint.action"),
+			shortcut: t("mapEditor.keybinds.items.insertMidpoint.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.deleteVertex.action"),
-			shortcut: translations("testMap.keybinds.items.deleteVertex.shortcut"),
+			action: t("mapEditor.keybinds.items.deleteVertex.action"),
+			shortcut: t("mapEditor.keybinds.items.deleteVertex.shortcut"),
 		},
 		{
-			action: translations("testMap.keybinds.items.resizeHandles.action"),
-			shortcut: translations("testMap.keybinds.items.resizeHandles.shortcut"),
+			action: t("mapEditor.keybinds.items.resizeHandles.action"),
+			shortcut: t("mapEditor.keybinds.items.resizeHandles.shortcut"),
 		},
 	];
 
 	const modeLabel = (() => {
 		const mode = mapEditorStore.mode;
 		if (mode === "select") {
-			return translations("testMap.modes.select");
+			return t("mapEditor.modes.select");
 		}
 		if (mode === "move") {
-			return translations("testMap.modes.move");
+			return t("mapEditor.modes.move");
 		}
 		if (mode === "point") {
-			return translations("testMap.modes.point");
+			return t("mapEditor.modes.point");
 		}
 		if (mode === "line") {
-			return translations("testMap.modes.line");
+			return t("mapEditor.modes.line");
 		}
 		if (mode === "polygon") {
-			return translations("testMap.modes.polygon");
+			return t("mapEditor.modes.polygon");
 		}
 		if (mode === "rectangle") {
-			return translations("testMap.modes.rectangle");
+			return t("mapEditor.modes.rectangle");
 		}
 		if (mode === "circle") {
-			return translations("testMap.modes.circle");
+			return t("mapEditor.modes.circle");
 		}
-		return translations("testMap.modes.freehand");
+		return t("mapEditor.modes.freehand");
 	})();
 
 	const canUndo = mapEditorStore.history.length > 0;
@@ -172,31 +172,31 @@ export function EditorTopbar({
 			<Dialog open={helpOpen} onOpenChange={setHelpOpen}>
 				<Menubar className="w-fit max-w-4xl">
 					<MenubarMenu>
-						<MenubarTrigger>{translations("testMap.menubar.file")}</MenubarTrigger>
+						<MenubarTrigger>{t("mapEditor.menubar.file")}</MenubarTrigger>
 						<MenubarContent>
-							<MenubarItem onClick={onNewMap}>{translations("testMap.menubar.newMap")}</MenubarItem>
+							<MenubarItem onClick={onNewMap}>{t("mapEditor.menubar.newMap")}</MenubarItem>
 							<MenubarSeparator />
 							<MenubarItem onClick={onExportPng} disabled={true}>
-								{translations("testMap.menubar.exportPng")}
+								{t("mapEditor.menubar.exportPng")}
 							</MenubarItem>
 							<MenubarItem onClick={onExport} disabled={playAreaSelecting}>
 								<Download className="mr-2 size-4" />
-								{translations("testMap.actions.export")}
+								{t("mapEditor.actions.export")}
 							</MenubarItem>
 							<MenubarItem onClick={onImportClick}>
 								<Upload className="mr-2 size-4" />
-								{translations("testMap.actions.import")}
+								{t("mapEditor.actions.import")}
 							</MenubarItem>
 							{onClose ? (
 								<>
 									<MenubarSeparator />
-									<MenubarItem onClick={onClose}>{translations("testMap.menubar.close")}</MenubarItem>
+									<MenubarItem onClick={onClose}>{t("mapEditor.menubar.close")}</MenubarItem>
 								</>
 							) : null}
 						</MenubarContent>
 					</MenubarMenu>
 					<MenubarMenu>
-						<MenubarTrigger>{translations("testMap.menubar.edit")}</MenubarTrigger>
+						<MenubarTrigger>{t("mapEditor.menubar.edit")}</MenubarTrigger>
 						<MenubarContent>
 							<MenubarItem
 								onSelect={(event) => {
@@ -205,7 +205,7 @@ export function EditorTopbar({
 								}}
 								disabled={playAreaSelecting}
 							>
-								{translations("testMap.menubar.clearSelection")}
+								{t("mapEditor.menubar.clearSelection")}
 							</MenubarItem>
 							<MenubarItem
 								onSelect={(event) => {
@@ -214,7 +214,7 @@ export function EditorTopbar({
 								}}
 								disabled={playAreaSelecting}
 							>
-								{translations("testMap.menubar.deleteSelection")}
+								{t("mapEditor.menubar.deleteSelection")}
 							</MenubarItem>
 							<MenubarItem
 								onSelect={(event) => {
@@ -223,7 +223,7 @@ export function EditorTopbar({
 								}}
 								disabled={playAreaSelecting}
 							>
-								{translations("testMap.menubar.duplicateSelection")}
+								{t("mapEditor.menubar.duplicateSelection")}
 							</MenubarItem>
 							<MenubarSeparator />
 							<MenubarItem
@@ -234,7 +234,7 @@ export function EditorTopbar({
 								disabled={!canUndo || playAreaSelecting}
 							>
 								<Undo2 className="mr-2 size-4" />
-								{translations("testMap.actions.undo")}
+								{t("mapEditor.actions.undo")}
 							</MenubarItem>
 							<MenubarItem
 								onSelect={(event) => {
@@ -244,12 +244,12 @@ export function EditorTopbar({
 								disabled={!canRedo || playAreaSelecting}
 							>
 								<Redo2 className="mr-2 size-4" />
-								{translations("testMap.actions.redo")}
+								{t("mapEditor.actions.redo")}
 							</MenubarItem>
 						</MenubarContent>
 					</MenubarMenu>
 					<MenubarMenu>
-						<MenubarTrigger>{translations("testMap.menubar.view")}</MenubarTrigger>
+						<MenubarTrigger>{t("mapEditor.menubar.view")}</MenubarTrigger>
 						<MenubarContent className="min-w-[260px]">
 							<MenubarItem
 								onSelect={(event) => {
@@ -258,7 +258,7 @@ export function EditorTopbar({
 								}}
 								disabled={playAreaSelecting}
 							>
-								{translations("testMap.menubar.resetView")}
+								{t("mapEditor.menubar.resetView")}
 							</MenubarItem>
 							<MenubarCheckboxItem
 								checked={mapEditorStore.gridVisible}
@@ -269,7 +269,7 @@ export function EditorTopbar({
 								disabled={playAreaSelecting}
 							>
 								<Grid className="mr-2 size-4" />
-								{translations("testMap.fields.grid")}
+								{t("mapEditor.fields.grid")}
 							</MenubarCheckboxItem>
 							<MenubarCheckboxItem
 								checked={mapEditorStore.gridLabelsVisible}
@@ -280,7 +280,7 @@ export function EditorTopbar({
 								disabled={playAreaSelecting}
 							>
 								<Text className="mr-2 size-4" />
-								{translations("testMap.fields.gridLabels")}
+								{t("mapEditor.fields.gridLabels")}
 							</MenubarCheckboxItem>
 							<MenubarItem
 								asChild
@@ -290,7 +290,7 @@ export function EditorTopbar({
 							>
 								<div className="flex flex-col gap-2 px-2 py-1.5">
 									<div className="flex items-center justify-between w-full text-sm">
-										<span>{translations("testMap.fields.gridOpacity")}</span>
+										<span>{t("mapEditor.fields.gridOpacity")}</span>
 										<span className="text-xs text-muted-foreground">
 											{formatPercent(mapEditorStore.gridOpacity)}
 										</span>
@@ -314,7 +314,7 @@ export function EditorTopbar({
 							>
 								<div className="flex flex-col gap-2 px-2 py-1.5">
 									<div className="flex items-center justify-between w-full text-sm">
-										<span>{translations("testMap.fields.labelOpacity")}</span>
+										<span>{t("mapEditor.fields.labelOpacity")}</span>
 										<span className="text-xs text-muted-foreground">
 											{formatPercent(mapEditorStore.labelOpacity)}
 										</span>
@@ -332,7 +332,7 @@ export function EditorTopbar({
 							</MenubarItem>
 							<MenubarSeparator />
 							<MenubarItem disabled className="opacity-100">
-								{translations("testMap.fields.basemap")}
+								{t("mapEditor.fields.basemap")}
 							</MenubarItem>
 							<MenubarRadioGroup value={mapEditorStore.basemap}>
 								{basemapOptions.map((option) => (
@@ -351,31 +351,31 @@ export function EditorTopbar({
 						</MenubarContent>
 					</MenubarMenu>
 					<MenubarMenu>
-						<MenubarTrigger>{translations("testMap.menubar.stats")}</MenubarTrigger>
+						<MenubarTrigger>{t("mapEditor.menubar.stats")}</MenubarTrigger>
 						<MenubarContent>
 							<MenubarItem onClick={onOpenStats}>
 								<BarChart3 className="mr-2 size-4" />
-								{translations("testMap.stats.open")}
+								{t("mapEditor.stats.open")}
 							</MenubarItem>
 						</MenubarContent>
 					</MenubarMenu>
 					<MenubarMenu>
-						<MenubarTrigger>{translations("testMap.menubar.playArea")}</MenubarTrigger>
+						<MenubarTrigger>{t("mapEditor.menubar.playArea")}</MenubarTrigger>
 						<MenubarContent>
 							<MenubarItem onClick={onTogglePlayArea}>
 								{playAreaConfirmed
-									? translations("testMap.actions.resetPlayArea")
-									: translations("testMap.actions.confirmPlayArea")}
+									? t("mapEditor.actions.resetPlayArea")
+									: t("mapEditor.actions.confirmPlayArea")}
 							</MenubarItem>
 						</MenubarContent>
 					</MenubarMenu>
 					<MenubarMenu>
-						<MenubarTrigger>{translations("testMap.menubar.help")}</MenubarTrigger>
+						<MenubarTrigger>{t("mapEditor.menubar.help")}</MenubarTrigger>
 						<MenubarContent>
 							<DialogTrigger asChild>
 								<MenubarItem>
 									<HelpCircle className="mr-2 size-4" />
-									{translations("testMap.keybinds.open")}
+									{t("mapEditor.keybinds.open")}
 								</MenubarItem>
 							</DialogTrigger>
 						</MenubarContent>
@@ -383,15 +383,15 @@ export function EditorTopbar({
 				</Menubar>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>{translations("testMap.keybinds.title")}</DialogTitle>
-						<DialogDescription>{translations("testMap.keybinds.description")}</DialogDescription>
+						<DialogTitle>{t("mapEditor.keybinds.title")}</DialogTitle>
+						<DialogDescription>{t("mapEditor.keybinds.description")}</DialogDescription>
 					</DialogHeader>
 					<div className="grid grid-cols-2 gap-2 text-sm">
 						<div className="font-semibold text-muted-foreground">
-							{translations("testMap.keybinds.columns.action")}
+							{t("mapEditor.keybinds.columns.action")}
 						</div>
 						<div className="font-semibold text-muted-foreground text-right">
-							{translations("testMap.keybinds.columns.shortcut")}
+							{t("mapEditor.keybinds.columns.shortcut")}
 						</div>
 						{keybinds.map((item) => (
 							<div key={`${item.action}-${item.shortcut}`} className="col-span-2 grid grid-cols-2 gap-2">
@@ -404,7 +404,7 @@ export function EditorTopbar({
 			</Dialog>
 			<div className="flex items-center gap-2">
 				<div className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-sidebar">
-					<span>{translations("testMap.canvas.modeLabel")}</span>
+					<span>{t("mapEditor.canvas.modeLabel")}</span>
 					<span className="font-semibold capitalize">{modeLabel}</span>
 				</div>
 				{visible ? (
