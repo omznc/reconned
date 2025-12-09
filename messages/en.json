@@ -1761,7 +1761,7 @@
 			"unknownError": "Unknown error"
 		}
 	},
-	"testMap": {
+	"mapEditor": {
 		"meta": {
 			"title": "Test Map Editor",
 			"description": "Work in progress"

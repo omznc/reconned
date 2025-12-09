@@ -126,7 +126,7 @@ const cloneMapGeometry = (geometry: MapGeometry): MapGeometry => {
 };
 
 export function MapEditor({ visible = false, onClose }: MapEditorProps) {
-	const translations = useTranslations();
+	const t = useTranslations();
 	const mapEditorStore = useMapEditorStore();
 	const { features, selectedId, gridVisible, basemap, gridLabelsVisible, gridOpacity, labelOpacity, mode } =
 		mapEditorStore;
@@ -1654,40 +1654,40 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 
 	const formatDistance = (meters: number) => {
 		if (meters <= 0) {
-			return translations("testMap.stats.notAvailable");
+			return t("mapEditor.stats.notAvailable");
 		}
 		if (meters >= 1000) {
-			return translations("testMap.stats.units.kilometers", { value: (meters / 1000).toFixed(1) });
+			return t("mapEditor.stats.units.kilometers", { value: (meters / 1000).toFixed(1) });
 		}
-		return translations("testMap.stats.units.meters", { value: Math.round(meters) });
+		return t("mapEditor.stats.units.meters", { value: Math.round(meters) });
 	};
 
 	const formatArea = (squareMeters: number) => {
 		if (squareMeters <= 0) {
-			return translations("testMap.stats.notAvailable");
+			return t("mapEditor.stats.notAvailable");
 		}
 		if (squareMeters >= 1_000_000) {
-			return translations("testMap.stats.units.squareKilometers", {
+			return t("mapEditor.stats.units.squareKilometers", {
 				value: (squareMeters / 1_000_000).toFixed(2),
 			});
 		}
-		return translations("testMap.stats.units.squareMeters", { value: Math.round(squareMeters) });
+		return t("mapEditor.stats.units.squareMeters", { value: Math.round(squareMeters) });
 	};
 
 	const formatDuration = (seconds: number) => {
 		if (seconds <= 0) {
-			return translations("testMap.stats.notAvailable");
+			return t("mapEditor.stats.notAvailable");
 		}
 		const minutes = Math.max(1, Math.round(seconds / 60));
 		if (minutes < 60) {
-			return translations("testMap.stats.units.minutes", { value: minutes });
+			return t("mapEditor.stats.units.minutes", { value: minutes });
 		}
 		const hours = Math.floor(minutes / 60);
 		const remainder = minutes % 60;
 		if (remainder === 0) {
-			return translations("testMap.stats.units.hours", { value: hours });
+			return t("mapEditor.stats.units.hours", { value: hours });
 		}
-		return translations("testMap.stats.units.hoursMinutes", { hours, minutes: remainder });
+		return t("mapEditor.stats.units.hoursMinutes", { hours, minutes: remainder });
 	};
 
 	const selectedFeature = selectedId ? features.find((feature) => feature.id === selectedId) : undefined;
@@ -2194,10 +2194,10 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 
 	const handleConfirmNewMap = async () => {
 		const result = await confirm({
-			title: translations("testMap.dialogs.newMap.title"),
+			title: t("mapEditor.dialogs.newMap.title"),
 			body: (
 				<div className="flex flex-col gap-2 text-sm">
-					<p>{translations("testMap.dialogs.newMap.body")}</p>
+					<p>{t("mapEditor.dialogs.newMap.body")}</p>
 					<Button
 						type="button"
 						variant="outline"
@@ -2207,13 +2207,13 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 						}}
 					>
 						<FileDown className="mr-2 size-4" />
-						{translations("testMap.dialogs.newMap.download")}
+						{t("mapEditor.dialogs.newMap.download")}
 					</Button>
 				</div>
 			),
-			actionButton: translations("testMap.dialogs.newMap.confirm"),
+			actionButton: t("mapEditor.dialogs.newMap.confirm"),
 			cancelButtonVariant: "outline",
-			cancelButton: translations("testMap.dialogs.newMap.cancel"),
+			cancelButton: t("mapEditor.dialogs.newMap.cancel"),
 		});
 		if (!result) {
 			return;
@@ -2226,83 +2226,81 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 			<Dialog open={statsOpen} onOpenChange={setStatsOpen}>
 				<DialogContent className="sm:max-w-2xl">
 					<DialogHeader>
-						<DialogTitle>{translations("testMap.stats.title")}</DialogTitle>
-						<DialogDescription>{translations("testMap.stats.description")}</DialogDescription>
+						<DialogTitle>{t("mapEditor.stats.title")}</DialogTitle>
+						<DialogDescription>{t("mapEditor.stats.description")}</DialogDescription>
 					</DialogHeader>
 					{stats.hasBounds ? (
 						<div className="grid gap-3">
 							<div className="rounded-md border p-3">
-								<div className="text-sm font-semibold">
-									{translations("testMap.stats.sections.size.title")}
-								</div>
+								<div className="text-sm font-semibold">{t("mapEditor.stats.sections.size.title")}</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.size.width")}</span>
+										<span>{t("mapEditor.stats.sections.size.width")}</span>
 										<span className="font-mono">{formatDistance(stats.width)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.size.height")}</span>
+										<span>{t("mapEditor.stats.sections.size.height")}</span>
 										<span className="font-mono">{formatDistance(stats.height)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.size.diagonal")}</span>
+										<span>{t("mapEditor.stats.sections.size.diagonal")}</span>
 										<span className="font-mono">{formatDistance(stats.diagonal)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.size.area")}</span>
+										<span>{t("mapEditor.stats.sections.size.area")}</span>
 										<span className="font-mono">{formatArea(stats.area)}</span>
 									</div>
 								</div>
 							</div>
 							<div className="rounded-md border p-3">
 								<div className="text-sm font-semibold">
-									{translations("testMap.stats.sections.features.title")}
+									{t("mapEditor.stats.sections.features.title")}
 								</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.features.total")}</span>
+										<span>{t("mapEditor.stats.sections.features.total")}</span>
 										<span className="font-mono">{stats.counts.total}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.features.points")}</span>
+										<span>{t("mapEditor.stats.sections.features.points")}</span>
 										<span className="font-mono">{stats.counts.points}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.features.lines")}</span>
+										<span>{t("mapEditor.stats.sections.features.lines")}</span>
 										<span className="font-mono">{stats.counts.lines}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.features.areas")}</span>
+										<span>{t("mapEditor.stats.sections.features.areas")}</span>
 										<span className="font-mono">{stats.counts.areas}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.features.freehand")}</span>
+										<span>{t("mapEditor.stats.sections.features.freehand")}</span>
 										<span className="font-mono">{stats.counts.freehand}</span>
 									</div>
 								</div>
 							</div>
 							<div className="rounded-md border p-3">
 								<div className="text-sm font-semibold">
-									{translations("testMap.stats.sections.distance.title")}
+									{t("mapEditor.stats.sections.distance.title")}
 								</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.distance.lineLength")}</span>
+										<span>{t("mapEditor.stats.sections.distance.lineLength")}</span>
 										<span className="font-mono">{formatDistance(stats.totalLineLength)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.distance.crossingWalk")}</span>
+										<span>{t("mapEditor.stats.sections.distance.crossingWalk")}</span>
 										<span className="font-mono">{formatDuration(stats.travel.walkSeconds)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{translations("testMap.stats.sections.distance.crossingDrive")}</span>
+										<span>{t("mapEditor.stats.sections.distance.crossingDrive")}</span>
 										<span className="font-mono">{formatDuration(stats.travel.driveSeconds)}</span>
 									</div>
 								</div>
 							</div>
 						</div>
 					) : (
-						<p className="text-sm text-muted-foreground">{translations("testMap.stats.empty")}</p>
+						<p className="text-sm text-muted-foreground">{t("mapEditor.stats.empty")}</p>
 					)}
 				</DialogContent>
 			</Dialog>
@@ -2348,34 +2346,28 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 								) : null}
 								{gridRef.cell ? (
 									<div className="absolute right-4 top-4 rounded-md bg-background/90 backdrop-blur px-3 py-2 text-xs shadow space-y-1">
-										<div className="font-semibold">{translations("testMap.gridRef.title")}</div>
+										<div className="font-semibold">{t("mapEditor.gridRef.title")}</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">
-												{translations("testMap.gridRef.cell")}
-											</span>
+											<span className="text-muted-foreground">{t("mapEditor.gridRef.cell")}</span>
 											<span className="font-mono text-sm">{gridRef.cell}</span>
 										</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">
-												{translations("testMap.gridRef.lat")}
-											</span>
+											<span className="text-muted-foreground">{t("mapEditor.gridRef.lat")}</span>
 											<span className="font-mono text-sm">{gridRef.lat}</span>
 										</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">
-												{translations("testMap.gridRef.lng")}
-											</span>
+											<span className="text-muted-foreground">{t("mapEditor.gridRef.lng")}</span>
 											<span className="font-mono text-sm">{gridRef.lng}</span>
 										</div>
 									</div>
 								) : null}
 								{draft ? (
 									<div className="absolute left-4 bottom-4 rounded-md bg-background/90 backdrop-blur px-3 py-2 text-xs shadow">
-										{draft.type === "line" ? translations("testMap.status.line") : null}
-										{draft.type === "polygon" ? translations("testMap.status.polygon") : null}
-										{draft.type === "rectangle" ? translations("testMap.status.rectangle") : null}
-										{draft.type === "circle" ? translations("testMap.status.circle") : null}
-										{draft.type === "freehand" ? translations("testMap.status.freehand") : null}
+										{draft.type === "line" ? t("mapEditor.status.line") : null}
+										{draft.type === "polygon" ? t("mapEditor.status.polygon") : null}
+										{draft.type === "rectangle" ? t("mapEditor.status.rectangle") : null}
+										{draft.type === "circle" ? t("mapEditor.status.circle") : null}
+										{draft.type === "freehand" ? t("mapEditor.status.freehand") : null}
 									</div>
 								) : null}
 							</div>
@@ -2412,7 +2404,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 											<div className="absolute inset-0 z-10 flex items-end justify-center pb-6">
 												<div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-md shadow-lg">
 													<Button size="sm" onClick={setPlayAreaFromOverlay}>
-														{translations("testMap.actions.confirmPlayArea")}
+														{t("mapEditor.actions.confirmPlayArea")}
 													</Button>
 													{previousPlayAreaRef.current ? (
 														<Button
@@ -2420,7 +2412,7 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 															size="sm"
 															onClick={cancelPlayAreaEdit}
 														>
-															{translations("testMap.actions.cancelPlayArea")}
+															{t("mapEditor.actions.cancelPlayArea")}
 														</Button>
 													) : null}
 												</div>

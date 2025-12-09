@@ -1761,7 +1761,7 @@
 			"unknownError": "Nepoznata greška"
 		}
 	},
-	"testMap": {
+	"mapEditor": {
 		"meta": {
 			"title": "Test editor mape",
 			"description": "U toku"

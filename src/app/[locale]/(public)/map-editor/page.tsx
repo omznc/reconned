@@ -7,8 +7,8 @@ import { env } from "@/lib/env";
 export async function generateMetadata(): Promise<Metadata> {
 	const t = await getTranslations();
 	return {
-		title: t("testMap.meta.title"),
-		description: t("testMap.meta.description"),
+		title: t("mapEditor.meta.title"),
+		description: t("mapEditor.meta.description"),
 	};
 }
 
