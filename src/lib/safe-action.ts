@@ -3,10 +3,20 @@ import { Logger } from "next-axiom";
 import { getTranslations } from "next-intl/server";
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
+import { ActionError } from "@/lib/action-error";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const unsafeActionClient = createSafeActionClient();
+const unsafeActionClient = createSafeActionClient({
+	// Can also be an async function.
+	async handleServerError(e) {
+		const t = await getTranslations("errors");
+		if (e instanceof ActionError) {
+			return e.message;
+		}
+		return t("errors.default");
+	},
+});
 
 const clubIdSchema = z.object({
 	clubId: z.string(),

@@ -352,7 +352,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 										{event.isPrivate && (
 											<span className="text-xs text-muted-foreground">
 												{t("public.home.eventCard.privateEvent", {
-													club: event.club?.name,
+													clubName: event.club?.name,
 												})}
 											</span>
 										)}

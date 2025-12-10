@@ -123,7 +123,7 @@ export const getPostImageUploadUrl = safeActionClient
 		const rateLimitResult = await imageUploadRateLimit.limit(ctx.user.id);
 		if (!rateLimitResult.success) {
 			const resetTime = rateLimitResult.reset ? new Date(rateLimitResult.reset).toLocaleTimeString() : "soon";
-			throw new Error(`Too many upload attempts. Try again at ${resetTime}.`);
+			throw new ActionError(`Too many upload attempts. Try again at ${resetTime}.`);
 		}
 
 		// Generate secure filename

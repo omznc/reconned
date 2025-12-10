@@ -181,7 +181,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			});
 			const response = await fetch(`/api/users?${queryParams.toString()}`);
 			if (!response.ok) {
-				throw new Error("Search failed");
+				throw new ActionError("Search failed");
 			}
 			const data = await response.json();
 			setSearchResults(data);

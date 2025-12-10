@@ -50,7 +50,7 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 				setSubmitted(true);
 				form.reset();
 			} else {
-				throw new Error();
+				throw new ActionError();
 			}
 		} catch {
 			toast.error(t("components.claimClubForm.error"));

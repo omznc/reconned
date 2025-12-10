@@ -408,7 +408,7 @@ export function EditorTopbar({
 					<span className="font-semibold capitalize">{modeLabel}</span>
 				</div>
 				{visible ? (
-					<Button variant="default" size="sm" onClick={onClose}>
+					<Button type="button" variant="default" size="sm" onClick={onClose}>
 						<X className="size-5" />
 					</Button>
 				) : null}

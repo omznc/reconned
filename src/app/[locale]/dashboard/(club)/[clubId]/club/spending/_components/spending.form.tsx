@@ -56,7 +56,7 @@ export function AddPurchaseModal() {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			const response = await fetch(resp.data.url, {
@@ -69,7 +69,7 @@ export function AddPurchaseModal() {
 			});
 
 			if (!response.ok) {
-				throw new Error(`Upload failed with status ${response.status}`);
+				throw new ActionError(`Upload failed with status ${response.status}`);
 			}
 
 			return resp.data.cdnUrl;

@@ -9,7 +9,7 @@ export const toggleAttendance = safeActionClient
 	.inputSchema(toggleAttendanceSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		if (!ctx.club?.id) {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized");
 		}
 
 		// Verify the event belongs to the club
@@ -21,7 +21,7 @@ export const toggleAttendance = safeActionClient
 		});
 
 		if (!event) {
-			throw new Error("Event not found");
+			throw new ActionError("Event not found");
 		}
 
 		const updated = await prisma.eventRegistration.update({

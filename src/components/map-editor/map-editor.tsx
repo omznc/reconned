@@ -2503,11 +2503,12 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 											</div>
 											<div className="absolute inset-0 z-10 flex items-end justify-center pb-6">
 												<div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-md shadow-lg">
-													<Button size="sm" onClick={setPlayAreaFromOverlay}>
+													<Button type="button" size="sm" onClick={setPlayAreaFromOverlay}>
 														{t("mapEditor.actions.confirmPlayArea")}
 													</Button>
 													{previousPlayAreaRef.current ? (
 														<Button
+															type="button"
 															variant="outline"
 															size="sm"
 															onClick={cancelPlayAreaEdit}

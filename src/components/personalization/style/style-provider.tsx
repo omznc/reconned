@@ -40,7 +40,7 @@ function applyStyle(style: StyleType) {
 export function useStyle() {
 	const context = useContext(StyleContext);
 	if (!context) {
-		throw new Error("useStyle must be used within a StyleProvider");
+		throw new ActionError("useStyle must be used within a StyleProvider");
 	}
 	return context;
 }

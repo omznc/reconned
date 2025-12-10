@@ -28,7 +28,7 @@ export const saveClubInformation = safeActionClient.inputSchema(clubInfoSchema).
 			slug: parsedInput.slug,
 		});
 		if (!valid) {
-			throw new Error("Izabrani link je već zauzet.");
+			throw new ActionError("Izabrani link je već zauzet.");
 		}
 	}
 

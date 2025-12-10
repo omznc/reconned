@@ -35,7 +35,7 @@ type SearchUser = {
 async function searchUsers(query: string) {
 	const response = await fetch(`/api/users?query=${encodeURIComponent(query)}`);
 	if (!response.ok) {
-		throw new Error("Failed to fetch users");
+		throw new ActionError("Failed to fetch users");
 	}
 	return (await response.json()) as SearchUser[];
 }

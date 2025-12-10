@@ -96,7 +96,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentClubId = clubIdRef.current;
 			if (!currentClubId) {
-				throw new Error("Must save club first");
+				throw new ActionError("Must save club first");
 			}
 
 			const resp = await getClubImageUploadUrl({
@@ -108,7 +108,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			await fetch(resp.data?.url, {
@@ -143,7 +143,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentClubId = clubIdRef.current;
 			if (!currentClubId) {
-				throw new Error("Must save club first");
+				throw new ActionError("Must save club first");
 			}
 
 			const resp = await getClubHeaderImageUploadUrl({
@@ -155,7 +155,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			await fetch(resp.data?.url, {
@@ -306,7 +306,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			});
 
 			if (!result?.data?.success) {
-				throw new Error(result?.serverError);
+				throw new ActionError(result?.serverError);
 			}
 
 			toast.success(t("dashboard.club.info.instagramDisconnectSuccess"));
@@ -436,7 +436,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				const result = await saveClubInformation(values);
 
 				if (!result?.data?.id) {
-					throw new Error("Failed to create club");
+					throw new ActionError("Failed to create club");
 				}
 
 				clubId = result.data.id;

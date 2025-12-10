@@ -32,7 +32,7 @@ export const deleteRegistration = safeActionClient
 		});
 
 		if (!registration) {
-			throw new Error("Prijava nije pronađena");
+			throw new ActionError("Prijava nije pronađena");
 		}
 
 		// Delete registration (this will cascade delete invites)
@@ -67,7 +67,7 @@ export const submitEventApplication = safeActionClient
 		});
 
 		if (event.dateRegistrationsClose < new Date()) {
-			throw new Error("Registracije su zatvorene za ovaj susret");
+			throw new ActionError("Registracije su zatvorene za ovaj susret");
 		}
 
 		if (event.isPrivate) {
@@ -79,7 +79,7 @@ export const submitEventApplication = safeActionClient
 			});
 
 			if (!isClubMember) {
-				throw new Error("Nemate pristup ovom susretu");
+				throw new ActionError("Nemate pristup ovom susretu");
 			}
 		}
 

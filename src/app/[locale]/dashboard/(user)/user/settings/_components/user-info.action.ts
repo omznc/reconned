@@ -22,7 +22,7 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 			slug: parsedInput.slug,
 		});
 		if (!valid) {
-			throw new Error(t("dashboard.user.settings.linkTaken"));
+			throw new ActionError(t("dashboard.user.settings.linkTaken"));
 		}
 	}
 

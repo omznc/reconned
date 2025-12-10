@@ -32,7 +32,7 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 		logger.info("OneSignal API error", {
 			error: response.statusText,
 		});
-		throw new Error(`OneSignal API error: ${response.statusText}`);
+		throw new ActionError(`OneSignal API error: ${response.statusText}`);
 	}
 
 	logger.info("Email sent", {

@@ -66,7 +66,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const logoUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
 			if (!club?.id) {
-				throw new Error("Must save club first");
+				throw new ActionError("Must save club first");
 			}
 
 			const resp = await getClubImageUploadUrl({
@@ -78,7 +78,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			await fetch(resp.data?.url, {
@@ -111,7 +111,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const headerUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
 			if (!club?.id) {
-				throw new Error("Must save club first");
+				throw new ActionError("Must save club first");
 			}
 
 			const resp = await getClubHeaderImageUploadUrl({
@@ -123,7 +123,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			await fetch(resp.data?.url, {

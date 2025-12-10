@@ -1035,7 +1035,7 @@
 				"location": "Location",
 				"dateStart": "Start",
 				"dateRegistrationsClose": "Closing applications",
-				"type": "The guy",
+				"type": "Type",
 				"private": "Private",
 				"public": "Public",
 				"registrations": "Applications",

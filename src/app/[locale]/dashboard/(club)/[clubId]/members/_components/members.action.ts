@@ -30,7 +30,7 @@ export const removeMember = safeActionClient.inputSchema(removeMemberSchema).act
 		});
 
 		if (!membership) {
-			throw new Error("Član nije pronađen ili je vlasnik kluba.");
+			throw new ActionError("Član nije pronađen ili je vlasnik kluba.");
 		}
 
 		await prisma.clubMembership.delete({
@@ -85,11 +85,11 @@ export const leaveClub = safeActionClient.inputSchema(leaveClubSchema).action(as
 		});
 
 		if (!membership) {
-			throw new Error("Niste član ovog kluba.");
+			throw new ActionError("Niste član ovog kluba.");
 		}
 
 		if (membership.role === "CLUB_OWNER") {
-			throw new Error(
+			throw new ActionError(
 				"Vlasnik kluba ne može napustiti klub. Morate prvo prenijeti vlasništvo ili obrisati klub.",
 			);
 		}

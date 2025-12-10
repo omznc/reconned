@@ -81,7 +81,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentEventId = eventIdRef.current;
 			if (!currentEventId) {
-				throw new Error(t("dashboard.club.events.create.mustSaveEventFirst"));
+				throw new ActionError(t("dashboard.club.events.create.mustSaveEventFirst"));
 			}
 
 			const resp = await getEventImageUploadUrl({
@@ -94,7 +94,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error(t("dashboard.club.events.create.failedToGetUploadUrl"));
+				throw new ActionError(t("dashboard.club.events.create.failedToGetUploadUrl"));
 			}
 
 			await fetch(resp.data.url, {
@@ -285,31 +285,34 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	async function onSubmit(values: z.infer<typeof createEventFormSchema>) {
 		setIsLoading(true);
 		try {
-			// First create/update the event
 			const event = await createEvent(values);
 
 			if (!event?.data || event.serverError) {
-				toast.error(t("dashboard.club.events.create.error"));
+				const message = event?.serverError ?? t("dashboard.club.events.create.error");
+				toast.error(message);
 				return;
 			}
 
 			eventIdRef.current = event.data.id;
 
-			// Then upload any new files and handle deletion
 			const filesToUpload = eventImageUpload.files.filter((f) => f.file && !f.isExisting);
 			if (filesToUpload.length > 0) {
 				const uploadedUrls = await eventImageUpload.uploadAllFiles();
 				if (uploadedUrls.length > 0) {
-					// Update the event with the image URL
-					await createEvent({
+					const updateResult = await createEvent({
 						...values,
 						eventId: event.data.id,
 						image: uploadedUrls[0],
 					});
+
+					if (!updateResult?.data || updateResult.serverError) {
+						const message = updateResult?.serverError ?? t("dashboard.club.events.create.error");
+						toast.error(message);
+						return;
+					}
 				}
 			}
 
-			// Mark files as saved
 			eventImageUpload.markAsSaved();
 
 			if (!props.event) {
@@ -318,10 +321,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
 			toast.success(t("dashboard.club.events.create.success"));
-		} catch {
-			toast.error(t("dashboard.club.events.create.error"));
+		} catch (error) {
+			const message = error instanceof Error ? error.message : t("dashboard.club.events.create.error");
+			toast.error(message);
+		} finally {
+			setIsLoading(false);
 		}
-		setIsLoading(false);
 	}
 
 	const RequiredFieldMarker = () => <span className="text-destructive ml-0.5">*</span>;
@@ -1030,11 +1035,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																				: t(
 																						"dashboard.club.events.create.changedAgo",
 																						{
-																							time: differenceInDays(
-																								new Date(
-																									rule.createdAt,
+																							time: Math.abs(
+																								differenceInDays(
+																									new Date(
+																										rule.createdAt,
+																									),
+																									new Date(),
 																								),
-																								new Date(),
 																							),
 																						},
 																					)}
@@ -1072,7 +1079,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																				)}
 																	</p>
 																</SheetHeader>
-																<div className="mt-6 flex-1 overflow-y-auto">
+																<div className="mt-6 flex-1 overflow-y-auto px-4">
 																	<div
 																		className={cn(
 																			"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",

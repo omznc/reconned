@@ -357,7 +357,7 @@ export function useCommandMenu() {
 	const context = useContext(CommandMenuContext);
 
 	if (context === undefined) {
-		throw new Error("useCommandMenu must be used within a CommandMenuProvider");
+		throw new ActionError("useCommandMenu must be used within a CommandMenuProvider");
 	}
 
 	return context;
