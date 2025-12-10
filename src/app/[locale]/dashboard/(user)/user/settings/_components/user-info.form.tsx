@@ -62,7 +62,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			await fetch(resp.data?.url, {
@@ -103,7 +103,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			await fetch(resp.data?.url, {

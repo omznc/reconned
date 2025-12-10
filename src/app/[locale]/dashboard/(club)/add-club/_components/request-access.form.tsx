@@ -26,7 +26,7 @@ type Club = {
 async function searchClubs(query: string) {
 	const response = await fetch(`/api/clubs?query=${encodeURIComponent(query)}`);
 	if (!response.ok) {
-		throw new Error("Failed to fetch clubs");
+		throw new ActionError("Failed to fetch clubs");
 	}
 	return response.json() as Promise<Club[]>;
 }

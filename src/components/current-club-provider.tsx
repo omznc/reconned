@@ -22,7 +22,7 @@ export const CurrentClubProvider = ({
 export const useCurrentClub = () => {
 	const context = useContext(CurrentClubContextBase);
 	if (!context) {
-		throw new Error("useCurrentClub must be used within a CurrentClubProvider");
+		throw new ActionError("useCurrentClub must be used within a CurrentClubProvider");
 	}
 
 	return context;

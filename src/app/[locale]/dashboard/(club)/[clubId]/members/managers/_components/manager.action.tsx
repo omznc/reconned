@@ -31,7 +31,7 @@ export const promoteToManager = safeActionClient
 			});
 
 			if (!targetMembership) {
-				throw new Error("Član nije pronađen ili je već menadžer.");
+				throw new ActionError("Član nije pronađen ili je već menadžer.");
 			}
 
 			const updatedMembership = await prisma.clubMembership.update({
@@ -108,7 +108,7 @@ export const demoteFromManager = safeActionClient
 			});
 
 			if (!targetMembership) {
-				throw new Error("Menadžer nije pronađen.");
+				throw new ActionError("Menadžer nije pronađen.");
 			}
 
 			const updatedMembership = await prisma.clubMembership.update({

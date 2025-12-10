@@ -20,7 +20,7 @@ export function FontProvider({ initial, children }: { initial: "mono" | "sans"; 
 export function useFont() {
 	const context = useContext(FontContext);
 	if (!context) {
-		throw new Error("useFont must be used within a FontProvider");
+		throw new ActionError("useFont must be used within a FontProvider");
 	}
 	return context;
 }

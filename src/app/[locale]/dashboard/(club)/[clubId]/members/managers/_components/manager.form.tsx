@@ -30,7 +30,7 @@ type Member = {
 async function searchMembers(clubId: string, query: string) {
 	const response = await fetch(`/api/club/${clubId}/members?query=${encodeURIComponent(query)}&role=USER`);
 	if (!response.ok) {
-		throw new Error("Neuspjela pretraga članova");
+		throw new ActionError("Neuspjela pretraga članova");
 	}
 	return response.json();
 }

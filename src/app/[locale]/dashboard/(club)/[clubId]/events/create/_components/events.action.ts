@@ -28,7 +28,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 			slug: parsedInput.slug,
 		});
 		if (!valid) {
-			throw new Error(t("slugAlreadyTaken"));
+			throw new ActionError(t("slugAlreadyTaken"));
 		}
 	}
 
@@ -76,7 +76,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 	});
 
 	if (eventFinished) {
-		throw new Error(t("cannotUpdateFinishedEvent"));
+		throw new ActionError(t("cannotUpdateFinishedEvent"));
 	}
 
 	// If the event has an image and the image is being deleted, delete the image.
@@ -144,7 +144,7 @@ export const getEventImageUploadUrl = safeActionClient
 		});
 
 		if (!belongsToClub) {
-			throw new Error(t("eventDoesNotBelongToClub"));
+			throw new ActionError(t("eventDoesNotBelongToClub"));
 		}
 
 		const resp = await getS3FileUploadUrl({
@@ -196,7 +196,7 @@ export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).actio
 	const locale = await getLocale();
 
 	if (eventFinished) {
-		throw new Error(t("cannotDeleteFinishedEvent"));
+		throw new ActionError(t("cannotDeleteFinishedEvent"));
 	}
 
 	const [event, _] = await Promise.all([

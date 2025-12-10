@@ -43,7 +43,7 @@ export const saveRule = safeActionClient.inputSchema(ruleSchema).action(async ({
 
 		return { success: true, rule };
 	} catch {
-		throw new Error("Failed to save rule");
+		throw new ActionError("Failed to save rule");
 	}
 });
 

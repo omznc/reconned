@@ -11,7 +11,7 @@ async function getClubStats(clubId: string) {
 	});
 
 	if (!club) {
-		throw new Error("Club not found");
+		throw new ActionError("Club not found");
 	}
 
 	// Members since club creation

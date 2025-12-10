@@ -76,6 +76,7 @@ export function EditorControlsPanel({
 						return (
 							<Button
 								key={item.mode}
+								type="button"
 								variant={isActive ? "default" : "outline"}
 								size="sm"
 								className="justify-start gap-2"
@@ -92,10 +93,16 @@ export function EditorControlsPanel({
 						<span className="font-semibold text-sm">{t("mapEditor.actions.title")}</span>
 					</div>
 					<div className="flex flex-wrap gap-2">
-						<Button variant="secondary" size="sm" onClick={onFinishDraft} disabled={!canFinish}>
+						<Button
+							type="button"
+							variant="secondary"
+							size="sm"
+							onClick={onFinishDraft}
+							disabled={!canFinish}
+						>
 							{t("mapEditor.actions.finish")}
 						</Button>
-						<Button variant="destructive" size="sm" onClick={onClear}>
+						<Button type="button" variant="destructive" size="sm" onClick={onClear}>
 							{t("mapEditor.actions.clear")}
 						</Button>
 					</div>

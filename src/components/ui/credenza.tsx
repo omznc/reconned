@@ -49,7 +49,7 @@ const CredenzaContext = React.createContext<CredenzaContextType | null>(null);
 const useCredenza = () => {
     const context = React.useContext(CredenzaContext);
     if (!context) {
-        throw new Error("Credenza components must be used within a Credenza");
+        throw new ActionError("Credenza components must be used within a Credenza");
     }
     return context;
 };

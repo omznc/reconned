@@ -50,7 +50,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 		uploadFunction: async (file: File) => {
 			const currentClubId = clubIdRef.current;
 			if (!currentClubId) {
-				throw new Error("Must create club first");
+				throw new ActionError("Must create club first");
 			}
 
 			const resp = await getUnclaimedClubLogoUploadUrl({
@@ -62,7 +62,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new ActionError("Failed to get upload URL");
 			}
 
 			await fetch(resp.data?.url, {
@@ -229,7 +229,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			});
 
 			if (!result?.data?.id) {
-				throw new Error();
+				throw new ActionError();
 			}
 
 			const newClubId = result.data.id;

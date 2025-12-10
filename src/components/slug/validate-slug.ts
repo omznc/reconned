@@ -64,7 +64,7 @@ export const validateSlug = safeActionClient
 				return !(userBySlug || userById);
 			}
 			default: {
-				throw new Error("Invalid type");
+				throw new ActionError("Invalid type");
 			}
 		}
 	});

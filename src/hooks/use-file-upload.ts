@@ -46,7 +46,7 @@ export function useFileUpload({
 		}
 
 		if (filesToUpload.length > maxFiles) {
-			throw new Error(t("maximumNumberOfFilesExceeded", { maxFiles }));
+			throw new ActionError(t("maximumNumberOfFilesExceeded", { maxFiles }));
 		}
 
 		const uploadPromises = filesToUpload.map(async (fileItem) => {
@@ -65,7 +65,7 @@ export function useFileUpload({
 					);
 					return url;
 				}
-				throw new Error(t("uploadFailed"));
+				throw new ActionError(t("uploadFailed"));
 			} catch (error) {
 				toast.error(`Failed to upload ${fileItem.name}`);
 				throw error;
@@ -89,7 +89,7 @@ export function useFileUpload({
 			return [...existingUrls, ...successfulUploads];
 		} catch (error) {
 			logger.error("Some files failed to upload", { error });
-			throw new Error(t("someFilesFailedToUpload"));
+			throw new ActionError(t("someFilesFailedToUpload"));
 		}
 	}, [files, uploadFunction, t, maxFiles]);
 

@@ -105,7 +105,7 @@ export const getPurchaseReceiptUploadUrl = safeActionClient
 		const rateLimitResult = await fileUploadRateLimit.limit(ctx.user.id);
 		if (!rateLimitResult.success) {
 			const resetTime = rateLimitResult.reset ? new Date(rateLimitResult.reset).toLocaleTimeString() : "soon";
-			throw new Error(`Too many upload attempts. Try again at ${resetTime}.`);
+			throw new ActionError(`Too many upload attempts. Try again at ${resetTime}.`);
 		}
 
 		// Generate secure filename
@@ -137,7 +137,7 @@ export const getPurchaseReceiptUploadUrl = safeActionClient
 // 		});
 
 // 		if (!purchase) {
-// 			throw new Error("Purchase not found");
+// 			throw new ActionError("Purchase not found");
 // 		}
 
 // 		const newUrls = purchase.receiptUrls.filter((url) => url !== parsedInput.receiptUrl);
