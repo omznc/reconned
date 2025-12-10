@@ -147,7 +147,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 									loading="lazy"
 									referrerPolicy="no-referrer-when-downgrade"
 									className="w-full h-96 border rounded-md"
-									title="Google Maps"
+									title={t("components.eventOverview.googleMapsTitle")}
 								/>
 							</LoadChildOnClick>
 						</div>

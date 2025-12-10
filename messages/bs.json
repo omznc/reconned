@@ -1125,6 +1125,8 @@
 					"eventDuration": ", traje <number></number> sati/a.",
 					"error": "Došlo je do greške prilikom spašavanja podataka",
 					"photoUploadError": "Došlo je do greške prilikom uploada slike",
+					"failedToGetUploadUrl": "Nije moguće dobiti URL za upload.",
+					"mustSaveEventFirst": "Prvo sačuvajte susret.",
 					"success": "Podataci o susretu su sačuvani",
 					"editingTitle": "Izmjena susreta",
 					"editingDescription": "Ovaj susret je već kreiran, trenutno ga uređujete.",
@@ -1143,6 +1145,7 @@
 					"descriptionPlaceholder": "Ponesite pribor za jelo...",
 					"photo": "Slika",
 					"photoDescription": "Dodajte sliku susreta. Preporučujemo da koristite sliku sa 16:9 odnosom stranica.",
+					"eventImageExisting": "Slika susreta",
 					"fileUpload": "Povucite ili kliknite za upload slike",
 					"fileUploadFormats": "Podržani formati:",
 					"deletePhoto": {
@@ -1202,6 +1205,9 @@
 					"partiallyRequired": "Parcijalno-obavezno",
 					"additionalLocationInfo": "Dodatne informacije o lokaciji",
 					"reset": "Resetuj"
+				},
+				"audit": {
+					"imageDeleted": "Slika susreta obrisana"
 				},
 				"allEvents": "Svi susreti",
 				"createEvent": "Kreirajte susret",
@@ -1596,6 +1602,7 @@
 			"publicEvent": "Javni susret",
 			"location": "Lokacija",
 			"showLocation": "Prikaži lokaciju",
+			"googleMapsTitle": "Google mapa",
 			"map": "Mapa",
 			"showEventMap": "Prikaži mapu susreta",
 			"views": "{count} pregleda",
