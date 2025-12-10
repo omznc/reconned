@@ -1076,6 +1076,8 @@
 					"eventDuration": ", lasts <number></number> hour/s.",
 					"error": "An error occurred while saving data",
 					"photoUploadError": "An error occurred while uploading the image",
+					"failedToGetUploadUrl": "Could not get upload URL.",
+					"mustSaveEventFirst": "Save the event first.",
 					"success": "Successfully created event",
 					"editingTitle": "Change of event",
 					"editingDescription": "This event has already been created, you are currently editing it.",
@@ -1094,6 +1096,7 @@
 					"descriptionPlaceholder": "Bring cutlery...",
 					"photo": "Image",
 					"photoDescription": "Add a photo of the event. ",
+					"eventImageExisting": "Event image",
 					"fileUpload": "Drag or click to upload image",
 					"fileUploadFormats": "Supported formats:",
 					"deletePhoto": {
@@ -1153,6 +1156,9 @@
 					"partiallyRequired": "Partially required",
 					"additionalLocationInfo": "Additional location info",
 					"reset": "Reset"
+				},
+				"audit": {
+					"imageDeleted": "Event image deleted"
 				},
 				"allEvents": "All events",
 				"createEvent": "Create an event",
@@ -1596,6 +1602,7 @@
 			"publicEvent": "Public event",
 			"location": "Location",
 			"showLocation": "Show location",
+			"googleMapsTitle": "Google Maps",
 			"map": "Map",
 			"showEventMap": "Show match map",
 			"registeredCount": "{count} registered",

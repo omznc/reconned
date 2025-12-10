@@ -70,7 +70,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				{
 					id: `existing-${props.event.id}`,
 					url: props.event.image,
-					name: "Event image",
+					name: t("dashboard.club.events.create.eventImageExisting"),
 					type: "image/jpeg",
 					isExisting: true,
 				},
@@ -81,7 +81,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentEventId = eventIdRef.current;
 			if (!currentEventId) {
-				throw new Error("Must save event first");
+				throw new Error(t("dashboard.club.events.create.mustSaveEventFirst"));
 			}
 
 			const resp = await getEventImageUploadUrl({
@@ -94,7 +94,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new Error("Failed to get upload URL");
+				throw new Error(t("dashboard.club.events.create.failedToGetUploadUrl"));
 			}
 
 			await fetch(resp.data.url, {

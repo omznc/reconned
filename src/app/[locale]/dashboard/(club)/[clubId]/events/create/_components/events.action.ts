@@ -158,6 +158,8 @@ export const getEventImageUploadUrl = safeActionClient
 export const deleteEventImage = safeActionClient
 	.inputSchema(deleteEventImageSchema)
 	.action(async ({ parsedInput, ctx }) => {
+		const t = await getTranslations("dashboard.club.events");
+
 		await prisma.event.update({
 			where: {
 				id: parsedInput.eventId,
@@ -173,7 +175,7 @@ export const deleteEventImage = safeActionClient
 			actionType: "EVENT_UPDATE",
 			actionData: {
 				id: parsedInput.eventId,
-				note: "Event image deleted",
+				note: t("audit.imageDeleted"),
 			},
 		});
 	});
