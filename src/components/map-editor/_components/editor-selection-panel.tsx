@@ -294,9 +294,10 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 											<button
 												key={name}
 												type="button"
-												className={`flex items-center justify-center rounded border px-1 py-1 ${
-													active ? "border-primary bg-primary/10" : "border-border"
-												}`}
+												className={cn(
+													"flex items-center justify-center rounded border px-1 py-1",
+													active ? "border-primary bg-primary/10" : "border-border",
+												)}
 												onClick={() => handleIconSelect(name)}
 											>
 												<IconComp className="h-5 w-5" color={iconColor} />

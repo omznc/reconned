@@ -116,11 +116,12 @@ export function EditorControlsPanel({
 										<button
 											key={feature.id}
 											type="button"
-											className={`w-full rounded-md border px-3 py-2 text-left ${
+											className={cn(
+												"w-full rounded-md border px-3 py-2 text-left",
 												isActive
 													? "border-primary bg-primary/10"
-													: "border-border bg-background"
-											}`}
+													: "border-border bg-background",
+											)}
 											onClick={() => mapEditorStore.setSelectedId(feature.id)}
 										>
 											<div className="flex items-center gap-2">

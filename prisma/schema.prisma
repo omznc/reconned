@@ -2,6 +2,8 @@ generator client {
   provider      = "prisma-client"
   output        = "../generated/client"
   binaryTargets = ["native", "darwin-arm64"]
+  engineType = "client"
+  runtime       = "bun"
 }
 
 datasource db {

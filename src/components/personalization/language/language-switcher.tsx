@@ -46,7 +46,7 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 								router.refresh();
 							}
 						}}
-						className={locale === localeOption ? "bg-accent" : ""}
+						className={cn(locale === localeOption && "bg-accent")}
 					>
 						<div className="flex items-center gap-2">
 							<span>{LANGUAGE_TRANSLATIONS[localeOption]}</span>

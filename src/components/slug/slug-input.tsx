@@ -7,13 +7,13 @@ import { validateSlug } from "@/components/slug/validate-slug";
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { env } from "@/lib/env";
+import { cn } from "@/lib/utils";
 
 interface SlugInputProps {
 	type: "club" | "event" | "user";
 	currentSlug?: string | null;
 	defaultSlug?: string;
 	onValid: (_: string) => void;
-	// Add new prop
 	onValidityChange: (_: boolean) => void;
 }
 
@@ -66,7 +66,7 @@ export function SlugInput(props: SlugInputProps) {
 			<FormDescription>
 				{t("components.slug.description")}{" "}
 				{debouncedSlug && debouncedSlug !== props.currentSlug && (
-					<span className={valid ? "text-green-500" : "text-red-500"}>
+					<span className={cn(valid && "text-green-500", !valid && "text-red-500")}>
 						{valid ? t("components.slug.available") : t("components.slug.taken")}
 					</span>
 				)}

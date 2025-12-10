@@ -21,8 +21,17 @@ import {
 	featuresToCollection,
 	featureToGeoJSON,
 } from "@/components/map-editor/geometry";
+import { createEmptySnapshot, playAreaFromBbox } from "@/components/map-editor/map-data";
 
-import type { EditorMode, LngLatTuple, MapFeature, MapFeatureKind, MapGeometry } from "@/components/map-editor/types";
+import type {
+	EditorMode,
+	LngLatTuple,
+	MapEditorSnapshot,
+	MapFeature,
+	MapFeatureKind,
+	MapGeometry,
+	MapPlayArea,
+} from "@/components/map-editor/types";
 
 import { useMapEditorStore } from "@/components/map-editor/use-map-editor-store";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
@@ -58,6 +67,8 @@ const emptyCollection: FeatureCollection = { type: "FeatureCollection", features
 type MapEditorProps = {
 	visible?: boolean;
 	onClose?: () => void;
+	initialData?: MapEditorSnapshot | null;
+	onSnapshotChange?: (snapshot: MapEditorSnapshot) => void;
 };
 
 type HandleMeta =
@@ -125,7 +136,7 @@ const cloneMapGeometry = (geometry: MapGeometry): MapGeometry => {
 	return { type: "Freehand", coordinates: coords, closed: geometry.closed };
 };
 
-export function MapEditor({ visible = false, onClose }: MapEditorProps) {
+export function MapEditor({ visible = false, onClose, initialData, onSnapshotChange }: MapEditorProps) {
 	const t = useTranslations();
 	const mapEditorStore = useMapEditorStore();
 	const { features, selectedId, gridVisible, basemap, gridLabelsVisible, gridOpacity, labelOpacity, mode } =
@@ -144,11 +155,12 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		lat: "",
 		lng: "",
 	});
-	const [playArea, setPlayArea] = useState<{ minLng: number; maxLng: number; minLat: number; maxLat: number } | null>(
-		null,
-	);
-	const [isSettingPlayArea, setIsSettingPlayArea] = useState(true);
-	const [playAreaConfirmed, setPlayAreaConfirmed] = useState(false);
+	const initialSnapshotRef = useRef<MapEditorSnapshot>(initialData ?? createEmptySnapshot());
+	const initialPlayArea =
+		initialSnapshotRef.current.playArea ?? playAreaFromBbox(initialSnapshotRef.current.collection.bbox);
+	const [playArea, setPlayArea] = useState<MapPlayArea | null>(initialPlayArea ?? null);
+	const [isSettingPlayArea, setIsSettingPlayArea] = useState(!initialPlayArea);
+	const [playAreaConfirmed, setPlayAreaConfirmed] = useState(Boolean(initialPlayArea));
 	const hasPlayArea = Boolean(playArea);
 	useEffect(() => {
 		if (visible) {
@@ -164,13 +176,14 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 	const [isFreehandDrawing, setIsFreehandDrawing] = useState(false);
 	const importRef = useRef<HTMLInputElement | null>(null);
 	const markersRef = useRef<Map<string, { marker: maplibregl.Marker; root: Root; size: number }>>(new Map());
-	const previousPlayAreaRef = useRef<{ minLng: number; maxLng: number; minLat: number; maxLat: number } | null>(null);
+	const previousPlayAreaRef = useRef<MapPlayArea | null>(initialPlayArea ?? null);
 	const draggingRef = useRef<{
 		id: string;
 		last: LngLatTuple;
 	} | null>(null);
 	const [handleDrag, setHandleDrag] = useState<HandleDragState | null>(null);
 	const handleDragRef = useRef<HandleDragState | null>(null);
+	const snapshotAppliedRef = useRef(false);
 	const [overlaySize, setOverlaySize] = useState<number>(0);
 	const [projectionTick, setProjectionTick] = useState(0);
 	const temporaryModeRef = useRef<EditorMode | null>(null);
@@ -231,6 +244,56 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		const lngLat = map.unproject([event.clientX - rect.left, event.clientY - rect.top]);
 		return [lngLat.lng, lngLat.lat];
 	}, []);
+
+	const applySnapshot = useCallback(
+		(snapshot: MapEditorSnapshot) => {
+			let defaultIconName = mapEditorStore.pointIconName ?? "map-pin";
+			for (let index = 0; index < snapshot.collection.features.length; index += 1) {
+				const feature = snapshot.collection.features[index];
+				if (!feature) {
+					continue;
+				}
+				const icon = feature.properties?.iconName;
+				if (typeof icon === "string" && icon.length > 0) {
+					defaultIconName = icon;
+					break;
+				}
+			}
+			const defaults = {
+				style: mapEditorStore.style,
+				iconName: defaultIconName,
+				iconBackground: true,
+				iconSize: 22,
+			};
+			const loadedFeatures = collectionToFeatures(snapshot.collection, defaults);
+			mapEditorStore.replaceFeatures(loadedFeatures);
+			mapEditorStore.setBasemap(snapshot.basemap);
+			mapEditorStore.setGridVisible(snapshot.grid.visible);
+			mapEditorStore.setGridLabelsVisible(snapshot.grid.labelsVisible);
+			mapEditorStore.setGridOpacity(snapshot.grid.opacity);
+			mapEditorStore.setLabelOpacity(snapshot.grid.labelOpacity);
+			mapEditorStore.setPointIconName(defaultIconName);
+			const nextPlayArea = snapshot.playArea ?? playAreaFromBbox(snapshot.collection.bbox);
+			if (nextPlayArea) {
+				setPlayArea(nextPlayArea);
+				setPlayAreaConfirmed(true);
+				setIsSettingPlayArea(false);
+			} else {
+				setPlayArea(null);
+				setPlayAreaConfirmed(false);
+				setIsSettingPlayArea(true);
+			}
+		},
+		[mapEditorStore],
+	);
+
+	useEffect(() => {
+		if (snapshotAppliedRef.current) {
+			return;
+		}
+		applySnapshot(initialSnapshotRef.current);
+		snapshotAppliedRef.current = true;
+	}, [applySnapshot]);
 
 	const createFeature = (kind: MapFeatureKind, geometry: MapFeature["geometry"]): MapFeature => {
 		return {
@@ -1273,6 +1336,43 @@ export function MapEditor({ visible = false, onClose }: MapEditorProps) {
 		}
 		source.setData(featuresToCollection(features));
 	}, [features, mapReady]);
+
+	useEffect(() => {
+		if (!onSnapshotChange) {
+			return;
+		}
+		const snapshot: MapEditorSnapshot = {
+			version: 2,
+			collection: featuresToCollection(features),
+			basemap,
+			grid: {
+				visible: gridVisible,
+				labelsVisible: gridLabelsVisible,
+				opacity: gridOpacity,
+				labelOpacity,
+			},
+			playArea: playArea && playAreaConfirmed ? playArea : null,
+		};
+		if (snapshot.playArea) {
+			snapshot.collection.bbox = [
+				snapshot.playArea.minLng,
+				snapshot.playArea.minLat,
+				snapshot.playArea.maxLng,
+				snapshot.playArea.maxLat,
+			];
+		}
+		onSnapshotChange(snapshot);
+	}, [
+		basemap,
+		features,
+		gridLabelsVisible,
+		gridOpacity,
+		gridVisible,
+		labelOpacity,
+		onSnapshotChange,
+		playArea,
+		playAreaConfirmed,
+	]);
 
 	useEffect(() => {
 		if (!mapReady) {

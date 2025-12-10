@@ -13,6 +13,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { demoteFromManager } from "./manager.action.tsx";
 
 type Role = "CLUB_OWNER" | "MANAGER" | "USER";
@@ -126,7 +127,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 										<DropdownMenuItem
 											onClick={() => handleDemote(row)}
 											disabled={isOwner}
-											className={!isOwner ? "text-destructive focus:text-destructive" : ""}
+											className={cn(!isOwner && "text-destructive focus:text-destructive")}
 										>
 											<UserMinus className="size-4 mr-2" />
 											{isOwner ? "Vlasnik kluba" : "Demotuj"}

@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 interface Review {
 	id: string;
@@ -45,11 +46,12 @@ export function ReviewsOverviewSheet({ reviews, title }: ReviewsOverviewSheetPro
 										{[1, 2, 3, 4, 5].map((star) => (
 											<Star
 												key={star}
-												className={`h-4 w-4 ${
+												className={cn(
+													"h-4 w-4",
 													star <= review.rating
 														? "fill-yellow-400 text-yellow-400"
-														: "fill-muted text-muted"
-												}`}
+														: "fill-muted text-muted",
+												)}
 											/>
 										))}
 									</div>

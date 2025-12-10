@@ -200,7 +200,7 @@ export const Editor = ({ editable = true, initialValue = "", onChange }: EditorP
 			)}
 
 			{/** biome-ignore lint/a11y/noStaticElementInteractions: TODO: use button */}
-			<div onClick={handleContainerClick} className={cn("cursor-text", editable ? "min-h-[150px]" : "")}>
+			<div onClick={handleContainerClick} className={cn("cursor-text", editable && "min-h-[150px]")}>
 				<EditorContent
 					editor={editor}
 					className={cn(

@@ -4,6 +4,7 @@ import type { Patch } from "immer";
 import { applyPatches, enablePatches, produceWithPatches } from "immer";
 import { create } from "zustand";
 
+import { MAP_DEFAULT_STYLE } from "@/components/map-editor/constants";
 import type { BasemapId, EditorMode, FeatureStyle, LngLatTuple, MapFeature } from "@/components/map-editor/types";
 
 enablePatches();
@@ -45,13 +46,6 @@ type EditorState = {
 	undo: () => void;
 	redo: () => void;
 	replaceFeatures: (features: MapFeature[]) => void;
-};
-
-const defaultStyle: FeatureStyle = {
-	strokeColor: "#ef4444",
-	fillColor: "#f97316",
-	strokeWidth: 2,
-	fillOpacity: 0.4,
 };
 
 const applyChange = (
@@ -139,7 +133,7 @@ export const useMapEditorStore = create<EditorState>((set, get) => ({
 	labelOpacity: 0.45,
 	basemap: "osm",
 	pointIconName: "map-pin",
-	style: defaultStyle,
+	style: MAP_DEFAULT_STYLE,
 	setMode: (mode) => {
 		set({ mode });
 	},

@@ -557,9 +557,10 @@ export function EventApplicationForm({ existingApplication, event, user, current
 													}
 												}}
 												disabled={isAlreadyAdded}
-												className={`flex items-center gap-2 p-2 ${
-													isAlreadyAdded ? "opacity-50 cursor-not-allowed" : ""
-												}`}
+												className={cn(
+													"flex items-center gap-2 p-2",
+													isAlreadyAdded && "opacity-50 cursor-not-allowed",
+												)}
 											>
 												<Avatar className="h-8 w-8">
 													<AvatarImage src={user.image || ""} />
@@ -615,18 +616,18 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			<div className="space-y-2">
 				<Progress value={(step / 4) * 100} className="h-2" />
 				<div className="flex justify-between select-none text-sm text-muted-foreground px-1">
-					<span className={step >= 1 ? "text-foreground font-medium" : ""}>
+					<span className={cn(step >= 1 && "text-foreground font-medium")}>
 						{t("public.events.apply.form.steps.type")}
 					</span>
-					<span className={step >= 2 ? "text-foreground font-medium" : ""}>
+					<span className={cn(step >= 2 && "text-foreground font-medium")}>
 						{form.watch("type") === "team"
 							? t("public.events.apply.form.steps.team")
 							: t("public.events.apply.form.steps.info")}
 					</span>
-					<span className={step >= 3 ? "text-foreground font-medium" : ""}>
+					<span className={cn(step >= 3 && "text-foreground font-medium")}>
 						{t("public.events.apply.form.steps.rules")}
 					</span>
-					<span className={step >= 4 ? "text-foreground font-medium" : ""}>
+					<span className={cn(step >= 4 && "text-foreground font-medium")}>
 						{t("public.events.apply.form.steps.payment")}
 					</span>
 				</div>

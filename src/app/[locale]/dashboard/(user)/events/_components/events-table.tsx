@@ -13,6 +13,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 function getEventStatus(dateStart: Date, dateEnd: Date) {
 	const now = new Date();
@@ -76,7 +77,7 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 						variant: "custom",
 						component: (_, row) => {
 							const { label, className } = getEventStatus(row.dateStart, row.dateEnd);
-							return <Badge className={`pointer-events-none ${className}`}>{label}</Badge>;
+							return <Badge className={cn("pointer-events-none", className)}>{label}</Badge>;
 						},
 					},
 				},

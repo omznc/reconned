@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
 import { isAuthenticated } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 interface ExtendedUser extends User {
 	clubMembership: {
@@ -89,7 +90,10 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			)}
 
 			<div
-				className={`flex flex-col gap-1 ${user.image && user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : ""}`}
+				className={cn(
+					"flex flex-col gap-1",
+					user.image && user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : undefined,
+				)}
 			>
 				<div className="flex items-center gap-2">
 					<h1 className="text-3xl font-semibold">

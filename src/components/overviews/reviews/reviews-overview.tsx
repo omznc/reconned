@@ -7,6 +7,7 @@ import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-ove
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { cn } from "@/lib/utils";
 
 interface ReviewsOverviewProps {
 	type: "club" | "event" | "user";
@@ -90,9 +91,10 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 						{[1, 2, 3, 4, 5].map((star) => (
 							<Star
 								key={star}
-								className={`h-6 w-6 ${
-									star <= averageRating ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"
-								}`}
+								className={cn(
+									"h-6 w-6",
+									star <= averageRating ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted",
+								)}
 							/>
 						))}
 						<span className="ml-2 text-sm text-muted-foreground">({reviews.length})</span>
@@ -108,11 +110,12 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 											{[1, 2, 3, 4, 5].map((star) => (
 												<Star
 													key={star}
-													className={`h-4 w-4 ${
+													className={cn(
+														"h-4 w-4",
 														star <= review.rating
 															? "fill-yellow-400 text-yellow-400"
-															: "fill-muted text-muted"
-													}`}
+															: "fill-muted text-muted",
+													)}
 												/>
 											))}
 										</div>

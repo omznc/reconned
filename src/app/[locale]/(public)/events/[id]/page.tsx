@@ -39,8 +39,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 
 	const event = await prisma.event.findFirst({
 		where: {
-			OR: [{ id: params.id }, { slug: params.id }],
-			...conditionalPrivateWhere,
+			AND: [{ OR: [{ id: params.id }, { slug: params.id }] }, conditionalPrivateWhere],
 		},
 		include: {
 			_count: {
