@@ -6,12 +6,11 @@ import { addDays, differenceInDays, format, subHours } from "date-fns";
 import { bs } from "date-fns/locale";
 import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
-import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useLogger } from "next-axiom";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
 import {
@@ -22,6 +21,10 @@ import {
 import { createEventFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
 import { AnimatedNumber } from "@/components/animated-number";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
+import { createEmptySnapshot, normalizeMapData } from "@/components/map-editor/map-data";
+import { MapEditor } from "@/components/map-editor/map-editor";
+import { MapViewer } from "@/components/map-editor/map-viewer";
+import type { MapEditorSnapshot } from "@/components/map-editor/types";
 import { SlugInput } from "@/components/slug/slug-input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -42,16 +45,13 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-// Dynamically import MapComponent to avoid SSR issues
-const MapComponent = dynamic(() => import("@/components/map-component").then((m) => ({ default: m.MapComponent })), {
-	ssr: false,
-});
-
 interface CreateEventFormProps {
 	event: Event | null;
 	rules: ClubRule[];
 	prefillDate?: Date | null;
 }
+
+type CreateEventFormValues = z.output<typeof createEventFormSchema>;
 
 export default function CreateEventForm(props: CreateEventFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
@@ -61,6 +61,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const t = useTranslations();
 	const logger = useLogger();
 	const eventIdRef = useRef<string | null>(props.event?.id || null);
+	const normalizedMapData = useMemo(() => normalizeMapData(props.event?.mapData), [props.event?.mapData]);
+	const [isMapEditorOpen, setIsMapEditorOpen] = useState(false);
 
 	// Initialize file upload system
 	const initialFiles: FileUploadItem[] = props.event?.image
@@ -183,7 +185,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const defaultEndDate = props.event?.dateEnd ?? addDays(defaultStartDate, 1);
 	const defaultRegistrationCloseDate = props.event?.dateRegistrationsClose ?? subHours(defaultStartDate, 2);
 
-	const defaultFormValues = {
+	const defaultFormValues: CreateEventFormValues = {
 		eventId: props.event?.id || "",
 		clubId: props.event?.clubId || clubId || "",
 		name: props.event?.name || "",
@@ -205,14 +207,21 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		slug: props.event?.slug || "",
 		hasDrinks: props.event?.hasDrinks,
 		hasPrizes: props.event?.hasPrizes,
-		// biome-ignore lint/suspicious/noExplicitAny: I'll eventually handle this
-		mapData: (props.event?.mapData as any) || { areas: [], pois: [] },
+		mapData: normalizedMapData,
 	};
-	const form = useForm<z.infer<typeof createEventFormSchema>>({
-		resolver: zodResolver(createEventFormSchema),
+	const form = useForm<CreateEventFormValues>({
+		resolver: zodResolver(createEventFormSchema) as Resolver<CreateEventFormValues>,
 		defaultValues: defaultFormValues,
 		mode: "onChange",
 	});
+
+	const handleMapSnapshotChange = useCallback(
+		(snapshot: MapEditorSnapshot) => {
+			form.setValue("mapData", snapshot, { shouldDirty: true, shouldTouch: true });
+		},
+		[form],
+	);
+	const mapData = form.watch("mapData");
 
 	useEffect(() => {
 		// If editing form, ignore the saved data
@@ -1100,21 +1109,46 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						</AccordionTrigger>
 						<AccordionContent className="pb-4">
 							<div className="space-y-4">
-								<p className="text-sm text-muted-foreground">
-									{t("dashboard.club.events.create.mapDescription")}
-								</p>
-								<div className="w-full h-[400px] border rounded-lg overflow-hidden">
-									<MapComponent
-										defaultMapData={form.watch("mapData")}
-										onSaveMapData={(data) => {
-											form.setValue("mapData", data);
-										}}
-									/>
+								<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+									<p className="text-sm text-muted-foreground">
+										{t("dashboard.club.events.create.mapDescription")}
+									</p>
+									<div className="flex gap-2">
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() => {
+												form.setValue("mapData", createEmptySnapshot(), {
+													shouldDirty: true,
+													shouldTouch: true,
+												});
+											}}
+										>
+											<RotateCcw className="size-4" />
+											{t("common.actions.reset")}
+										</Button>
+										<Button type="button" size="sm" onClick={() => setIsMapEditorOpen(true)}>
+											{t("common.actions.edit")}
+										</Button>
+									</div>
+								</div>
+								<div className="w-full h-[400px]">
+									<MapViewer data={mapData} />
 								</div>
 							</div>
 						</AccordionContent>
 					</AccordionItem>
 				</Accordion>
+
+				{isMapEditorOpen ? (
+					<MapEditor
+						visible
+						initialData={mapData}
+						onSnapshotChange={handleMapSnapshotChange}
+						onClose={() => setIsMapEditorOpen(false)}
+					/>
+				) : null}
 
 				<div className="flex justify-end pt-4 gap-4">
 					<Button

@@ -267,7 +267,7 @@ export function GenericDataTable<T>({
 						<Button
 							variant="ghost"
 							size="sm"
-							className={cn("shadow-none", isMobile ? "w-full justify-center" : "")}
+							className={cn("shadow-none", isMobile && "w-full justify-center")}
 						>
 							<MoreHorizontal className="size-4" />
 							{isMobile && (
@@ -305,7 +305,7 @@ export function GenericDataTable<T>({
 			const badgeClass =
 				config.badgeVariants?.[value as string] ?? config.badgeVariants?.default ?? "bg-primary/10";
 			return (
-				<span className={`px-2 py-1 text-xs rounded-md ${badgeClass}`}>
+				<span className={cn("px-2 py-1 text-xs rounded-md", badgeClass)}>
 					{config.valueMap?.[value as string] ?? config.valueMap?.default ?? value}
 				</span>
 			);
@@ -315,7 +315,7 @@ export function GenericDataTable<T>({
 	};
 
 	return (
-		<div className="space-y-4 w-full">
+		<div className={cn("space-y-4 w-full", hasActionsAsLastColumn && "overflow-x-auto")}>
 			{/* Controls */}
 			<div className="flex flex-col gap-4 md:flex-row md:items-center">
 				<div className="w-full md:w-[300px] relative">
@@ -405,7 +405,7 @@ export function GenericDataTable<T>({
 
 			{/* Desktop Table */}
 			<div className="rounded-md border hidden md:block">
-				<div className={hasActionsAsLastColumn ? "overflow-x-auto" : ""}>
+				<div className={cn(hasActionsAsLastColumn && "overflow-x-auto")}>
 					<Table>
 						<TableHeader>
 							<TableRow>

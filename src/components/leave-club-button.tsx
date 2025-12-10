@@ -9,6 +9,7 @@ import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 interface LeaveClubButtonProps extends Omit<ButtonProps, "onClick"> {
 	clubId: string;
@@ -63,7 +64,10 @@ export function LeaveClubButton({
 				type="button"
 				onClick={handleLeaveClub}
 				disabled={isClubOwner}
-				className={`flex items-center w-full text-left ${isClubOwner ? "opacity-50 pointer-events-none" : "cursor-pointer"} text-destructive`}
+				className={cn(
+					"flex items-center w-full text-left text-destructive",
+					isClubOwner ? "opacity-50 pointer-events-none" : "cursor-pointer",
+				)}
 				title={isClubOwner ? t("components.leaveClubButton.ownerError") : undefined}
 			>
 				{icon || <LogOut className="size-4 mr-2" />}

@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useState } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
+import { cn } from "@/lib/utils";
 
 interface FontBodyProps {
 	children: ReactNode;
@@ -22,7 +23,7 @@ export function FontBody({ children, geistMonoVariable, geistSansVariable }: Fon
 
 	return (
 		<body
-			className={`${fontVariable} antialiased min-h-dvh flex flex-col items-center justify-center`}
+			className={cn(fontVariable, "antialiased min-h-dvh flex flex-col items-center justify-center")}
 			suppressHydrationWarning
 		>
 			{children}

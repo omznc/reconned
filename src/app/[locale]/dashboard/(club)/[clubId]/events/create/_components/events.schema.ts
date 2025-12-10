@@ -1,6 +1,11 @@
 import { z } from "zod";
+import { normalizeMapData } from "@/components/map-editor/map-data";
+import type { MapEditorSnapshot } from "@/components/map-editor/types";
 
 const matcher = /<iframe.*?src="([^"]+)"/;
+
+const mapDataSchema: z.ZodType<MapEditorSnapshot> = z.any().transform((value) => normalizeMapData(value));
+
 export const createEventFormSchema = z
 	.object({
 		eventId: z.string().optional(),
@@ -23,13 +28,10 @@ export const createEventFormSchema = z
 		googleMapsLink: z
 			.string()
 			.transform((input) => {
-				// Check for iframe tag and extract src if present
 				const iframeMatch = input.match(matcher);
 				if (iframeMatch) {
 					return iframeMatch[1];
 				}
-
-				// If direct link is provided, return as-is
 				return input;
 			})
 			.optional(),
@@ -56,15 +58,7 @@ export const createEventFormSchema = z
 		hasDrinks: z.boolean().optional(),
 		hasPrizes: z.boolean().optional(),
 		ruleIds: z.array(z.string()).optional(),
-		mapData: z.object({
-			areas: z.array(z.array(z.array(z.array(z.number())))),
-			pois: z.array(
-				z.object({
-					lat: z.number(),
-					lng: z.number(),
-				}),
-			),
-		}),
+		mapData: mapDataSchema,
 	})
 	.refine((data) => data.dateEnd > data.dateStart, {
 		message: "Datum završetka mora biti nakon datuma početka",

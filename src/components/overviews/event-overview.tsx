@@ -6,13 +6,15 @@ import { getTranslations } from "next-intl/server";
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
 import { BadgeSoon } from "@/components/badge-soon";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
-import { MapComponent } from "@/components/map-component";
+import { normalizeMapData, snapshotHasData } from "@/components/map-editor/map-data";
+import { MapViewer } from "@/components/map-editor/map-viewer";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
 import { isAuthenticated } from "@/lib/auth";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { cn } from "@/lib/utils";
 
 interface EventOverviewProps {
@@ -34,6 +36,8 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 		getPageViews(`/events/${event.slug}`),
 	]);
 	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const mapSnapshot = normalizeMapData(event.mapData);
+	const hasMap = snapshotHasData(mapSnapshot);
 
 	const canApplyToEvent = (event: Event) => {
 		const now = new Date();
@@ -61,8 +65,8 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 				</>
 			)}
 			<div
-				className={cn({
-					"peer-hover:opacity-25 peer-hover:mt-[50%] rounded-md z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
+				className={cn("rounded-md", {
+					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
 						event.image,
 					"border p-4 bg-background w-full flex flex-col gap-1": !event.image,
 				})}
@@ -82,18 +86,22 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 						)
 					) : (
 						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-2 h-fit w-full md:w-fit">
-							{user && canApplyToEvent(event) ? (
-								<Link href={`/events/${event.id}/apply`}>
-									<Button variant="outline" size="sm" className="w-full md:w-auto">
-										{t("components.eventOverview.apply")} <BadgeSoon className="ml-2" />
-									</Button>
-								</Link>
-							) : user ? (
-								<p className="text-sm text-muted-foreground">
-									{t("components.eventOverview.registrationsClosed")}
-								</p>
-							) : null}
-							<AddEventToCalendarButton event={event} />
+							{FEATURE_FLAGS.EVENT_REGISTRATION && (
+								<>
+									{user && canApplyToEvent(event) ? (
+										<Link href={`/events/${event.id}/apply`}>
+											<Button variant="outline" size="sm" className="w-full md:w-auto">
+												{t("components.eventOverview.apply")} <BadgeSoon className="ml-2" />
+											</Button>
+										</Link>
+									) : user ? (
+										<p className="text-sm text-muted-foreground">
+											{t("components.eventOverview.registrationsClosed")}
+										</p>
+									) : null}
+									<AddEventToCalendarButton event={event} />
+								</>
+							)}
 						</div>
 					)}
 					<div className="flex items-center gap-2">
@@ -144,18 +152,14 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							</LoadChildOnClick>
 						</div>
 					)}
-					{event.mapData && JSON.stringify(event.mapData) !== `{"pois":[],"areas":[]}` && (
+					{hasMap ? (
 						<div className="size-full flex flex-col gap-2">
 							<h2 className="text-xl font-semibold">{t("components.eventOverview.map")}</h2>
 							<LoadChildOnClick title={t("components.eventOverview.showEventMap")}>
-								<MapComponent
-									// biome-ignore lint/suspicious/noExplicitAny: Dynamic map data
-									defaultMapData={event.mapData as any}
-									readOnly={true}
-								/>
+								<MapViewer data={mapSnapshot} height={800} />
 							</LoadChildOnClick>
 						</div>
-					)}
+					) : null}
 					<ReviewsOverview type="event" typeId={event.id} />
 				</div>
 			</div>

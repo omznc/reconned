@@ -1,5 +1,7 @@
 "use client";
 
+import type { FeatureCollection } from "geojson";
+
 export type LngLatTuple = [number, number];
 
 export type MapGeometry =
@@ -33,3 +35,23 @@ export type MapFeature = {
 export type EditorMode = "select" | "move" | MapFeatureKind;
 
 export type BasemapId = "osm" | "satellite";
+
+export type MapPlayArea = {
+	minLng: number;
+	maxLng: number;
+	minLat: number;
+	maxLat: number;
+};
+
+export type MapEditorSnapshot = {
+	version: 2;
+	collection: FeatureCollection;
+	basemap: BasemapId;
+	grid: {
+		visible: boolean;
+		labelsVisible: boolean;
+		opacity: number;
+		labelOpacity: number;
+	};
+	playArea: MapPlayArea | null;
+};

@@ -1,4 +1,6 @@
 "use server";
+import type { Prisma } from "@generated/client";
+import type { JsonValue } from "@prisma/client/runtime/client";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
 	createEventFormSchema,
@@ -6,6 +8,7 @@ import {
 	deleteEventSchema,
 	eventImageFileSchema,
 } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
+import { createEmptySnapshot, normalizeMapData } from "@/components/map-editor/map-data";
 import { validateSlug } from "@/components/slug/validate-slug";
 import { redirect } from "@/i18n/navigation";
 import { revalidateLocalizedPaths } from "@/i18n/revalidateLocalizedPaths";
@@ -31,6 +34,9 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 
 	const shouldDeleteImage = parsedInput.image === undefined;
 
+	const mapData = normalizeMapData(parsedInput.mapData ?? createEmptySnapshot());
+	const mapDataJson = JSON.parse(JSON.stringify(mapData)) as Prisma.InputJsonValue;
+
 	const data = {
 		name: parsedInput.name,
 		description: parsedInput.description,
@@ -55,7 +61,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 		rules: {
 			connect: parsedInput.ruleIds?.map((id) => ({ id })) || [],
 		},
-		mapData: parsedInput.mapData ?? { areas: [], pois: [] },
+		mapData: mapDataJson,
 	};
 
 	// If the event has ended, you can't update it.
@@ -113,7 +119,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 			hasPrizes: parsedInput.hasPrizes,
 			slug: parsedInput.slug,
 			rules: parsedInput.ruleIds,
-			mapData: parsedInput.mapData,
+			mapData: mapDataJson as JsonValue,
 		},
 	});
 

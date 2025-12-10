@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const toPascalCase = (name: string) => {
 	return name
@@ -38,7 +39,7 @@ export function PointMarker({ name, color, fill, background = true, scale = 1, s
 	const base = size / 22;
 	return (
 		<div
-			className={`flex items-center justify-center rounded-full ${background ? "shadow-sm" : ""}`}
+			className={cn("flex items-center justify-center rounded-full", background && "shadow-sm")}
 			style={{
 				backgroundColor: bgColor,
 				transform: `scale(${scale * base})`,
