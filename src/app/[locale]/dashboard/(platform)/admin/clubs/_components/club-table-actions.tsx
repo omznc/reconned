@@ -39,7 +39,7 @@ export function ClubActions({ club }: { club: Club }) {
 				action: action === "ban" ? (club.banned ? "unban" : "ban") : "remove",
 			});
 			if (!resp?.data?.success) {
-				throw new Error("Došlo je do greške prilikom izvršavanja akcije.");
+				throw new ActionError("Došlo je do greške prilikom izvršavanja akcije.");
 			}
 			// Optionally toast success message or refresh data
 		} catch {

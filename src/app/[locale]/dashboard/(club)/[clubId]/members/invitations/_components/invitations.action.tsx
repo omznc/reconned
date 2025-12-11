@@ -29,7 +29,7 @@ export const sendInvitation = safeActionClient
 			});
 
 			if (existingInvite) {
-				throw new Error("Već ste poslali pozivnicu ovoj osobi.");
+				throw new ActionError("Već ste poslali pozivnicu ovoj osobi.");
 			}
 
 			const existingMembership = await prisma.clubMembership.findFirst({
@@ -40,7 +40,7 @@ export const sendInvitation = safeActionClient
 			});
 
 			if (existingMembership) {
-				throw new Error("Osoba već ima članstvo u klubu.");
+				throw new ActionError("Osoba već ima članstvo u klubu.");
 			}
 
 			// Generate unique invite code
@@ -136,7 +136,7 @@ export const revokeInvitation = safeActionClient
 			});
 
 			if (!invite) {
-				throw new Error("Pozivnica nije pronađena ili je već iskorištena.");
+				throw new ActionError("Pozivnica nije pronađena ili je već iskorištena.");
 			}
 
 			await prisma.clubInvite.update({
