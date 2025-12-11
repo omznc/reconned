@@ -4,7 +4,7 @@ import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
 import { AlertCircle, ArrowLeft, Info, Loader, ShieldAlert, Verified } from "lucide-react";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -42,12 +42,12 @@ export default function InstagramPageSelection() {
 	const searchParams = useSearchParams();
 	const sessionId = searchParams.get("sessionId");
 	const router = useRouter();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	// Fetch the available Facebook pages
 	useEffect(() => {
 		if (!sessionId) {
-			setError(t("dashboard.club.info.instagramSessionMissing"));
+			setError(t("Missing session for page selection"));
 			setIsLoading(false);
 			return;
 		}
@@ -60,7 +60,7 @@ export default function InstagramPageSelection() {
 
 				if (!response.ok) {
 					const errorData = await response.json();
-					setError(errorData.error || t("dashboard.club.info.instagramPagesFetchFailed"));
+					setError(errorData.error || t("Failed to load Facebook pages"));
 					setIsLoading(false);
 					return;
 				}
@@ -90,7 +90,7 @@ export default function InstagramPageSelection() {
 
 				setIsLoading(false);
 			} catch {
-				setError(t("dashboard.club.info.instagramPagesFetchFailed"));
+				setError(t("Failed to load Facebook pages"));
 				setIsLoading(false);
 			}
 		};
@@ -112,13 +112,13 @@ export default function InstagramPageSelection() {
 		try {
 			const selectedPage = pages.find((page) => page.id === selectedPageId);
 			if (!selectedPage) {
-				throw new ActionError(t("dashboard.club.info.instagramSelectedPageNotFound"));
+				throw new ActionError(t("Selected page not found"));
 			}
 
 			// Redirect to the callback route with the selected page ID and its page-specific access token
 			window.location.href = `/api/club/instagram/callback?pageId=${selectedPageId}&accessToken=${encodeURIComponent(selectedPage.access_token)}&state=${params.clubId}`;
 		} catch (err) {
-			setError(err instanceof Error ? err.message : t("dashboard.club.info.instagramConnectionFailed"));
+			setError(err instanceof Error ? err.message : t("Failed to connect Instagram account"));
 			setIsConnecting(false);
 		}
 	};
@@ -132,7 +132,7 @@ export default function InstagramPageSelection() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[400px]">
 				<Loader className="h-8 w-8 animate-spin text-primary mb-4" />
-				<p className="text-lg text-muted-foreground">{t("dashboard.club.info.instagramLoadingPages")}</p>
+				<p className="text-lg text-muted-foreground">{t("Loading pages...")}</p>
 			</div>
 		);
 	}
@@ -141,11 +141,11 @@ export default function InstagramPageSelection() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh]">
 				<AlertCircle className="h-12 w-12 text-destructive" />
-				<h2 className="text-xl font-bold mt-4">{t("dashboard.club.info.instagramError.title")}</h2>
+				<h2 className="text-xl font-bold mt-4">{t("Problem connecting Instagram account")}</h2>
 				<p className="text-muted-foreground mt-2">{error}</p>
 				<Button variant="default" className="mt-6" onClick={handleCancel}>
 					<ArrowLeft className="mr-2 h-4 w-4" />
-					{t("dashboard.club.info.backToClub")}
+					{t("Back to club")}
 				</Button>
 			</div>
 		);
@@ -155,11 +155,15 @@ export default function InstagramPageSelection() {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>{t("dashboard.club.info.instagramNoPages")}</CardTitle>
-					<CardDescription>{t("dashboard.club.info.instagramNoPageDescription")}</CardDescription>
+					<CardTitle>{t("No Facebook pages found")}</CardTitle>
+					<CardDescription>
+						{t(
+							"No Facebook pages connected to your account found. First create a Facebook page and connect it to an Instagram Business account.",
+						)}
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<Button onClick={handleCancel}>{t("dashboard.club.info.backToClub")}</Button>
+					<Button onClick={handleCancel}>{t("Back to club")}</Button>
 				</CardContent>
 			</Card>
 		);
@@ -173,16 +177,24 @@ export default function InstagramPageSelection() {
 			<CardHeader>
 				<div className="flex items-center gap-2">
 					<SiInstagram className="h-5 w-5" />
-					<CardTitle>{t("dashboard.club.info.instagramSelectPageTitle")}</CardTitle>
+					<CardTitle>{t("Select Facebook Page")}</CardTitle>
 				</div>
-				<CardDescription>{t("dashboard.club.info.instagramSelectPageDescription")}</CardDescription>
+				<CardDescription>
+					{t(
+						"Select the Facebook page that is connected to the Instagram Business account you want to connect to your club.",
+					)}
+				</CardDescription>
 			</CardHeader>
 
 			{!hasEligiblePages && (
 				<CardContent>
 					<Alert className="mb-4">
 						<ShieldAlert className="h-4 w-4" />
-						<AlertDescription>{t("dashboard.club.info.instagramNoEligiblePages")}</AlertDescription>
+						<AlertDescription>
+							{t(
+								"None of your Facebook pages are connected to an Instagram Business account. First connect an Instagram Business account to your Facebook page.",
+							)}
+						</AlertDescription>
 					</Alert>
 				</CardContent>
 			)}
@@ -232,7 +244,7 @@ export default function InstagramPageSelection() {
 									{isEligible ? (
 										<div className="flex flex-shrink-0 items-center text-sm text-green-600 font-medium gap-1">
 											<Verified className="h-4 w-4" />
-											<span>{t("dashboard.club.info.instagramEligible")}</span>
+											<span>{t("Available")}</span>
 										</div>
 									) : (
 										<TooltipProvider>
@@ -240,11 +252,15 @@ export default function InstagramPageSelection() {
 												<TooltipTrigger asChild>
 													<div className="flex flex-shrink-0 items-center text-sm text-amber-500 font-medium gap-1">
 														<Info className="h-4 w-4" />
-														<span>{t("dashboard.club.info.instagramIneligible")}</span>
+														<span>{t("Not available")}</span>
 													</div>
 												</TooltipTrigger>
 												<TooltipContent className="max-w-xs">
-													<p>{t("dashboard.club.info.instagramIneligibleTooltip")}</p>
+													<p>
+														{t(
+															"This Facebook page is not connected to an Instagram Business account. To connect, first link an Instagram Business account to this Facebook page.",
+														)}
+													</p>
 												</TooltipContent>
 											</Tooltip>
 										</TooltipProvider>
@@ -257,7 +273,7 @@ export default function InstagramPageSelection() {
 			</CardContent>
 			<CardFooter className="flex justify-between">
 				<Button variant="outline" onClick={handleCancel} disabled={isConnecting}>
-					{t("common.actions.cancel")}
+					{t("Cancel")}
 				</Button>
 				<Button
 					onClick={handleConnect}
@@ -267,12 +283,12 @@ export default function InstagramPageSelection() {
 					{isConnecting ? (
 						<>
 							<Loader className="h-4 w-4 animate-spin" />
-							<span>{t("dashboard.club.info.instagramConnecting")}</span>
+							<span>{t("Connecting...")}</span>
 						</>
 					) : (
 						<>
 							<SiInstagram className="h-4 w-4" />
-							<span>{t("dashboard.club.info.instagramConnect")}</span>
+							<span>{t("Connect Instagram")}</span>
 						</>
 					)}
 				</Button>

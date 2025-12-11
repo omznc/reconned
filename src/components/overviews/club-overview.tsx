@@ -14,7 +14,7 @@ import {
 	ShieldBan,
 } from "lucide-react";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
 import { AdminIcon, ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
 import { LeaveClubButton } from "@/components/leave-club-button";
@@ -78,7 +78,7 @@ export async function ClubOverview({
 	const [analyticsId, analyticsSlug, t, instagramData] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
-		getTranslations(),
+		getExtracted(),
 		club.instagramConnected
 			? fetchInstagramPhotos(club.id)
 			: Promise.resolve({
@@ -128,7 +128,7 @@ export async function ClubOverview({
 						<Button asChild size="sm">
 							<Link href={`/dashboard/${club.id}/club/information`}>
 								<Cog className="h-4 w-4 mr-2" />
-								{t("components.clubOverview.edit")}
+								{t("Edit club")}
 							</Link>
 						</Button>
 					</div>
@@ -169,7 +169,7 @@ export async function ClubOverview({
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
 								<MapIcon className="h-4 w-4 mr-2" />
-								{t("components.clubOverview.map")}
+								{t("Map")}
 							</Link>
 						</Button>
 					)}
@@ -185,12 +185,12 @@ export async function ClubOverview({
 						{club.isPrivate ? (
 							<>
 								<EyeOff className="w-4 h-4" />
-								{t("components.clubOverview.private")}
+								{t("Private club")}
 							</>
 						) : (
 							<>
 								<Eye className="w-4 h-4" />
-								{t("components.clubOverview.public")}
+								{t("Public club")}
 							</>
 						)}
 					</Badge>
@@ -203,7 +203,7 @@ export async function ClubOverview({
 					{club.isAllied && (
 						<Badge className="md:grow-0 grow flex items-center gap-1">
 							<Handshake className="w-4 h-4" />
-							{t("components.clubOverview.allied")}
+							{t("Allied with ASK FBIH")}
 						</Badge>
 					)}
 					{club.contactEmail && (
@@ -222,14 +222,14 @@ export async function ClubOverview({
 					)}
 					{shouldShowStats && visitors > 0 && (
 						<Badge className="md:grow-0 grow flex items-center gap-1">
-							{t("components.clubOverview.views", { count: visitors })}
+							{t("{count} view/s", { count: String(visitors) })}
 						</Badge>
 					)}
 				</div>
 			</div>
 			{!hasOwner && (
 				<div className="border bg-sidebar p-6 space-y-4 rounded-md">
-					<h2 className="text-xl font-semibold">{t("components.clubOverview.claimClub")}</h2>
+					<h2 className="text-xl font-semibold">{t("Claim this club")}</h2>
 					<ClaimClubForm clubId={club.id} clubName={club.name} user={user} />
 				</div>
 			)}
@@ -246,11 +246,9 @@ export async function ClubOverview({
 							<div className="space-y-4 h-full bg-sidebar border p-4 order-1 md:order-2 md:col-span-1 rounded-md">
 								<div className="flex flex-col gap-2">
 									<div className="flex gap-2 items-center">
-										<h2 className="text-xl font-semibold">
-											{t("components.clubOverview.members")}
-										</h2>
+										<h2 className="text-xl font-semibold">{t("Members")}</h2>
 									</div>
-									<p>{t("components.clubOverview.membersDescription")}</p>
+									<p>{t("All members of this club")}</p>
 								</div>
 								<hr />
 								<div className="grid gap-2 max-h-[400px] overflow-auto">
@@ -321,11 +319,9 @@ export async function ClubOverview({
 										<div className="flex flex-col gap-2">
 											<div className="flex gap-2 items-center">
 												<SiInstagram className="h-5 w-5 text-primary" />
-												<h2 className="text-xl font-semibold">
-													{t("components.clubOverview.instagramGallery")}
-												</h2>
+												<h2 className="text-xl font-semibold">{t("Instagram photos")}</h2>
 											</div>
-											<p>{t("components.clubOverview.instagramGalleryDescription")}</p>
+											<p>{t("View our latest posts on Instagram")}</p>
 										</div>
 									</div>
 									<div className="p-4">
@@ -341,20 +337,18 @@ export async function ClubOverview({
 
 					<div className="space-y-4 mt-8 ">
 						<div className="flex h-10 items-center justify-between">
-							<h2 className="text-xl font-semibold flex items-center gap-2">
-								{t("components.clubOverview.posts")}
-							</h2>
+							<h2 className="text-xl font-semibold flex items-center gap-2">{t("Announcements")}</h2>
 							{isManager && (
 								<Button asChild size="sm">
 									<Link href={`/dashboard/${club.id}/club/posts`}>
 										<Pencil className="h-4 w-4" />
-										{t("components.clubOverview.createPost")}
+										{t("New post")}
 									</Link>
 								</Button>
 							)}
 						</div>
 						{!posts || posts.length === 0 ? (
-							<p className="text-muted-foreground">{t("components.clubOverview.noPosts")}</p>
+							<p className="text-muted-foreground">{t("There are no posts")}</p>
 						) : (
 							<div className="space-y-4">
 								{posts?.map((post) => (

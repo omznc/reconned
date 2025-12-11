@@ -1,6 +1,6 @@
 import { Users } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { EventOverview } from "@/components/overviews/event-overview";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	if (!user) {
 		return notFound();
@@ -49,14 +49,14 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("dashboard.club.events.event")}</h3>
+				<h3 className="text-lg font-semibold">{t("Event")}</h3>
 				<Button disabled={disabledAttendence} variant="default" size="sm" asChild={!disabledAttendence}>
 					<Link
 						className="flex items-center gap-2"
 						href={`/dashboard/${params.clubId}/events/${params.id}/attendance`}
 					>
 						<Users className="h-4 w-4" />
-						{t("dashboard.club.events.attendence")}
+						{t("Presence")}
 					</Link>
 				</Button>
 			</div>

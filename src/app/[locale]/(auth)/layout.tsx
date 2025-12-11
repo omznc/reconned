@@ -1,7 +1,7 @@
 import { House } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import type { ReactNode } from "react";
 import { AnimationWrapper } from "@/app/[locale]/(auth)/_components/animation-wrapper";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
@@ -16,7 +16,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: ReactNode;
 }>) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	return (
 		<>
@@ -40,7 +40,7 @@ export default async function RootLayout({
 						<Button variant={"outline"} className="shadow-none w-full" asChild={true}>
 							<Link href="/" className="flex items-center gap-2">
 								<House className="w-4 h-4" />
-								{t("components.sidebar.home")}
+								{t("Homepage")}
 							</Link>
 						</Button>
 					</div>
@@ -55,12 +55,16 @@ export default async function RootLayout({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	return {
-		title: t("public.auth.metadata.title"),
-		description: t("public.auth.metadata.description"),
-		keywords: t("public.layout.metadata.keywords")
+		title: t("Authentication - RECONNED"),
+		description: t(
+			"Login, register, and reset your password. The first universal platform for airsoft clubs, events, and players.",
+		),
+		keywords: t(
+			"airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 	};

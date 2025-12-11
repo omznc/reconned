@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
@@ -37,8 +37,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t("public.auth.twoFactor")}</CardTitle>
-				<CardDescription>{t("public.auth.twoFactorDescription")}</CardDescription>
+				<CardTitle className="text-2xl">{t("Two-factor authentication")}</CardTitle>
+				<CardDescription>{t("Enter the code from your app or use the backup code.")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -77,7 +77,7 @@ export default function LoginPage() {
 											onSuccess: handleSuccessfulLogin,
 											onError: () => {
 												setIsError(true);
-												toast.error(t("public.auth.twoFactorError"));
+												toast.error(t("The code entered is not valid."));
 											},
 										},
 									);
@@ -88,7 +88,7 @@ export default function LoginPage() {
 					className="grid gap-4"
 				>
 					<div className="grid gap-2">
-						<Label htmlFor="totp">{t("public.auth.twoFactor")}</Label>
+						<Label htmlFor="totp">{t("Two-factor authentication")}</Label>
 						<Input
 							id="totp"
 							type="text"
@@ -100,20 +100,20 @@ export default function LoginPage() {
 					</div>
 					<div className="flex items-center space-x-2">
 						<Checkbox id="rememberDevice" name="rememberDevice" />
-						<Label htmlFor="rememberDevice">{t("public.auth.rememberDevice")}</Label>
+						<Label htmlFor="rememberDevice">{t("Remember this device")}</Label>
 					</div>
-					{isError && <p className="text-red-500">{t("public.auth.twoFactorError")}</p>}
+					{isError && <p className="text-red-500">{t("The code entered is not valid.")}</p>}
 					<LoaderSubmitButton isLoading={isLoading} className="w-full">
-						{t("public.auth.verify")}
+						{t("Confirm")}
 					</LoaderSubmitButton>
 				</form>
 				<div className="mt-4 text-center text-sm">
-					{t("public.auth.noAccountQuestion")}{" "}
+					{t("Don't have an account?")}{" "}
 					<Link
 						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
 						className="underline"
 					>
-						{t("public.auth.register")}
+						{t("Register")}
 					</Link>
 				</div>
 			</CardContent>

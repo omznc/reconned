@@ -1,6 +1,6 @@
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
 import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import { BadgeNew } from "@/components/badge-new";
 import { BadgeSoon } from "@/components/badge-soon";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
@@ -17,7 +17,7 @@ type CommitResponse = {
 };
 
 export async function Footer() {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const locale = await getLocale();
 
 	const commitDateResponse = await fetch(`https://api.github.com/repos/omznc/reconned/commits/${CURRENT_COMMIT}`, {
@@ -33,46 +33,50 @@ export async function Footer() {
 			<div className="container z-10 mx-auto px-4 py-8">
 				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 					<div>
-						<h3 className="font-bold mb-4">{t("components.footer.about.title")}</h3>
-						<p className="text-sm ">{t("components.footer.about.description")}</p>
+						<h3 className="font-bold mb-4">{t("About us")}</h3>
+						<p className="text-sm ">
+							{t(
+								"RECONNED is a new platform for airsoft enthusiasts. Discover clubs, events, and players across the world. Manage your club, organize events, and find new opportunities.",
+							)}
+						</p>
 					</div>
 					<div>
-						<h3 className="font-bold mb-4">{t("components.footer.quickLinks.title")}</h3>
+						<h3 className="font-bold mb-4">{t("Quick links")}</h3>
 						<ul className="space-y-2 text-sm">
 							<li>
 								<Link href="/about" className="flex items-center hover:text-red-500 transition-all">
 									<ShieldQuestion className="w-5 h-5 mr-2" />
-									{t("components.footer.quickLinks.about")} 👀
+									{t("About us")} 👀
 								</Link>
 							</li>
 							<li>
 								<Link href="/events" className="flex items-center hover:text-red-500 transition-all">
 									<Calendar className="w-5 h-5 mr-2" />
-									{t("components.footer.quickLinks.events")}
+									{t("Events")}
 								</Link>
 							</li>
 							<li>
 								<Link href="/dashboard" className="flex items-center hover:text-red-500 transition-all">
 									<LayoutDashboard className="w-5 h-5 mr-2" />
-									{t("components.footer.quickLinks.dashboard")}
+									{t("Dashboard")}
 								</Link>
 							</li>
 							<li>
 								<Link href="/map" className="flex items-center hover:text-red-500 transition-all">
 									<MapIcon className="w-5 h-5 mr-2" />
-									{t("components.footer.quickLinks.map")}
+									{t("Map")}
 								</Link>
 							</li>
 							<li>
 								<Link href="/search" className="flex items-center hover:text-red-500 transition-all">
 									<Search className="w-5 h-5 mr-2" />
-									{t("components.footer.quickLinks.search")}
+									{t("Search")}
 								</Link>
 							</li>{" "}
 							<li>
 								<Link href="/sponsors" className="flex items-center hover:text-red-500 transition-all">
 									<StarIcon className="w-5 h-5 mr-2" />
-									{t("components.footer.quickLinks.sponsors")}
+									{t("Sponsors")}
 								</Link>
 							</li>
 							{/* <li>
@@ -82,13 +86,13 @@ export async function Footer() {
 									className="flex items-center hover:text-red-500 transition-all"
 								>
 									<BarChart2 className="w-5 h-5 mr-2" />
-									{t("components.footer.quickLinks.stats")}
+									{t("Statistics")}
 								</Link>
 							</li> */}
 						</ul>
 					</div>
 					<div>
-						<h3 className="font-bold mb-4">{t("components.footer.community.title")}</h3>
+						<h3 className="font-bold mb-4">{t("Community")}</h3>
 						<ul className="space-y-2 text-sm">
 							<li>
 								<Link
@@ -131,24 +135,24 @@ export async function Footer() {
 						</ul>
 					</div>
 					<div>
-						<h3 className="font-bold mb-4">{t("components.footer.support.title")}</h3>
+						<h3 className="font-bold mb-4">{t("Support")}</h3>
 						<ul className="space-y-2 text-sm ">
 							<li>
-								<Link href="#">{t("components.footer.support.contact")}</Link>
+								<Link href="#">{t("Contact")}</Link>
 								<BadgeSoon className="ml-2" />
 							</li>
 							<li>
-								<Link href="#">{t("components.footer.support.faq")}</Link>
+								<Link href="#">{t("FAQ")}</Link>
 								<BadgeSoon className="ml-2" />
 							</li>
 							<li>
-								<Link href="/privacy-policy">{t("components.footer.support.privacy")}</Link>
+								<Link href="/privacy-policy">{t("Privacy")}</Link>
 							</li>
 							<li>
-								<Link href="/terms-of-use">{t("components.footer.support.terms")}</Link>
+								<Link href="/terms-of-use">{t("Terms of Use")}</Link>
 							</li>
 							<li>
-								<Link href="/changelog">{t("components.footer.support.changelog")}</Link>
+								<Link href="/changelog">{t("Changelog")}</Link>
 								<BadgeNew className="ml-2" />
 							</li>
 						</ul>
@@ -157,7 +161,7 @@ export async function Footer() {
 				<div className="mt-8 pt-8 border-t border-border/10 text-center text-sm flex flex-col items-center">
 					<p>© RECONNED, {new Date().getFullYear()} </p>
 					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
-						{t("components.footer.sponsors")}
+						{t("Check out our sponsors and partners")}
 					</Link>
 					{CURRENT_COMMIT && body.commit?.committer?.date && (
 						<Link
@@ -165,7 +169,7 @@ export async function Footer() {
 							target="_blank"
 							className="font-mono mt-4 w-fit opacity-30 hover:opacity-60 flex items-center gap-1 transition-opacity"
 						>
-							{t("components.footer.version", {
+							{t("Version {commit} ({date})", {
 								commit: CURRENT_COMMIT.slice(0, 7),
 								date: new Date(body.commit.committer.date).toLocaleDateString(locale, {
 									year: "numeric",

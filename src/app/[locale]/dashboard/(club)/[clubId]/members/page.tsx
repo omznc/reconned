@@ -1,5 +1,5 @@
 import type { Prisma, Role } from "@generated/client";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { MembersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
@@ -111,13 +111,13 @@ export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[
 }
 
 export default async function MembersPage(props: PageProps<"/[locale]/dashboard/[clubId]/members">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const searchParams = await props.searchParams;
 
 	return (
 		<>
 			<div>
-				<h3 className="text-lg font-semibold">{t("dashboard.club.members.allMembers")}</h3>
+				<h3 className="text-lg font-semibold">{t("All members")}</h3>
 			</div>
 			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 				<MembersPageFetcher {...props} />

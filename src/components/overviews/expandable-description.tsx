@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ interface ExpandableDescriptionProps {
 export function ExpandableDescription({ description, translationNamespace = "common.ui" }: ExpandableDescriptionProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const shouldShowButton = description.length > 300; // Show expand button if text is long
-	const t = useTranslations(translationNamespace);
+	const t = useExtracted(translationNamespace);
 
 	return (
 		<div className="space-y-2">

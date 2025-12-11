@@ -3,7 +3,7 @@
 import type { ClubPurchase } from "@generated/client";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EditPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/edit-purchase-modal";
@@ -29,7 +29,7 @@ interface PurchasesTableProps {
 export function PurchasesTable(props: PurchasesTableProps) {
 	const router = useRouter();
 	const confirm = useConfirm();
-	const t = useTranslations();
+	const t = useExtracted();
 	const [selectedFile, setSelectedFile] = useState<{
 		url: string;
 		name: string;
@@ -42,17 +42,17 @@ export function PurchasesTable(props: PurchasesTableProps) {
 				columns={[
 					{
 						key: "title",
-						header: t("dashboard.club.spending.details.title"),
+						header: t("Title"),
 						sortable: true,
 					},
 					{
 						key: "description",
-						header: t("dashboard.club.spending.details.description"),
+						header: t("Description"),
 						sortable: true,
 					},
 					{
 						key: "amount",
-						header: t("dashboard.club.spending.details.amount"),
+						header: t("Amount (KM)"),
 						sortable: true,
 						cellConfig: {
 							component: (value: number) => `${value.toFixed(2)} KM`,
@@ -60,7 +60,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 					{
 						key: "receiptUrls",
-						header: t("dashboard.club.spending.details.receipts"),
+						header: t("Receipts"),
 						sortable: false,
 						cellConfig: {
 							variant: "custom",
@@ -103,7 +103,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 					{
 						key: "createdAt",
-						header: t("dashboard.club.spending.date"),
+						header: t("Date"),
 						sortable: true,
 						cellConfig: {
 							component: (value: Date) =>
@@ -116,7 +116,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 					{
 						key: "actions",
-						header: t("dashboard.club.spending.details.actions"),
+						header: t("Actions"),
 						sortable: false,
 						cellConfig: {
 							variant: "custom",
@@ -135,18 +135,20 @@ export function PurchasesTable(props: PurchasesTableProps) {
 											}}
 										>
 											<Edit className="size-4 mr-2" />
-											{t("dashboard.club.spending.edit")}
+											{t("Edit")}
 										</DropdownMenuItem>
 										<DropdownMenuItem
 											className="text-destructive focus:text-destructive"
 											onSelect={async (e) => {
 												e.preventDefault();
 												const confirmed = await confirm({
-													title: t("dashboard.club.spending.deleteConfirm.title"),
-													body: t("dashboard.club.spending.deleteConfirm.body"),
-													actionButton: t("dashboard.club.spending.deleteConfirm.action"),
+													title: t("Delete expense item"),
+													body: t(
+														"Are you sure you want to delete this expense item? This action cannot be undone.",
+													),
+													actionButton: t("Delete"),
 													actionButtonVariant: "destructive",
-													cancelButton: t("dashboard.club.spending.deleteConfirm.cancel"),
+													cancelButton: t("Cancel"),
 												});
 
 												if (!confirmed) {
@@ -158,16 +160,16 @@ export function PurchasesTable(props: PurchasesTableProps) {
 													clubId: row.clubId,
 												}).then((result) => {
 													if (result?.data) {
-														toast.success(t("dashboard.club.spending.successDelete"));
+														toast.success(t("Expense successfully deleted"));
 														router.refresh();
 													} else {
-														toast.error(t("dashboard.club.spending.errorDelete"));
+														toast.error(t("Error while deleting expense item"));
 													}
 												});
 											}}
 										>
 											<Trash2 className="size-4 mr-2" />
-											{t("dashboard.club.spending.delete")}
+											{t("Delete")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
@@ -176,7 +178,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 					},
 				]}
 				totalPages={Math.ceil(props.totalPurchases / props.pageSize)}
-				searchPlaceholder={t("dashboard.club.spending.search")}
+				searchPlaceholder={t("Search expenses...")}
 			/>
 
 			<div className="hidden">

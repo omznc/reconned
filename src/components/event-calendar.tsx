@@ -22,7 +22,7 @@ import { bs, enUS } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, Square } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Fragment, type KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -54,9 +54,26 @@ interface EventCalendarProps {
 type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "sep" | "oct" | "nov" | "dec";
 
 export function EventCalendar(props: EventCalendarProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
+	const monthNames = useMemo(
+		() => ({
+			jan: t("January"),
+			feb: t("February"),
+			mar: t("March"),
+			apr: t("April"),
+			may: t("May"),
+			jun: t("June"),
+			jul: t("July"),
+			aug: t("August"),
+			sep: t("September"),
+			oct: t("October"),
+			nov: t("November"),
+			dec: t("December"),
+		}),
+		[t],
+	);
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(formatDateFns(new Date(), "yyyy-MM"), "yyyy-MM", new Date()),
 		shallow: false,
@@ -300,9 +317,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		<div className="flex flex-col h-full w-full text-foreground">
 			<header className="flex py-4 items-center justify-between">
 				<h2 className="text-2xl font-bold">
-					{t(
-						`components.calendar.months.${format(currentDate, "MMM", { locale: enUS }).toLowerCase() as Months}`,
-					)}{" "}
+					{monthNames[format(currentDate, "MMM", { locale: enUS }).toLowerCase() as Months]}{" "}
 					{format(currentDate, "yyyy")}
 				</h2>
 				<div className="flex items-center gap-2">
@@ -310,20 +325,16 @@ export function EventCalendar(props: EventCalendarProps) {
 						variant={isSameMonth(new Date(), currentDate) ? "outline" : "default"}
 						onClick={handleToday}
 						disabled={isSameMonth(new Date(), currentDate)}
-						title={
-							isSameMonth(new Date(), currentDate)
-								? t("components.calendar.alreadyToday")
-								: t("components.calendar.goToToday")
-						}
+						title={isSameMonth(new Date(), currentDate) ? t("It's already today") : t("Go to today")}
 					>
-						{t("components.calendar.today")}
+						{t("Today")}
 					</Button>
 					<div className="flex gap-2">
 						<Button variant="outline" onClick={handlePreviousMonth}>
-							<ChevronLeft className="h-4 w-4" aria-label={t("components.calendar.previousMonth")} />
+							<ChevronLeft className="h-4 w-4" aria-label={t("Previous month")} />
 						</Button>
 						<Button variant="outline" onClick={handleNextMonth}>
-							<ChevronRight className="h-4 w-4" aria-label={t("components.calendar.nextMonth")} />
+							<ChevronRight className="h-4 w-4" aria-label={t("Next month")} />
 						</Button>
 					</div>
 				</div>
@@ -332,15 +343,7 @@ export function EventCalendar(props: EventCalendarProps) {
 			<div className="flex-1 overflow-auto border-t rounded-t-md">
 				<div className="grid grid-cols-7 ">
 					{/* Day headers */}
-					{[
-						t("components.calendar.days.mon"),
-						t("components.calendar.days.tue"),
-						t("components.calendar.days.wed"),
-						t("components.calendar.days.thu"),
-						t("components.calendar.days.fri"),
-						t("components.calendar.days.sat"),
-						t("components.calendar.days.sun"),
-					].map((day, index) => (
+					{[t("Mon"), t("Tue"), t("Wed"), t("Thu"), t("Fri"), t("Sat"), t("Sun")].map((day, index) => (
 						<div
 							key={day}
 							className={cn(
@@ -373,7 +376,7 @@ export function EventCalendar(props: EventCalendarProps) {
 												onClick: () => handleDayClick(day),
 												onKeyDown: (event: KeyboardEvent<HTMLDivElement>) =>
 													handleDayKeyDown(event, day),
-												"aria-label": t("components.calendar.createEventOnDate", {
+												"aria-label": t("Create event on {date}", {
 													date: format(day, "d. MMMM yyyy", { locale: bs }),
 												}),
 											}
@@ -478,10 +481,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																	<div className="text-sm space-y-1">
 																		<div className="grid grid-cols-[auto_1fr] gap-2">
 																			<span className="font-medium">
-																				{t(
-																					"components.calendar.eventDetails.start",
-																				)}
-																				:
+																				{t("Start")}:
 																			</span>
 																			<span>
 																				{format(
@@ -496,10 +496,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																			{event.dateEnd && (
 																				<>
 																					<span className="font-medium">
-																						{t(
-																							"components.calendar.eventDetails.end",
-																						)}
-																						:
+																						{t("End")}:
 																					</span>
 																					<span>
 																						{format(
@@ -516,10 +513,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																			{event.location && (
 																				<>
 																					<span className="font-medium">
-																						{t(
-																							"components.calendar.eventDetails.location",
-																						)}
-																						:
+																						{t("Location")}:
 																					</span>
 																					<span>{event.location}</span>
 																				</>
@@ -528,10 +522,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																			{event?.costPerPerson && (
 																				<>
 																					<span className="font-medium">
-																						{t(
-																							"components.calendar.eventDetails.cost",
-																						)}
-																						:
+																						{t("Price")}:
 																					</span>
 																					<span>
 																						{event.costPerPerson} KM
@@ -560,15 +551,13 @@ export function EventCalendar(props: EventCalendarProps) {
 																			}}
 																		>
 																			<Plus className="h-4 w-4 mr-2" />
-																			{t(
-																				"components.calendar.eventDetails.apply",
-																			)}
+																			{t("Log in")}
 																			<BadgeSoon className="ml-2" />
 																		</Button>
 																	) : (
 																		<p className="text-sm text-muted-foreground text-center mt-2">
 																			{t(
-																				"components.calendar.eventDetails.registrationsClosed",
+																				"Registrations for this event are currently not open",
 																			)}
 																		</p>
 																	)}
@@ -591,13 +580,15 @@ export function EventCalendar(props: EventCalendarProps) {
 				<Credenza open={clubSelectorOpen} onOpenChange={handleClubSelectorOpenChange}>
 					<CredenzaContent className="md:max-w-md">
 						<CredenzaHeader>
-							<CredenzaTitle>{t("components.calendar.selectClub.title")}</CredenzaTitle>
-							<CredenzaDescription>{t("components.calendar.selectClub.description")}</CredenzaDescription>
+							<CredenzaTitle>{t("Select a club")}</CredenzaTitle>
+							<CredenzaDescription>
+								{t("Choose which club should create this event.")}
+							</CredenzaDescription>
 						</CredenzaHeader>
 						<CredenzaBody className="space-y-4">
 							<Input
 								type="text"
-								placeholder={t("components.calendar.selectClub.searchPlaceholder")}
+								placeholder={t("Search clubs...")}
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
 								className="w-full"
@@ -606,7 +597,7 @@ export function EventCalendar(props: EventCalendarProps) {
 								<div className="flex flex-col gap-2">
 									{filteredClubs.length === 0 ? (
 										<div className="text-center text-sm text-muted-foreground py-8">
-											{t("components.calendar.selectClub.noResults")}
+											{t("No clubs found")}
 										</div>
 									) : (
 										filteredClubs.map((club) => (

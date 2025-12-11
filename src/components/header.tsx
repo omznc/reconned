@@ -1,7 +1,7 @@
 "use client";
 import type { User } from "better-auth";
 import { ArrowLeft, LogOut } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import posthog from "posthog-js";
 import { Logo } from "@/components/logos/logo";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
@@ -22,7 +22,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function Header({ user }: { user: User | null }) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const path = usePathname();
 	const router = useRouter();
 
@@ -42,7 +42,7 @@ export function Header({ user }: { user: User | null }) {
 					className="w-full hover:bg-transparent md:-mr-12 shadow-none"
 				>
 					<ArrowLeft className="w-6 h-6" />
-					{t("components.header.back")}
+					{t("Back")}
 				</Button>
 			)}
 			<div className="flex gap-2 md:w-fit w-full" suppressHydrationWarning={true}>
@@ -52,7 +52,7 @@ export function Header({ user }: { user: User | null }) {
 						{/* TODO: Manager-only? */}
 						<Button asChild={true} className="w-full">
 							<Link href="/dashboard" className="w-full">
-								{t("components.header.dashboard")}
+								{t("Dashboard")}
 							</Link>
 						</Button>
 						<DropdownMenu>
@@ -63,7 +63,7 @@ export function Header({ user }: { user: User | null }) {
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="mr-4" sideOffset={12}>
-								<DropdownMenuLabel>{t("components.header.personalization")}</DropdownMenuLabel>
+								<DropdownMenuLabel>{t("Personalization")}</DropdownMenuLabel>
 								<DropdownMenuItem asChild={true}>
 									<ThemeSwitcher />
 								</DropdownMenuItem>
@@ -93,7 +93,7 @@ export function Header({ user }: { user: User | null }) {
 										className="w-full items-center justify-start cursor-pointer"
 									>
 										<LogOut className="w-4 h-4" />
-										{t("components.header.logout")}
+										{t("Sign out")}
 									</Button>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -102,7 +102,7 @@ export function Header({ user }: { user: User | null }) {
 				) : (
 					<Button asChild={true} suppressHydrationWarning={true}>
 						<Link className="w-full md:w-fit" suppressHydrationWarning={true} href="/login">
-							{t("components.header.login")}
+							{t("Login")}
 						</Link>
 					</Button>
 				)}

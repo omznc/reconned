@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -17,7 +17,7 @@ export function Search() {
 		clearOnDefault: true,
 	});
 	const [input, setInput] = useState(query);
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const handleSearch = useDebouncedCallback(async (value: string) => {
 		await setQuery(value);
@@ -32,7 +32,7 @@ export function Search() {
 				handleSearch(e.target.value);
 			}}
 			className="dark:bg-white bg-black placeholder:text-black dark:placeholder:text-white text-white dark:text-black"
-			placeholder={t("public.search.placeholder")}
+			placeholder={t("Something...")}
 		/>
 	);
 }

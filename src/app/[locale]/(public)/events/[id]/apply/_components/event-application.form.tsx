@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "better-auth";
 import DOMPurify from "isomorphic-dompurify";
 import { AlertCircle, ChevronsUpDown, CirclePlus, Mail, Plus, UserIcon, Users, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { EventApplicationSchemaType } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
@@ -63,7 +63,7 @@ type SearchUser = {
 export function EventApplicationForm({ existingApplication, event, user, currentUserClubs }: EventApplicationProps) {
 	const [step, setStep] = useState(1);
 	const router = useRouter();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	// Initialize form with existing application data if it exists
 	const form = useForm<EventApplicationSchemaType>({
@@ -133,12 +133,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 				eventId: event.id,
 			}),
 			{
-				loading: t("public.events.apply.form.submitting"),
+				loading: t("Submitting application..."),
 				success: () => {
 					router.push(`/events/${event.id}`);
-					return t("public.events.apply.form.success");
+					return t("Successfully applied to event!");
 				},
-				error: (e) => e?.message ?? t("public.events.apply.form.error"),
+				error: (e) => e?.message ?? t("An error occurred while applying"),
 			},
 		);
 	};
@@ -150,7 +150,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			if (totalMembers < 2) {
 				form.setError("invitedUsers", {
 					type: "manual",
-					message: t("public.events.apply.form.teamMinMembers"),
+					message: t("Team must have at least one member besides you"),
 				});
 				return;
 			}
@@ -158,7 +158,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 		if (step === 3 && !form.watch("rulesAccepted")) {
 			form.setError("rulesAccepted", {
 				type: "manual",
-				message: t("public.events.apply.form.rulesRequired"),
+				message: t("You must accept the event rules"),
 			});
 			return;
 		}
@@ -246,17 +246,19 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	// Add delete handler
 	const handleDelete = async () => {
-		const confirm = window.confirm(t("public.events.apply.form.deleteConfirm"));
+		const confirm = window.confirm(
+			t("Are you sure you want to delete your application? This will also delete all invitations you sent."),
+		);
 
 		if (confirm) {
 			toast.promise(deleteRegistration({ eventId: event.id }), {
-				loading: t("public.events.apply.form.deleting"),
+				loading: t("Deleting application..."),
 				success: () => {
 					router.refresh();
 					router.push(`/events/${event.id}`);
-					return t("public.events.apply.form.deleteSuccess");
+					return t("Successfully deleted application!");
 				},
-				error: t("public.events.apply.form.deleteError"),
+				error: t("An error occurred while deleting application"),
 			});
 		}
 	};
@@ -274,23 +276,25 @@ export function EventApplicationForm({ existingApplication, event, user, current
 						disabled={!event.allowFreelancers && currentUserClubs.length === 0}
 					>
 						<CirclePlus />
-						{t("public.events.apply.form.typeSelection.soloButton")}
+						{t("Apply solo")}
 					</Button>
 					<span className="text-gray-500 text-sm">
 						{!event.allowFreelancers && currentUserClubs.length === 0
-							? t("public.events.apply.form.typeSelection.cannotApplySolo")
-							: t("public.events.apply.form.typeSelection.soloDescription")}
+							? t(
+									"You cannot apply solo because you are not a member of any club and this event does not allow freelancer applications.",
+								)
+							: t("Choose this option if you're coming alone to the event")}
 					</span>
 					{existingApplication !== null && (
 						<>
 							{form.watch("type") === "solo" && (
-								<p className="text-sm text-primary">
-									{t("public.events.apply.form.typeSelection.currentlySelected")}
-								</p>
+								<p className="text-sm text-primary">{t("Currently selected")}</p>
 							)}
 							{form.watch("type") === "team" && (
 								<p className="text-sm text-destructive">
-									{t("public.events.apply.form.typeSelection.switchingWarning")}
+									{t(
+										"Switching to solo application will cancel all current team member invitations.",
+									)}
 								</p>
 							)}
 						</>
@@ -299,22 +303,20 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
-					<span className="text-gray-500">{t("public.events.apply.form.typeSelection.or")}</span>
+					<span className="text-gray-500">{t("or")}</span>
 					<hr className="flex-1 border-t-2 border-gray-300" />
 				</div>
 
 				<div className="flex flex-col gap-2">
 					<Button type="button" className="flex items-center gap-2" onClick={() => handleTypeChange("team")}>
 						<Users />
-						{t("public.events.apply.form.typeSelection.teamButton")}
+						{t("Apply team")}
 					</Button>
 					<span className="text-gray-500 text-sm">
-						{t("public.events.apply.form.typeSelection.teamDescription")}
+						{t("Choose this option if you're coming with multiple players")}
 					</span>
 					{existingApplication && form.watch("type") === "team" && (
-						<p className="text-sm text-primary">
-							{t("public.events.apply.form.typeSelection.currentlySelected")}
-						</p>
+						<p className="text-sm text-primary">{t("Currently selected")}</p>
 					)}
 				</div>
 			</div>
@@ -340,11 +342,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							<CirclePlus className="size-16 text-muted-foreground group-hover:text-primary transition-colors" />
 						</div>
 						<div className="mt-8 text-center">
-							<h3 className="text-2xl font-semibold mb-2">
-								{t("public.events.apply.form.typeSelection.soloTitle")}
-							</h3>
+							<h3 className="text-2xl font-semibold mb-2">{t("Solo application")}</h3>
 							<p className="text-muted-foreground">
-								{t("public.events.apply.form.typeSelection.soloDescription")}
+								{t("Choose this option if you're coming alone to the event")}
 							</p>
 						</div>
 						<div className="absolute inset-0 border-2 border-primary scale-105 opacity-0 rounded-lg group-hover:opacity-100 transition-all" />
@@ -372,11 +372,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							<Users className="size-16 text-muted-foreground group-hover:text-primary transition-colors" />
 						</div>
 						<div className="mt-8 text-center">
-							<h3 className="text-2xl font-semibold mb-2">
-								{t("public.events.apply.form.typeSelection.teamTitle")}
-							</h3>
+							<h3 className="text-2xl font-semibold mb-2">{t("Team application")}</h3>
 							<p className="text-muted-foreground">
-								{t("public.events.apply.form.typeSelection.teamDescription")}
+								{t("Choose this option if you're coming with multiple players")}
 							</p>
 						</div>
 						<div className="absolute inset-0 border-2 border-primary scale-105 opacity-0 rounded-lg group-hover:opacity-100 transition-all" />
@@ -392,28 +390,24 @@ export function EventApplicationForm({ existingApplication, event, user, current
 		<div className="flex gap-2 justify-between">
 			{existingApplication && (
 				<Button type="button" variant="destructive" onClick={handleDelete}>
-					{t("public.events.apply.form.navigation.deleteApplication")}
+					{t("Delete application")}
 				</Button>
 			)}
 
 			<div className="flex gap-2">
 				{step > 1 && (
 					<Button type="button" variant="outline" onClick={() => setStep(step - 1)}>
-						{t("public.events.apply.form.navigation.back")}
+						{t("Back")}
 					</Button>
 				)}
 				{step < 4 && (
 					<Button type="button" onClick={() => handleNextStep()}>
-						{t("public.events.apply.form.navigation.next")}
+						{t("Next")}
 					</Button>
 				)}
 
 				{step === 4 && (
-					<Button type="submit">
-						{existingApplication
-							? t("public.events.apply.form.navigation.saveChanges")
-							: t("public.events.apply.form.navigation.submitApplication")}
-					</Button>
+					<Button type="submit">{existingApplication ? t("Save changes") : t("Submit application")}</Button>
 				)}
 			</div>
 		</div>
@@ -421,9 +415,11 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	const renderInvitedUsers = () => (
 		<div className="space-y-2">
-			<h4 className="text-sm font-medium">{t("public.events.apply.form.membersWithAccount")}</h4>
+			<h4 className="text-sm font-medium">{t("Members with account")}</h4>
 			<span className="text-sm text-muted-foreground">
-				{t("public.events.apply.form.membersWithAccountDesc")}
+				{t(
+					"These people have an account on the app, so the event will appear on their dashboard. There they can decline or see more information about it.",
+				)}
 			</span>
 			{invitedUserFields.map((field, index) => (
 				<div key={field.id} className="flex bg-sidebar items-center justify-between p-2 border rounded-md">
@@ -458,8 +454,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	const renderInvitedUsersNotOnApp = () => (
 		<div className="space-y-2">
-			<h4 className="text-sm font-medium">{t("public.events.apply.form.invitedMembers")}</h4>
-			<span className="text-sm text-muted-foreground">{t("public.events.apply.form.invitedMembersDesc")}</span>
+			<h4 className="text-sm font-medium">{t("Invited members (without account)")}</h4>
+			<span className="text-sm text-muted-foreground">
+				{t(
+					"Members who don't have an account on the app who will receive an email invitation. It's not mandatory to use it.",
+				)}
+			</span>
 			{invitedUserNotOnAppFields.map((field, index) => (
 				<div key={field.id} className="flex bg-sidebar items-center justify-between p-2 border rounded-md">
 					<div className="flex items-center gap-2">
@@ -490,7 +490,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 	// Replace the existing team members section with this
 	const renderTeamSection = () => (
 		<div className="space-y-4">
-			<h3 className="font-medium">{t("public.events.apply.form.teamMembers")}</h3>
+			<h3 className="font-medium">{t("Team members")}</h3>
 			<div className="flex gap-2">
 				<Popover open={open} onOpenChange={setOpen}>
 					<PopoverTrigger asChild>
@@ -500,14 +500,14 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							aria-expanded={open}
 							className="w-full justify-between"
 						>
-							{searchValue || t("public.events.apply.form.searchPlayers")}
+							{searchValue || t("Search players...")}
 							<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent align="start" className="p-0 w-[var(--radix-popover-trigger-width)]">
 						<Command shouldFilter={false}>
 							<CommandInput
-								placeholder={t("public.events.apply.form.searchPlaceholder")}
+								placeholder={t("Search by name, email or callsign...")}
 								value={searchValue}
 								onValueChange={handleSearch}
 							/>
@@ -518,12 +518,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 									</CommandEmpty>
 								)}
 								{!isSearching && searchValue.length < 2 && (
-									<CommandEmpty>{t("public.events.apply.form.searchMinChars")}</CommandEmpty>
+									<CommandEmpty>{t("Enter at least 2 characters...")}</CommandEmpty>
 								)}
 								{!isSearching && searchValue.length >= 2 && searchResults.length === 0 && (
 									<CommandEmpty>
 										<div className="p-4 text-sm space-y-4">
-											<p>{t("public.events.apply.form.noResults", { query: searchValue })}</p>
+											<p>{t('No results for "{query}"', { query: searchValue })}</p>
 											<Button
 												type="button"
 												variant="outline"
@@ -539,7 +539,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 												}}
 											>
 												<Plus className="mr-2 h-4 w-4" />
-												{t("public.events.apply.form.addNewMember")}
+												{t("Add new member")}
 											</Button>
 										</div>
 									</CommandEmpty>
@@ -577,7 +577,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 														)}
 														{isAlreadyAdded && (
 															<span className="text-muted-foreground text-xs ml-2">
-																- {t("public.events.apply.form.alreadyAdded")}
+																- {t("Already added to team")}
 															</span>
 														)}
 													</span>
@@ -616,20 +616,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			<div className="space-y-2">
 				<Progress value={(step / 4) * 100} className="h-2" />
 				<div className="flex justify-between select-none text-sm text-muted-foreground px-1">
-					<span className={cn(step >= 1 && "text-foreground font-medium")}>
-						{t("public.events.apply.form.steps.type")}
-					</span>
+					<span className={cn(step >= 1 && "text-foreground font-medium")}>{t("Type")}</span>
 					<span className={cn(step >= 2 && "text-foreground font-medium")}>
-						{form.watch("type") === "team"
-							? t("public.events.apply.form.steps.team")
-							: t("public.events.apply.form.steps.info")}
+						{form.watch("type") === "team" ? t("Team") : t("Info")}
 					</span>
-					<span className={cn(step >= 3 && "text-foreground font-medium")}>
-						{t("public.events.apply.form.steps.rules")}
-					</span>
-					<span className={cn(step >= 4 && "text-foreground font-medium")}>
-						{t("public.events.apply.form.steps.payment")}
-					</span>
+					<span className={cn(step >= 3 && "text-foreground font-medium")}>{t("Rules")}</span>
+					<span className={cn(step >= 4 && "text-foreground font-medium")}>{t("Payment")}</span>
 				</div>
 			</div>
 
@@ -665,9 +657,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				{showAddMember && (
 					<div className="space-y-4 p-4 bg-sidebar border">
-						<h3 className="font-medium">{t("public.events.apply.form.addNewMember")}</h3>
+						<h3 className="font-medium">{t("Add new member")}</h3>
 						<div className="space-y-2">
-							<Label htmlFor="memberName">{t("public.events.apply.form.fullName")}</Label>
+							<Label htmlFor="memberName">{t("Full name")}</Label>
 							<Input
 								id="memberName"
 								value={tempMember.name}
@@ -677,14 +669,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 										name: e.target.value,
 									}))
 								}
-								placeholder={t("public.events.apply.form.typeSelection.enterFullName")}
+								placeholder={t("Enter full name")}
 							/>
-							{!tempMember.name && (
-								<p className="text-sm text-destructive">{t("public.events.apply.form.nameRequired")}</p>
-							)}
+							{!tempMember.name && <p className="text-sm text-destructive">{t("Name is required")}</p>}
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="memberEmail">{t("common.fields.email")}</Label>
+							<Label htmlFor="memberEmail">{t("Email")}</Label>
 							<Input
 								id="memberEmail"
 								type="email"
@@ -698,12 +688,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 								placeholder={"my@email.com"}
 							/>
 							<span className="text-sm text-muted-foreground">
-								{t("public.events.apply.form.emailDesc")}
+								{t(
+									"Using email address, people who don't have an account on the site will receive a registration invitation, but that registration is not mandatory.",
+								)}
 							</span>
 							{tempMember.email && !isValidEmail(tempMember.email) && (
-								<p className="text-sm text-destructive">
-									{t("public.events.apply.form.typeSelection.invalidEmail")}
-								</p>
+								<p className="text-sm text-destructive">{t("Email address is not valid")}</p>
 							)}
 						</div>
 						<div className="flex gap-2 justify-end">
@@ -715,14 +705,14 @@ export function EventApplicationForm({ existingApplication, event, user, current
 									setTempMember({ name: "", email: "" });
 								}}
 							>
-								{t("common.actions.cancel")}
+								{t("Cancel")}
 							</Button>
 							<Button
 								type="button"
 								onClick={addCustomMember}
 								disabled={!(tempMember.name && tempMember.email && isValidEmail(tempMember.email))}
 							>
-								{t("common.actions.add")}
+								{t("Add")}
 							</Button>
 						</div>
 					</div>
@@ -730,7 +720,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				{step === 3 && (
 					<div className="fade-in-up space-y-4">
-						<h3 className="font-medium">{t("public.events.apply.form.eventRules")}</h3>
+						<h3 className="font-medium">{t("Event rules")}</h3>
 						<ScrollArea className="h-[400px] rounded-md border p-4">
 							<div className="space-y-8">
 								{event.rules?.map((rule, index) => (
@@ -761,13 +751,13 @@ export function EventApplicationForm({ existingApplication, event, user, current
 								onCheckedChange={(checked) => form.setValue("rulesAccepted", checked as boolean)}
 							/>
 							<Label htmlFor="rules" className="text-sm cursor-pointer select-none">
-								{t("public.events.apply.form.rulesAccept")}
+								{t("I have read and accept all event rules")}
 							</Label>
 						</div>
 
 						<p className="text-sm text-muted-foreground flex items-center gap-2">
 							<AlertCircle className="h-4 w-4" />
-							{t("public.events.apply.form.rulesReadCarefully")}
+							{t("Please read the rules carefully before accepting them")}
 						</p>
 
 						{form.formState.errors.rulesAccepted && (
@@ -781,25 +771,23 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				{step === 4 && (
 					<div className="space-y-4 fade-in-up">
-						<h3 className="font-medium">{t("public.events.apply.form.paymentMethod")}</h3>
+						<h3 className="font-medium">{t("Payment method")}</h3>
 						<Tabs
 							defaultValue="cash"
 							onValueChange={(val) => form.setValue("paymentMethod", val as "cash" | "bank")}
 							className="w-full"
 						>
 							<TabsList className="grid w-full grid-cols-2">
-								<TabsTrigger value="cash">{t("public.events.apply.form.cash")}</TabsTrigger>
-								<TabsTrigger value="bank">{t("public.events.apply.form.bank")}</TabsTrigger>
+								<TabsTrigger value="cash">{t("Cash")}</TabsTrigger>
+								<TabsTrigger value="bank">{t("Bank")}</TabsTrigger>
 							</TabsList>
 							<TabsContent value="cash" className="p-4 border rounded-lg mt-2">
-								{t("public.events.apply.form.cashDesc")}
+								{t("Cash payment on the day of the event")}
 							</TabsContent>
 							<TabsContent value="bank" className="p-4 border rounded-lg mt-2">
-								{t("public.events.apply.form.bankDesc")}
-								<br />
-								IBAN: BA123456789
-								<br />
-								Svrha: Susret-{event.id}
+								{t("Bank: Example Bank\nIBAN: BA123456789\nPurpose: Event-{eventId}", {
+									eventId: event.id,
+								})}
 							</TabsContent>
 						</Tabs>
 						{Object.keys(form.formState.errors).length > 0 && (

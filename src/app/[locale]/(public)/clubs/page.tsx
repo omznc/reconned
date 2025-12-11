@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { ItemList, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
@@ -25,7 +25,7 @@ type ClubSearch = {
 };
 
 export default async function Page(props: PageProps<"/[locale]/clubs">) {
-	const [searchParams, t, locale] = await Promise.all([props.searchParams, getTranslations(), getLocale()]);
+	const [searchParams, t, locale] = await Promise.all([props.searchParams, getExtracted(), getLocale()]);
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -49,8 +49,10 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",
 		"@type": "ItemList",
-		name: t("public.clubs.metadata.title"),
-		description: t("public.clubs.metadata.description"),
+		name: t("Airsoft clubs - RECONNED"),
+		description: t(
+			"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+		),
 		numberOfItems: total,
 		itemListElement: clubs.map((club, index) => ({
 			"@type": "ListItem",
@@ -82,7 +84,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	return (
 		<div className="container py-8 space-y-8 px-4">
 			<JsonLdScript data={itemListSchema} />
-			<h1 className="text-2xl font-bold">{t("public.clubs.title")}</h1>
+			<h1 className="text-2xl font-bold">{t("Clubs")}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{clubs.map((club) => (
 					<SearchResultCard
@@ -96,9 +98,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 						}
 						description={club.description}
 						href={`/clubs/${club.slug ?? club.id}`}
-						badges={[
-							`${club.member_count} ${club.member_count === 1 ? t("public.clubs.member") : t("public.clubs.members")}`,
-						]}
+						badges={[`${club.member_count} ${club.member_count === 1 ? t("member") : t("members")}`]}
 						meta={club.location || undefined}
 					/>
 				))}
@@ -109,24 +109,32 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	return {
-		title: t("public.clubs.metadata.title"),
-		description: t("public.clubs.metadata.description"),
-		keywords: t("public.clubs.metadata.keywords")
+		title: t("Airsoft clubs - RECONNED"),
+		description: t(
+			"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+		),
+		keywords: t(
+			"airsoft clubs, airsoft teams, airsoft club directory, find airsoft club, join airsoft club, airsoft club BiH, airsoft club Bosnia, airsoft club Sarajevo, airsoft club members, airsoft club registration",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("public.clubs.metadata.title"),
-			description: t("public.clubs.metadata.description"),
+			title: t("Airsoft clubs - RECONNED"),
+			description: t(
+				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("public.clubs.metadata.title"),
-			description: t("public.clubs.metadata.description"),
+			title: t("Airsoft clubs - RECONNED"),
+			description: t(
+				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),

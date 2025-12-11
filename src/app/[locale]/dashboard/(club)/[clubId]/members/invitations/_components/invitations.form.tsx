@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -47,7 +47,7 @@ export function InvitationsForm() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const form = useForm<z.infer<typeof sendInvitationSchema>>({
 		resolver: zodResolver(sendInvitationSchema),
@@ -66,7 +66,7 @@ export function InvitationsForm() {
 					const results = await searchUsers(value);
 					setUsers(results);
 				} catch (_error) {
-					toast.error(t("dashboard.club.members.invitations.searchError"));
+					toast.error(t("Failed to search users. Please try again."));
 				} finally {
 					setIsLoading(false);
 				}
@@ -87,13 +87,15 @@ export function InvitationsForm() {
 			const response = await sendInvitation(values);
 
 			if (!response?.data?.success) {
-				toast.error(response?.data?.error || t("dashboard.club.members.invitations.sendError"));
+				toast.error(
+					response?.data?.error || t("An error occurred while sending the invitation. Please try again."),
+				);
 				return;
 			}
 
-			toast.success(t("dashboard.club.members.invitations.sendSuccess"));
+			toast.success(t("Invitation sent successfully"));
 		} catch (_error) {
-			toast.error(t("dashboard.club.members.invitations.sendError"));
+			toast.error(t("An error occurred while sending the invitation. Please try again."));
 		} finally {
 			form.reset({ userName: "", userEmail: "", clubId: params.clubId });
 			router.refresh();
@@ -104,15 +106,17 @@ export function InvitationsForm() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
 				<div>
-					<h3 className="text-lg font-semibold">{t("dashboard.club.members.invitations.title")}</h3>
-					<span className="text-muted-foreground">{t("dashboard.club.members.invitations.description")}</span>
+					<h3 className="text-lg font-semibold">{t("Invite user to club")}</h3>
+					<span className="text-muted-foreground">
+						{t("Invitations will expire after 7 days, and will be deleted after 3 months.")}
+					</span>
 				</div>
 				<FormField
 					control={form.control}
 					name="userName"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("dashboard.club.members.invitations.user")}</FormLabel>
+							<FormLabel>{t("User")}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -126,7 +130,7 @@ export function InvitationsForm() {
 										>
 											{field.value
 												? users.find((user) => user.id === field.value)?.name
-												: t("dashboard.club.members.invitations.searchPlaceholder")}
+												: t("Search users...")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
@@ -134,7 +138,7 @@ export function InvitationsForm() {
 								<PopoverContent className="sm:w-[448px] p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder={t("dashboard.club.members.invitations.searchPlaceholder")}
+											placeholder={t("Search users...")}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -144,13 +148,9 @@ export function InvitationsForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>
-													{t("dashboard.club.members.invitations.minimumChars")}
-												</CommandEmpty>
+												<CommandEmpty>{t("Enter at least 2 characters")}</CommandEmpty>
 											) : users.length === 0 ? (
-												<CommandEmpty>
-													{t("dashboard.club.members.invitations.noResults")}
-												</CommandEmpty>
+												<CommandEmpty>{t("No results")}</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{users.map((user) => (
@@ -192,7 +192,7 @@ export function InvitationsForm() {
 								</PopoverContent>
 							</Popover>
 							<FormDescription>
-								{t("dashboard.club.members.invitations.chooseUserDescription")}
+								{t("If the user is already on the platform, you can find them here.")}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -200,7 +200,7 @@ export function InvitationsForm() {
 				/>
 				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
-					<span className="text-gray-500">{t("dashboard.club.members.invitations.or")}</span>
+					<span className="text-gray-500">{t("or")}</span>
 					<hr className="flex-1 border-t-2 border-gray-300" />
 				</div>
 				<FormField
@@ -213,14 +213,14 @@ export function InvitationsForm() {
 								<Input {...field} />
 							</FormControl>
 							<FormDescription>
-								{t("dashboard.club.members.invitations.emailDescription")}
+								{t("If you can't find the user, or already know their email, enter it here.")}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
-					{t("dashboard.club.members.invitations.send")}
+					{t("Send invitation")}
 				</Button>
 			</form>
 		</Form>

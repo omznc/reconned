@@ -5,7 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { AxiomWebVitals } from "next-axiom";
 import { hasLocale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
@@ -34,7 +34,7 @@ const geistMono = Geist_Mono({
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const [session, t] = await Promise.all([isAuthenticated(), getTranslations()]);
+	const [session, t] = await Promise.all([isAuthenticated(), getExtracted()]);
 
 	const { locale } = await params;
 
@@ -58,7 +58,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		"@context": "https://schema.org",
 		"@type": "WebSite",
 		name: "Reconned",
-		description: t("public.home.metadata.description"),
+		description: t("The first universal platform for airsoft clubs, events, and players."),
 		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
 		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
 		sameAs: ["https://github.com/omznc/reconned"],
@@ -83,7 +83,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		"@type": "SportsOrganization",
 		name: "Reconned",
 		sport: "Airsoft",
-		description: t("public.home.metadata.description"),
+		description: t("The first universal platform for airsoft clubs, events, and players."),
 		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
 		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
 		foundingDate: "2024",
@@ -137,12 +137,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	return {
-		title: t("public.layout.metadata.title"),
-		description: t("public.layout.metadata.description"),
+		title: t("RECONNED - Airsoft clubs, events, and players"),
+		description: t("The first universal platform for airsoft clubs, events, and players."),
 		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
-		keywords: t("public.layout.metadata.keywords")
+		keywords: t(
+			"airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH",
+		)
 			.split(", ")
 			.map((keyword: string) => keyword.trim()),
 	};

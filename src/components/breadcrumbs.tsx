@@ -1,8 +1,8 @@
 "use client";
 
 import { Building2Icon, CalendarFoldIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Fragment } from "react";
+import { useExtracted } from "next-intl";
+import { Fragment, useMemo } from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -30,7 +30,41 @@ type BreadcrumbsProps = {
 export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	const path = usePathname();
 	const sections = path.split("/").filter(Boolean);
-	const t = useTranslations();
+	const t = useExtracted();
+
+	const breadcrumbsTranslations = useMemo(
+		() => ({
+			dashboard: t("Dashboard"),
+			club: t("Club"),
+			clubs: t("Clubs"),
+			events: t("Events"),
+			information: t("Information"),
+			create: t("Create"),
+			stats: t("Statistics"),
+			members: t("Members"),
+			settings: t("Settings"),
+			calendar: t("Calendar"),
+			invitations: t("Invitations"),
+			security: t("Security"),
+			user: t("User"),
+			help: t("Help"),
+			managers: t("Managers"),
+			rules: t("Rules"),
+			attendance: t("Attendance"),
+			admin: t("Administration"),
+			emails: t("Emails"),
+			posts: t("New post"),
+			spending: t("Spending"),
+			"add-club": t("Add club"),
+			audit: t("Audit"),
+			invites: t("Invitations"),
+			users: t("Users"),
+			instagram: t("Instagram"),
+			"unclaimed-clubs": t("Unclaimed clubs"),
+			edit: t("Edit"),
+		}),
+		[t],
+	);
 
 	const getDisplayText = (section: string) => {
 		// Check if section is a club ID
@@ -45,7 +79,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>{t("components.breadcrumbs.currentClub")}</p>
+						<p>{t("Current club")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);
@@ -63,18 +97,15 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 						</span>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>{t("components.breadcrumbs.currentEvent")}</p>
+						<p>{t("Current event")}</p>
 					</TooltipContent>
 				</Tooltip>
 			);
 		}
 
 		try {
-			const resp = t(`components.breadcrumbs.translations.${section}`);
-			if (resp.startsWith("components.breadcrumbs.translations.")) {
-				return "👀";
-			}
-			return resp;
+			const resp = breadcrumbsTranslations[section as keyof typeof breadcrumbsTranslations];
+			return resp ?? section;
 		} catch {
 			return section;
 		}
@@ -119,3 +150,34 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		</div>
 	);
 }
+
+// "translations": {
+// 				"dashboard": "Dashboard",
+// 				"club": "Club",
+// 				"clubs": "Clubs",
+// 				"events": "Events",
+// 				"information": "Information",
+// 				"create": "Create",
+// 				"stats": "Statistics",
+// 				"members": "Members",
+// 				"settings": "Settings",
+// 				"calendar": "Calendar",
+// 				"invitations": "Invitations",
+// 				"security": "Security",
+// 				"user": "User",
+// 				"help": "Help",
+// 				"managers": "Managers",
+// 				"rules": "Rules",
+// 				"attendance": "Attendance",
+// 				"admin": "Administration",
+// 				"emails": "Emails",
+// 				"posts": "New post",
+// 				"spending": "Spending",
+// 				"add-club": "Add club",
+// 				"audit": "Audit",
+// 				"invites": "Invitations",
+// 				"users": "Users",
+// 				"instagram": "Instagram",
+// 				"unclaimed-clubs": "Unclaimed clubs",
+// 				"edit": "Edit"
+// 			}

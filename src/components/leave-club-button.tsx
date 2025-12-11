@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { leaveClub } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
@@ -29,20 +29,20 @@ export function LeaveClubButton({
 	...props
 }: LeaveClubButtonProps) {
 	const confirm = useConfirm();
-	const t = useTranslations();
+	const t = useExtracted();
 	const router = useRouter();
 
 	const handleLeaveClub = async () => {
 		if (isClubOwner) {
-			toast.error(t("components.leaveClubButton.ownerError"));
+			toast.error(t("Club owners cannot leave the club. You must first transfer ownership or delete the club."));
 			return;
 		}
 
 		const confirmed = await confirm({
-			title: t("components.leaveClubButton.title"),
-			body: t("components.leaveClubButton.body"),
-			cancelButton: t("common.actions.cancel"),
-			actionButton: t("common.actions.confirm"),
+			title: t("Leave club"),
+			body: t("Are you sure you'd like to leave this club? You'll need an invite to join it again."),
+			cancelButton: t("Cancel"),
+			actionButton: t("Confirm"),
 			actionButtonVariant: "destructive",
 		});
 
@@ -54,7 +54,9 @@ export function LeaveClubButton({
 			await leaveClub({ clubId });
 			router.push("/dashboard");
 		} catch (error) {
-			toast.error(error instanceof Error ? error.message : t("components.leaveClubButton.error"));
+			toast.error(
+				error instanceof Error ? error.message : t("There was an error while trying to leave the club"),
+			);
 		}
 	};
 
@@ -68,10 +70,14 @@ export function LeaveClubButton({
 					"flex items-center w-full text-left text-destructive",
 					isClubOwner ? "opacity-50 pointer-events-none" : "cursor-pointer",
 				)}
-				title={isClubOwner ? t("components.leaveClubButton.ownerError") : undefined}
+				title={
+					isClubOwner
+						? t("Club owners cannot leave the club. You must first transfer ownership or delete the club.")
+						: undefined
+				}
 			>
 				{icon || <LogOut className="size-4 mr-2" />}
-				{t("components.leaveClubButton.action")}
+				{t("Leave club")}
 			</button>
 		);
 	}
@@ -81,12 +87,16 @@ export function LeaveClubButton({
 			variant={variant}
 			onClick={handleLeaveClub}
 			disabled={isClubOwner}
-			title={isClubOwner ? t("components.leaveClubButton.ownerError") : undefined}
+			title={
+				isClubOwner
+					? t("Club owners cannot leave the club. You must first transfer ownership or delete the club.")
+					: undefined
+			}
 			size={size}
 			{...props}
 		>
 			{icon || <LogOut className="h-4 w-4 mr-2" />}
-			{t("components.leaveClubButton.action")}
+			{t("Leave club")}
 		</Button>
 	);
 }

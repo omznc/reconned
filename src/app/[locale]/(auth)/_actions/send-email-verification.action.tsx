@@ -1,5 +1,5 @@
 import { render } from "@react-email/components";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import EmailVerification from "@/emails/email-verification";
 import { env } from "@/lib/env";
 import { sendEmail } from "@/lib/mail";
@@ -15,7 +15,7 @@ export async function sendEmailVerificationAction({
 }) {
 	const redirectUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/login`;
 	const url = new URL(inviteLink);
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	if (!url.pathname.startsWith("/api/auth/")) {
 		url.pathname = `/api/auth${url.pathname}`;
@@ -30,7 +30,7 @@ export async function sendEmailVerificationAction({
 	try {
 		const resp = await sendEmail({
 			to,
-			subject: t("public.auth.verifyEmail"),
+			subject: t("Confirm your email"),
 			html: await render(<EmailVerification userName={name} verificationUrl={url.toString()} />, {
 				pretty: true,
 			}),

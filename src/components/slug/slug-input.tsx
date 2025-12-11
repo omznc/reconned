@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { validateSlug } from "@/components/slug/validate-slug";
@@ -18,7 +18,7 @@ interface SlugInputProps {
 }
 
 export function SlugInput(props: SlugInputProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const [slug, setSlug] = useState(props.defaultSlug);
 	const [debouncedSlug] = useDebounce(slug, 300);
 	const [valid, setValid] = useState(false);
@@ -43,8 +43,8 @@ export function SlugInput(props: SlugInputProps) {
 	return (
 		<FormItem>
 			<FormLabel>
-				{t("components.slug.label")}
-				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${props.type[0]}/${debouncedSlug ?? t("components.slug.slugPlaceholder")}`}</span>
+				{t("Special link")}
+				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${props.type[0]}/${debouncedSlug ?? t("my-link")}`}</span>
 			</FormLabel>
 			<FormControl>
 				<Input
@@ -59,15 +59,15 @@ export function SlugInput(props: SlugInputProps) {
 						setSlug(value);
 					}}
 					className="z-10"
-					placeholder={t("components.slug.placeholder")}
+					placeholder={t("my-link")}
 					type="text"
 				/>
 			</FormControl>
 			<FormDescription>
-				{t("components.slug.description")}{" "}
+				{t("A short link that you will be able to share.")}{" "}
 				{debouncedSlug && debouncedSlug !== props.currentSlug && (
 					<span className={cn(valid && "text-green-500", !valid && "text-red-500")}>
-						{valid ? t("components.slug.available") : t("components.slug.taken")}
+						{valid ? t("The link is available.") : t("The link is unavailable!")}
 					</span>
 				)}
 			</FormDescription>

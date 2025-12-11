@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -74,7 +74,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [mapZoom, setMapZoom] = useState<number>(8);
 	const [cropBannerFile, setCropBannerFile] = useState<File | null>(null);
 	const confirm = useConfirm();
-	const t = useTranslations();
+	const t = useExtracted();
 	const clubIdRef = useRef<string | null>(props.club?.id || null);
 	const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const geocodeAbortRef = useRef<AbortController | null>(null);
@@ -288,11 +288,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		}
 
 		const confirmed = await confirm({
-			title: t("dashboard.club.info.instagramDisconnect.title"),
-			body: t("dashboard.club.info.instagramDisconnect.body"),
+			title: t("Disconnect Instagram Account"),
+			body: t(
+				"Are you sure you want to disconnect the Instagram account? After disconnecting, photos will no longer be displayed on the club profile.",
+			),
 			actionButtonVariant: "destructive",
-			actionButton: t("common.actions.confirm"),
-			cancelButton: t("common.actions.cancel"),
+			actionButton: t("Confirm"),
+			cancelButton: t("Cancel"),
 		});
 
 		if (!confirmed) {
@@ -309,10 +311,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				throw new ActionError(result?.serverError);
 			}
 
-			toast.success(t("dashboard.club.info.instagramDisconnectSuccess"));
+			toast.success(t("Instagram account successfully disconnected"));
 			router.refresh();
 		} catch (_) {
-			toast.error(t("dashboard.club.info.instagramDisconnectError"));
+			toast.error(t("An error occurred while disconnecting Instagram account"));
 		} finally {
 			setIsDisconnectingInstagram(false);
 		}
@@ -403,25 +405,26 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		};
 	}, [locationValue, selectedCountryId, props.countries, form]);
 
-	// Helper function to get error message translation key
-	const getInstagramErrorTranslationKey = (errorCode: string): string => {
+	const getInstagramErrorMessage = (errorCode: string): string => {
 		switch (errorCode) {
 			case "no_facebook_pages":
-				return "dashboard.club.info.instagramError.noFacebookPages";
+				return t("We couldn't find any Facebook Pages connected to your account.");
 			case "no_instagram_business_account":
-				return "dashboard.club.info.instagramError.noInstagramAccount";
+				return t("We couldn't find an Instagram Business account connected to the selected Facebook page.");
 			case "not_connected_to_instagram":
-				return "dashboard.club.info.instagramError.notConnected";
+				return t("Instagram account is not connected to your Facebook page.");
 			case "missing_params":
-				return "dashboard.club.info.instagramError.missingParams";
+				return t("Missing parameters for connecting to Instagram API.");
 			case "auth_failed":
-				return "dashboard.club.info.instagramError.authFailed";
+				return t("Authorization failed. Please try again.");
 			case "page_not_found":
-				return "dashboard.club.info.instagramError.pageNotFound";
+				return t("Facebook Page not found.");
 			case "personal_account":
-				return "dashboard.club.info.instagramError.personalAccount";
+				return t(
+					"The Instagram account connected to the selected Facebook page is not a Business account. You need to use an Instagram Business account to connect.",
+				);
 			default:
-				return "dashboard.club.info.instagramError.connectionFailed";
+				return t("Problem connecting to Instagram account. Please try again.");
 		}
 	};
 
@@ -480,13 +483,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 			logoUpload.markAsSaved();
 			headerUpload.markAsSaved();
-			toast.success(t("dashboard.club.info.success"));
+			toast.success(t("Club information has been saved"));
 
 			if (isCreating && clubId) {
 				router.push(`/dashboard/${clubId}/club`);
 			}
 		} catch {
-			toast.error(t("dashboard.club.info.error"));
+			toast.error(t("An error occurred"));
 		}
 		setIsLoading(false);
 	}
@@ -498,8 +501,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					{props.club && (
 						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 							<div className="flex flex-col">
-								<AlertTitle>{t("dashboard.club.info.clubEditTitle")}</AlertTitle>
-								<AlertDescription>{t("dashboard.club.info.clubEditDescription")}</AlertDescription>
+								<AlertTitle>{t("You are changing your club information")}</AlertTitle>
+								<AlertDescription>
+									{t("Changes will be visible immediately after you save them.")}
+								</AlertDescription>
 							</div>
 							<div className="flex gap-1">
 								{props.isClubOwner && (
@@ -510,11 +515,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										className="w-fit"
 										onClick={async () => {
 											const resp = await confirm({
-												title: t("dashboard.club.info.clubDelete.title"),
-												body: t("dashboard.club.info.clubDelete.body"),
+												title: t("Are you sure?"),
+												body: t("If you delete a club, you won't be able to get it back."),
 												actionButtonVariant: "destructive",
-												actionButton: t("dashboard.club.info.clubDelete.confirm"),
-												cancelButton: t("dashboard.club.info.clubDelete.cancel"),
+												actionButton: t("Delete the club"),
+												cancelButton: t("No, come back"),
 											});
 											if (resp) {
 												setIsLoading(true);
@@ -527,18 +532,14 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									>
 										<Trash className="size-4" />
 
-										{isLoading ? (
-											<Loader className="animate-spin size-4" />
-										) : (
-											t("dashboard.club.info.clubDelete.confirm")
-										)}
+										{isLoading ? <Loader className="animate-spin size-4" /> : t("Delete the club")}
 									</Button>
 								)}
 							</div>
 						</Alert>
 					)}
 					<div>
-						<h3 className="text-lg font-semibold">{t("dashboard.club.info.general")}</h3>
+						<h3 className="text-lg font-semibold">{t("General")}</h3>
 					</div>
 
 					{/* Banner/Header Image */}
@@ -547,7 +548,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						name="headerImage"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.info.headerImage")}</FormLabel>
+								<FormLabel>{t("Header image")}</FormLabel>
 								<FormControl>
 									<SingleImageUpload
 										variant="banner"
@@ -567,7 +568,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										}}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.headerImageDescription")}</FormDescription>
+								<FormDescription>
+									{t("Add a wide banner image for your club page (1200x300).")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -579,7 +582,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						name="logo"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.info.logo")}</FormLabel>
+								<FormLabel>{t("Logo")}</FormLabel>
 								<FormControl>
 									<SingleImageUpload
 										variant="logo"
@@ -593,7 +596,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										}}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.logoDescription")}</FormDescription>
+								<FormDescription>{t("Add a club logo. ")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -606,13 +609,16 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									{t("dashboard.club.info.name")}* ({nameValue?.length ?? 0}/
-									{clubInfoSchema.shape.name.maxLength})
+									{t("Club name")}* ({nameValue?.length ?? 0}/{clubInfoSchema.shape.name.maxLength})
 								</FormLabel>
 								<FormControl>
 									<Input placeholder="Veis" type="text" {...field} />
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.nameDescription")}</FormDescription>
+								<FormDescription>
+									{t(
+										"The name of the club will be displayed everywhere on the site, if the club is public.",
+									)}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -623,7 +629,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						name="countryId"
 						render={({ field }) => (
 							<FormItem className="flex flex-col">
-								<FormLabel>{t("dashboard.club.info.country")}*</FormLabel>
+								<FormLabel>{t("Country")}*</FormLabel>
 								<Popover open={open} onOpenChange={setOpen}>
 									<PopoverTrigger asChild>
 										<FormControl>
@@ -638,15 +644,15 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 												{field.value
 													? props.countries.find((country) => country.id === field.value)
 															?.name
-													: t("dashboard.club.info.pickCountry")}
+													: t("Select a country")}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 											</Button>
 										</FormControl>
 									</PopoverTrigger>
 									<PopoverContent className="w-full p-0">
 										<Command>
-											<CommandInput placeholder={t("dashboard.club.info.searchCountry")} />
-											<CommandEmpty>{t("dashboard.club.info.noResults")}</CommandEmpty>
+											<CommandInput placeholder={t("Search countries...")} />
+											<CommandEmpty>{t("No results")}</CommandEmpty>
 											<CommandGroup className="h-[300px] overflow-y-scroll">
 												{props.countries.map((country) => (
 													<CommandItem
@@ -674,7 +680,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										</Command>
 									</PopoverContent>
 								</Popover>
-								<FormDescription>{t("dashboard.club.info.countryDescription")}</FormDescription>
+								<FormDescription>{t("The country where the club is located")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -685,11 +691,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						name="location"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.info.city")}*</FormLabel>
+								<FormLabel>{t("City")}*</FormLabel>
 								<FormControl>
 									<Input placeholder="Livno" type="text" {...field} />
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.cityDescription")}</FormDescription>
+								<FormDescription>{t("The city where the club is located")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -715,7 +721,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					{/* Map and exact location */}
 					<FormItem>
 						<FormLabel className="flex items-center justify-between">
-							<span>{t("dashboard.club.info.exactLocation")}</span>
+							<span>{t("Exact location")}</span>
 							<Button
 								type="button"
 								variant="ghost"
@@ -726,10 +732,12 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								}
 								className="h-6 px-2 text-xs data-[hidden=true]:opacity-0"
 							>
-								{t("dashboard.club.info.reset")}
+								{t("Reset")}
 							</Button>
 						</FormLabel>
-						<FormDescription>{t("dashboard.club.info.mapClickToMark")}</FormDescription>
+						<FormDescription>
+							{t("Click anywhere on the map to mark where your club is located.")}
+						</FormDescription>
 						<FormControl>
 							<div className="h-[400px] w-full rounded-lg overflow-hidden border">
 								<MapSelector
@@ -752,14 +760,17 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							</div>
 						</FormControl>
 						<FormDescription>
-							{t.rich("dashboard.club.info.exactLocationDescription", {
-								link: () => (
-									<Link target="_blank" className="text-red-500" href="/map">
-										{t("dashboard.club.info.exactLocationLink")}
-										<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
-									</Link>
-								),
-							})}
+							{t.rich(
+								"Click on the map to mark the exact location of your club. If your club is public, you'll be able to see it on the <link></link>",
+								{
+									link: () => (
+										<Link target="_blank" className="text-red-500" href="/map">
+											{t("airsoft clubs map")}
+											<ArrowUpRight className="inline-block h-4 w-4 ml-1" />
+										</Link>
+									),
+								},
+							)}
 						</FormDescription>
 					</FormItem>
 
@@ -770,17 +781,17 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									{t("dashboard.club.info.description")}* ({descriptionValue?.length ?? 0}/
+									{t("Description")}* ({descriptionValue?.length ?? 0}/
 									{clubInfoSchema.shape.description.maxLength})
 								</FormLabel>
 								<FormControl>
 									<Textarea
-										placeholder={t("dashboard.club.info.descriptionPlaceholder")}
+										placeholder={t("This is a cool description")}
 										className="resize-none"
 										{...field}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.descriptionDescription")}</FormDescription>
+								<FormDescription>{t("Describe your club in a few sentences")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -791,7 +802,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						name="dateFounded"
 						render={({ field }) => (
 							<FormItem className="flex flex-col">
-								<FormLabel>{t("dashboard.club.info.foundedDate")}*</FormLabel>
+								<FormLabel>{t("Date of establishment")}*</FormLabel>
 								<Popover>
 									<PopoverTrigger asChild={true}>
 										<FormControl>
@@ -805,7 +816,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 												{field.value ? (
 													format(field.value, "PPP")
 												) : (
-													<span>{t("dashboard.club.info.chooseDate")}</span>
+													<span>{t("Select a date")}</span>
 												)}
 												<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 											</Button>
@@ -819,7 +830,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										/>
 									</PopoverContent>
 								</Popover>
-								<FormDescription>{t("dashboard.club.info.foundedDateDescription")}</FormDescription>
+								<FormDescription>{t("When was the club founded?")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -831,8 +842,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("dashboard.club.info.isAllied")}</FormLabel>
-									<FormDescription>{t("dashboard.club.info.isAlliedDescription")}</FormDescription>
+									<FormLabel>{t("In the ASK FBIH alliance")}</FormLabel>
+									<FormDescription>
+										{t("If you are part of the SAKFBIH, select this option. Will be verified.")}
+									</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -847,8 +860,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("dashboard.club.info.private")}</FormLabel>
-									<FormDescription>{t("dashboard.club.info.privateDescription")}</FormDescription>
+									<FormLabel>{t("Private club")}</FormLabel>
+									<FormDescription>
+										{t("Private clubs are only visible to club members. ")}
+									</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -863,9 +878,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("dashboard.club.info.privateStats")}</FormLabel>
+									<FormLabel>{t("Private Statistics")}</FormLabel>
 									<FormDescription>
-										{t("dashboard.club.info.privateStatsDescription")}
+										{t("Only club members can see how many views the club has")}
 									</FormDescription>
 								</div>
 								<FormControl>
@@ -876,7 +891,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					/>
 
 					<div>
-						<h3 className="text-lg font-semibold">{t("dashboard.club.info.contact")}</h3>
+						<h3 className="text-lg font-semibold">{t("Contact")}</h3>
 					</div>
 
 					<FormField
@@ -884,11 +899,13 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						name="contactPhone"
 						render={({ field }) => (
 							<FormItem className="flex flex-col items-start">
-								<FormLabel>{t("dashboard.club.info.phone")}</FormLabel>
+								<FormLabel>{t("Phone number")}</FormLabel>
 								<FormControl className="w-full">
 									<PhoneInput placeholder="063 000 000" {...field} defaultCountry="BA" />
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.phoneDescription")}</FormDescription>
+								<FormDescription>
+									{t("The club's phone number, publicly displayed on the profile.")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -903,7 +920,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								<FormControl>
 									<Input placeholder="airsoft@club.com" type="email" {...field} />
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.emailDescription")}</FormDescription>
+								<FormDescription>
+									{t("Email address of the club, publicly displayed on the profile.")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -914,11 +933,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						name="website"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.info.website")}</FormLabel>
+								<FormLabel>{t("Website")}</FormLabel>
 								<FormControl>
 									<Input placeholder="https://..." {...field} />
 								</FormControl>
-								<FormDescription>{t("dashboard.club.info.website")}</FormDescription>
+								<FormDescription>{t("Website")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -930,7 +949,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<div className="flex sm:flex-row flex-col gap-2 items-center justify-between">
 								<div className="flex items-center gap-2">
 									<SiInstagram className="h-5 w-5" />
-									<h4 className="font-medium">{t("dashboard.club.info.instagramConnection")}</h4>
+									<h4 className="font-medium">{t("Instagram Connection")}</h4>
 								</div>
 
 								{props.club?.instagramConnected ? (
@@ -944,16 +963,16 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										{isDisconnectingInstagram ? (
 											<>
 												<Loader className="mr-2 h-4 w-4 animate-spin" />
-												{t("dashboard.club.info.instagramDisconnecting")}
+												{t("Disconnecting...")}
 											</>
 										) : (
-											t("dashboard.club.info.instagramDisconnect.action")
+											t("Disconnect Instagram")
 										)}
 									</Button>
 								) : (
 									<Link href={props.instagramConnectionUrl ?? ""}>
 										<Button type="button" variant="outline" size="sm" disabled={!props.club?.id}>
-											{t("dashboard.club.info.instagramConnect")}
+											{t("Connect Instagram")}
 										</Button>
 									</Link>
 								)}
@@ -963,7 +982,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							{instagramSuccess && (
 								<Alert>
 									<CheckCircle className="h-4 w-4" />
-									<AlertTitle>{t("dashboard.club.info.instagramConnectSuccess")}</AlertTitle>
+									<AlertTitle>{t("Instagram account successfully connected")}</AlertTitle>
 								</Alert>
 							)}
 
@@ -971,9 +990,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							{instagramError && (
 								<Alert variant="destructive">
 									<AlertCircle className="h-4 w-4" />
-									<AlertTitle>{t("dashboard.club.info.instagramError.title")}</AlertTitle>
+									<AlertTitle>{t("Problem connecting Instagram account")}</AlertTitle>
 									<AlertDescription>
-										{instagramErrorMessage || t(getInstagramErrorTranslationKey(instagramError))}
+										{instagramErrorMessage || getInstagramErrorMessage(instagramError)}
 									</AlertDescription>
 								</Alert>
 							)}
@@ -981,7 +1000,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							{props.club?.instagramConnected && props.club?.instagramUsername && (
 								<div className="text-sm inline-flex items-center gap-1">
 									<p className="text-muted-foreground">
-										{t("dashboard.club.info.instagramConnectedMessage")}
+										{t("Your club is connected to an Instagram account")}
 									</p>
 									<Link
 										href={`https://instagram.com/${props.club.instagramUsername}`}
@@ -997,7 +1016,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							{!props.club?.instagramConnected && (
 								<div className="text-sm">
 									<p className="text-muted-foreground">
-										{t("dashboard.club.info.instagramDescription")}
+										{t(
+											"Connect your Instagram account to display club photos on the club profile.",
+										)}
 									</p>
 								</div>
 							)}
@@ -1005,7 +1026,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					)}
 
 					<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!slugValue}>
-						{props.club ? t("common.actions.save") : t("common.actions.create")}
+						{props.club ? t("Save") : t("Create")}
 					</LoaderSubmitButton>
 				</form>
 			</Form>

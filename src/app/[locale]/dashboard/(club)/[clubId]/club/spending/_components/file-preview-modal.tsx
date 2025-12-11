@@ -3,7 +3,7 @@
 import { Download, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useLogger } from "next-axiom";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Credenza, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
@@ -17,7 +17,7 @@ interface FilePreviewModalProps {
 
 export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePreviewModalProps) {
 	const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
-	const t = useTranslations();
+	const t = useExtracted();
 	const [isDownloading, setIsDownloading] = useState(false);
 	const logger = useLogger();
 	const handleDownload = async () => {
@@ -47,13 +47,11 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 						<div className="flex gap-2">
 							<Button variant="outline" size="sm" onClick={() => window.open(fileUrl, "_blank")}>
 								<ExternalLink className="h-4 w-4 mr-2" />
-								{t("dashboard.club.spending.receipt.open")}
+								{t("Open")}
 							</Button>
 							<Button variant="outline" size="sm" onClick={handleDownload} disabled={isDownloading}>
 								<Download className="h-4 w-4 mr-2" />
-								{isDownloading
-									? t("dashboard.club.spending.receipt.downloading")
-									: t("dashboard.club.spending.receipt.download")}
+								{isDownloading ? t("Downloading...") : t("Download")}
 							</Button>
 						</div>
 					</CredenzaTitle>

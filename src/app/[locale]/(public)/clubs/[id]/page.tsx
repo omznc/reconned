@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
@@ -149,7 +149,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">): Promise<Metadata> {
-	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
+	const [params, t, locale] = await Promise.all([props.params, getExtracted(), getLocale()]);
 
 	const club = await prisma.club.findFirst({
 		where: {
@@ -181,7 +181,11 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 
 	return {
 		title: `${club.name} - RECONNED`,
-		description: club.description?.slice(0, 160) ?? t("public.clubs.metadata.description"),
+		description:
+			club.description?.slice(0, 160) ??
+			t(
+				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(

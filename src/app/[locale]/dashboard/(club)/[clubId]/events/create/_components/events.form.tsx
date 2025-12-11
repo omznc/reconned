@@ -8,7 +8,7 @@ import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useLogger } from "next-axiom";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -58,7 +58,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const confirm = useConfirm();
-	const t = useTranslations();
+	const t = useExtracted();
 	const logger = useLogger();
 	const eventIdRef = useRef<string | null>(props.event?.id || null);
 	const normalizedMapData = useMemo(() => normalizeMapData(props.event?.mapData), [props.event?.mapData]);
@@ -70,7 +70,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				{
 					id: `existing-${props.event.id}`,
 					url: props.event.image,
-					name: t("dashboard.club.events.create.eventImageExisting"),
+					name: t("Event image"),
 					type: "image/jpeg",
 					isExisting: true,
 				},
@@ -81,7 +81,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentEventId = eventIdRef.current;
 			if (!currentEventId) {
-				throw new ActionError(t("dashboard.club.events.create.mustSaveEventFirst"));
+				throw new ActionError(t("Save the event first."));
 			}
 
 			const resp = await getEventImageUploadUrl({
@@ -94,7 +94,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			});
 
 			if (!resp?.data?.url) {
-				throw new ActionError(t("dashboard.club.events.create.failedToGetUploadUrl"));
+				throw new ActionError(t("Could not get upload URL."));
 			}
 
 			await fetch(resp.data.url, {
@@ -141,35 +141,35 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			const days = Math.floor(regOpenDiff / (1000 * 60 * 60 * 24));
 			parts.push(
 				<span key="regOpen">
-					{t.rich("dashboard.club.events.create.registrationsOpenIn", {
+					{t.rich("Registrations open for <number></number> day/s", {
 						number: () => <AnimatedNumber value={days} />,
 					})}
 				</span>,
 			);
 		} else if (regCloseDiff > 0) {
-			parts.push(<span key="regOpen">{t("dashboard.club.events.create.registrationsOpen")}</span>);
+			parts.push(<span key="regOpen">{t("Registrations are open")}</span>);
 		} else if (regCloseDiff < 0) {
-			parts.push(<span key="regClose">{t("dashboard.club.events.create.registrationsClosed")}</span>);
+			parts.push(<span key="regClose">{t("Registrations are closed")}</span>);
 		} else {
-			parts.push(<span key="regClose">{t("dashboard.club.events.create.registrationsClosed")}</span>);
+			parts.push(<span key="regClose">{t("Registrations are closed")}</span>);
 		}
 
 		if (startDiff > 0) {
 			const days = Math.floor(startDiff / (1000 * 60 * 60 * 24));
 			parts.push(
 				<span key="start">
-					{t.rich("dashboard.club.events.create.eventStartsIn", {
+					{t.rich(", the event starts in <number></number> day/s", {
 						number: () => <AnimatedNumber value={days} />,
 					})}
 				</span>,
 			);
 		} else {
-			parts.push(<span key="start">{t("dashboard.club.events.create.eventStarted")}</span>);
+			parts.push(<span key="start">{t(", the event has already started")}</span>);
 		}
 
 		parts.push(
 			<span key="duration">
-				{t.rich("dashboard.club.events.create.eventDuration", {
+				{t.rich(", lasts <number></number> hour/s.", {
 					number: () => <AnimatedNumber value={Math.round(eventDuration)} />,
 				})}
 			</span>,
@@ -288,7 +288,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			const event = await createEvent(values);
 
 			if (!event?.data || event.serverError) {
-				const message = event?.serverError ?? t("dashboard.club.events.create.error");
+				const message = event?.serverError ?? t("An error occurred while saving data");
 				toast.error(message);
 				return;
 			}
@@ -306,7 +306,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					});
 
 					if (!updateResult?.data || updateResult.serverError) {
-						const message = updateResult?.serverError ?? t("dashboard.club.events.create.error");
+						const message = updateResult?.serverError ?? t("An error occurred while saving data");
 						toast.error(message);
 						return;
 					}
@@ -320,9 +320,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			}
 
 			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
-			toast.success(t("dashboard.club.events.create.success"));
+			toast.success(t("Successfully created event"));
 		} catch (error) {
-			const message = error instanceof Error ? error.message : t("dashboard.club.events.create.error");
+			const message = error instanceof Error ? error.message : t("An error occurred while saving data");
 			toast.error(message);
 		} finally {
 			setIsLoading(false);
@@ -337,8 +337,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				{props.event?.id && (
 					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>{t("dashboard.club.events.create.editingTitle")}</AlertTitle>
-							<AlertDescription>{t("dashboard.club.events.create.editingDescription")}</AlertDescription>
+							<AlertTitle>{t("Change of event")}</AlertTitle>
+							<AlertDescription>
+								{t("This event has already been created, you are currently editing it.")}
+							</AlertDescription>
 						</div>
 						<div className="flex gap-1">
 							<Button
@@ -348,11 +350,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								className="w-fit"
 								onClick={async () => {
 									const resp = await confirm({
-										title: t("dashboard.club.events.create.delete.title"),
-										body: t("dashboard.club.events.create.delete.body"),
+										title: t("Are you sure?"),
+										body: t("If you delete an event, you won't be able to get it back."),
 										actionButtonVariant: "destructive",
-										actionButton: t("common.actions.confirm"),
-										cancelButton: t("common.actions.cancel"),
+										actionButton: t("Confirm"),
+										cancelButton: t("Cancel"),
 									});
 									if (resp) {
 										setIsLoading(true);
@@ -365,11 +367,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								}}
 							>
 								<Trash className="size-4" />
-								{isLoading ? (
-									<Loader className="animate-spin size-4" />
-								) : (
-									t("dashboard.club.events.create.delete.confirm")
-								)}
+								{isLoading ? <Loader className="animate-spin size-4" /> : t("Delete event")}
 							</Button>
 							<Button variant="outline" asChild={true}>
 								<Link
@@ -377,7 +375,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									href={`/dashboard/${clubId}/events/${props.event.id}`}
 								>
 									<Eye className="size-4" />
-									{t("dashboard.club.events.create.view")}
+									{t("View")}
 								</Link>
 							</Button>
 						</div>
@@ -388,14 +386,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				<Card className="bg-sidebar">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-4">
-							<span>{t("dashboard.club.events.create.general")}</span>
-							<span className="text-sm font-normal text-muted-foreground">
-								{t("dashboard.club.events.create.requiredSection")}
-							</span>
+							<span>{t("General")}</span>
+							<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
 						</CardTitle>
-						<CardDescription>
-							{t("dashboard.club.events.create.basicInformationDescription")}
-						</CardDescription>
+						<CardDescription>{t("The basic information we need to create your event")}</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{/* Required fields */}
@@ -406,18 +400,14 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>
-											{t("dashboard.club.events.create.name")}
+											{t("Name of the event")}
 											<RequiredFieldMarker />
 										</FormLabel>
 										<FormControl>
-											<Input
-												placeholder={t("dashboard.club.events.create.namePlaceholder")}
-												type="text"
-												{...field}
-											/>
+											<Input placeholder={t("Food Wars 24")} type="text" {...field} />
 										</FormControl>
 										<FormDescription>
-											{t("dashboard.club.events.create.nameDescription")}
+											{t("The name of the event will be displayed everywhere on the site")}
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
@@ -430,19 +420,17 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>
-											{t("dashboard.club.events.create.description")}
+											{t("Description")}
 											<RequiredFieldMarker />
 										</FormLabel>
 										<FormControl>
 											<Textarea
-												placeholder={t("dashboard.club.events.create.descriptionPlaceholder")}
+												placeholder={t("Bring cutlery...")}
 												className="min-h-32"
 												{...field}
 											/>
 										</FormControl>
-										<FormDescription>
-											{t("dashboard.club.events.create.descriptionDescription")}
-										</FormDescription>
+										<FormDescription>{t("Description of the event. ")}</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
@@ -452,12 +440,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						{/* Optional fields */}
 						<div className="pt-4 border-t space-y-4">
 							<div className="flex items-center justify-between gap-2">
-								<h3 className="text-base font-medium">
-									{t("dashboard.club.events.create.additionalInformation")}
-								</h3>
-								<span className="text-xs text-muted-foreground">
-									{t("dashboard.club.events.create.optional")}
-								</span>
+								<h3 className="text-base font-medium">{t("Additional information")}</h3>
+								<span className="text-xs text-muted-foreground">{t("Optional")}</span>
 							</div>
 
 							<FormField
@@ -482,7 +466,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								name="image"
 								render={() => (
 									<FormItem>
-										<FormLabel>{t("dashboard.club.events.create.photo")}</FormLabel>
+										<FormLabel>{t("Image")}</FormLabel>
 										<FormControl>
 											<FileUpload
 												value={eventImageUpload.files}
@@ -498,9 +482,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 												showPreview={true}
 											/>
 										</FormControl>
-										<FormDescription>
-											{t("dashboard.club.events.create.photoDescription")}
-										</FormDescription>
+										<FormDescription>{t("Add a photo of the event. ")}</FormDescription>
 									</FormItem>
 								)}
 							/>
@@ -510,7 +492,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								name="costPerPerson"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("dashboard.club.events.create.price")}</FormLabel>
+										<FormLabel>{t("Registration fee/price")}</FormLabel>
 										<FormControl>
 											<Input
 												placeholder="20"
@@ -520,7 +502,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											/>
 										</FormControl>
 										<FormDescription>
-											{t("dashboard.club.events.create.priceDescription")}
+											{t("How much does it cost to participate in the event? ")}
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
@@ -534,10 +516,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				<Card className="bg-sidebar">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-4">
-							<CalendarIcon className="size-5" /> {t("dashboard.club.events.create.time")}
-							<span className="text-sm font-normal text-muted-foreground">
-								{t("dashboard.club.events.create.requiredSection")}
-							</span>
+							<CalendarIcon className="size-5" /> {t("Time")}
+							<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
 						</CardTitle>
 						<CardDescription>
 							{!(
@@ -562,7 +542,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					<CardContent className="space-y-4">
 						{/* Required event dates section */}
 						<div className="space-y-4">
-							<h3 className="text-base font-medium">{t("dashboard.club.events.create.eventDates")}</h3>
+							<h3 className="text-base font-medium">{t("Event dates")}</h3>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<FormField
 									control={form.control}
@@ -570,7 +550,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									render={({ field }) => (
 										<FormItem className="flex flex-col">
 											<FormLabel>
-												{t("dashboard.club.events.create.start")}
+												{t("Start")}
 												<RequiredFieldMarker />
 											</FormLabel>
 											<Popover>
@@ -588,9 +568,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																	locale: bs,
 																})
 															) : (
-																<span>
-																	{t("dashboard.club.events.create.selectDate")}
-																</span>
+																<span>{t("Select a date")}</span>
 															)}
 															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 														</Button>
@@ -600,9 +578,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<DateTimePicker value={field.value} onChange={field.onChange} />
 												</PopoverContent>
 											</Popover>
-											<FormDescription>
-												{t("dashboard.club.events.create.startDescription")}
-											</FormDescription>
+											<FormDescription>{t("When does the event start?")}</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -614,7 +590,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									render={({ field }) => (
 										<FormItem className="flex flex-col">
 											<FormLabel>
-												{t("dashboard.club.events.create.end")}
+												{t("End")}
 												<RequiredFieldMarker />
 											</FormLabel>
 											<Popover>
@@ -632,9 +608,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																	locale: bs,
 																})
 															) : (
-																<span>
-																	{t("dashboard.club.events.create.selectDate")}
-																</span>
+																<span>{t("Select a date")}</span>
 															)}
 															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 														</Button>
@@ -644,9 +618,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<DateTimePicker value={field.value} onChange={field.onChange} />
 												</PopoverContent>
 											</Popover>
-											<FormDescription>
-												{t("dashboard.club.events.create.endDescription")}
-											</FormDescription>
+											<FormDescription>{t("When does the event end?")}</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -657,12 +629,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						{/* Registration period section */}
 						<div className="space-y-4 pt-4 border-t">
 							<div className="flex items-center justify-between gap-2">
-								<h3 className="text-base font-medium">
-									{t("dashboard.club.events.create.registrationPeriod")}
-								</h3>
-								<span className="text-xs text-muted-foreground">
-									{t("dashboard.club.events.create.partiallyRequired")}
-								</span>
+								<h3 className="text-base font-medium">{t("Registration period")}</h3>
+								<span className="text-xs text-muted-foreground">{t("Partially required")}</span>
 							</div>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<FormField
@@ -670,7 +638,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									name="dateRegistrationsOpen"
 									render={({ field }) => (
 										<FormItem className="flex flex-col">
-											<FormLabel>{t("dashboard.club.events.create.registrationStart")}</FormLabel>
+											<FormLabel>{t("Start of applications")}</FormLabel>
 											<Popover>
 												<PopoverTrigger asChild={true}>
 													<FormControl>
@@ -686,9 +654,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																	locale: bs,
 																})
 															) : (
-																<span>
-																	{t("dashboard.club.events.create.selectDate")}
-																</span>
+																<span>{t("Select a date")}</span>
 															)}
 															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 														</Button>
@@ -698,9 +664,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<DateTimePicker value={field.value} onChange={field.onChange} />
 												</PopoverContent>
 											</Popover>
-											<FormDescription>
-												{t("dashboard.club.events.create.registrationStartDescription")}
-											</FormDescription>
+											<FormDescription>{t("When do meetup registrations open?")}</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -712,7 +676,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									render={({ field }) => (
 										<FormItem className="flex flex-col">
 											<FormLabel>
-												{t("dashboard.club.events.create.registrationEnd")}
+												{t("End of applications")}
 												<RequiredFieldMarker />
 											</FormLabel>
 											<Popover>
@@ -730,9 +694,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																	locale: bs,
 																})
 															) : (
-																<span>
-																	{t("dashboard.club.events.create.selectDate")}
-																</span>
+																<span>{t("Select a date")}</span>
 															)}
 															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 														</Button>
@@ -743,7 +705,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 												</PopoverContent>
 											</Popover>
 											<FormDescription>
-												{t("dashboard.club.events.create.registrationEndDescription")}
+												{t("When do the registrations for the event close?")}
 											</FormDescription>
 											<FormMessage />
 										</FormItem>
@@ -758,10 +720,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				<Card className="bg-sidebar">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-4">
-							<MapPin className="size-5" /> {t("dashboard.club.events.create.location")}
-							<span className="text-sm font-normal text-muted-foreground">
-								{t("dashboard.club.events.create.requiredSection")}
-							</span>
+							<MapPin className="size-5" /> {t("Location")}
+							<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -772,15 +732,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>
-										{t("dashboard.club.events.create.location")}
+										{t("Location")}
 										<RequiredFieldMarker />
 									</FormLabel>
 									<FormControl>
 										<Input placeholder="Livno" type="text" {...field} />
 									</FormControl>
-									<FormDescription>
-										{t("dashboard.club.events.create.locationDescription")}
-									</FormDescription>
+									<FormDescription>{t("Where is the event taking place?")}</FormDescription>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -789,12 +747,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						{/* Non-required Google Maps field */}
 						<div className="pt-4 border-t">
 							<div className="flex items-center justify-between mb-4">
-								<h3 className="text-base font-medium">
-									{t("dashboard.club.events.create.additionalLocationInfo")}
-								</h3>
-								<span className="text-xs text-muted-foreground">
-									{t("dashboard.club.events.create.optional")}
-								</span>
+								<h3 className="text-base font-medium">{t("Additional location info")}</h3>
+								<span className="text-xs text-muted-foreground">{t("Optional")}</span>
 							</div>
 							<FormField
 								control={form.control}
@@ -809,14 +763,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											/>
 										</FormControl>
 										<FormDescription>
-											{t("dashboard.club.events.create.googleMapsDescription")}{" "}
+											{t("You can add a Google Maps embed link. ")}{" "}
 											<Link
 												target="_blank"
 												className="font-semibold flex gap-0.5 items-center"
 												href={"/dashboard/help#google-maps"}
 											>
-												{t("dashboard.club.events.create.googleMapsLink")}{" "}
-												<ArrowUpRight className="size-3" />
+												{t("Where to find it?")} <ArrowUpRight className="size-3" />
 											</Link>
 										</FormDescription>
 										<FormMessage />
@@ -833,16 +786,14 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						<AccordionTrigger className="py-4">
 							<div className="flex items-center gap-2">
 								<Settings className="size-5" />
-								<span className="font-medium">
-									{t("dashboard.club.events.create.advancedSettings")}
-								</span>
+								<span className="font-medium">{t("Advanced settings")}</span>
 							</div>
 						</AccordionTrigger>
 						<AccordionContent className="pb-4 space-y-6">
 							{/* Visibility Settings */}
 							<div>
 								<h3 className="text-base font-medium mb-4 flex items-center gap-2">
-									{t("dashboard.club.events.create.visibility")}
+									{t("Visibility")}
 								</h3>
 								<div className="space-y-4">
 									<FormField
@@ -851,9 +802,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 												<div className="space-y-0.5">
-													<FormLabel>{t("dashboard.club.events.create.private")}</FormLabel>
+													<FormLabel>{t("Private")}</FormLabel>
 													<FormDescription>
-														{t("dashboard.club.events.create.privateDescription")}
+														{t("Private events are visible only to club members.")}
 													</FormDescription>
 												</div>
 												<FormControl>
@@ -869,11 +820,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 												<div className="space-y-0.5">
-													<FormLabel>
-														{t("dashboard.club.events.create.freelancers")}
-													</FormLabel>
+													<FormLabel>{t("Freelancers allowed")}</FormLabel>
 													<FormDescription>
-														{t("dashboard.club.events.create.freelancersDescription")}
+														{t(
+															"Do you allow players who are not members of a club to register for a match?",
+														)}
 													</FormDescription>
 												</div>
 												<FormControl>
@@ -888,7 +839,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 							{/* Amenities Settings */}
 							<div>
 								<h3 className="text-base font-medium mb-4 flex items-center gap-2">
-									{t("dashboard.club.events.create.organization")}
+									{t("Organization")}
 								</h3>
 								<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 									<FormField
@@ -896,7 +847,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										name="hasBreakfast"
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("dashboard.club.events.create.breakfast")}</FormLabel>
+												<FormLabel>{t("Breakfast")}</FormLabel>
 												<FormControl>
 													<Switch checked={field.value} onCheckedChange={field.onChange} />
 												</FormControl>
@@ -909,7 +860,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										name="hasLunch"
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("dashboard.club.events.create.lunch")}</FormLabel>
+												<FormLabel>{t("Lunch")}</FormLabel>
 												<FormControl>
 													<Switch checked={field.value} onCheckedChange={field.onChange} />
 												</FormControl>
@@ -922,7 +873,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										name="hasDinner"
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("dashboard.club.events.create.dinner")}</FormLabel>
+												<FormLabel>{t("Dinner")}</FormLabel>
 												<FormControl>
 													<Switch checked={field.value} onCheckedChange={field.onChange} />
 												</FormControl>
@@ -935,7 +886,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										name="hasSnacks"
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("dashboard.club.events.create.snacks")}</FormLabel>
+												<FormLabel>{t("Snacks")}</FormLabel>
 												<FormControl>
 													<Switch checked={field.value} onCheckedChange={field.onChange} />
 												</FormControl>
@@ -948,7 +899,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										name="hasDrinks"
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("dashboard.club.events.create.drinks")}</FormLabel>
+												<FormLabel>{t("Drinks")}</FormLabel>
 												<FormControl>
 													<Switch checked={field.value} onCheckedChange={field.onChange} />
 												</FormControl>
@@ -961,7 +912,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										name="hasPrizes"
 										render={({ field }) => (
 											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("dashboard.club.events.create.prizes")}</FormLabel>
+												<FormLabel>{t("Awards")}</FormLabel>
 												<FormControl>
 													<Switch checked={field.value} onCheckedChange={field.onChange} />
 												</FormControl>
@@ -973,9 +924,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 							{/* Rules Section */}
 							<div>
-								<h3 className="text-base font-medium mb-4">
-									{t("dashboard.club.events.create.rules")}
-								</h3>
+								<h3 className="text-base font-medium mb-4">{t("Rules")}</h3>
 								<FormField
 									control={form.control}
 									name="ruleIds"
@@ -983,19 +932,19 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										return (
 											<FormItem>
 												<FormDescription>
-													{t("dashboard.club.events.create.rulesDescription")}
+													{t("Select the rules that will apply to this event.")}
 												</FormDescription>
 												<FormControl>
 													<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 														{/* TODO: Hot reload rules when they're added. */}
 														{props.rules?.length === 0 && (
 															<p className="text-muted-foreground">
-																{t("dashboard.club.events.create.noRules")}{" "}
+																{t("This club has no rules.")}{" "}
 																<Link
 																	className="text-foreground"
 																	href={`/dashboard/${clubId}/events/rules`}
 																>
-																	{t("dashboard.club.events.create.createRule")}.
+																	{t("Add rules")}.
 																</Link>
 															</p>
 														)}
@@ -1029,13 +978,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																				new Date(rule.createdAt),
 																				new Date(),
 																			) === 0
-																				? t(
-																						"dashboard.club.events.create.changedToday",
-																					)
-																				: t(
-																						"dashboard.club.events.create.changedAgo",
-																						{
-																							time: Math.abs(
+																				? t("Changed today")
+																				: t("Changed {time} day/s ago", {
+																						time: String(
+																							Math.abs(
 																								differenceInDays(
 																									new Date(
 																										rule.createdAt,
@@ -1043,8 +989,8 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																									new Date(),
 																								),
 																							),
-																						},
-																					)}
+																						),
+																					})}
 																		</p>
 																	</div>
 																</div>
@@ -1074,9 +1020,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																	<p className="text-muted-foreground">
 																		{(selectedRule.description?.length ?? 0) > 0
 																			? selectedRule.description
-																			: t(
-																					"dashboard.club.events.create.noDescription",
-																				)}
+																			: t("No description")}
 																	</p>
 																</SheetHeader>
 																<div className="mt-6 flex-1 overflow-y-auto px-4">
@@ -1109,16 +1053,16 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						<AccordionTrigger className="py-4">
 							<div className="flex items-center gap-2">
 								<MapPin className="size-5" />
-								<span className="font-medium">
-									{t("dashboard.club.events.create.mapEditor")} (BETA)
-								</span>
+								<span className="font-medium">{t("Map editor")} (BETA)</span>
 							</div>
 						</AccordionTrigger>
 						<AccordionContent className="pb-4">
 							<div className="space-y-4">
 								<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 									<p className="text-sm text-muted-foreground">
-										{t("dashboard.club.events.create.mapDescription")}
+										{t(
+											"This is where you can edit your game map. Add points of interest, obstacles, and other important details.",
+										)}
 									</p>
 									<div className="flex gap-2">
 										<Button
@@ -1133,10 +1077,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											}}
 										>
 											<RotateCcw className="size-4" />
-											{t("common.actions.reset")}
+											{t("Reset")}
 										</Button>
 										<Button type="button" size="sm" onClick={() => setIsMapEditorOpen(true)}>
-											{t("common.actions.edit")}
+											{t("Edit")}
 										</Button>
 									</div>
 								</div>
@@ -1170,14 +1114,14 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						}}
 					>
 						<RotateCcw className="size-4" />
-						{t("common.actions.reset")}
+						{t("Reset")}
 					</Button>
 					<LoaderSubmitButton
 						isLoading={isLoading}
 						disabled={!isSlugValid && !!form.watch("slug")}
 						className="min-w-[200px]"
 					>
-						{props.event ? t("common.actions.save") : t("common.actions.create")}
+						{props.event ? t("Save") : t("Create")}
 					</LoaderSubmitButton>
 				</div>
 			</form>

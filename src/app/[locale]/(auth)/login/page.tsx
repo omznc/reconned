@@ -4,7 +4,7 @@ import { Button } from "@components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { SuccessContext } from "better-auth/react";
 import { Key } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -27,7 +27,7 @@ export default function LoginPage() {
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
-	const t = useTranslations();
+	const t = useExtracted();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 	const [email, setEmail] = useQueryState("email", {
 		defaultValue: "",
@@ -40,9 +40,9 @@ export default function LoginPage() {
 
 	// Login form schema with Zod
 	const loginSchema = z.object({
-		email: z.string().email(t("public.auth.invalidEmail")),
-		password: z.string().min(1, t("public.auth.passwordRequired")),
-		turnstileToken: z.string().min(1, t("public.auth.captchaError")),
+		email: z.string().email(t("Invalid email")),
+		password: z.string().min(1, t("Your password is required")),
+		turnstileToken: z.string().min(1, t("Captcha error")),
 	});
 
 	type LoginFormValues = z.infer<typeof loginSchema>;
@@ -100,10 +100,10 @@ export default function LoginPage() {
 				onSuccess: handleSuccessfulLogin,
 				onError: (ctx) => {
 					if (ctx.error.status === 403) {
-						toast.error(t("public.auth.unverified"));
+						toast.error(t("Your email has not been verified. "));
 					} else {
 						if (ctx.error.message === "Missing CAPTCHA response") {
-							toast.error(t("public.auth.captchaError"));
+							toast.error(t("Captcha error"));
 							router.refresh();
 						}
 						setIsError(true);
@@ -116,8 +116,8 @@ export default function LoginPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t("public.auth.login")}</CardTitle>
-				<CardDescription>{t("public.auth.loginDescription")}</CardDescription>
+				<CardTitle className="text-2xl">{t("Login")}</CardTitle>
+				<CardDescription>{t("Enter your email and password to join the world of airsoft.")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Form {...form}>
@@ -140,7 +140,7 @@ export default function LoginPage() {
 									</FormControl>
 									{!!email && (
 										<p className="text-sm text-gray-500">
-											{t("public.auth.emailAutofilled")}{" "}
+											{t("The email has been filled in automatically")}{" "}
 											{/* biome-ignore lint/a11y/useSemanticElements: Style stuff */}
 											<span
 												role="button"
@@ -150,7 +150,7 @@ export default function LoginPage() {
 													setEmail("");
 												}}
 											>
-												{t("public.auth.remove")}
+												{t("Remove")}
 											</span>
 										</p>
 									)}
@@ -165,7 +165,7 @@ export default function LoginPage() {
 							render={({ field }) => (
 								<FormItem>
 									<div className="flex items-center">
-										<Label htmlFor="password">{t("public.auth.password")}</Label>
+										<Label htmlFor="password">{t("Password")}</Label>
 										<Button
 											type="button"
 											onClick={async () => {
@@ -175,13 +175,15 @@ export default function LoginPage() {
 												setIsForgotPasswordLoading(true);
 												const email = form.getValues("email");
 												if (!email) {
-													toast.error(t("public.auth.forgotPasswordNoEmail"));
+													toast.error(
+														t("Enter your email to receive a password reset link."),
+													);
 													setIsForgotPasswordLoading(false);
 													return;
 												}
 
 												if (form.getFieldState("email").invalid) {
-													toast.error(t("public.auth.forgotPasswordWrongEmail"));
+													toast.error(t("The email is not valid."));
 													setIsForgotPasswordLoading(false);
 													return;
 												}
@@ -190,7 +192,7 @@ export default function LoginPage() {
 													email,
 													redirectTo: "/reset-password",
 												});
-												toast.success(t("public.auth.forgotPasswordSuccess"));
+												toast.success(t("A password reset link has been sent to your email."));
 												setIsForgotPasswordLoading(false);
 											}}
 											variant="ghost"
@@ -198,8 +200,8 @@ export default function LoginPage() {
 											disabled={isLoading || isForgotPasswordLoading}
 										>
 											{isForgotPasswordLoading
-												? t("public.auth.loading")
-												: t("public.auth.forgotPassword")}
+												? t("Just a moment...")
+												: t("Forgot your password?")}
 										</Button>
 									</div>
 									<FormControl>
@@ -215,7 +217,7 @@ export default function LoginPage() {
 							)}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("public.auth.invalidData")}</p>}
+						{isError && <p className="text-red-500 -mb-2">{t("The data entered is incorrect.")}</p>}
 
 						<TurnstileWidget
 							ref={turnstileRef}
@@ -233,10 +235,10 @@ export default function LoginPage() {
 								"mb-4": lastMethod === "email",
 							})}
 						>
-							{t("public.auth.login")}
+							{t("Login")}
 							{lastMethod === "email" && (
 								<span className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold">
-									{t("public.auth.lastUsed")}
+									{t("Last used")}
 								</span>
 							)}
 						</LoaderSubmitButton>
@@ -273,12 +275,12 @@ export default function LoginPage() {
 					</form>
 				</Form>
 				<div className="mt-8 text-center text-sm">
-					{t("public.auth.noAccountQuestion")}{" "}
+					{t("Don't have an account?")}{" "}
 					<Link
 						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
 						className="underline"
 					>
-						{t("public.auth.register")}
+						{t("Register")}
 					</Link>
 				</div>
 			</CardContent>

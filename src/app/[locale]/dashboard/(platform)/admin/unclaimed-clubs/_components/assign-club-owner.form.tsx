@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown, LoaderIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { assignClubOwner } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
@@ -21,7 +21,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 	const [users, setUsers] = useState<Array<{ id: string; name: string; email: string; callsign: string | null }>>([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
-	const t = useTranslations();
+	const t = useExtracted();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -48,7 +48,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 
 	const handleAssign = async () => {
 		if (!selectedUserId) {
-			toast.error(t("dashboard.admin.unclaimedClubs.selectUser"));
+			toast.error(t("Select a user"));
 			return;
 		}
 
@@ -60,7 +60,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 			});
 
 			if (result?.data?.success) {
-				toast.success(t("dashboard.admin.unclaimedClubs.assignedSuccess"));
+				toast.success(t("Club owner assigned successfully"));
 				const params = new URLSearchParams(window.location.search);
 				params.delete("clubId");
 				router.replace(`?${params.toString()}`);
@@ -68,7 +68,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 				throw new ActionError();
 			}
 		} catch {
-			toast.error(t("dashboard.admin.unclaimedClubs.assignedError"));
+			toast.error(t("Failed to assign club owner"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -80,7 +80,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 		<div className="space-y-4">
 			<div className="space-y-2">
 				<label htmlFor="assign-club-owner-select" className="text-sm font-medium">
-					{t("dashboard.admin.unclaimedClubs.assignOwner")}
+					{t("Assign club owner")}
 				</label>
 				<Popover open={open} onOpenChange={setOpen}>
 					<PopoverTrigger asChild>
@@ -93,19 +93,19 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 						>
 							{selectedUser
 								? `${selectedUser.name}${selectedUser.callsign ? ` (${selectedUser.callsign})` : ""}`
-								: t("dashboard.admin.unclaimedClubs.selectUser")}
+								: t("Select a user")}
 							<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="w-full p-0" align="start">
 						<Command shouldFilter={false}>
 							<CommandInput
-								placeholder={t("dashboard.admin.unclaimedClubs.searchUsers")}
+								placeholder={t("Search users...")}
 								value={searchQuery}
 								onValueChange={setSearchQuery}
 							/>
 							<CommandList>
-								<CommandEmpty>{t("dashboard.admin.unclaimedClubs.noUsersFound")}</CommandEmpty>
+								<CommandEmpty>{t("No users found.")}</CommandEmpty>
 								<CommandGroup>
 									{users.map((user) => (
 										<CommandItem
@@ -137,7 +137,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 			</div>
 			<Button onClick={handleAssign} disabled={isLoading || !selectedUserId}>
 				{isLoading && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
-				{t("dashboard.admin.unclaimedClubs.assign")}
+				{t("Assign owner")}
 			</Button>
 		</div>
 	);

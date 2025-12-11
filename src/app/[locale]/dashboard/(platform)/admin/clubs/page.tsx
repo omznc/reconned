@@ -1,5 +1,5 @@
 import type { Prisma } from "@generated/client";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { prisma } from "@/lib/prisma";
@@ -74,13 +74,13 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 }
 
 export default async function ClubsPage(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const params = await props.params;
 
 	return (
 		<>
 			<div>
-				<h3 className="text-lg font-semibold">{t("dashboard.admin.clubs.allClubs")}</h3>
+				<h3 className="text-lg font-semibold">{t("All clubs")}</h3>
 			</div>
 			<Suspense key={JSON.stringify(params)} fallback={<GenericDataTableSkeleton />}>
 				<ClubsPageFetcher {...props} />

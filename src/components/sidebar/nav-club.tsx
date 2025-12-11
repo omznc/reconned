@@ -1,7 +1,7 @@
 "use client";
 
 import type { User } from "better-auth";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { getClubNavigationItems } from "@/components/sidebar/navigation-items";
 import { renderCollapsedItem, renderExpandedItem } from "@/components/sidebar/utils";
@@ -16,7 +16,7 @@ export function NavClub({ user }: NavClubProps) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const { clubId } = useCurrentClub();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	if (!clubId) {
 		return null;
@@ -27,7 +27,7 @@ export function NavClub({ user }: NavClubProps) {
 
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>{t("components.sidebar.myClub")}</SidebarGroupLabel>
+			<SidebarGroupLabel>{t("My club")}</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) =>
 					sidebarOpen || isMobile

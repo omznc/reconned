@@ -1,7 +1,7 @@
 "use client";
 
 import { Globe } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -21,7 +21,7 @@ interface ClubWebsiteButtonProps {
 }
 
 export function ClubWebsiteButton({ website, isVerified = false }: ClubWebsiteButtonProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const formatWebsiteDisplay = (url: string) => {
 		try {
@@ -67,16 +67,14 @@ export function ClubWebsiteButton({ website, isVerified = false }: ClubWebsiteBu
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>{t("components.clubOverview.leavingReconned")}</AlertDialogTitle>
+					<AlertDialogTitle>{t("You're leaving RECONNED")}</AlertDialogTitle>
 					<AlertDialogDescription>
-						{t("components.clubOverview.leavingReconnedDescription")}
+						{t("You're about to visit an external website. Are you sure you want to continue?")}
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>{t("components.clubOverview.cancel")}</AlertDialogCancel>
-					<AlertDialogAction onClick={handleContinue}>
-						{t("components.clubOverview.continue")}
-					</AlertDialogAction>
+					<AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
+					<AlertDialogAction onClick={handleContinue}>{t("Continue")}</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

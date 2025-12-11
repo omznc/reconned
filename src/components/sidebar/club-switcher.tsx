@@ -4,7 +4,7 @@ import type { Club } from "@generated/client";
 import { ChevronsUpDown, Plus, Square } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useEffect, useMemo } from "react";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 	const router = useRouter();
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
-	const t = useTranslations();
+	const t = useExtracted();
 	const sidebar = useSidebar();
 
 	const activeClub = useMemo(() => clubs.find((club) => club.id === params.clubId), [clubs, params.clubId, clubId]);
@@ -85,7 +85,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 		return (
 			<Link href="/dashboard/add-club" className="w-full">
 				<Button variant="default" className="w-full">
-					{sidebar.open ? t("components.sidebar.createClub") : "+"}
+					{sidebar.open ? t("Add a Club") : "+"}
 				</Button>
 			</Link>
 		);
@@ -120,19 +120,13 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 										<div className="grid flex-1 text-left text-sm leading-tight">
 											<span className="truncate font-semibold">{selectedClub?.name}</span>
 											<span className="truncate text-xs fade-in">
-												{user?.managedClubs?.includes(clubId)
-													? t("components.sidebar.manager")
-													: t("components.sidebar.member")}
+												{user?.managedClubs?.includes(clubId) ? t("Manager") : t("Member")}
 											</span>
 										</div>
 									) : (
 										<div className="grid flex-1 text-left text-sm leading-tight">
-											<span className="truncate fade-in font-semibold">
-												{t("components.sidebar.clubs")}
-											</span>
-											<span className="truncate fade-in text-xs">
-												{t("components.sidebar.selectClub")}
-											</span>
+											<span className="truncate fade-in font-semibold">{t("Clubs")}</span>
+											<span className="truncate fade-in text-xs">{t("Select a club")}</span>
 										</div>
 									)}
 								</>
@@ -142,12 +136,8 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 										<Square className="size-4" />
 									</div>
 									<div className="grid flex-1 text-left text-sm leading-tight">
-										<span className="truncate fade-in font-semibold">
-											{t("components.sidebar.clubs")}
-										</span>
-										<span className="truncate fade-in text-xs">
-											{t("components.sidebar.selectClub")}
-										</span>
+										<span className="truncate fade-in font-semibold">{t("Clubs")}</span>
+										<span className="truncate fade-in text-xs">{t("Select a club")}</span>
 									</div>
 								</>
 							)}
@@ -160,9 +150,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						side="bottom"
 						sideOffset={4}
 					>
-						<DropdownMenuLabel className="text-xs text-muted-foreground">
-							{t("components.sidebar.clubs")}
-						</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-xs text-muted-foreground">{t("Clubs")}</DropdownMenuLabel>
 						{clubs.map((club) => (
 							<DropdownMenuItem
 								key={club.id}
@@ -188,7 +176,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 						))}
 						{clubs.length > 1 && (
 							<DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-								{t("components.sidebar.shiftHint")}
+								{t("You can use shift + up and down keys to move between clubs.")}
 							</DropdownMenuLabel>
 						)}
 						<DropdownMenuSeparator />
@@ -197,9 +185,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 								<div className="flex size-6 items-center justify-center rounded-md border bg-background">
 									<Plus className="size-4" />
 								</div>
-								<div className="font-medium text-muted-foreground">
-									{t("components.sidebar.addClub")}
-								</div>
+								<div className="font-medium text-muted-foreground">{t("Add a club")}</div>
 							</DropdownMenuItem>
 						</Link>
 					</DropdownMenuContent>

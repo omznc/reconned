@@ -2,7 +2,7 @@
 
 import { Hash } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import DeleteClubPhoto1 from "@/../public/help/delete-club-photo-1.png";
@@ -12,39 +12,39 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 export default function Page() {
-	const t = useTranslations();
+	const t = useExtracted();
 	return (
 		<>
 			<div className="mb-6">
-				<h3 className="text-lg font-semibold">{t("dashboard.help.title")}</h3>
+				<h3 className="text-lg font-semibold">{t("Help")}</h3>
 			</div>
 			<Accordion type="single" collapsible className="space-y-4">
-				<HelpItem title={t("dashboard.help.googleMaps.title")} id="google-maps">
+				<HelpItem title={t("How to add a Google Maps link to an event")} id="google-maps">
 					<div className="space-y-4 text-muted-foreground">
 						<ol className="pl-4 space-y-2 list-disc">
-							<li>{t("dashboard.help.googleMaps.steps.step1")}</li>
-							<li>{t("dashboard.help.googleMaps.steps.step2")}</li>
-							<li>{t("dashboard.help.googleMaps.steps.step3")}</li>
-							<li>{t("dashboard.help.googleMaps.steps.step4")}</li>
+							<li>{t("Open Google Maps and find the desired location")}</li>
+							<li>{t('Click the "Share" button')}</li>
+							<li>{t('In the share dialog, select the "Embed a map" tab')}</li>
+							<li>{t("Copy the entire link")}</li>
 							<Image
 								width={IMAGE_SIZES.MEDIUM}
 								height={IMAGE_SIZES.MEDIUM}
 								src={GoogleMap1Image}
-								alt={t("dashboard.help.googleMaps.shareDialog")}
+								alt={t("Google Maps share dialog")}
 								className="w-full border md:w-1/2 dark:invert"
 							/>
-							<li>{t("dashboard.help.googleMaps.steps.step5")}</li>
+							<li>{t("Paste the copied link into the Google Maps field on the event creation form")}</li>
 						</ol>
 					</div>
 				</HelpItem>
 
-				<HelpItem title={t("dashboard.help.deleteClub.title")} id="delete-club">
+				<HelpItem title={t("How to delete a club")} id="delete-club">
 					<div className="space-y-4 text-muted-foreground">
-						<p>{t("dashboard.help.deleteClub.description")}</p>
+						<p>{t("To delete a club, follow these steps:")}</p>
 						<ol className="pl-4 space-y-4 list-decimal">
-							<li>{t("dashboard.help.deleteClub.steps.step1")}</li>
-							<li>{t("dashboard.help.deleteClub.steps.step2")}</li>
-							<li>{t("dashboard.help.deleteClub.steps.step3")}</li>
+							<li>{t("Select the club you want to delete from the sidebar")}</li>
+							<li>{t('Click on "Club" in the menu')}</li>
+							<li>{t('Click on "Information" in the submenu')}</li>
 							<Image
 								width={IMAGE_SIZES.MEDIUM}
 								height={IMAGE_SIZES.MEDIUM}
@@ -52,7 +52,11 @@ export default function Page() {
 								alt="Navigation to club information page"
 								className="w-full border md:w-2/3"
 							/>
-							<li>{t("dashboard.help.deleteClub.steps.step4")}</li>
+							<li>
+								{t(
+									'On the club information page, find and click the "Delete the club" button in the top right corner',
+								)}
+							</li>
 							<Image
 								width={IMAGE_SIZES.MEDIUM}
 								height={IMAGE_SIZES.MEDIUM}
@@ -61,7 +65,11 @@ export default function Page() {
 								className="w-full border md:w-2/3"
 							/>
 						</ol>
-						<p className="mt-4 text-sm italic">{t("dashboard.help.deleteClub.notes")}</p>
+						<p className="mt-4 text-sm italic">
+							{t(
+								"Note: Deleting a club is a permanent action and cannot be undone. All events and memberships related to the club will also be deleted.",
+							)}
+						</p>
 					</div>
 				</HelpItem>
 			</Accordion>

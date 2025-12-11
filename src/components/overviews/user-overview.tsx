@@ -2,7 +2,7 @@ import type { Club, Event, User } from "@generated/client";
 import { format } from "date-fns";
 import { Globe, MapPin } from "lucide-react";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +27,7 @@ interface UserOverviewProps {
 }
 
 export async function UserOverview({ user }: UserOverviewProps) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const [analyticsId, analyticsSlug] = await Promise.all([
 		getPageViews(`/users/${user.id}`),
 		getPageViews(`/users/${user.slug}`),
@@ -105,16 +105,16 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			{/* New Additional User Information Card */}
 			{/* <Card>
                 <CardHeader>
-                    <CardTitle>{t("components.userOverview.additionalInfo.title")}</CardTitle>
+                    <CardTitle>{t("Additional information")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-2">
-                        <li>{t("components.userOverview.email")}: {user.email}</li>
+                        <li>{t("Email")}: {user.email}</li>
                         {user.location && (
-                            <li>{t("components.userOverview.location")}: {user.location}</li>
+                            <li>{t("Location")}: {user.location}</li>
                         )}
                         {user.phone && !user.isPrivatePhone && (
-                            <li>{t("components.userOverview.phone")}: {user.phone}</li>
+                            <li>{t("Phone")}: {user.phone}</li>
                         )}
                     </ul>
                 </CardContent>
@@ -122,13 +122,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			<div className="flex flex-wrap gap-2">
 				{shouldShowStats && visitors > 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{t("components.userOverview.views", { count: visitors })}
+						{t("{count} view/s", { count: String(visitors) })}
 					</Badge>
 				)}
 				{user.clubMembership.length === 0 && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{t("components.userOverview.freelancer")}
-					</Badge>
+					<Badge className="md:grow-0 grow flex items-center gap-1">{t("Freelancer")}</Badge>
 				)}
 				{user.website && (
 					<Link href={user.website} target="_blank" rel="noopener noreferrer" className="md:grow-0 grow">
@@ -154,11 +152,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
 					<CardHeader>
-						<CardTitle>{t("components.userOverview.clubs.title")}</CardTitle>
+						<CardTitle>{t("Clubs")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{user.clubMembership.length === 0 ? (
-							<p className="text-muted-foreground">{t("components.userOverview.clubs.noClubs")}</p>
+							<p className="text-muted-foreground">{t("Not a member of any club")}</p>
 						) : (
 							<ul className="space-y-4">
 								{user.clubMembership.map((membership) => (
@@ -193,13 +191,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>{t("components.userOverview.upcomingEvents.title")}</CardTitle>
+						<CardTitle>{t("Upcoming events")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{futureEvents.length === 0 ? (
-							<p className="text-muted-foreground">
-								{t("components.userOverview.upcomingEvents.noEvents")}
-							</p>
+							<p className="text-muted-foreground">{t("There are no upcoming matches")}</p>
 						) : (
 							<ul className="space-y-2">
 								{futureEvents.map((reg) => (
@@ -219,11 +215,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>{t("components.userOverview.pastEvents.title")}</CardTitle>
+						<CardTitle>{t("Previous events")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						{pastEvents.length === 0 ? (
-							<p className="text-muted-foreground">{t("components.userOverview.pastEvents.noEvents")}</p>
+							<p className="text-muted-foreground">{t("No previous events")}</p>
 						) : (
 							<ul className="space-y-2">
 								{pastEvents.map((reg) => (

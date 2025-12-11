@@ -1,6 +1,6 @@
 import { Calendar, Shield, Users } from "lucide-react";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import { Suspense } from "react";
 import type { SearchResultsPage, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
@@ -161,7 +161,7 @@ async function SearchResults({
 		prisma.event.count({ where: eventWhere }),
 	]);
 
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const locale = await getLocale();
 
 	// Determine the first non-empty tab
@@ -186,21 +186,23 @@ async function SearchResults({
 				<TabsList className="grid w-full grid-cols-3 mb-8">
 					<TabsTrigger value="clubs" className="text-xs flex gap-2">
 						<Shield className="h-4 w-4 hidden md:block" />
-						{t("public.search.clubs")} ({clubsTotal})
+						{t("Clubs")} ({clubsTotal})
 					</TabsTrigger>
 					<TabsTrigger value="users" className="text-xs flex gap-2">
 						<Users className="h-4 w-4 hidden md:block" />
-						{t("public.search.users")} ({usersTotal})
+						{t("Players")} ({usersTotal})
 					</TabsTrigger>
 					<TabsTrigger value="events" className="text-xs flex gap-2">
 						<Calendar className="h-4 w-4 hidden md:block" />
-						{t("public.search.events")} ({eventsTotal})
+						{t("Events")} ({eventsTotal})
 					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="clubs" className="grid gap-4">
 					{clubs.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">{t("public.search.noResults")}</div>
+						<div className="text-center text-muted-foreground py-12">
+							{t("Nothing was found matching that search")}
+						</div>
 					) : (
 						<>
 							{clubs.map((club) => (
@@ -215,9 +217,7 @@ async function SearchResults({
 									description={club.description}
 									href={`/clubs/${club.slug ?? club.id}`}
 									meta={`${club._count.members} ${
-										club._count.members === 1
-											? t("public.search.member")
-											: t("public.search.members")
+										club._count.members === 1 ? t("member") : t("members")
 									}`}
 									type="club"
 								/>
@@ -229,7 +229,9 @@ async function SearchResults({
 
 				<TabsContent value="users" className="grid gap-4">
 					{users.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">{t("public.search.noResults")}</div>
+						<div className="text-center text-muted-foreground py-12">
+							{t("Nothing was found matching that search")}
+						</div>
 					) : (
 						<>
 							{users.map((user) => (
@@ -260,7 +262,9 @@ async function SearchResults({
 
 				<TabsContent value="events" className="grid gap-4">
 					{events.length === 0 ? (
-						<div className="text-center text-muted-foreground py-12">{t("public.search.noResults")}</div>
+						<div className="text-center text-muted-foreground py-12">
+							{t("Nothing was found matching that search")}
+						</div>
 					) : (
 						<>
 							{events.map((event) => (
@@ -272,7 +276,7 @@ async function SearchResults({
 									href={`/events/${event.slug ?? event.id}`}
 									badges={[
 										event.club.name,
-										event.isPrivate ? t("public.search.private") : t("public.search.public"),
+										event.isPrivate ? t("Private") : t("Public"),
 										event.dateStart.toLocaleDateString(locale, {
 											year: "numeric",
 											month: "long",
@@ -294,7 +298,7 @@ async function SearchResults({
 
 export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 	const [{ q, tab, clubsPage, usersPage, eventsPage }, locale] = await Promise.all([props.searchParams, getLocale()]);
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	const parsePageParam = (value?: string | string[]) => {
 		const rawValue = Array.isArray(value) ? value[0] : value;
@@ -313,8 +317,11 @@ export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 		"@context": "https://schema.org",
 		"@type": "SearchResultsPage",
 		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-		name: t("public.search.metadata.title", { query: q }),
-		description: t("public.search.metadata.description", { query: q }),
+		name: t("Search for {query} - RECONNED", { query: q }),
+		description: t(
+			"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+			{ query: q },
+		),
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
 		mainEntity: {
 			"@type": "WebSite",
@@ -344,17 +351,15 @@ export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 		<div className="container max-w-4xl py-8 space-y-8 px-4">
 			<JsonLdScript data={searchSchema} />
 			<div>
-				<h1 className="text-4xl font-bold mb-2">{t("public.search.title")}</h1>
-				<p className="text-muted-foreground">{t("public.search.description")}</p>
+				<h1 className="text-4xl font-bold mb-2">{t("Search")}</h1>
+				<p className="text-muted-foreground">{t("Find clubs, players, and events - all in one place")}</p>
 			</div>
 
 			<div className="w-full">
 				<Search />
 			</div>
 
-			<Suspense
-				fallback={<div className="text-center text-muted-foreground py-12">{t("public.search.loading")}</div>}
-			>
+			<Suspense fallback={<div className="text-center text-muted-foreground py-12">{t("Just a moment...")}</div>}>
 				<SearchResults
 					query={q}
 					tab={tab}
@@ -369,30 +374,41 @@ export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 
 export async function generateMetadata(props: PageProps<"/[locale]/search">): Promise<Metadata> {
 	const [{ q }, locale] = await Promise.all([props.searchParams, getLocale()]);
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	const path = `/search${q ? `?q=${encodeURIComponent(q)}` : ""}`;
 
 	return {
-		title: t("public.search.metadata.title", {
+		title: t("Search for {query} - RECONNED", {
 			query: q,
 		}),
-		description: t("public.search.metadata.description", {
-			query: q,
-		}),
-		keywords: t("public.search.metadata.keywords")
+		description: t(
+			"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+			{
+				query: q,
+			},
+		),
+		keywords: t(
+			"search airsoft, find airsoft clubs, find airsoft players, find airsoft events, airsoft search, airsoft directory, airsoft community search",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("public.search.metadata.title", { query: q }),
-			description: t("public.search.metadata.description", { query: q }),
+			title: t("Search for {query} - RECONNED", { query: q }),
+			description: t(
+				"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				{ query: q },
+			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("public.search.metadata.title", { query: q }),
-			description: t("public.search.metadata.description", { query: q }),
+			title: t("Search for {query} - RECONNED", { query: q }),
+			description: t(
+				"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				{ query: q },
+			),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),

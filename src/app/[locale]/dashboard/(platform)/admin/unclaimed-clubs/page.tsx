@@ -1,6 +1,6 @@
 import type { Prisma } from "@generated/client";
 import { Plus } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
@@ -84,16 +84,16 @@ export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dash
 
 export default async function UnclaimedClubsPage(props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs">) {
 	const params = await props.params;
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	return (
 		<>
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-lg font-semibold">{t("dashboard.admin.unclaimedClubs.title")}</h3>
+				<h3 className="text-lg font-semibold">{t("Unclaimed clubs")}</h3>
 				<Button asChild>
 					<Link href="/dashboard/admin/unclaimed-clubs/create">
 						<Plus className="size-4 mr-2" />
-						{t("dashboard.admin.unclaimedClubs.create")}
+						{t("Create unclaimed club")}
 					</Link>
 				</Button>
 			</div>

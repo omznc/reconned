@@ -3,7 +3,7 @@ import { bs } from "date-fns/locale";
 import { CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { ItemList, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
-	const [user, t, locale] = await Promise.all([isAuthenticated(), getTranslations(), getLocale()]);
+	const [user, t, locale] = await Promise.all([isAuthenticated(), getExtracted(), getLocale()]);
 	const upcomingEvents = await prisma.event.findMany({
 		where: {
 			dateStart: {
@@ -60,8 +60,10 @@ export default async function Page() {
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",
 		"@type": "ItemList",
-		name: t("public.events.metadata.title"),
-		description: t("public.events.metadata.description"),
+		name: t("Airsoft events - RECONNED"),
+		description: t(
+			"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+		),
 		numberOfItems: upcomingEvents.length,
 		itemListElement: upcomingEvents.map((event, index) => ({
 			"@type": "ListItem",
@@ -111,9 +113,11 @@ export default async function Page() {
 	return (
 		<div className="flex flex-col gap-4 max-w-[1200px] py-8 px-4">
 			<JsonLdScript data={itemListSchema} />
-			<h1 className="text-xl font-bold">{t("public.events.title")}</h1>
+			<h1 className="text-xl font-bold">{t("Upcoming events")}</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{upcomingEvents.length === 0 && <div className="text-muted-foreground">{t("public.events.none")}</div>}
+				{upcomingEvents.length === 0 && (
+					<div className="text-muted-foreground">{t("There are no upcomig events")}</div>
+				)}
 				{upcomingEvents.map((event) => (
 					<Card key={event.id} className="flex flex-col">
 						<CardHeader className="p-0">
@@ -148,39 +152,25 @@ export default async function Page() {
 							<div className="flex items-center">
 								<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
 								<span>
-									{event.costPerPerson.toFixed(2)}KM {t("public.events.costPerPerson")}
+									{event.costPerPerson.toFixed(2)}KM {t("per person")}
 								</span>
 							</div>
 							<div className="flex flex-wrap gap-2 my-4">
 								<Badge className="grow justify-center">
-									{event.allowFreelancers
-										? t("public.events.allowFreelancers")
-										: t("public.events.onlyClubs")}
+									{event.allowFreelancers ? t("Freelancer-friendly") : t("No freelancers")}
 								</Badge>
-								{event.hasBreakfast && (
-									<Badge className="grow justify-center">{t("common.words.breakfast")}</Badge>
-								)}
-								{event.hasLunch && (
-									<Badge className="flex-growjustify-center ">{t("common.words.lunch")}</Badge>
-								)}
-								{event.hasDinner && (
-									<Badge className="grow justify-center ">{t("common.words.dinner")}</Badge>
-								)}
-								{event.hasSnacks && (
-									<Badge className="grow justify-center">{t("common.words.snacks")}</Badge>
-								)}
-								{event.hasDrinks && (
-									<Badge className="grow justify-center">{t("common.words.drinks")}</Badge>
-								)}
-								{event.hasPrizes && (
-									<Badge className="grow justify-center ">{t("common.words.prizes")}</Badge>
-								)}
+								{event.hasBreakfast && <Badge className="grow justify-center">{t("Breakfast")}</Badge>}
+								{event.hasLunch && <Badge className="flex-growjustify-center ">{t("Lunch")}</Badge>}
+								{event.hasDinner && <Badge className="grow justify-center ">{t("Dinner")}</Badge>}
+								{event.hasSnacks && <Badge className="grow justify-center">{t("Snacks")}</Badge>}
+								{event.hasDrinks && <Badge className="grow justify-center">{t("Drinks")}</Badge>}
+								{event.hasPrizes && <Badge className="grow justify-center ">{t("Prizes")}</Badge>}
 							</div>
 						</CardContent>
 						<CardFooter className="flex justify-between items-center">
 							<div className="flex flex-col">
 								<div className="text-sm text-muted-foreground">
-									{t("public.events.starts")}{" "}
+									{t("Starts")}{" "}
 									{formatDistanceToNow(event.dateStart, {
 										addSuffix: true,
 										locale: bs,
@@ -188,7 +178,7 @@ export default async function Page() {
 								</div>
 								{event.dateRegistrationsClose && (
 									<div className="text-sm text-muted-foreground">
-										{t("public.events.registrationsOpen")}{" "}
+										{t("Registrations open for ")}{" "}
 										{formatDistanceToNow(event.dateRegistrationsClose, {
 											locale: bs,
 										})}
@@ -196,7 +186,7 @@ export default async function Page() {
 								)}
 							</div>
 							<Button asChild={true}>
-								<Link href={`/events/${event.id}`}>{t("public.events.view")}</Link>
+								<Link href={`/events/${event.id}`}>{t("View")}</Link>
 							</Button>
 						</CardFooter>
 					</Card>
@@ -207,24 +197,32 @@ export default async function Page() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	return {
-		title: t("public.events.metadata.title"),
-		description: t("public.events.metadata.description"),
-		keywords: t("public.events.metadata.keywords")
+		title: t("Airsoft events - RECONNED"),
+		description: t(
+			"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+		),
+		keywords: t(
+			"airsoft events, airsoft matches, airsoft tournaments, airsoft games, airsoft competitions, find airsoft event, join airsoft event, airsoft event BiH, airsoft event Bosnia, airsoft event registration",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("public.events.metadata.title"),
-			description: t("public.events.metadata.description"),
+			title: t("Airsoft events - RECONNED"),
+			description: t(
+				"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("public.events.metadata.title"),
-			description: t("public.events.metadata.description"),
+			title: t("Airsoft events - RECONNED"),
+			description: t(
+				"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),

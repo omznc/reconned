@@ -2,7 +2,7 @@
 
 import type { Event, EventRegistration, User } from "@generated/client";
 import { Check, Eye, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { toggleAttendance } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance.action";
@@ -33,7 +33,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const [optimisticRegistrations, setOptimisticRegistrations] = useState<Record<string, ExtendedEventRegistration>>(
 		{},
 	);
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const registrations = event.eventRegistration.map((reg) => ({
 		...reg,
@@ -83,7 +83,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				...prev,
 				[registration.id]: registration,
 			}));
-			toast.error(t("dashboard.club.events.attendenceTracking.error"));
+			toast.error(t("An error occurred while saving presence"));
 		} finally {
 			setIsLoading(null);
 		}
@@ -108,10 +108,11 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 								<HoverCard openDelay={100}>
 									<HoverCardTrigger asChild>
 										<p className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-											{t("others", {
-												count:
+											{t("+ {count} others", {
+												count: String(
 													registration.invitedUsers.length +
-													registration.invitedUsersNotOnApp.length,
+														registration.invitedUsersNotOnApp.length,
+												),
 											})}
 											<Eye className="h-4 w-4 inline" />
 										</p>
@@ -165,14 +166,14 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	return (
 		<div className="space-y-4 w-full max-w-3xl">
 			<Input
-				placeholder={t("dashboard.club.events.attendenceTracking.search")}
+				placeholder={t("Search participants...")}
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
 			/>
 			<div className="grid md:grid-cols-2 gap-4">
 				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">
-						{t("dashboard.club.events.attendenceTracking.registered")} ({notAttending.length})
+						{t("Registered")} ({notAttending.length})
 					</h2>
 					{notAttending.map((registration) => (
 						<RegistrationCard key={registration.id} registration={registration} />
@@ -180,7 +181,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				</div>
 				<div className="space-y-4 w-fit">
 					<h2 className="font-semibold">
-						{t("dashboard.club.events.attendenceTracking.attending")} ({attendees.length})
+						{t("Present")} ({attendees.length})
 					</h2>
 					{attendees.map((registration) => (
 						<RegistrationCard key={registration.id} registration={registration} />

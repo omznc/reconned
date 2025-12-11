@@ -12,7 +12,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import "react-image-crop/dist/ReactCrop.css";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 
 interface BannerCropDialogProps {
 	file: File | null;
@@ -29,7 +29,7 @@ export function BannerCropDialog({ file, onClose, onCrop }: BannerCropDialogProp
 		y: 5,
 	});
 	const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const onImageLoad = useCallback((img: HTMLImageElement) => {
 		setImageRef(img);
@@ -135,8 +135,10 @@ export function BannerCropDialog({ file, onClose, onCrop }: BannerCropDialogProp
 		<Dialog open={!!file} onOpenChange={onClose}>
 			<DialogContent className="max-w-[800px]">
 				<DialogHeader>
-					<DialogTitle>{t("dashboard.club.info.cropBannerTitle")}</DialogTitle>
-					<DialogDescription>{t("dashboard.club.info.cropBannerDescription")}</DialogDescription>
+					<DialogTitle>{t("Crop banner image")}</DialogTitle>
+					<DialogDescription>
+						{t("Adjust the crop area for your banner (3:1 ratio) and click save to apply changes")}
+					</DialogDescription>
 				</DialogHeader>
 				<div className="my-4 flex justify-center">
 					<div className="max-h-[500px] w-auto">
@@ -153,9 +155,9 @@ export function BannerCropDialog({ file, onClose, onCrop }: BannerCropDialogProp
 				</div>
 				<DialogFooter>
 					<Button variant="ghost" onClick={onClose}>
-						{t("common.actions.cancel")}
+						{t("Cancel")}
 					</Button>
-					<Button onClick={handleCrop}>{t("common.actions.save")}</Button>
+					<Button onClick={handleCrop}>{t("Save")}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

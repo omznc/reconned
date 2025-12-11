@@ -5,7 +5,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, captcha, lastLoginMethod, oneTap, twoFactor } from "better-auth/plugins";
 import { emailHarmony } from "better-auth-harmony";
 import { headers } from "next/headers";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { cache } from "react";
 import { sendEmailVerificationAction } from "@/app/[locale]/(auth)/_actions/send-email-verification.action";
 import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
@@ -36,10 +36,10 @@ export const auth = betterAuth({
 		enabled: true,
 		requireEmailVerification: true,
 		sendResetPassword: async ({ user, url }) => {
-			const t = await getTranslations("auth");
+			const t = await getExtracted();
 			await sendEmail({
 				to: user.email,
-				subject: t("resetPasswordSubject"),
+				subject: t("Reset your password"),
 				html: await render(<PasswordReset userName={user.name} resetUrl={url} />, {
 					pretty: true,
 				}),
@@ -185,7 +185,7 @@ export const auth = betterAuth({
 			},
 			create: {
 				after: async (user) => {
-					const t = await getTranslations("auth");
+					const t = await getExtracted();
 
 					if (env.NTFY_ENDPOINT) {
 						await fetch(env.NTFY_ENDPOINT, {
@@ -194,7 +194,7 @@ export const auth = betterAuth({
 								"Content-Type": "application/json",
 							},
 							body: JSON.stringify({
-								title: t("newUserSignedUp"),
+								title: t("A new user signed up"),
 								message: `User ${user.name} (${user.email}) signed up.`,
 							}),
 						});

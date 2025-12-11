@@ -2,7 +2,7 @@ import type { ClubRule, Event } from "@generated/client";
 import { isAfter, isBefore } from "date-fns";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
 import { BadgeSoon } from "@/components/badge-soon";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
@@ -28,7 +28,7 @@ interface EventOverviewProps {
 }
 
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const user = await isAuthenticated();
 	const canEdit = user?.managedClubs.some((club) => club === clubId);
 	const [analyticsId, analyticsSlug] = await Promise.all([
@@ -80,7 +80,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 									href={`/dashboard/${clubId}/events/create?id=${event.id}`}
 								>
 									<Pencil className="size-4" />
-									{t("components.eventOverview.editEvent")}
+									{t("Edit event")}
 								</Link>
 							</Button>
 						)
@@ -91,13 +91,11 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 									{user && canApplyToEvent(event) ? (
 										<Link href={`/events/${event.id}/apply`}>
 											<Button variant="outline" size="sm" className="w-full md:w-auto">
-												{t("components.eventOverview.apply")} <BadgeSoon className="ml-2" />
+												{t("Login")} <BadgeSoon className="ml-2" />
 											</Button>
 										</Link>
 									) : user ? (
-										<p className="text-sm text-muted-foreground">
-											{t("components.eventOverview.registrationsClosed")}
-										</p>
+										<p className="text-sm text-muted-foreground">{t("Applications closed")}</p>
 									) : null}
 									<AddEventToCalendarButton event={event} />
 								</>
@@ -112,20 +110,20 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 					<div className="flex flex-wrap -mt-2 gap-2">
 						<Badge className="flex h-fit items-center gap-1">
 							<UserIcon className="size-4" />
-							{t("components.eventOverview.registeredCount", {
-								count: event._count?.eventRegistration,
+							{t("{count} registered", {
+								count: String(event._count?.eventRegistration),
 							})}
 						</Badge>
 						<Badge className="flex h-fit items-center gap-1">
 							{event.isPrivate ? (
 								<>
 									<EyeOff className="size-4" />
-									{t("components.eventOverview.privateEvent")}
+									{t("Private event")}
 								</>
 							) : (
 								<>
 									<Eye className="size-4" />
-									{t("components.eventOverview.publicEvent")}
+									{t("Public event")}
 								</>
 							)}
 						</Badge>
@@ -135,27 +133,27 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 								{event.location}
 							</Badge>
 						)}
-						<Badge className="h-fit">{t("components.eventOverview.views", { count: visitors })}</Badge>
+						<Badge className="h-fit">{t("{count} views", { count: String(visitors) })}</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.googleMapsLink && (
 						<div className="size-full flex flex-col gap-2">
-							<h2 className="text-xl font-semibold">{t("components.eventOverview.location")}</h2>
-							<LoadChildOnClick title={t("components.eventOverview.showLocation")}>
+							<h2 className="text-xl font-semibold">{t("Location")}</h2>
+							<LoadChildOnClick title={t("Show location")}>
 								<iframe
 									src={event.googleMapsLink}
 									loading="lazy"
 									referrerPolicy="no-referrer-when-downgrade"
 									className="w-full h-96 border rounded-md"
-									title={t("components.eventOverview.googleMapsTitle")}
+									title={t("Google Maps")}
 								/>
 							</LoadChildOnClick>
 						</div>
 					)}
 					{hasMap ? (
 						<div className="size-full flex flex-col gap-2">
-							<h2 className="text-xl font-semibold">{t("components.eventOverview.map")}</h2>
-							<LoadChildOnClick title={t("components.eventOverview.showEventMap")}>
+							<h2 className="text-xl font-semibold">{t("Map")}</h2>
+							<LoadChildOnClick title={t("Show match map")}>
 								<MapViewer data={mapSnapshot} height={800} />
 							</LoadChildOnClick>
 						</div>

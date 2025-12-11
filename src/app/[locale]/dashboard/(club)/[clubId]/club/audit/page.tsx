@@ -1,6 +1,6 @@
 import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
@@ -8,10 +8,10 @@ import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata() {
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	return {
-		title: t("dashboard.club.audit.pageTitle"),
+		title: t("Audit Log"),
 	};
 }
 
@@ -95,14 +95,14 @@ async function AuditLogsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubI
 }
 
 export default async function AuditLogsPage(props: PageProps<"/[locale]/dashboard/[clubId]/club/audit">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const [_, searchParams] = await Promise.all([props.params, props.searchParams]);
 
 	return (
 		<div className="space-y-6">
 			<div>
-				<h2 className="text-3xl font-bold tracking-tight">{t("dashboard.club.audit.pageTitle")}</h2>
-				<p className="text-muted-foreground">{t("dashboard.club.audit.pageDescription")}</p>
+				<h2 className="text-3xl font-bold tracking-tight">{t("Audit Log")}</h2>
+				<p className="text-muted-foreground">{t("View all actions performed in this club.")}</p>
 			</div>
 
 			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>

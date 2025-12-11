@@ -2,7 +2,7 @@
 
 import type { Club } from "@generated/client";
 import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { AssignClubOwnerForm } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/assign-club-owner.form.tsx";
 import {
 	Credenza,
@@ -23,7 +23,7 @@ interface UnclaimedClubsSheetProps {
 
 export function UnclaimedClubsSheet({ selectedClub }: UnclaimedClubsSheetProps) {
 	const router = useRouter();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const handleOpenChange = (open: boolean) => {
 		if (!open) {
@@ -40,22 +40,18 @@ export function UnclaimedClubsSheet({ selectedClub }: UnclaimedClubsSheetProps) 
 				</CredenzaHeader>
 				{!selectedClub && (
 					<div className="mt-4 space-y-4">
-						<p>{t("dashboard.admin.unclaimedClubs.notFound")}</p>
+						<p>{t("Club not found.")}</p>
 					</div>
 				)}
 				{selectedClub && (
 					<div className="mt-4 space-y-4">
 						<div className="space-y-2 text-sm">
 							<div>
-								<span className="text-muted-foreground">
-									{t("dashboard.admin.unclaimedClubs.createdAt")}:{" "}
-								</span>
+								<span className="text-muted-foreground">{t("Created at")}: </span>
 								{format(new Date(selectedClub.createdAt), "d. MMMM yyyy.")}
 							</div>
 							<div>
-								<span className="text-muted-foreground">
-									{t("dashboard.admin.unclaimedClubs.members")}:{" "}
-								</span>
+								<span className="text-muted-foreground">{t("Members")}: </span>
 								{selectedClub._count.members}
 							</div>
 						</div>

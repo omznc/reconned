@@ -4,7 +4,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import type { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ export function PasswordChangeForm({
 	isLoading: boolean;
 	setIsLoading: Dispatch<SetStateAction<boolean>>;
 }) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const changePasswordForm = useForm<z.infer<typeof passwordChangeSchema>>({
 		resolver: zodResolver(passwordChangeSchema),
 		defaultValues: {
@@ -43,22 +43,20 @@ export function PasswordChangeForm({
 					onError: (e) => {
 						setIsLoading(false);
 						if (e.error?.code === "INVALID_PASSWORD") {
-							toast.error(
-								t("dashboard.security.securitySettings.twoFactorDisablePrompt.invalidPassword"),
-							);
+							toast.error(t("Please enter the correct password"));
 							return;
 						}
-						toast.error(t("dashboard.security.passwordChange.error"));
+						toast.error(t("An error occurred while changing your password. "));
 					},
 					onSuccess: () => {
 						setIsLoading(false);
-						toast.success(t("dashboard.security.passwordChange.success"));
+						toast.success(t("Password successfully changed"));
 					},
 				},
 			);
 			changePasswordForm.reset();
 		} catch (_e) {
-			toast(t("dashboard.security.passwordChange.error"));
+			toast(t("An error occurred while changing your password. "));
 		} finally {
 			setIsLoading(false);
 		}
@@ -68,14 +66,14 @@ export function PasswordChangeForm({
 		<Form {...changePasswordForm}>
 			<form onSubmit={changePasswordForm.handleSubmit(onChangePasswordSubmit)} className="space-y-4 w-full">
 				<div>
-					<h3 className="text-lg font-semibold">{t("dashboard.security.passwordChange.title")}</h3>
+					<h3 className="text-lg font-semibold">{t("Change password")}</h3>
 				</div>
 				<FormField
 					control={changePasswordForm.control}
 					name="currentPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("dashboard.security.passwordChange.currentPassword")}</FormLabel>
+							<FormLabel>{t("Current password")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -88,7 +86,7 @@ export function PasswordChangeForm({
 					name="newPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("dashboard.security.passwordChange.newPassword")}</FormLabel>
+							<FormLabel>{t("New password")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -101,7 +99,7 @@ export function PasswordChangeForm({
 					name="confirmPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("dashboard.security.passwordChange.confirmPassword")}</FormLabel>
+							<FormLabel>{t("Confirm new password")}</FormLabel>
 							<FormControl>
 								<Input type="password" disabled={isLoading} {...field} />
 							</FormControl>
@@ -111,9 +109,7 @@ export function PasswordChangeForm({
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
 					<LockIcon className="w-4 h-4 mr-2" />
-					{isLoading
-						? t("dashboard.security.passwordChange.loading")
-						: t("dashboard.security.passwordChange.changePassword")}
+					{isLoading ? t("Just a moment...") : t("Change password")}
 				</Button>
 			</form>
 		</Form>

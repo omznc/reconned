@@ -1,7 +1,7 @@
 "use client";
 import type { User } from "better-auth";
 import { ChevronsUpDown, LogOut, UserCog } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import posthog from "posthog-js";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
@@ -23,7 +23,7 @@ import { authClient } from "@/lib/auth-client";
 
 export function UserSwitcher(props: { user: User }) {
 	const { isMobile } = useSidebar();
-	const t = useTranslations();
+	const t = useExtracted();
 	const router = useRouter();
 	const { user } = props;
 
@@ -73,7 +73,7 @@ export function UserSwitcher(props: { user: User }) {
 							</Link>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuLabel>{t("components.sidebar.personalization")}</DropdownMenuLabel>
+						<DropdownMenuLabel>{t("Personalization")}</DropdownMenuLabel>
 						<DropdownMenuItem asChild={true}>
 							<Button
 								variant="ghost"
@@ -82,7 +82,7 @@ export function UserSwitcher(props: { user: User }) {
 							>
 								<Link href="/dashboard/user/settings" className="cursor-pointer">
 									<UserCog className="h-[1.2rem] w-[1.2rem] transition-all" />
-									{t("components.sidebar.settings")}
+									{t("Settings")}
 								</Link>
 							</Button>
 						</DropdownMenuItem>
@@ -117,7 +117,7 @@ export function UserSwitcher(props: { user: User }) {
 								className="w-full items-center justify-start pl-4 cursor-pointer"
 							>
 								<LogOut className="w-4 h-4" />
-								{t("components.sidebar.logout")}
+								{t("Sign out")}
 							</Button>
 						</DropdownMenuItem>
 					</DropdownMenuContent>

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import {
   Sheet,
   SheetContent,
@@ -68,7 +68,7 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void;
 }) {
   const isMobile = useIsMobile();
-  const t = useTranslations();
+  const t = useExtracted();
   const [openMobile, setOpenMobile] = React.useState(false);
 
   // This is the internal state of the sidebar.
@@ -166,7 +166,7 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
-  const t = useTranslations();
+  const t = useExtracted();
 
   if (collapsible === "none") {
     return (
@@ -200,7 +200,7 @@ function Sidebar({
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>{t("components.sidebar.mobileToggle")}</SheetDescription>
+            <SheetDescription>{t("Displays the mobile sidebar.")}</SheetDescription>
           </SheetHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>

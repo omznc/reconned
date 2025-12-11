@@ -3,38 +3,38 @@
 import type { ClubRule, Event } from "@generated/client";
 import { AddToCalendarButton as CalendarButtonBase } from "add-to-calendar-button-react";
 import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 
 export default function AddEventToCalendarButton({ event }: { event: Event & { rules: ClubRule[] } }) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
 	const startDate = formatDate(event.dateStart);
 	let description = `${event.description}\n\n`;
 
 	if (event.googleMapsLink) {
-		description += `${t("components.addToCalendar.location")} ${event.googleMapsLink}\n\n`;
+		description += `${t("Location:")} ${event.googleMapsLink}\n\n`;
 	}
 
 	if (event.costPerPerson > 0) {
-		description += `${t("components.addToCalendar.cost", { amount: `${event.costPerPerson.toFixed(2)}` })}\n\n`;
+		description += `${t("Cost: {amount}", { amount: `${event.costPerPerson.toFixed(2)}` })}\n\n`;
 	}
 
 	const features = [
-		event.hasBreakfast && t("components.addToCalendar.features.breakfast"),
-		event.hasLunch && t("components.addToCalendar.features.lunch"),
-		event.hasDinner && t("components.addToCalendar.features.dinner"),
-		event.hasSnacks && t("components.addToCalendar.features.snacks"),
-		event.hasDrinks && t("components.addToCalendar.features.drinks"),
-		event.hasPrizes && t("components.addToCalendar.features.prizes"),
+		event.hasBreakfast && t("Breakfast"),
+		event.hasLunch && t("Lunch"),
+		event.hasDinner && t("Dinner"),
+		event.hasSnacks && t("Snacks"),
+		event.hasDrinks && t("Drinks"),
+		event.hasPrizes && t("Awards"),
 	].filter(Boolean);
 
 	if (features.length > 0) {
-		description += `${t("components.addToCalendar.sections.other")}: ${features.join(", ")}\n\n`;
+		description += `${t("The rest")}: ${features.join(", ")}\n\n`;
 	}
 
 	if (Array.isArray(event.rules) && event.rules.length > 0) {
-		description += `${t("components.addToCalendar.sections.rules")}:\n`;
+		description += `${t("Rules")}:\n`;
 		for (const rule of event.rules) {
 			if (rule?.name && rule?.description) {
 				description += `- ${rule?.name}: ${rule?.description}\n`;
@@ -44,7 +44,7 @@ export default function AddEventToCalendarButton({ event }: { event: Event & { r
 	}
 
 	if (event.gearRequirements.length > 0) {
-		description += `${t("components.addToCalendar.sections.gear")}:\n`;
+		description += `${t("Equipment")}:\n`;
 		for (const gear of event.gearRequirements) {
 			// @ts-expect-error
 			description += `- ${gear.name}: ${gear.description}\n`;
@@ -52,11 +52,11 @@ export default function AddEventToCalendarButton({ event }: { event: Event & { r
 	}
 
 	if (event.isPrivate) {
-		description += `\n${t("components.addToCalendar.sections.private")}\n`;
+		description += `\n${t("This is a private event for club members only.")}\n`;
 	}
 
 	if (event.allowFreelancers) {
-		description += `\n${t("components.addToCalendar.sections.freelancers")}\n`;
+		description += `\n${t("Freelancers are welcome to register for this meetup.")}\n`;
 	}
 	return (
 		<CalendarButtonBase
@@ -66,7 +66,7 @@ export default function AddEventToCalendarButton({ event }: { event: Event & { r
 			timeZone="Europe/Sarajevo"
 			location={event.location}
 			options={t("components.addToCalendar.calendarOptions")}
-			label={t("components.addToCalendar.addToCalendar")}
+			label={t("Add to calendar")}
 			hideBackground={true}
 			hideBranding={true}
 			size="2"

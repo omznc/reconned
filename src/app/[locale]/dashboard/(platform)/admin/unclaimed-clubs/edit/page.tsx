@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { EditClubForm } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/edit-club-form";
 import { isAuthenticated } from "@/lib/auth";
 import { getCountries } from "@/lib/cached-countries";
@@ -38,13 +38,13 @@ export default async function EditUnclaimedClubPage(
 		return notFound();
 	}
 
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	return (
 		<div className="space-y-4">
 			<div>
-				<h3 className="text-lg font-semibold">{t("dashboard.admin.unclaimedClubs.editTitle")}</h3>
-				<p className="text-muted-foreground">{t("dashboard.admin.unclaimedClubs.editDescription")}</p>
+				<h3 className="text-lg font-semibold">{t("Edit unclaimed club")}</h3>
+				<p className="text-muted-foreground">{t("Edit the information for this unclaimed club.")}</p>
 			</div>
 			<EditClubForm club={club} countries={countries} />
 		</div>

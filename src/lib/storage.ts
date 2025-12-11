@@ -1,7 +1,7 @@
 import { S3Client } from "bun";
 
 import { Logger } from "next-axiom";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { env } from "@/lib/env";
 import {
 	type FileValidationResult,
@@ -63,7 +63,7 @@ export interface SecureUploadResult {
  */
 export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<SecureUploadResult> => {
 	const { type, size, key, clubId, userId } = props;
-	const t = await getTranslations("errors.storage");
+	const t = await getExtracted();
 
 	// Basic validation
 	if (!(type && size && key)) {
@@ -72,7 +72,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			size,
 			key,
 		});
-		throw new ActionError(t("fileTypeSizeKeyRequired"));
+		throw new ActionError(t("File type, size, and key are required"));
 	}
 
 	if (!allowedFileTypes.includes(type)) {
@@ -80,7 +80,12 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			type,
 			allowedFileTypes,
 		});
-		throw new ActionError(t("unsupportedFileType", { type, allowedTypes: allowedFileTypes.join(", ") }));
+		throw new ActionError(
+			t("Unsupported file type: {type}. Allowed: {allowedTypes}", {
+				type,
+				allowedTypes: allowedFileTypes.join(", "),
+			}),
+		);
 	}
 
 	if (size > maxFileSize) {
@@ -88,14 +93,18 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			size,
 			maxFileSize,
 		});
-		throw new ActionError(t("fileSizeExceedsMaximum", { maxSize: Math.round(maxFileSize / 1024 / 1024) }));
+		throw new ActionError(
+			t("File size exceeds the maximum allowed size of {maxSize}MB", {
+				maxSize: String(Math.round(maxFileSize / 1024 / 1024)),
+			}),
+		);
 	}
 
 	// Check storage quotas if clubId provided
 	if (clubId) {
 		const clubQuota = await checkClubStorageQuota(clubId, size);
 		if (!clubQuota.allowed) {
-			throw new ActionError(clubQuota.error || t("clubStorageQuotaExceeded"));
+			throw new ActionError(clubQuota.error || t("Club storage quota exceeded"));
 		}
 	}
 
@@ -103,7 +112,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 	if (userId) {
 		const userQuota = await checkUserDailyQuota(userId, size);
 		if (!userQuota.allowed) {
-			throw new ActionError(userQuota.error || t("dailyUploadQuotaExceeded"));
+			throw new ActionError(userQuota.error || t("Daily upload quota exceeded"));
 		}
 	}
 
@@ -155,8 +164,8 @@ export const processFileForUpload = async (
 			expectedMimeType,
 			maxFileSize,
 		});
-		const t = await getTranslations("errors.storage");
-		throw new ActionError(validation.error || t("fileValidationFailed"));
+		const t = await getExtracted();
+		throw new ActionError(validation.error || t("File validation failed"));
 	}
 
 	let processedBuffer = buffer;

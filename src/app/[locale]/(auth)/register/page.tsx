@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,15 +26,15 @@ export default function RegisterPage() {
 		clearOnDefault: true,
 		shallow: true,
 	});
-	const t = useTranslations();
+	const t = useExtracted();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 	const lastMethod = authClient.getLastUsedLoginMethod();
 	// Register form schema with Zod
 	const registerSchema = z.object({
-		name: z.string().min(1, t("public.auth.nameRequired")),
-		email: z.string().email(t("public.auth.invalidEmail")),
-		password: z.string().min(8, t("public.auth.passwordTooShort")),
-		turnstileToken: z.string().min(1, t("public.auth.captchaError")),
+		name: z.string().min(1, t("Your name is required")),
+		email: z.string().email(t("Invalid email")),
+		password: z.string().min(8, t("That password is too short")),
+		turnstileToken: z.string().min(1, t("Captcha error")),
 	});
 
 	type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -86,16 +86,16 @@ export default function RegisterPage() {
 					}
 				},
 				onSuccess: () => {
-					toast.success(t("public.auth.registerSuccess"));
+					toast.success(t("You have successfully registered. Check your email to verify it."));
 					router.push("/login");
 					router.refresh();
 				},
 				onError: (ctx) => {
 					if (ctx.error.status === 403) {
-						toast.error(t("public.auth.unverified"));
+						toast.error(t("Your email has not been verified. "));
 					} else {
 						if (ctx.error.message === "Missing CAPTCHA response") {
-							toast.error(t("public.auth.captchaError"));
+							toast.error(t("Captcha error"));
 							router.refresh();
 						}
 						setIsError(true);
@@ -108,16 +108,18 @@ export default function RegisterPage() {
 	return (
 		<>
 			<CardHeader>
-				<CardTitle className="text-2xl">{t("public.auth.register")}</CardTitle>
+				<CardTitle className="text-2xl">{t("Register")}</CardTitle>
 				<CardDescription>
-					{t("public.auth.registerDescription")}{" "}
+					{t("Create your account and join the airsoft community.")}{" "}
 					<Accordion type="single" collapsible className="w-full border-b-none">
 						<AccordionItem value="item-1" className="border-b-none">
 							<AccordionTrigger className="border-b-none">
-								<span className="text-red-500">{t("public.auth.registerDescriptionTooltipTitle")}</span>
+								<span className="text-red-500">{t("Registering a club?")}</span>
 							</AccordionTrigger>
 							<AccordionContent>
-								{t("public.auth.registerDescriptionTooltipDescription")}
+								{t(
+									"If you want to add your club, register as yourself. After logging in, you will be able to add a club and be its owner.",
+								)}
 							</AccordionContent>
 						</AccordionItem>
 					</Accordion>
@@ -131,13 +133,13 @@ export default function RegisterPage() {
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="name">{t("public.auth.name")}</Label>
+									<Label htmlFor="name">{t("Name")}</Label>
 									<FormControl>
 										<Input
 											{...field}
 											id="name"
 											type="text"
-											placeholder={t("public.auth.name")}
+											placeholder={t("Name")}
 											autoComplete="name"
 										/>
 									</FormControl>
@@ -164,7 +166,7 @@ export default function RegisterPage() {
 									</FormControl>
 									{!!email && (
 										<p className="text-sm text-gray-500">
-											{t("public.auth.emailAutofilled")}{" "}
+											{t("The email has been filled in automatically")}{" "}
 											{/* biome-ignore lint/a11y/useSemanticElements: Style stuff */}
 											<span
 												role="button"
@@ -174,7 +176,7 @@ export default function RegisterPage() {
 													setEmail("");
 												}}
 											>
-												{t("public.auth.remove")}
+												{t("Remove")}
 											</span>
 										</p>
 									)}
@@ -188,13 +190,13 @@ export default function RegisterPage() {
 							name="password"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="password">{t("public.auth.password")}</Label>
+									<Label htmlFor="password">{t("Password")}</Label>
 									<FormControl>
 										<Input
 											{...field}
 											id="password"
 											type="password"
-											placeholder={t("public.auth.password")}
+											placeholder={t("Password")}
 											autoComplete="new-password"
 										/>
 									</FormControl>
@@ -212,17 +214,21 @@ export default function RegisterPage() {
 							}}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("public.auth.invalidDataOrUserExists")}</p>}
+						{isError && (
+							<p className="text-red-500 -mb-2">
+								{t("The entered data is incorrect or the user already exists.")}
+							</p>
+						)}
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
 							className="relative w-full plausible-event-name=register-button-click"
 							disabled={!form.formState.isValid}
 						>
-							{t("public.auth.register")}
+							{t("Register")}
 							{lastMethod === "email" && (
 								<span className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold">
-									{t("public.auth.lastUsed")}
+									{t("Last used")}
 								</span>
 							)}
 						</LoaderSubmitButton>
@@ -230,9 +236,9 @@ export default function RegisterPage() {
 					</form>
 				</Form>
 				<div className="mt-8 text-center text-sm">
-					{t("public.auth.haveAccountQuestion")}{" "}
+					{t("Already have an account?")}{" "}
 					<Link suppressHydrationWarning={true} href="/login" className="underline">
-						{t("public.auth.login")}
+						{t("Login")}
 					</Link>
 				</div>
 			</CardContent>

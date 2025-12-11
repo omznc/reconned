@@ -3,7 +3,7 @@
 import { format } from "date-fns";
 import { bs, enUS } from "date-fns/locale";
 import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import type { ChangeEvent, ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -90,7 +90,7 @@ export function GenericDataTable<T>({
 	totalPages,
 	tableConfig,
 }: GenericTableProps<T>) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const locale = useLocale();
 	const [search, setSearch] = useQueryState("search", { shallow: false });
 	const [page, setPage] = useQueryState("page", {
@@ -270,9 +270,7 @@ export function GenericDataTable<T>({
 							className={cn("shadow-none", isMobile && "w-full justify-center")}
 						>
 							<MoreHorizontal className="size-4" />
-							{isMobile && (
-								<span className="ml-2">{t("components.table.actions", { fallback: "Actions" })}</span>
-							)}
+							{isMobile && <span className="ml-2">{t("Actions")}</span>}
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">{actionItems}</DropdownMenuContent>
@@ -344,7 +342,7 @@ export function GenericDataTable<T>({
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" className="h-10 shadow-none">
-							{t("components.table.showColumns")}
+							{t("Show columns")}
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-[200px]">
@@ -394,12 +392,12 @@ export function GenericDataTable<T>({
 						className="h-10 px-2 lg:px-3 shadow-none"
 					>
 						<X className="h-4 w-4" />
-						<span className="ml-2 md:hidden inline lg:inline">{t("components.table.filters.clear")}</span>
+						<span className="ml-2 md:hidden inline lg:inline">{t("Clear filters")}</span>
 					</Button>
 				)}
 
 				<div className="ml-auto text-sm text-muted-foreground">
-					{t("components.table.navigation.page", { page, total: totalPages })}
+					{t("Page {page} of {total}", { page: String(page), total: String(totalPages) })}
 				</div>
 			</div>
 
@@ -449,7 +447,7 @@ export function GenericDataTable<T>({
 							{data.length === 0 ? (
 								<TableRow>
 									<TableCell colSpan={visibleColumnsArray.length} className="text-center h-24">
-										{t("components.table.noData")}
+										{t("No data found")}
 									</TableCell>
 								</TableRow>
 							) : (
@@ -488,7 +486,7 @@ export function GenericDataTable<T>({
 			{/* Mobile Cards */}
 			<div className="space-y-4 md:hidden">
 				{data.length === 0 ? (
-					<div className="text-center py-8 text-muted-foreground">{t("components.table.noData")}</div>
+					<div className="text-center py-8 text-muted-foreground">{t("No data found")}</div>
 				) : (
 					data.map((item, idx) => (
 						<div
@@ -546,7 +544,7 @@ export function GenericDataTable<T>({
 							<SelectItem value="100">100</SelectItem>
 						</SelectContent>
 					</Select>
-					<span className="text-sm text-muted-foreground">{t("components.table.navigation.perPage")}</span>
+					<span className="text-sm text-muted-foreground">{t("per page")}</span>
 				</div>
 
 				<div className="flex items-center justify-center w-full sm:w-auto gap-2">
@@ -556,7 +554,7 @@ export function GenericDataTable<T>({
 						disabled={page === "1"}
 						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
-						{t("components.table.navigation.previous")}
+						{t("Previous")}
 					</Button>
 					<Button
 						variant="outline"
@@ -564,7 +562,7 @@ export function GenericDataTable<T>({
 						disabled={Number(page) >= totalPages}
 						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
-						{t("components.table.navigation.next")}
+						{t("Next")}
 					</Button>
 				</div>
 			</div>

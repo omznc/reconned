@@ -50,8 +50,8 @@ can import them in actions as well.
 ## Language
 - All code strings need to be translated into every language under messages.
 - Use English for comments, variables, declarations, paths, etc.
-- When I say 'translate', extract keys from the files and add them to bs.json. If we're in an async component we have to use (await) import { getTranslations } from "next-intl/server", otherwise we use useTranslations.
-- Always use verbose access to translations key, never do const t = useTranslations("some.path"), t("key"). Always do onst t = useTranslations(), t("some.path.key")
+- When I say 'translate', extract keys from the files and add them to bs.json. If we're in an async component we have to use (await) import { getExtracted } from "next-intl/server", otherwise we use useExtracted.
+- Always use verbose access to translations key, never do const t = useExtracted("some.path"), t("key"). Always do onst t = useExtracted(), t("some.path.key")
 
 ## Formatting and linting
 - You can use `bun format` and `bun lint`

@@ -1,5 +1,5 @@
 import type { Prisma } from "@generated/client";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { PurchasesTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/purchases-table";
 import { AddPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.form";
@@ -51,17 +51,17 @@ export async function SpendingPageFetcher(props: PageProps<"/[locale]/dashboard/
 }
 
 export default async function SpendingPage(props: PageProps<"/[locale]/dashboard/[clubId]/club/spending">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const searchParams = await props.searchParams;
 
 	if (!FEATURE_FLAGS.CLUBS_SPENDING) {
-		return <ErrorPage title={t("dashboard.club.spending.title")} />;
+		return <ErrorPage title={t("Spending")} />;
 	}
 
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("dashboard.club.spending.title")}</h3>
+				<h3 className="text-lg font-semibold">{t("Spending")}</h3>
 				<AddPurchaseModal />
 			</div>
 
