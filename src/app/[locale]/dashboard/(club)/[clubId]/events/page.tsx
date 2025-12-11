@@ -1,7 +1,7 @@
 import type { Prisma } from "@generated/client";
 import { PlusCircle } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
@@ -80,18 +80,18 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[c
 }
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const { clubId } = await props.params;
 	const searchParams = await props.searchParams;
 
 	return (
 		<>
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">{t("dashboard.club.events.allEvents")}</h3>
+				<h3 className="text-lg font-semibold">{t("All events")}</h3>
 				<Button asChild>
 					<Link href={`/dashboard/${clubId}/events/create`}>
 						<PlusCircle className="size-4 mr-2" />
-						{t("dashboard.club.events.createEvent")}
+						{t("Create an event")}
 					</Link>
 				</Button>
 			</div>

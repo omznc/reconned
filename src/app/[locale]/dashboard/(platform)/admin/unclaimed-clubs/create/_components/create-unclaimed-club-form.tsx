@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -42,7 +42,7 @@ interface CreateUnclaimedClubFormProps {
 export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [open, setOpen] = useState(false);
-	const t = useTranslations();
+	const t = useExtracted();
 	const router = useRouter();
 	const clubIdRef = useRef<string | null>(null);
 
@@ -248,10 +248,10 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			}
 
 			logoUpload.markAsSaved();
-			toast.success(t("dashboard.admin.unclaimedClubs.createdSuccess"));
+			toast.success(t("Unclaimed club created successfully"));
 			router.push("/dashboard/admin/unclaimed-clubs");
 		} catch {
-			toast.error(t("dashboard.admin.unclaimedClubs.createdError"));
+			toast.error(t("Failed to create unclaimed club"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -261,7 +261,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl">
 				<div>
-					<h3 className="text-lg font-semibold">{t("dashboard.club.info.general")}</h3>
+					<h3 className="text-lg font-semibold">{t("General")}</h3>
 				</div>
 
 				<FormField
@@ -270,12 +270,16 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("dashboard.club.info.name")}* ({nameValue?.length ?? 0}/50)
+								{t("Club name")}* ({nameValue?.length ?? 0}/50)
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="Veis" type="text" {...field} />
 							</FormControl>
-							<FormDescription>{t("dashboard.club.info.nameDescription")}</FormDescription>
+							<FormDescription>
+								{t(
+									"The name of the club will be displayed everywhere on the site, if the club is public.",
+								)}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -286,7 +290,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					name="countryId"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("dashboard.club.info.country")}*</FormLabel>
+							<FormLabel>{t("Country")}*</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -300,15 +304,15 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 										>
 											{field.value
 												? countries.find((country) => country.id === field.value)?.name
-												: t("dashboard.club.info.pickCountry")}
+												: t("Select a country")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
 								</PopoverTrigger>
 								<PopoverContent className="w-full p-0">
 									<Command>
-										<CommandInput placeholder={t("dashboard.club.info.searchCountry")} />
-										<CommandEmpty>{t("dashboard.club.info.noResults")}</CommandEmpty>
+										<CommandInput placeholder={t("Search countries...")} />
+										<CommandEmpty>{t("No results")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
 											{countries.map((country) => (
 												<CommandItem
@@ -332,7 +336,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 									</Command>
 								</PopoverContent>
 							</Popover>
-							<FormDescription>{t("dashboard.club.info.countryDescription")}</FormDescription>
+							<FormDescription>{t("The country where the club is located")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -343,7 +347,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					name="logo"
 					render={() => (
 						<FormItem>
-							<FormLabel>{t("dashboard.club.info.logo")}</FormLabel>
+							<FormLabel>{t("Logo")}</FormLabel>
 							<FormControl>
 								<FileUpload
 									value={logoUpload.files}
@@ -359,7 +363,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 									showPreview={true}
 								/>
 							</FormControl>
-							<FormDescription>{t("dashboard.club.info.logoDescription")}</FormDescription>
+							<FormDescription>{t("Add a club logo. ")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -370,11 +374,11 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					name="location"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("dashboard.club.info.city")}</FormLabel>
+							<FormLabel>{t("City")}</FormLabel>
 							<FormControl>
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
-							<FormDescription>{t("dashboard.club.info.cityDescription")}</FormDescription>
+							<FormDescription>{t("The city where the club is located")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -382,17 +386,19 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 
 				<FormItem>
 					<FormLabel className="flex items-center justify-between">
-						<span>{t("dashboard.club.info.exactLocation")}</span>
+						<span>{t("Exact location")}</span>
 						<button
 							type="button"
 							onClick={handleLocationReset}
 							data-hidden={!latitudeValue && !longitudeValue}
 							className="h-6 px-2 text-xs data-[hidden=true]:opacity-0 text-muted-foreground hover:text-foreground"
 						>
-							{t("dashboard.club.info.reset")}
+							{t("Reset")}
 						</button>
 					</FormLabel>
-					<FormDescription>{t("dashboard.club.info.mapClickToMark")}</FormDescription>
+					<FormDescription>
+						{t("Click anywhere on the map to mark where your club is located.")}
+					</FormDescription>
 					<FormControl>
 						<div className="h-[400px] w-full rounded-lg overflow-hidden border">
 							<MapSelector
@@ -439,16 +445,16 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("dashboard.club.info.description")} ({descriptionValue?.length ?? 0}/5000)
+								{t("Description")} ({descriptionValue?.length ?? 0}/5000)
 							</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder={t("dashboard.club.info.descriptionPlaceholder")}
+									placeholder={t("This is a cool description")}
 									className="resize-none"
 									{...field}
 								/>
 							</FormControl>
-							<FormDescription>{t("dashboard.club.info.descriptionDescription")}</FormDescription>
+							<FormDescription>{t("Describe your club in a few sentences")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -459,7 +465,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					name="dateFounded"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("dashboard.club.info.foundedDate")}</FormLabel>
+							<FormLabel>{t("Date of establishment")}</FormLabel>
 							<Popover>
 								<PopoverTrigger asChild={true}>
 									<FormControl>
@@ -473,7 +479,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 											{field.value ? (
 												new Date(field.value).toLocaleDateString()
 											) : (
-												<span>{t("dashboard.club.info.chooseDate")}</span>
+												<span>{t("Select a date")}</span>
 											)}
 										</Button>
 									</FormControl>
@@ -482,14 +488,14 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 									<DateTimePicker value={field.value} onChange={field.onChange} granularity="day" />
 								</PopoverContent>
 							</Popover>
-							<FormDescription>{t("dashboard.club.info.foundedDateDescription")}</FormDescription>
+							<FormDescription>{t("When was the club founded?")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 
 				<div>
-					<h3 className="text-lg font-semibold">{t("dashboard.club.info.contact")}</h3>
+					<h3 className="text-lg font-semibold">{t("Contact")}</h3>
 				</div>
 
 				<FormField
@@ -501,7 +507,9 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 							<FormControl>
 								<Input placeholder="airsoft@club.com" type="email" {...field} />
 							</FormControl>
-							<FormDescription>{t("dashboard.club.info.emailDescription")}</FormDescription>
+							<FormDescription>
+								{t("Email address of the club, publicly displayed on the profile.")}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -512,11 +520,13 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					name="contactPhone"
 					render={({ field }) => (
 						<FormItem className="flex flex-col items-start">
-							<FormLabel>{t("dashboard.club.info.phone")}</FormLabel>
+							<FormLabel>{t("Phone number")}</FormLabel>
 							<FormControl className="w-full">
 								<PhoneInput placeholder="063 000 000" {...field} defaultCountry="BA" />
 							</FormControl>
-							<FormDescription>{t("dashboard.club.info.phoneDescription")}</FormDescription>
+							<FormDescription>
+								{t("The club's phone number, publicly displayed on the profile.")}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -527,11 +537,11 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					name="website"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t("dashboard.club.info.website")}</FormLabel>
+							<FormLabel>{t("Website")}</FormLabel>
 							<FormControl>
 								<Input placeholder="https://..." {...field} />
 							</FormControl>
-							<FormDescription>{t("dashboard.club.info.website")}</FormDescription>
+							<FormDescription>{t("Website")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -543,8 +553,10 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>{t("dashboard.club.info.isAllied")}</FormLabel>
-								<FormDescription>{t("dashboard.club.info.isAlliedDescription")}</FormDescription>
+								<FormLabel>{t("In the ASK FBIH alliance")}</FormLabel>
+								<FormDescription>
+									{t("If you are part of the SAKFBIH, select this option. Will be verified.")}
+								</FormDescription>
 							</div>
 							<FormControl>
 								<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -559,8 +571,10 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel className="text-base">{t("dashboard.club.info.private")}</FormLabel>
-								<FormDescription>{t("dashboard.club.info.privateDescription")}</FormDescription>
+								<FormLabel className="text-base">{t("Private club")}</FormLabel>
+								<FormDescription>
+									{t("Private clubs are only visible to club members. ")}
+								</FormDescription>
 							</div>
 							<FormControl>
 								<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -575,8 +589,10 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					render={({ field }) => (
 						<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 							<div className="space-y-0.5">
-								<FormLabel>{t("dashboard.club.info.privateStats")}</FormLabel>
-								<FormDescription>{t("dashboard.club.info.privateStatsDescription")}</FormDescription>
+								<FormLabel>{t("Private Statistics")}</FormLabel>
+								<FormDescription>
+									{t("Only club members can see how many views the club has")}
+								</FormDescription>
 							</div>
 							<FormControl>
 								<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -586,7 +602,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				/>
 
 				<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!slugValue}>
-					{t("common.actions.create")}
+					{t("Create")}
 				</LoaderSubmitButton>
 			</form>
 		</Form>

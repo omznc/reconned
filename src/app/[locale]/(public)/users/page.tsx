@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { ItemList, WithContext } from "schema-dts";
 import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
@@ -24,7 +24,7 @@ const ITEMS_PER_PAGE = 12;
 export const dynamic = "force-dynamic";
 
 export default async function Page(props: PageProps<"/[locale]/users">) {
-	const [searchParams, t, locale] = await Promise.all([props.searchParams, getTranslations(), getLocale()]);
+	const [searchParams, t, locale] = await Promise.all([props.searchParams, getExtracted(), getLocale()]);
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -46,8 +46,10 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",
 		"@type": "ItemList",
-		name: t("public.users.metadata.title"),
-		description: t("public.users.metadata.description"),
+		name: t("Airsoft players - RECONNED"),
+		description: t(
+			"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+		),
 		numberOfItems: total,
 		itemListElement: users.map((user, index) => ({
 			"@type": "ListItem",
@@ -73,7 +75,7 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 	return (
 		<div className="container py-8 space-y-8 px-4">
 			<JsonLdScript data={itemListSchema} />
-			<h1 className="text-2xl font-bold">{t("public.users.title")}</h1>
+			<h1 className="text-2xl font-bold">{t("Players")}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{users.map((user) => (
 					<SearchResultCard
@@ -98,24 +100,32 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	return {
-		title: t("public.users.metadata.title"),
-		description: t("public.users.metadata.description"),
-		keywords: t("public.users.metadata.keywords")
+		title: t("Airsoft players - RECONNED"),
+		description: t(
+			"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+		),
+		keywords: t(
+			"airsoft players, airsoft gamers, airsoft community members, find airsoft player, airsoft player profiles, airsoft player BiH, airsoft player Bosnia, airsoft player directory",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("public.users.metadata.title"),
-			description: t("public.users.metadata.description"),
+			title: t("Airsoft players - RECONNED"),
+			description: t(
+				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/users", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("public.users.metadata.title"),
-			description: t("public.users.metadata.description"),
+			title: t("Airsoft players - RECONNED"),
+			description: t(
+				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/users", locale),

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Info, LogIn } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ interface ClaimClubFormProps {
 export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const form = useForm<z.infer<typeof claimClubSchema>>({
 		resolver: zodResolver(claimClubSchema),
@@ -46,14 +46,16 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 			});
 
 			if (result?.data?.success) {
-				toast.success(t("components.claimClubForm.success"));
+				toast.success(
+					t("Claim request submitted successfully. We'll review your request and get back to you soon."),
+				);
 				setSubmitted(true);
 				form.reset();
 			} else {
 				throw new ActionError();
 			}
 		} catch {
-			toast.error(t("components.claimClubForm.error"));
+			toast.error(t("Failed to submit claim request. Please try again."));
 		} finally {
 			setIsLoading(false);
 		}
@@ -64,14 +66,20 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 			<div className="space-y-4">
 				<Alert>
 					<Info className="h-4 w-4" />
-					<AlertDescription>{t("components.claimClubForm.disclaimer")}</AlertDescription>
+					<AlertDescription>
+						{t(
+							"This club was added by the RECONNED team and is not owned by anyone yet. If you are the owner or representative of this club, you can claim it by filling out the form below.",
+						)}
+					</AlertDescription>
 				</Alert>
 				<Alert>
 					<LogIn className="h-4 w-4" />
-					<AlertDescription>{t("components.claimClubForm.loginRequired")}</AlertDescription>
+					<AlertDescription>
+						{t("You must be logged in to submit a claim request. Please log in to continue.")}
+					</AlertDescription>
 					<div className="mt-4">
 						<Button asChild>
-							<Link href="/login">{t("components.claimClubForm.login")}</Link>
+							<Link href="/login">{t("Log in")}</Link>
 						</Button>
 					</div>
 				</Alert>
@@ -83,7 +91,9 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 		return (
 			<Alert>
 				<Info className="h-4 w-4" />
-				<AlertDescription>{t("components.claimClubForm.submitted")}</AlertDescription>
+				<AlertDescription>
+					{t("Your claim request has been submitted. We'll review it and get back to you soon.")}
+				</AlertDescription>
 			</Alert>
 		);
 	}
@@ -92,7 +102,11 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 		<div className="space-y-4">
 			<Alert>
 				<Info className="h-4 w-4" />
-				<AlertDescription>{t("components.claimClubForm.disclaimer")}</AlertDescription>
+				<AlertDescription>
+					{t(
+						"This club was added by the RECONNED team and is not owned by anyone yet. If you are the owner or representative of this club, you can claim it by filling out the form below.",
+					)}
+				</AlertDescription>
 			</Alert>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -101,22 +115,24 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 						name="message"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("components.claimClubForm.message")}</FormLabel>
+								<FormLabel>{t("Message")}</FormLabel>
 								<FormControl>
 									<Textarea
-										placeholder={t("components.claimClubForm.messagePlaceholder")}
+										placeholder={t("Tell us why you should be the owner of this club...")}
 										{...field}
 									/>
 								</FormControl>
-								<FormDescription>{t("components.claimClubForm.messageDescription")}</FormDescription>
+								<FormDescription>
+									{t(
+										"Optional: Provide additional information about your relationship with this club.",
+									)}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
 
-					<LoaderSubmitButton isLoading={isLoading}>
-						{t("components.claimClubForm.submit")}
-					</LoaderSubmitButton>
+					<LoaderSubmitButton isLoading={isLoading}>{t("Submit claim request")}</LoaderSubmitButton>
 				</form>
 			</Form>
 		</div>

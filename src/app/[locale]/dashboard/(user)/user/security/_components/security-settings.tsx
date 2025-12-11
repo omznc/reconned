@@ -4,10 +4,10 @@ import { authClient } from "@auth/client";
 import type { Passkey } from "@better-auth/passkey";
 import { Button } from "@components/ui/button";
 import type { Session } from "@generated/client";
-import { formatDate, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { bs } from "date-fns/locale";
 import { Dice5, Download, KeyRound, Laptop, ShieldQuestion, Smartphone, Tablet, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -42,8 +42,8 @@ export function SecuritySettings({
 	const [regeneratedBackupCodes, setRegeneratedBackupCodes] = useState<string[] | null>(null);
 	const router = useRouter();
 	const prompt = usePrompt();
-	const t = useTranslations();
-
+	const t = useExtracted();
+	const locale = useLocale();
 	const backupCodes: string[] = JSON.parse((backupCodesString?.length ?? 0) > 0 ? backupCodesString || "[]" : "[]");
 	const displayBackupCodes = regeneratedBackupCodes || backupCodes;
 	const hasBackupCodes = displayBackupCodes.length > 0;
@@ -69,15 +69,14 @@ export function SecuritySettings({
 				{passkeys.map((passkey) => (
 					<Alert key={passkey.id} className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>
-								{passkey.name ?? t("dashboard.security.securitySettings.defaultPasskeyName")}
-							</AlertTitle>
+							<AlertTitle>{passkey.name ?? t("Passkey")}</AlertTitle>
 							<AlertDescription>
-								{/* Kreiran{" "}
-                                {passkey.createdAt &&
-                                    formatDate(passkey.createdAt, "dd.MM.yyyy")} */}
-								{t("createdAt", {
-									date: passkey.createdAt && formatDate(passkey.createdAt, "dd.MM.yyyy"),
+								{t("Created on {date}", {
+									date: passkey.createdAt?.toLocaleDateString(locale, {
+										year: "numeric",
+										month: "long",
+										day: "numeric",
+									}),
 								})}
 							</AlertDescription>
 						</div>
@@ -110,9 +109,9 @@ export function SecuritySettings({
 				))}
 				<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 					<div className="flex flex-col">
-						<AlertTitle>{t("dashboard.security.securitySettings.addNewPasskey")}</AlertTitle>
+						<AlertTitle>{t("Add a new Passkey")}</AlertTitle>
 						<AlertDescription>
-							{t("dashboard.security.securitySettings.addNewPasskeyDescription")}
+							{t("Add a new passkey for faster and more secure login to your account.")}
 						</AlertDescription>
 					</div>
 					<Button
@@ -138,19 +137,19 @@ export function SecuritySettings({
 						}}
 					>
 						<KeyRound className="w-4 h-4 mr-2" />
-						{t("dashboard.security.securitySettings.add")}
+						{t("Add")}
 						<BadgeSoon />
 					</Button>
 				</Alert>
 			</div>
 			<div className="flex flex-col gap-1">
-				<h3 className="text-lg font-semibold">{t("dashboard.security.securitySettings.twoFactor")}</h3>
+				<h3 className="text-lg font-semibold">{t("Two-factor authentication")}</h3>
 			</div>
 			{!hasPassword && (
 				<Alert className="flex flex-col gap-1">
-					<AlertTitle>{t("dashboard.security.securitySettings.twoFactorUnavailable")}</AlertTitle>
+					<AlertTitle>{t("Two-factor authentication is not available")}</AlertTitle>
 					<AlertDescription>
-						{t("dashboard.security.securitySettings.twoFactorUnavailableDescription")}
+						{t("To use 2-factor authentication, you must first set a password.")}
 					</AlertDescription>
 				</Alert>
 			)}
@@ -160,9 +159,11 @@ export function SecuritySettings({
 						<>
 							<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 								<div className="flex flex-col">
-									<AlertTitle>{t("dashboard.security.securitySettings.twoFactorDisable")}</AlertTitle>
+									<AlertTitle>{t("Disable 2-factor authentication")}</AlertTitle>
 									<AlertDescription>
-										{t("dashboard.security.securitySettings.twoFactorDisableDescription")}
+										{t(
+											"If you turn off 2-factor authentication, you will be able to log into your account without confirmation through the application.",
+										)}
 									</AlertDescription>
 								</div>
 								<Button
@@ -172,13 +173,11 @@ export function SecuritySettings({
 									className="w-full md:w-auto"
 									onClick={async () => {
 										const confirmed = await prompt({
-											cancelButton: t("common.actions.cancel"),
+											cancelButton: t("Cancel"),
 											cancelButtonVariant: "ghost",
-											title: t(
-												"dashboard.security.securitySettings.twoFactorDisablePrompt.title",
-											),
-											body: t("dashboard.security.securitySettings.twoFactorDisablePrompt.body"),
-											actionButton: t("common.actions.disable"),
+											title: t("Disable 2-factor authentication?"),
+											body: t("Are you sure you want to disable 2-factor authentication? "),
+											actionButton: t("Disable"),
 											inputType: "input",
 											inputProps: {
 												type: "password",
@@ -203,39 +202,31 @@ export function SecuritySettings({
 												},
 												onError: () => {
 													setIsLoading(false);
-													toast.error(
-														t(
-															"dashboard.security.securitySettings.twoFactorDisablePrompt.invalidPassword",
-														),
-													);
+													toast.error(t("Please enter the correct password"));
 												},
 											},
 										);
 									}}
 								>
-									{t("dashboard.security.securitySettings.disable")}
+									{t("Disable")}
 								</Button>
 							</Alert>
 							{!hasBackupCodes ? (
 								<Alert className="flex flex-col gap-1">
 									<AlertTitle className="flex items-center gap-4 justify-between">
-										<span>{t("dashboard.security.securitySettings.backupCodes")}</span>
+										<span>{t("Backup codes")}</span>
 										<Button
 											type="button"
 											variant="outline"
 											disabled={isLoading}
 											onClick={async () => {
 												const confirmed = await prompt({
-													title: t("dashboard.security.securitySettings.regenerate"),
+													title: t("Regenerate codes"),
 													body: t(
-														"dashboard.security.securitySettings.regenerateDescription",
+														"These are your backup codes for 2-factor authentication. Enter your password to regenerate them.",
 													),
-													cancelButton: t(
-														"dashboard.security.securitySettings.regenerateCancel",
-													),
-													actionButton: t(
-														"dashboard.security.securitySettings.regenerateConfirm",
-													),
+													cancelButton: t("No, go back"),
+													actionButton: t("Regenerate"),
 													actionButtonVariant: "destructive",
 													inputType: "input",
 													inputProps: {
@@ -258,18 +249,12 @@ export function SecuritySettings({
 														onSuccess: (r) => {
 															setIsLoading(false);
 															setRegeneratedBackupCodes(r.data.backupCodes);
-															toast.success(
-																t(
-																	"dashboard.security.securitySettings.regenerateSuccess",
-																),
-															);
+															toast.success(t("Codes successfully regenerated"));
 														},
 														onError: () => {
 															setIsLoading(false);
 															toast.error(
-																t(
-																	"dashboard.security.securitySettings.regenerateError",
-																),
+																t("An error occurred while regenerating the codes"),
 															);
 														},
 													},
@@ -277,17 +262,19 @@ export function SecuritySettings({
 											}}
 										>
 											<Dice5 className="w-4 h-4 mr-2" />
-											{t("dashboard.security.securitySettings.regenerate")}
+											{t("Regenerate codes")}
 										</Button>
 									</AlertTitle>
 									<AlertDescription>
-										{t("dashboard.security.securitySettings.backupCodesNotVisible")}
+										{t(
+											"Backup codes are not visible for security reasons. You need to regenerate them to see and save them. Warning: regenerating will invalidate all existing backup codes.",
+										)}
 									</AlertDescription>
 								</Alert>
 							) : (
 								<Alert className="flex flex-col gap-1">
 									<AlertTitle className="flex items-center gap-2 justify-between">
-										<span>{t("dashboard.security.securitySettings.backupCodes")}</span>
+										<span>{t("Backup codes")}</span>
 										<div className="flex gap-2">
 											<Button
 												type="button"
@@ -301,31 +288,25 @@ export function SecuritySettings({
 													const url = window.URL.createObjectURL(blob);
 													const a = document.createElement("a");
 													a.href = url;
-													a.download = t(
-														"dashboard.security.securitySettings.backupCodesFilename",
-													);
+													a.download = t("backup-codes.txt");
 													a.click();
 													window.URL.revokeObjectURL(url);
 												}}
 											>
 												<Download className="w-4 h-4 mr-2" />
-												{t("dashboard.security.securitySettings.download")}
+												{t("Download")}
 											</Button>
 											<Button
 												type="button"
 												variant="outline"
 												onClick={async () => {
 													const confirmed = await prompt({
-														title: t("dashboard.security.securitySettings.regenerate"),
+														title: t("Regenerate codes"),
 														body: t(
-															"dashboard.security.securitySettings.regenerateDescription",
+															"These are your backup codes for 2-factor authentication. Enter your password to regenerate them.",
 														),
-														cancelButton: t(
-															"dashboard.security.securitySettings.regenerateCancel",
-														),
-														actionButton: t(
-															"dashboard.security.securitySettings.regenerateConfirm",
-														),
+														cancelButton: t("No, go back"),
+														actionButton: t("Regenerate"),
 														actionButtonVariant: "destructive",
 														inputType: "input",
 														inputProps: {
@@ -348,18 +329,12 @@ export function SecuritySettings({
 															onSuccess: (r) => {
 																setIsLoading(false);
 																setRegeneratedBackupCodes(r.data.backupCodes);
-																toast.success(
-																	t(
-																		"dashboard.security.securitySettings.regenerateSuccess",
-																	),
-																);
+																toast.success(t("Codes successfully regenerated"));
 															},
 															onError: () => {
 																setIsLoading(false);
 																toast.error(
-																	t(
-																		"dashboard.security.securitySettings.regenerateError",
-																	),
+																	t("An error occurred while regenerating the codes"),
 																);
 															},
 														},
@@ -367,21 +342,21 @@ export function SecuritySettings({
 												}}
 											>
 												<Dice5 className="w-4 h-4 mr-2" />
-												{t("dashboard.security.securitySettings.regenerate")}
+												{t("Regenerate codes")}
 											</Button>
 										</div>
 									</AlertTitle>
 									<AlertDescription>
-										{t("dashboard.security.securitySettings.regenerateDescription")}
+										{t(
+											"These are your backup codes for 2-factor authentication. Enter your password to regenerate them.",
+										)}
 									</AlertDescription>
 									<div className="bg-background border p-4 mt-2 flex flex-wrap gap-2">
 										{displayBackupCodes?.map((code) => (
 											<code
 												onClick={() => {
 													navigator.clipboard.writeText(code);
-													toast.success(
-														t("dashboard.security.securitySettings.copiedToClipboard"),
-													);
+													toast.success(t("Copied to clipboard."));
 												}}
 												key={code}
 												className="grow cursor-pointer text-center bg-sidebar blur-sm hover:blur-none transition-all p-2 font-mono"
@@ -396,9 +371,9 @@ export function SecuritySettings({
 					) : (
 						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 							<div className="flex flex-col">
-								<AlertTitle>{t("dashboard.security.securitySettings.twoFactorEnable")}</AlertTitle>
+								<AlertTitle>{t("Enable 2-factor authentication")}</AlertTitle>
 								<AlertDescription>
-									{t("dashboard.security.securitySettings.twoFactorEnableDescription")}
+									{t("Enable 2-factor authentication for extra security of your account.")}
 								</AlertDescription>
 							</div>
 							<Button
@@ -407,11 +382,11 @@ export function SecuritySettings({
 								className="w-full md:w-auto"
 								onClick={async () => {
 									const password = await prompt({
-										cancelButton: t("common.actions.cancel"),
+										cancelButton: t("Cancel"),
 										cancelButtonVariant: "ghost",
-										title: t("dashboard.security.securitySettings.twoFactorEnablePrompt.title"),
-										body: t("dashboard.security.securitySettings.twoFactorEnablePrompt.body"),
-										actionButton: t("common.actions.confirm"),
+										title: t("Enable 2-factor authentication?"),
+										body: t("Enter your password to enable 2-factor authentication."),
+										actionButton: t("Confirm"),
 										inputType: "input",
 										inputProps: {
 											type: "password",
@@ -436,9 +411,7 @@ export function SecuritySettings({
 											},
 											onError: () => {
 												setIsLoading(false);
-												toast.error(
-													t("dashboard.security.securitySettings.invalidPasswordTryAgain"),
-												);
+												toast.error(t("Invalid password, please try again."));
 											},
 										},
 									);
@@ -448,35 +421,29 @@ export function SecuritySettings({
 									}
 
 									const confirmed = await prompt({
-										cancelButton: t("common.actions.cancel"),
+										cancelButton: t("Cancel"),
 										cancelButtonVariant: "ghost",
-										title: t("dashboard.security.securitySettings.twoFactorEnablePrompt.title"),
+										title: t("Enable 2-factor authentication?"),
 										body: (
 											<div className="space-y-2">
 												<p>
-													{t(
-														"dashboard.security.securitySettings.twoFactorConfirmPrompt.scanQr",
-													)}
+													{t("Scan the QR code with your app for 2-factor authentication.")}
 												</p>
 												<div className="w-fit flex flex-col items-center w-full">
 													<QRCodeSVG value={resp.data.totpURI} className="w-full" />
 													<p className="mt-2 w-full text-left">
-														{t(
-															"dashboard.security.securitySettings.twoFactorConfirmPrompt.enterCode",
-														)}
+														{t("If you can't scan the QR code, enter this code:")}
 													</p>
 													<code className="font-semibold select-all break-all whitespace-pre-wrap">
 														{resp.data.totpURI.split("?secret=")[1]?.split("&")[0]}
 													</code>
 												</div>
 												<span className="block mt-2">
-													{t(
-														"dashboard.security.securitySettings.twoFactorConfirmPrompt.verifyCode",
-													)}
+													{t("Confirm the 6-digit code you received from the app")}
 												</span>
 											</div>
 										),
-										actionButton: t("common.actions.enable"),
+										actionButton: t("Enable"),
 										inputType: "input",
 										inputProps: {
 											type: "text",
@@ -501,32 +468,28 @@ export function SecuritySettings({
 											},
 											onError: () => {
 												setIsLoading(false);
-												toast.error(
-													t(
-														"dashboard.security.securitySettings.twoFactorConfirmPrompt.invalidCode",
-													),
-												);
+												toast.error(t("Please enter a valid 6-digit code"));
 											},
 										},
 									);
 								}}
 							>
-								{t("dashboard.security.securitySettings.twoFactorConfirmPrompt.confirm")}
+								{t("Confirm")}
 							</Button>
 						</Alert>
 					)}
 				</div>
 			)}
 			<div className="flex flex-col gap-1">
-				<h3 className="text-lg font-semibold">{t("dashboard.security.securitySettings.activeSessions")}</h3>
+				<h3 className="text-lg font-semibold">{t("Active sessions")}</h3>
 				<p className="text-sm text-muted-foreground">
-					{t("dashboard.security.securitySettings.activeSessionsDescription")}
+					{t("Here you can see all active sessions on your account. ")}
 				</p>
 			</div>
 			{sessions.length > 1 && (
 				<Alert>
 					<AlertDescription className="flex justify-between items-center">
-						<span>{t("dashboard.security.securitySettings.logoutAll")}</span>
+						<span>{t("Sign out of all devices except this one.")}</span>
 						<Button
 							type="button"
 							variant="destructive"
@@ -539,17 +502,17 @@ export function SecuritySettings({
 										onSuccess: () => {
 											setIsLoading(false);
 											router.refresh();
-											toast.success(t("dashboard.security.securitySettings.logoutAllSuccess"));
+											toast.success(t("You are signed out of all other devices"));
 										},
 										onError: () => {
 											setIsLoading(false);
-											toast.error(t("dashboard.security.securitySettings.logoutAllError"));
+											toast.error(t("An error occurred while signing out from other devices."));
 										},
 									},
 								);
 							}}
 						>
-							{t("dashboard.security.securitySettings.logoutAllAction")}
+							{t("Sign out")}
 						</Button>
 					</AlertDescription>
 				</Alert>
@@ -569,18 +532,15 @@ export function SecuritySettings({
 									<Icon className="w-8 h-8" />
 									<div className="flex flex-col gap-1">
 										<AlertTitle className="flex items-center gap-4 w-full ">
-											{session.userAgent?.split("/")[0] ||
-												t("dashboard.security.securitySettings.unknownDevice")}
-											{session.isCurrentSession && (
-												<Badge>{t("dashboard.security.securitySettings.currentSession")}</Badge>
-											)}
+											{session.userAgent?.split("/")[0] || t("Unknown Device")}
+											{session.isCurrentSession && <Badge>{t("Current session")}</Badge>}
 										</AlertTitle>
 										<AlertDescription>
 											{session.ipAddress && (
 												<span className="block text-xs">IP: {session.ipAddress}</span>
 											)}
 											<span className="block text-xs">
-												{t("dashboard.security.securitySettings.sessionLastUsed", {
+												{t("Last used on {date}", {
 													date: formatDistanceToNow(session.updatedAt, {
 														addSuffix: true,
 														locale: bs,
@@ -604,16 +564,12 @@ export function SecuritySettings({
 													onSuccess: () => {
 														setIsLoading(false);
 														router.refresh();
-														toast.success(
-															t(
-																"dashboard.security.securitySettings.logoutSingleSuccess",
-															),
-														);
+														toast.success(t("You are signed out of this device"));
 													},
 													onError: () => {
 														setIsLoading(false);
 														toast.error(
-															t("dashboard.security.securitySettings.logoutSingleError"),
+															t("An error occurred while logging out of this device."),
 														);
 													},
 												},

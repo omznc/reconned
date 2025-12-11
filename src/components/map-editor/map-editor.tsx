@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { BBox, FeatureCollection } from "geojson";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { createRoot, type Root } from "react-dom/client";
 import { EditorControlsPanel } from "@/components/map-editor/_components/editor-controls-panel";
 import { EditorSelectionPanel } from "@/components/map-editor/_components/editor-selection-panel";
@@ -137,7 +137,7 @@ const cloneMapGeometry = (geometry: MapGeometry): MapGeometry => {
 };
 
 export function MapEditor({ visible = false, onClose, initialData, onSnapshotChange }: MapEditorProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const mapEditorStore = useMapEditorStore();
 	const { features, selectedId, gridVisible, basemap, gridLabelsVisible, gridOpacity, labelOpacity, mode } =
 		mapEditorStore;
@@ -1754,40 +1754,40 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 
 	const formatDistance = (meters: number) => {
 		if (meters <= 0) {
-			return t("mapEditor.stats.notAvailable");
+			return t("Not available");
 		}
 		if (meters >= 1000) {
-			return t("mapEditor.stats.units.kilometers", { value: (meters / 1000).toFixed(1) });
+			return t("{value} km", { value: (meters / 1000).toFixed(1) });
 		}
-		return t("mapEditor.stats.units.meters", { value: Math.round(meters) });
+		return t("{value} m", { value: String(Math.round(meters)) });
 	};
 
 	const formatArea = (squareMeters: number) => {
 		if (squareMeters <= 0) {
-			return t("mapEditor.stats.notAvailable");
+			return t("Not available");
 		}
 		if (squareMeters >= 1_000_000) {
-			return t("mapEditor.stats.units.squareKilometers", {
+			return t("{value} km²", {
 				value: (squareMeters / 1_000_000).toFixed(2),
 			});
 		}
-		return t("mapEditor.stats.units.squareMeters", { value: Math.round(squareMeters) });
+		return t("{value} m²", { value: String(Math.round(squareMeters)) });
 	};
 
 	const formatDuration = (seconds: number) => {
 		if (seconds <= 0) {
-			return t("mapEditor.stats.notAvailable");
+			return t("Not available");
 		}
 		const minutes = Math.max(1, Math.round(seconds / 60));
 		if (minutes < 60) {
-			return t("mapEditor.stats.units.minutes", { value: minutes });
+			return t("{value} min", { value: String(minutes) });
 		}
 		const hours = Math.floor(minutes / 60);
 		const remainder = minutes % 60;
 		if (remainder === 0) {
-			return t("mapEditor.stats.units.hours", { value: hours });
+			return t("{value} h", { value: String(hours) });
 		}
-		return t("mapEditor.stats.units.hoursMinutes", { hours, minutes: remainder });
+		return t("{hours} h {minutes} min", { hours: String(hours), minutes: String(remainder) });
 	};
 
 	const selectedFeature = selectedId ? features.find((feature) => feature.id === selectedId) : undefined;
@@ -2294,10 +2294,10 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 
 	const handleConfirmNewMap = async () => {
 		const result = await confirm({
-			title: t("mapEditor.dialogs.newMap.title"),
+			title: t("Start a new map?"),
 			body: (
 				<div className="flex flex-col gap-2 text-sm">
-					<p>{t("mapEditor.dialogs.newMap.body")}</p>
+					<p>{t("The current map will be overwritten. Download it first if you want to keep it.")}</p>
 					<Button
 						type="button"
 						variant="outline"
@@ -2307,13 +2307,13 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 						}}
 					>
 						<FileDown className="mr-2 size-4" />
-						{t("mapEditor.dialogs.newMap.download")}
+						{t("Download current map")}
 					</Button>
 				</div>
 			),
-			actionButton: t("mapEditor.dialogs.newMap.confirm"),
+			actionButton: t("Start new map"),
 			cancelButtonVariant: "outline",
-			cancelButton: t("mapEditor.dialogs.newMap.cancel"),
+			cancelButton: t("Cancel"),
 		});
 		if (!result) {
 			return;
@@ -2326,81 +2326,79 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 			<Dialog open={statsOpen} onOpenChange={setStatsOpen}>
 				<DialogContent className="sm:max-w-2xl">
 					<DialogHeader>
-						<DialogTitle>{t("mapEditor.stats.title")}</DialogTitle>
-						<DialogDescription>{t("mapEditor.stats.description")}</DialogDescription>
+						<DialogTitle>{t("Stats")}</DialogTitle>
+						<DialogDescription>{t("Quick metrics for the current map.")}</DialogDescription>
 					</DialogHeader>
 					{stats.hasBounds ? (
 						<div className="grid gap-3">
 							<div className="rounded-md border p-3">
-								<div className="text-sm font-semibold">{t("mapEditor.stats.sections.size.title")}</div>
+								<div className="text-sm font-semibold">{t("Map size")}</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.size.width")}</span>
+										<span>{t("Width")}</span>
 										<span className="font-mono">{formatDistance(stats.width)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.size.height")}</span>
+										<span>{t("Height")}</span>
 										<span className="font-mono">{formatDistance(stats.height)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.size.diagonal")}</span>
+										<span>{t("Diagonal")}</span>
 										<span className="font-mono">{formatDistance(stats.diagonal)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.size.area")}</span>
+										<span>{t("Area")}</span>
 										<span className="font-mono">{formatArea(stats.area)}</span>
 									</div>
 								</div>
 							</div>
 							<div className="rounded-md border p-3">
-								<div className="text-sm font-semibold">
-									{t("mapEditor.stats.sections.features.title")}
-								</div>
+								<div className="text-sm font-semibold">{t("Features")}</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.features.total")}</span>
+										<span>{t("Total")}</span>
 										<span className="font-mono">{stats.counts.total}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.features.points")}</span>
+										<span>{t("Points")}</span>
 										<span className="font-mono">{stats.counts.points}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.features.lines")}</span>
+										<span>{t("Lines")}</span>
 										<span className="font-mono">{stats.counts.lines}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.features.areas")}</span>
+										<span>{t("Areas")}</span>
 										<span className="font-mono">{stats.counts.areas}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.features.freehand")}</span>
+										<span>{t("Freehand")}</span>
 										<span className="font-mono">{stats.counts.freehand}</span>
 									</div>
 								</div>
 							</div>
 							<div className="rounded-md border p-3">
-								<div className="text-sm font-semibold">
-									{t("mapEditor.stats.sections.distance.title")}
-								</div>
+								<div className="text-sm font-semibold">{t("Distances")}</div>
 								<div className="mt-2 space-y-1 text-sm">
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.distance.lineLength")}</span>
+										<span>{t("Linework length")}</span>
 										<span className="font-mono">{formatDistance(stats.totalLineLength)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.distance.crossingWalk")}</span>
+										<span>{t("Walk end-to-end (5 km/h)")}</span>
 										<span className="font-mono">{formatDuration(stats.travel.walkSeconds)}</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span>{t("mapEditor.stats.sections.distance.crossingDrive")}</span>
+										<span>{t("Drive end-to-end (50 km/h)")}</span>
 										<span className="font-mono">{formatDuration(stats.travel.driveSeconds)}</span>
 									</div>
 								</div>
 							</div>
 						</div>
 					) : (
-						<p className="text-sm text-muted-foreground">{t("mapEditor.stats.empty")}</p>
+						<p className="text-sm text-muted-foreground">
+							{t("Add a play area or draw something to see stats.")}
+						</p>
 					)}
 				</DialogContent>
 			</Dialog>
@@ -2446,28 +2444,28 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 								) : null}
 								{gridRef.cell ? (
 									<div className="absolute right-4 top-4 rounded-md bg-background/90 backdrop-blur px-3 py-2 text-xs shadow space-y-1">
-										<div className="font-semibold">{t("mapEditor.gridRef.title")}</div>
+										<div className="font-semibold">{t("Grid ref")}</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">{t("mapEditor.gridRef.cell")}</span>
+											<span className="text-muted-foreground">{t("Cell")}</span>
 											<span className="font-mono text-sm">{gridRef.cell}</span>
 										</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">{t("mapEditor.gridRef.lat")}</span>
+											<span className="text-muted-foreground">{t("Lat")}</span>
 											<span className="font-mono text-sm">{gridRef.lat}</span>
 										</div>
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-muted-foreground">{t("mapEditor.gridRef.lng")}</span>
+											<span className="text-muted-foreground">{t("Lng")}</span>
 											<span className="font-mono text-sm">{gridRef.lng}</span>
 										</div>
 									</div>
 								) : null}
 								{draft ? (
 									<div className="absolute left-4 bottom-4 rounded-md bg-background/90 backdrop-blur px-3 py-2 text-xs shadow">
-										{draft.type === "line" ? t("mapEditor.status.line") : null}
-										{draft.type === "polygon" ? t("mapEditor.status.polygon") : null}
-										{draft.type === "rectangle" ? t("mapEditor.status.rectangle") : null}
-										{draft.type === "circle" ? t("mapEditor.status.circle") : null}
-										{draft.type === "freehand" ? t("mapEditor.status.freehand") : null}
+										{draft.type === "line" ? t("Line drawing") : null}
+										{draft.type === "polygon" ? t("Polygon drawing") : null}
+										{draft.type === "rectangle" ? t("Rectangle sizing") : null}
+										{draft.type === "circle" ? t("Circle sizing") : null}
+										{draft.type === "freehand" ? t("Freehand drawing") : null}
 									</div>
 								) : null}
 							</div>
@@ -2504,7 +2502,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 											<div className="absolute inset-0 z-10 flex items-end justify-center pb-6">
 												<div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-md shadow-lg">
 													<Button type="button" size="sm" onClick={setPlayAreaFromOverlay}>
-														{t("mapEditor.actions.confirmPlayArea")}
+														{t("Confirm area")}
 													</Button>
 													{previousPlayAreaRef.current ? (
 														<Button
@@ -2513,7 +2511,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 															size="sm"
 															onClick={cancelPlayAreaEdit}
 														>
-															{t("mapEditor.actions.cancelPlayArea")}
+															{t("Cancel")}
 														</Button>
 													) : null}
 												</div>

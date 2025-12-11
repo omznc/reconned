@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { X, File as FileIcon, Image as ImageIcon, Upload } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -53,7 +53,7 @@ export function FileUpload({
     multiple = true,
 }: FileUploadProps) {
     const [dragActive, setDragActive] = useState(false);
-    const t = useTranslations()
+    const t = useExtracted()
 
     const canAddMore = multiple ? value.length < maxFiles : value.length === 0;
 
@@ -178,11 +178,11 @@ export function FileUpload({
                         <Upload className="w-8 h-8 text-muted-foreground" />
                         <div className="space-y-1">
                             <p className="text-sm font-medium">
-                                {dragActive ? t("components.fileUpload.dropFilesHere") : t("components.fileUpload.clickToUploadOrDragAndDrop")}
+                                {dragActive ? t("Drop files here") : t("Click to upload or drag and drop")}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                {multiple && t("components.fileUpload.maxFiles", { count: maxFiles })}
-                                {t("components.fileUpload.maxFileSize", { size: Math.round(maxFileSize / (1024 * 1024)) })}
+                                {multiple && t("Up to {count} files", { count: String(maxFiles) })}
+                                {t("Maximum size of {size} MB", { size: String(Math.round(maxFileSize / (1024 * 1024))) })}
                             </p>
                         </div>
                     </div>
@@ -192,7 +192,7 @@ export function FileUpload({
             {/* File count indicator */}
             {multiple && value.length > 0 && (
                 <p className="text-xs text-muted-foreground">
-                    {t("components.fileUpload.filesSelected", { count: value.length, maxFiles })}
+                    {t("{count} of {maxFiles} files added", { count: String(value.length), maxFiles: String(maxFiles) })}
                 </p>
             )}
         </div>

@@ -2,7 +2,7 @@
 import type { User } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Phone, Shield, User as UserIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,7 +33,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [cropFile, setCropFile] = useState<File | null>(null);
-	const t = useTranslations();
+	const t = useExtracted();
 
 	// Initialize file upload system for avatar
 	const initialFiles: FileUploadItem[] = props.user?.image
@@ -175,10 +175,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				avatarUpload.markAsSaved();
 				headerUpload.markAsSaved();
 				form.reset(values);
-				toast.success(t("dashboard.user.settings.success"));
+				toast.success(t("User data has been saved"));
 			}
 		} catch {
-			toast.error(t("dashboard.user.settings.error"));
+			toast.error(t("An error occurred while saving data"));
 		}
 		setIsLoading(false);
 	}
@@ -190,7 +190,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					<div>
 						<h3 className="text-lg font-semibold flex items-center gap-2">
 							<UserIcon className="h-5 w-5" />
-							{t("dashboard.user.settings.general")}
+							{t("General")}
 						</h3>
 					</div>
 
@@ -199,7 +199,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="headerImage"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("dashboard.user.settings.headerImage")}</FormLabel>
+								<FormLabel>{t("Header image")}</FormLabel>
 								<FormControl>
 									<SingleImageUpload
 										variant="banner"
@@ -213,7 +213,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 										}}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.user.settings.headerImageDescription")}</FormDescription>
+								<FormDescription>
+									{t("Add a wide cover photo to personalize your profile (1200x300).")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -224,7 +226,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="image"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("dashboard.user.settings.avatar")}</FormLabel>
+								<FormLabel>{t("Profile picture")}</FormLabel>
 								<FormControl>
 									<SingleImageUpload
 										variant="avatar"
@@ -244,7 +246,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 										}}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.user.settings.avatarDescription")}</FormDescription>
+								<FormDescription>
+									{t("We recommend that you upload a profile picture.")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -255,9 +259,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.user.settings.name")}</FormLabel>
+								<FormLabel>{t("Your name")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("dashboard.user.settings.name")} {...field} />
+									<Input placeholder={t("Your name")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -286,15 +290,17 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="bio"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.user.settings.bio")}</FormLabel>
+								<FormLabel>{t("About you")}</FormLabel>
 								<FormControl>
 									<Textarea
-										placeholder={t("dashboard.user.settings.bioPlaceholder")}
+										placeholder={t("Something about me is that...")}
 										className="resize-none"
 										{...field}
 									/>
 								</FormControl>
-								<FormDescription>{t("dashboard.user.settings.bioDescription")}</FormDescription>
+								<FormDescription>
+									{t("This is your chance to stand out in a few sentences")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -305,11 +311,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="callsign"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.user.settings.callsign")}</FormLabel>
+								<FormLabel>{t("Callsign")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("dashboard.user.settings.callsignPlaceholder")} {...field} />
+									<Input placeholder={t("My callsign")} {...field} />
 								</FormControl>
-								<FormDescription>{t("dashboard.user.settings.callsignDescription")}</FormDescription>
+								<FormDescription>{t("Callsign you use on the field")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -320,9 +326,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="location"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.user.settings.location")}</FormLabel>
+								<FormLabel>{t("Location")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("dashboard.user.settings.locationPlaceholder")} {...field} />
+									<Input placeholder={t("Sarajevo, BiH")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -334,7 +340,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="website"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.user.settings.website")}</FormLabel>
+								<FormLabel>{t("Website")}</FormLabel>
 								<FormControl>
 									<Input placeholder="https://..." {...field} />
 								</FormControl>
@@ -346,7 +352,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					<div>
 						<h3 className="text-lg font-semibold flex items-center gap-2">
 							<Phone className="h-5 w-5" />
-							{t("dashboard.user.settings.contact")}
+							{t("Contact")}
 						</h3>
 					</div>
 
@@ -355,11 +361,11 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						name="phone"
 						render={({ field }) => (
 							<FormItem className="flex flex-col items-start">
-								<FormLabel>{t("dashboard.user.settings.phone")}</FormLabel>
+								<FormLabel>{t("Phone number")}</FormLabel>
 								<FormControl className="w-full">
 									<PhoneInput placeholder="063 000 000" {...field} defaultCountry="BA" />
 								</FormControl>
-								<FormDescription>{t("dashboard.user.settings.phoneDescription")}</FormDescription>
+								<FormDescription>{t("This is how people can reach you")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -368,7 +374,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					<div>
 						<h3 className="text-lg font-semibold flex items-center gap-2">
 							<Shield className="h-5 w-5" />
-							{t("dashboard.user.settings.privacy")}
+							{t("Privacy")}
 						</h3>
 					</div>
 
@@ -378,8 +384,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("dashboard.user.settings.private")}</FormLabel>
-									<FormDescription>{t("dashboard.user.settings.privateDescription")}</FormDescription>
+									<FormLabel>{t("Private profile")}</FormLabel>
+									<FormDescription>
+										{t("Hide profile from public access. We recommend keeping profile public.")}
+									</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -394,10 +402,8 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("dashboard.user.settings.privateEmail")}</FormLabel>
-									<FormDescription>
-										{t("dashboard.user.settings.privateEmailDescription")}
-									</FormDescription>
+									<FormLabel>{t("Private email")}</FormLabel>
+									<FormDescription>{t("Hide your email address from public access")}</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -412,10 +418,8 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("dashboard.user.settings.privatePhone")}</FormLabel>
-									<FormDescription>
-										{t("dashboard.user.settings.privatePhoneDescription")}
-									</FormDescription>
+									<FormLabel>{t("Private phone")}</FormLabel>
+									<FormDescription>{t("Hide your phone number from public access")}</FormDescription>
 								</div>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -430,9 +434,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 								<div className="space-y-0.5">
-									<FormLabel>{t("dashboard.user.settings.privateStats")}</FormLabel>
+									<FormLabel>{t("Private Statistics")}</FormLabel>
 									<FormDescription>
-										{t("dashboard.user.settings.privateStatsDescription")}
+										{t("Only you can see how many views your profile has")}
 									</FormDescription>
 								</div>
 								<FormControl>
@@ -446,10 +450,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						{isLoading ? (
 							<>
 								<Loader className="mr-2 h-4 w-4 animate-spin" />
-								{t("common.actions.saving")}
+								{t("Saving...")}
 							</>
 						) : (
-							t("common.actions.save")
+							t("Save")
 						)}
 					</LoaderSubmitButton>
 				</form>

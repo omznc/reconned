@@ -2,7 +2,7 @@
 
 import type { InviteStatus } from "@generated/client";
 import { Ban } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ interface InvitationsTableProps {
 
 export function InvitationsTable({ invites, totalPages }: InvitationsTableProps) {
 	const confirm = useConfirm();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const [message] = useQueryState("message");
 	useEffect(() => {
@@ -50,10 +50,10 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 		}
 
 		const confirmed = await confirm({
-			title: t("dashboard.club.members.invitations.table.revoke.title"),
-			body: t("dashboard.club.members.invitations.table.revoke.body"),
-			cancelButton: t("common.actions.cancel"),
-			actionButton: t("common.actions.confirm"),
+			title: t("Are you sure?"),
+			body: t("Are you sure you want to revoke the club access invitation?"),
+			cancelButton: t("Cancel"),
+			actionButton: t("Confirm"),
 			actionButtonVariant: "destructive",
 		});
 
@@ -67,18 +67,18 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 		});
 
 		if (!response?.data?.success) {
-			toast.error(response?.data?.error || t("dashboard.club.members.invitations.table.revoke.error"));
+			toast.error(response?.data?.error || t("An error occurred while revoking the invitation"));
 			return;
 		}
 
-		toast.success(t("dashboard.club.members.invitations.table.revoke.success"));
+		toast.success(t("Invitation successfully revoked"));
 	};
 
 	return (
 		<GenericDataTable
 			data={invites}
 			totalPages={totalPages}
-			searchPlaceholder={t("dashboard.club.members.invitations.table.searchPlaceholder")}
+			searchPlaceholder={t("Search invitations...")}
 			columns={[
 				{
 					key: "email",
@@ -87,21 +87,21 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 				},
 				{
 					key: "userName",
-					header: t("dashboard.club.members.invitations.table.user"),
+					header: t("User"),
 				},
 				{
 					key: "status",
-					header: t("dashboard.club.members.invitations.table.status"),
+					header: t("Status"),
 					sortable: true,
 					cellConfig: {
 						variant: "badge",
 						valueMap: {
-							PENDING: t("dashboard.club.members.invitations.table.pending"),
-							ACCEPTED: t("dashboard.club.members.invitations.table.accepted"),
-							REJECTED: t("dashboard.club.members.invitations.table.rejected"),
-							EXPIRED: t("dashboard.club.members.invitations.table.expired"),
-							REVOKED: t("dashboard.club.members.invitations.table.revoked"),
-							REQUESTED: t("dashboard.club.members.invitations.table.requested"),
+							PENDING: t("Pending"),
+							ACCEPTED: t("Accepted"),
+							REJECTED: t("Rejected"),
+							EXPIRED: t("Expired"),
+							REVOKED: t("Revoked"),
+							REQUESTED: t("Requested"),
 						},
 						badgeVariants: {
 							PENDING: "bg-yellow-100 text-yellow-800",
@@ -115,17 +115,17 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 				},
 				{
 					key: "createdAt",
-					header: t("dashboard.club.members.invitations.table.created"),
+					header: t("Date sent"),
 					sortable: true,
 				},
 				{
 					key: "expiresAt",
-					header: t("dashboard.club.members.invitations.table.expires"),
+					header: t("Expires"),
 					sortable: true,
 				},
 				{
 					key: "actions",
-					header: t("dashboard.club.members.invitations.table.actions"),
+					header: t("Actions"),
 					cellConfig: {
 						variant: "custom",
 						components: (row) => {
@@ -142,9 +142,7 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 									}
 								>
 									<Ban className="size-4 mr-2" />
-									{row.status === "PENDING"
-										? t("dashboard.club.members.invitations.table.revoke.confirm")
-										: t("dashboard.club.members.invitations.table.inactive")}
+									{row.status === "PENDING" ? t("Revoke") : t("Inactive")}
 								</DropdownMenuItem>,
 							];
 						},
@@ -154,15 +152,15 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 			filters={[
 				{
 					key: "status",
-					label: t("dashboard.club.members.invitations.table.status"),
+					label: t("Status"),
 					options: [
-						{ label: t("dashboard.club.members.invitations.table.all"), value: "all" },
-						{ label: t("dashboard.club.members.invitations.table.pending"), value: "PENDING" },
-						{ label: t("dashboard.club.members.invitations.table.accepted"), value: "ACCEPTED" },
-						{ label: t("dashboard.club.members.invitations.table.rejected"), value: "REJECTED" },
-						{ label: t("dashboard.club.members.invitations.table.expired"), value: "EXPIRED" },
-						{ label: t("dashboard.club.members.invitations.table.revoked"), value: "REVOKED" },
-						{ label: t("dashboard.club.members.invitations.table.requested"), value: "REQUESTED" },
+						{ label: t("All"), value: "all" },
+						{ label: t("Pending"), value: "PENDING" },
+						{ label: t("Accepted"), value: "ACCEPTED" },
+						{ label: t("Rejected"), value: "REJECTED" },
+						{ label: t("Expired"), value: "EXPIRED" },
+						{ label: t("Revoked"), value: "REVOKED" },
+						{ label: t("Requested"), value: "REQUESTED" },
 					],
 				},
 			]}

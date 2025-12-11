@@ -2,7 +2,7 @@
 
 import type { Event } from "@generated/client";
 import { ExternalLink, MoreHorizontal } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,32 +41,32 @@ interface EventsTableProps {
 }
 
 export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 
 	return (
 		<GenericDataTable
 			data={events}
 			totalPages={Math.ceil(totalEvents / pageSize)}
-			searchPlaceholder={t("dashboard.events.search")}
+			searchPlaceholder={t("Search events...")}
 			columns={[
 				{
 					key: "name",
-					header: t("dashboard.events.name"),
+					header: t("Name"),
 					sortable: true,
 				},
 				{
 					key: "location",
-					header: t("dashboard.events.location"),
+					header: t("Location"),
 					sortable: true,
 				},
 				{
 					key: "dateStart",
-					header: t("dashboard.events.dateStart"),
+					header: t("Start"),
 					sortable: true,
 				},
 				{
 					key: "dateRegistrationsClose",
-					header: t("dashboard.events.dateRegistrationsClose"),
+					header: t("Closing applications"),
 					sortable: true,
 				},
 				{
@@ -83,12 +83,12 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 				},
 				{
 					key: "club.name",
-					header: t("dashboard.events.clubName"),
+					header: t("Club"),
 					sortable: true,
 				},
 				{
 					key: "actions",
-					header: t("dashboard.events.actions"),
+					header: t("Actions"),
 					cellConfig: {
 						variant: "custom",
 						component: (_, item) => {

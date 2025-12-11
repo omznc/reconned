@@ -1,7 +1,7 @@
 import { isAfter, isBefore } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.form";
 import { ErrorPage } from "@/components/error-page";
@@ -14,9 +14,9 @@ import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function EventApplicationPage(props: PageProps<"/[locale]/events/[id]/apply">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
-		return <ErrorPage title={t("dashboard.club.events.attendenceTracking.unavailable")} />;
+		return <ErrorPage title={t("This functionality is not available")} />;
 	}
 
 	const [user, params] = await Promise.all([isAuthenticated(), props.params]);
@@ -123,9 +123,9 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 	if (!canApplyToEvent) {
 		return (
 			<ErrorPage
-				title={t("public.events.apply.registrationsClosed")}
+				title={t("Registrations for this event are not open")}
 				link={`/events/${event.id}`}
-				linkText={t("public.events.apply.backToEvent")}
+				linkText={t("Back to event")}
 			/>
 		);
 	}
@@ -134,8 +134,8 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
 		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
-		name: `${existingApplication ? t("public.events.apply.editTitle") : t("public.events.apply.title")}: ${event.name}`,
-		description: t("public.events.apply.metadata.description", { eventName: event.name }),
+		name: `${existingApplication ? t("Edit event application") : t("Apply to event")}: ${event.name}`,
+		description: t("Applying to {eventName}", { eventName: event.name }),
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
 		mainEntity: {
 			"@type": "SportsEvent",
@@ -181,8 +181,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 		<div className="container mx-auto max-w-[1200px] py-8">
 			<JsonLdScript data={applicationPageSchema} />
 			<h1 className="text-3xl font-bold mb-8">
-				{existingApplication ? t("public.events.apply.editTitle") : t("public.events.apply.title")}:{" "}
-				{event.name}
+				{existingApplication ? t("Edit event application") : t("Apply to event")}: {event.name}
 			</h1>
 			<EventApplicationForm
 				existingApplication={existingApplication}
@@ -195,7 +194,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/apply">): Promise<Metadata> {
-	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
+	const [params, t, locale] = await Promise.all([props.params, getExtracted(), getLocale()]);
 
 	const event = await prisma.event.findFirst({
 		where: {
@@ -218,7 +217,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/a
 
 	if (!event) {
 		return {
-			title: t("public.events.apply.eventNotFound"),
+			title: t("Event Not Found - RECONNED"),
 		};
 	}
 
@@ -231,8 +230,8 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/a
 	);
 
 	return {
-		title: t("public.events.apply.applyToEvent", { eventName: event.name }),
-		description: t("public.events.apply.applyToParticipate", { eventName: event.name }),
+		title: t("Apply to {eventName} - RECONNED", { eventName: event.name }),
+		description: t("Apply to participate in {eventName}", { eventName: event.name }),
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(

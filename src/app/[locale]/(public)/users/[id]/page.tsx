@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
@@ -102,7 +102,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">): Promise<Metadata> {
-	const [params, t, locale] = await Promise.all([props.params, getTranslations(), getLocale()]);
+	const [params, t, locale] = await Promise.all([props.params, getExtracted(), getLocale()]);
 
 	const user = await prisma.user.findFirst({
 		where: {
@@ -137,7 +137,11 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 
 	return {
 		title: `${user.name} - RECONNED`,
-		description: user.bio?.slice(0, 160) ?? t("public.users.metadata.description"),
+		description:
+			user.bio?.slice(0, 160) ??
+			t(
+				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(

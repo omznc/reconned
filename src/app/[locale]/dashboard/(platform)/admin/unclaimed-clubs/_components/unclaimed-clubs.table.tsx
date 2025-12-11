@@ -3,7 +3,7 @@
 import type { Club } from "@generated/client";
 import { ExternalLink, Pencil, Settings } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
@@ -20,7 +20,7 @@ interface UnclaimedClubsTableProps {
 }
 
 export function UnclaimedClubsTable({ clubs, totalClubs, pageSize }: UnclaimedClubsTableProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const getActionUrl = (clubId: string) => {
 		return `?clubId=${clubId}`;
@@ -34,7 +34,7 @@ export function UnclaimedClubsTable({ clubs, totalClubs, pageSize }: UnclaimedCl
 		<GenericDataTable
 			data={clubs}
 			totalPages={Math.ceil(totalClubs / pageSize)}
-			searchPlaceholder={t("dashboard.admin.unclaimedClubs.searchPlaceholder")}
+			searchPlaceholder={t("Search for clubs...")}
 			columns={[
 				{
 					key: "logo",
@@ -93,7 +93,7 @@ export function UnclaimedClubsTable({ clubs, totalClubs, pageSize }: UnclaimedCl
 							<DropdownMenuItem key="edit" asChild>
 								<Link href={getEditUrl(club.id)}>
 									<Pencil className="size-4 mr-2" />
-									{t("common.actions.edit")}
+									{t("Edit")}
 								</Link>
 							</DropdownMenuItem>,
 							<DropdownMenuItem key="actions" asChild>

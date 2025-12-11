@@ -1,7 +1,7 @@
 import type { Prisma } from "@generated/client";
 import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { AddManagerForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.form";
 import { ManagersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/managers-table";
@@ -111,13 +111,13 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 }
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/members/managers">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const searchParams = await props.searchParams;
 
 	return (
 		<div className="space-y-8">
 			<div>
-				<h2 className="text-2xl font-bold mb-4">{t("dashboard.club.members.managers.title")}</h2>
+				<h2 className="text-2xl font-bold mb-4">{t("Managers")}</h2>
 				<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
 					<ManagersPageFetcher {...props} />
 				</Suspense>

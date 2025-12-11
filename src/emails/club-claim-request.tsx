@@ -1,5 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { emailStyles } from "@/emails/styles";
 import { env } from "@/lib/env";
 
@@ -24,13 +24,13 @@ export const ClubClaimRequestEmail = async ({
 	message,
 	clubId,
 }: ClubClaimRequestEmailProps) => {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	const adminUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/admin/unclaimed-clubs?clubId=${clubId}`;
 
 	return (
 		<Html>
 			<Head />
-			<Preview>{t("emails.clubClaimRequest.title", { clubName })}</Preview>
+			<Preview>{t("Club Claim Request: {clubName}", { clubName })}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -49,38 +49,42 @@ export const ClubClaimRequestEmail = async ({
 							{clubLocation && ` - ${clubLocation}`}
 						</Heading>
 					</Section>
-					<Heading style={emailStyles.h1}>{t("emails.clubClaimRequest.title", { clubName })}</Heading>
-					<Text style={emailStyles.text}>{t("emails.clubClaimRequest.message")}</Text>
+					<Heading style={emailStyles.h1}>{t("Club Claim Request: {clubName}", { clubName })}</Heading>
+					<Text style={emailStyles.text}>
+						{t(
+							"A user has requested to claim an unclaimed club. Review the details below and assign an owner if appropriate.",
+						)}
+					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={adminUrl}>
-							{t("emails.clubClaimRequest.action")}
+							{t("View Club in Admin Panel")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
 					<Text style={emailStyles.text}>
-						<strong>{t("emails.clubClaimRequest.requesterName")}:</strong> {requesterName}
+						<strong>{t("Requester Name")}:</strong> {requesterName}
 						{requesterCallsign && ` (${requesterCallsign})`}
 					</Text>
 					<Text style={emailStyles.text}>
-						<strong>{t("emails.clubClaimRequest.requesterEmail")}:</strong> {requesterEmail}
+						<strong>{t("Requester Email")}:</strong> {requesterEmail}
 					</Text>
 					<Text style={emailStyles.text}>
-						<strong>{t("emails.clubClaimRequest.club")}:</strong> {clubName}
+						<strong>{t("Club")}:</strong> {clubName}
 					</Text>
 					<Text style={emailStyles.text}>
-						<strong>{t("emails.clubClaimRequest.clubId")}:</strong> {clubId}
+						<strong>{t("Club ID")}:</strong> {clubId}
 					</Text>
 					{message && (
 						<>
 							<Hr style={emailStyles.hr} />
 							<Text style={emailStyles.text}>
-								<strong>{t("emails.clubClaimRequest.messageLabel")}:</strong>
+								<strong>{t("Message")}:</strong>
 							</Text>
 							<Text style={emailStyles.text}>{message}</Text>
 						</>
 					)}
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("emails.clubClaimRequest.footer")}</Text>
+					<Text style={emailStyles.footer}>{t("This is an automated notification from RECONNED.")}</Text>
 				</Container>
 			</Body>
 		</Html>

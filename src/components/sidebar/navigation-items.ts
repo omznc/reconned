@@ -29,49 +29,49 @@ import type { NavItem } from "@/components/sidebar/types";
 export function getAppNavigationItems(isAdmin: boolean, pendingInvites: number, t: (key: string) => string): NavItem[] {
 	const items: NavItem[] = [
 		{
-			title: t("components.sidebar.home"),
+			title: t("Homepage"),
 			url: "/",
 			icon: House,
 		},
 		{
-			title: t("components.sidebar.dashboard"),
+			title: t("Dashboard"),
 			url: "/dashboard",
 			icon: LayoutDashboard,
 		},
 		{
-			title: t("components.sidebar.help"),
+			title: t("Help"),
 			url: "/dashboard/help",
 			icon: Info,
 		},
 		{
-			title: t("components.sidebar.user"),
+			title: t("User"),
 			url: "#",
 			icon: User,
 			items: [
 				{
-					title: t("components.sidebar.overview"),
+					title: t("Overview"),
 					url: "/dashboard/user",
 					icon: Search,
 				},
 				{
-					title: t("components.sidebar.settings"),
+					title: t("Settings"),
 					url: "/dashboard/user/settings",
 					icon: Cog,
 				},
 				{
-					title: t("components.sidebar.security"),
+					title: t("Security"),
 					url: "/dashboard/user/security",
 					icon: Key,
 				},
 				{
-					title: `${t("components.sidebar.invites")} (${pendingInvites})`,
+					title: `${t("Invitations")} (${pendingInvites})`,
 					url: "/dashboard/user/invites",
 					icon: Bell,
 				},
 			],
 		},
 		{
-			title: t("components.sidebar.myEvents"),
+			title: t("My events"),
 			url: "/dashboard/events",
 			icon: CalendarFold,
 		},
@@ -79,28 +79,28 @@ export function getAppNavigationItems(isAdmin: boolean, pendingInvites: number, 
 
 	if (isAdmin) {
 		items.push({
-			title: t("components.sidebar.admin"),
+			title: t("Administration"),
 			url: "#",
 			icon: Shield,
 			protected: true,
 			items: [
 				{
-					title: t("components.sidebar.users"),
+					title: t("Users"),
 					url: "/dashboard/admin/users",
 					icon: User,
 				},
 				{
-					title: t("components.sidebar.clubs"),
+					title: t("Clubs"),
 					url: "/dashboard/admin/clubs",
 					icon: Building2,
 				},
 				{
-					title: t("components.sidebar.unclaimedClubs"),
+					title: t("Unclaimed clubs"),
 					url: "/dashboard/admin/unclaimed-clubs",
 					icon: Building2,
 				},
 				{
-					title: t("components.sidebar.emails"),
+					title: t("Emails"),
 					url: "/dashboard/admin/emails",
 					icon: Mail,
 				},
@@ -117,12 +117,12 @@ export function getAppNavigationItems(isAdmin: boolean, pendingInvites: number, 
 export function getClubNavigationItems(clubId: string, isManager: boolean, t: (key: string) => string): NavItem[] {
 	const items: NavItem[] = [
 		{
-			title: t("components.sidebar.club"),
+			title: t("Club"),
 			url: "#",
 			icon: Building2,
 			items: [
 				{
-					title: t("components.sidebar.overview"),
+					title: t("Overview"),
 					url: `/dashboard/${clubId}/club`,
 					icon: Search,
 				},
@@ -134,31 +134,31 @@ export function getClubNavigationItems(clubId: string, isManager: boolean, t: (k
 	if (isManager && items[0]?.items) {
 		items[0].items.push(
 			{
-				title: t("components.sidebar.newPost"),
+				title: t("New post"),
 				url: `/dashboard/${clubId}/club/posts`,
 				icon: NotebookPen,
 				protected: true,
 			},
 			{
-				title: t("components.sidebar.spending"),
+				title: t("Expenses"),
 				url: `/dashboard/${clubId}/club/spending`,
 				icon: DollarSign,
 				protected: true,
 			},
 			{
-				title: t("components.sidebar.info"),
+				title: t("Information"),
 				url: `/dashboard/${clubId}/club/information`,
 				icon: Pencil,
 				protected: true,
 			},
 			// {
-			// 	title: t("components.sidebar.stats"),
+			// 	title: t("Statistics"),
 			// 	url: `/dashboard/${clubId}/club/stats`,
 			// 	icon: ChartBar,
 			// 	protected: true,
 			// },
 			{
-				title: t("components.sidebar.auditLogs"),
+				title: t("Audit"),
 				url: `/dashboard/${clubId}/club/audit`,
 				icon: History,
 				protected: true,
@@ -168,12 +168,12 @@ export function getClubNavigationItems(clubId: string, isManager: boolean, t: (k
 
 	// Add members section
 	items.push({
-		title: t("components.sidebar.members"),
+		title: t("Members"),
 		url: "#",
 		icon: BookUser,
 		items: [
 			{
-				title: t("components.sidebar.overview"),
+				title: t("Overview"),
 				url: `/dashboard/${clubId}/members`,
 				icon: Search,
 			},
@@ -184,13 +184,13 @@ export function getClubNavigationItems(clubId: string, isManager: boolean, t: (k
 	if (isManager && items[1]?.items) {
 		items[1].items.push(
 			{
-				title: t("components.sidebar.invitations"),
+				title: t("Invitations"),
 				url: `/dashboard/${clubId}/members/invitations`,
 				icon: MailPlus,
 				protected: true,
 			},
 			{
-				title: t("components.sidebar.managers"),
+				title: t("Managers"),
 				url: `/dashboard/${clubId}/members/managers`,
 				icon: BookUser,
 				protected: true,
@@ -200,17 +200,17 @@ export function getClubNavigationItems(clubId: string, isManager: boolean, t: (k
 
 	// Add events section
 	items.push({
-		title: t("components.sidebar.events"),
+		title: t("Events"),
 		url: "#",
 		icon: CalendarFold,
 		items: [
 			{
-				title: t("components.sidebar.overview"),
+				title: t("Overview"),
 				url: `/dashboard/${clubId}/events`,
 				icon: Search,
 			},
 			{
-				title: t("components.sidebar.calendar"),
+				title: t("Calendar"),
 				url: `/dashboard/${clubId}/events/calendar`,
 				icon: CalendarDays,
 			},
@@ -221,13 +221,13 @@ export function getClubNavigationItems(clubId: string, isManager: boolean, t: (k
 	if (isManager && items[2]?.items) {
 		items[2].items.push(
 			{
-				title: t("components.sidebar.newEvent"),
+				title: t("Create an event"),
 				url: `/dashboard/${clubId}/events/create`,
 				icon: Plus,
 				protected: true,
 			},
 			{
-				title: t("components.sidebar.rules"),
+				title: t("Rules"),
 				url: `/dashboard/${clubId}/events/rules`,
 				icon: DiamondMinus,
 				protected: true,

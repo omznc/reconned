@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { GoogleLogo } from "@/components/logos/google-logo";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
@@ -10,7 +10,7 @@ export function GoogleLoginButton({
 	redirectTo?: string | null;
 	wasLastMethod?: boolean;
 }) {
-	const t = useTranslations();
+	const t = useExtracted();
 
 	return (
 		<Button
@@ -30,7 +30,7 @@ export function GoogleLoginButton({
 			<GoogleLogo /> Google
 			{wasLastMethod && (
 				<span className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold">
-					{t("public.auth.lastUsed")}
+					{t("Last used")}
 				</span>
 			)}
 		</Button>

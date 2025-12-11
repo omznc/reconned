@@ -1,7 +1,7 @@
 import { Role } from "@generated/client";
 import { Square } from "lucide-react";
 import Image from "next/image";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
 import { Link, redirect } from "@/i18n/navigation";
 import { isAuthenticated } from "@/lib/auth";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
-	const [user, locale, t] = await Promise.all([isAuthenticated(), getLocale(), getTranslations()]);
+	const [user, locale, t] = await Promise.all([isAuthenticated(), getLocale(), getExtracted()]);
 
 	if (!user) {
 		return redirect({ href: "/login", locale });
@@ -74,42 +74,40 @@ export default async function DashboardPage() {
 	});
 
 	if (!stats) {
-		return <ErrorPage title={t("dashboard.root.error")} />;
+		return <ErrorPage title={t("An error occurred")} />;
 	}
 
 	const ROLE_MAPPING: Record<Role, string> = {
-		[Role.CLUB_OWNER]: t("dashboard.root.icons.clubOwner"),
-		[Role.MANAGER]: t("dashboard.root.icons.clubManager"),
-		[Role.USER]: t("dashboard.root.icons.member"),
+		[Role.CLUB_OWNER]: t("Club owner"),
+		[Role.MANAGER]: t("Club manager"),
+		[Role.USER]: t("Member"),
 	};
 
 	return (
 		<div className="container py-6 space-y-6">
-			<h1 className="text-2xl font-bold">{t("dashboard.root.welcome", { name: user.name })}</h1>
+			<h1 className="text-2xl font-bold">{t("Welcome, {name}", { name: user.name })}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">{t("dashboard.root.statistics.events")}</div>
+					<div className="text-sm text-muted-foreground">{t("Events")}</div>
 					<div className="text-2xl font-bold">{stats._count.eventRegistration}</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">{t("dashboard.root.statistics.clubs")}</div>
+					<div className="text-sm text-muted-foreground">{t("Clubs")}</div>
 					<div className="text-2xl font-bold">{stats._count.clubMembership}</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">{t("dashboard.root.statistics.writtenReviews")}</div>
+					<div className="text-sm text-muted-foreground">{t("Written reviews")}</div>
 					<div className="text-2xl font-bold">{stats._count.reviewsWritten}</div>
 				</div>
 				<div className="p-4 border rounded-lg bg-sidebar">
-					<div className="text-sm text-muted-foreground">
-						{t("dashboard.root.statistics.receivedReviews")}
-					</div>
+					<div className="text-sm text-muted-foreground">{t("Reviews received")}</div>
 					<div className="text-2xl font-bold">{stats._count.reviewsReceived}</div>
 				</div>
 			</div>
 
 			{stats.clubMembership.length > 0 && (
 				<div className="space-y-4">
-					<h2 className="text-xl font-semibold">{t("dashboard.root.myClubs")}</h2>
+					<h2 className="text-xl font-semibold">{t("My clubs")}</h2>
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 						{stats.clubMembership.map((membership) => (
 							<Link
@@ -172,9 +170,7 @@ export default async function DashboardPage() {
 									<div className="space-y-3">
 										{membership.club.events[0] && (
 											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">
-													{t("dashboard.root.nextEvent")}
-												</p>
+												<p className="text-sm font-medium mb-1">{t("Next event")}</p>
 												<p className="text-sm text-muted-foreground line-clamp-1">
 													{membership.club.events[0].name} •{" "}
 													{membership.club.events[0].dateStart.toLocaleDateString("bs")}
@@ -184,9 +180,7 @@ export default async function DashboardPage() {
 
 										{membership.club.reviews[0] && (
 											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">
-													{t("dashboard.root.latestReview")}
-												</p>
+												<p className="text-sm font-medium mb-1">{t("Latest review")}</p>
 												<p className="text-sm text-muted-foreground line-clamp-2">
 													{membership.club.reviews[0].content}
 												</p>
@@ -202,7 +196,7 @@ export default async function DashboardPage() {
 
 			{stats.eventRegistration.length > 0 && (
 				<div className="space-y-4">
-					<h2 className="text-xl font-semibold">{t("dashboard.root.recentEvents")}</h2>
+					<h2 className="text-xl font-semibold">{t("Recent events")}</h2>
 					<div className="space-y-2">
 						{stats.eventRegistration.map((registration) => (
 							<Link

@@ -2,7 +2,7 @@ import type { Review, User } from "@generated/client";
 import { format } from "date-fns";
 import { Star } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
@@ -15,7 +15,7 @@ interface ReviewsOverviewProps {
 }
 
 export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	if (!FEATURE_FLAGS.REVIEWS) {
 		return;
@@ -75,15 +75,13 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 			return notFound();
 	}
 
-	const title = t(`types.${type}`);
-
 	const averageRating =
 		reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
 
 	return (
 		<Card>
 			<CardHeader className="pb-2">
-				<CardTitle>{t("components.reviews.title")}</CardTitle>
+				<CardTitle>{t("Ratings")}</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<div className="flex flex-col gap-4">
@@ -102,7 +100,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 
 					{reviews.length > 0 ? (
 						<>
-							<h2 className="text-lg font-semibold">{t("components.reviews.latestReviews")}</h2>
+							<h2 className="text-lg font-semibold">{t("Latest ratings")}</h2>
 							<div className="flex flex-col md:flex-row gap-4 items-start justify-between">
 								{reviews?.slice(0, 3).map((review) => (
 									<div key={review.id} className="space-y-1">
@@ -130,10 +128,19 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 								))}
 							</div>
 
-							<ReviewsOverviewSheet reviews={reviews} title={title} />
+							<ReviewsOverviewSheet
+								reviews={reviews}
+								title={
+									{
+										club: t("club"),
+										event: t("event"),
+										user: t("the user"),
+									}[type]
+								}
+							/>
 						</>
 					) : (
-						<p className="text-sm text-muted-foreground">{t("components.reviews.noReviews")}</p>
+						<p className="text-sm text-muted-foreground">{t("There are no ratings")}</p>
 					)}
 				</div>
 			</CardContent>

@@ -1,7 +1,7 @@
 import { ArrowUpRight, MailCheckIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,14 +34,14 @@ const sponsors = [
 export const revalidate = 86_400; // 1 day
 
 export default async function SponsorsPage() {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	const sponsorPageSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
 		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
-		name: t("public.sponsors.metadata.title"),
-		description: t("public.sponsors.metadata.description"),
+		name: t("Sponsors - RECONNED"),
+		description: t("Our current sponsors and partners. Thank you for your support!"),
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
 		mainEntity: {
 			"@type": "ItemList",
@@ -69,16 +69,20 @@ export default async function SponsorsPage() {
 				<div className="container mx-auto px-4 py-24 max-w-[1200px]">
 					<div className="relative max-w-2xl">
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
-							{t("public.sponsors.title")}
+							{t("Sponsors and partners")}
 						</h1>
-						<p className="text-xl text-text/80 mb-8">{t("public.sponsors.description")}</p>
+						<p className="text-xl text-text/80 mb-8">
+							{t(
+								"It is realistic to say that this site would not exist without the engagement and support of everyone you can find below. Thank you.",
+							)}
+						</p>
 					</div>
 				</div>
 			</div>
 
 			<div className="flex flex-col size-full gap-16 max-w-[1200px] px-4 py-16">
 				<section>
-					<h2 className="text-3xl font-bold mb-8">{t("public.sponsors.currentSponsors")}</h2>
+					<h2 className="text-3xl font-bold mb-8">{t("Our current sponsors")}</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 						{sponsors.map((sponsor) => (
 							<Link target="_blank" key={sponsor.name} href={sponsor.website} className="h-full group">
@@ -131,8 +135,8 @@ export default async function SponsorsPage() {
 									/>
 								</CardHeader>
 								<CardContent className="flex flex-col gap-1">
-									<CardTitle>{t("public.sponsors.cta.title")}</CardTitle>
-									<p className="opacity-80">{t("public.sponsors.cta.description")}</p>
+									<CardTitle>{t("You")}</CardTitle>
+									<p className="opacity-80">{t("This place can be yours")}</p>
 								</CardContent>
 							</Card>
 						</Link>
@@ -140,9 +144,9 @@ export default async function SponsorsPage() {
 				</section>
 
 				<section>
-					<h2 className="text-3xl font-bold mb-4">{t("public.sponsors.contactUs")}</h2>
+					<h2 className="text-3xl font-bold mb-4">{t("Contact Us")}</h2>
 					<p className="text-lg">
-						{t("public.sponsors.contactDescription")}{" "}
+						{t("Want to help or have questions? ")}{" "}
 						<Link
 							href="mailto:mail@reconned.com"
 							className="text-red-600 underline hover:text-red-400 transition-colors"
@@ -158,24 +162,26 @@ export default async function SponsorsPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	return {
-		title: t("public.sponsors.metadata.title"),
-		description: t("public.sponsors.metadata.description"),
-		keywords: t("public.sponsors.metadata.keywords")
+		title: t("Sponsors - RECONNED"),
+		description: t("Our current sponsors and partners. Thank you for your support!"),
+		keywords: t(
+			"airsoft sponsors, airsoft partners, support airsoft, airsoft donations, airsoft funding, airsoft community sponsors, airsoft BiH sponsors",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("public.sponsors.metadata.title"),
-			description: t("public.sponsors.metadata.description"),
+			title: t("Sponsors - RECONNED"),
+			description: t("Our current sponsors and partners. Thank you for your support!"),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("public.sponsors.metadata.title"),
-			description: t("public.sponsors.metadata.description"),
+			title: t("Sponsors - RECONNED"),
+			description: t("Our current sponsors and partners. Thank you for your support!"),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),

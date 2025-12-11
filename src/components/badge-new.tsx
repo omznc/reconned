@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface BadgeNewProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -6,7 +6,7 @@ interface BadgeNewProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function BadgeNew({ className, ...props }: BadgeNewProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	return (
 		<span
 			className={cn(
@@ -15,7 +15,7 @@ export function BadgeNew({ className, ...props }: BadgeNewProps) {
 			)}
 			{...props}
 		>
-			{t("components.badge.new")}
+			{t("New")}
 		</span>
 	);
 }

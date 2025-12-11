@@ -1,6 +1,6 @@
 import type { Club } from "@generated/client";
 import { Logger } from "next-axiom";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { ActionError } from "@/lib/action-error";
@@ -10,11 +10,11 @@ import { prisma } from "@/lib/prisma";
 const unsafeActionClient = createSafeActionClient({
 	// Can also be an async function.
 	async handleServerError(e) {
-		const t = await getTranslations("errors");
+		const t = await getExtracted();
 		if (e instanceof ActionError) {
 			return e.message;
 		}
-		return t("errors.default");
+		return t("There's been a problem, try again later.");
 	},
 });
 
@@ -22,7 +22,7 @@ const clubIdSchema = z.object({
 	clubId: z.string(),
 });
 const logger = new Logger({ source: "server-action" });
-const t = await getTranslations("errors");
+const t = await getExtracted();
 
 /**
  * If the underyling schema requires a clubId, this action will check if the user is authenticated and if they manage the club.
@@ -37,7 +37,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 		logger.info("User not authenticated", {
 			input: clientInput,
 		});
-		throw new ActionError(t("safeAction.userNotAuthenticated"));
+		throw new ActionError(t("User not authenticated"));
 	}
 
 	// 2. Check if a clubId is provided. If not, allow the action to proceed
@@ -59,7 +59,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 			input: clientInput,
 			user,
 		});
-		throw new ActionError(t("safeAction.invalidClubIdProvided"));
+		throw new ActionError(t("Invalid clubId provided"));
 	}
 
 	// 4. Check if the club exists
@@ -71,7 +71,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 			input: clientInput,
 			user,
 		});
-		throw new ActionError(t("safeAction.clubNotFound"));
+		throw new ActionError(t("Club not found"));
 	}
 
 	// 5. Check if the user is an admin or manages the club. If either are true, allow the action to proceed
@@ -85,7 +85,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 		user,
 		club,
 	});
-	throw new ActionError(t("safeAction.userDoesNotManageClub"));
+	throw new ActionError(t("User does not manage this club"));
 });
 
 /**
@@ -97,11 +97,11 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 export const adminActionClient = unsafeActionClient.use(async ({ next }) => {
 	const user = await isAuthenticated();
 	if (!user) {
-		throw new ActionError(t("safeAction.userNotAuthenticated"));
+		throw new ActionError(t("User not authenticated"));
 	}
 
 	if (user.role !== "admin") {
-		throw new ActionError(t("safeAction.userIsNotAdmin"));
+		throw new ActionError(t("User is not an admin"));
 	}
 
 	return next({ ctx: { user } });

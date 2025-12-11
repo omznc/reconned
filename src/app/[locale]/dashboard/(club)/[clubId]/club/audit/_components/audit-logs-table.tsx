@@ -2,7 +2,7 @@
 
 import type { JsonValue } from "@prisma/client/runtime/client";
 import { Code, MoreHorizontal } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import { useState } from "react";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Badge } from "@/components/ui/badge";
@@ -42,37 +42,37 @@ interface AuditLogsTableProps {
 }
 
 export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const locale = useLocale();
 	const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
 	const actionTypeMap: Record<string, string> = {
-		CLUB_CREATE: t("dashboard.club.audit.actionTypes.clubCreate"),
-		CLUB_UPDATE: t("dashboard.club.audit.actionTypes.clubUpdate"),
-		CLUB_DELETE: t("dashboard.club.audit.actionTypes.clubDelete"),
-		MEMBER_INVITE: t("dashboard.club.audit.actionTypes.memberInvite"),
-		MEMBER_REMOVE: t("dashboard.club.audit.actionTypes.memberRemove"),
-		MEMBER_PROMOTE: t("dashboard.club.audit.actionTypes.memberPromote"),
-		MEMBER_DEMOTE: t("dashboard.club.audit.actionTypes.memberDemote"),
-		MEMBER_JOIN: t("dashboard.club.audit.actionTypes.memberJoin"),
-		MEMBER_LEAVE: t("dashboard.club.audit.actionTypes.memberLeave"),
-		CLUB_BAN: t("dashboard.club.audit.actionTypes.clubBan"), // Admin-only
-		CLUB_UNBAN: t("dashboard.club.audit.actionTypes.clubUnban"),
-		SPENDING_CREATE: t("dashboard.club.audit.actionTypes.spendingCreate"),
-		SPENDING_UPDATE: t("dashboard.club.audit.actionTypes.spendingUpdate"),
-		SPENDING_DELETE: t("dashboard.club.audit.actionTypes.spendingDelete"),
-		POST_CREATE: t("dashboard.club.audit.actionTypes.postCreate"),
-		POST_UPDATE: t("dashboard.club.audit.actionTypes.postUpdate"),
-		POST_DELETE: t("dashboard.club.audit.actionTypes.postDelete"),
-		INSTAGRAM_CONNECT: t("dashboard.club.audit.actionTypes.instagramConnect"),
-		INSTAGRAM_DISCONNECT: t("dashboard.club.audit.actionTypes.instagramDisconnect"),
-		EVENT_CREATE: t("dashboard.club.audit.actionTypes.eventCreate"),
-		EVENT_UPDATE: t("dashboard.club.audit.actionTypes.eventUpdate"),
-		EVENT_DELETE: t("dashboard.club.audit.actionTypes.eventDelete"),
-		CLUB_RULE_UPDATE: t("dashboard.club.audit.actionTypes.clubRuleUpdate"),
-		CLUB_RULE_CREATE: t("dashboard.club.audit.actionTypes.clubRuleCreate"),
-		CLUB_RULE_DELETE: t("dashboard.club.audit.actionTypes.clubRuleDelete"),
-		MEMBERSHIP_EXTENSION: t("dashboard.club.audit.actionTypes.membershipExtension"),
+		CLUB_CREATE: t("Club creation"),
+		CLUB_UPDATE: t("Club update"),
+		CLUB_DELETE: t("Club deletion"),
+		MEMBER_INVITE: t("Member invite"),
+		MEMBER_REMOVE: t("Member removal"),
+		MEMBER_PROMOTE: t("Member promotion"),
+		MEMBER_DEMOTE: t("Member demotion"),
+		MEMBER_JOIN: t("Member join"),
+		MEMBER_LEAVE: t("Member leave"),
+		CLUB_BAN: t("Club ban"), // Admin-only
+		CLUB_UNBAN: t("Club unban"),
+		SPENDING_CREATE: t("Spending creation"),
+		SPENDING_UPDATE: t("Spending update"),
+		SPENDING_DELETE: t("Spending deletion"),
+		POST_CREATE: t("Post creation"),
+		POST_UPDATE: t("Post update"),
+		POST_DELETE: t("Post deletion"),
+		INSTAGRAM_CONNECT: t("Instagram connection"),
+		INSTAGRAM_DISCONNECT: t("Instagram disconnection"),
+		EVENT_CREATE: t("Event creation"),
+		EVENT_UPDATE: t("Event update"),
+		EVENT_DELETE: t("Event deletion"),
+		CLUB_RULE_UPDATE: t("Club rule update"),
+		CLUB_RULE_CREATE: t("Club rule creation"),
+		CLUB_RULE_DELETE: t("Club rule deletion"),
+		MEMBERSHIP_EXTENSION: t("Membership extension"),
 	};
 
 	const getActionTypeLabel = (actionType: string): string => {
@@ -81,7 +81,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 
 	// Create filter options from the action type map
 	const filterOptions = [
-		{ label: t("dashboard.club.audit.allActions"), value: "all" },
+		{ label: t("All actions"), value: "all" },
 		// Generate options from the actionTypeMap
 		...Object.entries(actionTypeMap).map(([value, label]) => ({
 			label,
@@ -93,11 +93,11 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 			<GenericDataTable
 				data={logs}
 				totalPages={Math.ceil(totalLogs / pageSize)}
-				searchPlaceholder={t("dashboard.club.audit.search")}
+				searchPlaceholder={t("Search audit logs...")}
 				columns={[
 					{
 						key: "createdAt",
-						header: t("dashboard.club.audit.columns.date"),
+						header: t("Date"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
@@ -111,7 +111,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 					},
 					{
 						key: "actionType",
-						header: t("dashboard.club.audit.columns.action"),
+						header: t("Action"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
@@ -124,12 +124,12 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 					},
 					{
 						key: "user.name",
-						header: t("dashboard.club.audit.columns.user"),
+						header: t("User"),
 						sortable: true,
 					},
 					{
 						key: "ipAddress",
-						header: t("dashboard.club.audit.columns.ipAddress"),
+						header: t("IP address"),
 						sortable: true,
 						cellConfig: {
 							variant: "custom",
@@ -138,7 +138,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 					},
 					{
 						key: "actions",
-						header: t("dashboard.club.audit.columns.actions"),
+						header: t("Actions"),
 						cellConfig: {
 							variant: "custom",
 							component: (_, log) => (
@@ -151,7 +151,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem onClick={() => setSelectedLog(log)}>
 											<Code className="size-4 mr-2" />
-											{t("dashboard.club.audit.viewDetails")}
+											{t("View details")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
@@ -162,7 +162,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 				filters={[
 					{
 						key: "actionType",
-						label: t("dashboard.club.audit.filterByAction"),
+						label: t("Filter by action"),
 						options: filterOptions,
 					},
 				]}
@@ -180,7 +180,7 @@ interface LogDetailCredenzaProps {
 }
 
 function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const locale = useLocale();
 
 	if (!log) {
@@ -191,7 +191,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 		<Credenza open={Boolean(log)} onOpenChange={onClose}>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle className="truncate mr-8">{t("dashboard.club.audit.detailsTitle")}</CredenzaTitle>
+					<CredenzaTitle className="truncate mr-8">{t("Log details")}</CredenzaTitle>
 					<CredenzaDescription>
 						{new Date(log.createdAt).toLocaleDateString(locale, {
 							year: "numeric",
@@ -204,12 +204,12 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 
 				<div className="mt-4 space-y-4 p-4 md:p-0">
 					<div>
-						<h3 className="text-sm font-medium">{t("dashboard.club.audit.actionType")}</h3>
+						<h3 className="text-sm font-medium">{t("Action type")}</h3>
 						<p className="mt-1 font-mono text-sm">{actionTypeMap[log.actionType] || log.actionType}</p>
 					</div>
 
 					<div>
-						<h3 className="text-sm font-medium">{t("dashboard.club.audit.userInfo")}</h3>
+						<h3 className="text-sm font-medium">{t("User")}</h3>
 						<p className="mt-1 text-sm">
 							{log.user?.name ?? "-"} ({log.user?.email ?? "-"})
 						</p>
@@ -217,20 +217,20 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 
 					{log.ipAddress && (
 						<div>
-							<h3 className="text-sm font-medium">{t("dashboard.club.audit.ipAddress")}</h3>
+							<h3 className="text-sm font-medium">{t("IP address")}</h3>
 							<p className="mt-1 font-mono text-sm">{log.ipAddress}</p>
 						</div>
 					)}
 
 					{log.userAgent && (
 						<div>
-							<h3 className="text-sm font-medium">{t("dashboard.club.audit.userAgent")}</h3>
+							<h3 className="text-sm font-medium">{t("User agent")}</h3>
 							<p className="mt-1 text-sm truncate">{log.userAgent}</p>
 						</div>
 					)}
 
 					<div>
-						<h3 className="text-sm font-medium">{t("dashboard.club.audit.actionData")}</h3>
+						<h3 className="text-sm font-medium">{t("Action data")}</h3>
 						<pre className="mt-1 p-4 bg-muted rounded-md overflow-auto text-xs max-h-[300px]">
 							{JSON.stringify(log.actionData, null, 2)}
 						</pre>

@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import { InviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/invite-actions";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { redirect } from "@/i18n/navigation";
@@ -14,7 +14,7 @@ export default async function InvitesPage() {
 		});
 	}
 
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	const invites = await prisma.clubInvite.findMany({
 		where: {
@@ -28,10 +28,10 @@ export default async function InvitesPage() {
 
 	return (
 		<div className="container py-6 space-y-6">
-			<h1 className="text-2xl font-bold">{t("dashboard.user.invites.title")}</h1>
+			<h1 className="text-2xl font-bold">{t("Invitations")}</h1>
 
 			{invites.length === 0 ? (
-				<p className="text-muted-foreground">{t("dashboard.user.invites.noInvites")}</p>
+				<p className="text-muted-foreground">{t("You have no invitations")}</p>
 			) : (
 				<div className="grid gap-4">
 					{invites.map((invite) => (

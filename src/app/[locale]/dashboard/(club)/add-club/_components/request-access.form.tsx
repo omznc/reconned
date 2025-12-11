@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ async function searchClubs(query: string) {
 }
 
 export function RequestAccessForm() {
-	const t = useTranslations();
+	const t = useExtracted();
 	const [clubs, setClubs] = useState<Club[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -50,7 +50,7 @@ export function RequestAccessForm() {
 					const results = await searchClubs(value);
 					setClubs(results);
 				} catch (_error) {
-					toast.error(t("dashboard.addClub.searchFailed"));
+					toast.error(t("Error searching clubs"));
 				} finally {
 					setIsLoading(false);
 				}
@@ -70,10 +70,10 @@ export function RequestAccessForm() {
 		const response = await requestAccess(data);
 
 		if (response?.data?.success) {
-			toast.success(t("dashboard.addClub.requestSent"));
+			toast.success(t("Request sent successfully"));
 			form.reset();
 		} else {
-			toast.error(response?.data?.error || t("dashboard.addClub.requestFailed"));
+			toast.error(response?.data?.error || t("Error sending request"));
 		}
 	}
 
@@ -85,7 +85,7 @@ export function RequestAccessForm() {
 					name="clubIdTarget"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("dashboard.addClub.selectClub")}</FormLabel>
+							<FormLabel>{t("Select club")}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -100,7 +100,7 @@ export function RequestAccessForm() {
 										>
 											{field.value
 												? clubs.find((club) => club.id === field.value)?.name
-												: t("dashboard.addClub.selectClubPlaceholder")}
+												: t("Select club...")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
@@ -108,7 +108,7 @@ export function RequestAccessForm() {
 								<PopoverContent className="w-full p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder={t("dashboard.addClub.searchClubs")}
+											placeholder={t("Search clubs...")}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -118,9 +118,9 @@ export function RequestAccessForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>{t("dashboard.addClub.enterTwoChars")}</CommandEmpty>
+												<CommandEmpty>{t("Enter at least two characters")}</CommandEmpty>
 											) : clubs.length === 0 ? (
-												<CommandEmpty>{t("dashboard.addClub.noClubsFound")}</CommandEmpty>
+												<CommandEmpty>{t("No clubs found")}</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{clubs.map((club) => (
@@ -153,7 +153,7 @@ export function RequestAccessForm() {
 						</FormItem>
 					)}
 				/>
-				<Button type="submit">{t("dashboard.addClub.sendRequest")}</Button>
+				<Button type="submit">{t("Send request")}</Button>
 			</form>
 		</Form>
 	);

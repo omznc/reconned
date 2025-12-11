@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -12,7 +12,7 @@ export default async function RootLayout({
 	children: ReactNode;
 }>) {
 	const user = await isAuthenticated({ bypassCache: true });
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	const isBeta = env.NEXT_PUBLIC_BETA ?? false;
 
@@ -21,14 +21,14 @@ export default async function RootLayout({
 			<div className="w-full min-h-screen flex flex-col items-center">
 				{isBeta && (
 					<div className="top-0 left-0 z-50 w-full bg-background/40 text-center py-1.5">
-						<p className="text-sm">{t("components.sidebar.betaMessage")}</p>
+						<p className="text-sm">{t("Beta version - Changes and errors are possible.")}</p>
 					</div>
 				)}
 				<Link
 					href="https://github.com/omznc/reconned?utm_source=reconned.com"
 					className="top-0 left-0 z-50 w-full bg-background/20 text-center py-1.5"
 				>
-					<p className="text-sm">{t("components.sidebar.githubMessage")}</p>
+					<p className="text-sm">{t("We're open-source! Click here and help us become better.")}</p>
 				</Link>
 				<Header user={user} />
 				<main className="grow size-full flex flex-col items-center">

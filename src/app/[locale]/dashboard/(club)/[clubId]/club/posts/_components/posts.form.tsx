@@ -2,7 +2,7 @@
 
 import type { Post } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,7 +31,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [editorContent, setEditorContent] = useState<string>(editingPost?.content ?? "");
 	const confirm = useConfirm();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	// Initialize file upload system for post images
 	const initialFiles: FileUploadItem[] = editingPost?.images
@@ -109,11 +109,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 
 			form.reset();
 			setPostId(null);
-			toast.success(
-				values.id ? t("dashboard.club.posts.successEdited") : t("dashboard.club.posts.successCreated"),
-			);
+			toast.success(values.id ? t("Post successfully modified") : t("Post successfully created"));
 		} catch {
-			toast.error(t("dashboard.club.posts.error"));
+			toast.error(t("An error occurred"));
 		} finally {
 			if (values.id) {
 				router.back();
@@ -128,10 +126,10 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		}
 
 		const confirmed = await confirm({
-			title: t("dashboard.club.posts.delete.title"),
-			body: t("dashboard.club.posts.delete.body"),
-			cancelButton: t("common.actions.cancel"),
-			actionButton: t("common.actions.confirm"),
+			title: t("Are you sure?"),
+			body: t("If you delete a post, you won't be able to get it back."),
+			cancelButton: t("Cancel"),
+			actionButton: t("Confirm"),
 			actionButtonVariant: "destructive",
 		});
 
@@ -146,9 +144,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 				clubId,
 			});
 			setPostId(null);
-			toast.success(t("dashboard.club.posts.delete.success"));
+			toast.success(t("Post successfully deleted"));
 		} catch {
-			toast.error(t("dashboard.club.posts.delete.error"));
+			toast.error(t("An error occurred while deleting the post"));
 		} finally {
 			router.back();
 		}
@@ -158,12 +156,10 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	return (
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-semibold">
-					{editingPost ? t("dashboard.club.posts.editing") : t("dashboard.club.posts.creating")}
-				</h1>
+				<h1 className="text-2xl font-semibold">{editingPost ? t("Editing a post") : t("New post")}</h1>
 				{editingPost && (
 					<Button variant="destructive" onClick={handleDelete} disabled={isLoading}>
-						{t("dashboard.club.posts.delete.confirm")}
+						{t("Delete the post")}
 					</Button>
 				)}
 			</div>
@@ -174,9 +170,9 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="title"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.posts.title")}</FormLabel>
+								<FormLabel>{t("Title")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("dashboard.club.posts.creating")} {...field} />
+									<Input placeholder={t("New post")} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -188,7 +184,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="content"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.posts.content")}</FormLabel>
+								<FormLabel>{t("Content")}</FormLabel>
 								<FormControl>
 									<Editor editable initialValue={editorContent} onChange={handleEditorChange} />
 								</FormControl>
@@ -201,7 +197,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="images"
 						render={() => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.posts.images")}</FormLabel>
+								<FormLabel>{t("Images")}</FormLabel>
 								<FormControl>
 									<FileUpload
 										value={imageUpload.files}
@@ -225,7 +221,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						name="isPublic"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>{t("dashboard.club.posts.public")}</FormLabel>
+								<FormLabel>{t("Public announcement")}</FormLabel>
 								<FormControl>
 									<Switch checked={field.value} onCheckedChange={field.onChange} />
 								</FormControl>
@@ -235,7 +231,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 					/>
 
 					<Button type="submit" disabled={isLoading}>
-						{editingPost ? t("dashboard.club.posts.saveEditPost") : t("dashboard.club.posts.saveNewPost")}
+						{editingPost ? t("Save changes") : t("Save the post")}
 					</Button>
 				</form>
 			</Form>

@@ -1,5 +1,5 @@
 "use server";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import {
 	userAvatarFileSchema,
 	userHeaderFileSchema,
@@ -14,7 +14,7 @@ import { deleteS3File, getS3FileUploadUrl } from "@/lib/storage";
 import { addImageVersion } from "@/lib/utils";
 
 export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).action(async ({ parsedInput, ctx }) => {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	// Validate slug
 	if (parsedInput.slug) {
 		const valid = await validateSlug({
@@ -22,7 +22,7 @@ export const saveUserInformation = safeActionClient.inputSchema(userInfoShema).a
 			slug: parsedInput.slug,
 		});
 		if (!valid) {
-			throw new ActionError(t("dashboard.user.settings.linkTaken"));
+			throw new ActionError(t("Link taken"));
 		}
 	}
 

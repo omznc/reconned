@@ -2,7 +2,7 @@
 
 import { render } from "@react-email/components";
 import { revalidateTag } from "next/cache";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { z } from "zod";
 import { createUnclaimedClubSchema } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-club.schema";
 import { validateSlug } from "@/components/slug/validate-slug";
@@ -247,7 +247,7 @@ export const claimClubRequest = adminActionClient
 		}
 
 		const adminEmails = admins.map((admin) => admin.email);
-		const t = await getTranslations();
+		const t = await getExtracted();
 
 		const emailHtml = await render(
 			<ClubClaimRequestEmail
@@ -267,7 +267,7 @@ export const claimClubRequest = adminActionClient
 
 		await sendEmail({
 			to: adminEmails,
-			subject: t("emails.clubClaimRequest.title", { clubName: club.name }),
+			subject: t("Club Claim Request: {clubName}", { clubName: club.name }),
 			html: emailHtml,
 		});
 

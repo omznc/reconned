@@ -1,6 +1,6 @@
 "use client";
 import { Moon, Sun } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { setThemeAction } from "@/lib/global-actions/theme";
 
 export function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	useEffect(() => {
 		if (theme !== "light" && theme !== "dark") {
@@ -29,7 +29,7 @@ export function ThemeSwitcher() {
 		>
 			<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
 			<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-			{t("components.themeSwitcher.toggle")}
+			{t("Change theme")}
 		</Button>
 	);
 }

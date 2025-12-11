@@ -1,7 +1,7 @@
 "use client";
 
 import { Upload, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type { FileUploadItem } from "@/components/ui/file-upload";
@@ -37,7 +37,7 @@ export function SingleImageUpload({
     variant = "logo",
     className,
 }: SingleImageUploadProps) {
-    const t = useTranslations();
+    const t = useExtracted();
     const file = value[0];
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -123,10 +123,10 @@ export function SingleImageUpload({
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/50 opacity-0 transition group-hover:opacity-100">
                             <Upload className="h-5 w-5 text-white" />
                             <p className="text-sm font-medium text-white text-center">
-                                {t("components.singleImageUpload.changeImage")}
+                                {t("Change image")}
                             </p>
                             <p className="text-xs text-white/70 text-center">
-                                {t("components.singleImageUpload.dragOrClick")}
+                                {t("Click or drag to upload")}
                             </p>
                         </div>
                     </div>
@@ -134,14 +134,14 @@ export function SingleImageUpload({
                     <div className="flex flex-col items-center justify-center text-center text-muted-foreground rounded-md">
                         <Upload className="mb-2 h-6 w-6" />
                         <p className="text-sm font-medium text-foreground">
-                            {t("components.singleImageUpload.uploadImage")}
+                            {t("Upload image")}
                         </p>
                         <p className="text-xs">
-                            {t("components.singleImageUpload.dragOrClick")}
+                            {t("Click or drag to upload")}
                         </p>
                         <p className="text-[11px] text-muted-foreground">
-                            {t("components.singleImageUpload.maxFile", {
-                                size: Math.round(maxFileSize / (1024 * 1024)),
+                            {t("Up to {size}MB per image", {
+                                size: Math.round(maxFileSize / (1024 * 1024)).toFixed(1),
                             })}
                         </p>
                     </div>
@@ -157,7 +157,7 @@ export function SingleImageUpload({
                     disabled={disabled}
                 >
                     <X className="h-4 w-4" />
-                    {t("components.singleImageUpload.removeImage")}
+                    {t("Remove image")}
                 </Button>
             )}
         </div>

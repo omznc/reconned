@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash/debounce";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,7 +41,7 @@ export function AddManagerForm() {
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const form = useForm<z.infer<typeof promoteToManagerSchema>>({
 		resolver: zodResolver(promoteToManagerSchema),
@@ -59,7 +59,7 @@ export function AddManagerForm() {
 					const results = await searchMembers(params.clubId, value);
 					setMembers(results);
 				} catch (_error) {
-					toast.error(t("dashboard.club.members.managers.search.error"));
+					toast.error(t("There's been a problem with the search, try again."));
 				} finally {
 					setIsLoading(false);
 				}
@@ -80,14 +80,14 @@ export function AddManagerForm() {
 			const response = await promoteToManager(values);
 
 			if (!response?.data?.success) {
-				toast.error(response?.data?.error || t("dashboard.club.members.managers.promote.error"));
+				toast.error(response?.data?.error || t("There's been a problem while promoting that user, try again."));
 				return;
 			}
 
-			toast(t("dashboard.club.members.managers.promote.success"));
+			toast(t("Successfully promoted to manager"));
 			form.reset({ clubId: params.clubId, memberId: "" });
 		} catch (_error) {
-			toast.error(t("dashboard.club.members.managers.promote.error"));
+			toast.error(t("There's been a problem while promoting that user, try again."));
 		}
 	}
 
@@ -95,14 +95,14 @@ export function AddManagerForm() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-3xl w-full">
 				<div>
-					<h3 className="text-lg font-semibold">{t("dashboard.club.members.managers.promote.title")}</h3>
+					<h3 className="text-lg font-semibold">{t("Add a new manager")}</h3>
 				</div>
 				<FormField
 					control={form.control}
 					name="memberId"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>{t("dashboard.club.members.managers.promote.member.label")}</FormLabel>
+							<FormLabel>{t("Club member")}</FormLabel>
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<FormControl>
@@ -116,7 +116,7 @@ export function AddManagerForm() {
 										>
 											{field.value
 												? members.find((member) => member.id === field.value)?.user.name
-												: t("dashboard.club.members.managers.promote.member.placeholder")}
+												: t("Select a member...")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
@@ -124,7 +124,7 @@ export function AddManagerForm() {
 								<PopoverContent className="sm:w-[448px] p-0">
 									<Command shouldFilter={false}>
 										<CommandInput
-											placeholder={t("dashboard.club.members.managers.promote.member.search")}
+											placeholder={t("Search members...")}
 											value={searchQuery}
 											onValueChange={handleSearch}
 										/>
@@ -134,13 +134,9 @@ export function AddManagerForm() {
 													<Loader className="animate-spin h-4 w-4" />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
-												<CommandEmpty>
-													{t("dashboard.club.members.managers.promote.member.searchEmpty")}
-												</CommandEmpty>
+												<CommandEmpty>{t("Please enter at least 2 characters")}</CommandEmpty>
 											) : members.length === 0 ? (
-												<CommandEmpty>
-													{t("dashboard.club.members.managers.promote.member.noResults")}
-												</CommandEmpty>
+												<CommandEmpty>{t("We couldn't find anyone")}</CommandEmpty>
 											) : (
 												<CommandGroup>
 													{members.map((member) => (
@@ -179,14 +175,14 @@ export function AddManagerForm() {
 								</PopoverContent>
 							</Popover>
 							<FormDescription>
-								{t("dashboard.club.members.managers.promote.member.description")}
+								{t("Choose the member you'd like to promote to manager.")}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
-					{t("dashboard.club.members.managers.promote.submit")}
+					{t("Promote")}
 				</Button>
 			</form>
 		</Form>

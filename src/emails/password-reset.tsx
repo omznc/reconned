@@ -1,5 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { emailStyles } from "@/emails/styles";
 import { env } from "@/lib/env";
 
@@ -9,12 +9,12 @@ interface PasswordResetProps {
 }
 
 export const PasswordReset = async ({ resetUrl, userName }: PasswordResetProps) => {
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	return (
 		<Html>
 			<Head />
-			<Preview>{t("emails.passwordReset.title")}</Preview>
+			<Preview>{t("Reset your password")}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -25,20 +25,24 @@ export const PasswordReset = async ({ resetUrl, userName }: PasswordResetProps) 
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>{t("emails.passwordReset.title")}</Heading>
+					<Heading style={emailStyles.h1}>{t("Reset your password")}</Heading>
 					{userName ? (
-						<Text style={emailStyles.text}>{t("emails.passwordReset.helloUser", { name: userName })}</Text>
+						<Text style={emailStyles.text}>{t("Hello {name}", { name: userName })}</Text>
 					) : (
-						<Text style={emailStyles.text}>{t("emails.passwordReset.hello")}</Text>
+						<Text style={emailStyles.text}>{t("Hello")}</Text>
 					)}
-					<Text style={emailStyles.text}>{t("emails.passwordReset.message")}</Text>
+					<Text style={emailStyles.text}>
+						{t("To reset your password, please click on the button below")}
+					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={resetUrl}>
-							{t("emails.passwordReset.action")}
+							{t("Reset my password")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("emails.passwordReset.footer")}</Text>
+					<Text style={emailStyles.footer}>
+						{t("If this email is unexpected, and you didn't request a password reset, simply ignore it.")}
+					</Text>
 				</Container>
 			</Body>
 		</Html>

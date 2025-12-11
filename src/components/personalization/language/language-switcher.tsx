@@ -1,6 +1,6 @@
 "use client";
 import { Globe } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 export interface LanguageSwitcherProps extends ButtonProps {}
 export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitcherProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const router = useRouter();
 	const path = usePathname();
 	const locale = useLocale();
@@ -35,7 +35,7 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="start">
-				<DropdownMenuLabel>{t("components.languageSwitcher.select")}</DropdownMenuLabel>
+				<DropdownMenuLabel>{t("Choose a language")}</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{VALID_LOCALES.map((localeOption) => (
 					<DropdownMenuItem

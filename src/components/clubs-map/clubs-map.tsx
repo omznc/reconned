@@ -6,7 +6,7 @@ import { Marker } from "@adamscybot/react-leaflet-component-marker";
 import L from "leaflet";
 import { MapPin, Search } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -378,12 +378,12 @@ function createClubIcon(
 	size: number,
 	clubName: string,
 	isHovered: boolean,
-	t: ReturnType<typeof useTranslations>,
+	t: ReturnType<typeof useExtracted>,
 ) {
 	const iconContent = logoUrl ? (
 		<Image
 			src={logoUrl}
-			alt={t("components.clubsMap.clubLogo")}
+			alt={t("Club logo")}
 			className="object-contain"
 			width={IMAGE_SIZES.ICON}
 			height={IMAGE_SIZES.ICON}
@@ -438,7 +438,7 @@ function LocationMarker({
 }: {
 	position: [number, number];
 	logo?: string | null;
-	t: ReturnType<typeof useTranslations>;
+	t: ReturnType<typeof useExtracted>;
 }) {
 	return position ? <Marker position={position} icon={createClubIcon(logo, 32, "", false, t)} /> : null;
 }
@@ -499,7 +499,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 	const [clusteredPositions, setClusteredPositions] = useState<Map<string, [number, number]>>(new Map());
 	const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 	const [clusteringEnabled, setClusteringEnabled] = useState(false); // Default to disabled
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
 
@@ -577,7 +577,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 									className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 								/>
 								<span className="text-sm font-medium text-gray-900 dark:text-gray-300">
-									{t("components.clubsMap.enableClustering")}
+									{t("Clustering")}
 								</span>
 							</label>
 						</div>
@@ -600,7 +600,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 								<div className="relative">
 									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
 									<Input
-										placeholder={t("components.clubsMap.searchClubs")}
+										placeholder={t("Search clubs...")}
 										value={searchQuery}
 										onChange={(e) => setSearchQuery(e.target.value)}
 										onKeyDown={(e) => {
@@ -694,7 +694,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 							<div className="relative">
 								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
 								<Input
-									placeholder={t("components.clubsMap.searchClubs")}
+									placeholder={t("Search clubs...")}
 									value={searchQuery}
 									onChange={(e) => setSearchQuery(e.target.value)}
 									onKeyDown={(e) => {

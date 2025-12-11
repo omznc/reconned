@@ -1,7 +1,7 @@
 "use server";
 import type { Prisma } from "@generated/client";
 import type { JsonValue } from "@prisma/client/runtime/client";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import {
 	createEventFormSchema,
 	deleteEventImageSchema,
@@ -19,7 +19,7 @@ import { getS3FileUploadUrl } from "@/lib/storage";
 import { addImageVersion } from "@/lib/utils";
 
 export const createEvent = safeActionClient.inputSchema(createEventFormSchema).action(async ({ parsedInput, ctx }) => {
-	const t = await getTranslations("errors.events");
+	const t = await getExtracted();
 
 	// Validate slug
 	if (parsedInput.slug) {
@@ -28,7 +28,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 			slug: parsedInput.slug,
 		});
 		if (!valid) {
-			throw new ActionError(t("slugAlreadyTaken"));
+			throw new ActionError(t("This slug is already taken"));
 		}
 	}
 
@@ -76,7 +76,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 	});
 
 	if (eventFinished) {
-		throw new ActionError(t("cannotUpdateFinishedEvent"));
+		throw new ActionError(t("You cannot update a finished event"));
 	}
 
 	// If the event has an image and the image is being deleted, delete the image.
@@ -134,7 +134,7 @@ export const createEvent = safeActionClient.inputSchema(createEventFormSchema).a
 export const getEventImageUploadUrl = safeActionClient
 	.inputSchema(eventImageFileSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const t = await getTranslations("errors.events");
+		const t = await getExtracted();
 
 		const belongsToClub = await prisma.event.findFirst({
 			where: {
@@ -144,7 +144,7 @@ export const getEventImageUploadUrl = safeActionClient
 		});
 
 		if (!belongsToClub) {
-			throw new ActionError(t("eventDoesNotBelongToClub"));
+			throw new ActionError(t("This event does not belong to your club"));
 		}
 
 		const resp = await getS3FileUploadUrl({
@@ -158,7 +158,7 @@ export const getEventImageUploadUrl = safeActionClient
 export const deleteEventImage = safeActionClient
 	.inputSchema(deleteEventImageSchema)
 	.action(async ({ parsedInput, ctx }) => {
-		const t = await getTranslations("dashboard.club.events");
+		const t = await getExtracted();
 
 		await prisma.event.update({
 			where: {
@@ -175,13 +175,13 @@ export const deleteEventImage = safeActionClient
 			actionType: "EVENT_UPDATE",
 			actionData: {
 				id: parsedInput.eventId,
-				note: t("audit.imageDeleted"),
+				note: t("Event image deleted"),
 			},
 		});
 	});
 
 export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).action(async ({ parsedInput, ctx }) => {
-	const t = await getTranslations("errors.events");
+	const t = await getExtracted();
 
 	// If the event is in the past, you can't delete it.
 	const eventFinished = await prisma.event.findFirst({
@@ -196,7 +196,7 @@ export const deleteEvent = safeActionClient.inputSchema(deleteEventSchema).actio
 	const locale = await getLocale();
 
 	if (eventFinished) {
-		throw new ActionError(t("cannotDeleteFinishedEvent"));
+		throw new ActionError(t("You cannot delete a finished event"));
 	}
 
 	const [event, _] = await Promise.all([

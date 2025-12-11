@@ -7,6 +7,15 @@ import { env } from "@/lib/env";
 const withNextIntl = createNextIntlPlugin({
 	experimental: {
 		createMessagesDeclaration: "./messages/en.json",
+		srcPath: "./src",
+		extract: {
+			sourceLocale: "en",
+		},
+		messages: {
+			path: "./messages",
+			format: "json",
+			locales: "infer",
+		},
 	},
 });
 
@@ -32,7 +41,6 @@ const nextConfig = {
 		serverComponentsHmrCache: true,
 	},
 	images: {
-		// remotePatterns: [ ... ],
 		loader: "custom",
 		loaderFile: "./image-loader.ts",
 		qualities: [50, 75, 100],

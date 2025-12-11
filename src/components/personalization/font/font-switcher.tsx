@@ -1,7 +1,7 @@
 "use client";
 
 import { Type } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useEffect } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { setFontAction } from "@/lib/global-actions/font";
 
 export function FontSwitcher() {
 	const { font, setFont } = useFont();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	useEffect(() => {
 		if (font !== "sans" && font !== "mono") {
@@ -29,7 +29,7 @@ export function FontSwitcher() {
 			className="w-full items-center justify-start cursor-pointer shadow-none"
 		>
 			<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-			{t("components.fontSwitcher.toggle")}
+			{t("Change font")}
 		</Button>
 	);
 }

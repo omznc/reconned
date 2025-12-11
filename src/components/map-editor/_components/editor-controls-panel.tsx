@@ -1,7 +1,7 @@
 "use client";
 
 import { Circle, Copy, MousePointer2, Move3d, PencilLine, Shapes, Square, Trash2, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import type { ComponentType } from "react";
 
 import { PointMarker } from "@/components/map-editor/_components/point-marker";
@@ -34,21 +34,21 @@ export function EditorControlsPanel({
 	sidebarIconSize,
 	dimmed,
 }: EditorControlsPanelProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const mapEditorStore = useMapEditorStore();
 	const features = mapEditorStore.features;
 	const selectedId = mapEditorStore.selectedId;
 	const mode = mapEditorStore.mode;
 
 	const modeButtons: ModeButton[] = [
-		{ mode: "select", icon: MousePointer2, label: t("mapEditor.modes.select") },
-		{ mode: "move", icon: Move3d, label: t("mapEditor.modes.move") },
-		{ mode: "point", icon: X, label: t("mapEditor.modes.point") },
-		{ mode: "line", icon: PencilLine, label: t("mapEditor.modes.line") },
-		{ mode: "polygon", icon: Shapes, label: t("mapEditor.modes.polygon") },
-		{ mode: "rectangle", icon: Square, label: t("mapEditor.modes.rectangle") },
-		{ mode: "circle", icon: Circle, label: t("mapEditor.modes.circle") },
-		{ mode: "freehand", icon: PencilLine, label: t("mapEditor.modes.freehand") },
+		{ mode: "select", icon: MousePointer2, label: t("Select") },
+		{ mode: "move", icon: Move3d, label: t("Move") },
+		{ mode: "point", icon: X, label: t("Point") },
+		{ mode: "line", icon: PencilLine, label: t("Line") },
+		{ mode: "polygon", icon: Shapes, label: t("Polygon") },
+		{ mode: "rectangle", icon: Square, label: t("Rectangle") },
+		{ mode: "circle", icon: Circle, label: t("Circle") },
+		{ mode: "freehand", icon: PencilLine, label: t("Freehand") },
 	];
 
 	const sortedFeatures = [...features].sort((a, b) => {
@@ -66,7 +66,7 @@ export function EditorControlsPanel({
 	return (
 		<Card className={cn("flex h-full w-[320px] shrink-0 flex-col", dimmed && "opacity-70")}>
 			<CardHeader>
-				<CardTitle>{t("mapEditor.controls")}</CardTitle>
+				<CardTitle>{t("Controls")}</CardTitle>
 			</CardHeader>
 			<CardContent className="flex h-full min-h-0 flex-col space-y-4">
 				<div className="grid grid-cols-2 gap-2">
@@ -90,7 +90,7 @@ export function EditorControlsPanel({
 				</div>
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<span className="font-semibold text-sm">{t("mapEditor.actions.title")}</span>
+						<span className="font-semibold text-sm">{t("Actions")}</span>
 					</div>
 					<div className="flex flex-wrap gap-2">
 						<Button
@@ -100,16 +100,16 @@ export function EditorControlsPanel({
 							onClick={onFinishDraft}
 							disabled={!canFinish}
 						>
-							{t("mapEditor.actions.finish")}
+							{t("Finish shape")}
 						</Button>
 						<Button type="button" variant="destructive" size="sm" onClick={onClear}>
-							{t("mapEditor.actions.clear")}
+							{t("Clear all")}
 						</Button>
 					</div>
 				</div>
 				<div className="flex min-h-0 flex-1 flex-col gap-2">
 					<div className="flex items-center justify-between">
-						<span className="font-semibold text-sm">{t("mapEditor.fields.features")}</span>
+						<span className="font-semibold text-sm">{t("Features")}</span>
 						<span className="text-xs text-muted-foreground">{features.length}</span>
 					</div>
 					{features.length > 0 ? (

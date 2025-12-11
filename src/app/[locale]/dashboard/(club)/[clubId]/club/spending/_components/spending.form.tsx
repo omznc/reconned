@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -31,7 +31,7 @@ export function AddPurchaseModal() {
 	const [open, setOpen] = useState(false);
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	const form = useForm<PurchaseFormValues>({
 		resolver: zodResolver(purchaseFormSchema),
@@ -88,14 +88,14 @@ export function AddPurchaseModal() {
 
 			const result = await createPurchase(data);
 			if (result?.data?.purchase) {
-				toast.success(t("dashboard.club.spending.success"));
+				toast.success(t("Expense successfully added"));
 				setOpen(false);
 				receiptUpload.resetToInitial();
 				form.reset();
 				router.refresh();
 			}
 		} catch {
-			toast.error(t("dashboard.club.spending.error"));
+			toast.error(t("Error while saving expense data"));
 		}
 		setIsLoading(false);
 	};
@@ -105,12 +105,12 @@ export function AddPurchaseModal() {
 			<CredenzaTrigger asChild>
 				<Button>
 					<Plus className="mr-2 h-4 w-4" />
-					{t("dashboard.club.spending.newItem")}
+					{t("New item")}
 				</Button>
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{t("dashboard.club.spending.newItem")}</CredenzaTitle>
+					<CredenzaTitle>{t("New item")}</CredenzaTitle>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -120,12 +120,9 @@ export function AddPurchaseModal() {
 								name="title"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("dashboard.club.spending.details.title")}</FormLabel>
+										<FormLabel>{t("Title")}</FormLabel>
 										<FormControl>
-											<Input
-												placeholder={t("dashboard.club.spending.details.title")}
-												{...field}
-											/>
+											<Input placeholder={t("Title")} {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -136,12 +133,9 @@ export function AddPurchaseModal() {
 								name="description"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("dashboard.club.spending.details.description")}</FormLabel>
+										<FormLabel>{t("Description")}</FormLabel>
 										<FormControl>
-											<Textarea
-												placeholder={t("dashboard.club.spending.details.description")}
-												{...field}
-											/>
+											<Textarea placeholder={t("Description")} {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -152,7 +146,7 @@ export function AddPurchaseModal() {
 								name="amount"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>{t("dashboard.club.spending.details.amount")}</FormLabel>
+										<FormLabel>{t("Amount (KM)")}</FormLabel>
 										<FormControl>
 											<Input
 												type="number"
@@ -171,7 +165,7 @@ export function AddPurchaseModal() {
 								name="receiptUrls"
 								render={() => (
 									<FormItem>
-										<FormLabel>{t("dashboard.club.spending.details.receipts")}</FormLabel>
+										<FormLabel>{t("Receipts")}</FormLabel>
 										<FormControl>
 											<FileUpload
 												value={receiptUpload.files}
@@ -187,15 +181,13 @@ export function AddPurchaseModal() {
 												showPreview={true}
 											/>
 										</FormControl>
-										<FormDescription>
-											{t("dashboard.club.spending.details.receiptsMaxCount")}
-										</FormDescription>
+										<FormDescription>{t("Maximum 3 receipts per item")}</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
 							<LoaderSubmitButton isLoading={isLoading} className="w-full">
-								{isLoading ? t("common.actions.saving") : t("common.actions.save")}
+								{isLoading ? t("Saving...") : t("Save")}
 							</LoaderSubmitButton>
 						</form>
 					</Form>

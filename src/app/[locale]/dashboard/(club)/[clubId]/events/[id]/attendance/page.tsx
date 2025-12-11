@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { AttendanceTracker } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
 import { ErrorPage } from "@/components/error-page";
 import { isAuthenticated } from "@/lib/auth";
@@ -7,10 +7,10 @@ import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]/attendance">) {
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
-		return <ErrorPage title={t("dashboard.club.events.attendenceTracking.unavailable")} />;
+		return <ErrorPage title={t("This functionality is not available")} />;
 	}
 
 	const params = await props.params;
@@ -43,9 +43,9 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	if (new Date() < event.dateRegistrationsClose) {
 		return (
 			<ErrorPage
-				title={t("dashboard.club.events.attendenceTracking.registrationNotClosed")}
+				title={t("Applications are still open")}
 				link={`/dashboard/${params.clubId}/events/${params.id}`}
-				linkText={t("dashboard.club.events.attendenceTracking.backToEvent")}
+				linkText={t("Back to the event")}
 			/>
 		);
 	}
@@ -53,9 +53,9 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	if (new Date() > event.dateEnd) {
 		return (
 			<ErrorPage
-				title={t("dashboard.club.events.attendenceTracking.eventEnded")}
+				title={t("The event is over")}
 				link={`/dashboard/${params.clubId}/events/${params.id}`}
-				linkText={t("dashboard.club.events.attendenceTracking.backToEvent")}
+				linkText={t("Back to the event")}
 			/>
 		);
 	}

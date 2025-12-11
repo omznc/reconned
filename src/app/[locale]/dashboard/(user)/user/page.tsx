@@ -1,6 +1,6 @@
 import { Eye, Pencil } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export default async function Page() {
 		return notFound();
 	}
 
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	const userFromDb = await prisma.user.findUnique({
 		where: {
@@ -41,21 +41,21 @@ export default async function Page() {
 		<>
 			<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 				<div className="flex flex-col">
-					<AlertTitle>{t("dashboard.user.overview.alertTitle")}</AlertTitle>
-					<AlertDescription>{t("dashboard.user.overview.alertDescription")}</AlertDescription>
+					<AlertTitle>{t("Your account")}</AlertTitle>
+					<AlertDescription>{t("You can see your profile here")}</AlertDescription>
 				</div>
 				<div className="flex gap-1 flex-col md:flex-row">
 					<Button variant="outline" asChild={true}>
 						<Link className="flex items-center gap-1" href={"/dashboard/user/settings"}>
 							<Pencil size={16} />
-							{t("dashboard.user.overview.edit")}
+							{t("Edit profile")}
 						</Link>
 					</Button>
 					{!userFromDb.isPrivate && (
 						<Button variant="outline" asChild={true}>
 							<Link target="_blank" className="flex items-center gap-1" href={`/users/${user.id}`}>
 								<Eye size={16} />
-								{t("dashboard.user.overview.view")}
+								{t("View profile")}
 							</Link>
 						</Button>
 					)}

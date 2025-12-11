@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
 import { bs, enUS } from "date-fns/locale";
 import { CalendarClock } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -51,7 +51,7 @@ export function MembershipExtensionForm({
 	open,
 	onOpenChange,
 }: MembershipExtensionFormProps) {
-	const t = useTranslations();
+	const t = useExtracted();
 	const locale = useLocale();
 	const [isLocalOpen, setIsLocalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -88,11 +88,11 @@ export function MembershipExtensionForm({
 				return;
 			}
 
-			toast.success(t("components.membershipExtension.success", { user: membership.user.name }));
+			toast.success(t("Membership successfully extended for {user}", { user: membership.user.name }));
 
 			setIsOpen(false);
 		} catch {
-			toast.error(t("components.membershipExtension.failedToExtend"));
+			toast.error(t("There was an error while extending the membership"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -105,7 +105,7 @@ export function MembershipExtensionForm({
 		if (variant === "button") {
 			return (
 				<Button variant="outline" size="sm">
-					<CalendarClock className="mr-2 h-4 w-4" /> {t("components.membershipExtension.extendMembership")}
+					<CalendarClock className="mr-2 h-4 w-4" /> {t("Extend")}
 				</Button>
 			);
 		}
@@ -120,7 +120,7 @@ export function MembershipExtensionForm({
 			return (
 				<button type="button" className="flex items-center w-full text-left">
 					{icon || <CalendarClock className="size-4 mr-2" />}
-					{t("components.membershipExtension.extendMembership")}
+					{t("Extend")}
 				</button>
 			);
 		}
@@ -134,9 +134,9 @@ export function MembershipExtensionForm({
 			{open === undefined && <CredenzaTrigger asChild>{renderTrigger()}</CredenzaTrigger>}
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{t("components.membershipExtension.extendMembershipTitle")}</CredenzaTitle>
+					<CredenzaTitle>{t("Extend membership")}</CredenzaTitle>
 					<p className="text-sm text-muted-foreground">
-						{t("components.membershipExtension.extendMembershipDescription", {
+						{t("Extend membership for user {user}", {
 							user: membership.user.name,
 						})}
 					</p>
@@ -144,7 +144,7 @@ export function MembershipExtensionForm({
 				<CredenzaBody>
 					<div className="grid gap-4 py-4">
 						<div className="grid gap-2">
-							<div className="font-medium">{t("components.membershipExtension.currentStatus")}</div>
+							<div className="font-medium">{t("Current status")}</div>
 							<div className="text-sm">
 								<Badge variant={membershipStatus.variant}>{membershipStatus.label}</Badge>
 							</div>
@@ -152,7 +152,7 @@ export function MembershipExtensionForm({
 
 						{membership.startDate && (
 							<div className="grid gap-2">
-								<div className="font-medium">{t("components.membershipExtension.startDate")}</div>
+								<div className="font-medium">{t("Start date")}</div>
 								<div className="text-sm flex items-center gap-2">
 									<span>
 										{format(membership.startDate, "PPP", {
@@ -173,7 +173,7 @@ export function MembershipExtensionForm({
 
 						{membership.endDate && (
 							<div className="grid gap-2">
-								<div className="font-medium">{t("components.membershipExtension.endDate")}</div>
+								<div className="font-medium">{t("End date")}</div>
 								<div className="text-sm flex items-center gap-2">
 									<span>
 										{format(membership.endDate, "PPP", {
@@ -199,28 +199,16 @@ export function MembershipExtensionForm({
 									name="duration"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>
-												{t("components.membershipExtension.extensionDuration")}
-											</FormLabel>
+											<FormLabel>{t("Extension duration")}</FormLabel>
 											<Select onValueChange={field.onChange} defaultValue={field.value}>
 												<SelectTrigger>
-													<SelectValue
-														placeholder={t("components.membershipExtension.selectDuration")}
-													/>
+													<SelectValue placeholder={t("Select duration")} />
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value="1">
-														{t("components.membershipExtension.oneMonth")}
-													</SelectItem>
-													<SelectItem value="3">
-														{t("components.membershipExtension.threeMonths")}
-													</SelectItem>
-													<SelectItem value="6">
-														{t("components.membershipExtension.sixMonths")}
-													</SelectItem>
-													<SelectItem value="12">
-														{t("components.membershipExtension.oneYear")}
-													</SelectItem>
+													<SelectItem value="1">{t("1 month")}</SelectItem>
+													<SelectItem value="3">{t("3 months")}</SelectItem>
+													<SelectItem value="6">{t("6 months")}</SelectItem>
+													<SelectItem value="12">{t("1 year")}</SelectItem>
 												</SelectContent>
 											</Select>
 											<FormMessage />
@@ -230,10 +218,10 @@ export function MembershipExtensionForm({
 
 								<CredenzaFooter>
 									<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-										{t("common.actions.cancel")}
+										{t("Cancel")}
 									</Button>
 									<Button type="submit" disabled={isLoading}>
-										{isLoading ? t("common.actions.saving") : t("common.actions.save")}
+										{isLoading ? t("Saving...") : t("Save")}
 									</Button>
 								</CredenzaFooter>
 							</form>
@@ -253,14 +241,14 @@ function getMembershipStatus(
 
 	if (!(membership.startDate || membership.endDate)) {
 		return {
-			label: t("components.membershipExtension.unlimited"),
+			label: t("Unlimited"),
 			variant: "default",
 		} as const;
 	}
 
 	if (membership.endDate && new Date(membership.endDate) < today) {
 		return {
-			label: t("components.membershipExtension.expired"),
+			label: t("Expired"),
 			variant: "outline",
 		} as const;
 	}
@@ -272,19 +260,19 @@ function getMembershipStatus(
 
 		if (new Date(membership.endDate) < thirtyDaysFromNow) {
 			return {
-				label: t("components.membershipExtension.expiringSoon"),
+				label: t("Expires soon"),
 				variant: "secondary",
 			} as const;
 		}
 
 		return {
-			label: t("components.membershipExtension.active"),
+			label: t("Active"),
 			variant: "default",
 		} as const;
 	}
 
 	return {
-		label: t("components.membershipExtension.active"),
+		label: t("Active"),
 		variant: "default",
 	} as const;
 }

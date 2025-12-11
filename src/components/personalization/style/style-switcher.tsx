@@ -1,13 +1,13 @@
 "use client";
 
 import { Square, SquareRoundCorner } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useExtracted } from "next-intl";
 import { useStyle } from "@/components/personalization/style/style-provider";
 import { Button } from "@/components/ui/button";
 
 export function StyleSwitcher() {
 	const { style, setStyle } = useStyle();
-	const t = useTranslations();
+	const t = useExtracted();
 
 	return (
 		<Button
@@ -21,7 +21,7 @@ export function StyleSwitcher() {
 			) : (
 				<Square className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 			)}
-			{t("components.roundnessSwitcher.toggle")}
+			{t("Change style")}
 		</Button>
 	);
 }

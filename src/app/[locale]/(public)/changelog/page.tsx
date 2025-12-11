@@ -2,7 +2,7 @@ import { SiGithub } from "@icons-pack/react-simple-icons";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
@@ -37,7 +37,7 @@ export const revalidate = 3600; // 1 hour
 
 // Main changelog page
 export default async function ChangelogPage() {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	// Get the latest releases from GitHub
 	const response = await fetch("https://api.github.com/repos/omznc/reconned/releases", {
@@ -60,14 +60,14 @@ export default async function ChangelogPage() {
 		return (
 			<div className="container mx-auto py-12 px-4 md:px-6">
 				<div className="text-center mb-12">
-					<h1 className="text-4xl font-bold mb-4">{t("public.changelog.title")}</h1>
-					<p className="text-lg text-muted-foreground">{t("public.changelog.description")}</p>
+					<h1 className="text-4xl font-bold mb-4">{t("Changes")}</h1>
+					<p className="text-lg text-muted-foreground">{t("The RECONNED changelog")}</p>
 				</div>
 
 				<Alert variant="destructive" className="mb-6">
 					<AlertTriangle className="h-4 w-4" />
 					<AlertTitle>Error</AlertTitle>
-					<AlertDescription>{t("public.changelog.errorLoading")}</AlertDescription>
+					<AlertDescription>{t("There's been a problem while trying to get the changelog")}</AlertDescription>
 				</Alert>
 			</div>
 		);
@@ -99,8 +99,10 @@ export default async function ChangelogPage() {
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
 		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog`,
-		name: t("public.changelog.metadata.title"),
-		description: t("public.changelog.metadata.description"),
+		name: t("Changelog - RECONNED"),
+		description: t(
+			"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+		),
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog`,
 		mainEntity: {
 			"@type": "ItemList",
@@ -137,24 +139,24 @@ export default async function ChangelogPage() {
 		<div className="container mx-auto py-12 px-4 md:px-6">
 			<JsonLdScript data={changelogSchema} />
 			<div className="text-center mb-12">
-				<h1 className="text-4xl font-bold mb-4">{t("public.changelog.title")}</h1>
-				<p className="text-lg text-muted-foreground">{t("public.changelog.description")}</p>
+				<h1 className="text-4xl font-bold mb-4">{t("Changes")}</h1>
+				<p className="text-lg text-muted-foreground">{t("The RECONNED changelog")}</p>
 			</div>
 
 			{/* Latest Release */}
 			<div className="relative mb-16">
 				<PeekingDrawing className="z-10 absolute -right-5 md:-right-0 -top-11 lg:-top-27 transition-all w-full max-w-[180px] lg:max-w-[300px] dark:invert" />
-				<h2 className="text-2xl font-bold mb-6">{t("public.changelog.latestRelease")}</h2>
+				<h2 className="text-2xl font-bold mb-6">{t("Latest version")}</h2>
 				<Card className="relative overflow-hidden border-2 border-primary/20 shadow-lg">
 					<CardHeader className="bg-primary/5">
 						<CardTitle className="text-2xl flex items-center gap-2">
 							{latestRelease.name ||
-								t.rich("public.changelog.version", {
+								t("Version {version}", {
 									version: latestRelease.tag_name,
 								})}
 						</CardTitle>
 						<div className="text-sm text-muted-foreground">
-							{t("public.changelog.published", {
+							{t("Posted {date}", {
 								date: new Date(latestRelease.published_at).toLocaleDateString(locale, {
 									year: "numeric",
 									month: "long",
@@ -182,7 +184,7 @@ export default async function ChangelogPage() {
 								className="flex items-center gap-2"
 							>
 								<SiGithub className="h-4 w-4" />
-								{t("public.changelog.viewOnGithub")}
+								{t("View on GitHub")}
 								<ExternalLink className="h-3 w-3" />
 							</a>
 						</Button>
@@ -193,19 +195,19 @@ export default async function ChangelogPage() {
 			{/* Previous Releases */}
 			{previousReleasesContent.length > 0 && (
 				<div>
-					<h2 className="text-2xl font-bold mb-6">{t("public.changelog.previousReleases")}</h2>
+					<h2 className="text-2xl font-bold mb-6">{t("Previous versions")}</h2>
 					<div className="space-y-6">
 						{previousReleasesContent.map((release) => (
 							<Card key={release.id} className="overflow-hidden">
 								<CardHeader>
 									<CardTitle className="text-xl">
 										{release.name ||
-											t.rich("public.changelog.version", {
+											t.rich("Version {version}", {
 												version: release.tag_name,
 											})}
 									</CardTitle>
 									<div className="text-sm text-muted-foreground">
-										{t("public.changelog.published", {
+										{t("Posted {date}", {
 											date: new Date(release.published_at).toLocaleDateString(locale, {
 												year: "numeric",
 												month: "long",
@@ -233,7 +235,7 @@ export default async function ChangelogPage() {
 											className="flex items-center gap-2"
 										>
 											<SiGithub className="h-4 w-4" />
-											{t("public.changelog.viewOnGithub")}
+											{t("View on GitHub")}
 											<ExternalLink className="h-3 w-3" />
 										</a>
 									</Button>
@@ -248,24 +250,32 @@ export default async function ChangelogPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	return {
-		title: t("public.changelog.metadata.title"),
-		description: t("public.changelog.metadata.description"),
-		keywords: t("public.layout.metadata.keywords")
+		title: t("Changelog - RECONNED"),
+		description: t(
+			"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+		),
+		keywords: t(
+			"airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("public.changelog.metadata.title"),
-			description: t("public.changelog.metadata.description"),
+			title: t("Changelog - RECONNED"),
+			description: t(
+				"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("public.changelog.metadata.title"),
-			description: t("public.changelog.metadata.description"),
+			title: t("Changelog - RECONNED"),
+			description: t(
+				"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+			),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),

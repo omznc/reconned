@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { fileTypeFromBuffer } from "file-type";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import sharp from "sharp";
 
 export interface FileValidationResult {
@@ -34,15 +34,18 @@ export const validateFileBuffer = async (
 	expectedMimeType: string,
 	maxSize: number,
 ): Promise<FileValidationResult> => {
-	const t = await getTranslations("errors.fileSecurity");
+	const t = await getExtracted();
 
 	// Check file size
 	if (buffer.length === 0) {
-		return { isValid: false, error: t("emptyFile") };
+		return { isValid: false, error: t("The file is empty") };
 	}
 
 	if (buffer.length > maxSize) {
-		return { isValid: false, error: t("fileTooLarge", { maxSize }) };
+		return {
+			isValid: false,
+			error: t("The file is too large, the maximum size is {maxSize} bytes", { maxSize: String(maxSize) }),
+		};
 	}
 
 	// Magic number validation
@@ -50,19 +53,22 @@ export const validateFileBuffer = async (
 		const fileType = await fileTypeFromBuffer(buffer);
 
 		if (!fileType) {
-			return { isValid: false, error: t("unknownFileType") };
+			return { isValid: false, error: t("Unknown file type") };
 		}
 
 		if (fileType.mime !== expectedMimeType) {
 			return {
 				isValid: false,
-				error: t("invalidFileType", { expectedType: expectedMimeType, actualType: fileType.mime }),
+				error: t("Invalid file type, expected {expectedType} but got {actualType}", {
+					expectedType: expectedMimeType,
+					actualType: fileType.mime,
+				}),
 			};
 		}
 
 		return { isValid: true, mimeType: fileType.mime };
 	} catch {
-		return { isValid: false, error: t("fileValidationFailed") };
+		return { isValid: false, error: t("File validation failed") };
 	}
 };
 

@@ -1,5 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
-import { getTranslations } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { emailStyles } from "@/emails/styles";
 import { env } from "@/lib/env";
 
@@ -9,11 +9,11 @@ interface EmailVerificationProps {
 }
 
 export const EmailVerification = async ({ verificationUrl, userName }: EmailVerificationProps) => {
-	const t = await getTranslations();
+	const t = await getExtracted();
 	return (
 		<Html>
 			<Head />
-			<Preview>{t("emails.emailVerification.title")}</Preview>
+			<Preview>{t("Verify your email address")}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -24,24 +24,28 @@ export const EmailVerification = async ({ verificationUrl, userName }: EmailVeri
 							style={emailStyles.logo}
 						/>
 					</Section>
-					<Heading style={emailStyles.h1}>{t("emails.emailVerification.title")}</Heading>
+					<Heading style={emailStyles.h1}>{t("Verify your email address")}</Heading>
 					{userName ? (
 						<Text style={emailStyles.text}>
-							{t("emails.emailVerification.helloUser", {
+							{t("Hi {name},", {
 								name: userName,
 							})}
 						</Text>
 					) : (
-						<Text style={emailStyles.text}>{t("emails.emailVerification.hello")}</Text>
+						<Text style={emailStyles.text}>{t("Hello,")}</Text>
 					)}
-					<Text style={emailStyles.text}>{t("emails.emailVerification.message")}</Text>
+					<Text style={emailStyles.text}>
+						{t("Please click the button below to verify your email address.")}
+					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={verificationUrl}>
-							{t("emails.emailVerification.action")}
+							{t("Verify email")}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>{t("emails.emailVerification.footer")}</Text>
+					<Text style={emailStyles.footer}>
+						{t("If you did not request verification, please ignore this email.")}
+					</Text>
 				</Container>
 			</Body>
 		</Html>

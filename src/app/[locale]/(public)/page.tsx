@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import { EventCalendar } from "@/components/event-calendar";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
@@ -136,7 +136,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 		take: 3,
 	});
 
-	const t = await getTranslations();
+	const t = await getExtracted();
 
 	return (
 		<>
@@ -146,7 +146,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 					<div className="relative max-w-2xl">
 						<HomeDrawing className="absolute opacity-0 lg:opacity-100 transition-all -right-110 bottom-0 w-full max-w-[400px] h-auto dark:invert" />
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-4">
-							{t.rich("public.home.hero.title", {
+							{t.rich("Just Airsoft,<br></br> but better.", {
 								br: () => <br />,
 							})}
 						</h1>
@@ -156,10 +156,14 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									"inline-flex items-center rounded-full border border-green-500/30 dark:text-white bg-green-500/50 px-2.5 py-0.5 text-xs font text-black transition-colors hover:bg-green-500/20"
 								}
 							>
-								{t("public.home.hero.button")}
+								{t("View the changelog")}
 							</span>
 						</Link>
-						<p className="text-xl text-text/80 mb-8 mt-4">{t("public.home.hero.description")}</p>
+						<p className="text-xl text-text/80 mb-8 mt-4">
+							{t(
+								"Join the most advanced airsoft community. Find matches, connect with players and improve your game.",
+							)}
+						</p>
 						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
 							<Button
 								size="sm"
@@ -169,7 +173,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/search">
 									<Search className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.search")}</span>
+									<span className="text-sm">{t("Search all")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -180,7 +184,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/events">
 									<Calendar className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.events")}</span>
+									<span className="text-sm">{t("Events")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -191,7 +195,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/clubs">
 									<Building2 className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.clubs")}</span>
+									<span className="text-sm">{t("Clubs")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -202,7 +206,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/users">
 									<Users className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.members")}</span>
+									<span className="text-sm">{t("Players")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -213,7 +217,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/map">
 									<MapIcon className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.map")}</span>
+									<span className="text-sm">{t("Show map")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -224,7 +228,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/about">
 									<ShieldQuestion className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.about")}</span>
+									<span className="text-sm">{t("Find out more")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -235,7 +239,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/dashboard">
 									<LayoutDashboard className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.dashboard")}</span>
+									<span className="text-sm">{t("Dashboard")}</span>
 								</Link>
 							</Button>
 							<Button
@@ -246,7 +250,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<Link href="/sponsors">
 									<Medal className="scale-150 mb-2" />
-									<span className="text-sm">{t("public.home.hero.sponsors")}</span>
+									<span className="text-sm">{t("Sponsors")}</span>
 								</Link>
 							</Button>
 						</div>
@@ -257,12 +261,12 @@ export default async function Home(props: PageProps<"/[locale]">) {
 			<div className="flex flex-col size-full gap-8 max-w-[1200px] px-4 py-8">
 				<div className="flex flex-col gap-4">
 					<div>
-						<h2 className="text-2xl font-bold">{t("public.home.upcomingEventsTitle")}</h2>
-						<p className="text-gray-400">{t("public.home.upcomingEventsSubtitle")}</p>
+						<h2 className="text-2xl font-bold">{t("Upcoming events")}</h2>
+						<p className="text-gray-400">{t("See you on the field")}</p>
 					</div>
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{upcomingEvents.length === 0 && (
-							<div className="text-muted-foreground">{t("public.home.upcomingEventsNone")}</div>
+							<div className="text-muted-foreground">{t("There are no upcoming matches")}</div>
 						)}
 
 						{upcomingEvents.map((event) => (
@@ -315,43 +319,43 @@ export default async function Home(props: PageProps<"/[locale]">) {
 										<div className="flex flex-wrap gap-2 my-4">
 											<Badge variant="outline" className="grow justify-center">
 												{event.allowFreelancers
-													? t("public.home.eventCard.canFreelance")
-													: t("public.home.eventCard.cannotFreelance")}
+													? t("Freelancers allowed")
+													: t("For members only")}
 											</Badge>
 											{event.hasBreakfast && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.home.eventCard.breakfast")}
+													{t("Breakfast")}
 												</Badge>
 											)}
 											{event.hasLunch && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.home.eventCard.lunch")}
+													{t("Lunch")}
 												</Badge>
 											)}
 											{event.hasDinner && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.home.eventCard.dinner")}
+													{t("Dinner")}
 												</Badge>
 											)}
 											{event.hasSnacks && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.home.eventCard.snacks")}
+													{t("Snacks")}
 												</Badge>
 											)}
 											{event.hasDrinks && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.home.eventCard.drinks")}
+													{t("Drinks")}
 												</Badge>
 											)}
 											{event.hasPrizes && (
 												<Badge variant="outline" className="grow justify-center">
-													{t("public.home.eventCard.prizes")}
+													{t("Awards")}
 												</Badge>
 											)}
 										</div>
 										{event.isPrivate && (
 											<span className="text-xs text-muted-foreground">
-												{t("public.home.eventCard.privateEvent", {
+												{t("This is a private event, but you are in the {clubName} club.", {
 													clubName: event.club?.name,
 												})}
 											</span>
@@ -360,7 +364,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<CardFooter className="flex justify-between items-center">
 										<div className="flex flex-col">
 											<div className="text-sm text-muted-foreground">
-												{t("public.home.eventCard.starts")}{" "}
+												{t("Starts")}{" "}
 												{formatDistanceToNow(event.dateStart, {
 													addSuffix: true,
 													locale: bs,
@@ -388,24 +392,26 @@ export default async function Home(props: PageProps<"/[locale]">) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
 
 	return {
-		title: t("public.home.metadata.title"),
-		description: t("public.home.metadata.description"),
-		keywords: t("public.home.metadata.keywords")
+		title: t("RECONNED - Airsoft clubs, events, and players"),
+		description: t("The first universal platform for airsoft clubs, events, and players."),
+		keywords: t(
+			"airsoft platform, airsoft community, airsoft events, airsoft clubs, airsoft players, airsoft BiH, airsoft Bosnia, find airsoft events, join airsoft clubs, airsoft community platform",
+		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("public.home.metadata.title"),
-			description: t("public.home.metadata.description"),
+			title: t("RECONNED - Airsoft clubs, events, and players"),
+			description: t("The first universal platform for airsoft clubs, events, and players."),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("public.home.metadata.title"),
-			description: t("public.home.metadata.description"),
+			title: t("RECONNED - Airsoft clubs, events, and players"),
+			description: t("The first universal platform for airsoft clubs, events, and players."),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/", locale),
