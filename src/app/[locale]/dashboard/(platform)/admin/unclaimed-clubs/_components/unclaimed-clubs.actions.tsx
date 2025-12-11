@@ -37,7 +37,7 @@ export const createUnclaimedClub = adminActionClient
 	.inputSchema(createUnclaimedClubSchema.omit({ logo: true }))
 	.action(async ({ parsedInput, ctx }) => {
 		if (ctx.user.role !== "admin") {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized");
 		}
 
 		if (parsedInput.slug) {
@@ -46,7 +46,7 @@ export const createUnclaimedClub = adminActionClient
 				slug: parsedInput.slug,
 			});
 			if (!valid) {
-				throw new Error("Izabrani link je već zauzet.");
+				throw new ActionError("Izabrani link je već zauzet.");
 			}
 		}
 
@@ -110,7 +110,7 @@ export const getUnclaimedClubLogoUploadUrl = adminActionClient
 	.inputSchema(clubLogoUploadSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		if (ctx.user.role !== "admin") {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized");
 		}
 
 		const club = await prisma.club.findUnique({
@@ -119,7 +119,7 @@ export const getUnclaimedClubLogoUploadUrl = adminActionClient
 		});
 
 		if (!club) {
-			throw new Error("Club not found");
+			throw new ActionError("Club not found");
 		}
 
 		const key = `club/${parsedInput.clubId}/logo`;
@@ -143,7 +143,7 @@ export const updateUnclaimedClubLogo = adminActionClient
 	)
 	.action(async ({ parsedInput, ctx }) => {
 		if (ctx.user.role !== "admin") {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized");
 		}
 
 		const club = await prisma.club.update({
@@ -167,7 +167,7 @@ export const assignClubOwner = adminActionClient
 	.inputSchema(assignClubOwnerSchema)
 	.action(async ({ parsedInput, ctx }) => {
 		if (ctx.user.role !== "admin") {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized");
 		}
 
 		const existingOwner = await prisma.clubMembership.findFirst({
@@ -178,7 +178,7 @@ export const assignClubOwner = adminActionClient
 		});
 
 		if (existingOwner) {
-			throw new Error("Club already has an owner");
+			throw new ActionError("Club already has an owner");
 		}
 
 		await prisma.clubMembership.create({
@@ -219,7 +219,7 @@ export const claimClubRequest = adminActionClient
 		});
 
 		if (!club) {
-			throw new Error("Club not found");
+			throw new ActionError("Club not found");
 		}
 
 		const existingOwner = await prisma.clubMembership.findFirst({
@@ -230,7 +230,7 @@ export const claimClubRequest = adminActionClient
 		});
 
 		if (existingOwner) {
-			throw new Error("Club already has an owner");
+			throw new ActionError("Club already has an owner");
 		}
 
 		const admins = await prisma.user.findMany({
@@ -243,7 +243,7 @@ export const claimClubRequest = adminActionClient
 		});
 
 		if (admins.length === 0) {
-			throw new Error("No admins found");
+			throw new ActionError("No admins found");
 		}
 
 		const adminEmails = admins.map((admin) => admin.email);

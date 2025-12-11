@@ -91,7 +91,7 @@ export async function exchangeCodeForToken(code: string): Promise<FacebookAuthRe
 	);
 
 	if (!response.ok) {
-		throw new Error(`Failed to exchange code for token: ${await response.text()}`);
+		throw new ActionError(`Failed to exchange code for token: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -106,7 +106,7 @@ export async function exchangeForLongLivedToken(shortLivedToken: string): Promis
 	);
 
 	if (!response.ok) {
-		throw new Error(`Failed to exchange for long-lived token: ${await response.text()}`);
+		throw new ActionError(`Failed to exchange for long-lived token: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -128,7 +128,7 @@ export async function debugToken(accessToken: string): Promise<FacebookDebugToke
 	);
 
 	if (!response.ok) {
-		throw new Error(`Failed to debug token: ${await response.text()}`);
+		throw new ActionError(`Failed to debug token: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -141,7 +141,7 @@ export async function getUserPages(accessToken: string): Promise<FacebookPageRes
 	const response = await fetch(`https://graph.facebook.com/v19.0/me/accounts?access_token=${accessToken}`);
 
 	if (!response.ok) {
-		throw new Error(`Failed to get user pages: ${await response.text()}`);
+		throw new ActionError(`Failed to get user pages: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -213,7 +213,7 @@ export async function getInstagramMedia(
 	);
 
 	if (!response.ok) {
-		throw new Error(`Failed to get media: ${await response.text()}`);
+		throw new ActionError(`Failed to get media: ${await response.text()}`);
 	}
 
 	return await response.json();
@@ -248,7 +248,7 @@ export async function getNonExpiringPageAccessToken(userAccessToken: string, pag
 		);
 
 		if (!response.ok) {
-			throw new Error(`Failed to get page access token: ${await response.text()}`);
+			throw new ActionError(`Failed to get page access token: ${await response.text()}`);
 		}
 
 		const data = await response.json();
@@ -267,7 +267,7 @@ export async function getNonExpiringPageAccessToken(userAccessToken: string, pag
 	const page = pagesResponse.data.find((p) => p.id === pageId);
 
 	if (!page) {
-		throw new Error(`Page with ID ${pageId} not found`);
+		throw new ActionError(`Page with ID ${pageId} not found`);
 	}
 
 	// This page token is essentially non-expiring when obtained this way

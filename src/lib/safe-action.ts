@@ -21,8 +21,8 @@ const unsafeActionClient = createSafeActionClient({
 const clubIdSchema = z.object({
 	clubId: z.string(),
 });
-
 const logger = new Logger({ source: "server-action" });
+const t = await getTranslations("errors");
 
 /**
  * If the underyling schema requires a clubId, this action will check if the user is authenticated and if they manage the club.
@@ -37,8 +37,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 		logger.info("User not authenticated", {
 			input: clientInput,
 		});
-		const t = await getTranslations("errors.safeAction");
-		throw new Error(t("userNotAuthenticated"));
+		throw new ActionError(t("safeAction.userNotAuthenticated"));
 	}
 
 	// 2. Check if a clubId is provided. If not, allow the action to proceed
@@ -60,8 +59,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 			input: clientInput,
 			user,
 		});
-		const t = await getTranslations("errors.safeAction");
-		throw new Error(t("invalidClubIdProvided"));
+		throw new ActionError(t("safeAction.invalidClubIdProvided"));
 	}
 
 	// 4. Check if the club exists
@@ -73,8 +71,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 			input: clientInput,
 			user,
 		});
-		const t = await getTranslations("errors.safeAction");
-		throw new Error(t("clubNotFound"));
+		throw new ActionError(t("safeAction.clubNotFound"));
 	}
 
 	// 5. Check if the user is an admin or manages the club. If either are true, allow the action to proceed
@@ -88,8 +85,7 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 		user,
 		club,
 	});
-	const t = await getTranslations("errors.safeAction");
-	throw new Error(t("userDoesNotManageClub"));
+	throw new ActionError(t("safeAction.userDoesNotManageClub"));
 });
 
 /**
@@ -101,13 +97,11 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
 export const adminActionClient = unsafeActionClient.use(async ({ next }) => {
 	const user = await isAuthenticated();
 	if (!user) {
-		const t = await getTranslations("errors.safeAction");
-		throw new Error(t("userNotAuthenticated"));
+		throw new ActionError(t("safeAction.userNotAuthenticated"));
 	}
 
 	if (user.role !== "admin") {
-		const t = await getTranslations("errors.safeAction");
-		throw new Error(t("userIsNotAdmin"));
+		throw new ActionError(t("safeAction.userIsNotAdmin"));
 	}
 
 	return next({ ctx: { user } });

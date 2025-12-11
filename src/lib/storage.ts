@@ -72,7 +72,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			size,
 			key,
 		});
-		throw new Error(t("fileTypeSizeKeyRequired"));
+		throw new ActionError(t("fileTypeSizeKeyRequired"));
 	}
 
 	if (!allowedFileTypes.includes(type)) {
@@ -80,7 +80,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			type,
 			allowedFileTypes,
 		});
-		throw new Error(t("unsupportedFileType", { type, allowedTypes: allowedFileTypes.join(", ") }));
+		throw new ActionError(t("unsupportedFileType", { type, allowedTypes: allowedFileTypes.join(", ") }));
 	}
 
 	if (size > maxFileSize) {
@@ -88,14 +88,14 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 			size,
 			maxFileSize,
 		});
-		throw new Error(t("fileSizeExceedsMaximum", { maxSize: Math.round(maxFileSize / 1024 / 1024) }));
+		throw new ActionError(t("fileSizeExceedsMaximum", { maxSize: Math.round(maxFileSize / 1024 / 1024) }));
 	}
 
 	// Check storage quotas if clubId provided
 	if (clubId) {
 		const clubQuota = await checkClubStorageQuota(clubId, size);
 		if (!clubQuota.allowed) {
-			throw new Error(clubQuota.error || t("clubStorageQuotaExceeded"));
+			throw new ActionError(clubQuota.error || t("clubStorageQuotaExceeded"));
 		}
 	}
 
@@ -103,7 +103,7 @@ export const getS3FileUploadUrl = async (props: SecureUploadOptions): Promise<Se
 	if (userId) {
 		const userQuota = await checkUserDailyQuota(userId, size);
 		if (!userQuota.allowed) {
-			throw new Error(userQuota.error || t("dailyUploadQuotaExceeded"));
+			throw new ActionError(userQuota.error || t("dailyUploadQuotaExceeded"));
 		}
 	}
 
@@ -156,7 +156,7 @@ export const processFileForUpload = async (
 			maxFileSize,
 		});
 		const t = await getTranslations("errors.storage");
-		throw new Error(validation.error || t("fileValidationFailed"));
+		throw new ActionError(validation.error || t("fileValidationFailed"));
 	}
 
 	let processedBuffer = buffer;
