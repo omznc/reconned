@@ -8,7 +8,7 @@ FROM oven/bun:1.3.4 AS base
 
 WORKDIR /app
 
-RUN apt-get update -y && apt-get install -y openssl curl adduser && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y openssl curl wget adduser && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies with bun
 FROM base AS deps
