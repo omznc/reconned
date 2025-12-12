@@ -24,7 +24,8 @@ const ITEMS_PER_PAGE = 12;
 export const dynamic = "force-dynamic";
 
 export default async function Page(props: PageProps<"/[locale]/users">) {
-	const [searchParams, t, locale] = await Promise.all([props.searchParams, getExtracted(), getLocale()]);
+	const [searchParams, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const t = await getExtracted();
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -100,7 +101,8 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Airsoft players - RECONNED"),

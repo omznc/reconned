@@ -1,7 +1,7 @@
 "use client";
 
 import { useExtracted } from "next-intl";
-import { getAppNavigationItems } from "@/components/sidebar/navigation-items";
+import { useAppNavigationItems } from "@/components/sidebar/navigation-items";
 import { renderCollapsedItem, renderExpandedItem } from "@/components/sidebar/utils";
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "@/i18n/navigation";
@@ -11,7 +11,7 @@ export function NavApp({ isAdmin, pendingInvites }: { isAdmin: boolean; pendingI
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const t = useExtracted();
 
-	const items = getAppNavigationItems(isAdmin, pendingInvites, t);
+	const items = useAppNavigationItems(isAdmin, pendingInvites);
 
 	return (
 		<SidebarGroup>

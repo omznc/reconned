@@ -19,7 +19,11 @@ import {
 	useState,
 } from "react";
 import { useCurrentClub } from "@/components/current-club-provider";
-import { flattenNavigationItems, getAppNavigationItems, getClubFlatItems } from "@/components/sidebar/navigation-items";
+import {
+	flattenNavigationItems,
+	useAppNavigationItems,
+	useClubsNavigationItems,
+} from "@/components/sidebar/navigation-items";
 import type { NavItem } from "@/components/sidebar/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -48,37 +52,34 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 	const t = useExtracted();
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const overviewTitle = useMemo(() => t("Overview"), [t]);
+	const overviewTitle = t("Overview");
 
-	const sectionTitleMap = useMemo(
-		() => ({
-			dashboard: t("Dashboard"),
-			help: t("Help"),
-			user: t("User"),
-			settings: t("Settings"),
-			security: t("Security"),
-			invites: t("Invitations"),
-			"add-club": t("Add club"),
-			club: t("Club"),
-			clubs: t("Clubs"),
-			information: t("Information"),
-			stats: t("Statistics"),
-			spending: t("Expenses"),
-			members: t("Members"),
-			invitations: t("Invitations"),
-			managers: t("Managers"),
-			events: t("Events"),
-			calendar: t("Calendar"),
-			rules: t("Rules"),
-			admin: t("Administration"),
-			audit: t("Audit"),
-			emails: t("Emails"),
-			users: t("Users"),
-			"unclaimed-clubs": t("Unclaimed clubs"),
-			posts: t("New post"),
-		}),
-		[t],
-	);
+	const sectionTitleMap = {
+		dashboard: t("Dashboard"),
+		help: t("Help"),
+		user: t("User"),
+		settings: t("Settings"),
+		security: t("Security"),
+		invites: t("Invitations"),
+		"add-club": t("Add club"),
+		club: t("Club"),
+		clubs: t("Clubs"),
+		information: t("Information"),
+		stats: t("Statistics"),
+		spending: t("Expenses"),
+		members: t("Members"),
+		invitations: t("Invitations"),
+		managers: t("Managers"),
+		events: t("Events"),
+		calendar: t("Calendar"),
+		rules: t("Rules"),
+		admin: t("Administration"),
+		audit: t("Audit"),
+		emails: t("Emails"),
+		users: t("Users"),
+		"unclaimed-clubs": t("Unclaimed clubs"),
+		posts: t("New post"),
+	};
 
 	const handleClubSelection = (club: Club) => {
 		const currentFullUrl = window.location.href;
@@ -126,21 +127,11 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 		return item.title;
 	}
 
-	// Generate all navigation items using our centralized functions
-	const allItems = useMemo(() => {
-		// App navigation items
-		const appItems = getAppNavigationItems(user.role === "admin", 0, t);
-		const flatAppItems = flattenNavigationItems(appItems);
+	const appItems = useAppNavigationItems(user.role === "admin", 0);
+	const clubItems = useClubsNavigationItems(clubs, (clubId) => user?.managedClubs?.includes(clubId) ?? false, true);
 
-		// Club-specific items for each club
-		let clubItems: NavItem[] = [];
-		for (const club of clubs) {
-			const isManager = user?.managedClubs?.includes(club.id);
-			const items = getClubFlatItems(club.id, isManager, t);
-			// Add club information to each item
-			const itemsWithClub = items.map((item) => ({ ...item, club }));
-			clubItems = [...clubItems, ...itemsWithClub];
-		}
+	const allItems = useMemo(() => {
+		const flatAppItems = flattenNavigationItems(appItems);
 
 		// Create enhanced items with display titles for search
 		const enhancedItems = [...flatAppItems, ...clubItems].map((item) => {
@@ -152,7 +143,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 		});
 
 		return enhancedItems;
-	}, [clubs, clubId, t, user.managedClubs, user.role]);
+	}, [appItems, clubItems, clubId, t]);
 
 	// Fuse.js setup for fuzzy search
 	const fuse = useMemo(() => {
@@ -174,7 +165,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 
 	// Group filtered items - fix items with both isNav and club properties
 	const navItems = filteredItems.filter((item) => item.isNav && !item.club);
-	const clubItems = filteredItems.filter((item) => !!item.club);
+	const filteredClubItems = filteredItems.filter((item) => !!item.club);
 
 	useEffect(() => {
 		const handleShiftNumberPress = (event: KeyboardEvent) => {
@@ -269,11 +260,11 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 						</CommandGroup>
 
 						{/* Club items */}
-						{clubItems.length > 0 && (
+						{filteredClubItems.length > 0 && (
 							<>
 								<CommandSeparator />
 								<CommandGroup heading={t("Navigation")}>
-									{clubItems.map((item) => (
+									{filteredClubItems.map((item) => (
 										<CommandItem
 											key={item.url}
 											onSelect={() => handleCommand(item.url)}

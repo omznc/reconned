@@ -37,7 +37,8 @@ export const revalidate = 3600; // 1 hour
 
 // Main changelog page
 export default async function ChangelogPage() {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	// Get the latest releases from GitHub
 	const response = await fetch("https://api.github.com/repos/omznc/reconned/releases", {
@@ -250,7 +251,8 @@ export default async function ChangelogPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Changelog - RECONNED"),

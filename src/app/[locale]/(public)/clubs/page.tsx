@@ -25,7 +25,8 @@ type ClubSearch = {
 };
 
 export default async function Page(props: PageProps<"/[locale]/clubs">) {
-	const [searchParams, t, locale] = await Promise.all([props.searchParams, getExtracted(), getLocale()]);
+	const [searchParams, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const t = await getExtracted();
 	const page = Number(searchParams.page) || 1;
 	const skip = (page - 1) * ITEMS_PER_PAGE;
 
@@ -109,7 +110,8 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Airsoft clubs - RECONNED"),

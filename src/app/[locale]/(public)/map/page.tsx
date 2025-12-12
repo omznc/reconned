@@ -85,7 +85,8 @@ export default async function MapPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Club Map - RECONNED"),

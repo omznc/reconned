@@ -135,7 +135,8 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">): Promise<Metadata> {
-	const [params, user, t, locale] = await Promise.all([props.params, isAuthenticated(), getExtracted(), getLocale()]);
+	const [params, user, locale] = await Promise.all([props.params, isAuthenticated(), getLocale()]);
+	const t = await getExtracted();
 
 	const event = await prisma.event.findFirst({
 		where: {

@@ -8,7 +8,8 @@ import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Home() {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	const aboutPageSchema: WithContext<AboutPage> = {
 		"@context": "https://schema.org",
@@ -123,7 +124,8 @@ export default async function Home() {
 export const revalidate = 86_400; // 1 day
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("About us - RECONNED"),

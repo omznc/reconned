@@ -34,7 +34,8 @@ const geistMono = Geist_Mono({
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const [session, t] = await Promise.all([isAuthenticated(), getExtracted()]);
+	const session = await isAuthenticated();
+	const t = await getExtracted();
 
 	const { locale } = await params;
 

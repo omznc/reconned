@@ -57,23 +57,20 @@ export function EventCalendar(props: EventCalendarProps) {
 	const t = useExtracted();
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
-	const monthNames = useMemo(
-		() => ({
-			jan: t("January"),
-			feb: t("February"),
-			mar: t("March"),
-			apr: t("April"),
-			may: t("May"),
-			jun: t("June"),
-			jul: t("July"),
-			aug: t("August"),
-			sep: t("September"),
-			oct: t("October"),
-			nov: t("November"),
-			dec: t("December"),
-		}),
-		[t],
-	);
+	const monthNames = {
+		jan: t("January"),
+		feb: t("February"),
+		mar: t("March"),
+		apr: t("April"),
+		may: t("May"),
+		jun: t("June"),
+		jul: t("July"),
+		aug: t("August"),
+		sep: t("September"),
+		oct: t("October"),
+		nov: t("November"),
+		dec: t("December"),
+	};
 	const [currentDate, setCurrentDate] = useQueryState("month", {
 		defaultValue: parseDateFns(formatDateFns(new Date(), "yyyy-MM"), "yyyy-MM", new Date()),
 		shallow: false,
@@ -393,7 +390,6 @@ export function EventCalendar(props: EventCalendarProps) {
 												getEventsForDay(day).length > 0 ? "bg-sidebar" : "",
 												isSameDay(day, new Date()) ? "bg-accent" : "",
 												canCreateEvent && "cursor-pointer hover:bg-sidebar transition-colors",
-												canCreateEvent && "hover:rounded-md",
 												isLastWeek && isFirstDay && "rounded-bl-md",
 												isLastWeek && isLastDay && "rounded-br-md",
 											)}

@@ -2,28 +2,22 @@
 
 import type { User } from "better-auth";
 import { useExtracted } from "next-intl";
-import { useCurrentClub } from "@/components/current-club-provider";
-import { getClubNavigationItems } from "@/components/sidebar/navigation-items";
+import { useClubNavigationItems } from "@/components/sidebar/navigation-items";
 import { renderCollapsedItem, renderExpandedItem } from "@/components/sidebar/utils";
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "@/i18n/navigation";
 
 interface NavClubProps {
 	user: User & { managedClubs: string[] };
+	clubId: string;
 }
 
-export function NavClub({ user }: NavClubProps) {
+export function NavClub({ user, clubId }: NavClubProps) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
-	const { clubId } = useCurrentClub();
 	const t = useExtracted();
-
-	if (!clubId) {
-		return null;
-	}
-
 	const isManager = user?.managedClubs?.includes(clubId);
-	const items = getClubNavigationItems(clubId, isManager, t);
+	const items = useClubNavigationItems(clubId, isManager);
 
 	return (
 		<SidebarGroup>

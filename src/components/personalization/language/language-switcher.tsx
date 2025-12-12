@@ -50,9 +50,6 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 					>
 						<div className="flex items-center gap-2">
 							<span>{LANGUAGE_TRANSLATIONS[localeOption]}</span>
-							{localeOption === "en" && (
-								<span className="text-xs text-muted-foreground">In progress</span>
-							)}
 						</div>
 					</DropdownMenuItem>
 				))}

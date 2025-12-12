@@ -392,7 +392,8 @@ export default async function Home(props: PageProps<"/[locale]">) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("RECONNED - Airsoft clubs, events, and players"),

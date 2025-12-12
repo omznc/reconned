@@ -2,7 +2,7 @@
 
 import { Building2Icon, CalendarFoldIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
-import { Fragment, useMemo } from "react";
+import { Fragment } from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -32,39 +32,36 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 	const sections = path.split("/").filter(Boolean);
 	const t = useExtracted();
 
-	const breadcrumbsTranslations = useMemo(
-		() => ({
-			dashboard: t("Dashboard"),
-			club: t("Club"),
-			clubs: t("Clubs"),
-			events: t("Events"),
-			information: t("Information"),
-			create: t("Create"),
-			stats: t("Statistics"),
-			members: t("Members"),
-			settings: t("Settings"),
-			calendar: t("Calendar"),
-			invitations: t("Invitations"),
-			security: t("Security"),
-			user: t("User"),
-			help: t("Help"),
-			managers: t("Managers"),
-			rules: t("Rules"),
-			attendance: t("Attendance"),
-			admin: t("Administration"),
-			emails: t("Emails"),
-			posts: t("New post"),
-			spending: t("Spending"),
-			"add-club": t("Add club"),
-			audit: t("Audit"),
-			invites: t("Invitations"),
-			users: t("Users"),
-			instagram: t("Instagram"),
-			"unclaimed-clubs": t("Unclaimed clubs"),
-			edit: t("Edit"),
-		}),
-		[t],
-	);
+	const breadcrumbsTranslations = {
+		dashboard: t("Dashboard"),
+		club: t("Club"),
+		clubs: t("Clubs"),
+		events: t("Events"),
+		information: t("Information"),
+		create: t("Create"),
+		stats: t("Statistics"),
+		members: t("Members"),
+		settings: t("Settings"),
+		calendar: t("Calendar"),
+		invitations: t("Invitations"),
+		security: t("Security"),
+		user: t("User"),
+		help: t("Help"),
+		managers: t("Managers"),
+		rules: t("Rules"),
+		attendance: t("Attendance"),
+		admin: t("Administration"),
+		emails: t("Emails"),
+		posts: t("New post"),
+		spending: t("Spending"),
+		"add-club": t("Add club"),
+		audit: t("Audit"),
+		invites: t("Invitations"),
+		users: t("Users"),
+		instagram: t("Instagram"),
+		"unclaimed-clubs": t("Unclaimed clubs"),
+		edit: t("Edit"),
+	};
 
 	const getDisplayText = (section: string) => {
 		// Check if section is a club ID

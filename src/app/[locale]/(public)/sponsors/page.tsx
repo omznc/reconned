@@ -34,7 +34,8 @@ const sponsors = [
 export const revalidate = 86_400; // 1 day
 
 export default async function SponsorsPage() {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	const sponsorPageSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
@@ -162,7 +163,8 @@ export default async function SponsorsPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Sponsors - RECONNED"),

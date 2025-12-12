@@ -11,7 +11,8 @@ const lastUpdated = new Date("2025-04-13");
 export const revalidate = 86_400; // 1 day
 
 export default async function PrivacyPolicyPage() {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	const privacyPageSchema: WithContext<WebPage> = {
 		"@context": "https://schema.org",
@@ -250,7 +251,8 @@ export default async function PrivacyPolicyPage() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Privacy Policy - RECONNED"),
