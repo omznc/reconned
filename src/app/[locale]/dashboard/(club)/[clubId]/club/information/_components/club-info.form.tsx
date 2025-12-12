@@ -596,7 +596,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										}}
 									/>
 								</FormControl>
-								<FormDescription>{t("Add a club logo. ")}</FormDescription>
+								<FormDescription>{t("Add a club logo (600x600).")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}

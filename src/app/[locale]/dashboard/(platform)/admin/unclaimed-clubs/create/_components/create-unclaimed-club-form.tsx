@@ -11,7 +11,9 @@ import type { z } from "zod";
 import { createUnclaimedClubSchema } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-club.schema";
 import {
 	createUnclaimedClub,
+	getUnclaimedClubHeaderImageUploadUrl,
 	getUnclaimedClubLogoUploadUrl,
+	updateUnclaimedClubHeaderImage,
 	updateUnclaimedClubLogo,
 } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -19,11 +21,11 @@ import { SlugInput } from "@/components/slug/slug-input";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { FileUpload } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SingleImageUpload } from "@/components/ui/single-image-upload";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
@@ -54,6 +56,40 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			}
 
 			const resp = await getUnclaimedClubLogoUploadUrl({
+				file: {
+					type: file.type,
+					size: file.size,
+				},
+				clubId: currentClubId,
+			});
+
+			if (!resp?.data?.url) {
+				throw new ActionError("Failed to get upload URL");
+			}
+
+			await fetch(resp.data?.url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": file.type,
+					"Content-Length": file.size.toString(),
+				},
+			});
+
+			return resp.data.cdnUrl;
+		},
+		maxFiles: 1,
+		initialFiles: [],
+	});
+
+	const headerUpload = useFileUpload({
+		uploadFunction: async (file: File) => {
+			const currentClubId = clubIdRef.current;
+			if (!currentClubId) {
+				throw new ActionError("Must create club first");
+			}
+
+			const resp = await getUnclaimedClubHeaderImageUploadUrl({
 				file: {
 					type: file.type,
 					size: file.size,
@@ -133,18 +169,6 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 		}
 	};
 
-	// Handle country selection - center map on country
-	useEffect(() => {
-		if (selectedCountryId) {
-			const selectedCountry = countries.find((c) => c.id === selectedCountryId);
-			if (selectedCountry?.latitude && selectedCountry?.longitude) {
-				setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
-				setMapZoom(6);
-			}
-		}
-	}, [selectedCountryId, countries]);
-
-	// Handle location/city geocoding
 	useEffect(() => {
 		if (geocodeTimeoutRef.current) {
 			clearTimeout(geocodeTimeoutRef.current);
@@ -155,6 +179,13 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 		}
 
 		if (!locationValue || locationValue.length < 3 || !selectedCountryId) {
+			if (selectedCountryId && (!locationValue || locationValue.length < 3)) {
+				const selectedCountry = countries.find((c) => c.id === selectedCountryId);
+				if (selectedCountry?.latitude && selectedCountry?.longitude) {
+					setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
+					setMapZoom(6);
+				}
+			}
 			return;
 		}
 
@@ -224,7 +255,6 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				slug: values.slug,
 				latitude: values.latitude,
 				longitude: values.longitude,
-				instagramUsername: values.instagramUsername,
 				website: values.website,
 			});
 
@@ -247,7 +277,20 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				}
 			}
 
+			const headerFilesToUpload = headerUpload.files.filter((f) => f.file && !f.isExisting);
+			if (headerFilesToUpload.length > 0) {
+				const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
+				const headerUrl = uploadedHeaderUrls[0];
+				if (headerUrl) {
+					await updateUnclaimedClubHeaderImage({
+						clubId: newClubId,
+						headerImage: headerUrl,
+					});
+				}
+			}
+
 			logoUpload.markAsSaved();
+			headerUpload.markAsSaved();
 			toast.success(t("Unclaimed club created successfully"));
 			router.push("/dashboard/admin/unclaimed-clubs");
 		} catch {
@@ -344,26 +387,51 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 
 				<FormField
 					control={form.control}
+					name="headerImage"
+					render={() => (
+						<FormItem>
+							<FormLabel>{t("Header image")}</FormLabel>
+							<FormControl>
+								<SingleImageUpload
+									variant="banner"
+									value={headerUpload.files}
+									onChange={headerUpload.setFiles}
+									maxFileSize={8 * 1024 * 1024}
+									accept={{
+										"image/jpeg": [".jpg", ".jpeg"],
+										"image/png": [".png"],
+										"image/webp": [".webp"],
+									}}
+								/>
+							</FormControl>
+							<FormDescription>
+								{t("Add a wide banner image for your club page (1200x300).")}
+							</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
 					name="logo"
 					render={() => (
 						<FormItem>
 							<FormLabel>{t("Logo")}</FormLabel>
 							<FormControl>
-								<FileUpload
+								<SingleImageUpload
+									variant="logo"
 									value={logoUpload.files}
 									onChange={logoUpload.setFiles}
-									maxFiles={1}
 									maxFileSize={4 * 1024 * 1024}
 									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],
 										"image/webp": [".webp"],
 									}}
-									multiple={false}
-									showPreview={true}
 								/>
 							</FormControl>
-							<FormDescription>{t("Add a club logo. ")}</FormDescription>
+							<FormDescription>{t("Add a club logo (600x600).")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}

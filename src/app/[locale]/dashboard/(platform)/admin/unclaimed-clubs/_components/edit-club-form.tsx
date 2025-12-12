@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { ArrowUpRight, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useExtracted } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -48,8 +48,13 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [open, setOpen] = useState(false);
+	const [mapCenter, setMapCenter] = useState<[number, number] | undefined>(undefined);
+	const [mapZoom, setMapZoom] = useState<number>(8);
 	const t = useExtracted();
 	const router = useRouter();
+
+	const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const geocodeAbortRef = useRef<AbortController | null>(null);
 
 	const initialFiles: FileUploadItem[] = club?.logo
 		? [
@@ -167,9 +172,14 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 		mode: "onBlur",
 	});
 
+	const selectedCountryId = form.watch("countryId");
+	const locationValue = form.watch("location");
+
 	const handleLocationSelect = (lat: number, lng: number) => {
 		form.setValue("latitude", lat, { shouldDirty: true });
 		form.setValue("longitude", lng, { shouldDirty: true });
+		setMapCenter([lat, lng]);
+		setMapZoom(14);
 	};
 
 	const handleLocationReset = () => {
@@ -179,7 +189,86 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 
 		form.setValue("latitude", club.latitude ?? undefined, { shouldDirty: true });
 		form.setValue("longitude", club.longitude ?? undefined, { shouldDirty: true });
+		if (club.latitude && club.longitude) {
+			setMapCenter([club.latitude, club.longitude]);
+			setMapZoom(14);
+		} else {
+			const selectedCountry = countries.find((country) => country.id === selectedCountryId);
+			if (selectedCountry?.latitude && selectedCountry?.longitude) {
+				setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
+				setMapZoom(6);
+			}
+		}
 	};
+
+	useEffect(() => {
+		if (geocodeTimeoutRef.current) {
+			clearTimeout(geocodeTimeoutRef.current);
+		}
+
+		if (geocodeAbortRef.current) {
+			geocodeAbortRef.current.abort();
+		}
+
+		if (!locationValue || locationValue.length < 3 || !selectedCountryId) {
+			if (selectedCountryId && (!locationValue || locationValue.length < 3)) {
+				const selectedCountry = countries.find((c) => c.id === selectedCountryId);
+				if (selectedCountry?.latitude && selectedCountry?.longitude) {
+					setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
+					setMapZoom(6);
+				}
+			}
+			return;
+		}
+
+		const selectedCountry = countries.find((c) => c.id === selectedCountryId);
+		if (!selectedCountry) {
+			return;
+		}
+
+		geocodeTimeoutRef.current = setTimeout(async () => {
+			try {
+				geocodeAbortRef.current = new AbortController();
+				const query = encodeURIComponent(`${locationValue}, ${selectedCountry.name}`);
+				const response = await fetch(
+					`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`,
+					{
+						signal: geocodeAbortRef.current.signal,
+						headers: {
+							"User-Agent": "AirsoftClubManagement/1.0",
+						},
+					},
+				);
+				const data = await response.json();
+
+				if (data && data.length > 0) {
+					const result = data[0];
+					const lat = Number.parseFloat(result.lat);
+					const lng = Number.parseFloat(result.lon);
+
+					if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+						form.setValue("latitude", lat, { shouldDirty: true });
+						form.setValue("longitude", lng, { shouldDirty: true });
+						setMapCenter([lat, lng]);
+						setMapZoom(12);
+					}
+				}
+			} catch (error) {
+				if (error instanceof Error && error.name !== "AbortError") {
+					console.error("Geocoding error:", error);
+				}
+			}
+		}, 1000);
+
+		return () => {
+			if (geocodeTimeoutRef.current) {
+				clearTimeout(geocodeTimeoutRef.current);
+			}
+			if (geocodeAbortRef.current) {
+				geocodeAbortRef.current.abort();
+			}
+		};
+	}, [locationValue, selectedCountryId, countries, form]);
 
 	async function onSubmit(values: z.infer<typeof clubInfoSchema>) {
 		setIsLoading(true);
@@ -334,6 +423,9 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 								]}
 								interactive={true}
 								onLocationSelect={handleLocationSelect}
+								focusPoint={
+									mapCenter ? { lat: mapCenter[0], lng: mapCenter[1], zoom: mapZoom } : undefined
+								}
 							/>
 						</div>
 					</FormControl>
@@ -526,7 +618,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 									}}
 								/>
 							</FormControl>
-							<FormDescription>{t("Add a club logo. ")}</FormDescription>
+							<FormDescription>{t("Add a club logo (600x600).")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}

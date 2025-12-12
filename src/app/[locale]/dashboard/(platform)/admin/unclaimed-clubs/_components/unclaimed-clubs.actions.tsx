@@ -24,6 +24,14 @@ const clubLogoUploadSchema = z.object({
 	clubId: z.string(),
 });
 
+const clubHeaderUploadSchema = z.object({
+	file: z.object({
+		type: z.string().regex(/^image\//),
+		size: z.number().max(1024 * 1024 * 8),
+	}),
+	clubId: z.string(),
+});
+
 const assignClubOwnerSchema = z.object({
 	clubId: z.string(),
 	userId: z.string(),
@@ -34,7 +42,7 @@ const claimClubRequestSchema = z.object({
 });
 
 export const createUnclaimedClub = adminActionClient
-	.inputSchema(createUnclaimedClubSchema.omit({ logo: true }))
+	.inputSchema(createUnclaimedClubSchema.omit({ logo: true, headerImage: true }))
 	.action(async ({ parsedInput, ctx }) => {
 		if (ctx.user.role !== "admin") {
 			throw new ActionError("Unauthorized");
@@ -60,6 +68,7 @@ export const createUnclaimedClub = adminActionClient
 				isPrivate: parsedInput.isPrivate || false,
 				isPrivateStats: parsedInput.isPrivateStats || false,
 				logo: null,
+				headerImage: null,
 				contactPhone: parsedInput.contactPhone || null,
 				contactEmail: parsedInput.contactEmail || null,
 				latitude: parsedInput.latitude || null,
@@ -150,6 +159,63 @@ export const updateUnclaimedClubLogo = adminActionClient
 			where: { id: parsedInput.clubId },
 			data: {
 				logo: addImageVersion(parsedInput.logo),
+			},
+		});
+
+		revalidateTag("managed-clubs", "max");
+		if (!club.isPrivate) {
+			revalidateLocalizedPaths(`/clubs/${club.slug ?? club.id}`);
+			revalidateLocalizedPaths("/clubs");
+			revalidateLocalizedPaths("/search");
+		}
+
+		return { success: true };
+	});
+
+export const getUnclaimedClubHeaderImageUploadUrl = adminActionClient
+	.inputSchema(clubHeaderUploadSchema)
+	.action(async ({ parsedInput, ctx }) => {
+		if (ctx.user.role !== "admin") {
+			throw new ActionError("Unauthorized");
+		}
+
+		const club = await prisma.club.findUnique({
+			where: { id: parsedInput.clubId },
+			select: { id: true },
+		});
+
+		if (!club) {
+			throw new ActionError("Club not found");
+		}
+
+		const key = `club/${parsedInput.clubId}/header`;
+
+		const resp = await getS3FileUploadUrl({
+			type: parsedInput.file.type,
+			size: parsedInput.file.size,
+			key,
+			clubId: parsedInput.clubId,
+		});
+
+		return resp;
+	});
+
+export const updateUnclaimedClubHeaderImage = adminActionClient
+	.inputSchema(
+		z.object({
+			clubId: z.string(),
+			headerImage: z.string(),
+		}),
+	)
+	.action(async ({ parsedInput, ctx }) => {
+		if (ctx.user.role !== "admin") {
+			throw new ActionError("Unauthorized");
+		}
+
+		const club = await prisma.club.update({
+			where: { id: parsedInput.clubId },
+			data: {
+				headerImage: addImageVersion(parsedInput.headerImage),
 			},
 		});
 
