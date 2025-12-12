@@ -22,7 +22,6 @@ const clubIdSchema = z.object({
 	clubId: z.string(),
 });
 const logger = new Logger({ source: "server-action" });
-const t = await getExtracted();
 
 /**
  * If the underyling schema requires a clubId, this action will check if the user is authenticated and if they manage the club.
@@ -31,6 +30,8 @@ const t = await getExtracted();
  * The club in the context will be undefined if the user is not managing the club, or if the clubId is not provided.
  */
 export const safeActionClient = unsafeActionClient.use(async ({ clientInput, next }) => {
+	const t = await getExtracted();
+
 	// 1. Check if the user is logged in
 	const user = await isAuthenticated();
 	if (!user) {
@@ -95,6 +96,8 @@ export const safeActionClient = unsafeActionClient.use(async ({ clientInput, nex
  * Otherwise, it will throw an error.
  */
 export const adminActionClient = unsafeActionClient.use(async ({ next }) => {
+	const t = await getExtracted();
+
 	const user = await isAuthenticated();
 	if (!user) {
 		throw new ActionError(t("User not authenticated"));

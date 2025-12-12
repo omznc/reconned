@@ -96,7 +96,7 @@ export function AppSidebar(props: AppSidebarProps) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavApp isAdmin={props.user.role === "admin"} pendingInvites={props.invitesCount} />
-				<NavClub user={props.user} />
+				{clubId && <NavClub user={props.user} clubId={clubId} />}
 			</SidebarContent>
 			<SidebarFooter>
 				{props.invitesCount > 0 &&

@@ -6,7 +6,6 @@ import { env } from "@/lib/env";
 
 const withNextIntl = createNextIntlPlugin({
 	experimental: {
-		createMessagesDeclaration: "./messages/en.json",
 		srcPath: "./src",
 		extract: {
 			sourceLocale: "en",

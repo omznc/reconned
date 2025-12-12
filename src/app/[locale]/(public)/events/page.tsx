@@ -16,7 +16,8 @@ import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
-	const [user, t, locale] = await Promise.all([isAuthenticated(), getExtracted(), getLocale()]);
+	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);
+	const t = await getExtracted();
 	const upcomingEvents = await prisma.event.findMany({
 		where: {
 			dateStart: {
@@ -197,7 +198,8 @@ export default async function Page() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Airsoft events - RECONNED"),

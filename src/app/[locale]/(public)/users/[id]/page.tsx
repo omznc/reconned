@@ -102,7 +102,9 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">): Promise<Metadata> {
-	const [params, t, locale] = await Promise.all([props.params, getExtracted(), getLocale()]);
+	const params = await props.params;
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	const user = await prisma.user.findFirst({
 		where: {

@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
-	const [user, locale, t] = await Promise.all([isAuthenticated(), getLocale(), getExtracted()]);
+	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);
+	const t = await getExtracted();
 
 	if (!user) {
 		return redirect({ href: "/login", locale });

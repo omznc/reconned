@@ -75,10 +75,9 @@ export async function ClubOverview({
 	hasOwner = true,
 	user,
 }: ClubOverviewProps) {
-	const [analyticsId, analyticsSlug, t, instagramData] = await Promise.all([
+	const [analyticsId, analyticsSlug, instagramData] = await Promise.all([
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
-		getExtracted(),
 		club.instagramConnected
 			? fetchInstagramPhotos(club.id)
 			: Promise.resolve({
@@ -86,6 +85,7 @@ export async function ClubOverview({
 					username: club.instagramUsername || null,
 				}),
 	]);
+	const t = await getExtracted();
 	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const posts = club.posts.sort((a, b) => {
 		if (a.createdAt < b.createdAt) {

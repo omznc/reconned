@@ -10,7 +10,8 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 export const revalidate = 86_400; // 1 day
 
 export default async function Page() {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	const supportPageSchema: WithContext<ContactPage> = {
 		"@context": "https://schema.org",
@@ -51,7 +52,8 @@ export default async function Page() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-	const [t, locale] = await Promise.all([getExtracted(), getLocale()]);
+	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
 		title: t("Support us - RECONNED"),
