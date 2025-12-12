@@ -22,6 +22,7 @@ export const createUnclaimedClubSchema = z.object({
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().optional(),
+	headerImage: z.string().optional(),
 	contactPhone: z.string().optional(),
 	contactEmail: z.string().optional(),
 	website: z.string().optional(),
