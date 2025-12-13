@@ -15,6 +15,10 @@ on:
         required: true
         type: string
         description: "Tag suffix for the image (amd64 or arm64)"
+      service:
+        required: true
+        type: string
+        description: "Service to build (backend or web)"
     secrets:
       REGISTRY_TOKEN:
         required: true
@@ -66,7 +70,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ inputs.service }}
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}-
@@ -84,6 +88,7 @@ jobs:
       - name: Log build info
         run: |
           echo "Building for branch: ${{ github.ref_name }}"
+          echo "Service: ${{ inputs.service }}"
           echo "Beta mode: ${{ steps.beta.outputs.value }}"
           echo "Platform: ${{ inputs.platform }}"
 
@@ -91,13 +96,13 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./apps/${{ inputs.service }}/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ inputs.tag-suffix }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ inputs.service }}:${{ github.sha }}-${{ inputs.tag-suffix }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: ${{ inputs.platform }}
-          cache-from: type=gha,scope=${{ inputs.platform }}
-          cache-to: type=gha,mode=max,scope=${{ inputs.platform }}
+          cache-from: type=gha,scope=${{ inputs.service }}-${{ inputs.platform }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.service }}-${{ inputs.platform }}
           build-args: |
             NEXT_PUBLIC_CDN_URL=${{ secrets.NEXT_PUBLIC_CDN_URL }}
             NEXT_PUBLIC_BETTER_AUTH_URL=${{ secrets.NEXT_PUBLIC_BETTER_AUTH_URL }}
