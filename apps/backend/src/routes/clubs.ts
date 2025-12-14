@@ -231,7 +231,7 @@ clubsRouter.delete(
 
 clubsRouter.post(
 	"/api/clubs/:id/members",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -249,8 +249,6 @@ clubsRouter.post(
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
-
-		const body = validatedBody;
 
 		if (!body.userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -329,15 +327,13 @@ clubsRouter.post(
 
 clubsRouter.put(
 	"/api/clubs/:id/members/:memberId/extend",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const memberId = params.memberId;
 
 		if (!clubId || !memberId) {
 			return response.error({ error: "Club ID and Member ID are required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		if (!body.duration) {
 			return response.error({ error: "Duration is required" }, 400);
@@ -530,15 +526,9 @@ clubsRouter.post(
 
 clubsRouter.get(
 	"/api/clubs",
-	async ({ query, response, validatedQuery }) => {
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "25", 10),
-		};
+	async ({ response, query }) => {
+		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query;
 		const offset = (page - 1) * perPage;
-		const search = query.get("search") || "";
-		const sortBy = query.get("sortBy") || "createdAt";
-		const sortOrder = query.get("sortOrder") || "desc";
 
 		const whereConditions = [];
 
@@ -703,14 +693,12 @@ clubsRouter.get(
 
 clubsRouter.post(
 	"/api/clubs/:id/rules",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -781,15 +769,13 @@ clubsRouter.post(
 
 clubsRouter.put(
 	"/api/clubs/:id/rules/:ruleId",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const ruleId = params.ruleId;
 
 		if (!clubId || !ruleId) {
 			return response.error({ error: "Club ID and Rule ID are required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -1037,7 +1023,7 @@ clubsRouter.get(
 
 clubsRouter.get(
 	"/api/clubs/:id/posts",
-	async ({ params, response, query, context, validatedQuery }) => {
+	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -1056,10 +1042,7 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "10", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 
 		const posts = await db
@@ -1339,14 +1322,12 @@ clubsRouter.get(
 
 clubsRouter.post(
 	"/api/clubs/:id/posts",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -1420,15 +1401,13 @@ clubsRouter.post(
 
 clubsRouter.put(
 	"/api/clubs/:id/posts/:postId",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const postId = params.postId;
 
 		if (!clubId || !postId) {
 			return response.error({ error: "Club ID and Post ID are required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -1600,14 +1579,12 @@ clubsRouter.delete(
 
 clubsRouter.post(
 	"/api/clubs/:id/posts/images/upload-url",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -1666,7 +1643,7 @@ clubsRouter.post(
 
 clubsRouter.get(
 	"/api/clubs/:id/purchases",
-	async ({ params, response, query, context, validatedQuery }) => {
+	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -1685,10 +1662,7 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "10", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 
 		const purchases = await db
@@ -1738,7 +1712,7 @@ clubsRouter.get(
 
 clubsRouter.get(
 	"/api/clubs/:id/audit-logs",
-	async ({ params, response, query, context, validatedQuery }) => {
+	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -1757,12 +1731,9 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "25", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
-		const actionType = query.get("actionType") || "";
+		const actionType = query?.actionType || "";
 
 		const whereConditions = [eq(clubAuditLog.clubId, clubId)];
 
@@ -1889,14 +1860,12 @@ clubsRouter.get(
 
 clubsRouter.post(
 	"/api/clubs/:id/purchases",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		if (body.receiptUrls && body.receiptUrls.length > 3) {
 			return response.error({ error: "Maximum 3 receipts per item" }, 400);
@@ -1974,15 +1943,13 @@ clubsRouter.post(
 
 clubsRouter.put(
 	"/api/clubs/:id/purchases/:purchaseId",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const purchaseId = params.purchaseId;
 
 		if (!clubId || !purchaseId) {
 			return response.error({ error: "Club ID and Purchase ID are required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		if (body.receiptUrls && body.receiptUrls.length > 3) {
 			return response.error({ error: "Maximum 3 receipts per item" }, 400);
@@ -2142,14 +2109,12 @@ clubsRouter.delete(
 
 clubsRouter.post(
 	"/api/clubs/:id/purchases/receipts/upload-url",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -2208,7 +2173,7 @@ clubsRouter.post(
 
 clubsRouter.get(
 	"/api/clubs/:id/invites",
-	async ({ params, response, query, context, validatedQuery }) => {
+	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -2227,14 +2192,11 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "10", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 
-		const search = query.get("search");
-		const status = query.get("status");
+		const search = query?.search;
+		const status = query?.status;
 
 		const whereConditions = [eq(clubInvite.clubId, clubId)];
 
@@ -2326,14 +2288,12 @@ clubsRouter.get(
 
 clubsRouter.post(
 	"/api/clubs/:id/invites",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -2570,7 +2530,7 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const status = query.get("status");
+		const status = query?.status;
 		const whereConditions = [eq(clubInvite.clubId, clubId)];
 
 		if (status && ["PENDING", "ACCEPTED", "REJECTED", "EXPIRED", "REVOKED", "REQUESTED"].includes(status)) {
@@ -2783,9 +2743,7 @@ clubsRouter.get(
 
 clubsRouter.post(
 	"/api/clubs",
-	async ({ context, response, validatedBody }) => {
-		const body = validatedBody;
-
+	async ({ context, response, body }) => {
 		if (body.slug) {
 			const valid = await validateSlug(body.slug);
 			if (!valid) {
@@ -2871,14 +2829,12 @@ clubsRouter.post(
 
 clubsRouter.put(
 	"/api/clubs/:id",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -3040,14 +2996,12 @@ clubsRouter.delete(
 
 clubsRouter.post(
 	"/api/clubs/:id/logo/upload-url",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -3092,14 +3046,12 @@ clubsRouter.post(
 
 clubsRouter.post(
 	"/api/clubs/:id/header-image/upload-url",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const managerMembershipData = await db
 			.select()
@@ -3271,15 +3223,13 @@ clubsRouter.delete(
 
 clubsRouter.put(
 	"/api/clubs/:id/members/:memberId",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const memberId = params.memberId;
 
 		if (!clubId || !memberId) {
 			return response.error({ error: "Club ID and Member ID are required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const ownerMembershipData = await db
 			.select()
@@ -3379,7 +3329,7 @@ clubsRouter.put(
 
 clubsRouter.get(
 	"/api/clubs/:id/managers",
-	async ({ params, response, query, context, validatedQuery }) => {
+	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -3398,13 +3348,10 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "10", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 
-		const search = query.get("search");
+		const search = query?.search;
 
 		const whereConditions = [
 			eq(clubMembership.clubId, clubId),
@@ -3512,7 +3459,7 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be club member" }, 403);
 		}
 
-		const role = query.get("role");
+		const role = query?.role;
 		const whereConditions = [eq(clubMembership.clubId, clubId)];
 
 		if (role && ["USER", "MANAGER", "CLUB_OWNER"].includes(role)) {
@@ -3668,7 +3615,7 @@ clubsRouter.get(
 clubsRouter.get(
 	"/api/clubs/count",
 	async ({ query, response }) => {
-		const isPrivate = query.get("isPrivate");
+		const isPrivate = query?.isPrivate;
 
 		const whereClause =
 			isPrivate === "true" || isPrivate === "false" ? eq(club.isPrivate, isPrivate === "true") : undefined;
@@ -3697,7 +3644,7 @@ clubsRouter.get(
 
 clubsRouter.get(
 	"/api/clubs/:clubId/events",
-	async ({ params, response, query, context, validatedQuery }) => {
+	async ({ params, response, context, query }) => {
 		const clubId = params.clubId;
 
 		if (!clubId) {
@@ -3716,14 +3663,11 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "25", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
-		const search = query.get("search") || "";
-		const sortBy = query.get("sortBy") || "dateStart";
-		const sortOrder = query.get("sortOrder") || "desc";
+		const search = query?.search || "";
+		const sortBy = query?.sortBy || "dateStart";
+		const sortOrder = query?.sortOrder || "desc";
 
 		const whereConditions = [eq(event.clubId, clubId)];
 
@@ -3830,7 +3774,7 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const search = query.get("search") || "";
+		const search = query?.search || "";
 
 		const whereConditions = [eq(event.clubId, clubId)];
 
@@ -4029,7 +3973,7 @@ clubsRouter.get(
 
 clubsRouter.get(
 	"/api/clubs/:id/audit-logs",
-	async ({ params, query, context, validatedQuery, response }) => {
+	async ({ params, context, query, response }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -4048,13 +3992,10 @@ clubsRouter.get(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "25", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
-		const search = query.get("search") || "";
-		const actionType = query.get("actionType");
+		const search = query?.search || "";
+		const actionType = query?.actionType;
 
 		const whereConditions = [eq(clubAuditLog.clubId, clubId)];
 
@@ -4162,14 +4103,12 @@ const addMemberBodySchema = z.object({
 
 clubsRouter.post(
 	"/api/clubs/:id/members",
-	async ({ params, context, validatedBody, response }) => {
+	async ({ params, context, body, response }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const existingMembershipData = await db
 			.select()
@@ -4316,6 +4255,285 @@ clubsRouter.get(
 					allowed: z.boolean(),
 				}),
 				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.get(
+	"/api/clubs/:id/instagram/auth-url",
+	async ({ params, response, context }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			return response.error({ error: "Club ID is required" }, 400);
+		}
+
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+		}
+
+		if (!env.FACEBOOK_APP_ID) {
+			return response.error({ error: "Facebook App ID not configured" }, 500);
+		}
+
+		const redirectUri = `${env.BETTER_AUTH_URL}/api/club/instagram/callback`;
+		const authUrl = new URL("https://www.facebook.com/v19.0/dialog/oauth");
+		authUrl.searchParams.set("client_id", env.FACEBOOK_APP_ID);
+		authUrl.searchParams.set("redirect_uri", redirectUri);
+		authUrl.searchParams.set("scope", "pages_show_list,instagram_basic,pages_read_engagement");
+		authUrl.searchParams.set("state", clubId);
+
+		return response.json({ authUrl: authUrl.toString() });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get Instagram authorization URL",
+			description: "Get Instagram authorization URL for club",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					authUrl: z.string(),
+				}),
+				...responseSchema([400, 401, 403, 500], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.post(
+	"/api/clubs/:id/instagram/disconnect",
+	async ({ params, response, context }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			return response.error({ error: "Club ID is required" }, 400);
+		}
+
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+		}
+
+		await db
+			.update(club)
+			.set({
+				instagramAccessToken: null,
+				instagramUsername: null,
+				instagramConnected: false,
+				instagramTokenExpiry: null,
+				instagramBusinessId: null,
+				facebookPageId: null,
+				instagramTokenType: null,
+				instagramRefreshToken: null,
+				instagramProfilePictureUrl: null,
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(club.id, clubId));
+
+		await logClubAudit({
+			clubId,
+			actionType: "INSTAGRAM_DISCONNECT",
+			actionData: {
+				success: true,
+			},
+			userId: context.user.id,
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Disconnect Instagram account",
+			description: "Disconnect Instagram account from club",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.get(
+	"/api/clubs/:id/instagram/check-token",
+	async ({ params, response, context }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			return response.error({ error: "Club ID is required" }, 400);
+		}
+
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+		}
+
+		const clubData = await db
+			.select({
+				instagramAccessToken: club.instagramAccessToken,
+				instagramBusinessId: club.instagramBusinessId,
+				instagramTokenExpiry: club.instagramTokenExpiry,
+				facebookPageId: club.facebookPageId,
+				instagramTokenType: club.instagramTokenType,
+			})
+			.from(club)
+			.where(eq(club.id, clubId))
+			.limit(1);
+
+		if (!clubData[0]) {
+			return response.error({ error: "Club not found" }, 404);
+		}
+
+		const clubRecord = clubData[0];
+
+		if (!clubRecord.instagramAccessToken || !clubRecord.instagramBusinessId) {
+			return response.json({ token: null, igBusinessId: null });
+		}
+
+		if (!env.FACEBOOK_APP_ID || !env.FACEBOOK_APP_SECRET) {
+			return response.error({ error: "Facebook credentials not configured" }, 500);
+		}
+
+		try {
+			const appAccessToken = `${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`;
+
+			if (clubRecord.instagramTokenType === "PERMANENT") {
+				const debugResponse = await fetch(
+					`https://graph.facebook.com/v19.0/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
+				);
+
+				if (!debugResponse.ok) {
+					return response.json({ token: null, igBusinessId: null });
+				}
+
+				const debugData = (await debugResponse.json()) as {
+					data?: { is_valid?: boolean };
+				};
+
+				if (!debugData.data?.is_valid) {
+					return response.json({ token: null, igBusinessId: null });
+				}
+
+				return response.json({
+					token: clubRecord.instagramAccessToken,
+					igBusinessId: clubRecord.instagramBusinessId,
+				});
+			}
+
+			const shouldRefreshToken =
+				!clubRecord.instagramTokenExpiry ||
+				new Date(clubRecord.instagramTokenExpiry) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+			if (shouldRefreshToken && clubRecord.facebookPageId) {
+				const pageTokenResponse = await fetch(
+					`https://graph.facebook.com/v19.0/${clubRecord.facebookPageId}?fields=access_token&access_token=${clubRecord.instagramAccessToken}`,
+				);
+
+				if (pageTokenResponse.ok) {
+					const pageTokenData = (await pageTokenResponse.json()) as {
+						access_token?: string;
+					};
+					const nonExpiringToken = pageTokenData.access_token;
+
+					if (nonExpiringToken) {
+						await db
+							.update(club)
+							.set({
+								instagramAccessToken: nonExpiringToken,
+								instagramTokenExpiry: null,
+								instagramTokenType: "PERMANENT",
+								updatedAt: new Date().toISOString(),
+							})
+							.where(eq(club.id, clubId));
+
+						return response.json({
+							token: nonExpiringToken,
+							igBusinessId: clubRecord.instagramBusinessId,
+						});
+					}
+				}
+			}
+
+			const debugResponse = await fetch(
+				`https://graph.facebook.com/v19.0/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
+			);
+
+			if (!debugResponse.ok) {
+				return response.json({ token: null, igBusinessId: null });
+			}
+
+			const debugData = (await debugResponse.json()) as {
+				data?: { is_valid?: boolean; expires_at?: number };
+			};
+
+			if (!debugData.data?.is_valid) {
+				return response.json({ token: null, igBusinessId: null });
+			}
+
+			if (debugData.data?.expires_at) {
+				await db
+					.update(club)
+					.set({
+						instagramTokenExpiry: new Date(debugData.data.expires_at * 1000).toISOString(),
+						updatedAt: new Date().toISOString(),
+					})
+					.where(eq(club.id, clubId));
+			}
+
+			return response.json({
+				token: clubRecord.instagramAccessToken,
+				igBusinessId: clubRecord.instagramBusinessId,
+			});
+		} catch {
+			return response.json({
+				token: clubRecord.instagramAccessToken,
+				igBusinessId: clubRecord.instagramBusinessId,
+			});
+		}
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Check and refresh Instagram token",
+			description: "Check Instagram token validity and refresh if needed",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					token: z.string().nullable(),
+					igBusinessId: z.string().nullable(),
+				}),
+				...responseSchema([400, 401, 403, 404, 500], z.object({ error: z.string() })),
 			},
 		},
 	},

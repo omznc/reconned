@@ -17,10 +17,12 @@ import {
 	Router,
 	type RouteSchema,
 } from "./lib/router";
+import { adminRouter } from "./routes/admin";
 import { clubsRouter } from "./routes/clubs";
 import { countriesRouter } from "./routes/countries";
 import { dashboardRouter } from "./routes/dashboard";
 import { eventsRouter } from "./routes/events";
+import { publicRouter } from "./routes/public";
 import { usersRouter } from "./routes/users";
 import { utilsRouter } from "./routes/utils";
 
@@ -48,7 +50,16 @@ async function handleRequest(request: Request): Promise<Response> {
 
 	const openApiResponse = await handleOpenAPIRoutes(
 		request,
-		[countriesRouter, usersRouter, clubsRouter, eventsRouter, dashboardRouter, utilsRouter],
+		[
+			countriesRouter,
+			usersRouter,
+			clubsRouter,
+			eventsRouter,
+			dashboardRouter,
+			utilsRouter,
+			adminRouter,
+			publicRouter,
+		],
 		corsOrigins,
 	);
 	if (openApiResponse) {
@@ -123,20 +134,11 @@ async function handleRequest(request: Request): Promise<Response> {
 		}
 	}
 
-	let query = url.searchParams;
-	let validatedQuery: unknown;
+	let query: unknown;
 	if (route.schema?.query) {
 		try {
-			const queryObj = Object.fromEntries(query.entries());
-			validatedQuery = route.schema.query.parse(queryObj);
-			query = new URLSearchParams();
-			if (validatedQuery && typeof validatedQuery === "object") {
-				for (const [key, value] of Object.entries(validatedQuery)) {
-					if (value !== undefined && value !== null) {
-						query.set(key, String(value));
-					}
-				}
-			}
+			const queryObj = Object.fromEntries(url.searchParams.entries());
+			query = route.schema.query.parse(queryObj);
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				return addCORSHeaders(
@@ -164,7 +166,7 @@ async function handleRequest(request: Request): Promise<Response> {
 	const hasBodySchema =
 		route.schema?.body && (request.method === "POST" || request.method === "PUT" || request.method === "PATCH");
 
-	let validatedBody: InferBodyType<typeof route.schema>;
+	let body: InferBodyType<typeof route.schema>;
 	if (hasBodySchema && route.schema?.body) {
 		try {
 			const contentType = request.headers.get("content-type");
@@ -238,7 +240,7 @@ async function handleRequest(request: Request): Promise<Response> {
 					corsOrigins,
 				);
 			}
-			validatedBody = parseResult.data as InferBodyType<typeof route.schema>;
+			body = parseResult.data as InferBodyType<typeof route.schema>;
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				return addCORSHeaders(
@@ -323,11 +325,10 @@ async function handleRequest(request: Request): Promise<Response> {
 				const handlerParams = {
 					request,
 					params,
-					query,
 					context,
-					validatedBody: validatedBody as BodyType,
+					body: body as BodyType,
 					response: responseHelper,
-					...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
+					...(hasQuerySchema && { query: query as QueryType }),
 				} as RouteHandlerParams<BodyType, QueryType, typeof route.schema, true>;
 				const response = await handler(handlerParams);
 				return addCORSHeaders(response, request, corsOrigins);
@@ -341,11 +342,10 @@ async function handleRequest(request: Request): Promise<Response> {
 			const handlerParams = {
 				request,
 				params,
-				query,
 				context,
-				validatedBody: validatedBody as BodyType,
+				body: body as BodyType,
 				response: responseHelper,
-				...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
+				...(hasQuerySchema && { query: query as QueryType }),
 			} as RouteHandlerParams<BodyType, QueryType, typeof route.schema, false>;
 			const response = await handler(handlerParams);
 			return addCORSHeaders(response, request, corsOrigins);
@@ -360,10 +360,9 @@ async function handleRequest(request: Request): Promise<Response> {
 			const handlerParams = {
 				request,
 				params,
-				query,
 				context,
 				response: responseHelper,
-				...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
+				...(hasQuerySchema && { query: query as QueryType }),
 			} as RouteHandlerParams<undefined, QueryType, typeof route.schema, true>;
 			const response = await handler(handlerParams);
 			return addCORSHeaders(response, request, corsOrigins);
@@ -377,10 +376,9 @@ async function handleRequest(request: Request): Promise<Response> {
 		const handlerParams = {
 			request,
 			params,
-			query,
 			context,
 			response: responseHelper,
-			...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
+			...(hasQuerySchema && { query: query as QueryType }),
 		} as RouteHandlerParams<undefined, QueryType, typeof route.schema, false>;
 		const response = await handler(handlerParams);
 		return addCORSHeaders(response, request, corsOrigins);
@@ -399,6 +397,8 @@ mainRouter.use(clubsRouter);
 mainRouter.use(eventsRouter);
 mainRouter.use(dashboardRouter);
 mainRouter.use(utilsRouter);
+mainRouter.use(adminRouter);
+mainRouter.use(publicRouter);
 
 Bun.serve({
 	port: 3002,

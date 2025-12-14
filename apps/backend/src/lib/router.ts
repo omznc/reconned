@@ -11,13 +11,12 @@ export type RouteContext<TAuth extends boolean = false> = {
 type BaseHandlerParams<TSchema extends RouteSchema | undefined, TAuth extends boolean> = {
 	request: Request;
 	params: Record<string, string>;
-	query: URLSearchParams;
 	context: RouteContext<TAuth>;
 	response: ResponseHelper<TSchema>;
 };
 
-type WithBody<T> = T extends undefined ? unknown : { validatedBody: T };
-type WithQuery<T> = T extends undefined ? unknown : { validatedQuery: T };
+type WithBody<T> = T extends undefined ? unknown : { body: T };
+type WithQuery<T> = T extends undefined ? unknown : { query: T };
 
 export type RouteHandlerParams<
 	TBody = undefined,

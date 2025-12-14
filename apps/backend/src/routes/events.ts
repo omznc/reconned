@@ -24,16 +24,13 @@ const baseClubRuleSchema = createSelectSchema(clubRule);
 
 eventsRouter.get(
 	"/api/events",
-	async ({ query, context, validatedQuery, response }) => {
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "25", 10),
-		};
+	async ({ context, query, response }) => {
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
-		const search = query.get("search") || "";
-		const sortBy = query.get("sortBy") || "dateStart";
-		const sortOrder = query.get("sortOrder") || "asc";
-		const isPrivateFilter = query.get("isPrivate");
+		const search = query?.search || "";
+		const sortBy = query?.sortBy || "dateStart";
+		const sortOrder = query?.sortOrder || "asc";
+		const isPrivateFilter = query?.isPrivate;
 
 		const whereConditions = [];
 
@@ -197,7 +194,7 @@ eventsRouter.get(
 eventsRouter.get(
 	"/api/events/upcoming",
 	async ({ query, context, response }) => {
-		const limit = Number.parseInt(query.get("limit") || "100", 10);
+		const { limit } = query;
 
 		const whereConditions = [gte(event.dateStart, new Date().toISOString())];
 
@@ -241,7 +238,7 @@ eventsRouter.get(
 			summary: "Get upcoming events",
 			description: "Get upcoming events with privacy filtering",
 			query: z.object({
-				limit: z.string().optional(),
+				limit: z.number().optional().default(25),
 			}),
 			response: {
 				200: z.object({
@@ -255,8 +252,8 @@ eventsRouter.get(
 eventsRouter.get(
 	"/api/events/calendar",
 	async ({ query, context, response }) => {
-		const startDate = query.get("startDate");
-		const endDate = query.get("endDate");
+		const startDate = query?.startDate;
+		const endDate = query?.endDate;
 
 		if (!startDate || !endDate) {
 			return response.error({ error: "Start date and end date are required" }, 400);
@@ -318,7 +315,7 @@ eventsRouter.get(
 eventsRouter.get(
 	"/api/events/count",
 	async ({ query, context, response }) => {
-		const isPrivateFilter = query.get("isPrivate");
+		const isPrivateFilter = query?.isPrivate;
 
 		const whereConditions = [];
 
@@ -385,9 +382,7 @@ async function validateEventSlug(slug: string, excludeEventId?: string): Promise
 
 eventsRouter.post(
 	"/api/events",
-	async ({ context, validatedBody, response }) => {
-		const body = validatedBody;
-
+	async ({ context, body, response }) => {
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -517,14 +512,12 @@ eventsRouter.post(
 
 eventsRouter.put(
 	"/api/events/:id",
-	async ({ params, context, validatedBody, response }) => {
+	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 
 		if (!eventId) {
 			return response.error({ error: "Event ID is required" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const existingEventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
@@ -736,21 +729,18 @@ eventsRouter.delete(
 
 eventsRouter.get(
 	"/api/clubs/:clubId/events",
-	async ({ params, query, validatedQuery, response }) => {
+	async ({ params, query, response }) => {
 		const clubId = params.clubId;
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "25", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
-		const search = query.get("search") || "";
-		const sortBy = query.get("sortBy") || "dateStart";
-		const sortOrder = query.get("sortOrder") || "desc";
+		const search = query?.search || "";
+		const sortBy = query?.sortBy || "dateStart";
+		const sortOrder = query?.sortOrder || "desc";
 
 		const whereConditions = [eq(event.clubId, clubId)];
 
@@ -828,7 +818,7 @@ eventsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		const search = query.get("search") || "";
+		const search = query?.search || "";
 
 		const whereConditions = [eq(event.clubId, clubId)];
 
@@ -876,7 +866,7 @@ const eventImageUploadBodySchema = z.object({
 
 eventsRouter.post(
 	"/api/events/:id/image/upload-url",
-	async ({ params, context, validatedBody, response }) => {
+	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 
 		if (!eventId) {
@@ -903,7 +893,6 @@ eventsRouter.post(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const body = validatedBody;
 		const key = `event/${eventId}/image`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size);
 
@@ -1019,7 +1008,7 @@ const createEventRegistrationBodySchema = z.object({
 
 eventsRouter.post(
 	"/api/events/:id/registrations",
-	async ({ params, context, validatedBody, response }) => {
+	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 
 		if (!eventId) {
@@ -1042,8 +1031,6 @@ eventsRouter.post(
 		if (new Date(eventRecord.dateRegistrationsClose) < now) {
 			return response.error({ error: "Registrations are closed" }, 400);
 		}
-
-		const body = validatedBody;
 
 		const existingRegistrationData = await db
 			.select()
@@ -1175,7 +1162,7 @@ eventsRouter.post(
 
 eventsRouter.put(
 	"/api/events/:id/registrations/:registrationId/attendance",
-	async ({ params, context, validatedBody, response }) => {
+	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 		const registrationId = params.registrationId;
 
@@ -1202,8 +1189,6 @@ eventsRouter.put(
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
-
-		const body = validatedBody;
 
 		const updated = await db
 			.update(eventRegistration)

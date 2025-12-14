@@ -20,6 +20,8 @@ export const env = createEnv({
 		S3_SECRET_ACCESS_KEY: z.string().min(1),
 		S3_BUCKET_NAME: z.string().min(1),
 		CDN_URL: z.url(),
+		FACEBOOK_APP_ID: z.string().optional(),
+		FACEBOOK_APP_SECRET: z.string().optional(),
 		CI: z.string().optional(),
 	},
 	runtimeEnv: process.env,

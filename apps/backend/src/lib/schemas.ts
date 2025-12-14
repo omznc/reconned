@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-/**
- * Shared pagination query schema
- * Converts string query params to integers and validates values
- */
 export const paginationQuerySchema = z.object({
 	page: z
 		.string()
@@ -23,15 +19,8 @@ export const paginationQuerySchema = z.object({
 		}),
 });
 
-/**
- * Type for pagination query parameters
- */
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
 
-/**
- * Shared pagination response schema
- * Standard structure for paginated API responses
- */
 export const paginationResponseSchema = z.object({
 	page: z.number(),
 	perPage: z.number(),
@@ -39,7 +28,4 @@ export const paginationResponseSchema = z.object({
 	totalPages: z.number(),
 });
 
-/**
- * Type for pagination response
- */
 export type PaginationResponse = z.infer<typeof paginationResponseSchema>;

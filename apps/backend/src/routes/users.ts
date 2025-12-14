@@ -295,23 +295,20 @@ usersRouter.get(
 
 usersRouter.get(
 	"/api/users",
-	async ({ query, response, context, validatedQuery }) => {
+	async ({ response, context, query }) => {
 		const requestingUserId = context.user?.id;
 		const isAdmin = context.isAdmin;
 
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "20", 10),
-		};
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 
 		let orderBy = sql`${user.name} ASC`;
-		if (query.get("sort") === "admin") {
+		if (query?.sort === "admin") {
 			orderBy = sql`CASE WHEN ${user.role} = 'admin' THEN 0 ELSE 1 END, ${user.name} ASC`;
 		}
 
 		const whereConditions = [];
-		const search = query.get("search");
+		const search = query?.search;
 		if (search) {
 			whereConditions.push(
 				or(
@@ -581,7 +578,7 @@ usersRouter.get(
 
 usersRouter.put(
 	"/api/users/:id",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -590,8 +587,6 @@ usersRouter.put(
 		if (!context.user || context.user.id !== userId) {
 			return response.error({ error: "Unauthorized" }, 401);
 		}
-
-		const body = validatedBody;
 
 		const updateData: Record<string, unknown> = {
 			updatedAt: new Date().toISOString(),
@@ -946,7 +941,7 @@ usersRouter.get(
 
 usersRouter.put(
 	"/api/users/:id/theme",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -955,8 +950,6 @@ usersRouter.put(
 		if (!context.user || context.user.id !== userId) {
 			return response.error({ error: "Unauthorized" }, 401);
 		}
-
-		const body = validatedBody;
 
 		await db
 			.update(user)
@@ -990,7 +983,7 @@ usersRouter.put(
 
 usersRouter.put(
 	"/api/users/:id/font",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -999,8 +992,6 @@ usersRouter.put(
 		if (!context.user || context.user.id !== userId) {
 			return response.error({ error: "Unauthorized" }, 401);
 		}
-
-		const body = validatedBody;
 
 		await db
 			.update(user)
@@ -1034,7 +1025,7 @@ usersRouter.put(
 
 usersRouter.put(
 	"/api/users/:id/style",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -1043,8 +1034,6 @@ usersRouter.put(
 		if (!context.user || context.user.id !== userId) {
 			return response.error({ error: "Unauthorized" }, 401);
 		}
-
-		const body = validatedBody;
 
 		await db
 			.update(user)
@@ -1148,7 +1137,7 @@ usersRouter.get(
 
 usersRouter.post(
 	"/api/users/:id/image/upload-url",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -1157,8 +1146,6 @@ usersRouter.post(
 		if (!context.user || context.user.id !== userId) {
 			return response.error({ error: "Unauthorized" }, 401);
 		}
-
-		const body = validatedBody;
 
 		try {
 			const result = await getS3UploadUrl(`user/${userId}/image`, body.type, body.size);
@@ -1198,7 +1185,7 @@ usersRouter.post(
 
 usersRouter.post(
 	"/api/users/:id/header-image/upload-url",
-	async ({ params, response, context, validatedBody }) => {
+	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -1207,8 +1194,6 @@ usersRouter.post(
 		if (!context.user || context.user.id !== userId) {
 			return response.error({ error: "Unauthorized" }, 401);
 		}
-
-		const body = validatedBody;
 
 		try {
 			const result = await getS3UploadUrl(`user/${userId}/header`, body.type, body.size);

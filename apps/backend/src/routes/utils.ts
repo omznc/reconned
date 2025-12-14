@@ -14,14 +14,11 @@ const baseReviewSchema = createSelectSchema(review);
 
 utilsRouter.get(
 	"/api/search",
-	async ({ query, validatedQuery, response }) => {
-		const { page, perPage } = validatedQuery || {
-			page: Number.parseInt(query.get("page") || "1", 10),
-			perPage: Number.parseInt(query.get("perPage") || "25", 10),
-		};
+	async ({ query, response }) => {
+		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
-		const search = query.get("search") || "";
-		const type = query.get("type") || "all";
+		const search = query?.search || "";
+		const type = query?.type || "all";
 
 		if (!search || search.length < 2) {
 			return response.json({
@@ -203,9 +200,7 @@ const validateSlugBodySchema = z.object({
 
 utilsRouter.post(
 	"/api/validate-slug",
-	async ({ validatedBody, response }) => {
-		const body = validatedBody;
-
+	async ({ body, response }) => {
 		switch (body.type) {
 			case "club": {
 				const [clubBySlug, clubById] = await Promise.all([
@@ -263,9 +258,9 @@ utilsRouter.post(
 utilsRouter.get(
 	"/api/reviews",
 	async ({ query, response }) => {
-		const clubId = query.get("clubId");
-		const eventId = query.get("eventId");
-		const userId = query.get("userId");
+		const clubId = query?.clubId;
+		const eventId = query?.eventId;
+		const userId = query?.userId;
 
 		const whereConditions = [];
 
