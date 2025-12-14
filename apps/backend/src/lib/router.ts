@@ -282,6 +282,14 @@ export class Router {
 		return this.registerMethod("DELETE", path, handler, options);
 	}
 
+	use(router: Router, prefix?: string): this {
+		for (const route of router.routes) {
+			const path = prefix ? `${prefix}${route.path}` : route.path;
+			this.add(route.method, path, route.handler, { auth: route.auth, schema: route.schema });
+		}
+		return this;
+	}
+
 	match(request: Request): { route: Route; params: Record<string, string> } | null {
 		const url = new URL(request.url);
 		const pathname = url.pathname;

@@ -1,6 +1,6 @@
 # Backend API
 
-Backend API built with Bun, Elysia, and Drizzle ORM.
+Backend API built with Bun's built-in HTTP server and Drizzle ORM.
 
 ## Setup
 

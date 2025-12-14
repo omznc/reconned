@@ -16,7 +16,7 @@ RECONNED is a monorepo built with Bun workspaces, consisting of:
   - Uses Prisma ORM for database access
   - Server-side rendering with React Server Components
 
-- **Backend (`apps/backend`)**: Elysia API server
+- **Backend (`apps/backend`)**: Bun HTTP server
   - Runs on port **3002** by default
   - Uses Drizzle ORM for database access
   - Provides authentication endpoints via better-auth
@@ -38,7 +38,7 @@ Both applications share the same PostgreSQL database but use different ORMs opti
 - **i18n:** next-intl
 
 ### Backend
-- **Framework:** Elysia (Bun runtime)
+- **Framework:** Bun's built-in HTTP server
 - **Database:** Drizzle ORM + PostgreSQL
 - **Authentication:** better-auth
 - **API Docs:** OpenAPI/Swagger

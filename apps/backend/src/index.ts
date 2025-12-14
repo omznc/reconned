@@ -28,12 +28,6 @@ const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.t
 
 const mainRouter = new Router();
 
-const registerRoutes = (router: Router) => {
-	for (const route of router.routes) {
-		mainRouter.add(route.method, route.path, route.handler, { auth: route.auth, schema: route.schema });
-	}
-};
-
 async function handleBetterAuth(request: Request): Promise<Response> {
 	const url = new URL(request.url);
 	if (!url.pathname.startsWith("/api/auth")) {
@@ -399,12 +393,12 @@ async function handleRequest(request: Request): Promise<Response> {
 	}
 }
 
-registerRoutes(countriesRouter);
-registerRoutes(usersRouter);
-registerRoutes(clubsRouter);
-registerRoutes(eventsRouter);
-registerRoutes(dashboardRouter);
-registerRoutes(utilsRouter);
+mainRouter.use(countriesRouter);
+mainRouter.use(usersRouter);
+mainRouter.use(clubsRouter);
+mainRouter.use(eventsRouter);
+mainRouter.use(dashboardRouter);
+mainRouter.use(utilsRouter);
 
 Bun.serve({
 	port: 3002,
