@@ -13,7 +13,7 @@ const countrySchema = z.object({
 	iso2: z.string(),
 	latitude: z.number().nullable(),
 	longitude: z.number().nullable(),
-	translations: z.record(z.string(), z.string()).optional(),
+	translations: z.record(z.string(), z.string()).nullable().optional(),
 });
 
 export const countriesRouter = new Router();

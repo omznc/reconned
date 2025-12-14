@@ -1,53 +1,40 @@
 import type { z } from "zod";
 
-export type RouteContext = {
-	user?: { id: string; email: string; name: string; role?: string };
+export type RouteContext<TAuth extends boolean = false> = {
+	user: TAuth extends true
+		? { id: string; email: string; name: string; role?: string }
+		: { id: string; email: string; name: string; role?: string } | undefined;
 	session?: { id: string };
 	isAdmin: boolean;
 };
+
+type BaseHandlerParams<TSchema extends RouteSchema | undefined, TAuth extends boolean> = {
+	request: Request;
+	params: Record<string, string>;
+	query: URLSearchParams;
+	context: RouteContext<TAuth>;
+	response: ResponseHelper<TSchema>;
+};
+
+type WithBody<T> = T extends undefined ? unknown : { validatedBody: T };
+type WithQuery<T> = T extends undefined ? unknown : { validatedQuery: T };
 
 export type RouteHandlerParams<
 	TBody = undefined,
 	TQuery = undefined,
 	TSchema extends RouteSchema | undefined = undefined,
-> = TBody extends undefined
-	? TQuery extends undefined
-		? {
-				request: Request;
-				params: Record<string, string>;
-				query: URLSearchParams;
-				context: RouteContext;
-				response: ResponseHelper<TSchema>;
-			}
-		: {
-				request: Request;
-				params: Record<string, string>;
-				query: URLSearchParams;
-				validatedQuery: TQuery;
-				context: RouteContext;
-				response: ResponseHelper<TSchema>;
-			}
-	: TQuery extends undefined
-		? {
-				request: Request;
-				params: Record<string, string>;
-				query: URLSearchParams;
-				context: RouteContext;
-				validatedBody: TBody;
-				response: ResponseHelper<TSchema>;
-			}
-		: {
-				request: Request;
-				params: Record<string, string>;
-				query: URLSearchParams;
-				validatedQuery: TQuery;
-				context: RouteContext;
-				validatedBody: TBody;
-				response: ResponseHelper<TSchema>;
-			};
+	TAuth extends boolean = false,
+> = BaseHandlerParams<TSchema, TAuth> & WithBody<TBody> & WithQuery<TQuery>;
 
-export type RouteHandler<TBody = undefined, TQuery = undefined, TSchema extends RouteSchema | undefined = undefined> = (
-	params: RouteHandlerParams<TBody, TQuery, TSchema>,
+export type RouteHandler<
+	TBody = undefined,
+	TQuery = undefined,
+	TSchema extends RouteSchema | undefined = undefined,
+	TAuth extends boolean = false,
+> = (params: RouteHandlerParams<TBody, TQuery, TSchema, TAuth>) => Promise<Response> | Response;
+
+type HandlerFn<TSchema extends RouteSchema | undefined, TAuth extends boolean> = (
+	params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema, TAuth>,
 ) => Promise<Response> | Response;
 
 type ResponseSchema = Record<number | string, z.ZodTypeAny>;
@@ -80,42 +67,34 @@ export type InferQueryType<TSchema extends RouteSchema | undefined> = TSchema ex
 	? z.infer<TSchema["query"]>
 	: undefined;
 
-export type InferResponseType<TSchema extends RouteSchema | undefined> = TSchema extends {
+type InferResponseCode<TSchema extends RouteSchema | undefined, TCode extends number | string> = TSchema extends {
 	response: ResponseSchema;
 }
-	? TSchema["response"][200] extends z.ZodTypeAny
-		? z.infer<TSchema["response"][200]>
-		: TSchema["response"]["200"] extends z.ZodTypeAny
-			? z.infer<TSchema["response"]["200"]>
+	? TSchema["response"][TCode] extends z.ZodTypeAny
+		? z.infer<TSchema["response"][TCode]>
+		: TSchema["response"][`${TCode}`] extends z.ZodTypeAny
+			? z.infer<TSchema["response"][`${TCode}`]>
 			: unknown
 	: unknown;
 
-export type InferSuccessResponseType<TSchema extends RouteSchema | undefined> = TSchema extends {
-	response: ResponseSchema;
-}
+export type InferResponseType<TSchema extends RouteSchema | undefined> = InferResponseCode<TSchema, 200>;
+
+type Has201<TSchema extends RouteSchema | undefined> = TSchema extends { response: ResponseSchema }
 	? TSchema["response"][201] extends z.ZodTypeAny
-		? z.infer<TSchema["response"][201]>
+		? true
 		: TSchema["response"]["201"] extends z.ZodTypeAny
-			? z.infer<TSchema["response"]["201"]>
-			: TSchema["response"][200] extends z.ZodTypeAny
-				? z.infer<TSchema["response"][200]>
-				: TSchema["response"]["200"] extends z.ZodTypeAny
-					? z.infer<TSchema["response"]["200"]>
-					: unknown
-	: unknown;
+			? true
+			: false
+	: false;
+
+export type InferSuccessResponseType<TSchema extends RouteSchema | undefined> = Has201<TSchema> extends true
+	? InferResponseCode<TSchema, 201>
+	: InferResponseCode<TSchema, 200>;
 
 export type InferErrorResponseType<
 	TSchema extends RouteSchema | undefined,
 	TStatus extends 400 | 401 | 403 | 404 | 500,
-> = TSchema extends {
-	response: ResponseSchema;
-}
-	? TSchema["response"][TStatus] extends z.ZodTypeAny
-		? z.infer<TSchema["response"][TStatus]>
-		: TSchema["response"][`${TStatus}`] extends z.ZodTypeAny
-			? z.infer<TSchema["response"][`${TStatus}`]>
-			: unknown
-	: unknown;
+> = InferResponseCode<TSchema, TStatus>;
 
 export type ResponseHelper<TSchema extends RouteSchema | undefined> = {
 	json: <TStatus extends 200 | 201 = 200>(
@@ -179,13 +158,14 @@ export class Router {
 		};
 	}
 
-	private wrapHandler<TSchema extends RouteSchema | undefined>(
+	private wrapHandler<TSchema extends RouteSchema | undefined, TAuth extends boolean>(
 		handler: (
-			params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema>,
+			params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema, TAuth>,
 		) => Promise<Response> | Response,
 		schema?: TSchema,
-	): RouteHandler<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema> {
-		return (params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema>) => {
+		_auth?: boolean,
+	): RouteHandler<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema, TAuth> {
+		return (params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema, TAuth>) => {
 			return handler({
 				...params,
 				response: this.createResponseHelper(schema),
@@ -196,18 +176,35 @@ export class Router {
 	private registerMethod<TSchema extends RouteSchema | undefined = undefined>(
 		method: string,
 		path: string,
-		handler: (
-			params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema>,
-		) => Promise<Response> | Response,
+		handler: HandlerFn<TSchema, true>,
+		options?: { auth?: true; schema?: TSchema },
+	): this;
+	private registerMethod<TSchema extends RouteSchema | undefined = undefined>(
+		method: string,
+		path: string,
+		handler: HandlerFn<TSchema, false>,
+		options?: { auth?: false; schema?: TSchema },
+	): this;
+	private registerMethod<TSchema extends RouteSchema | undefined = undefined>(
+		method: string,
+		path: string,
+		handler: HandlerFn<TSchema, boolean>,
+		options?: { auth?: boolean; schema?: TSchema },
+	): this;
+	private registerMethod<TSchema extends RouteSchema | undefined = undefined>(
+		method: string,
+		path: string,
+		handler: HandlerFn<TSchema, boolean>,
 		options?: { auth?: boolean; schema?: TSchema },
 	): this {
 		return this.add(
 			method,
 			path,
-			this.wrapHandler(handler, options?.schema) as RouteHandler<
+			this.wrapHandler(handler, options?.schema, options?.auth) as RouteHandler<
 				InferBodyType<TSchema>,
 				InferQueryType<TSchema>,
-				TSchema
+				TSchema,
+				boolean
 			>,
 			options,
 		);
@@ -215,9 +212,17 @@ export class Router {
 
 	get<TSchema extends RouteSchema | undefined = undefined>(
 		path: string,
-		handler: (
-			params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema>,
-		) => Promise<Response> | Response,
+		handler: HandlerFn<TSchema, true>,
+		options: { auth: true; schema?: TSchema },
+	): this;
+	get<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, false>,
+		options?: { auth?: false; schema?: TSchema },
+	): this;
+	get<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, boolean>,
 		options?: { auth?: boolean; schema?: TSchema },
 	): this {
 		return this.registerMethod("GET", path, handler, options);
@@ -225,9 +230,17 @@ export class Router {
 
 	post<TSchema extends RouteSchema | undefined = undefined>(
 		path: string,
-		handler: (
-			params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema>,
-		) => Promise<Response> | Response,
+		handler: HandlerFn<TSchema, true>,
+		options: { auth: true; schema?: TSchema },
+	): this;
+	post<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, false>,
+		options?: { auth?: false; schema?: TSchema },
+	): this;
+	post<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, boolean>,
 		options?: { auth?: boolean; schema?: TSchema },
 	): this {
 		return this.registerMethod("POST", path, handler, options);
@@ -235,9 +248,17 @@ export class Router {
 
 	put<TSchema extends RouteSchema | undefined = undefined>(
 		path: string,
-		handler: (
-			params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema>,
-		) => Promise<Response> | Response,
+		handler: HandlerFn<TSchema, true>,
+		options: { auth: true; schema?: TSchema },
+	): this;
+	put<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, false>,
+		options?: { auth?: false; schema?: TSchema },
+	): this;
+	put<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, boolean>,
 		options?: { auth?: boolean; schema?: TSchema },
 	): this {
 		return this.registerMethod("PUT", path, handler, options);
@@ -245,9 +266,17 @@ export class Router {
 
 	delete<TSchema extends RouteSchema | undefined = undefined>(
 		path: string,
-		handler: (
-			params: RouteHandlerParams<InferBodyType<TSchema>, InferQueryType<TSchema>, TSchema>,
-		) => Promise<Response> | Response,
+		handler: HandlerFn<TSchema, true>,
+		options: { auth: true; schema?: TSchema },
+	): this;
+	delete<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, false>,
+		options?: { auth?: false; schema?: TSchema },
+	): this;
+	delete<TSchema extends RouteSchema | undefined = undefined>(
+		path: string,
+		handler: HandlerFn<TSchema, boolean>,
 		options?: { auth?: boolean; schema?: TSchema },
 	): this {
 		return this.registerMethod("DELETE", path, handler, options);

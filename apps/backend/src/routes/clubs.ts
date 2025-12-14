@@ -132,10 +132,6 @@ clubsRouter.delete(
 			return response.error({ error: "Club ID and Member ID are required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const membershipData = await db
 			.select({
 				id: clubMembership.id,
@@ -242,10 +238,6 @@ clubsRouter.post(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -258,7 +250,7 @@ clubsRouter.post(
 			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
 		}
 
-		const body = validatedBody as { userId: string; role?: "USER" | "MANAGER" | "CLUB_OWNER" };
+		const body = validatedBody;
 
 		if (!body.userId) {
 			return response.error({ error: "User ID is required" }, 400);
@@ -305,6 +297,10 @@ clubsRouter.post(
 			userId: context.user.id,
 		});
 
+		if (!newMembership[0]) {
+			return response.error({ error: "Failed to create membership" }, 500);
+		}
+
 		return response.json({ success: true, membership: newMembership[0] });
 	},
 	{
@@ -339,10 +335,6 @@ clubsRouter.put(
 
 		if (!clubId || !memberId) {
 			return response.error({ error: "Club ID and Member ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -483,10 +475,6 @@ clubsRouter.post(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const membershipData = await db
 			.select()
 			.from(clubMembership)
@@ -619,10 +607,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -668,10 +652,6 @@ clubsRouter.get(
 
 		if (!clubId || !ruleId) {
 			return response.error({ error: "Club ID and Rule ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -728,10 +708,6 @@ clubsRouter.post(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -811,10 +787,6 @@ clubsRouter.put(
 
 		if (!clubId || !ruleId) {
 			return response.error({ error: "Club ID and Rule ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -904,10 +876,6 @@ clubsRouter.delete(
 			return response.error({ error: "Club ID and Rule ID are required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -973,10 +941,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -1022,10 +986,6 @@ clubsRouter.get(
 
 		if (!clubId || !postId) {
 			return response.error({ error: "Club ID and Post ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -1082,10 +1042,6 @@ clubsRouter.get(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -1155,10 +1111,6 @@ clubsRouter.get(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -1324,10 +1276,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -1396,10 +1344,6 @@ clubsRouter.post(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -1482,10 +1426,6 @@ clubsRouter.put(
 
 		if (!clubId || !postId) {
 			return response.error({ error: "Club ID and Post ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -1594,10 +1534,6 @@ clubsRouter.delete(
 			return response.error({ error: "Club ID and Post ID are required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -1671,10 +1607,6 @@ clubsRouter.post(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const body = validatedBody;
 
 		const managerMembershipData = await db
@@ -1739,10 +1671,6 @@ clubsRouter.get(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -1817,10 +1745,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -1860,7 +1784,10 @@ clubsRouter.get(
 		const total = totalData[0]?.count || 0;
 
 		return response.json({
-			logs,
+			logs: logs.map((log) => ({
+				...log,
+				actionData: log.actionData as Record<string, unknown>,
+			})),
 			pagination: {
 				page,
 				perPage,
@@ -1911,10 +1838,6 @@ clubsRouter.get(
 
 		if (!clubId || !purchaseId) {
 			return response.error({ error: "Club ID and Purchase ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -1971,10 +1894,6 @@ clubsRouter.post(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -2061,10 +1980,6 @@ clubsRouter.put(
 
 		if (!clubId || !purchaseId) {
 			return response.error({ error: "Club ID and Purchase ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -2161,10 +2076,6 @@ clubsRouter.delete(
 			return response.error({ error: "Club ID and Purchase ID are required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -2238,10 +2149,6 @@ clubsRouter.post(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const body = validatedBody;
 
 		const managerMembershipData = await db
@@ -2306,10 +2213,6 @@ clubsRouter.get(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -2428,10 +2331,6 @@ clubsRouter.post(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -2581,10 +2480,6 @@ clubsRouter.put(
 			return response.error({ error: "Club ID and Invite ID are required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -2663,10 +2558,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -2729,10 +2620,6 @@ clubsRouter.get(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -2854,10 +2741,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
 		if (!clubData[0]) {
@@ -2901,10 +2784,6 @@ clubsRouter.get(
 clubsRouter.post(
 	"/api/clubs",
 	async ({ context, response, validatedBody }) => {
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const body = validatedBody;
 
 		if (body.slug) {
@@ -2997,10 +2876,6 @@ clubsRouter.put(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -3096,10 +2971,6 @@ clubsRouter.delete(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const ownerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -3176,10 +3047,6 @@ clubsRouter.post(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const body = validatedBody;
 
 		const managerMembershipData = await db
@@ -3230,10 +3097,6 @@ clubsRouter.post(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -3291,10 +3154,6 @@ clubsRouter.delete(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const managerMembershipData = await db
@@ -3358,10 +3217,6 @@ clubsRouter.delete(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -3422,10 +3277,6 @@ clubsRouter.put(
 
 		if (!clubId || !memberId) {
 			return response.error({ error: "Club ID and Member ID are required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const body = validatedBody;
@@ -3535,10 +3386,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -3600,10 +3447,19 @@ clubsRouter.get(
 		const total = totalData[0]?.count || 0;
 
 		return response.json({
-			managers: managers.map((m) => ({
-				...m,
-				userName: m.user?.name || null,
-			})),
+			managers: managers
+				.filter((m): m is typeof m & { user: NonNullable<typeof m.user> } => m.user !== null)
+				.map((m) => ({
+					id: m.id,
+					userId: m.userId,
+					clubId: m.clubId,
+					role: m.role,
+					startDate: m.startDate,
+					endDate: m.endDate,
+					createdAt: m.createdAt,
+					updatedAt: m.updatedAt,
+					user: m.user,
+				})),
 			pagination: {
 				page,
 				perPage,
@@ -3644,10 +3500,6 @@ clubsRouter.get(
 
 		if (!clubId) {
 			return response.error({ error: "Club ID is required" }, 400);
-		}
-
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
 		}
 
 		const membershipData = await db
@@ -3701,10 +3553,6 @@ clubsRouter.get(
 clubsRouter.get(
 	"/api/clubs/managed",
 	async ({ context, response }) => {
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managedClubs = await db
 			.select({
 				clubId: clubMembership.clubId,
@@ -3856,10 +3704,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -3912,6 +3756,8 @@ clubsRouter.get(
 					.where(eq(eventRegistration.eventId, e.id));
 				return {
 					...e,
+					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
+					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
 					_count: {
 						eventRegistration: Number(registrationCount[0]?.count || 0),
 					},
@@ -3972,10 +3818,6 @@ clubsRouter.get(
 			return response.error({ error: "Club ID is required" }, 400);
 		}
 
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -4018,6 +3860,460 @@ clubsRouter.get(
 			response: {
 				200: z.object({
 					count: z.number(),
+				}),
+				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.get(
+	"/api/clubs/:id/stats",
+	async ({ params, context, response }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			return response.error({ error: "Club ID is required" }, 400);
+		}
+
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+		}
+
+		const clubData = await db.select({ createdAt: club.createdAt }).from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!clubData[0]) {
+			return response.error({ error: "Club not found" }, 404);
+		}
+
+		const clubCreatedAt = clubData[0].createdAt;
+
+		const membersOverTime = await db.execute(sql`
+			WITH RECURSIVE dates AS (
+				SELECT DATE(date_trunc('day', ${clubCreatedAt}::timestamp))::timestamp as date
+				UNION ALL
+				SELECT (date + INTERVAL '1 day')::timestamp
+				FROM dates
+				WHERE date < DATE(NOW())
+			)
+			SELECT 
+				d.date::date as date,
+				COUNT(DISTINCT cm.id)::int as count
+			FROM dates d
+			LEFT JOIN "ClubMembership" cm ON 
+				DATE(cm."createdAt") <= d.date::date 
+				AND cm."clubId" = ${clubId}
+			GROUP BY d.date
+			ORDER BY d.date ASC
+		`);
+
+		const roleDistribution = await db
+			.select({
+				role: clubMembership.role,
+				count: count(),
+			})
+			.from(clubMembership)
+			.where(eq(clubMembership.clubId, clubId))
+			.groupBy(clubMembership.role);
+
+		const eventsPerMonth = await db.execute(sql`
+			WITH RECURSIVE months AS (
+				SELECT DATE_TRUNC('month', NOW() - INTERVAL '11 months')::date as month
+				UNION ALL
+				SELECT (month + INTERVAL '1 month')::date
+				FROM months
+				WHERE month < DATE_TRUNC('month', NOW())
+			)
+			SELECT 
+				m.month,
+				COUNT(e.id)::int as count
+			FROM months m
+			LEFT JOIN "Event" e ON 
+				DATE_TRUNC('month', e."dateStart") = m.month 
+				AND e."clubId" = ${clubId}
+			GROUP BY m.month
+			ORDER BY m.month ASC
+		`);
+
+		const recentEventsData = await db
+			.select()
+			.from(event)
+			.where(eq(event.clubId, clubId))
+			.orderBy(desc(event.dateStart))
+			.limit(10);
+
+		const recentEvents = await Promise.all(
+			recentEventsData.map(async (e) => {
+				const registrationCount = await db
+					.select({ count: count() })
+					.from(eventRegistration)
+					.where(eq(eventRegistration.eventId, e.id));
+				return {
+					...e,
+					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
+					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+					_count: {
+						eventRegistration: Number(registrationCount[0]?.count || 0),
+					},
+				};
+			}),
+		);
+
+		return response.json({
+			members: (membersOverTime as Array<{ date: Date | string; count: number | string }>).map((row) => ({
+				date: row.date instanceof Date ? row.date.toISOString() : String(row.date),
+				count: Number(row.count),
+			})),
+			roles: roleDistribution.map((r) => ({
+				role: r.role,
+				_count: Number(r.count),
+			})),
+			events: (eventsPerMonth as Array<{ month: Date | string; count: number | string }>).map((row) => ({
+				month: row.month instanceof Date ? row.month.toISOString() : String(row.month),
+				count: Number(row.count),
+			})),
+			recentEvents,
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get club statistics",
+			description:
+				"Get club statistics including members over time, role distribution, events per month, and recent events",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					members: z.array(
+						z.object({
+							date: z.string(),
+							count: z.number(),
+						}),
+					),
+					roles: z.array(
+						z.object({
+							role: z.string(),
+							_count: z.number(),
+						}),
+					),
+					events: z.array(
+						z.object({
+							month: z.string(),
+							count: z.number(),
+						}),
+					),
+					recentEvents: z.array(
+						baseEventSchema.extend({
+							_count: z.object({
+								eventRegistration: z.number(),
+							}),
+						}),
+					),
+				}),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.get(
+	"/api/clubs/:id/audit-logs",
+	async ({ params, query, context, validatedQuery, response }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			return response.error({ error: "Club ID is required" }, 400);
+		}
+
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+		}
+
+		const { page, perPage } = validatedQuery || {
+			page: Number.parseInt(query.get("page") || "1", 10),
+			perPage: Number.parseInt(query.get("perPage") || "25", 10),
+		};
+		const offset = (page - 1) * perPage;
+		const search = query.get("search") || "";
+		const actionType = query.get("actionType");
+
+		const whereConditions = [eq(clubAuditLog.clubId, clubId)];
+
+		if (actionType) {
+			whereConditions.push(eq(clubAuditLog.actionType, actionType));
+		}
+
+		if (search) {
+			const searchCondition = or(
+				ilike(clubAuditLog.actionType, `%${search}%`),
+				sql`CAST(${clubAuditLog.actionData} AS TEXT) ILIKE ${`%${search}%`}`,
+			);
+			if (searchCondition) {
+				whereConditions.push(searchCondition);
+			}
+		}
+
+		const whereClause = and(...whereConditions);
+
+		const logs = await db
+			.select({
+				id: clubAuditLog.id,
+				createdAt: clubAuditLog.createdAt,
+				userId: clubAuditLog.userId,
+				clubId: clubAuditLog.clubId,
+				actionType: clubAuditLog.actionType,
+				actionData: clubAuditLog.actionData,
+				ipAddress: clubAuditLog.ipAddress,
+				userAgent: clubAuditLog.userAgent,
+				user: {
+					id: user.id,
+					name: user.name,
+					email: user.email,
+				},
+			})
+			.from(clubAuditLog)
+			.leftJoin(user, eq(clubAuditLog.userId, user.id))
+			.where(whereClause)
+			.orderBy(desc(clubAuditLog.createdAt))
+			.limit(perPage)
+			.offset(offset);
+
+		const totalData = await db.select({ count: count() }).from(clubAuditLog).where(whereClause);
+		const total = totalData[0]?.count || 0;
+
+		return response.json({
+			logs: logs.map((log) => ({
+				...log,
+				actionData: log.actionData as Record<string, unknown>,
+			})),
+			pagination: {
+				page,
+				perPage,
+				total,
+				totalPages: Math.ceil(total / perPage),
+			},
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get club audit logs",
+			description: "Get audit logs for a club with pagination, search, and filtering by action type",
+			params: z.object({
+				id: z.string(),
+			}),
+			query: paginationQuerySchema.extend({
+				search: z.string().optional(),
+				actionType: z.string().optional(),
+			}),
+			response: {
+				200: z.object({
+					logs: z.array(
+						z.object({
+							id: z.string(),
+							createdAt: z.string(),
+							userId: z.string().nullable(),
+							clubId: z.string(),
+							actionType: z.string(),
+							actionData: z.record(z.string(), z.unknown()),
+							ipAddress: z.string().nullable(),
+							userAgent: z.string().nullable(),
+							user: z
+								.object({
+									id: z.string(),
+									name: z.string(),
+									email: z.string(),
+								})
+								.nullable(),
+						}),
+					),
+					pagination: paginationResponseSchema,
+				}),
+				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+const addMemberBodySchema = z.object({
+	userId: z.string(),
+	role: z.enum(["USER", "MANAGER", "CLUB_OWNER"]).optional(),
+});
+
+clubsRouter.post(
+	"/api/clubs/:id/members",
+	async ({ params, context, validatedBody, response }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			return response.error({ error: "Club ID is required" }, 400);
+		}
+
+		const body = validatedBody;
+
+		const existingMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, body.userId)))
+			.limit(1);
+
+		if (existingMembershipData[0]) {
+			return response.error({ error: "User is already a member of this club" }, 400);
+		}
+
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+		}
+
+		const newMembership = await db
+			.insert(clubMembership)
+			.values({
+				id: randomUUIDv7(),
+				clubId,
+				userId: body.userId,
+				role: body.role || "USER",
+				startDate: new Date().toISOString(),
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			})
+			.returning();
+
+		await logClubAudit({
+			clubId,
+			actionType: "MEMBER_ADD",
+			actionData: {
+				userId: body.userId,
+				role: body.role || "USER",
+			},
+			userId: context.user.id,
+		});
+
+		if (!newMembership[0]) {
+			return response.error({ error: "Failed to add member" }, 500);
+		}
+
+		return response.json({
+			success: true,
+			membership: newMembership[0],
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Add member to club",
+			description: "Add a member to a club",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: addMemberBodySchema,
+			response: {
+				200: z.object({
+					success: z.boolean(),
+					membership: baseClubMembershipSchema,
+				}),
+				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+const STORAGE_LIMITS = {
+	CLUB_TOTAL: 1024 * 1024 * 1024,
+	USER_DAILY: 50 * 1024 * 1024,
+} as const;
+
+clubsRouter.get(
+	"/api/clubs/:id/storage-quota",
+	async ({ params, context, response }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			return response.error({ error: "Club ID is required" }, 400);
+		}
+
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+		}
+
+		const [postsUsage, receiptsUsage] = await Promise.all([
+			db.select({ images: post.images }).from(post).where(eq(post.clubId, clubId)),
+			db
+				.select({ receiptUrls: clubPurchase.receiptUrls })
+				.from(clubPurchase)
+				.where(eq(clubPurchase.clubId, clubId)),
+		]);
+
+		const postImageSizes = postsUsage.flatMap((p) =>
+			(p.images as string[]).map((imageKey) => extractSizeFromKey(imageKey)),
+		);
+
+		const receiptSizes = receiptsUsage.flatMap((purchase) =>
+			(purchase.receiptUrls as string[]).map((receiptKey) => extractSizeFromKey(receiptKey)),
+		);
+
+		const currentUsage = [...postImageSizes, ...receiptSizes].reduce((total, size) => total + size, 0);
+		const limit = STORAGE_LIMITS.CLUB_TOTAL;
+		const remaining = Math.max(0, limit - currentUsage);
+
+		return response.json({
+			currentUsage,
+			limit,
+			remaining,
+			allowed: currentUsage < limit,
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Check club storage quota",
+			description: "Check club storage quota usage",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					currentUsage: z.number(),
+					limit: z.number(),
+					remaining: z.number(),
+					allowed: z.boolean(),
 				}),
 				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
 			},

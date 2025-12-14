@@ -19,8 +19,10 @@ import {
 } from "./lib/router";
 import { clubsRouter } from "./routes/clubs";
 import { countriesRouter } from "./routes/countries";
+import { dashboardRouter } from "./routes/dashboard";
 import { eventsRouter } from "./routes/events";
 import { usersRouter } from "./routes/users";
+import { utilsRouter } from "./routes/utils";
 
 const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.trim());
 
@@ -52,7 +54,7 @@ async function handleRequest(request: Request): Promise<Response> {
 
 	const openApiResponse = await handleOpenAPIRoutes(
 		request,
-		[countriesRouter, usersRouter, clubsRouter, eventsRouter],
+		[countriesRouter, usersRouter, clubsRouter, eventsRouter, dashboardRouter, utilsRouter],
 		corsOrigins,
 	);
 	if (openApiResponse) {
@@ -307,17 +309,41 @@ async function handleRequest(request: Request): Promise<Response> {
 	};
 
 	try {
-		const context = {
-			user,
-			session,
-			isAdmin,
-		};
 		const hasQuerySchema = !!route.schema?.query;
 		type QueryType = InferQueryType<typeof route.schema>;
 		const responseHelper = createResponseHelper(route.schema);
 		if (hasBodySchema) {
 			type BodyType = InferBodyType<typeof route.schema>;
-			const handler = route.handler as unknown as RouteHandler<BodyType, QueryType, typeof route.schema>;
+			if (route.auth) {
+				const context = {
+					user: user as NonNullable<typeof user>,
+					session,
+					isAdmin,
+				};
+				const handler = route.handler as unknown as RouteHandler<
+					BodyType,
+					QueryType,
+					typeof route.schema,
+					true
+				>;
+				const handlerParams = {
+					request,
+					params,
+					query,
+					context,
+					validatedBody: validatedBody as BodyType,
+					response: responseHelper,
+					...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
+				} as RouteHandlerParams<BodyType, QueryType, typeof route.schema, true>;
+				const response = await handler(handlerParams);
+				return addCORSHeaders(response, request, corsOrigins);
+			}
+			const context = {
+				user,
+				session,
+				isAdmin,
+			};
+			const handler = route.handler as unknown as RouteHandler<BodyType, QueryType, typeof route.schema, false>;
 			const handlerParams = {
 				request,
 				params,
@@ -326,11 +352,34 @@ async function handleRequest(request: Request): Promise<Response> {
 				validatedBody: validatedBody as BodyType,
 				response: responseHelper,
 				...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
-			} as RouteHandlerParams<BodyType, QueryType, typeof route.schema>;
+			} as RouteHandlerParams<BodyType, QueryType, typeof route.schema, false>;
 			const response = await handler(handlerParams);
 			return addCORSHeaders(response, request, corsOrigins);
 		}
-		const handler = route.handler as unknown as RouteHandler<undefined, QueryType, typeof route.schema>;
+		if (route.auth) {
+			const context = {
+				user: user as NonNullable<typeof user>,
+				session,
+				isAdmin,
+			};
+			const handler = route.handler as unknown as RouteHandler<undefined, QueryType, typeof route.schema, true>;
+			const handlerParams = {
+				request,
+				params,
+				query,
+				context,
+				response: responseHelper,
+				...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
+			} as RouteHandlerParams<undefined, QueryType, typeof route.schema, true>;
+			const response = await handler(handlerParams);
+			return addCORSHeaders(response, request, corsOrigins);
+		}
+		const context = {
+			user,
+			session,
+			isAdmin,
+		};
+		const handler = route.handler as unknown as RouteHandler<undefined, QueryType, typeof route.schema, false>;
 		const handlerParams = {
 			request,
 			params,
@@ -338,7 +387,7 @@ async function handleRequest(request: Request): Promise<Response> {
 			context,
 			response: responseHelper,
 			...(hasQuerySchema && { validatedQuery: validatedQuery as QueryType }),
-		} as RouteHandlerParams<undefined, QueryType, typeof route.schema>;
+		} as RouteHandlerParams<undefined, QueryType, typeof route.schema, false>;
 		const response = await handler(handlerParams);
 		return addCORSHeaders(response, request, corsOrigins);
 	} catch (error) {
@@ -354,8 +403,12 @@ registerRoutes(countriesRouter);
 registerRoutes(usersRouter);
 registerRoutes(clubsRouter);
 registerRoutes(eventsRouter);
+registerRoutes(dashboardRouter);
+registerRoutes(utilsRouter);
 
 Bun.serve({
 	port: 3002,
 	fetch: handleRequest,
 });
+
+console.log(`Server is running on ${env.BETTER_AUTH_URL}`);

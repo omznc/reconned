@@ -7,7 +7,9 @@
 		"apps/*"
 	],
 	"scripts": {
-		"dev": "bun run --filter '*' dev",
+		"dev": "bun run dev:backend & timeout 10 sh -c 'until curl -sf http://localhost:3002/api/openapi.json > /dev/null 2>&1; do sleep 0.5; done' && bun run dev:web",
+		"dev:backend": "bun run --filter 'backend' dev",
+		"dev:web": "bun run --filter 'web' dev",
 		"build": "bun run --filter '*' build",
 		"check": "bunx --bun @biomejs/biome check --write .",
 		"format": "bunx --bun @biomejs/biome format --write .",

@@ -20,6 +20,36 @@ export interface OpenAPISpec {
 	};
 }
 
+function unwrapForJSONSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
+	let current = schema;
+	while (true) {
+		const def = (
+			current as {
+				_def?: {
+					typeName?: string;
+					effect?: { type?: string };
+					innerType?: z.ZodTypeAny;
+					schema?: z.ZodTypeAny;
+				};
+			}
+		)._def;
+		const typeName = def?.typeName;
+
+		if (typeName === "ZodOptional" && def.innerType) {
+			current = def.innerType;
+		} else if (typeName === "ZodDefault" && def.innerType) {
+			current = def.innerType;
+		} else if (typeName === "ZodNullable" && def.innerType) {
+			current = def.innerType;
+		} else if (typeName === "ZodEffects" && def.schema) {
+			current = def.schema;
+		} else {
+			break;
+		}
+	}
+	return current;
+}
+
 function generateOperationId(path: string, method: string): string {
 	// Convert path like /api/users/:id to usersGetById
 	const pathParts = path
@@ -131,25 +161,30 @@ export async function generateOpenAPISpec(baseUrl: string, routers: Router[]): P
 				const paramSchema = route.schema.params as z.ZodObject<z.ZodRawShape>;
 				for (const [key, value] of Object.entries(paramSchema.shape)) {
 					const zodValue = value as unknown as z.ZodTypeAny;
+					const unwrapped = unwrapForJSONSchema(zodValue);
 					parameters.push({
 						name: key,
 						in: "path",
 						required: true,
-						schema: z.toJSONSchema(zodValue, { target: "openapi-3.0" }),
+						schema: z.toJSONSchema(unwrapped, { target: "openapi-3.0", unrepresentable: "any" }),
 					});
 				}
 			}
 
 			if (route.schema.query) {
-				const querySchema = route.schema.query as z.ZodObject<z.ZodRawShape>;
-				for (const [key, value] of Object.entries(querySchema.shape)) {
-					const zodValue = value as unknown as z.ZodTypeAny;
-					parameters.push({
-						name: key,
-						in: "query",
-						required: !zodValue.isOptional(),
-						schema: z.toJSONSchema(zodValue, { target: "openapi-3.0" }),
-					});
+				const unwrappedQuery = unwrapForJSONSchema(route.schema.query);
+				const querySchema = unwrappedQuery as z.ZodObject<z.ZodRawShape>;
+				if (querySchema.shape) {
+					for (const [key, value] of Object.entries(querySchema.shape)) {
+						const zodValue = value as unknown as z.ZodTypeAny;
+						const unwrapped = unwrapForJSONSchema(zodValue);
+						parameters.push({
+							name: key,
+							in: "query",
+							required: !zodValue.isOptional(),
+							schema: z.toJSONSchema(unwrapped, { target: "openapi-3.0", unrepresentable: "any" }),
+						});
+					}
 				}
 			}
 
@@ -175,16 +210,18 @@ export async function generateOpenAPISpec(baseUrl: string, routers: Router[]): P
 
 				// Generate JSON schema - manually build for ZodObject
 				let jsonSchema: unknown;
-				if (unwrappedSchema instanceof z.ZodObject) {
+				const fullyUnwrapped = unwrapForJSONSchema(unwrappedSchema);
+				if (fullyUnwrapped instanceof z.ZodObject) {
 					const properties: Record<string, unknown> = {};
 					const required: string[] = [];
 
-					for (const [key, value] of Object.entries(unwrappedSchema.shape)) {
+					for (const [key, value] of Object.entries(fullyUnwrapped.shape)) {
 						const zodValue = value as unknown as z.ZodTypeAny;
-						const fieldSchema = z.toJSONSchema(zodValue, { target: "openapi-3.0" }) as Record<
-							string,
-							unknown
-						>;
+						const fieldUnwrapped = unwrapForJSONSchema(zodValue);
+						const fieldSchema = z.toJSONSchema(fieldUnwrapped, {
+							target: "openapi-3.0",
+							unrepresentable: "any",
+						}) as Record<string, unknown>;
 
 						properties[key] = fieldSchema;
 						if (!(value instanceof z.ZodOptional || value instanceof z.ZodDefault)) {
@@ -198,8 +235,9 @@ export async function generateOpenAPISpec(baseUrl: string, routers: Router[]): P
 						...(required.length > 0 && { required }),
 					};
 				} else {
-					jsonSchema = z.toJSONSchema(unwrappedSchema as unknown as z.ZodTypeAny, {
+					jsonSchema = z.toJSONSchema(fullyUnwrapped, {
 						target: "openapi-3.0",
+						unrepresentable: "any",
 					});
 				}
 
@@ -218,13 +256,17 @@ export async function generateOpenAPISpec(baseUrl: string, routers: Router[]): P
 			if (route.schema.response) {
 				for (const [status, schema] of Object.entries(route.schema.response)) {
 					const zodSchema = schema as unknown as z.ZodTypeAny;
+					const unwrapped = unwrapForJSONSchema(zodSchema);
 					const statusCode = Number.parseInt(status, 10);
 					if (!Number.isNaN(statusCode)) {
 						responses[status] = {
 							description: getStatusDescription(statusCode),
 							content: {
 								"application/json": {
-									schema: z.toJSONSchema(zodSchema, { target: "openapi-3.0" }),
+									schema: z.toJSONSchema(unwrapped, {
+										target: "openapi-3.0",
+										unrepresentable: "any",
+									}),
 								},
 							},
 						};

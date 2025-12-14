@@ -17,41 +17,77 @@ alwaysApply: true
 
 ## State Management & Data Fetching
 - Use `next-safe-action` for type-safe server actions
-- Use React Server Components where possible
+- Use React Server Components where we have to use server components, but try to keep everything
+on the backend unless incredibly important to be run on the nextjs server.
 - Use client components only when necessary (e.g., for interactivity)
 - Use [nuqs](src/lib/nuqs) for URL state management in tables and filters
 
 ## Project Structure
-- Pages and routes follow Next.js 13+ App Router structure
-- Group related components in `_components` folders next to their pages
-- Use aliases for imports (configured in components.json):
-  - `@/components`
-  - `@/lib`
-  - `@/hooks`
-  - `@/ui`
+- **Monorepo**: Bun workspaces with two main apps:
+  - `apps/web`: Next.js 16+ frontend (App Router)
+  - `apps/backend`: Custom API server (Bun runtime)
+- **Frontend structure**:
+  - Pages and routes follow Next.js App Router structure
+  - Group related components in `_components` folders next to their pages
+  - Use aliases for imports (configured in components.json):
+    - `@/components`
+    - `@/lib`
+    - `@/hooks`
+    - `@/ui`
+- **Backend structure**:
+  - Routes are organized in `src/routes/` (clubs.ts, events.ts, users.ts, countries.ts)
+  - Custom Router class in `src/lib/router.ts`
+  - OpenAPI documentation auto-generated from route schemas
+  - API available at `/api/docs` (Swagger UI) and `/api/openapi.json`
 
 ## Database
-- Use Prisma as ORM
-- Run `prisma generate` after schema changes
-- Database models are defined in [prisma/schema.prisma](prisma/schema.prisma)
+- **Frontend (`apps/web`)**: Uses Prisma ORM. 
+  - Will be removed in favour of the backend being the only source of CRUD.
+  - Schema files are split across multiple files in `apps/web/prisma/`:
+    - `schema.prisma` (main file with generators/datasource)
+    - `audit.prisma`, `auth.prisma`, `clubs.prisma`, `countries.prisma`, `events.prisma`, `social.prisma`, `users.prisma`
+  - Run `bun run db:generate` (or `prisma generate`) after schema changes
+  - Database commands: `db:push`, `db:migrate`, `db:studio`
+- **Backend (`apps/backend`)**: Uses Drizzle ORM
+  - Schema is defined in `apps/backend/src/drizzle/schema.ts`
+  - Use `createSelectSchema` from `drizzle-zod` for Zod schema generation
+  - Database commands: `db:generate`, `db:push`, `db:migrate`, `db:studio`, `db:seed`
+  - Both apps share the same PostgreSQL database but use different ORMs
 
 ## Authentication
 - Uses [better-auth](package.json) for authentication management
 
 ## Other
-- Always use date-fns for date stuff
-- Always use react-hook-forms and zod. Schemas should be in a different file so we
-can import them in actions as well.
-- Namings are as follows, e.g. for password reset:
-  - password-reset.form.tsx
-  - password-reset.action.ts
-  - password-reset.schema.ts
+- Always use `date-fns` for date operations
+- Always use `react-hook-form` and `zod` for forms
+- Schemas should be in a separate file so they can be imported in actions as well
+- File naming convention (e.g., for password reset):
+  - `password-reset.form.tsx`
+  - `password-reset.schema.ts`
+- **Backend API**:
+  - Use Zod schemas for validation (with `drizzle-zod` for Drizzle schemas)
+  - Route schemas automatically generate OpenAPI documentation
+  - Use `response.error({ error: string }, statusCode)` for error responses
+  - Use `response.json(data)` for success responses
+  - When returning JSON fields from Drizzle (e.g., `jsonb()` columns), cast them to match schema types:
+    - `gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"]`
+    - `mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"]`
+    - `actionData: log.actionData as Record<string, unknown>`
+  - If you're using fetch and the backend route isn't typed, regenerate the api types on the frontend instead of casting as any.
+  - Never use any, never use never, always be as correct with types as you can. Always try to infer instead of re-typing.
 
-## Language
-- All code strings need to be translated into every language under messages.
+## Language / Internationalization
+- Uses `next-intl` for i18n
+- Supported locales: `en`, `bs`, `sr` (default: `bs`)
+- Translation files in `apps/web/messages/` (en.json, bs.json, sr.json)
+- All code strings need to be translated into every language
 - Use English for comments, variables, declarations, paths, etc.
-- When I say 'translate', extract keys from the files and add them to bs.json. If we're in an async component we have to use (await) import { getExtracted } from "next-intl/server", otherwise we use useExtracted.
-- Always use verbose access to translations key, never do const t = useExtracted("some.path"), t("key"). Always do onst t = useExtracted(), t("some.path.key")
+- When I say 'translate', extract keys from the files and add them to bs.json
+- **Client components**: Use `useExtracted()` from `next-intl`
+- **Server components**: Use `await getExtracted()` from `next-intl/server`
+- Always use verbose access to translations key:
+  - ❌ `const t = useExtracted("some.path"); t("key")`
+  - ✅ `const t = useExtracted(); t("some.path.key")`
 
 ## Formatting and linting
 - You can use `bun format` and `bun lint`

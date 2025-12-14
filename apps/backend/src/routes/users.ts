@@ -485,6 +485,7 @@ usersRouter.get(
 						id: event.id,
 						name: event.name,
 						slug: event.slug,
+						dateStart: event.dateStart,
 						isPrivate: event.isPrivate,
 						clubId: event.clubId,
 					})
@@ -513,7 +514,10 @@ usersRouter.get(
 				return {
 					...registration,
 					event: {
-						...eventItem,
+						id: eventItem.id,
+						name: eventItem.name,
+						slug: eventItem.slug,
+						dateStart: eventItem.dateStart,
 						club: {
 							id: eventItem.clubId,
 							isPrivate: clubItem?.isPrivate || false,
@@ -587,21 +591,7 @@ usersRouter.put(
 			return response.error({ error: "Unauthorized" }, 401);
 		}
 
-		const body = validatedBody as {
-			name?: string;
-			bio?: string;
-			website?: string;
-			location?: string;
-			phone?: string;
-			slug?: string;
-			callsign?: string;
-			isPrivate?: boolean;
-			isPrivateEmail?: boolean;
-			isPrivatePhone?: boolean;
-			isPrivateStats?: boolean;
-			image?: string;
-			headerImage?: string;
-		};
+		const body = validatedBody;
 
 		const updateData: Record<string, unknown> = {
 			updatedAt: new Date().toISOString(),
@@ -966,7 +956,7 @@ usersRouter.put(
 			return response.error({ error: "Unauthorized" }, 401);
 		}
 
-		const body = validatedBody as { theme: string };
+		const body = validatedBody;
 
 		await db
 			.update(user)
@@ -1010,7 +1000,7 @@ usersRouter.put(
 			return response.error({ error: "Unauthorized" }, 401);
 		}
 
-		const body = validatedBody as { font: string };
+		const body = validatedBody;
 
 		await db
 			.update(user)
@@ -1054,7 +1044,7 @@ usersRouter.put(
 			return response.error({ error: "Unauthorized" }, 401);
 		}
 
-		const body = validatedBody as { style: string };
+		const body = validatedBody;
 
 		await db
 			.update(user)
@@ -1089,14 +1079,25 @@ usersRouter.put(
 usersRouter.get(
 	"/api/users/invites",
 	async ({ context, response }) => {
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
-		const invites = await db
+		const invitesData = await db
 			.select()
 			.from(clubInvite)
 			.where(and(eq(clubInvite.email, context.user.email), eq(clubInvite.status, "PENDING")));
+
+		const invitesWithClubs = await Promise.all(
+			invitesData.map(async (invite) => {
+				const clubData = await db.select().from(club).where(eq(club.id, invite.clubId)).limit(1);
+				if (!clubData[0]) {
+					return null;
+				}
+				return {
+					...invite,
+					club: clubData[0],
+				} as typeof invite & { club: (typeof clubData)[0] };
+			}),
+		);
+
+		const invites = invitesWithClubs.filter((invite): invite is NonNullable<typeof invite> => invite !== null);
 
 		return response.json({ invites });
 	},
@@ -1123,10 +1124,6 @@ usersRouter.get(
 usersRouter.get(
 	"/api/users/invites/count",
 	async ({ context, response }) => {
-		if (!context.user) {
-			return response.error({ error: "Unauthorized" }, 401);
-		}
-
 		const result = await db
 			.select({ count: count() })
 			.from(clubInvite)
@@ -1161,13 +1158,16 @@ usersRouter.post(
 			return response.error({ error: "Unauthorized" }, 401);
 		}
 
-		const body = validatedBody as { type: string; size: number };
+		const body = validatedBody;
 
 		try {
 			const result = await getS3UploadUrl(`user/${userId}/image`, body.type, body.size);
 			return response.json(result);
 		} catch (error) {
-			return response.error(error instanceof Error ? error.message : "Failed to generate upload URL", 400);
+			return response.error(
+				{ error: error instanceof Error ? error.message : "Failed to generate upload URL" },
+				400,
+			);
 		}
 	},
 	{
@@ -1208,13 +1208,16 @@ usersRouter.post(
 			return response.error({ error: "Unauthorized" }, 401);
 		}
 
-		const body = validatedBody as { type: string; size: number };
+		const body = validatedBody;
 
 		try {
 			const result = await getS3UploadUrl(`user/${userId}/header`, body.type, body.size);
 			return response.json(result);
 		} catch (error) {
-			return response.error(error instanceof Error ? error.message : "Failed to generate upload URL", 400);
+			return response.error(
+				{ error: error instanceof Error ? error.message : "Failed to generate upload URL" },
+				400,
+			);
 		}
 	},
 	{

@@ -29,11 +29,11 @@ This document lists all Prisma database operations found in the frontend that ne
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action.ts:118` - `prisma.user.update` with headerImage: null
   - **Context**: Server action to remove user header image
 
-- `POST /api/users/:id/image/upload-url` - Get S3 upload URL for user avatar
+- `POST /api/users/:id/image/upload-url` - Get S3 upload URL for user avatar **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action.ts:69` - `getS3FileUploadUrl`
   - **Context**: Server action to get presigned URL for avatar upload
 
-- `POST /api/users/:id/header-image/upload-url` - Get S3 upload URL for user header image
+- `POST /api/users/:id/header-image/upload-url` - Get S3 upload URL for user header image **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action.ts:81` - `getS3FileUploadUrl`
   - **Context**: Server action to get presigned URL for header image upload
 
@@ -70,7 +70,7 @@ This document lists all Prisma database operations found in the frontend that ne
 ## Club APIs
 
 ### Club CRUD
-- `GET /api/clubs` - List clubs (with pagination, search, sorting)
+- `GET /api/clubs` - List clubs (with pagination, search, sorting) **[DONE]**
   - **Current usage**: `apps/web/src/app/api/clubs/route.ts:19` - `prisma.club.findMany`
   - **Context**: API route for clubs listing (already exists but may need enhancement)
 
@@ -102,19 +102,19 @@ This document lists all Prisma database operations found in the frontend that ne
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/members/managers/page.tsx:90` - `prisma.clubMembership.findMany` filtered by MANAGER/CLUB_OWNER roles
   - **Context**: Club managers management page
 
-- `GET /api/clubs/:id/stats` - Get club statistics (members over time, role distribution, events per month, recent events)
+- `GET /api/clubs/:id/stats` - Get club statistics (members over time, role distribution, events per month, recent events) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/club/stats/page.tsx:6` - Multiple queries including raw SQL for time series
   - **Context**: Club statistics dashboard with charts
 
-- `GET /api/clubs/:id/posts` - Get club posts
+- `GET /api/clubs/:id/posts` - Get club posts **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/club/page.tsx:34` - Included in club query
   - **Context**: Club overview page showing posts
 
-- `GET /api/clubs/:id/purchases` - Get club purchases/spending
+- `GET /api/clubs/:id/purchases` - Get club purchases/spending **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/club/spending/page.tsx:41` - `prisma.clubPurchase.findMany` with pagination
   - **Context**: Club spending/purchases table
 
-- `GET /api/clubs/:id/audit-logs` - Get club audit logs (with pagination, search, filtering by actionType)
+- `GET /api/clubs/:id/audit-logs` - Get club audit logs (with pagination, search, filtering by actionType) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/club/audit/page.tsx:77` - `prisma.clubAuditLog.findMany` with pagination and filters
   - **Context**: Club audit log page for managers
 
@@ -152,7 +152,7 @@ This document lists all Prisma database operations found in the frontend that ne
   - **Context**: Server action to remove club header image
 
 ### Club Members
-- `POST /api/clubs/:id/members` - Add member to club
+- `POST /api/clubs/:id/members` - Add member to club **[DONE]**
   - **Current usage**: `apps/web/src/app/api/club/member-invite/[code]/route.ts:148` - Transaction creating ClubMembership
   - **Context**: API route handling invite acceptance
 
@@ -271,11 +271,11 @@ This document lists all Prisma database operations found in the frontend that ne
   - **Context**: Server action to get presigned URL for receipt uploads
 
 ### Club Storage Quota
-- `GET /api/clubs/:id/storage-quota` - Check club storage quota (calculate from posts and purchases)
+- `GET /api/clubs/:id/storage-quota` - Check club storage quota (calculate from posts and purchases) **[DONE]**
   - **Current usage**: `apps/web/src/lib/storage-quota.ts:39` - Queries `prisma.post.findMany` and `prisma.clubPurchase.findMany` to calculate usage
   - **Context**: Utility function to check storage limits before uploads
 
-- `GET /api/users/:id/daily-quota` - Check user daily upload quota (based on audit logs)
+- `GET /api/users/:id/daily-quota` - Check user daily upload quota (based on audit logs) **[DONE]**
   - **Current usage**: `apps/web/src/lib/storage-quota.ts:116` - `prisma.clubAuditLog.count` for today's uploads
   - **Context**: Utility function to check daily upload limits
 
@@ -295,95 +295,95 @@ This document lists all Prisma database operations found in the frontend that ne
 ## Event APIs
 
 ### Event CRUD
-- `GET /api/events` - List events (with pagination, search, sorting, privacy filtering)
+- `GET /api/events` - List events (with pagination, search, sorting, privacy filtering) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/(public)/events/page.tsx:21` - `prisma.event.findMany` with privacy filtering
   - **Context**: Public events listing page
 
-- `GET /api/events/:id` - Get event by ID or slug (with rules, club, _count)
+- `GET /api/events/:id` - Get event by ID or slug (with rules, club, _count) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/(public)/events/[id]/page.tsx:40` - `prisma.event.findFirst` with OR for id/slug
   - **Context**: Public event detail page
 
-- `GET /api/events/upcoming` - Get upcoming events (with privacy filtering)
+- `GET /api/events/upcoming` - Get upcoming events (with privacy filtering) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/(public)/page.tsx:118` - `prisma.event.findMany` filtered by dateStart >= now
   - **Context**: Home page showing upcoming events
 
-- `GET /api/events/calendar` - Get events for calendar view (date range filtering)
+- `GET /api/events/calendar` - Get events for calendar view (date range filtering) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/calendar/page.tsx:13` - `prisma.event.findMany` with date range
   - **Current usage**: `apps/web/src/app/[locale]/(public)/page.tsx:100` - `prisma.event.findMany` for home calendar
   - **Context**: Calendar component showing events in date range
 
-- `POST /api/events` - Create event
+- `POST /api/events` - Create event **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action.ts:127` - `prisma.event.upsert` (create branch)
   - **Context**: Server action to create new event
 
-- `PUT /api/events/:id` - Update event
+- `PUT /api/events/:id` - Update event **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action.ts:127` - `prisma.event.upsert` (update branch)
   - **Context**: Server action to update existing event
 
-- `DELETE /api/events/:id` - Delete event
+- `DELETE /api/events/:id` - Delete event **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action.ts:203` - `prisma.event.delete`
   - **Context**: Server action to delete event
 
-- `GET /api/events/count` - Count events (with filters)
+- `GET /api/events/count` - Count events (with filters) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(user)/events/page.tsx:71` - `prisma.event.count` for pagination
   - **Context**: Used for pagination in events table
 
-- `GET /api/clubs/:clubId/events` - Get events for specific club (with pagination, search, sorting)
+- `GET /api/clubs/:clubId/events` - Get events for specific club (with pagination, search, sorting) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/page.tsx:55` - `prisma.event.findMany` filtered by clubId
   - **Context**: Club events table page
 
-- `GET /api/clubs/:clubId/events/count` - Count events for club
+- `GET /api/clubs/:clubId/events/count` - Count events for club **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/page.tsx:69` - `prisma.event.count` for pagination
   - **Context**: Used for pagination in club events table
 
 ### Event Images
-- `POST /api/events/:id/image/upload-url` - Get S3 upload URL for event image
+- `POST /api/events/:id/image/upload-url` - Get S3 upload URL for event image **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action.ts:134` - `getS3FileUploadUrl`
   - **Context**: Server action to get presigned URL for event image upload
 
-- `DELETE /api/events/:id/image` - Delete event image
+- `DELETE /api/events/:id/image` - Delete event image **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action.ts:163` - `prisma.event.update` with image: null
   - **Context**: Server action to remove event image
 
 ### Event Registration
-- `GET /api/events/:id/registrations` - Get event registrations
+- `GET /api/events/:id/registrations` - Get event registrations **[DONE]**
   - **Current usage**: Not directly queried, but included in event queries with _count
   - **Context**: Used in event detail pages
 
-- `POST /api/events/:id/registrations` - Create/update event registration
+- `POST /api/events/:id/registrations` - Create/update event registration **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/(public)/events/[id]/apply/_components/event-application.action.ts:95` - Transaction with `prisma.eventRegistration.update` or `create`
   - **Context**: Server action to submit event application
 
-- `PUT /api/events/:id/registrations/:registrationId/attendance` - Toggle attendance
+- `PUT /api/events/:id/registrations/:registrationId/attendance` - Toggle attendance **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance.action.ts:27` - `prisma.eventRegistration.update` with attended field
   - **Context**: Server action to mark attendance for event
 
-- `GET /api/events/:id/registrations/count` - Count registrations
+- `GET /api/events/:id/registrations/count` - Count registrations **[DONE]**
   - **Current usage**: Included in event queries with `_count.eventRegistration`
   - **Context**: Used to display registration count
 
 ### Event Rules
-- `GET /api/events/:id/rules` - Get rules associated with event
+- `GET /api/events/:id/rules` - Get rules associated with event **[DONE]**
   - **Current usage**: Included in event queries with `include: { rules: true }`
   - **Context**: Event detail pages showing associated rules
 
 ## Dashboard APIs
 
 ### Dashboard Layout
-- `GET /api/dashboard/clubs` - Get clubs for sidebar (with events preview)
+- `GET /api/dashboard/clubs` - Get clubs for sidebar (with events preview) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/layout.tsx:22` - `prisma.club.findMany` with events included
   - **Context**: Dashboard sidebar showing user's clubs
 
-- `GET /api/dashboard/invites-count` - Get count of pending invites for user
+- `GET /api/dashboard/invites-count` - Get count of pending invites for user **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/layout.tsx:46` - `prisma.clubInvite.count` for sidebar badge
   - **Context**: Dashboard sidebar invite count badge
 
-- `GET /api/dashboard/invite-requests-count` - Get count of invite requests by club (groupBy)
+- `GET /api/dashboard/invite-requests-count` - Get count of invite requests by club (groupBy) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/layout.tsx:53` - `prisma.clubInvite.groupBy` by clubId
   - **Context**: Dashboard sidebar showing invite request counts per managed club
 
 ### Dashboard Stats
-- `GET /api/dashboard/stats` - Get user dashboard statistics (user stats with clubMembership, eventRegistration, reviews)
+- `GET /api/dashboard/stats` - Get user dashboard statistics (user stats with clubMembership, eventRegistration, reviews) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/dashboard/page.tsx:22` - `prisma.user.findUnique` with complex includes and _count
   - **Context**: Main dashboard page showing user statistics and club overviews
 
@@ -494,14 +494,14 @@ This document lists all Prisma database operations found in the frontend that ne
   - **Context**: Public user profile page
 
 ### Search
-- `GET /api/search` - Search clubs, users, and events (with pagination, filtering by type)
+- `GET /api/search` - Search clubs, users, and events (with pagination, filtering by type) **[DONE]**
   - **Current usage**: `apps/web/src/app/[locale]/(public)/search/page.tsx:116` - Multiple `prisma.club.findMany`, `prisma.user.findMany`, `prisma.event.findMany` queries
   - **Context**: Search page with tabs for clubs/users/events
 
 ## Utility APIs
 
 ### Slug Validation
-- `POST /api/validate-slug` - Validate slug availability (for club, event, or user)
+- `POST /api/validate-slug` - Validate slug availability (for club, event, or user) **[DONE]**
   - **Current usage**: `apps/web/src/components/slug/validate-slug.ts:26` - Multiple `prisma.club.findUnique`, `prisma.event.findUnique`, `prisma.user.findUnique` checks
   - **Context**: Used in forms to validate slug uniqueness before submission
 
@@ -511,16 +511,16 @@ This document lists all Prisma database operations found in the frontend that ne
   - **Context**: Utility function called by server actions to log changes
 
 ### Reviews
-- `GET /api/reviews` - Get reviews (filtered by clubId, eventId, or userId)
+- `GET /api/reviews` - Get reviews (filtered by clubId, eventId, or userId) **[DONE]**
   - **Current usage**: `apps/web/src/components/overviews/reviews/reviews-overview.tsx:27` - `prisma.review.findMany` with different where clauses
   - **Context**: Reviews overview component for clubs/events/users
 
-- `GET /api/reviews/:type/:id` - Get reviews for specific entity (club/event/user)
+- `GET /api/reviews/:type/:id` - Get reviews for specific entity (club/event/user) **[DONE]**
   - **Current usage**: Same as above, different where filters based on type
   - **Context**: Reviews component showing ratings and reviews
 
 ## Sitemap
-- `GET /api/sitemap` - Generate sitemap (clubs, events, users)
+- `GET /api/sitemap` - Generate sitemap (clubs, events, users) **[DONE]**
   - **Current usage**: `apps/web/src/app/sitemap.ts:24` - `prisma.club.findMany`, `prisma.event.findMany`, `prisma.user.findMany` for sitemap generation
   - **Context**: Next.js sitemap route generating XML sitemap
 
