@@ -8,7 +8,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { redirect } from "@/i18n/navigation";
 import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 interface DashboardLayoutProps {
 	children: ReactNode;
@@ -20,24 +19,21 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		return redirect({ href: "/login", locale });
 	}
 
-	// TODO: Migrate to GET /api/dashboard/clubs when implemented
-	const clubs = await prisma.club.findMany({
-		where: {
-			members: {
-				some: {
-					userId: user.id,
-				},
-			},
-		},
-		include: {
-			events: {
-				select: {
-					id: true,
-					name: true,
-				},
-			},
-		},
-	});
+	const { data: clubsData, error: clubsError } = await apiClient.GET("/api/dashboard/clubs");
+
+	if (clubsError || !clubsData) {
+		return redirect({ href: "/login", locale });
+	}
+
+	const clubs = clubsData.clubs.map((club) => ({
+		id: club.id,
+		name: club.name,
+		events:
+			club.events?.map((event) => ({
+				id: event.id,
+				name: event.name,
+			})) ?? [],
+	}));
 
 	const simplifiedClubs = clubs.map((club) => ({
 		id: club.id,
@@ -48,33 +44,17 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const { data: invitesCountData, error: invitesCountError } = await apiClient.GET("/api/users/invites/count");
 	const invitesCountForUser = invitesCountError || !invitesCountData ? 0 : (invitesCountData.count ?? 0);
 
-	// TODO: Migrate to GET /api/dashboard/invite-requests-count when implemented
-	const inviteRequestsCountByClub = await prisma.clubInvite
-		.groupBy({
-			by: ["clubId"],
-			where: {
-				status: "REQUESTED",
-				club: {
-					members: {
-						some: {
-							userId: user.id,
-							role: {
-								in: ["MANAGER", "CLUB_OWNER"],
-							},
-						},
-					},
-				},
-			},
-			_count: {
-				_all: true,
-			},
-		})
-		.then((results) =>
-			results.map((result) => ({
-				id: result.clubId,
-				count: result._count._all,
-			})),
-		);
+	const { data: inviteRequestsData, error: inviteRequestsError } = await apiClient.GET(
+		"/api/dashboard/invite-requests-count",
+	);
+
+	const inviteRequestsCountByClub =
+		inviteRequestsError || !inviteRequestsData
+			? []
+			: inviteRequestsData.map((item) => ({
+					id: item.clubId,
+					count: item.count,
+				}));
 
 	return (
 		<SidebarProvider>

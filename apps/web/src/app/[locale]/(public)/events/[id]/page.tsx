@@ -1,70 +1,77 @@
+import type * as runtime from "@prisma/client/runtime/client";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { SportsEvent, WithContext } from "schema-dts";
-import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
-import { isAuthenticated } from "@/lib/auth";
+import apiClient from "@/lib/api";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
-	const user = await isAuthenticated();
 	const params = await props.params;
 
-	const conditionalPrivateWhere = user
-		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
-							},
-						},
-					},
-				],
-			}
-		: {
-				isPrivate: false,
-			};
-
-	const event = await prisma.event.findFirst({
-		where: {
-			AND: [{ OR: [{ id: params.id }, { slug: params.id }] }, conditionalPrivateWhere],
-		},
-		include: {
-			_count: {
-				select: {
-					eventRegistration: true,
-				},
-			},
-			rules: true,
-			club: {
-				select: {
-					id: true,
-					name: true,
-					slug: true,
-					logo: true,
-					verified: true,
-				},
+	const { data: eventData, error: eventError } = await apiClient.GET("/api/public/events/{id}", {
+		params: {
+			path: {
+				id: params.id,
 			},
 		},
 	});
 
-	if (!event) {
-		// TODO https://github.com/vercel/next.js/issues/63388
-		// notFound();
-		return <NotFoundTemporary />;
+	if (eventError || !eventData) {
+		notFound();
 	}
+
+	const { data: rulesData } = await apiClient.GET("/api/events/{id}/rules", {
+		params: {
+			path: {
+				id: eventData.id,
+			},
+		},
+	});
+
+	const { data: registrationsCountData } = await apiClient.GET("/api/events/{id}/registrations/count", {
+		params: {
+			path: {
+				id: eventData.id,
+			},
+		},
+	});
+
+	if (!eventData.club) {
+		notFound();
+	}
+
+	const event = {
+		...eventData,
+		_count: {
+			eventRegistration: registrationsCountData?.count ?? 0,
+		},
+		rules: (rulesData?.rules ?? []).map((rule) => ({
+			...rule,
+			createdAt: new Date(rule.createdAt),
+			updatedAt: new Date(rule.updatedAt),
+		})),
+		club: {
+			id: eventData.club.id,
+			name: eventData.club.name,
+			slug: eventData.club.slug,
+			logo: eventData.club.logo,
+			verified: eventData.club.verified,
+		},
+		gearRequirements: (eventData.gearRequirements ?? []) as runtime.JsonValue[],
+		mapData: (eventData.mapData ?? null) as runtime.JsonValue | null,
+		dateStart: new Date(eventData.dateStart),
+		dateEnd: new Date(eventData.dateEnd),
+		dateRegistrationsOpen: new Date(eventData.dateRegistrationsOpen),
+		dateRegistrationsClose: new Date(eventData.dateRegistrationsClose),
+		createdAt: new Date(eventData.createdAt),
+		updatedAt: new Date(eventData.updatedAt),
+	};
 
 	const locale = await getLocale();
 	const sportsEventSchema: WithContext<SportsEvent> = {
@@ -75,7 +82,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		description: event.description,
 		sport: "Airsoft",
 		startDate: event.dateStart.toISOString(),
-		endDate: event.dateEnd.toISOString(),
+		endDate: event.dateEnd?.toISOString(),
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
 		image: event.image || undefined,
 		location: {
@@ -135,34 +142,18 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">): Promise<Metadata> {
-	const [params, user, locale] = await Promise.all([props.params, isAuthenticated(), getLocale()]);
+	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const event = await prisma.event.findFirst({
-		where: {
-			AND: [
-				{
-					OR: [{ id: params.id }, { slug: params.id }],
-				},
-				{
-					OR: [
-						{ isPrivate: false },
-						{
-							club: {
-								members: {
-									some: {
-										userId: user?.id,
-									},
-								},
-							},
-						},
-					],
-				},
-			],
+	const { data: event, error } = await apiClient.GET("/api/public/events/{id}", {
+		params: {
+			path: {
+				id: params.id,
+			},
 		},
 	});
 
-	if (!event) {
+	if (error || !event) {
 		return notFound();
 	}
 

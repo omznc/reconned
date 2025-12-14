@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
-import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { apiClient } from "@/lib/api";
@@ -21,9 +20,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	});
 
 	if (error || !user) {
-		// TODO https://github.com/vercel/next.js/issues/63388
-		// notFound();
-		return <NotFoundTemporary />;
+		notFound();
 	}
 
 	const personSchema: WithContext<Person> = {

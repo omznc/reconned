@@ -16,6 +16,7 @@ import { FontProvider } from "@/components/personalization/font/font-provider";
 import { StyleProvider } from "@/components/personalization/style/style-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import PosthogIdentify from "@/components/posthog-identify";
+import { Providers } from "@/components/providers";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
@@ -124,10 +125,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 								}}
 							/>
 							<NuqsAdapter>
-								<TooltipProvider>
-									{session?.session?.impersonatedBy && <ImpersonationAlert />}
-									<AlertDialogProvider>{children}</AlertDialogProvider>
-								</TooltipProvider>
+								<Providers>
+									<TooltipProvider>
+										{session?.session?.impersonatedBy && <ImpersonationAlert />}
+										<AlertDialogProvider>{children}</AlertDialogProvider>
+									</TooltipProvider>
+								</Providers>
 							</NuqsAdapter>
 						</ThemeProvider>
 					</FontBody>

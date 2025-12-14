@@ -381,6 +381,7 @@ async function handleRequest(request: Request): Promise<Response> {
 			...(hasQuerySchema && { query: query as QueryType }),
 		} as RouteHandlerParams<undefined, QueryType, typeof route.schema, false>;
 		const response = await handler(handlerParams);
+		console.log(`${request.method} ${new URL(request.url).pathname} - ${response.status}`);
 		return addCORSHeaders(response, request, corsOrigins);
 	} catch (error) {
 		console.error("Error handling request:", error);

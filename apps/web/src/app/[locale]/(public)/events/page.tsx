@@ -10,53 +10,42 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import { isAuthenticated } from "@/lib/auth";
+import apiClient from "@/lib/api";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
-	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);
+	const [locale] = await Promise.all([getLocale()]);
 	const t = await getExtracted();
-	const upcomingEvents = await prisma.event.findMany({
-		where: {
-			dateStart: {
-				gte: new Date(),
-			},
-			...(user
-				? {
-						OR: [
-							{
-								isPrivate: false,
-							},
-							{
-								club: {
-									members: {
-										some: {
-											userId: user?.id,
-										},
-									},
-								},
-							},
-						],
-					}
-				: {
-						isPrivate: false,
-					}),
-		},
-		orderBy: {
-			dateStart: "asc",
-		},
-		include: {
-			club: {
-				select: {
-					name: true,
-				},
+
+	const { data, error } = await apiClient.GET("/api/events/upcoming", {
+		params: {
+			query: {
+				limit: 100,
 			},
 		},
-		// TODO: Add proper pagination
-		take: 100,
 	});
+
+	if (error) {
+		console.error("Error loading events:", error);
+		return <div>{t("Error loading events")}</div>;
+	}
+
+	if (!data) {
+		return <div>{t("Error loading events")}</div>;
+	}
+
+	const upcomingEvents = data.events.map((event) => ({
+		...event,
+		dateStart: new Date(event.dateStart),
+		dateEnd: event.dateEnd ? new Date(event.dateEnd) : null,
+		dateRegistrationsClose: event.dateRegistrationsClose ? new Date(event.dateRegistrationsClose) : null,
+		club: event.club
+			? {
+					name: event.club.name,
+				}
+			: null,
+	}));
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",

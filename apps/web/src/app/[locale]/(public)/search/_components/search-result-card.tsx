@@ -48,7 +48,7 @@ export function SearchResultCard({ title, description, href, badges, meta, image
 								})}
 							/>
 						) : (
-							<div className="w-full h-full bg-muted grid place-items-center">
+							<div className="w-full h-full bg-muted grid place-items-center aspect-square">
 								{
 									{
 										club: <Building2 className="w-12 h-12 text-muted-foreground" />,

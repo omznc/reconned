@@ -5,8 +5,8 @@ import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { VerifiedClubIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
+import apiClient from "@/lib/api";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
@@ -28,24 +28,32 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	const [searchParams, locale] = await Promise.all([props.searchParams, getLocale()]);
 	const t = await getExtracted();
 	const page = Number(searchParams.page) || 1;
-	const skip = (page - 1) * ITEMS_PER_PAGE;
 
-	const total = await prisma.club.count({
-		where: { isPrivate: false },
+	const { data, error } = await apiClient.GET("/api/public/clubs", {
+		params: {
+			query: {
+				page: String(page),
+				perPage: String(ITEMS_PER_PAGE),
+			},
+		},
 	});
 
-	const clubs: ClubSearch[] = await prisma.$queryRaw`
-        SELECT c.id, c.name, c.slug, c.description, c.logo, c.verified, c.location, COUNT(cm.id) as member_count
-        FROM "Club" c
-        LEFT JOIN "ClubMembership" cm ON c.id = cm."clubId"
-        WHERE c."isPrivate" = false
-        GROUP BY c.id
-        ORDER BY 
-            c.verified DESC,
-            COUNT(cm.id) DESC
-        LIMIT ${ITEMS_PER_PAGE}
-        OFFSET ${skip}
-    `;
+	if (error || !data) {
+		return <div>{t("Error loading clubs")}</div>;
+	}
+
+	const clubs: ClubSearch[] = data.clubs.map((club) => ({
+		id: club.id,
+		name: club.name,
+		slug: club.slug ?? "",
+		description: club.description ?? "",
+		logo: club.logo ?? "",
+		verified: club.verified,
+		location: club.location ?? "",
+		member_count: club.member_count,
+	}));
+
+	const total = data.pagination.total;
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",
@@ -57,7 +65,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 		numberOfItems: total,
 		itemListElement: clubs.map((club, index) => ({
 			"@type": "ListItem",
-			position: index + 1 + skip,
+			position: index + 1 + (page - 1) * ITEMS_PER_PAGE,
 			item: {
 				"@type": "SportsOrganization",
 				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${club.slug ?? club.id}`,

@@ -18,54 +18,30 @@ utilsRouter.get(
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 		const search = query?.search || "";
-		const type = query?.type || "all";
+		const filterParam = query?.filter || "club,user,event";
+		const filters = filterParam.split(",").map((f) => f.trim().toLowerCase());
 
-		if (!search || search.length < 2) {
-			return response.json({
-				clubs: [],
-				users: [],
-				events: [],
-				pagination: {
-					clubs: { page: 1, perPage, total: 0, totalPages: 0 },
-					users: { page: 1, perPage, total: 0, totalPages: 0 },
-					events: { page: 1, perPage, total: 0, totalPages: 0 },
-				},
-			});
-		}
+		const includeClubs = filters.includes("club");
+		const includeUsers = filters.includes("user");
+		const includeEvents = filters.includes("event");
 
-		const results: {
-			clubs: Array<{
-				id: string;
-				name: string;
-				slug: string | null;
-				logo: string | null;
-				location: string | null;
-				verified: boolean;
-				_count: { members: number };
-			}>;
-			users: Array<z.infer<typeof baseUserSchema>>;
-			events: Array<z.infer<typeof baseEventSchema>>;
-			pagination: {
-				clubs: { page: number; perPage: number; total: number; totalPages: number };
-				users: { page: number; perPage: number; total: number; totalPages: number };
-				events: { page: number; perPage: number; total: number; totalPages: number };
-			};
-		} = {
-			clubs: [],
-			users: [],
-			events: [],
-			pagination: {
-				clubs: { page, perPage, total: 0, totalPages: 0 },
-				users: { page, perPage, total: 0, totalPages: 0 },
-				events: { page, perPage, total: 0, totalPages: 0 },
-			},
-		};
+		const allItems: Array<{
+			type: "club" | "user" | "event";
+			id: string;
+			name: string;
+			relevanceScore: number;
+			data: unknown;
+		}> = [];
 
-		if (type === "all" || type === "clubs") {
-			const clubWhere = and(
-				eq(club.isPrivate, false),
-				or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)),
-			);
+		if (includeClubs) {
+			const clubWhereConditions = [eq(club.isPrivate, false)];
+			if (search) {
+				const searchCondition = or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`));
+				if (searchCondition) {
+					clubWhereConditions.push(searchCondition);
+				}
+			}
+			const clubWhere = and(...clubWhereConditions);
 
 			const clubsData = await db
 				.select({
@@ -79,10 +55,7 @@ utilsRouter.get(
 				.from(club)
 				.where(clubWhere)
 				.orderBy(desc(club.verified), club.name)
-				.limit(perPage)
-				.offset(offset);
-
-			const clubsTotalData = await db.select({ count: count() }).from(club).where(clubWhere);
+				.limit(1000);
 
 			const clubsWithMemberCounts = await Promise.all(
 				clubsData.map(async (c) => {
@@ -97,96 +70,282 @@ utilsRouter.get(
 				}),
 			);
 
-			results.clubs = clubsWithMemberCounts;
-			results.pagination.clubs = {
-				page,
-				perPage,
-				total: Number(clubsTotalData[0]?.count || 0),
-				totalPages: Math.ceil(Number(clubsTotalData[0]?.count || 0) / perPage),
-			};
+			for (const club of clubsWithMemberCounts) {
+				let relevanceScore = 0;
+				if (search) {
+					const nameMatch = club.name.toLowerCase().includes(search.toLowerCase());
+					const locationMatch = club.location?.toLowerCase().includes(search.toLowerCase());
+					if (nameMatch) {
+						relevanceScore += 10;
+						if (club.name.toLowerCase().startsWith(search.toLowerCase())) {
+							relevanceScore += 5;
+						}
+					}
+					if (locationMatch) {
+						relevanceScore += 3;
+					}
+					if (club.verified) {
+						relevanceScore += 1;
+					}
+				} else {
+					relevanceScore = club.verified ? 2 : 1;
+				}
+
+				allItems.push({
+					type: "club",
+					id: club.id,
+					name: club.name,
+					relevanceScore,
+					data: club,
+				});
+			}
 		}
 
-		if (type === "all" || type === "users") {
-			const userWhere = and(
-				or(ilike(user.name, `%${search}%`), ilike(user.email, `%${search}%`)),
-				eq(user.isPrivate, false),
+		if (includeUsers) {
+			const userWhereConditions = [eq(user.isPrivate, false)];
+			if (search) {
+				const searchCondition = or(ilike(user.name, `%${search}%`), ilike(user.email, `%${search}%`));
+				if (searchCondition) {
+					userWhereConditions.push(searchCondition);
+				}
+			}
+			const userWhere = and(...userWhereConditions);
+
+			const usersData = await db
+				.select()
+				.from(user)
+				.where(userWhere)
+				.orderBy(user.role, desc(user.createdAt))
+				.limit(1000);
+
+			const usersWithMemberships = await Promise.all(
+				usersData.map(async (u) => {
+					const memberships = await db
+						.select({
+							id: clubMembership.id,
+							userId: clubMembership.userId,
+							clubId: clubMembership.clubId,
+							role: clubMembership.role,
+						})
+						.from(clubMembership)
+						.where(eq(clubMembership.userId, u.id));
+
+					const membershipsWithClubs = await Promise.all(
+						memberships.map(async (m) => {
+							const clubData = await db
+								.select({
+									id: club.id,
+									name: club.name,
+									isPrivate: club.isPrivate,
+								})
+								.from(club)
+								.where(eq(club.id, m.clubId))
+								.limit(1);
+
+							const clubItem = clubData[0];
+							if (!clubItem || clubItem.isPrivate) {
+								return null;
+							}
+
+							return {
+								...m,
+								club: {
+									name: clubItem.name,
+								},
+							};
+						}),
+					);
+
+					return {
+						...u,
+						clubMembership: membershipsWithClubs.filter((m) => m !== null),
+					};
+				}),
 			);
 
-			const [usersData, usersTotalData] = await Promise.all([
-				db
-					.select()
-					.from(user)
-					.where(userWhere)
-					.orderBy(user.role, desc(user.createdAt))
-					.limit(perPage)
-					.offset(offset),
-				db.select({ count: count() }).from(user).where(userWhere),
-			]);
+			for (const user of usersWithMemberships) {
+				let relevanceScore = 0;
+				if (search) {
+					const nameMatch = user.name?.toLowerCase().includes(search.toLowerCase());
+					const emailMatch = user.email?.toLowerCase().includes(search.toLowerCase());
+					if (nameMatch) {
+						relevanceScore += 10;
+						if (user.name?.toLowerCase().startsWith(search.toLowerCase())) {
+							relevanceScore += 5;
+						}
+					}
+					if (emailMatch) {
+						relevanceScore += 3;
+					}
+				} else {
+					relevanceScore = 1;
+				}
 
-			results.users = usersData as z.infer<typeof baseUserSchema>[];
-			results.pagination.users = {
-				page,
-				perPage,
-				total: Number(usersTotalData[0]?.count || 0),
-				totalPages: Math.ceil(Number(usersTotalData[0]?.count || 0) / perPage),
-			};
+				allItems.push({
+					type: "user",
+					id: user.id,
+					name: user.name || user.email || "",
+					relevanceScore,
+					data: user as z.infer<typeof baseUserSchema>,
+				});
+			}
 		}
 
-		if (type === "all" || type === "events") {
-			const eventWhere = and(
-				eq(event.isPrivate, false),
-				or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`)),
+		if (includeEvents) {
+			const eventWhereConditions = [eq(event.isPrivate, false)];
+			if (search) {
+				const searchCondition = or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`));
+				if (searchCondition) {
+					eventWhereConditions.push(searchCondition);
+				}
+			}
+			const eventWhere = and(...eventWhereConditions);
+
+			const eventsData = await db.select().from(event).where(eventWhere).orderBy(event.dateStart).limit(1000);
+
+			const eventsWithClubs = await Promise.all(
+				eventsData.map(async (e) => {
+					const clubData = await db
+						.select({
+							id: club.id,
+							name: club.name,
+							slug: club.slug,
+							logo: club.logo,
+							verified: club.verified,
+						})
+						.from(club)
+						.where(eq(club.id, e.clubId))
+						.limit(1);
+
+					return {
+						...e,
+						gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
+						mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+						club: clubData[0] || null,
+					};
+				}),
 			);
 
-			const [eventsData, eventsTotalData] = await Promise.all([
-				db.select().from(event).where(eventWhere).orderBy(event.dateStart).limit(perPage).offset(offset),
-				db.select({ count: count() }).from(event).where(eventWhere),
-			]);
+			for (const event of eventsWithClubs) {
+				let relevanceScore = 0;
+				if (search) {
+					const nameMatch = event.name?.toLowerCase().includes(search.toLowerCase());
+					const locationMatch = event.location?.toLowerCase().includes(search.toLowerCase());
+					if (nameMatch) {
+						relevanceScore += 10;
+						if (event.name?.toLowerCase().startsWith(search.toLowerCase())) {
+							relevanceScore += 5;
+						}
+					}
+					if (locationMatch) {
+						relevanceScore += 3;
+					}
+				} else {
+					relevanceScore = 1;
+				}
 
-			results.events = eventsData.map((e) => ({
-				...e,
-				gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-				mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
-			}));
-			results.pagination.events = {
-				page,
-				perPage,
-				total: Number(eventsTotalData[0]?.count || 0),
-				totalPages: Math.ceil(Number(eventsTotalData[0]?.count || 0) / perPage),
-			};
+				allItems.push({
+					type: "event",
+					id: event.id,
+					name: event.name || "",
+					relevanceScore,
+					data: event as z.infer<typeof baseEventSchema>,
+				});
+			}
 		}
 
-		return response.json(results);
+		allItems.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+		const total = allItems.length;
+		const paginatedItems = allItems.slice(offset, offset + perPage);
+
+		const searchItemSchema = z.discriminatedUnion("type", [
+			z.object({
+				type: z.literal("club"),
+				id: z.string(),
+				name: z.string(),
+				relevanceScore: z.number(),
+				data: z.object({
+					id: z.string(),
+					name: z.string(),
+					slug: z.string().nullable(),
+					logo: z.string().nullable(),
+					location: z.string().nullable(),
+					verified: z.boolean(),
+					_count: z.object({ members: z.number() }),
+				}),
+			}),
+			z.object({
+				type: z.literal("user"),
+				id: z.string(),
+				name: z.string(),
+				relevanceScore: z.number(),
+				data: baseUserSchema.partial(),
+			}),
+			z.object({
+				type: z.literal("event"),
+				id: z.string(),
+				name: z.string(),
+				relevanceScore: z.number(),
+				data: baseEventSchema.partial(),
+			}),
+		]);
+
+		return response.json({
+			items: paginatedItems as z.infer<typeof searchItemSchema>[],
+			pagination: {
+				page,
+				perPage,
+				total,
+				totalPages: Math.ceil(total / perPage),
+			},
+		});
 	},
 	{
 		schema: {
 			tags: ["Utils"],
 			summary: "Search clubs, users, and events",
-			description: "Search across clubs, users, and events with pagination and type filtering",
+			description: "Unified search across clubs, users, and events with pagination and type filtering",
 			query: paginationQuerySchema.extend({
 				search: z.string(),
-				type: z.enum(["all", "clubs", "users", "events"]).optional(),
+				filter: z.string().optional(),
 			}),
 			response: {
 				200: z.object({
-					clubs: z.array(
-						z.object({
-							id: z.string(),
-							name: z.string(),
-							slug: z.string().nullable(),
-							logo: z.string().nullable(),
-							location: z.string().nullable(),
-							verified: z.boolean(),
-							_count: z.object({ members: z.number() }),
-						}),
+					items: z.array(
+						z.discriminatedUnion("type", [
+							z.object({
+								type: z.literal("club"),
+								id: z.string(),
+								name: z.string(),
+								relevanceScore: z.number(),
+								data: z.object({
+									id: z.string(),
+									name: z.string(),
+									slug: z.string().nullable(),
+									logo: z.string().nullable(),
+									location: z.string().nullable(),
+									verified: z.boolean(),
+									_count: z.object({ members: z.number() }),
+								}),
+							}),
+							z.object({
+								type: z.literal("user"),
+								id: z.string(),
+								name: z.string(),
+								relevanceScore: z.number(),
+								data: baseUserSchema.partial(),
+							}),
+							z.object({
+								type: z.literal("event"),
+								id: z.string(),
+								name: z.string(),
+								relevanceScore: z.number(),
+								data: baseEventSchema.partial(),
+							}),
+						]),
 					),
-					users: z.array(baseUserSchema.partial()),
-					events: z.array(baseEventSchema.partial()),
-					pagination: z.object({
-						clubs: paginationResponseSchema,
-						users: paginationResponseSchema,
-						events: paginationResponseSchema,
-					}),
+					pagination: paginationResponseSchema,
 				}),
 			},
 		},
@@ -209,7 +368,7 @@ utilsRouter.post(
 				]);
 
 				return response.json({
-					available: !clubBySlug[0] && !clubById[0],
+					available: clubBySlug.length === 0 && clubById.length === 0,
 				});
 			}
 			case "event": {
@@ -219,26 +378,22 @@ utilsRouter.post(
 				]);
 
 				return response.json({
-					available: !eventBySlug[0] && !eventById[0],
+					available: eventBySlug.length === 0 && eventById.length === 0,
 				});
 			}
 			case "user": {
-				const [userBySlug, userById] = await Promise.all([
+				const [userBySlug, userId] = await Promise.all([
 					db.select().from(user).where(eq(user.slug, body.slug)).limit(1),
 					db.select().from(user).where(eq(user.id, body.slug)).limit(1),
 				]);
 
 				return response.json({
-					available: !userBySlug[0] && !userById[0],
+					available: userBySlug.length === 0 && userId.length === 0,
 				});
-			}
-			default: {
-				return response.error({ error: "Invalid type" }, 400);
 			}
 		}
 	},
 	{
-		auth: true,
 		schema: {
 			tags: ["Utils"],
 			summary: "Validate slug availability",
@@ -248,8 +403,6 @@ utilsRouter.post(
 				200: z.object({
 					available: z.boolean(),
 				}),
-				400: z.object({ error: z.string() }),
-				401: z.object({ error: z.string() }),
 			},
 		},
 	},
@@ -265,31 +418,26 @@ utilsRouter.get(
 		const whereConditions = [];
 
 		if (clubId) {
-			whereConditions.push(and(eq(review.clubId, clubId), eq(review.type, "CLUB")));
+			whereConditions.push(eq(review.clubId, clubId));
 		}
-
 		if (eventId) {
-			whereConditions.push(and(eq(review.eventId, eventId), eq(review.type, "EVENT")));
+			whereConditions.push(eq(review.eventId, eventId));
 		}
-
 		if (userId) {
-			whereConditions.push(and(eq(review.userId, userId), eq(review.type, "USER")));
+			whereConditions.push(eq(review.userId, userId));
 		}
 
 		if (whereConditions.length === 0) {
 			return response.error({ error: "clubId, eventId, or userId is required" }, 400);
 		}
 
-		const whereClause = or(...whereConditions);
+		const reviews = await db
+			.select()
+			.from(review)
+			.where(and(...whereConditions))
+			.orderBy(desc(review.createdAt));
 
-		const reviews = await db.select().from(review).where(whereClause).orderBy(desc(review.createdAt));
-
-		return response.json({
-			reviews: reviews.map((r) => ({
-				...r,
-				content: r.content as z.infer<typeof baseReviewSchema>["content"],
-			})),
-		});
+		return response.json({ reviews });
 	},
 	{
 		schema: {
@@ -305,49 +453,40 @@ utilsRouter.get(
 				200: z.object({
 					reviews: z.array(baseReviewSchema),
 				}),
-				400: z.object({ error: z.string() }),
 			},
 		},
 	},
 );
 
 utilsRouter.get(
-	"/api/reviews/:type/:id",
+	"/api/reviews/{type}/{id}",
 	async ({ params, response }) => {
-		const { type, id } = params;
+		const type = params?.type;
+		const id = params?.id;
 
 		if (!type || !id) {
 			return response.error({ error: "Type and ID are required" }, 400);
 		}
 
-		let whereClause: ReturnType<typeof and> | undefined;
+		let whereCondition: ReturnType<typeof eq>;
 
 		switch (type) {
-			case "club": {
-				whereClause = and(eq(review.clubId, id), eq(review.type, "CLUB"));
+			case "club":
+				whereCondition = eq(review.clubId, id);
 				break;
-			}
-			case "event": {
-				whereClause = and(eq(review.eventId, id), eq(review.type, "EVENT"));
+			case "event":
+				whereCondition = eq(review.eventId, id);
 				break;
-			}
-			case "user": {
-				whereClause = and(eq(review.userId, id), eq(review.type, "USER"));
+			case "user":
+				whereCondition = eq(review.userId, id);
 				break;
-			}
-			default: {
-				return response.error({ error: "Invalid type. Must be club, event, or user" }, 400);
-			}
+			default:
+				return response.error({ error: "Invalid type" }, 400);
 		}
 
-		const reviews = await db.select().from(review).where(whereClause).orderBy(desc(review.createdAt));
+		const reviews = await db.select().from(review).where(whereCondition).orderBy(desc(review.createdAt));
 
-		return response.json({
-			reviews: reviews.map((r) => ({
-				...r,
-				content: r.content as z.infer<typeof baseReviewSchema>["content"],
-			})),
-		});
+		return response.json({ reviews });
 	},
 	{
 		schema: {
@@ -362,7 +501,6 @@ utilsRouter.get(
 				200: z.object({
 					reviews: z.array(baseReviewSchema),
 				}),
-				400: z.object({ error: z.string() }),
 			},
 		},
 	},
@@ -401,17 +539,17 @@ utilsRouter.get(
 		return response.json({
 			clubs: clubs.map((c) => ({
 				id: c.id,
-				slug: c.slug || c.id,
+				slug: c.slug,
 				updatedAt: c.updatedAt,
 			})),
 			events: events.map((e) => ({
 				id: e.id,
-				slug: e.slug || e.id,
+				slug: e.slug,
 				updatedAt: e.updatedAt,
 			})),
 			users: users.map((u) => ({
 				id: u.id,
-				slug: u.slug || u.id,
+				slug: u.slug,
 				updatedAt: u.updatedAt,
 			})),
 		});
@@ -426,21 +564,21 @@ utilsRouter.get(
 					clubs: z.array(
 						z.object({
 							id: z.string(),
-							slug: z.string(),
+							slug: z.string().nullable(),
 							updatedAt: z.string(),
 						}),
 					),
 					events: z.array(
 						z.object({
 							id: z.string(),
-							slug: z.string(),
+							slug: z.string().nullable(),
 							updatedAt: z.string(),
 						}),
 					),
 					users: z.array(
 						z.object({
 							id: z.string(),
-							slug: z.string(),
+							slug: z.string().nullable(),
 							updatedAt: z.string(),
 						}),
 					),

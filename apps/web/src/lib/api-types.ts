@@ -2045,6 +2045,66 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/api/clubs/{id}/instagram/auth-url": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get Instagram authorization URL
+		 * @description Get Instagram authorization URL for club
+		 */
+		get: operations["clubsidinstagramauthUrlGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/clubs/{id}/instagram/disconnect": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Disconnect Instagram account
+		 * @description Disconnect Instagram account from club
+		 */
+		post: operations["clubsidinstagramdisconnectPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/clubs/{id}/instagram/check-token": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Check and refresh Instagram token
+		 * @description Check Instagram token validity and refresh if needed
+		 */
+		get: operations["clubsidinstagramcheckTokenGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/api/events": {
 		parameters: {
 			query?: never;
@@ -2063,6 +2123,26 @@ export interface paths {
 		 * @description Create a new event
 		 */
 		post: operations["eventsPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/events/upcoming": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get upcoming events
+		 * @description Get upcoming events with privacy filtering
+		 */
+		get: operations["eventsupcomingGet1"];
+		put?: never;
+		post?: never;
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -2092,26 +2172,6 @@ export interface paths {
 		 * @description Delete an event
 		 */
 		delete: operations["eventsidDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/api/events/upcoming": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get upcoming events
-		 * @description Get upcoming events with privacy filtering
-		 */
-		get: operations["eventsupcomingGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
@@ -2370,7 +2430,7 @@ export interface paths {
 		};
 		/**
 		 * Search clubs, users, and events
-		 * @description Search across clubs, users, and events with pagination and type filtering
+		 * @description Unified search across clubs, users, and events with pagination and type filtering
 		 */
 		get: operations["searchGet"];
 		put?: never;
@@ -2453,6 +2513,454 @@ export interface paths {
 		 * @description Get all public clubs, events, and users for sitemap generation
 		 */
 		get: operations["sitemapGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/users": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List all users
+		 * @description Admin endpoint to list all users with pagination, search, and sorting
+		 */
+		get: operations["adminusersGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/users/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get user details
+		 * @description Admin endpoint to get user details with club memberships
+		 */
+		get: operations["adminusersidGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/users/count": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Count users
+		 * @description Admin endpoint to count users with optional search filter
+		 */
+		get: operations["adminuserscountGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/clubs": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List all clubs
+		 * @description Admin endpoint to list all clubs with pagination, search, and sorting
+		 */
+		get: operations["adminclubsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/clubs/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get club details
+		 * @description Admin endpoint to get club details
+		 */
+		get: operations["adminclubsidGet"];
+		put?: never;
+		post?: never;
+		/**
+		 * Delete club
+		 * @description Admin endpoint to delete a club
+		 */
+		delete: operations["adminclubsidDelete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/clubs/count": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Count clubs
+		 * @description Admin endpoint to count clubs with optional search filter
+		 */
+		get: operations["adminclubscountGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/clubs/{id}/ban": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Ban club
+		 * @description Admin endpoint to ban a club
+		 */
+		put: operations["adminclubsidbanPut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/clubs/{id}/unban": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Unban club
+		 * @description Admin endpoint to unban a club
+		 */
+		put: operations["adminclubsidunbanPut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/unclaimed-clubs": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List unclaimed clubs
+		 * @description Admin endpoint to list unclaimed clubs (clubs without CLUB_OWNER)
+		 */
+		get: operations["adminunclaimedClubsGet"];
+		put?: never;
+		/**
+		 * Create unclaimed club
+		 * @description Admin endpoint to create an unclaimed club
+		 */
+		post: operations["adminunclaimedClubsPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/unclaimed-clubs/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get unclaimed club details
+		 * @description Admin endpoint to get unclaimed club details
+		 */
+		get: operations["adminunclaimedClubsidGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/unclaimed-clubs/count": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Count unclaimed clubs
+		 * @description Admin endpoint to count unclaimed clubs with optional search filter
+		 */
+		get: operations["adminunclaimedClubscountGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/unclaimed-clubs/{id}/logo": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Update unclaimed club logo
+		 * @description Admin endpoint to update unclaimed club logo
+		 */
+		put: operations["adminunclaimedClubsidlogoPut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/unclaimed-clubs/{id}/header-image": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Update unclaimed club header image
+		 * @description Admin endpoint to update unclaimed club header image
+		 */
+		put: operations["adminunclaimedClubsidheaderImagePut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/unclaimed-clubs/{id}/assign-owner": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Assign club owner
+		 * @description Admin endpoint to assign owner to unclaimed club
+		 */
+		post: operations["adminunclaimedClubsidassignOwnerPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/admin/unclaimed-clubs/{id}/claim-request": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Send claim request email
+		 * @description Admin endpoint to send claim request email to admins
+		 */
+		post: operations["adminunclaimedClubsidclaimRequestPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/public/clubs": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List public clubs
+		 * @description List public clubs with pagination, verified sorting, and member count
+		 */
+		get: operations["publicclubsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/public/clubs/map": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get clubs for map
+		 * @description Get public clubs with coordinates for map display
+		 */
+		get: operations["publicclubsmapGet1"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/public/clubs/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get public club by ID or slug
+		 * @description Get public club details with posts and members (privacy filtering applied)
+		 */
+		get: operations["publicclubsidGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/public/events": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List public upcoming events
+		 * @description List public upcoming events with pagination and privacy filtering
+		 */
+		get: operations["publiceventsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/public/events/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get public event by ID or slug
+		 * @description Get public event details with privacy filtering
+		 */
+		get: operations["publiceventsidGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/public/users": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List public users
+		 * @description List public users with pagination and admin priority sorting
+		 */
+		get: operations["publicusersGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/public/users/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get public user by ID or slug
+		 * @description Get public user profile with filtered clubMembership and eventRegistration
+		 */
+		get: operations["publicusersidGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -12784,6 +13292,211 @@ export interface operations {
 			};
 		};
 	};
+	clubsidinstagramauthUrlGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						authUrl: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Internal Server Error */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidinstagramdisconnectPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidinstagramcheckTokenGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						token: string | null;
+						igBusinessId: string | null;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Internal Server Error */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	eventsGet: {
 		parameters: {
 			query?: {
@@ -12981,6 +13694,76 @@ export interface operations {
 				content: {
 					"application/json": {
 						error: string;
+					};
+				};
+			};
+		};
+	};
+	eventsupcomingGet1: {
+		parameters: {
+			query?: {
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						events: {
+							id: string;
+							name: string;
+							description: string;
+							clubId: string;
+							image: string | null;
+							slug: string | null;
+							dateStart: string;
+							dateEnd: string;
+							dateRegistrationsClose: string;
+							dateRegistrationsOpen: string;
+							isPrivate: boolean;
+							allowFreelancers: boolean;
+							location: string;
+							googleMapsLink: string | null;
+							costPerPerson: number;
+							hasBreakfast: boolean;
+							hasLunch: boolean;
+							hasDinner: boolean;
+							hasSnacks: boolean;
+							hasDrinks: boolean;
+							hasPrizes: boolean;
+							gearRequirements:
+								| (
+										| (string | number | boolean | null)
+										| {
+												[key: string]: unknown;
+										  }
+										| unknown[]
+								  )[]
+								| null;
+							mapData:
+								| (
+										| (string | number | boolean | null)
+										| {
+												[key: string]: unknown;
+										  }
+										| unknown[]
+								  )
+								| null;
+							createdAt: string;
+							updatedAt: string;
+							club: {
+								name: string;
+								verified: boolean;
+							} | null;
+						}[];
 					};
 				};
 			};
@@ -13277,72 +14060,6 @@ export interface operations {
 				content: {
 					"application/json": {
 						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsupcomingGet: {
-		parameters: {
-			query?: {
-				limit?: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						events: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements:
-								| (
-										| (string | number | boolean | null)
-										| {
-												[key: string]: unknown;
-										  }
-										| unknown[]
-								  )[]
-								| null;
-							mapData:
-								| (
-										| (string | number | boolean | null)
-										| {
-												[key: string]: unknown;
-										  }
-										| unknown[]
-								  )
-								| null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
 					};
 				};
 			};
@@ -14135,7 +14852,7 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search: string;
-				type?: "all" | "clubs" | "users" | "events";
+				filter?: string;
 			};
 			header?: never;
 			path?: never;
@@ -14150,117 +14867,126 @@ export interface operations {
 				};
 				content: {
 					"application/json": {
-						clubs: {
-							id: string;
-							name: string;
-							slug: string | null;
-							logo: string | null;
-							location: string | null;
-							verified: boolean;
-							_count: {
-								members: number;
-							};
-						}[];
-						users: {
-							id?: string;
-							email?: string;
-							name?: string;
-							emailVerified?: boolean;
-							normalizedEmail?: string | null;
-							image?: string | null;
-							slug?: string | null;
-							bio?: string | null;
-							location?: string | null;
-							website?: string | null;
-							phone?: string | null;
-							callsign?: string | null;
-							gear?:
-								| (
-										| (string | number | boolean | null)
-										| {
-												[key: string]: unknown;
-										  }
-										| unknown[]
-								  )[]
-								| null;
-							font?: string;
-							theme?: string;
-							isPrivate?: boolean;
-							isPrivateEmail?: boolean;
-							isPrivatePhone?: boolean;
-							isPrivateStats?: boolean;
-							role?: string | null;
-							banned?: boolean | null;
-							banReason?: string | null;
-							banExpires?: string | null;
-							twoFactorEnabled?: boolean | null;
-							createdAt?: string;
-							updatedAt?: string;
-							headerImage?: string | null;
-							style?: string;
-						}[];
-						events: {
-							id?: string;
-							name?: string;
-							description?: string;
-							clubId?: string;
-							image?: string | null;
-							slug?: string | null;
-							dateStart?: string;
-							dateEnd?: string;
-							dateRegistrationsClose?: string;
-							dateRegistrationsOpen?: string;
-							isPrivate?: boolean;
-							allowFreelancers?: boolean;
-							location?: string;
-							googleMapsLink?: string | null;
-							costPerPerson?: number;
-							hasBreakfast?: boolean;
-							hasLunch?: boolean;
-							hasDinner?: boolean;
-							hasSnacks?: boolean;
-							hasDrinks?: boolean;
-							hasPrizes?: boolean;
-							gearRequirements?:
-								| (
-										| (string | number | boolean | null)
-										| {
-												[key: string]: unknown;
-										  }
-										| unknown[]
-								  )[]
-								| null;
-							mapData?:
-								| (
-										| (string | number | boolean | null)
-										| {
-												[key: string]: unknown;
-										  }
-										| unknown[]
-								  )
-								| null;
-							createdAt?: string;
-							updatedAt?: string;
-						}[];
+						items: (
+							| {
+									/** @enum {string} */
+									type: "club";
+									id: string;
+									name: string;
+									relevanceScore: number;
+									data: {
+										id: string;
+										name: string;
+										slug: string | null;
+										logo: string | null;
+										location: string | null;
+										verified: boolean;
+										_count: {
+											members: number;
+										};
+									};
+							  }
+							| {
+									/** @enum {string} */
+									type: "user";
+									id: string;
+									name: string;
+									relevanceScore: number;
+									data: {
+										id?: string;
+										email?: string;
+										name?: string;
+										emailVerified?: boolean;
+										normalizedEmail?: string | null;
+										image?: string | null;
+										slug?: string | null;
+										bio?: string | null;
+										location?: string | null;
+										website?: string | null;
+										phone?: string | null;
+										callsign?: string | null;
+										gear?:
+											| (
+													| (string | number | boolean | null)
+													| {
+															[key: string]: unknown;
+													  }
+													| unknown[]
+											  )[]
+											| null;
+										font?: string;
+										theme?: string;
+										isPrivate?: boolean;
+										isPrivateEmail?: boolean;
+										isPrivatePhone?: boolean;
+										isPrivateStats?: boolean;
+										role?: string | null;
+										banned?: boolean | null;
+										banReason?: string | null;
+										banExpires?: string | null;
+										twoFactorEnabled?: boolean | null;
+										createdAt?: string;
+										updatedAt?: string;
+										headerImage?: string | null;
+										style?: string;
+									};
+							  }
+							| {
+									/** @enum {string} */
+									type: "event";
+									id: string;
+									name: string;
+									relevanceScore: number;
+									data: {
+										id?: string;
+										name?: string;
+										description?: string;
+										clubId?: string;
+										image?: string | null;
+										slug?: string | null;
+										dateStart?: string;
+										dateEnd?: string;
+										dateRegistrationsClose?: string;
+										dateRegistrationsOpen?: string;
+										isPrivate?: boolean;
+										allowFreelancers?: boolean;
+										location?: string;
+										googleMapsLink?: string | null;
+										costPerPerson?: number;
+										hasBreakfast?: boolean;
+										hasLunch?: boolean;
+										hasDinner?: boolean;
+										hasSnacks?: boolean;
+										hasDrinks?: boolean;
+										hasPrizes?: boolean;
+										gearRequirements?:
+											| (
+													| (string | number | boolean | null)
+													| {
+															[key: string]: unknown;
+													  }
+													| unknown[]
+											  )[]
+											| null;
+										mapData?:
+											| (
+													| (string | number | boolean | null)
+													| {
+															[key: string]: unknown;
+													  }
+													| unknown[]
+											  )
+											| null;
+										createdAt?: string;
+										updatedAt?: string;
+									};
+							  }
+						)[];
 						pagination: {
-							clubs: {
-								page: number;
-								perPage: number;
-								total: number;
-								totalPages: number;
-							};
-							users: {
-								page: number;
-								perPage: number;
-								total: number;
-								totalPages: number;
-							};
-							events: {
-								page: number;
-								perPage: number;
-								total: number;
-								totalPages: number;
-							};
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
 						};
 					};
 				};
@@ -14292,28 +15018,6 @@ export interface operations {
 				content: {
 					"application/json": {
 						available: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
 					};
 				};
 			};
@@ -14355,17 +15059,6 @@ export interface operations {
 					};
 				};
 			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
 		};
 	};
 	reviewstypeidGet: {
@@ -14403,17 +15096,6 @@ export interface operations {
 					};
 				};
 			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
 		};
 	};
 	sitemapGet: {
@@ -14434,19 +15116,1846 @@ export interface operations {
 					"application/json": {
 						clubs: {
 							id: string;
-							slug: string;
+							slug: string | null;
 							updatedAt: string;
 						}[];
 						events: {
 							id: string;
-							slug: string;
+							slug: string | null;
 							updatedAt: string;
 						}[];
 						users: {
 							id: string;
-							slug: string;
+							slug: string | null;
 							updatedAt: string;
 						}[];
+					};
+				};
+			};
+		};
+	};
+	adminusersGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				search?: string;
+				sortBy?: "name" | "email" | "callsign" | "createdAt";
+				sortOrder?: "asc" | "desc";
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						users: {
+							id: string;
+							email: string;
+							name: string;
+							emailVerified: boolean;
+							normalizedEmail: string | null;
+							image: string | null;
+							slug: string | null;
+							bio: string | null;
+							location: string | null;
+							website: string | null;
+							phone: string | null;
+							callsign: string | null;
+							gear:
+								| (
+										| (string | number | boolean | null)
+										| {
+												[key: string]: unknown;
+										  }
+										| unknown[]
+								  )[]
+								| null;
+							font: string;
+							theme: string;
+							isPrivate: boolean;
+							isPrivateEmail: boolean;
+							isPrivatePhone: boolean;
+							isPrivateStats: boolean;
+							role: string | null;
+							banned: boolean | null;
+							banReason: string | null;
+							banExpires: string | null;
+							twoFactorEnabled: boolean | null;
+							createdAt: string;
+							updatedAt: string;
+							headerImage: string | null;
+							style: string;
+							clubMembership: {
+								id: string;
+								clubId: string;
+								/** @enum {string} */
+								role: "USER" | "MANAGER" | "CLUB_OWNER";
+								club: {
+									name: string;
+								} | null;
+							}[];
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminusersidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						email: string;
+						name: string;
+						emailVerified: boolean;
+						normalizedEmail: string | null;
+						image: string | null;
+						slug: string | null;
+						bio: string | null;
+						location: string | null;
+						website: string | null;
+						phone: string | null;
+						callsign: string | null;
+						gear:
+							| (
+									| (string | number | boolean | null)
+									| {
+											[key: string]: unknown;
+									  }
+									| unknown[]
+							  )[]
+							| null;
+						font: string;
+						theme: string;
+						isPrivate: boolean;
+						isPrivateEmail: boolean;
+						isPrivatePhone: boolean;
+						isPrivateStats: boolean;
+						role: string | null;
+						banned: boolean | null;
+						banReason: string | null;
+						banExpires: string | null;
+						twoFactorEnabled: boolean | null;
+						createdAt: string;
+						updatedAt: string;
+						headerImage: string | null;
+						style: string;
+						clubMembership: {
+							id: string;
+							clubId: string;
+							/** @enum {string} */
+							role: "USER" | "MANAGER" | "CLUB_OWNER";
+							club: {
+								name: string;
+							} | null;
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminuserscountGet: {
+		parameters: {
+			query?: {
+				search?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						count: number;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				search?: string;
+				sortBy?: "name" | "location" | "createdAt";
+				sortOrder?: "asc" | "desc";
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						clubs: {
+							id: string;
+							name: string;
+							location: string | null;
+							latitude: number | null;
+							longitude: number | null;
+							description: string | null;
+							dateFounded: string | null;
+							slug: string | null;
+							isAllied: boolean;
+							isPrivate: boolean;
+							isPrivateStats: boolean;
+							logo: string | null;
+							contactPhone: string | null;
+							contactEmail: string | null;
+							verified: boolean;
+							website: string | null;
+							instagramUsername: string | null;
+							instagramProfilePictureUrl: string | null;
+							instagramAccessToken: string | null;
+							instagramTokenExpiry: string | null;
+							instagramRefreshToken: string | null;
+							instagramConnected: boolean;
+							instagramBusinessId: string | null;
+							facebookPageId: string | null;
+							instagramTokenType: string | null;
+							countryId: number | null;
+							banned: boolean | null;
+							banReason: string | null;
+							banExpires: string | null;
+							createdAt: string;
+							updatedAt: string;
+							headerImage: string | null;
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubsidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						location: string | null;
+						latitude: number | null;
+						longitude: number | null;
+						description: string | null;
+						dateFounded: string | null;
+						slug: string | null;
+						isAllied: boolean;
+						isPrivate: boolean;
+						isPrivateStats: boolean;
+						logo: string | null;
+						contactPhone: string | null;
+						contactEmail: string | null;
+						verified: boolean;
+						website: string | null;
+						instagramUsername: string | null;
+						instagramProfilePictureUrl: string | null;
+						instagramAccessToken: string | null;
+						instagramTokenExpiry: string | null;
+						instagramRefreshToken: string | null;
+						instagramConnected: boolean;
+						instagramBusinessId: string | null;
+						facebookPageId: string | null;
+						instagramTokenType: string | null;
+						countryId: number | null;
+						banned: boolean | null;
+						banReason: string | null;
+						banExpires: string | null;
+						createdAt: string;
+						updatedAt: string;
+						headerImage: string | null;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubsidDelete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubscountGet: {
+		parameters: {
+			query?: {
+				search?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						count: number;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubsidbanPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubsidunbanPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				search?: string;
+				sortBy?: "name" | "location" | "createdAt";
+				sortOrder?: "asc" | "desc";
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						clubs: {
+							id: string;
+							name: string;
+							location: string | null;
+							latitude: number | null;
+							longitude: number | null;
+							description: string | null;
+							dateFounded: string | null;
+							slug: string | null;
+							isAllied: boolean;
+							isPrivate: boolean;
+							isPrivateStats: boolean;
+							logo: string | null;
+							contactPhone: string | null;
+							contactEmail: string | null;
+							verified: boolean;
+							website: string | null;
+							instagramUsername: string | null;
+							instagramProfilePictureUrl: string | null;
+							instagramAccessToken: string | null;
+							instagramTokenExpiry: string | null;
+							instagramRefreshToken: string | null;
+							instagramConnected: boolean;
+							instagramBusinessId: string | null;
+							facebookPageId: string | null;
+							instagramTokenType: string | null;
+							countryId: number | null;
+							banned: boolean | null;
+							banReason: string | null;
+							banExpires: string | null;
+							createdAt: string;
+							updatedAt: string;
+							headerImage: string | null;
+							_count: {
+								members: number;
+							};
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					name: string;
+					countryId?: number;
+					location?: string;
+					latitude?: number;
+					longitude?: number;
+					description?: string;
+					slug?: string;
+					dateFounded?: string;
+					isAllied?: boolean;
+					isPrivate?: boolean;
+					isPrivateStats?: boolean;
+					contactPhone?: string;
+					/** Format: email */
+					contactEmail?: string;
+					/** Format: uri */
+					website?: string;
+					instagramUsername?: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						club: {
+							id: string;
+							name: string;
+							location: string | null;
+							latitude: number | null;
+							longitude: number | null;
+							description: string | null;
+							dateFounded: string | null;
+							slug: string | null;
+							isAllied: boolean;
+							isPrivate: boolean;
+							isPrivateStats: boolean;
+							logo: string | null;
+							contactPhone: string | null;
+							contactEmail: string | null;
+							verified: boolean;
+							website: string | null;
+							instagramUsername: string | null;
+							instagramProfilePictureUrl: string | null;
+							instagramAccessToken: string | null;
+							instagramTokenExpiry: string | null;
+							instagramRefreshToken: string | null;
+							instagramConnected: boolean;
+							instagramBusinessId: string | null;
+							facebookPageId: string | null;
+							instagramTokenType: string | null;
+							countryId: number | null;
+							banned: boolean | null;
+							banReason: string | null;
+							banExpires: string | null;
+							createdAt: string;
+							updatedAt: string;
+							headerImage: string | null;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Internal Server Error */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						location: string | null;
+						latitude: number | null;
+						longitude: number | null;
+						description: string | null;
+						dateFounded: string | null;
+						slug: string | null;
+						isAllied: boolean;
+						isPrivate: boolean;
+						isPrivateStats: boolean;
+						logo: string | null;
+						contactPhone: string | null;
+						contactEmail: string | null;
+						verified: boolean;
+						website: string | null;
+						instagramUsername: string | null;
+						instagramProfilePictureUrl: string | null;
+						instagramAccessToken: string | null;
+						instagramTokenExpiry: string | null;
+						instagramRefreshToken: string | null;
+						instagramConnected: boolean;
+						instagramBusinessId: string | null;
+						facebookPageId: string | null;
+						instagramTokenType: string | null;
+						countryId: number | null;
+						banned: boolean | null;
+						banReason: string | null;
+						banExpires: string | null;
+						createdAt: string;
+						updatedAt: string;
+						headerImage: string | null;
+						_count: {
+							members: number;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubscountGet: {
+		parameters: {
+			query?: {
+				search?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						count: number;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsidlogoPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					logo: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsidheaderImagePut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					headerImage: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsidassignOwnerPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					userId: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsidclaimRequestPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					message?: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						message: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Internal Server Error */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	publicclubsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						clubs: {
+							id: string;
+							name: string;
+							slug: string | null;
+							description: string | null;
+							logo: string | null;
+							verified: boolean;
+							location: string | null;
+							member_count: number;
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+		};
+	};
+	publicclubsmapGet1: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						clubs: {
+							id: string;
+							name: string;
+							slug: string | null;
+							logo: string | null;
+							latitude: number | null;
+							longitude: number | null;
+							location: string | null;
+						}[];
+					};
+				};
+			};
+		};
+	};
+	publicclubsidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						location: string | null;
+						latitude: number | null;
+						longitude: number | null;
+						description: string | null;
+						dateFounded: string | null;
+						slug: string | null;
+						isAllied: boolean;
+						isPrivate: boolean;
+						isPrivateStats: boolean;
+						logo: string | null;
+						contactPhone: string | null;
+						contactEmail: string | null;
+						verified: boolean;
+						website: string | null;
+						instagramUsername: string | null;
+						instagramProfilePictureUrl: string | null;
+						instagramAccessToken: string | null;
+						instagramTokenExpiry: string | null;
+						instagramRefreshToken: string | null;
+						instagramConnected: boolean;
+						instagramBusinessId: string | null;
+						facebookPageId: string | null;
+						instagramTokenType: string | null;
+						countryId: number | null;
+						banned: boolean | null;
+						banReason: string | null;
+						banExpires: string | null;
+						createdAt: string;
+						updatedAt: string;
+						headerImage: string | null;
+						_count: {
+							members: number;
+						};
+						posts: {
+							id: string;
+							title: string;
+							content: string;
+							images: string[] | null;
+							isPublic: boolean;
+							clubId: string;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						members: {
+							id: string;
+							userId: string;
+							/** @enum {string} */
+							role: "USER" | "MANAGER" | "CLUB_OWNER";
+							user: {
+								id: string;
+								name: string;
+								callsign: string | null;
+								slug: string | null;
+								image: string | null;
+								role: string | null;
+							} | null;
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	publiceventsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						events: {
+							id: string;
+							name: string;
+							description: string;
+							clubId: string;
+							image: string | null;
+							slug: string | null;
+							dateStart: string;
+							dateEnd: string;
+							dateRegistrationsClose: string;
+							dateRegistrationsOpen: string;
+							isPrivate: boolean;
+							allowFreelancers: boolean;
+							location: string;
+							googleMapsLink: string | null;
+							costPerPerson: number;
+							hasBreakfast: boolean;
+							hasLunch: boolean;
+							hasDinner: boolean;
+							hasSnacks: boolean;
+							hasDrinks: boolean;
+							hasPrizes: boolean;
+							gearRequirements:
+								| (
+										| (string | number | boolean | null)
+										| {
+												[key: string]: unknown;
+										  }
+										| unknown[]
+								  )[]
+								| null;
+							mapData:
+								| (
+										| (string | number | boolean | null)
+										| {
+												[key: string]: unknown;
+										  }
+										| unknown[]
+								  )
+								| null;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+		};
+	};
+	publiceventsidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						description: string;
+						clubId: string;
+						image: string | null;
+						slug: string | null;
+						dateStart: string;
+						dateEnd: string;
+						dateRegistrationsClose: string;
+						dateRegistrationsOpen: string;
+						isPrivate: boolean;
+						allowFreelancers: boolean;
+						location: string;
+						googleMapsLink: string | null;
+						costPerPerson: number;
+						hasBreakfast: boolean;
+						hasLunch: boolean;
+						hasDinner: boolean;
+						hasSnacks: boolean;
+						hasDrinks: boolean;
+						hasPrizes: boolean;
+						gearRequirements:
+							| (
+									| (string | number | boolean | null)
+									| {
+											[key: string]: unknown;
+									  }
+									| unknown[]
+							  )[]
+							| null;
+						mapData:
+							| (
+									| (string | number | boolean | null)
+									| {
+											[key: string]: unknown;
+									  }
+									| unknown[]
+							  )
+							| null;
+						createdAt: string;
+						updatedAt: string;
+						club: {
+							id: string;
+							name: string;
+							slug: string | null;
+							logo: string | null;
+							verified: boolean;
+						} | null;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	publicusersGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						users: {
+							id: string;
+							slug: string | null;
+							name: string;
+							bio: string | null;
+							image: string | null;
+							headerImage: string | null;
+							location: string | null;
+							website: string | null;
+							callsign: string | null;
+							isPrivate: boolean;
+							isPrivateEmail: boolean;
+							isPrivatePhone: boolean;
+							isPrivateStats: boolean;
+							role: string | null;
+							email: string | null;
+							phone: string | null;
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+		};
+	};
+	publicusersidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						slug: string | null;
+						name: string;
+						bio: string | null;
+						image: string | null;
+						headerImage: string | null;
+						location: string | null;
+						website: string | null;
+						callsign: string | null;
+						isPrivate: boolean;
+						isPrivateEmail: boolean;
+						isPrivatePhone: boolean;
+						isPrivateStats: boolean;
+						email: string | null;
+						phone: string | null;
+						clubMembership: {
+							id: string;
+							userId: string;
+							clubId: string;
+							role: string;
+							club: {
+								id: string;
+								name: string;
+								slug: string | null;
+							};
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
 					};
 				};
 			};

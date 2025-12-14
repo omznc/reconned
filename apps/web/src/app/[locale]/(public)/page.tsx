@@ -1,4 +1,3 @@
-import { Role } from "@generated/client";
 import {
 	addMonths,
 	endOfMonth,
@@ -33,9 +32,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export const revalidate = 3600; // 1 hour
@@ -45,96 +44,67 @@ export default async function Home(props: PageProps<"/[locale]">) {
 	const { month } = searchParams;
 
 	const managedClubs = user
-		? await prisma.clubMembership
-				.findMany({
-					where: {
-						userId: user.id,
-						role: {
-							in: [Role.CLUB_OWNER, Role.MANAGER],
-						},
-					},
-					select: {
-						clubId: true,
-						club: {
-							select: {
-								name: true,
-								logo: true,
-							},
-						},
-					},
-				})
-				.then((clubs) =>
-					clubs.map((club) => ({
-						id: club.clubId,
-						name: club.club.name,
-						logo: club.club.logo,
-					})),
-				)
-		: [];
+		? (async () => {
+				const { data, error } = await apiClient.GET("/api/clubs/managed");
+				if (error || !data) {
+					return [];
+				}
+				return data.clubs.map((club) => ({
+					id: club.id,
+					name: club.name,
+					logo: club.logo,
+				}));
+			})()
+		: Promise.resolve([]);
 
 	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 
-	const conditionalPrivateWhere = user
-		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
-							},
-						},
-					},
-				],
-			}
-		: {
-				isPrivate: false,
-			};
-
-	const events = await prisma.event.findMany({
-		where: {
-			dateStart: {
-				gte: startDate,
-				lte: endDate,
-			},
-			...conditionalPrivateWhere,
-		},
-		include: {
-			club: {
-				select: {
-					name: true,
-					verified: true,
+	const [managedClubsResult, calendarEventsResult, upcomingEventsResult] = await Promise.all([
+		managedClubs,
+		apiClient.GET("/api/events/calendar", {
+			params: {
+				query: {
+					startDate: startDate.toISOString(),
+					endDate: endDate.toISOString(),
 				},
 			},
-		},
-	});
-
-	const upcomingEvents = await prisma.event.findMany({
-		where: {
-			dateStart: {
-				gte: new Date(),
-			},
-			...conditionalPrivateWhere,
-		},
-		orderBy: {
-			dateStart: "asc",
-		},
-		include: {
-			club: {
-				select: {
-					name: true,
-					verified: true,
+		}),
+		apiClient.GET("/api/events/upcoming", {
+			params: {
+				query: {
+					limit: 3,
 				},
 			},
-		},
-		take: 3,
-	});
+		}),
+	]);
+
+	const events =
+		calendarEventsResult.error || !calendarEventsResult.data
+			? []
+			: calendarEventsResult.data.events.map((event) => ({
+					...event,
+					club: event.club
+						? {
+								name: event.club.name,
+								verified: event.club.verified ?? false,
+							}
+						: null,
+				}));
+
+	const upcomingEvents =
+		upcomingEventsResult.error || !upcomingEventsResult.data
+			? []
+			: upcomingEventsResult.data.events.map((event) => ({
+					...event,
+					club: event.club
+						? {
+								name: event.club.name,
+								verified: event.club.verified ?? false,
+							}
+						: null,
+				}));
 
 	const t = await getExtracted();
 
@@ -385,7 +355,10 @@ export default async function Home(props: PageProps<"/[locale]">) {
 						))}
 					</div>
 				</div>
-				<EventCalendar events={events} managedClubs={managedClubs.length > 0 ? managedClubs : undefined} />
+				<EventCalendar
+					events={events}
+					managedClubs={managedClubsResult.length > 0 ? managedClubsResult : undefined}
+				/>
 			</div>
 		</>
 	);

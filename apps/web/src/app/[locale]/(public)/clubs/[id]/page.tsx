@@ -2,77 +2,104 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
-import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
-	const userMembership = user
-		? await prisma.clubMembership.findFirst({
-				where: {
-					userId: user?.id,
-					club: {
-						OR: [{ id: params.id }, { slug: params.id }],
-					},
-				},
-			})
-		: null;
 
-	const isMemberOfClub = !!userMembership;
-
-	const club = await prisma.club.findFirst({
-		where: {
-			OR: [{ id: params.id }, { slug: params.id }],
-			isPrivate: false,
-		},
-		include: {
-			_count: {
-				select: {
-					members: true,
-				},
-			},
-			posts: {
-				orderBy: {
-					createdAt: "desc",
-				},
-				...(isMemberOfClub ? {} : { where: { isPublic: true } }),
-			},
-			members: {
-				include: {
-					user: {
-						select: {
-							id: true,
-							name: true,
-							callsign: true,
-							slug: true,
-							image: true,
-							role: true,
-						},
-					},
-				},
+	const { data: clubData, error: clubError } = await apiClient.GET("/api/public/clubs/{id}", {
+		params: {
+			path: {
+				id: params.id,
 			},
 		},
 	});
 
-	const hasOwner = club
-		? await prisma.clubMembership.findFirst({
-				where: {
-					clubId: club.id,
-					role: "CLUB_OWNER",
+	if (clubError || !clubData) {
+		notFound();
+	}
+
+	const [membershipData, hasOwnerData, managedClubsData] = await Promise.all([
+		user
+			? apiClient.GET("/api/clubs/{id}/membership", {
+					params: {
+						path: {
+							id: clubData.id,
+						},
+					},
+				})
+			: Promise.resolve({ data: null, error: null }),
+		apiClient.GET("/api/clubs/{id}/has-owner", {
+			params: {
+				path: {
+					id: clubData.id,
 				},
-			})
-		: null;
+			},
+		}),
+		user ? apiClient.GET("/api/clubs/managed") : Promise.resolve({ data: { clubIds: [] }, error: null }),
+	]);
+
+	const isMemberOfClub = !!membershipData?.data?.isMember;
+	const hasOwner = hasOwnerData?.data?.hasOwner ?? false;
+	const managedClubs =
+		managedClubsData?.data && "clubIds" in managedClubsData.data ? managedClubsData.data.clubIds : [];
+
+	const club = {
+		...clubData,
+		createdAt: new Date(clubData.createdAt),
+		updatedAt: new Date(clubData.updatedAt),
+		dateFounded: clubData.dateFounded ? new Date(clubData.dateFounded) : null,
+		instagramTokenExpiry: clubData.instagramTokenExpiry ? new Date(clubData.instagramTokenExpiry) : null,
+		banExpires: clubData.banExpires ? new Date(clubData.banExpires) : null,
+		_count: clubData._count,
+		posts: clubData.posts.map((p) => ({
+			...p,
+			images: p.images ?? [],
+			createdAt: new Date(p.createdAt),
+			updatedAt: new Date(p.updatedAt),
+		})),
+		members: clubData.members
+			.filter((m): m is typeof m & { user: NonNullable<typeof m.user> } => m.user !== null)
+			.map((m) => ({
+				...m,
+				clubId: clubData.id,
+				startDate: null,
+				endDate: null,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				user: {
+					id: m.user.id,
+					name: m.user.name,
+					callsign: m.user.callsign,
+					slug: m.user.slug,
+					image: m.user.image,
+					role: m.user.role,
+				},
+			})),
+	};
+
+	const userMembership =
+		membershipData?.data?.isMember && membershipData?.data?.membership
+			? {
+					id: membershipData.data.membership.id,
+					userId: membershipData.data.membership.userId,
+					clubId: membershipData.data.membership.clubId,
+					role: membershipData.data.membership.role,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					startDate: null,
+					endDate: null,
+				}
+			: null;
 
 	if (!club) {
-		// TODO https://github.com/vercel/next.js/issues/63388
-		// notFound();
-		return <NotFoundTemporary />;
+		notFound();
 	}
 
 	const sportsOrganizationSchema: WithContext<SportsOrganization> = {
@@ -88,7 +115,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		sport: "Airsoft",
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
 		logo: club.logo || undefined,
-		foundingDate: club.dateFounded?.toISOString() || undefined,
+		foundingDate: club.dateFounded ? club.dateFounded.toISOString() : undefined,
 		address: club.location
 			? {
 					"@type": "PostalAddress",
@@ -115,13 +142,17 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 					}
 				: undefined,
 		sameAs: club.website ? [club.website] : undefined,
-		member: club.members.map((member) => ({
-			"@type": "Person",
-			name: member.user.name,
-			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${member.user.slug ?? member.user.id}`,
-			image: member.user.image || undefined,
-			additionalName: member.user.callsign || undefined,
-		})),
+		member: club.members
+			.filter(
+				(member): member is typeof member & { user: NonNullable<typeof member.user> } => member.user !== null,
+			)
+			.map((member) => ({
+				"@type": "Person",
+				name: member.user.name,
+				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${member.user.slug ?? member.user.id}`,
+				image: member.user.image || undefined,
+				additionalName: member.user.callsign || undefined,
+			})),
 		aggregateRating: club.verified
 			? {
 					"@type": "AggregateRating",
@@ -138,10 +169,10 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 			<JsonLdScript data={sportsOrganizationSchema} />
 			<ClubOverview
 				club={club}
-				isManager={user?.managedClubs.includes(club.id)}
+				isManager={managedClubs.includes(club.id)}
 				isMember={isMemberOfClub}
 				currentUserMembership={userMembership}
-				hasOwner={!!hasOwner}
+				hasOwner={hasOwner}
 				user={user}
 			/>
 		</div>
@@ -152,14 +183,15 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const club = await prisma.club.findFirst({
-		where: {
-			OR: [{ id: params.id }, { slug: params.id }],
-			isPrivate: false,
+	const { data: club, error } = await apiClient.GET("/api/public/clubs/{id}", {
+		params: {
+			path: {
+				id: params.id,
+			},
 		},
 	});
 
-	if (!club) {
+	if (error || !club) {
 		notFound();
 	}
 

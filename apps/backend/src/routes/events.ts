@@ -119,6 +119,86 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
+	"/api/events/upcoming",
+	async ({ query, context, response }) => {
+		const limit = query.limit ?? 25;
+
+		const whereConditions = [gte(event.dateStart, new Date().toISOString())];
+
+		if (!context.user) {
+			whereConditions.push(eq(event.isPrivate, false));
+		} else {
+			const userClubMemberships = await db
+				.select({ clubId: clubMembership.clubId })
+				.from(clubMembership)
+				.where(eq(clubMembership.userId, context.user.id));
+
+			const userClubIds = userClubMemberships.map((m) => m.clubId);
+
+			if (userClubIds.length > 0) {
+				const privacyCondition = or(eq(event.isPrivate, false), sql`${event.clubId} = ANY(${userClubIds})`);
+				if (privacyCondition) {
+					whereConditions.push(privacyCondition);
+				}
+			} else {
+				whereConditions.push(eq(event.isPrivate, false));
+			}
+		}
+
+		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
+
+		const events = whereClause
+			? await db.select().from(event).where(whereClause).orderBy(event.dateStart).limit(limit)
+			: await db.select().from(event).orderBy(event.dateStart).limit(limit);
+
+		const eventsWithClubs = await Promise.all(
+			events.map(async (e) => {
+				const clubData = await db
+					.select({ name: club.name, verified: club.verified })
+					.from(club)
+					.where(eq(club.id, e.clubId))
+					.limit(1);
+
+				return {
+					...e,
+					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
+					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+					club: clubData[0] || null,
+				};
+			}),
+		);
+
+		return response.json({
+			events: eventsWithClubs,
+		});
+	},
+	{
+		schema: {
+			tags: ["Events"],
+			summary: "Get upcoming events",
+			description: "Get upcoming events with privacy filtering",
+			query: z.object({
+				limit: z.coerce.number().optional().default(25),
+			}),
+			response: {
+				200: z.object({
+					events: z.array(
+						baseEventSchema.extend({
+							club: z
+								.object({
+									name: z.string(),
+									verified: z.boolean(),
+								})
+								.nullable(),
+						}),
+					),
+				}),
+			},
+		},
+	},
+);
+
+eventsRouter.get(
 	"/api/events/:id",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
@@ -194,7 +274,7 @@ eventsRouter.get(
 eventsRouter.get(
 	"/api/events/upcoming",
 	async ({ query, context, response }) => {
-		const { limit } = query;
+		const limit = query.limit ?? 25;
 
 		const whereConditions = [gte(event.dateStart, new Date().toISOString())];
 
@@ -224,12 +304,25 @@ eventsRouter.get(
 			? await db.select().from(event).where(whereClause).orderBy(event.dateStart).limit(limit)
 			: await db.select().from(event).orderBy(event.dateStart).limit(limit);
 
+		const eventsWithClubs = await Promise.all(
+			events.map(async (e) => {
+				const clubData = await db
+					.select({ name: club.name, verified: club.verified })
+					.from(club)
+					.where(eq(club.id, e.clubId))
+					.limit(1);
+
+				return {
+					...e,
+					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
+					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+					club: clubData[0] || null,
+				};
+			}),
+		);
+
 		return response.json({
-			events: events.map((e) => ({
-				...e,
-				gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-				mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
-			})),
+			events: eventsWithClubs,
 		});
 	},
 	{
@@ -238,11 +331,20 @@ eventsRouter.get(
 			summary: "Get upcoming events",
 			description: "Get upcoming events with privacy filtering",
 			query: z.object({
-				limit: z.number().optional().default(25),
+				limit: z.coerce.number().optional().default(25),
 			}),
 			response: {
 				200: z.object({
-					events: z.array(baseEventSchema),
+					events: z.array(
+						baseEventSchema.extend({
+							club: z
+								.object({
+									name: z.string(),
+									verified: z.boolean(),
+								})
+								.nullable(),
+						}),
+					),
 				}),
 			},
 		},
@@ -285,12 +387,25 @@ eventsRouter.get(
 
 		const events = await db.select().from(event).where(whereClause).orderBy(event.dateStart);
 
+		const eventsWithClubs = await Promise.all(
+			events.map(async (e) => {
+				const clubData = await db
+					.select({ name: club.name, verified: club.verified })
+					.from(club)
+					.where(eq(club.id, e.clubId))
+					.limit(1);
+
+				return {
+					...e,
+					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
+					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+					club: clubData[0] || null,
+				};
+			}),
+		);
+
 		return response.json({
-			events: events.map((e) => ({
-				...e,
-				gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-				mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
-			})),
+			events: eventsWithClubs,
 		});
 	},
 	{

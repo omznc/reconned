@@ -3,29 +3,23 @@ import { getExtracted, getLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
 import JsonLdScript from "@/components/json-ld-script";
+import apiClient from "@/lib/api";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function MapPage() {
-	const clubs = await prisma.club.findMany({
-		where: {
-			isPrivate: false,
-			latitude: { not: null },
-			longitude: { not: null },
-		},
-		select: {
-			id: true,
-			name: true,
-			logo: true,
-			latitude: true,
-			longitude: true,
-			slug: true,
-			location: true,
-		},
-	});
+	const { data, error } = await apiClient.GET("/api/public/clubs/map");
 
-	const transformedClubs = clubs.map((club) => ({
+	if (error) {
+		console.error("Error loading clubs:", error);
+		return <div>Error loading clubs</div>;
+	}
+
+	if (!data) {
+		return <div>Error loading clubs</div>;
+	}
+
+	const transformedClubs = data.clubs.map((club) => ({
 		...club,
 		location: club.location ?? undefined,
 		slug: club.slug ?? undefined,
@@ -47,7 +41,7 @@ export default async function MapPage() {
 			"@type": "ItemList",
 			name: "Airsoft Clubs Map",
 			description: "Interactive map showing airsoft club locations",
-			itemListElement: clubs.map((club, index) => ({
+			itemListElement: transformedClubs.map((club, index) => ({
 				"@type": "ListItem",
 				position: index + 1,
 				item: {
