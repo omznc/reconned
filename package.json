@@ -25,5 +25,8 @@
 		"import-in-the-middle": "1.14.2",
 		"react-is": "^19.0.0",
 		"drizzle-orm": "^0.45.1"
+	},
+	"dependencies": {
+		"drizzle-zod": "^0.8.3"
 	}
 }

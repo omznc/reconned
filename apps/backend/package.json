@@ -8,27 +8,29 @@
 		"./*": "./src/*"
 	},
 	"scripts": {
-		"dev": "bun run src/index.ts",
+		"dev": "bun run --hot src/index.ts",
 		"build": "bun build src/index.ts --outdir ./dist --target bun",
 		"start": "bun run dist/index.js",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
-		"db:studio": "drizzle-kit studio"
+		"db:studio": "drizzle-kit studio",
+		"db:seed": "bun run src/drizzle/seed.ts"
 	},
 	"dependencies": {
+		"@asteasolutions/zod-to-openapi": "^8.2.0",
 		"@better-auth/passkey": "^1.4.6",
-		"@elysiajs/cors": "^1.4.0",
-		"@elysiajs/openapi": "^1.4.11",
 		"@react-email/components": "^1.0.1",
 		"@t3-oss/env-core": "^0.13.8",
 		"better-auth": "^1.4.6",
 		"better-auth-harmony": "^1.2.5",
 		"drizzle-orm": "^0.45.1",
 		"drizzle-zod": "^0.8.3",
-		"elysia": "^1.1.20",
+		"i18n-iso-countries": "^7.14.0",
 		"react": "^19.2.3",
 		"react-dom": "^19.2.3",
+		"swagger-ui-dist": "^5.31.0",
+		"world-countries": "^5.1.0",
 		"zod": "^4.1.13"
 	},
 	"devDependencies": {

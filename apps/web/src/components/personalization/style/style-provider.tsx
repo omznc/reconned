@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
-import { setStyleAction } from "@/lib/global-actions/style";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
+import { useIsAuthenticated } from "@/lib/auth-client";
 
 type StyleType = "sharp" | "relaxed";
 
@@ -14,6 +16,7 @@ const StyleContext = createContext<StyleContextType | undefined>(undefined);
 
 export function StyleProvider({ children, initial }: { children: ReactNode; initial: StyleType }) {
 	const [style, setStyleState] = useState<StyleType>(initial);
+	const { user } = useIsAuthenticated();
 
 	useEffect(() => {
 		applyStyle(style);
@@ -21,8 +24,26 @@ export function StyleProvider({ children, initial }: { children: ReactNode; init
 
 	const setStyle = (newStyle: StyleType) => {
 		setStyleState(newStyle);
-		setStyleAction({ style: newStyle });
 		applyStyle(newStyle);
+
+		if (!user?.id) {
+			return;
+		}
+
+		if (user.style === newStyle) {
+			return;
+		}
+
+		apiClient.PUT("/api/users/{id}/style", {
+			params: {
+				path: {
+					id: user.id,
+				},
+			},
+			body: {
+				style: newStyle,
+			},
+		});
 	};
 
 	return <StyleContext.Provider value={{ style, setStyle }}>{children}</StyleContext.Provider>;

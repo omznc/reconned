@@ -38,7 +38,8 @@
 			"@auth/server": ["./src/lib/auth"],
 			"@public/*": ["./public/*"],
 			"@generated/*": ["./generated/client/*"],
-			"backend/*": ["../backend/src/*"]
+			"backend/*": ["../backend/src/*"],
+			"@api": ["./src/lib/api"]
 		},
 		"incremental": true,
 		// Interop Constraints

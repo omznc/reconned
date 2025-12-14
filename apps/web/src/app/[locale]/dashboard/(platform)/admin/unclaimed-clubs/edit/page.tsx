@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { EditClubForm } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/edit-club-form";
+import api from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { getCountries } from "@/lib/cached-countries";
 import { prisma } from "@/lib/prisma";
 
 export default async function EditUnclaimedClubPage(
@@ -20,7 +20,7 @@ export default async function EditUnclaimedClubPage(
 		return notFound();
 	}
 
-	const [club, countries] = await Promise.all([
+	const [club, countriesResponse] = await Promise.all([
 		prisma.club.findUnique({
 			where: { id: clubId as string },
 			include: {
@@ -31,10 +31,10 @@ export default async function EditUnclaimedClubPage(
 				},
 			},
 		}),
-		getCountries(),
+		api.countries.get(),
 	]);
 
-	if (!club || club.members.length > 0) {
+	if (!club || club.members.length > 0 || countriesResponse.error) {
 		return notFound();
 	}
 
@@ -46,7 +46,7 @@ export default async function EditUnclaimedClubPage(
 				<h3 className="text-lg font-semibold">{t("Edit unclaimed club")}</h3>
 				<p className="text-muted-foreground">{t("Edit the information for this unclaimed club.")}</p>
 			</div>
-			<EditClubForm club={club} countries={countries} />
+			<EditClubForm club={club} countries={countriesResponse.data} />
 		</div>
 	);
 }

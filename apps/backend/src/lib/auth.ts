@@ -1,5 +1,4 @@
 import { passkey } from "@better-auth/passkey";
-import type { openapi } from "@elysiajs/openapi";
 import { render } from "@react-email/components";
 import { betterAuth, logger } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -7,7 +6,6 @@ import { admin, captcha, lastLoginMethod, oneTap, openAPI, twoFactor } from "bet
 import { emailHarmony } from "better-auth-harmony";
 import { and, eq, gt } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { Elysia } from "elysia";
 import { clubInvite, clubMembership } from "../drizzle/schema";
 import EmailVerification from "../emails/email-verification";
 import PasswordReset from "../emails/password-reset";
@@ -16,8 +14,6 @@ import { env } from "./env";
 import { sendEmail } from "./mail";
 import { redis } from "./redis";
 
-type OpenAPIConfig = Parameters<typeof openapi>[0];
-type Documentation = NonNullable<NonNullable<OpenAPIConfig>["documentation"]>;
 type SecondaryStorage = {
 	get: (key: string) => Promise<unknown>;
 	set: (key: string, value: string, ttl?: number) => Promise<void>;
@@ -228,55 +224,18 @@ export const auth = betterAuth({
 	},
 });
 
-let _schema: ReturnType<typeof auth.api.generateOpenAPISchema>;
-const getSchema = async () => {
-	if (!_schema) {
-		_schema = auth.api.generateOpenAPISchema();
-		if (!_schema) {
-			throw new Error("Failed to generate OpenAPI schema from Better Auth");
-		}
-	}
-	return _schema;
+export type AuthUser = {
+	id: string;
+	email: string;
+	name: string;
+	role?: string;
 };
 
-export const OpenAPI = {
-	getPaths: (prefix = "/api/auth"): Promise<Documentation["paths"]> =>
-		getSchema().then(({ paths }) => {
-			const reference: typeof paths = Object.create(null);
+export type AuthSession = {
+	id: string;
+};
 
-			for (const path of Object.keys(paths)) {
-				const pathValue = paths[path];
-				if (!pathValue) continue;
-
-				const key = prefix + path;
-				reference[key] = pathValue;
-
-				for (const method of Object.keys(pathValue)) {
-					const operation = (reference[key] as Record<string, unknown>)[method] as
-						| Record<string, unknown>
-						| undefined;
-					if (operation) {
-						operation.tags = ["Auth"];
-					}
-				}
-			}
-
-			return reference as Documentation["paths"];
-		}),
-	components: getSchema().then(({ components }) => components) as Promise<Documentation["components"]>,
-} as const;
-
-export const betterAuthElysia = new Elysia({ name: "better-auth" }).mount(auth.handler).macro({
-	auth: {
-		async resolve({ status, request: { headers } }) {
-			const session = await auth.api.getSession({
-				headers,
-			});
-			if (!session) return status(401);
-			return {
-				user: session.user,
-				session: session.session,
-			};
-		},
-	},
-});
+export type BetterAuthContext = {
+	user?: AuthUser;
+	session?: AuthSession;
+};

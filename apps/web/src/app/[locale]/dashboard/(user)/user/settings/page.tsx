@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { UserInfoForm } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.form";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export default async function Page() {
 	const user = await isAuthenticated();
@@ -9,13 +9,15 @@ export default async function Page() {
 		return notFound();
 	}
 
-	const userFromDb = await prisma.user.findUnique({
-		where: {
-			id: user.id,
+	const { data: userFromDb, error } = await apiClient.GET("/api/users/{id}", {
+		params: {
+			path: {
+				id: user.id,
+			},
 		},
 	});
 
-	if (!userFromDb) {
+	if (error || !userFromDb) {
 		return notFound();
 	}
 

@@ -4,10 +4,8 @@ import { EmailSheet } from "@/app/[locale]/dashboard/(platform)/admin/emails/_co
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClubInvitationEmail } from "@/emails/airsoft-invitation";
 import { CreateAccountEmail } from "@/emails/create-account";
-import { EmailVerification } from "@/emails/email-verification";
 import { MembershipExpiration } from "@/emails/membership-expiration";
 import { MembershipExpirationOwner } from "@/emails/membership-expiration-owner";
-import { PasswordReset } from "@/emails/password-reset";
 import { RateEventEmail } from "@/emails/rate-event";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -45,26 +43,6 @@ const emails = [
 			inviteeEmail: "john@example.com",
 			clubLogo: SAMPLE_CLUB.logo,
 			clubName: SAMPLE_CLUB.name,
-		},
-	},
-	{
-		id: "email-verification",
-		name: "Verifikacija email adrese",
-		description: "Email koji se šalje za verifikaciju email adrese",
-		preview: EmailVerification,
-		sampleData: {
-			verificationUrl: "#",
-			userName: "John Doe",
-		},
-	},
-	{
-		id: "password-reset",
-		name: "Reset lozinke",
-		description: "Email koji se šalje za resetovanje lozinke",
-		preview: PasswordReset,
-		sampleData: {
-			resetUrl: "#",
-			userName: "John Doe",
 		},
 	},
 	{

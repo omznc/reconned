@@ -2,19 +2,16 @@
 import type { User } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Phone, Shield, User as UserIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
-import {
-	getUserHeaderImageUploadUrl,
-	getUserImageUploadUrl,
-	saveUserInformation,
-} from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.action";
 import { userInfoShema } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
+import { validateSlug } from "@/components/slug/validate-slug";
 import type { FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -23,6 +20,9 @@ import { SingleImageUpload } from "@/components/ui/single-image-upload";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
+import { addImageVersion } from "@/lib/utils";
 import { ImageCropDialog } from "./image-crop-dialog.tsx";
 
 interface UserInfoFormProps {
@@ -34,6 +34,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [isSlugValid, setIsSlugValid] = useState(true);
 	const [cropFile, setCropFile] = useState<File | null>(null);
 	const t = useExtracted();
+	const router = useRouter();
 
 	// Initialize file upload system for avatar
 	const initialFiles: FileUploadItem[] = props.user?.image
@@ -50,22 +51,27 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 	const avatarUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			const resp = await getUserImageUploadUrl({
-				file: {
+			if (!props.user?.id) {
+				throw new ActionError("User not found");
+			}
+
+			const { data, error } = await apiClient.POST("/api/users/{id}/image/upload-url", {
+				params: {
+					path: {
+						id: props.user.id,
+					},
+				},
+				body: {
 					type: file.type,
 					size: file.size,
-					dimensions: {
-						width: 100,
-						height: 100,
-					},
 				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -74,7 +80,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles,
@@ -95,18 +101,27 @@ export function UserInfoForm(props: UserInfoFormProps) {
 
 	const headerUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			const resp = await getUserHeaderImageUploadUrl({
-				file: {
+			if (!props.user?.id) {
+				throw new ActionError("User not found");
+			}
+
+			const { data, error } = await apiClient.POST("/api/users/{id}/header-image/upload-url", {
+				params: {
+					path: {
+						id: props.user.id,
+					},
+				},
+				body: {
 					type: file.type,
 					size: file.size,
 				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -115,7 +130,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles: initialHeaderFiles,
@@ -159,24 +174,88 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	};
 
 	async function onSubmit(values: z.infer<typeof userInfoShema>) {
+		if (!props.user?.id) {
+			toast.error(t("User not found"));
+			return;
+		}
+
 		setIsLoading(true);
 		try {
-			// Upload avatar and handle deletion
+			if (values.slug) {
+				const valid = await validateSlug({
+					type: "user",
+					slug: values.slug,
+				});
+				if (!valid?.data) {
+					toast.error(t("Link taken"));
+					setIsLoading(false);
+					return;
+				}
+			}
+
 			const uploadedUrls = await avatarUpload.uploadAllFiles();
 			values.image = uploadedUrls.length > 0 ? uploadedUrls[0] : undefined;
 
-			// Upload header image and handle deletion
 			const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
 			values.headerImage = uploadedHeaderUrls.length > 0 ? uploadedHeaderUrls[0] : undefined;
 
-			const result = await saveUserInformation(values);
+			const shouldDeleteImage = values.image === undefined;
+			const shouldDeleteHeaderImage = values.headerImage === undefined;
 
-			if (result?.data) {
-				avatarUpload.markAsSaved();
-				headerUpload.markAsSaved();
-				form.reset(values);
-				toast.success(t("User data has been saved"));
+			const { error } = await apiClient.PUT("/api/users/{id}", {
+				params: {
+					path: {
+						id: props.user.id,
+					},
+				},
+				body: {
+					name: values.name,
+					bio: values.bio,
+					website: values.website,
+					location: values.location,
+					phone: values.phone,
+					slug: values.slug,
+					callsign: values.callsign,
+					isPrivate: values.isPrivate,
+					isPrivateEmail: values.isPrivateEmail,
+					isPrivatePhone: values.isPrivatePhone,
+					isPrivateStats: values.isPrivateStats,
+					image: values.image ? addImageVersion(values.image) : undefined,
+					headerImage: values.headerImage ? addImageVersion(values.headerImage) : undefined,
+				},
+			});
+
+			if (error) {
+				toast.error(t("Failed to update user information"));
+				setIsLoading(false);
+				return;
 			}
+
+			if (shouldDeleteImage) {
+				await apiClient.DELETE("/api/users/{id}/image", {
+					params: {
+						path: {
+							id: props.user.id,
+						},
+					},
+				});
+			}
+
+			if (shouldDeleteHeaderImage) {
+				await apiClient.DELETE("/api/users/{id}/header-image", {
+					params: {
+						path: {
+							id: props.user.id,
+						},
+					},
+				});
+			}
+
+			avatarUpload.markAsSaved();
+			headerUpload.markAsSaved();
+			form.reset(values);
+			router.refresh();
+			toast.success(t("User data has been saved"));
 		} catch {
 			toast.error(t("An error occurred while saving data"));
 		}

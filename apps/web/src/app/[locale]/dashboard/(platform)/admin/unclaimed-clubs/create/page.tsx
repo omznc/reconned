@@ -1,10 +1,15 @@
+import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
-import { getCountries } from "@/lib/cached-countries";
+import api from "@/lib/api";
 import { CreateUnclaimedClubForm } from "./_components/create-unclaimed-club-form";
 
 export default async function CreateUnclaimedClubPage() {
 	const t = await getExtracted();
-	const countries = await getCountries();
+	const countriesResponse = await api.countries.get();
+
+	if (countriesResponse.error) {
+		notFound();
+	}
 
 	return (
 		<div className="space-y-4">
@@ -16,7 +21,7 @@ export default async function CreateUnclaimedClubPage() {
 					)}
 				</p>
 			</div>
-			<CreateUnclaimedClubForm countries={countries} />
+			<CreateUnclaimedClubForm countries={countriesResponse.data} />
 		</div>
 	);
 }

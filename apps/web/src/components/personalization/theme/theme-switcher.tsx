@@ -4,21 +4,38 @@ import { useExtracted } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { setThemeAction } from "@/lib/global-actions/theme";
+import apiClient from "@/lib/api";
+import { useIsAuthenticated } from "@/lib/auth-client";
 
 export function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();
 	const t = useExtracted();
+	const { user } = useIsAuthenticated();
 
 	useEffect(() => {
 		if (theme !== "light" && theme !== "dark") {
 			return;
 		}
 
-		setThemeAction({
-			theme: theme,
+		if (!user?.id) {
+			return;
+		}
+
+		if (user.theme === theme) {
+			return;
+		}
+
+		apiClient.PUT("/api/users/{id}/theme", {
+			params: {
+				path: {
+					id: user.id,
+				},
+			},
+			body: {
+				theme: theme,
+			},
 		});
-	}, [theme]);
+	}, [theme, user]);
 
 	return (
 		<Button

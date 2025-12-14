@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
 import { bs, enUS } from "date-fns/locale";
 import { CalendarClock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import type { ReactNode } from "react";
 import { useState } from "react";
@@ -27,7 +28,7 @@ import {
 } from "@/components/ui/credenza";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { extendMembership } from "./membership-extension.action.ts";
+import apiClient from "@/lib/api";
 
 interface MembershipExtensionFormProps {
 	clubId: string;
@@ -53,6 +54,7 @@ export function MembershipExtensionForm({
 }: MembershipExtensionFormProps) {
 	const t = useExtracted();
 	const locale = useLocale();
+	const router = useRouter();
 	const [isLocalOpen, setIsLocalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -81,15 +83,25 @@ export function MembershipExtensionForm({
 		setIsLoading(true);
 
 		try {
-			const result = await extendMembership(data);
+			const { error } = await apiClient.PUT("/api/clubs/{id}/members/{memberId}/extend", {
+				params: {
+					path: {
+						id: clubId,
+						memberId: data.memberId,
+					},
+				},
+				body: {
+					duration: data.duration,
+				},
+			});
 
-			if (result?.serverError) {
-				toast.error(result.serverError);
+			if (error) {
+				toast.error(error.error || t("There was an error while extending the membership"));
 				return;
 			}
 
 			toast.success(t("Membership successfully extended for {user}", { user: membership.user.name }));
-
+			router.refresh();
 			setIsOpen(false);
 		} catch {
 			toast.error(t("There was an error while extending the membership"));

@@ -1,14 +1,14 @@
 "use client";
 
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
-import { leaveClub } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface LeaveClubButtonProps extends Omit<ButtonProps, "onClick"> {
@@ -51,8 +51,21 @@ export function LeaveClubButton({
 		}
 
 		try {
-			await leaveClub({ clubId });
+			const { error } = await apiClient.POST("/api/clubs/{id}/members/leave", {
+				params: {
+					path: {
+						id: clubId,
+					},
+				},
+			});
+
+			if (error) {
+				toast.error(error.error || t("There was an error while trying to leave the club"));
+				return;
+			}
+
 			router.push("/dashboard");
+			router.refresh();
 		} catch (error) {
 			toast.error(
 				error instanceof Error ? error.message : t("There was an error while trying to leave the club"),

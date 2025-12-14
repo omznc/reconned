@@ -1,9 +1,9 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { SecuritySettings } from "@/app/[locale]/dashboard/(user)/user/security/_components/security-settings";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
-import { prisma } from "@/lib/prisma";
 
 export default async function Page() {
 	const user = await isAuthenticated();
@@ -11,18 +11,15 @@ export default async function Page() {
 		return notFound();
 	}
 
-	const hasPassword =
-		(await prisma.account.findFirst({
-			where: {
-				userId: user.id,
-				password: {
-					not: null,
-				},
+	const { data: accountData, error } = await apiClient.GET("/api/users/{id}/account", {
+		params: {
+			path: {
+				id: user.id,
 			},
-			select: {
-				password: true,
-			},
-		})) !== null;
+		},
+	});
+
+	const hasPassword = accountData && !error ? (accountData.hasPassword ?? false) : false;
 
 	const sessions = await authClient.listSessions({
 		fetchOptions: {

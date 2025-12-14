@@ -1,8 +1,8 @@
 import { Role } from "@generated/client";
 import { notFound } from "next/navigation";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
+import api from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { getCountries } from "@/lib/cached-countries";
 import { getInstagramAuthUrl } from "@/lib/instagram";
 import { prisma } from "@/lib/prisma";
 
@@ -13,7 +13,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return notFound();
 	}
 
-	const [club, countries] = await Promise.all([
+	const [club, countriesResponse] = await Promise.all([
 		prisma.club.findUnique({
 			where: {
 				members: {
@@ -38,10 +38,10 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 				},
 			},
 		}),
-		getCountries(),
+		api.countries.get(),
 	]);
 
-	if (!club) {
+	if (!club || countriesResponse.error) {
 		return notFound();
 	}
 
@@ -51,7 +51,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		<div className="p-6">
 			<ClubInfoForm
 				club={club}
-				countries={countries}
+				countries={countriesResponse.data}
 				isClubOwner={club.members[0]?.role === Role.CLUB_OWNER}
 				instagramConnectionUrl={authUrl}
 			/>

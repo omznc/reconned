@@ -1,16 +1,21 @@
 import { CirclePlus, MailPlus, Search } from "lucide-react";
+import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { getCountries } from "@/lib/cached-countries";
+import api from "@/lib/api";
 import { RequestAccessForm } from "./_components/request-access.form.tsx";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/add-club">) {
 	const searchParams = await props.searchParams;
-	const countries = await getCountries();
+	const countriesResponse = await api.countries.get();
 	const t = await getExtracted();
 	const type = searchParams.type as "invite" | "new" | string;
+
+	if (countriesResponse.error) {
+		notFound();
+	}
 
 	if (type === "invite") {
 		return (
@@ -23,7 +28,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/add-clu
 	}
 
 	if (type === "new") {
-		return <ClubInfoForm countries={countries} />;
+		return <ClubInfoForm countries={countriesResponse.data} />;
 	}
 	return (
 		<>

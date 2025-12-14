@@ -5,21 +5,38 @@ import { useExtracted } from "next-intl";
 import { useEffect } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
 import { Button } from "@/components/ui/button";
-import { setFontAction } from "@/lib/global-actions/font";
+import apiClient from "@/lib/api";
+import { useIsAuthenticated } from "@/lib/auth-client";
 
 export function FontSwitcher() {
 	const { font, setFont } = useFont();
 	const t = useExtracted();
+	const { user } = useIsAuthenticated();
 
 	useEffect(() => {
 		if (font !== "sans" && font !== "mono") {
 			return;
 		}
 
-		setFontAction({
-			font: font,
+		if (!user?.id) {
+			return;
+		}
+
+		if (user.font === font) {
+			return;
+		}
+
+		apiClient.PUT("/api/users/{id}/font", {
+			params: {
+				path: {
+					id: user.id,
+				},
+			},
+			body: {
+				font: font,
+			},
 		});
-	}, [font]);
+	}, [font, user]);
 
 	return (
 		<Button

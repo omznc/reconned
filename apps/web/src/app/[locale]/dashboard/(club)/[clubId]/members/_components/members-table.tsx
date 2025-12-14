@@ -2,10 +2,10 @@
 
 import type { ClubMembership } from "@generated/client";
 import { Calendar, LogOut, UserCircle, UserMinus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { removeMember } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members.action";
 import { MembershipExtensionForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.form";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { LeaveClubButton } from "@/components/leave-club-button";
@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 
 interface MembersTableProps {
 	members: (ClubMembership & {
@@ -31,6 +32,7 @@ export function MembersTable(props: MembersTableProps) {
 	const confirm = useConfirm();
 	const t = useExtracted();
 	const locale = useLocale();
+	const router = useRouter();
 	const [membershipToExtend, setMembershipToExtend] = useState<
 		| (ClubMembership & {
 				userName: string;
@@ -56,17 +58,26 @@ export function MembersTable(props: MembersTableProps) {
 			return;
 		}
 
-		const response = await removeMember({
-			memberId: member.id,
-			clubId: clubId,
-		});
+		try {
+			const { error } = await apiClient.DELETE("/api/clubs/{id}/members/{memberId}", {
+				params: {
+					path: {
+						id: clubId,
+						memberId: member.id,
+					},
+				},
+			});
 
-		if (!response?.data?.success) {
-			toast.error(response?.data?.error || t("An error occurred while removing the member"));
-			return;
+			if (error) {
+				toast.error(error.error || t("An error occurred while removing the member"));
+				return;
+			}
+
+			toast.success(t("Member successfully removed"));
+			router.refresh();
+		} catch {
+			toast.error(t("An error occurred while removing the member"));
 		}
-
-		toast.success(t("Member successfully removed"));
 	};
 
 	const getMembershipStatus = (membership: ClubMembership) => {

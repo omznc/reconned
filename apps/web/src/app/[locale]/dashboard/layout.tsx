@@ -6,6 +6,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { CommandMenu, CommandMenuProvider } from "@/components/sidebar/command-menu";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { redirect } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -19,6 +20,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		return redirect({ href: "/login", locale });
 	}
 
+	// TODO: Migrate to GET /api/dashboard/clubs when implemented
 	const clubs = await prisma.club.findMany({
 		where: {
 			members: {
@@ -43,13 +45,10 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		events: club.events,
 	}));
 
-	const invitesCountForUser = await prisma.clubInvite.count({
-		where: {
-			email: user.email,
-			status: "PENDING",
-		},
-	});
+	const { data: invitesCountData, error: invitesCountError } = await apiClient.GET("/api/users/invites/count");
+	const invitesCountForUser = invitesCountError || !invitesCountData ? 0 : (invitesCountData.count ?? 0);
 
+	// TODO: Migrate to GET /api/dashboard/invite-requests-count when implemented
 	const inviteRequestsCountByClub = await prisma.clubInvite
 		.groupBy({
 			by: ["clubId"],

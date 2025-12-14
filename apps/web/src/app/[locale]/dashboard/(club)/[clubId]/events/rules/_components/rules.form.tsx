@@ -3,11 +3,11 @@
 import type { ClubRule } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Pencil, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
-import { deleteRule, saveRule } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.action";
 import { ruleSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.schema";
 import { Editor } from "@/components/editor/editor";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import apiClient from "@/lib/api";
 import "@/components/editor/editor.css";
 import { format } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";
@@ -38,6 +39,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 	const [editorContent, setEditorContent] = useState<string>(editingRule?.content ?? "");
 	const t = useExtracted();
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof ruleSchema>>({
 		resolver: zodResolver(ruleSchema),
@@ -55,16 +57,56 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 		form.setValue("content", content, { shouldValidate: true });
 	}
 
-	// TODO: Reset editor on form reset
 	async function onSubmit(values: z.infer<typeof ruleSchema>) {
 		setIsLoading(true);
 		try {
-			await saveRule(values);
+			if (values.id) {
+				const { error } = await apiClient.PUT("/api/clubs/{id}/rules/{ruleId}", {
+					params: {
+						path: {
+							id: clubId,
+							ruleId: values.id,
+						},
+					},
+					body: {
+						name: values.name,
+						description: values.description,
+						content: values.content,
+					},
+				});
+
+				if (error) {
+					toast.error(error.error || t("There's been a problem while saving that rule."));
+					setIsLoading(false);
+					return;
+				}
+			} else {
+				const { error } = await apiClient.POST("/api/clubs/{id}/rules", {
+					params: {
+						path: {
+							id: clubId,
+						},
+					},
+					body: {
+						name: values.name,
+						description: values.description,
+						content: values.content,
+					},
+				});
+
+				if (error) {
+					toast.error(error.error || t("There's been a problem while saving that rule."));
+					setIsLoading(false);
+					return;
+				}
+			}
+
 			form.reset();
 			setRuleId(null);
 			setRandom(Math.random());
+			router.refresh();
 			toast.success(values.id ? t("The rulebook has been updated.") : t("The rulebook has been created"));
-		} catch (_) {
+		} catch {
 			toast.error(t("There's been a problem while saving that rule."));
 		}
 		setIsLoading(false);
@@ -180,14 +222,31 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 												actionButton: t("Confirm"),
 												cancelButton: t("Cancel"),
 												actionButtonVariant: "destructive",
-											}).then((confirmed) => {
+											}).then(async (confirmed) => {
 												if (confirmed) {
-													deleteRule({
-														ruleId: rule.id,
-														clubId: rule.clubId,
-													}).then(() => {
+													try {
+														const { error } = await apiClient.DELETE(
+															"/api/clubs/{id}/rules/{ruleId}",
+															{
+																params: {
+																	path: {
+																		id: clubId,
+																		ruleId: rule.id,
+																	},
+																},
+															},
+														);
+
+														if (error) {
+															toast.error(error.error || t("Failed to delete rulebook"));
+															return;
+														}
+
+														router.refresh();
 														toast.success(t("Rulebook has been deleted"));
-													});
+													} catch {
+														toast.error(t("Failed to delete rulebook"));
+													}
 												}
 											});
 										}}

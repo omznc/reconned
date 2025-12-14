@@ -5,8 +5,8 @@ import { UserOverview } from "@/components/overviews/user-overview";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export default async function Page() {
 	const user = await isAuthenticated();
@@ -16,25 +16,15 @@ export default async function Page() {
 
 	const t = await getExtracted();
 
-	const userFromDb = await prisma.user.findUnique({
-		where: {
-			id: user.id,
-		},
-		include: {
-			clubMembership: {
-				include: {
-					club: true,
-				},
-			},
-			eventRegistration: {
-				include: {
-					event: true,
-				},
+	const { data: userFromDb, error } = await apiClient.GET("/api/users/{id}", {
+		params: {
+			path: {
+				id: user.id,
 			},
 		},
 	});
 
-	if (!userFromDb) {
+	if (error || !userFromDb) {
 		return notFound();
 	}
 	return (

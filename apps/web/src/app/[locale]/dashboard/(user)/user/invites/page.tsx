@@ -2,8 +2,8 @@ import { getExtracted, getLocale } from "next-intl/server";
 import { InviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/invite-actions";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { redirect } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export default async function InvitesPage() {
 	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);
@@ -16,15 +16,13 @@ export default async function InvitesPage() {
 
 	const t = await getExtracted();
 
-	const invites = await prisma.clubInvite.findMany({
-		where: {
-			email: user.email,
-			status: "PENDING",
-		},
-		include: {
-			club: true,
-		},
-	});
+	const { data, error } = await apiClient.GET("/api/users/invites");
+
+	if (error || !data) {
+		return <div>{t("Error loading invitations")}</div>;
+	}
+
+	const invites = data.invites;
 
 	return (
 		<div className="container py-6 space-y-6">

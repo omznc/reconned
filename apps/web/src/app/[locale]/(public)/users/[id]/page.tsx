@@ -5,50 +5,26 @@ import type { Person, ProfilePage, WithContext } from "schema-dts";
 import NotFoundTemporary from "@/app/[locale]/not-found";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
+import { apiClient } from "@/lib/api";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
 
-	const user = await prisma.user.findFirst({
-		where: {
-			OR: [{ id: params.id }, { slug: params.id }],
-			isPrivate: false,
-		},
-		include: {
-			clubMembership: {
-				include: {
-					club: true,
-				},
-			},
-			eventRegistration: {
-				include: {
-					event: {
-						include: {
-							club: {
-								select: {
-									id: true,
-									isPrivate: true,
-								},
-							},
-						},
-					},
-				},
+	const { data: user, error } = await apiClient.GET("/api/users/{id}/profile", {
+		params: {
+			path: {
+				id: params.id,
 			},
 		},
 	});
 
-	if (!user) {
+	if (error || !user) {
 		// TODO https://github.com/vercel/next.js/issues/63388
 		// notFound();
 		return <NotFoundTemporary />;
 	}
-
-	// Filter out private events and private clubs
-	user.eventRegistration = user.eventRegistration.filter((reg) => !(reg.event.isPrivate || reg.event.club.isPrivate));
-	user.clubMembership = user.clubMembership.filter((membership) => !membership.club.isPrivate);
 
 	const personSchema: WithContext<Person> = {
 		"@context": "https://schema.org",
@@ -66,12 +42,14 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 			: undefined,
 		additionalName: user.callsign || undefined,
 		sameAs: user.website ? [user.website] : undefined,
-		memberOf: user.clubMembership.map((membership) => ({
-			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${membership.club.slug ?? membership.club.id}`,
-			name: membership.club.name,
-			sport: "Airsoft",
-		})),
+		memberOf: user.clubMembership
+			.filter((membership) => membership.club)
+			.map((membership) => ({
+				"@type": "SportsOrganization",
+				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${membership.club.slug ?? membership.club.id}`,
+				name: membership.club.name,
+				sport: "Airsoft",
+			})),
 		knowsAbout: ["Airsoft", "Military Simulation", "Team Sports"],
 		hasOccupation: {
 			"@type": "Occupation",
@@ -106,14 +84,15 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 	const t = await getExtracted();
 	const locale = await getLocale();
 
-	const user = await prisma.user.findFirst({
-		where: {
-			OR: [{ id: params.id }, { slug: params.id }],
-			isPrivate: false,
+	const { data: user, error } = await apiClient.GET("/api/users/{id}/profile", {
+		params: {
+			path: {
+				id: params.id,
+			},
 		},
 	});
 
-	if (!user) {
+	if (error || !user) {
 		return notFound();
 	}
 

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ArrowUpRight, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useExtracted } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -32,7 +32,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
-import type { Country } from "@/lib/cached-countries";
 import { cn } from "@/lib/utils";
 
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
@@ -51,6 +50,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const [mapCenter, setMapCenter] = useState<[number, number] | undefined>(undefined);
 	const [mapZoom, setMapZoom] = useState<number>(8);
 	const t = useExtracted();
+	const locale = useLocale();
 	const router = useRouter();
 
 	const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -338,7 +338,9 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 											)}
 										>
 											{field.value
-												? countries.find((country) => country.id === field.value)?.name
+												? countries.find((country) => country.id === field.value)?.translations[
+														locale
+													]
 												: t("Select a country")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -349,24 +351,31 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 										<CommandInput placeholder={t("Search countries...")} />
 										<CommandEmpty>{t("No results")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
-											{countries.map((country) => (
-												<CommandItem
-													key={country.id}
-													value={country.name}
-													onSelect={() => {
-														form.setValue("countryId", country.id, { shouldDirty: true });
-														setOpen(false);
-													}}
-												>
-													<Check
-														className={cn(
-															"mr-2 h-4 w-4",
-															country.id === field.value ? "opacity-100" : "opacity-0",
-														)}
-													/>
-													{country.emoji} {country.name}
-												</CommandItem>
-											))}
+											{countries.map((country) => {
+												const countryName = country.translations[locale];
+												return (
+													<CommandItem
+														key={country.id}
+														value={countryName}
+														onSelect={() => {
+															form.setValue("countryId", country.id, {
+																shouldDirty: true,
+															});
+															setOpen(false);
+														}}
+													>
+														<Check
+															className={cn(
+																"mr-2 h-4 w-4",
+																country.id === field.value
+																	? "opacity-100"
+																	: "opacity-0",
+															)}
+														/>
+														{country.emoji} {countryName}
+													</CommandItem>
+												);
+											})}
 										</CommandGroup>
 									</Command>
 								</PopoverContent>

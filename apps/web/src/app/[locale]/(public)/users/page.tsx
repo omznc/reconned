@@ -5,19 +5,9 @@ import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { AdminIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
+import apiClient from "@/lib/api";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
-
-type UserSearch = {
-	id: string;
-	name: string;
-	slug: string;
-	image: string;
-	role: string;
-	callsign: string;
-	location: string;
-};
 
 const ITEMS_PER_PAGE = 12;
 
@@ -27,22 +17,24 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 	const [searchParams, locale] = await Promise.all([props.searchParams, getLocale()]);
 	const t = await getExtracted();
 	const page = Number(searchParams.page) || 1;
-	const skip = (page - 1) * ITEMS_PER_PAGE;
 
-	const total = await prisma.user.count({
-		where: { isPrivate: false },
+	const { data, error } = await apiClient.GET("/api/users", {
+		params: {
+			query: {
+				page: String(page),
+				perPage: String(ITEMS_PER_PAGE),
+				sort: "admin",
+			},
+		},
 	});
 
-	const users: UserSearch[] = await prisma.$queryRaw`
-        SELECT *
-        FROM "User"
-        WHERE "isPrivate" = false
-        ORDER BY 
-            CASE WHEN role = 'admin' THEN 0 ELSE 1 END,
-            "createdAt" DESC
-        LIMIT ${ITEMS_PER_PAGE}
-        OFFSET ${skip}
-    `;
+	if (error || !data) {
+		return <div>{t("Error loading users")}</div>;
+	}
+
+	const users = data.users;
+	const total = data.pagination.total;
+	const skip = (page - 1) * ITEMS_PER_PAGE;
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",

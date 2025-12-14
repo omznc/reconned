@@ -1,4 +1,3 @@
-import type { Club, Event, User } from "@generated/client";
 import { format } from "date-fns";
 import { Globe, MapPin } from "lucide-react";
 import Image from "next/image";
@@ -9,21 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
+import type { paths } from "@/lib/api-types";
 import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
-interface ExtendedUser extends User {
-	clubMembership: {
-		club: Club;
-	}[];
-	eventRegistration: {
-		event: Event;
-		attended: boolean;
-	}[];
-}
+type UserResponse = paths["/api/users/{id}"]["get"]["responses"]["200"]["content"]["application/json"];
+type UserProfileResponse = paths["/api/users/{id}/profile"]["get"]["responses"]["200"]["content"]["application/json"];
+type UserOverviewUser = UserResponse | UserProfileResponse;
 
 interface UserOverviewProps {
-	user: ExtendedUser;
+	user: UserOverviewUser;
 }
 
 export async function UserOverview({ user }: UserOverviewProps) {
@@ -33,8 +27,14 @@ export async function UserOverview({ user }: UserOverviewProps) {
 		getPageViews(`/users/${user.slug}`),
 	]);
 	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
-	const futureEvents = user.eventRegistration.filter((reg) => reg.event.dateStart > new Date() && !reg.attended);
-	const pastEvents = user.eventRegistration.filter((reg) => reg.attended || reg.event.dateStart <= new Date());
+	const futureEvents = user.eventRegistration.filter(
+		(reg: UserOverviewUser["eventRegistration"][number]) =>
+			reg.event && new Date(reg.event.dateStart) > new Date() && !reg.attended,
+	);
+	const pastEvents = user.eventRegistration.filter(
+		(reg: UserOverviewUser["eventRegistration"][number]) =>
+			reg.attended || (reg.event && new Date(reg.event.dateStart) <= new Date()),
+	);
 
 	// Get current user to check if they're viewing their own profile
 	const currentUser = await isAuthenticated();
@@ -159,31 +159,37 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							<p className="text-muted-foreground">{t("Not a member of any club")}</p>
 						) : (
 							<ul className="space-y-4">
-								{user.clubMembership.map((membership) => (
-									<li key={membership.club.id} className="flex items-center gap-3">
-										{membership.club.logo ? (
-											<Image
-												src={membership.club.logo}
-												alt={membership.club.name}
-												width={32}
-												height={32}
-												className="h-auto w-8"
-											/>
-										) : (
-											<div className="h-8 w-8 bg-muted flex items-center justify-center">
-												<span className="text-xs text-muted-foreground">
-													{membership.club.name.charAt(0)}
-												</span>
-											</div>
-										)}
-										<Link
-											href={`/clubs/${membership.club.slug ?? membership.club.id}`}
-											className="hover:underline"
-										>
-											{membership.club.name}
-										</Link>
-									</li>
-								))}
+								{user.clubMembership.map((membership: UserOverviewUser["clubMembership"][number]) => {
+									if (!membership.club) {
+										return null;
+									}
+									const clubLogo = "logo" in membership.club ? membership.club.logo : null;
+									return (
+										<li key={membership.club.id} className="flex items-center gap-3">
+											{clubLogo ? (
+												<Image
+													src={clubLogo}
+													alt={membership.club.name}
+													width={32}
+													height={32}
+													className="h-auto w-8"
+												/>
+											) : (
+												<div className="h-8 w-8 bg-muted flex items-center justify-center">
+													<span className="text-xs text-muted-foreground">
+														{membership.club.name.charAt(0)}
+													</span>
+												</div>
+											)}
+											<Link
+												href={`/clubs/${membership.club.slug ?? membership.club.id}`}
+												className="hover:underline"
+											>
+												{membership.club.name}
+											</Link>
+										</li>
+									);
+								})}
 							</ul>
 						)}
 					</CardContent>
@@ -198,16 +204,24 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							<p className="text-muted-foreground">{t("There are no upcoming matches")}</p>
 						) : (
 							<ul className="space-y-2">
-								{futureEvents.map((reg) => (
-									<li key={reg.event.id}>
-										<Link href={`/events/${reg.event.id}`} className="hover:underline">
-											{reg.event.name}
-										</Link>
-										<span className="text-muted-foreground ml-2">
-											({format(reg.event.dateStart, "dd.MM.yyyy")})
-										</span>
-									</li>
-								))}
+								{futureEvents.map((reg: UserOverviewUser["eventRegistration"][number]) => {
+									if (!reg.event) {
+										return null;
+									}
+									return (
+										<li key={reg.event.id}>
+											<Link
+												href={`/events/${reg.event.slug ?? reg.event.id}`}
+												className="hover:underline"
+											>
+												{reg.event.name}
+											</Link>
+											<span className="text-muted-foreground ml-2">
+												({format(new Date(reg.event.dateStart), "dd.MM.yyyy")})
+											</span>
+										</li>
+									);
+								})}
 							</ul>
 						)}
 					</CardContent>
@@ -222,16 +236,24 @@ export async function UserOverview({ user }: UserOverviewProps) {
 							<p className="text-muted-foreground">{t("No previous events")}</p>
 						) : (
 							<ul className="space-y-2">
-								{pastEvents.map((reg) => (
-									<li key={reg.event.id}>
-										<Link href={`/events/${reg.event.id}`} className="hover:underline">
-											{reg.event.name}
-										</Link>
-										<span className="text-muted-foreground ml-2">
-											({format(reg.event.dateStart, "dd.MM.yyyy")})
-										</span>
-									</li>
-								))}
+								{pastEvents.map((reg: UserOverviewUser["eventRegistration"][number]) => {
+									if (!reg.event) {
+										return null;
+									}
+									return (
+										<li key={reg.event.id}>
+											<Link
+												href={`/events/${reg.event.slug ?? reg.event.id}`}
+												className="hover:underline"
+											>
+												{reg.event.name}
+											</Link>
+											<span className="text-muted-foreground ml-2">
+												({format(new Date(reg.event.dateStart), "dd.MM.yyyy")})
+											</span>
+										</li>
+									);
+								})}
 							</ul>
 						)}
 					</CardContent>
