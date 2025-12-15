@@ -1,8 +1,10 @@
-import { and, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { club, clubMembership, event, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { apiError } from "../lib/errors";
+import { redis } from "../lib/redis";
 import { Router } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
@@ -428,7 +430,7 @@ utilsRouter.get(
 		}
 
 		if (whereConditions.length === 0) {
-			return response.error({ error: "clubId, eventId, or userId is required" }, 400);
+			throw apiError.validation("clubId, eventId, or userId is required");
 		}
 
 		const reviews = await db
@@ -465,7 +467,7 @@ utilsRouter.get(
 		const id = params?.id;
 
 		if (!type || !id) {
-			return response.error({ error: "Type and ID are required" }, 400);
+			throw apiError.validation("Type and ID are required");
 		}
 
 		let whereCondition: ReturnType<typeof eq>;
@@ -481,7 +483,7 @@ utilsRouter.get(
 				whereCondition = eq(review.userId, id);
 				break;
 			default:
-				return response.error({ error: "Invalid type" }, 400);
+				throw apiError.validation("Invalid type");
 		}
 
 		const reviews = await db.select().from(review).where(whereCondition).orderBy(desc(review.createdAt));
@@ -582,6 +584,92 @@ utilsRouter.get(
 							updatedAt: z.string(),
 						}),
 					),
+				}),
+			},
+		},
+	},
+);
+
+utilsRouter.get(
+	"/api/health",
+	async ({ response }) => {
+		const timestamp = new Date().toISOString();
+		let databaseStatus = "disconnected";
+		let redisStatus = "disconnected";
+		let databaseLatency = 0;
+		let redisLatency = 0;
+
+		try {
+			// Check database connectivity and measure latency
+			const dbStart = Date.now();
+			await db.execute(sql`SELECT 1`);
+			databaseLatency = Date.now() - dbStart;
+			databaseStatus = "connected";
+		} catch (error) {
+			console.error("Database health check failed:", error);
+		}
+
+		try {
+			// Check Redis connectivity and measure latency
+			const redisStart = Date.now();
+			await redis.ping();
+			redisLatency = Date.now() - redisStart;
+			redisStatus = "connected";
+		} catch (error) {
+			console.error("Redis health check failed:", error);
+		}
+
+		const overallStatus = databaseStatus === "connected" && redisStatus === "connected" ? "healthy" : "unhealthy";
+
+		if (overallStatus === "healthy") {
+			return response.json({
+				status: overallStatus,
+				timestamp,
+				database: databaseStatus,
+				redis: redisStatus,
+				databaseLatency: `${databaseLatency}ms`,
+				redisLatency: `${redisLatency}ms`,
+			});
+		}
+
+		// Return unhealthy status
+		return new Response(
+			JSON.stringify({
+				status: overallStatus,
+				timestamp,
+				database: databaseStatus,
+				redis: redisStatus,
+				databaseLatency: databaseStatus === "connected" ? `${databaseLatency}ms` : null,
+				redisLatency: redisStatus === "connected" ? `${redisLatency}ms` : null,
+			}),
+			{
+				status: 503,
+				headers: { "Content-Type": "application/json" },
+			},
+		);
+	},
+	{
+		rateLimit: false,
+		schema: {
+			tags: ["Health"],
+			summary: "Health check endpoint",
+			description: "Check API, database, and Redis health status with latency measurements",
+			response: {
+				200: z.object({
+					status: z.string(),
+					timestamp: z.string(),
+					database: z.string(),
+					redis: z.string(),
+					databaseLatency: z.string(),
+					redisLatency: z.string(),
+				}),
+				503: z.object({
+					status: z.string(),
+					timestamp: z.string(),
+					database: z.string(),
+					redis: z.string(),
+					databaseLatency: z.string().nullable(),
+					redisLatency: z.string().nullable(),
 				}),
 			},
 		},

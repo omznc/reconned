@@ -19,6 +19,7 @@ import ClubInvitationEmail from "../emails/airsoft-invitation";
 import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
 import { env } from "../lib/env";
+import { apiError } from "../lib/errors";
 import { sendEmail } from "../lib/mail";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
@@ -129,7 +130,7 @@ clubsRouter.delete(
 		const memberId = params.memberId;
 
 		if (!clubId || !memberId) {
-			return response.error({ error: "Club ID and Member ID are required" }, 400);
+			throw apiError.validation("Club ID and Member ID are required");
 		}
 
 		const membershipData = await db
@@ -154,7 +155,7 @@ clubsRouter.delete(
 			.limit(1);
 
 		if (!membershipData[0]) {
-			return response.error({ error: "Member not found or is club owner" }, 404);
+			throw apiError.notFound("Member not found or is club owner");
 		}
 
 		const membership = membershipData[0];
@@ -170,7 +171,7 @@ clubsRouter.delete(
 			.limit(1);
 
 		if (!userData[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const membershipWithUser = {
@@ -187,7 +188,7 @@ clubsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		await db.delete(clubMembership).where(eq(clubMembership.id, memberId));
@@ -235,7 +236,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -247,11 +248,11 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		if (!body.userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		const existingMembership = await db
@@ -261,13 +262,13 @@ clubsRouter.post(
 			.limit(1);
 
 		if (existingMembership[0]) {
-			return response.error({ error: "User is already a member of this club" }, 400);
+			throw apiError.validation("User is already a member of this club");
 		}
 
 		const userData = await db.select().from(user).where(eq(user.id, body.userId)).limit(1);
 
 		if (!userData[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const newMembership = await db
@@ -296,7 +297,7 @@ clubsRouter.post(
 		});
 
 		if (!newMembership[0]) {
-			return response.error({ error: "Failed to create membership" }, 500);
+			throw apiError.internal("Failed to create membership");
 		}
 
 		return response.json({ success: true, membership: newMembership[0] });
@@ -332,11 +333,11 @@ clubsRouter.put(
 		const memberId = params.memberId;
 
 		if (!clubId || !memberId) {
-			return response.error({ error: "Club ID and Member ID are required" }, 400);
+			throw apiError.validation("Club ID and Member ID are required");
 		}
 
 		if (!body.duration) {
-			return response.error({ error: "Duration is required" }, 400);
+			throw apiError.validation("Duration is required");
 		}
 
 		const managerMembershipData = await db
@@ -348,7 +349,7 @@ clubsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const membershipData = await db
@@ -358,7 +359,7 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!membershipData[0]) {
-			return response.error({ error: "Membership not found" }, 404);
+			throw apiError.notFound("Membership not found");
 		}
 
 		const membership = membershipData[0];
@@ -374,7 +375,7 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!userData[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const membershipWithUser = {
@@ -394,7 +395,7 @@ clubsRouter.put(
 
 		const durationMonths = Number.parseInt(body.duration, 10);
 		if (Number.isNaN(durationMonths) || durationMonths <= 0) {
-			return response.error({ error: "Invalid duration" }, 400);
+			throw apiError.validation("Invalid duration");
 		}
 
 		const newEndDate = new Date(baseDate);
@@ -468,7 +469,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const membershipData = await db
@@ -480,13 +481,12 @@ clubsRouter.post(
 		const membership = membershipData[0];
 
 		if (!membership) {
-			return response.error({ error: "You are not a member of this club" }, 404);
+			throw apiError.notFound("You are not a member of this club");
 		}
 
 		if (membership.role === "CLUB_OWNER") {
-			return response.error(
-				{ error: "Club owner cannot leave the club. You must transfer ownership or delete the club." },
-				400,
+			throw apiError.validation(
+				"Club owner cannot leave the club. You must transfer ownership or delete the club.",
 			);
 		}
 
@@ -594,7 +594,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -606,7 +606,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const rules = await db.select().from(clubRule).where(eq(clubRule.clubId, clubId));
@@ -641,7 +641,7 @@ clubsRouter.get(
 		const ruleId = params.ruleId;
 
 		if (!clubId || !ruleId) {
-			return response.error({ error: "Club ID and Rule ID are required" }, 400);
+			throw apiError.validation("Club ID and Rule ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -653,7 +653,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const ruleData = await db
@@ -663,7 +663,7 @@ clubsRouter.get(
 			.limit(1);
 
 		if (!ruleData[0]) {
-			return response.error({ error: "Rule not found" }, 404);
+			throw apiError.notFound("Rule not found");
 		}
 
 		return response.json({ rule: ruleData[0] });
@@ -697,7 +697,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -709,7 +709,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const ruleId = crypto.randomUUID();
@@ -728,7 +728,7 @@ clubsRouter.post(
 			.returning();
 
 		if (!rule[0]) {
-			return response.error({ error: "Failed to create rule" }, 400);
+			throw apiError.validation("Failed to create rule");
 		}
 
 		await logClubAudit({
@@ -774,7 +774,7 @@ clubsRouter.put(
 		const ruleId = params.ruleId;
 
 		if (!clubId || !ruleId) {
-			return response.error({ error: "Club ID and Rule ID are required" }, 400);
+			throw apiError.validation("Club ID and Rule ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -786,7 +786,7 @@ clubsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const ruleData = await db
@@ -796,7 +796,7 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!ruleData[0]) {
-			return response.error({ error: "Rule not found" }, 404);
+			throw apiError.notFound("Rule not found");
 		}
 
 		const updatedRule = await db
@@ -811,7 +811,7 @@ clubsRouter.put(
 			.returning();
 
 		if (!updatedRule[0]) {
-			return response.error({ error: "Failed to update rule" }, 400);
+			throw apiError.validation("Failed to update rule");
 		}
 
 		await logClubAudit({
@@ -859,7 +859,7 @@ clubsRouter.delete(
 		const ruleId = params.ruleId;
 
 		if (!clubId || !ruleId) {
-			return response.error({ error: "Club ID and Rule ID are required" }, 400);
+			throw apiError.validation("Club ID and Rule ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -871,7 +871,7 @@ clubsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const ruleData = await db
@@ -881,7 +881,7 @@ clubsRouter.delete(
 			.limit(1);
 
 		if (!ruleData[0]) {
-			return response.error({ error: "Rule not found" }, 404);
+			throw apiError.notFound("Rule not found");
 		}
 
 		await db.delete(clubRule).where(eq(clubRule.id, ruleId));
@@ -924,7 +924,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -936,7 +936,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const posts = await db.select().from(post).where(eq(post.clubId, clubId)).orderBy(desc(post.createdAt));
@@ -971,7 +971,7 @@ clubsRouter.get(
 		const postId = params.postId;
 
 		if (!clubId || !postId) {
-			return response.error({ error: "Club ID and Post ID are required" }, 400);
+			throw apiError.validation("Club ID and Post ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -983,7 +983,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const postData = await db
@@ -993,7 +993,7 @@ clubsRouter.get(
 			.limit(1);
 
 		if (!postData[0]) {
-			return response.error({ error: "Post not found" }, 404);
+			throw apiError.notFound("Post not found");
 		}
 
 		return response.json({ post: postData[0] });
@@ -1027,7 +1027,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -1039,7 +1039,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { page, perPage } = query;
@@ -1093,7 +1093,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -1105,13 +1105,13 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const clubData = await db.select({ createdAt: club.createdAt }).from(club).where(eq(club.id, clubId)).limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const clubCreatedAt = clubData[0].createdAt;
@@ -1256,7 +1256,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -1268,7 +1268,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const [postsUsage, receiptsUsage] = await Promise.all([
@@ -1326,7 +1326,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -1338,7 +1338,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const postId = crypto.randomUUID();
@@ -1358,7 +1358,7 @@ clubsRouter.post(
 			.returning();
 
 		if (!newPost[0]) {
-			return response.error({ error: "Failed to create post" }, 400);
+			throw apiError.validation("Failed to create post");
 		}
 
 		await logClubAudit({
@@ -1406,7 +1406,7 @@ clubsRouter.put(
 		const postId = params.postId;
 
 		if (!clubId || !postId) {
-			return response.error({ error: "Club ID and Post ID are required" }, 400);
+			throw apiError.validation("Club ID and Post ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -1418,7 +1418,7 @@ clubsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const existingPostData = await db
@@ -1428,7 +1428,7 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!existingPostData[0]) {
-			return response.error({ error: "Post not found" }, 404);
+			throw apiError.notFound("Post not found");
 		}
 
 		const existingPost = existingPostData[0];
@@ -1452,7 +1452,7 @@ clubsRouter.put(
 			.returning();
 
 		if (!updatedPost[0]) {
-			return response.error({ error: "Failed to update post" }, 400);
+			throw apiError.validation("Failed to update post");
 		}
 
 		if (imagesToDelete.length > 0) {
@@ -1510,7 +1510,7 @@ clubsRouter.delete(
 		const postId = params.postId;
 
 		if (!clubId || !postId) {
-			return response.error({ error: "Club ID and Post ID are required" }, 400);
+			throw apiError.validation("Club ID and Post ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -1522,7 +1522,7 @@ clubsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const postData = await db
@@ -1532,7 +1532,7 @@ clubsRouter.delete(
 			.limit(1);
 
 		if (!postData[0]) {
-			return response.error({ error: "Post not found" }, 404);
+			throw apiError.notFound("Post not found");
 		}
 
 		if (postData[0].images && postData[0].images.length > 0) {
@@ -1583,7 +1583,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -1595,7 +1595,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const secureFilename = `${Date.now()}_${body.file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
@@ -1605,10 +1605,7 @@ clubsRouter.post(
 			const result = await getS3UploadUrl(key, body.file.type, body.file.size);
 			return response.json(result);
 		} catch (error) {
-			return response.error(
-				{ error: error instanceof Error ? error.message : "Failed to generate upload URL" },
-				400,
-			);
+			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},
 	{
@@ -1647,7 +1644,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -1659,7 +1656,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { page, perPage } = query;
@@ -1716,7 +1713,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -1728,7 +1725,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { page, perPage } = query;
@@ -1808,7 +1805,7 @@ clubsRouter.get(
 		const purchaseId = params.purchaseId;
 
 		if (!clubId || !purchaseId) {
-			return response.error({ error: "Club ID and Purchase ID are required" }, 400);
+			throw apiError.validation("Club ID and Purchase ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -1820,7 +1817,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const purchaseData = await db
@@ -1830,7 +1827,7 @@ clubsRouter.get(
 			.limit(1);
 
 		if (!purchaseData[0]) {
-			return response.error({ error: "Purchase not found" }, 404);
+			throw apiError.notFound("Purchase not found");
 		}
 
 		return response.json({ purchase: purchaseData[0] });
@@ -1864,11 +1861,11 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		if (body.receiptUrls && body.receiptUrls.length > 3) {
-			return response.error({ error: "Maximum 3 receipts per item" }, 400);
+			throw apiError.validation("Maximum 3 receipts per item");
 		}
 
 		const managerMembershipData = await db
@@ -1880,7 +1877,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const purchaseId = crypto.randomUUID();
@@ -1900,7 +1897,7 @@ clubsRouter.post(
 			.returning();
 
 		if (!newPurchase[0]) {
-			return response.error({ error: "Failed to create purchase" }, 500);
+			throw apiError.internal("Failed to create purchase");
 		}
 
 		await logClubAudit({
@@ -1948,11 +1945,11 @@ clubsRouter.put(
 		const purchaseId = params.purchaseId;
 
 		if (!clubId || !purchaseId) {
-			return response.error({ error: "Club ID and Purchase ID are required" }, 400);
+			throw apiError.validation("Club ID and Purchase ID are required");
 		}
 
 		if (body.receiptUrls && body.receiptUrls.length > 3) {
-			return response.error({ error: "Maximum 3 receipts per item" }, 400);
+			throw apiError.validation("Maximum 3 receipts per item");
 		}
 
 		const managerMembershipData = await db
@@ -1964,7 +1961,7 @@ clubsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const purchaseData = await db
@@ -1974,7 +1971,7 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!purchaseData[0]) {
-			return response.error({ error: "Purchase not found" }, 404);
+			throw apiError.notFound("Purchase not found");
 		}
 
 		const updatedPurchase = await db
@@ -1990,7 +1987,7 @@ clubsRouter.put(
 			.returning();
 
 		if (!updatedPurchase[0]) {
-			return response.error({ error: "Failed to update purchase" }, 500);
+			throw apiError.internal("Failed to update purchase");
 		}
 
 		await logClubAudit({
@@ -2040,7 +2037,7 @@ clubsRouter.delete(
 		const purchaseId = params.purchaseId;
 
 		if (!clubId || !purchaseId) {
-			return response.error({ error: "Club ID and Purchase ID are required" }, 400);
+			throw apiError.validation("Club ID and Purchase ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -2052,7 +2049,7 @@ clubsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const purchaseData = await db
@@ -2062,7 +2059,7 @@ clubsRouter.delete(
 			.limit(1);
 
 		if (!purchaseData[0]) {
-			return response.error({ error: "Purchase not found" }, 404);
+			throw apiError.notFound("Purchase not found");
 		}
 
 		if (purchaseData[0].receiptUrls && purchaseData[0].receiptUrls.length > 0) {
@@ -2113,7 +2110,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -2125,7 +2122,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const secureFilename = `${Date.now()}_${body.file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
@@ -2135,10 +2132,7 @@ clubsRouter.post(
 			const result = await getS3UploadUrl(key, body.file.type, body.file.size);
 			return response.json(result);
 		} catch (error) {
-			return response.error(
-				{ error: error instanceof Error ? error.message : "Failed to generate upload URL" },
-				400,
-			);
+			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},
 	{
@@ -2177,7 +2171,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -2189,7 +2183,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { page, perPage } = query;
@@ -2292,7 +2286,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -2304,13 +2298,13 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const existingInvite = await db
@@ -2327,7 +2321,7 @@ clubsRouter.post(
 			.limit(1);
 
 		if (existingInvite[0]) {
-			return response.error({ error: "Invitation already sent to this email" }, 400);
+			throw apiError.validation("Invitation already sent to this email");
 		}
 
 		const existingUser = await db.select().from(user).where(eq(user.email, body.userEmail)).limit(1);
@@ -2340,7 +2334,7 @@ clubsRouter.post(
 				.limit(1);
 
 			if (existingMembership[0]) {
-				return response.error({ error: "User is already a member of this club" }, 400);
+				throw apiError.validation("User is already a member of this club");
 			}
 		}
 
@@ -2364,7 +2358,7 @@ clubsRouter.post(
 			.returning();
 
 		if (!newInvite[0]) {
-			return response.error({ error: "Failed to create invite" }, 500);
+			throw apiError.internal("Failed to create invite");
 		}
 
 		await logClubAudit({
@@ -2437,7 +2431,7 @@ clubsRouter.put(
 		const inviteId = params.inviteId;
 
 		if (!clubId || !inviteId) {
-			return response.error({ error: "Club ID and Invite ID are required" }, 400);
+			throw apiError.validation("Club ID and Invite ID are required");
 		}
 
 		const managerMembershipData = await db
@@ -2449,7 +2443,7 @@ clubsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const inviteData = await db
@@ -2459,7 +2453,7 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!inviteData[0]) {
-			return response.error({ error: "Invite not found or already used" }, 404);
+			throw apiError.notFound("Invite not found or already used");
 		}
 
 		const updatedInvite = await db
@@ -2472,7 +2466,7 @@ clubsRouter.put(
 			.returning();
 
 		if (!updatedInvite[0]) {
-			return response.error({ error: "Failed to revoke invite" }, 400);
+			throw apiError.validation("Failed to revoke invite");
 		}
 
 		await logClubAudit({
@@ -2515,7 +2509,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -2527,7 +2521,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const status = query?.status;
@@ -2579,7 +2573,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -2591,7 +2585,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const requestsData = await db
@@ -2641,7 +2635,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const clubData = await db
@@ -2651,7 +2645,7 @@ clubsRouter.get(
 			.limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const membersCount = await db
@@ -2698,13 +2692,13 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const membershipData = await db
@@ -2716,7 +2710,7 @@ clubsRouter.get(
 		const membership = membershipData[0];
 
 		if (!membership || (membership.role !== "MANAGER" && membership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		return response.json(clubData[0]);
@@ -2747,7 +2741,7 @@ clubsRouter.post(
 		if (body.slug) {
 			const valid = await validateSlug(body.slug);
 			if (!valid) {
-				return response.error({ error: "Slug is already taken" }, 400);
+				throw apiError.validation("Slug is already taken");
 			}
 		}
 
@@ -2781,7 +2775,7 @@ clubsRouter.post(
 			.returning();
 
 		if (!newClub[0]) {
-			return response.error({ error: "Failed to create club" }, 500);
+			throw apiError.internal("Failed to create club");
 		}
 
 		await db.insert(clubMembership).values({
@@ -2833,7 +2827,7 @@ clubsRouter.put(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -2845,13 +2839,13 @@ clubsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		if (body.slug) {
 			const valid = await validateSlug(body.slug, clubId);
 			if (!valid) {
-				return response.error({ error: "Slug is already taken" }, 400);
+				throw apiError.validation("Slug is already taken");
 			}
 		}
 
@@ -2880,7 +2874,7 @@ clubsRouter.put(
 		const updatedClub = await db.update(club).set(updateData).where(eq(club.id, clubId)).returning();
 
 		if (!updatedClub[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		await logClubAudit({
@@ -2924,7 +2918,7 @@ clubsRouter.delete(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const ownerMembershipData = await db
@@ -2940,13 +2934,13 @@ clubsRouter.delete(
 			.limit(1);
 
 		if (!ownerMembershipData[0]) {
-			return response.error({ error: "Unauthorized - must be club owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be club owner");
 		}
 
 		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const filesToDelete: string[] = [];
@@ -3000,7 +2994,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3012,7 +3006,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const key = `club/${clubId}/logo`;
@@ -3050,7 +3044,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3062,7 +3056,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const key = `club/${clubId}/header`;
@@ -3105,7 +3099,7 @@ clubsRouter.delete(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3117,7 +3111,7 @@ clubsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		await db
@@ -3166,7 +3160,7 @@ clubsRouter.delete(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3178,7 +3172,7 @@ clubsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		await db
@@ -3228,7 +3222,7 @@ clubsRouter.put(
 		const memberId = params.memberId;
 
 		if (!clubId || !memberId) {
-			return response.error({ error: "Club ID and Member ID are required" }, 400);
+			throw apiError.validation("Club ID and Member ID are required");
 		}
 
 		const ownerMembershipData = await db
@@ -3244,7 +3238,7 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!ownerMembershipData[0]) {
-			return response.error({ error: "Unauthorized - must be club owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be club owner");
 		}
 
 		const targetMembershipData = await db
@@ -3264,15 +3258,15 @@ clubsRouter.put(
 			.limit(1);
 
 		if (!targetMembershipData[0]) {
-			return response.error({ error: "Member not found" }, 404);
+			throw apiError.notFound("Member not found");
 		}
 
 		if (targetMembershipData[0].role === "CLUB_OWNER") {
-			return response.error({ error: "Cannot change club owner role" }, 400);
+			throw apiError.validation("Cannot change club owner role");
 		}
 
 		if (body.role === "CLUB_OWNER") {
-			return response.error({ error: "Cannot promote to club owner via this endpoint" }, 400);
+			throw apiError.validation("Cannot promote to club owner via this endpoint");
 		}
 
 		const updatedMembership = await db
@@ -3285,7 +3279,7 @@ clubsRouter.put(
 			.returning();
 
 		if (!updatedMembership[0]) {
-			return response.error({ error: "Failed to update membership" }, 400);
+			throw apiError.validation("Failed to update membership");
 		}
 
 		await logClubAudit({
@@ -3333,7 +3327,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3345,7 +3339,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { page, perPage } = query;
@@ -3446,7 +3440,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const membershipData = await db
@@ -3456,7 +3450,7 @@ clubsRouter.get(
 			.limit(1);
 
 		if (!membershipData[0]) {
-			return response.error({ error: "Unauthorized - must be club member" }, 403);
+			throw apiError.forbidden("Unauthorized - must be club member");
 		}
 
 		const role = query?.role;
@@ -3538,7 +3532,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		if (!context.user) {
@@ -3582,7 +3576,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const ownerData = await db
@@ -3648,7 +3642,7 @@ clubsRouter.get(
 		const clubId = params.clubId;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3660,7 +3654,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { page, perPage } = query;
@@ -3759,7 +3753,7 @@ clubsRouter.get(
 		const clubId = params.clubId;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3771,7 +3765,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const search = query?.search || "";
@@ -3817,7 +3811,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3829,13 +3823,13 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const clubData = await db.select({ createdAt: club.createdAt }).from(club).where(eq(club.id, clubId)).limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const clubCreatedAt = clubData[0].createdAt;
@@ -3977,7 +3971,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -3989,7 +3983,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { page, perPage } = query;
@@ -4107,7 +4101,7 @@ clubsRouter.post(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const existingMembershipData = await db
@@ -4117,7 +4111,7 @@ clubsRouter.post(
 			.limit(1);
 
 		if (existingMembershipData[0]) {
-			return response.error({ error: "User is already a member of this club" }, 400);
+			throw apiError.validation("User is already a member of this club");
 		}
 
 		const managerMembershipData = await db
@@ -4129,7 +4123,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const newMembership = await db
@@ -4156,7 +4150,7 @@ clubsRouter.post(
 		});
 
 		if (!newMembership[0]) {
-			return response.error({ error: "Failed to add member" }, 500);
+			throw apiError.internal("Failed to add member");
 		}
 
 		return response.json({
@@ -4196,7 +4190,7 @@ clubsRouter.get(
 		const clubId = params.id;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -4208,7 +4202,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const [postsUsage, receiptsUsage] = await Promise.all([
@@ -4265,7 +4259,7 @@ clubsRouter.get(
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -4277,11 +4271,11 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		if (!env.FACEBOOK_APP_ID) {
-			return response.error({ error: "Facebook App ID not configured" }, 500);
+			throw apiError.internal("Facebook App ID not configured");
 		}
 
 		const redirectUri = `${env.BETTER_AUTH_URL}/api/club/instagram/callback`;
@@ -4317,7 +4311,7 @@ clubsRouter.post(
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -4329,7 +4323,7 @@ clubsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		await db
@@ -4381,7 +4375,7 @@ clubsRouter.get(
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const managerMembershipData = await db
@@ -4393,7 +4387,7 @@ clubsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const clubData = await db
@@ -4409,7 +4403,7 @@ clubsRouter.get(
 			.limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const clubRecord = clubData[0];
@@ -4419,7 +4413,7 @@ clubsRouter.get(
 		}
 
 		if (!env.FACEBOOK_APP_ID || !env.FACEBOOK_APP_SECRET) {
-			return response.error({ error: "Facebook credentials not configured" }, 500);
+			throw apiError.internal("Facebook credentials not configured");
 		}
 
 		try {

@@ -3,6 +3,7 @@ import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { club, clubMembership, event, post, user } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { apiError } from "../lib/errors";
 import { Router } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
@@ -88,6 +89,7 @@ publicRouter.get(
 		});
 	},
 	{
+		auth: false,
 		schema: {
 			tags: ["Public"],
 			summary: "List public clubs",
@@ -166,7 +168,7 @@ publicRouter.get(
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const clubData = await db
@@ -176,7 +178,7 @@ publicRouter.get(
 			.limit(1);
 
 		if (!clubData[0]) {
-			return response.error({ error: "Club not found" }, 404);
+			throw apiError.notFound("Club not found");
 		}
 
 		const clubRecord = clubData[0];
@@ -398,7 +400,7 @@ publicRouter.get(
 	async ({ params, response, context }) => {
 		const eventId = params.id;
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const eventData = await db
@@ -408,7 +410,7 @@ publicRouter.get(
 			.limit(1);
 
 		if (!eventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const eventRecord = eventData[0];
@@ -421,10 +423,10 @@ publicRouter.get(
 				.limit(1);
 
 			if (!userMembership[0]) {
-				return response.error({ error: "Event not found" }, 404);
+				throw apiError.notFound("Event not found");
 			}
 		} else if (eventRecord.isPrivate && !context.user) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const clubData = await db
@@ -565,7 +567,7 @@ publicRouter.get(
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		const requestingUserId = context.user?.id;
@@ -604,7 +606,7 @@ publicRouter.get(
 			.limit(1);
 
 		if (targetUser.length === 0 || !targetUser[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const u = targetUser[0];

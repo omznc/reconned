@@ -13,6 +13,7 @@ import {
 	user,
 } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { apiError } from "../lib/errors";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { getS3UploadUrl } from "../lib/storage";
@@ -146,7 +147,7 @@ usersRouter.get(
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		const requestingUserId = context.user?.id;
@@ -159,7 +160,7 @@ usersRouter.get(
 			.limit(1);
 
 		if (targetUser.length === 0 || !targetUser[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const u = targetUser[0];
@@ -186,7 +187,6 @@ usersRouter.get(
 					return { ...membership, club: null };
 				}
 
-				// Get counts
 				const memberCount = await db
 					.select({ count: count() })
 					.from(clubMembership)
@@ -200,7 +200,6 @@ usersRouter.get(
 					.from(review)
 					.where(eq(review.clubId, membership.clubId));
 
-				// Get next event
 				const nextEvents = await db
 					.select({
 						id: event.id,
@@ -212,7 +211,6 @@ usersRouter.get(
 					.orderBy(event.dateStart)
 					.limit(1);
 
-				// Get latest review
 				const latestReviews = await db
 					.select({
 						content: review.content,
@@ -401,7 +399,7 @@ usersRouter.get(
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		const requestingUserId = context.user?.id;
@@ -414,7 +412,7 @@ usersRouter.get(
 			.limit(1);
 
 		if (targetUser.length === 0 || !targetUser[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const u = targetUser[0];
@@ -581,11 +579,11 @@ usersRouter.put(
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		const updateData: Record<string, unknown> = {
@@ -673,11 +671,11 @@ usersRouter.delete(
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		await db
@@ -712,11 +710,11 @@ usersRouter.delete(
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		await db
@@ -749,7 +747,7 @@ usersRouter.get(
 	async ({ params, response }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		const eventRegCount = await db
@@ -789,7 +787,6 @@ usersRouter.get(
 					return { ...membership, club: null };
 				}
 
-				// Get counts
 				const memberCount = await db
 					.select({ count: count() })
 					.from(clubMembership)
@@ -803,7 +800,6 @@ usersRouter.get(
 					.from(review)
 					.where(eq(review.clubId, membership.clubId));
 
-				// Get next event
 				const nextEvents = await db
 					.select({
 						id: event.id,
@@ -815,7 +811,6 @@ usersRouter.get(
 					.orderBy(event.dateStart)
 					.limit(1);
 
-				// Get latest review
 				const latestReviews = await db
 					.select({
 						content: review.content,
@@ -913,7 +908,7 @@ usersRouter.get(
 	async ({ params, response }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		const userAccount = await db.select().from(account).where(eq(account.userId, userId)).limit(1);
@@ -944,11 +939,11 @@ usersRouter.put(
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		await db
@@ -986,11 +981,11 @@ usersRouter.put(
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		await db
@@ -1028,11 +1023,11 @@ usersRouter.put(
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		await db
@@ -1140,21 +1135,18 @@ usersRouter.post(
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		try {
 			const result = await getS3UploadUrl(`user/${userId}/image`, body.type, body.size);
 			return response.json(result);
 		} catch (error) {
-			return response.error(
-				{ error: error instanceof Error ? error.message : "Failed to generate upload URL" },
-				400,
-			);
+			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},
 	{
@@ -1188,21 +1180,18 @@ usersRouter.post(
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		try {
 			const result = await getS3UploadUrl(`user/${userId}/header`, body.type, body.size);
 			return response.json(result);
 		} catch (error) {
-			return response.error(
-				{ error: error instanceof Error ? error.message : "Failed to generate upload URL" },
-				400,
-			);
+			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},
 	{
@@ -1237,11 +1226,11 @@ usersRouter.get(
 		const userId = params.id;
 
 		if (!userId) {
-			return response.error({ error: "User ID is required" }, 400);
+			throw apiError.validation("User ID is required");
 		}
 
 		if (!context.user || context.user.id !== userId) {
-			return response.error({ error: "Unauthorized" }, 401);
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		const today = new Date();

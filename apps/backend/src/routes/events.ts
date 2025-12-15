@@ -13,14 +13,20 @@ import {
 } from "../drizzle/schema";
 import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
+import { apiError } from "../lib/errors";
 import { Router, responseSchema } from "../lib/router";
-import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
+import {
+	baseClubRuleSchema,
+	baseEventSchema,
+	castClubRuleResults,
+	castEventResult,
+	castEventResults,
+	paginationQuerySchema,
+	paginationResponseSchema,
+} from "../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../lib/storage";
 
 const eventsRouter = new Router();
-
-const baseEventSchema = createSelectSchema(event);
-const baseClubRuleSchema = createSelectSchema(clubRule);
 
 eventsRouter.get(
 	"/api/events",
@@ -84,11 +90,7 @@ eventsRouter.get(
 		const total = totalData[0]?.count || 0;
 
 		return response.json({
-			events: events.map((e) => ({
-				...e,
-				gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-				mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
-			})),
+			events: castEventResults(events),
 			pagination: {
 				page,
 				perPage,
@@ -160,9 +162,7 @@ eventsRouter.get(
 					.limit(1);
 
 				return {
-					...e,
-					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+					...castEventResult(e),
 					club: clubData[0] || null,
 				};
 			}),
@@ -204,7 +204,7 @@ eventsRouter.get(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const eventData = await db
@@ -214,7 +214,7 @@ eventsRouter.get(
 			.limit(1);
 
 		if (!eventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event");
 		}
 
 		const eventRecord = eventData[0];
@@ -227,10 +227,10 @@ eventsRouter.get(
 				.limit(1);
 
 			if (!userMembership[0]) {
-				return response.error({ error: "Event not found" }, 404);
+				throw apiError.notFound("Event");
 			}
 		} else if (eventRecord.isPrivate && !context.user) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event");
 		}
 
 		const registrationCount = await db
@@ -241,11 +241,7 @@ eventsRouter.get(
 		const clubData = await db.select().from(club).where(eq(club.id, eventRecord.clubId)).limit(1);
 
 		return response.json({
-			event: {
-				...eventRecord,
-				gearRequirements: eventRecord.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-				mapData: eventRecord.mapData as z.infer<typeof baseEventSchema>["mapData"],
-			},
+			event: castEventResult(eventRecord),
 			club: clubData[0],
 			registrationCount: Number(registrationCount[0]?.count || 0),
 		});
@@ -313,9 +309,7 @@ eventsRouter.get(
 					.limit(1);
 
 				return {
-					...e,
-					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+					...castEventResult(e),
 					club: clubData[0] || null,
 				};
 			}),
@@ -358,7 +352,7 @@ eventsRouter.get(
 		const endDate = query?.endDate;
 
 		if (!startDate || !endDate) {
-			return response.error({ error: "Start date and end date are required" }, 400);
+			throw apiError.validation("Start date and end date are required");
 		}
 
 		const whereConditions = [gte(event.dateStart, startDate), lte(event.dateStart, endDate)];
@@ -396,9 +390,7 @@ eventsRouter.get(
 					.limit(1);
 
 				return {
-					...e,
-					gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-					mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
+					...castEventResult(e),
 					club: clubData[0] || null,
 				};
 			}),
@@ -507,13 +499,13 @@ eventsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		if (body.slug) {
 			const valid = await validateEventSlug(body.slug);
 			if (!valid) {
-				return response.error({ error: "This slug is already taken" }, 400);
+				throw apiError.validation("This slug is already taken");
 			}
 		}
 
@@ -572,16 +564,12 @@ eventsRouter.post(
 		});
 
 		if (!newEvent[0]) {
-			return response.error({ error: "Failed to create event" }, 500);
+			throw apiError.internal("Failed to create event");
 		}
 
 		return response.json({
 			success: true,
-			event: {
-				...newEvent[0],
-				gearRequirements: newEvent[0].gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-				mapData: newEvent[0].mapData as z.infer<typeof baseEventSchema>["mapData"],
-			},
+			event: castEventResult(newEvent[0]),
 		});
 	},
 	{
@@ -631,19 +619,19 @@ eventsRouter.put(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const existingEventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
 		if (!existingEventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const existingEvent = existingEventData[0];
 
 		if (new Date(existingEvent.dateEnd) <= new Date()) {
-			return response.error({ error: "You cannot update a finished event" }, 400);
+			throw apiError.validation("You cannot update a finished event");
 		}
 
 		const managerMembershipData = await db
@@ -655,13 +643,13 @@ eventsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		if (body.slug && body.slug !== existingEvent.slug) {
 			const valid = await validateEventSlug(body.slug, eventId);
 			if (!valid) {
-				return response.error({ error: "This slug is already taken" }, 400);
+				throw apiError.validation("This slug is already taken");
 			}
 		}
 
@@ -717,18 +705,12 @@ eventsRouter.put(
 		});
 
 		if (!updatedEvent[0]) {
-			return response.error({ error: "Failed to update event" }, 500);
+			throw apiError.internal("Failed to update event");
 		}
 
 		return response.json({
 			success: true,
-			event: {
-				...updatedEvent[0],
-				gearRequirements: updatedEvent[0].gearRequirements as z.infer<
-					typeof baseEventSchema
-				>["gearRequirements"],
-				mapData: updatedEvent[0].mapData as z.infer<typeof baseEventSchema>["mapData"],
-			},
+			event: castEventResult(updatedEvent[0]),
 		});
 	},
 	{
@@ -781,13 +763,13 @@ eventsRouter.delete(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const existingEventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
 		if (!existingEventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const existingEvent = existingEventData[0];
@@ -801,7 +783,7 @@ eventsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		if (existingEvent.image) {
@@ -848,7 +830,7 @@ eventsRouter.get(
 		const clubId = params.clubId;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const { page, perPage } = query;
@@ -887,11 +869,7 @@ eventsRouter.get(
 		const total = totalData[0]?.count || 0;
 
 		return response.json({
-			events: events.map((e) => ({
-				...e,
-				gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-				mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
-			})),
+			events: castEventResults(events),
 			pagination: {
 				page,
 				perPage,
@@ -930,7 +908,7 @@ eventsRouter.get(
 		const clubId = params.clubId;
 
 		if (!clubId) {
-			return response.error({ error: "Club ID is required" }, 400);
+			throw apiError.validation("Club ID is required");
 		}
 
 		const search = query?.search || "";
@@ -985,13 +963,13 @@ eventsRouter.post(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const existingEventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
 		if (!existingEventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const existingEvent = existingEventData[0];
@@ -1005,7 +983,7 @@ eventsRouter.post(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const key = `event/${eventId}/image`;
@@ -1044,13 +1022,13 @@ eventsRouter.delete(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const existingEventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
 		if (!existingEventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const existingEvent = existingEventData[0];
@@ -1064,7 +1042,7 @@ eventsRouter.delete(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		if (existingEvent.image) {
@@ -1127,24 +1105,24 @@ eventsRouter.post(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const eventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
 		if (!eventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const eventRecord = eventData[0];
 
 		const now = new Date();
 		if (new Date(eventRecord.dateRegistrationsOpen) > now) {
-			return response.error({ error: "Registrations are not open yet" }, 400);
+			throw apiError.validation("Registrations are not open yet");
 		}
 
 		if (new Date(eventRecord.dateRegistrationsClose) < now) {
-			return response.error({ error: "Registrations are closed" }, 400);
+			throw apiError.validation("Registrations are closed");
 		}
 
 		const existingRegistrationData = await db
@@ -1246,7 +1224,7 @@ eventsRouter.post(
 			.limit(1);
 
 		if (!registration[0]) {
-			return response.error({ error: "Registration not found" }, 404);
+			throw apiError.notFound("Registration not found");
 		}
 
 		return response.json({
@@ -1282,13 +1260,13 @@ eventsRouter.put(
 		const registrationId = params.registrationId;
 
 		if (!eventId || !registrationId) {
-			return response.error({ error: "Event ID and Registration ID are required" }, 400);
+			throw apiError.validation("Event ID and Registration ID are required");
 		}
 
 		const eventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
 		if (!eventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const eventRecord = eventData[0];
@@ -1302,7 +1280,7 @@ eventsRouter.put(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const updated = await db
@@ -1315,7 +1293,7 @@ eventsRouter.put(
 			.returning();
 
 		if (!updated[0]) {
-			return response.error({ error: "Registration not found" }, 404);
+			throw apiError.notFound("Registration not found");
 		}
 
 		return response.json({
@@ -1353,13 +1331,13 @@ eventsRouter.get(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const eventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
 
 		if (!eventData[0]) {
-			return response.error({ error: "Event not found" }, 404);
+			throw apiError.notFound("Event not found");
 		}
 
 		const eventRecord = eventData[0];
@@ -1373,7 +1351,7 @@ eventsRouter.get(
 		const managerMembership = managerMembershipData[0];
 
 		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			return response.error({ error: "Unauthorized - must be manager or owner" }, 403);
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const registrations = await db.select().from(eventRegistration).where(eq(eventRegistration.eventId, eventId));
@@ -1407,7 +1385,7 @@ eventsRouter.get(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const totalData = await db
@@ -1442,16 +1420,13 @@ eventsRouter.get(
 		const eventId = params.id;
 
 		if (!eventId) {
-			return response.error({ error: "Event ID is required" }, 400);
+			throw apiError.validation("Event ID is required");
 		}
 
 		const rules = await db.select().from(clubRule).where(eq(clubRule.eventId, eventId));
 
 		return response.json({
-			rules: rules.map((r) => ({
-				...r,
-				content: r.content as z.infer<typeof baseClubRuleSchema>["content"],
-			})),
+			rules: castClubRuleResults(rules),
 		});
 	},
 	{

@@ -33,7 +33,12 @@ function unwrapForJSONSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
 				};
 			}
 		)._def;
-		const typeName = def?.typeName;
+
+		if (!def) {
+			break;
+		}
+
+		const typeName = def.typeName;
 
 		if (typeName === "ZodOptional" && def.innerType) {
 			current = def.innerType;

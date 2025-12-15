@@ -2,6 +2,7 @@ import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { club, clubInvite, clubMembership, event, eventRegistration, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { apiError } from "../lib/errors";
 import { Router } from "../lib/router";
 
 const dashboardRouter = new Router();
@@ -109,7 +110,7 @@ dashboardRouter.get(
 		const userData = await db.select({ email: user.email }).from(user).where(eq(user.id, context.user.id)).limit(1);
 
 		if (!userData[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const invitesCount = await db
@@ -208,7 +209,7 @@ dashboardRouter.get(
 			.limit(1);
 
 		if (!userData[0]) {
-			return response.error({ error: "User not found" }, 404);
+			throw apiError.notFound("User not found");
 		}
 
 		const [eventRegistrationCount, clubMembershipCount, reviewsWrittenCount, reviewsReceivedCount] =
