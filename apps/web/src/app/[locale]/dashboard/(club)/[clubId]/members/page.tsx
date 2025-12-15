@@ -1,10 +1,9 @@
-import type { Prisma, Role } from "@generated/client";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { MembersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members">) {
 	const [params, { search, role, sortBy, sortOrder, page, perPage }] = await Promise.all([
@@ -18,95 +17,27 @@ export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[
 
 	const user = await isAuthenticated();
 
-	const where = {
-		clubId: clubId,
-		...(role && role !== "all" ? { role: role as Role } : {}),
-		...(search
-			? {
-					OR: [
-						{
-							user: {
-								name: { contains: search as string, mode: "insensitive" },
-							},
-						},
-						{
-							user: {
-								email: {
-									contains: search as string,
-									mode: "insensitive",
-								},
-							},
-						},
-						{
-							user: {
-								callsign: {
-									contains: search as string,
-									mode: "insensitive",
-								},
-							},
-						},
-					],
-				}
-			: {}),
-	} satisfies Prisma.ClubMembershipWhereInput;
-
-	const orderBy: Prisma.ClubMembershipOrderByWithRelationInput = sortBy
-		? {
-				...(sortBy === "userName" && {
-					user: { name: sortOrder === "desc" ? "desc" : "asc" },
-				}),
-				...(sortBy === "userCallsign" && {
-					user: { callsign: sortOrder === "desc" ? "desc" : "asc" },
-				}),
-				...(sortBy === "createdAt" && {
-					createdAt: sortOrder === "desc" ? "desc" : "asc",
-				}),
-				...(sortBy === "role" && {
-					role: sortOrder === "desc" ? "desc" : "asc",
-				}),
-			}
-		: { createdAt: "desc" };
-
-	const members = await prisma.clubMembership.findMany({
-		where,
-		orderBy,
-		include: {
-			user: {
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					image: true,
-					callsign: true,
-					location: true,
-					bio: true,
-					website: true,
-					createdAt: true,
-					slug: true,
-				},
+	// Fetch members from backend
+	const { data, error } = await apiClient.GET("/api/clubs/{id}/members", {
+		params: {
+			path: { id: clubId },
+			query: {
+				page: currentPage,
+				perPage: pageSize,
+				search: search as string | undefined,
+				role: role as "all" | "USER" | "MANAGER" | "CLUB_OWNER" | undefined,
+				sortBy: sortBy as "userName" | "userCallsign" | "role" | "createdAt" | undefined,
+				sortOrder: sortOrder as "asc" | "desc" | undefined,
 			},
 		},
-		take: pageSize,
-		skip: (currentPage - 1) * pageSize,
 	});
 
-	const formattedMembers = members.map((member) => ({
-		...member,
-		userName: member.user.name,
-		userCallsign: member.user.callsign,
-		userAvatar: member.user.image,
-		userSlug: member.user.slug,
-	}));
-
-	const totalMembers = await prisma.clubMembership.count({ where });
+	if (error || !data) {
+		return <div>Failed to load members</div>;
+	}
 
 	return (
-		<MembersTable
-			members={formattedMembers}
-			totalMembers={totalMembers}
-			pageSize={pageSize}
-			currentUserId={user?.id}
-		/>
+		<MembersTable members={data.members} totalMembers={data.total} pageSize={pageSize} currentUserId={user?.id} />
 	);
 }
 

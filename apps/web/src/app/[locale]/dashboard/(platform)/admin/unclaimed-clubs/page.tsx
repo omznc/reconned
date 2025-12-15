@@ -1,78 +1,45 @@
-import type { Prisma } from "@generated/client";
 import { Plus } from "lucide-react";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { prisma } from "@/lib/prisma";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { UnclaimedClubsSheet } from "./_components/unclaimed-clubs.sheet.tsx";
 import { UnclaimedClubsTable } from "./_components/unclaimed-clubs.table.tsx";
 
+type AdminUnclaimedList = ApiResponse<"/api/admin/unclaimed-clubs", "get">;
+type AdminUnclaimed = AdminUnclaimedList["clubs"][number];
+
 export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs">) {
-	const searchParams = await props.searchParams;
-	const { search, sortBy, sortOrder, page, clubId, perPage } = await searchParams;
+	const { search, sortBy, sortOrder, page, clubId, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const where: Prisma.ClubWhereInput = {
-		...(search
-			? {
-					OR: [
-						{
-							name: {
-								contains: search as string,
-								mode: "insensitive" as const,
-							},
-						},
-						{
-							location: {
-								contains: search as string,
-								mode: "insensitive" as const,
-							},
-						},
-					],
-				}
-			: {}),
-		members: {
-			none: {
-				role: "CLUB_OWNER",
-			},
-		},
-	};
-
-	const orderBy: Prisma.ClubOrderByWithRelationInput = sortBy
-		? { [sortBy as string]: sortOrder ?? ("asc" as "asc" | "desc") }
-		: { createdAt: "desc" };
-
-	const clubs = await prisma.club.findMany({
-		where,
-		orderBy,
-		take: pageSize,
-		skip: (currentPage - 1) * pageSize,
-		include: {
-			_count: {
-				select: {
-					members: true,
-				},
+	const { data: listData } = await apiClient.GET("/api/admin/unclaimed-clubs", {
+		params: {
+			query: {
+				page: currentPage,
+				perPage: pageSize,
+				...(search ? { search: search as string } : {}),
+				...(sortBy ? { sortBy: sortBy as "name" | "location" | "createdAt" } : {}),
+				sortOrder: sortOrder === "asc" ? "asc" : "desc",
 			},
 		},
 	});
 
-	const totalClubs = await prisma.club.count({ where });
+	const clubs = (listData?.clubs ?? []) as AdminUnclaimed[];
+	const totalClubs = listData?.pagination.total ?? 0;
 
 	const selectedClub = clubId
-		? await prisma.club.findUnique({
-				where: { id: clubId as string },
-				include: {
-					_count: {
-						select: {
-							members: true,
-						},
+		? (
+				await apiClient.GET("/api/admin/unclaimed-clubs/{id}", {
+					params: {
+						path: { id: clubId as string },
 					},
-				},
-			})
-		: null;
+				})
+			).data
+		: undefined;
 
 	return (
 		<>

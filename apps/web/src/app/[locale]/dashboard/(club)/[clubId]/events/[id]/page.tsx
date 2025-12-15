@@ -4,8 +4,8 @@ import { getExtracted } from "next-intl/server";
 import { EventOverview } from "@/components/overviews/event-overview";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]">) {
 	const params = await props.params;
@@ -16,35 +16,44 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return notFound();
 	}
 
-	const event = await prisma.event.findFirst({
-		where: {
-			id: params.id,
-			club: {
-				members: {
-					some: {
-						userId: user.id,
-					},
-				},
-			},
-		},
-		include: {
-			_count: {
-				select: {
-					eventRegistration: true,
-				},
-			},
-			rules: true,
-		},
+	// Fetch event from backend
+	const { data: eventData, error: eventError } = await apiClient.GET("/api/events/{id}", {
+		params: { path: { id: params.id } },
 	});
 
-	if (!event) {
+	if (eventError || !eventData) {
 		return notFound();
 	}
+
+	const { event, registrationCount } = eventData;
+
+	// Check if user is a member of the club
+	const { data: clubData, error: clubError } = await apiClient.GET("/api/clubs/{id}/membership", {
+		params: { path: { id: params.clubId } },
+	});
+
+	if (clubError || !clubData?.membership) {
+		return notFound();
+	}
+
+	// Fetch event rules
+	const { data: rulesData } = await apiClient.GET("/api/events/{id}/rules", {
+		params: { path: { id: params.id } },
+	});
 
 	const disabledAttendence =
 		!(user.managedClubs.includes(params.clubId) || user.role === "admin") ||
 		new Date() < new Date(event.dateRegistrationsClose) ||
 		new Date() > new Date(event.dateEnd);
+
+	// Combine event with rules and count for the overview component
+	const eventWithDetails = {
+		...event,
+		rules: rulesData?.rules || [],
+		_count: {
+			eventRegistration: registrationCount,
+		},
+	};
 
 	return (
 		<>
@@ -60,7 +69,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 					</Link>
 				</Button>
 			</div>
-			<EventOverview event={event} clubId={params.clubId} />
+			<EventOverview event={eventWithDetails} clubId={params.clubId} />
 		</>
 	);
 }

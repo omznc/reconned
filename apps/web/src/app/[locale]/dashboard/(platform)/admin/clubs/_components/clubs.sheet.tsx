@@ -1,6 +1,5 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import { format } from "date-fns";
 import { useExtracted } from "next-intl";
 import { ClubActions } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club-table-actions";
@@ -12,9 +11,12 @@ import {
 	CredenzaTitle,
 } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
+
+type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
 
 interface ClubsSheetProps {
-	selectedClub?: Club;
+	selectedClub?: AdminClub;
 }
 
 export function ClubsSheet({ selectedClub }: ClubsSheetProps) {

@@ -29,7 +29,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	const t = await getExtracted();
 	const page = Number(searchParams.page) || 1;
 
-	const { data, error } = await apiClient.GET("/api/public/clubs", {
+	const { data, error } = await apiClient.GET("/api/clubs", {
 		params: {
 			query: {
 				page: String(page),
@@ -42,18 +42,20 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 		return <div>{t("Error loading clubs")}</div>;
 	}
 
-	const clubs: ClubSearch[] = data.clubs.map((club) => ({
-		id: club.id,
-		name: club.name,
-		slug: club.slug ?? "",
-		description: club.description ?? "",
-		logo: club.logo ?? "",
-		verified: club.verified,
-		location: club.location ?? "",
-		member_count: club.member_count,
-	}));
+	const clubs: ClubSearch[] = data.clubs
+		.filter((club) => !club.isPrivate)
+		.map((club) => ({
+			id: club.id,
+			name: club.name,
+			slug: club.slug ?? "",
+			description: club.description ?? "",
+			logo: club.logo ?? "",
+			verified: club.verified,
+			location: club.location ?? "",
+			member_count: 0,
+		}));
 
-	const total = data.pagination.total;
+	const total = clubs.length;
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",

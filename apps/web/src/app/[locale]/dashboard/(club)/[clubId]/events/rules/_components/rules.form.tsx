@@ -1,6 +1,5 @@
 "use client";
 
-import type { ClubRule } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import apiClient from "@/lib/api";
+import type { ClubRule } from "@/lib/api-type-helpers";
 import "@/components/editor/editor.css";
 import { format } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";

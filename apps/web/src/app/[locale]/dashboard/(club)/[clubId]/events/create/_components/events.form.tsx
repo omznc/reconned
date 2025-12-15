@@ -1,6 +1,5 @@
 "use client";
 
-import type { ClubRule, Event } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, differenceInDays, format, subHours } from "date-fns";
 import { bs } from "date-fns/locale";
@@ -13,11 +12,6 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
-import {
-	createEvent,
-	deleteEvent,
-	getEventImageUploadUrl,
-} from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.action";
 import { createEventFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.schema";
 import { AnimatedNumber } from "@/components/animated-number";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -43,6 +37,9 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { Link, useRouter } from "@/i18n/navigation";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
+import type { ClubRule, Event } from "@/lib/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 interface CreateEventFormProps {
@@ -84,20 +81,23 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				throw new ActionError(t("Save the event first."));
 			}
 
-			const resp = await getEventImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
+			const { data, error } = await apiClient.POST("/api/events/{id}/image/upload-url", {
+				params: {
+					path: { id: currentEventId },
 				},
-				eventId: currentEventId,
-				clubId: clubId,
+				body: {
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError(t("Could not get upload URL."));
 			}
 
-			await fetch(resp.data.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -106,7 +106,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles,
@@ -285,30 +285,65 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	async function onSubmit(values: z.infer<typeof createEventFormSchema>) {
 		setIsLoading(true);
 		try {
-			const event = await createEvent(values);
+			const mapData = values.mapData ?? createEmptySnapshot();
+			const normalized = normalizeMapData(mapData);
 
-			if (!event?.data || event.serverError) {
-				const message = event?.serverError ?? t("An error occurred while saving data");
-				toast.error(message);
-				return;
+			const body = {
+				name: values.name,
+				description: values.description,
+				costPerPerson: values.costPerPerson,
+				location: values.location,
+				googleMapsLink: values.googleMapsLink,
+				dateStart: values.dateStart.toISOString(),
+				dateEnd: values.dateEnd.toISOString(),
+				dateRegistrationsOpen: values.dateRegistrationsOpen.toISOString(),
+				dateRegistrationsClose: values.dateRegistrationsClose.toISOString(),
+				image: values.image || undefined,
+				isPrivate: values.isPrivate,
+				allowFreelancers: values.allowFreelancers,
+				hasBreakfast: values.hasBreakfast,
+				hasLunch: values.hasLunch,
+				hasDinner: values.hasDinner,
+				hasSnacks: values.hasSnacks,
+				hasDrinks: values.hasDrinks,
+				hasPrizes: values.hasPrizes,
+				slug: values.slug || undefined,
+				clubId,
+				ruleIds: values.ruleIds ?? [],
+				mapData: normalized,
+			};
+
+			const isEditing = Boolean(props.event?.id);
+
+			const { data: createdOrUpdated, error: createError } = isEditing
+				? await apiClient.PUT("/api/events/{id}", {
+						params: { path: { id: props.event?.id ?? "" } },
+						body,
+					})
+				: await apiClient.POST("/api/events", {
+						body,
+					});
+
+			if (createError || !createdOrUpdated?.id) {
+				throw new ActionError(createError?.error ?? t("An error occurred while saving data"));
 			}
 
-			eventIdRef.current = event.data.id;
+			const eventId = createdOrUpdated.id;
+			eventIdRef.current = eventId;
 
 			const filesToUpload = eventImageUpload.files.filter((f) => f.file && !f.isExisting);
 			if (filesToUpload.length > 0) {
 				const uploadedUrls = await eventImageUpload.uploadAllFiles();
 				if (uploadedUrls.length > 0) {
-					const updateResult = await createEvent({
-						...values,
-						eventId: event.data.id,
-						image: uploadedUrls[0],
+					const { error: updateError } = await apiClient.PUT("/api/events/{id}", {
+						params: { path: { id: eventId } },
+						body: {
+							image: uploadedUrls[0],
+						},
 					});
 
-					if (!updateResult?.data || updateResult.serverError) {
-						const message = updateResult?.serverError ?? t("An error occurred while saving data");
-						toast.error(message);
-						return;
+					if (updateError) {
+						throw new ActionError(updateError.error ?? t("An error occurred while saving data"));
 					}
 				}
 			}
@@ -319,7 +354,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				sessionStorage.removeItem("createEventForm");
 			}
 
-			router.push(`/dashboard/${clubId}/events/${event.data.id}`);
+			router.push(`/dashboard/${clubId}/events/${eventId}`);
 			toast.success(t("Successfully created event"));
 		} catch (error) {
 			const message = error instanceof Error ? error.message : t("An error occurred while saving data");
@@ -358,11 +393,30 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 									});
 									if (resp) {
 										setIsLoading(true);
-										await deleteEvent({
-											eventId: props.event?.id ?? "",
-											clubId: clubId,
-										});
-										setIsLoading(false);
+										try {
+											const { error } = await apiClient.DELETE("/api/events/{id}", {
+												params: {
+													path: { id: props.event?.id ?? "" },
+												},
+											});
+
+											if (error) {
+												throw new ActionError(
+													error.error ?? t("An error occurred while deleting event"),
+												);
+											}
+
+											toast.success(t("Event deleted"));
+											router.push(`/dashboard/${clubId}/events/`);
+										} catch (error) {
+											const message =
+												error instanceof Error
+													? error.message
+													: t("An error occurred while deleting event");
+											toast.error(message);
+										} finally {
+											setIsLoading(false);
+										}
 									}
 								}}
 							>

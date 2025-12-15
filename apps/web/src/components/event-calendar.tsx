@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@components/ui/button";
-import type { Event } from "@generated/client";
 import {
 	addMonths,
 	eachDayOfInterval,
@@ -40,13 +39,13 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
+import type { Club, Event } from "@/lib/api-type-helpers";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 interface EventCalendarProps {
 	events: (Event & {
-		club: { name: string; verified: boolean };
-		image?: string | null;
+		club: Pick<Club, "id" | "name" | "verified" | "logo">;
 	})[];
 	managedClubs?: Array<{ id: string; name: string; logo: string | null }>;
 }
@@ -57,6 +56,18 @@ export function EventCalendar(props: EventCalendarProps) {
 	const t = useExtracted();
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
+
+	// Parse string dates from API to Date objects
+	const eventsWithParsedDates = useMemo(() => {
+		return props.events.map((event) => ({
+			...event,
+			dateStart: new Date(event.dateStart),
+			dateEnd: event.dateEnd ? new Date(event.dateEnd) : null,
+			dateRegistrationsOpen: new Date(event.dateRegistrationsOpen),
+			dateRegistrationsClose: new Date(event.dateRegistrationsClose),
+		}));
+	}, [props.events]);
+
 	const monthNames = {
 		jan: t("January"),
 		feb: t("February"),
@@ -144,13 +155,13 @@ export function EventCalendar(props: EventCalendarProps) {
 	};
 
 	const getEventsForDay = (day: Date) => {
-		return props.events.filter(
+		return eventsWithParsedDates.filter(
 			(event) =>
 				isSameDay(day, event.dateStart) || (event.dateEnd && day >= event.dateStart && day <= event.dateEnd),
 		);
 	};
 
-	const getEventDisplayProperties = (event: Event, day: Date, week: Date[]) => {
+	const getEventDisplayProperties = (event: (typeof eventsWithParsedDates)[number], day: Date, week: Date[]) => {
 		const eventStart = event.dateStart;
 		const eventEnd = event.dateEnd ?? event.dateStart;
 
@@ -182,13 +193,13 @@ export function EventCalendar(props: EventCalendarProps) {
 		};
 	};
 
-	const getEventPositions = (events: Event[]) => {
+	const getEventPositions = (events: typeof eventsWithParsedDates) => {
 		const positions = new Map<string, number>();
 		const layers = [] as Set<string>[];
 
 		const sortedEvents = [...events].sort((a, b) => {
-			const aDuration = (a.dateEnd?.getTime() ?? a.dateStart.getTime()) - a.dateStart.getTime();
-			const bDuration = (b.dateEnd?.getTime() ?? b.dateStart.getTime()) - b.dateStart.getTime();
+			const aDuration = (a.dateEnd ? a.dateEnd.getTime() : a.dateStart.getTime()) - a.dateStart.getTime();
+			const bDuration = (b.dateEnd ? b.dateEnd.getTime() : b.dateStart.getTime()) - b.dateStart.getTime();
 			return bDuration - aDuration || a.dateStart.getTime() - b.dateStart.getTime();
 		});
 

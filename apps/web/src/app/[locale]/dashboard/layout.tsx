@@ -51,8 +51,8 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const inviteRequestsCountByClub =
 		inviteRequestsError || !inviteRequestsData
 			? []
-			: inviteRequestsData.map((item) => ({
-					id: item.clubId,
+			: inviteRequestsData.clubs.map((item) => ({
+					id: item.id,
 					count: item.count,
 				}));
 

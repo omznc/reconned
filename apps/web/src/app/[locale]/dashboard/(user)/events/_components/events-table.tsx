@@ -1,6 +1,4 @@
 "use client";
-
-import type { Event } from "@generated/client";
 import { ExternalLink, MoreHorizontal } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
@@ -13,6 +11,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 function getEventStatus(dateStart: Date, dateEnd: Date) {
@@ -27,15 +26,11 @@ function getEventStatus(dateStart: Date, dateEnd: Date) {
 	return { label: "Trenutno", className: "bg-green-100 text-green-800" };
 }
 
+type EventsListResponse = ApiResponse<"/api/events", "get">;
+type EventsListItem = EventsListResponse["events"][number];
+
 interface EventsTableProps {
-	events: (Event & {
-		_count: {
-			eventRegistration: number;
-		};
-		club: {
-			name: string;
-		};
-	})[];
+	events: EventsListItem[];
 	totalEvents: number;
 	pageSize: number;
 }

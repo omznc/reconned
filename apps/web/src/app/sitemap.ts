@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
+import apiClient from "@/lib/api";
 import { getCached } from "@/lib/cache";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import {
 	constructCanonicalUrl,
 	generateHreflangAlternatesForSluggableEntity,
@@ -20,53 +20,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		// Get public clubs (cached for 30 minutes)
 		getCached(
 			"sitemap:clubs",
-			() =>
-				prisma.club.findMany({
-					where: {
-						isPrivate: false,
-						OR: [{ banned: false }, { banned: null }],
-					},
-					select: {
-						id: true,
-						slug: true,
-						updatedAt: true,
-					},
-				}),
+			async () => {
+				const { data } = await apiClient.GET("/api/public/sitemap/clubs", {});
+				return data?.clubs || [];
+			},
 			{ ttl: 1800 }, // 30 minutes
 		),
 
 		// Get public events (cached for 30 minutes)
 		getCached(
 			"sitemap:events",
-			() =>
-				prisma.event.findMany({
-					where: {
-						isPrivate: false,
-					},
-					select: {
-						id: true,
-						slug: true,
-						updatedAt: true,
-					},
-				}),
+			async () => {
+				const { data } = await apiClient.GET("/api/public/sitemap/events", {});
+				return data?.events || [];
+			},
 			{ ttl: 1800 }, // 30 minutes
 		),
 
 		// Get public user profiles (cached for 30 minutes)
 		getCached(
 			"sitemap:users",
-			() =>
-				prisma.user.findMany({
-					where: {
-						isPrivate: false,
-						OR: [{ banned: false }, { banned: null }],
-					},
-					select: {
-						id: true,
-						slug: true,
-						updatedAt: true,
-					},
-				}),
+			async () => {
+				const { data } = await apiClient.GET("/api/public/sitemap/users", {});
+				return data?.users || [];
+			},
 			{ ttl: 1800 }, // 30 minutes
 		),
 	]);
@@ -103,7 +80,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		const slugOrId = club.slug || club.id;
 		return {
 			url: constructCanonicalUrl(baseUrl || "", `${pathPrefix}/${slugOrId}`, defaultLocale),
-			lastModified: club.updatedAt,
+			lastModified: new Date(club.updatedAt),
 			changeFrequency: "daily" as const,
 			priority: club.slug ? 0.8 : 0.7,
 			alternates: {
@@ -123,7 +100,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		const slugOrId = event.slug || event.id;
 		return {
 			url: constructCanonicalUrl(baseUrl || "", `${pathPrefix}/${slugOrId}`, defaultLocale),
-			lastModified: event.updatedAt,
+			lastModified: new Date(event.updatedAt),
 			changeFrequency: "daily" as const,
 			priority: event.slug ? 0.7 : 0.6,
 			alternates: {
@@ -143,7 +120,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		const slugOrId = user.slug || user.id;
 		return {
 			url: constructCanonicalUrl(baseUrl || "", `${pathPrefix}/${slugOrId}`, defaultLocale),
-			lastModified: user.updatedAt,
+			lastModified: new Date(user.updatedAt),
 			changeFrequency: "weekly" as const,
 			priority: user.slug ? 0.6 : 0.5,
 			alternates: {

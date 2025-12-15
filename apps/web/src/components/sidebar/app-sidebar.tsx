@@ -1,6 +1,5 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import type { User } from "better-auth";
 import { MailPlus, Search } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -24,6 +23,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
+import type { Club } from "@/lib/api-type-helpers";
 import { env } from "@/lib/env";
 
 interface AppSidebarProps {

@@ -1,16 +1,17 @@
 "use client";
 
-import type { Event, EventRegistration, User } from "@generated/client";
 import { Check, Eye, X } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import { toggleAttendance } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance.action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
+import type { Event, EventRegistration, User } from "@/lib/api-type-helpers";
 
 type ExtendedEventRegistration = EventRegistration & {
 	invitedUsers: User[];
@@ -62,7 +63,6 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	async function handleToggleAttendance(registration: ExtendedEventRegistration) {
 		try {
 			setIsLoading(registration.id);
-			// Store complete registration data in optimistic state
 			setOptimisticRegistrations((prev) => ({
 				...prev,
 				[registration.id]: {
@@ -71,19 +71,28 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				},
 			}));
 
-			await toggleAttendance({
-				registrationId: registration.id,
-				eventId: event.id,
-				attended: !registration.attended,
-				clubId: event.clubId,
+			const { error } = await apiClient.PUT("/api/events/{id}/registrations/{registrationId}/attendance", {
+				params: {
+					path: {
+						id: event.id,
+						registrationId: registration.id,
+					},
+				},
+				body: {
+					attended: !registration.attended,
+				},
 			});
-		} catch (_error) {
-			// Revert to original registration data on error
+
+			if (error) {
+				throw new ActionError(error.error ?? t("An error occurred while saving presence"));
+			}
+		} catch (error) {
 			setOptimisticRegistrations((prev) => ({
 				...prev,
 				[registration.id]: registration,
 			}));
-			toast.error(t("An error occurred while saving presence"));
+			const message = error instanceof Error ? error.message : t("An error occurred while saving presence");
+			toast.error(message);
 		} finally {
 			setIsLoading(null);
 		}

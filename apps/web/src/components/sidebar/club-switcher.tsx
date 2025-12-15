@@ -1,6 +1,5 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import { ChevronsUpDown, Plus, Square } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { Link, useRouter } from "@/i18n/navigation";
+import type { Club } from "@/lib/api-type-helpers";
 
 interface ClubSwitcherProps {
 	clubs: Club[];

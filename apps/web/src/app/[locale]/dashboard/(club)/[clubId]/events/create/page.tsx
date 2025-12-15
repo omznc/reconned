@@ -1,8 +1,11 @@
 import { parse as parseDateFns } from "date-fns";
 import { notFound } from "next/navigation";
 import CreateEventForm from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.form";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+
+type EventResponse = ApiResponse<"/api/events/{id}", "get">;
+type ClubRulesResponse = ApiResponse<"/api/clubs/{id}/rules", "get">;
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/create">) {
 	const searchParams = await props.searchParams;
@@ -13,19 +16,23 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return notFound();
 	}
 
-	const existingEvent = searchParams?.id
-		? await prisma.event.findFirst({
-				where: {
-					id: searchParams.id as string,
-				},
-			})
-		: null;
+	let existingEvent: EventResponse | null = null;
 
-	const rules = await prisma.clubRule.findMany({
-		where: {
-			clubId: params.clubId,
+	if (searchParams?.id) {
+		const { data } = await apiClient.GET("/api/events/{id}", {
+			params: {
+				path: { id: searchParams.id as string },
+			},
+		});
+		existingEvent = (data as EventResponse) ?? null;
+	}
+
+	const { data: rulesData } = await apiClient.GET("/api/clubs/{id}/rules", {
+		params: {
+			path: { id: params.clubId },
 		},
 	});
+	const rules = (rulesData as ClubRulesResponse | undefined) ?? [];
 
 	// Parse initial date from search params if provided
 	const parsedDate = searchParams?.date ? parseDateFns(searchParams.date as string, "yyyy-MM-dd", new Date()) : null;

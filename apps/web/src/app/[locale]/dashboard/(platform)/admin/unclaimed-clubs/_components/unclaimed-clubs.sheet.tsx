@@ -1,6 +1,5 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import { format } from "date-fns";
 import { useExtracted } from "next-intl";
 import { AssignClubOwnerForm } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/assign-club-owner.form.tsx";
@@ -12,13 +11,13 @@ import {
 	CredenzaTitle,
 } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
+
+type AdminUnclaimedList = ApiResponse<"/api/admin/unclaimed-clubs", "get">;
+type AdminUnclaimed = AdminUnclaimedList["clubs"][number];
 
 interface UnclaimedClubsSheetProps {
-	selectedClub?: Club & {
-		_count: {
-			members: number;
-		};
-	};
+	selectedClub?: AdminUnclaimed;
 }
 
 export function UnclaimedClubsSheet({ selectedClub }: UnclaimedClubsSheetProps) {

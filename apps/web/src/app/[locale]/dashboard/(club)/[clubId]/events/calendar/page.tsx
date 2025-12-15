@@ -1,6 +1,6 @@
 import { addMonths, endOfMonth, parse as parseDateFns, startOfMonth, subMonths } from "date-fns";
 import { EventCalendar } from "@/components/event-calendar";
-import { prisma } from "@/lib/prisma";
+import apiClient from "@/lib/api";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/calendar">) {
 	const params = await props.params;
@@ -10,23 +10,21 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 
-	const events = await prisma.event.findMany({
-		where: {
-			clubId: params.clubId,
-			dateStart: {
-				gte: startDate,
-				lte: endDate,
-			},
-		},
-		include: {
-			club: {
-				select: {
-					name: true,
-					verified: true,
-				},
+	const { data, error } = await apiClient.GET("/api/events/calendar", {
+		params: {
+			query: {
+				startDate: startDate.toISOString(),
+				endDate: endDate.toISOString(),
 			},
 		},
 	});
 
-	return <EventCalendar events={events} />;
+	if (error || !data) {
+		return <div>Failed to load events</div>;
+	}
+
+	// Filter events for the specific club
+	const clubEvents = data.events.filter((event) => event.clubId === params.clubId);
+
+	return <EventCalendar events={clubEvents} />;
 }

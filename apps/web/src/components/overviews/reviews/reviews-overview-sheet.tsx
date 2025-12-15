@@ -1,20 +1,12 @@
 "use client";
 
-import type { User } from "@generated/client";
 import { format } from "date-fns";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import type { Review } from "@/lib/api-type-helpers";
 import { cn } from "@/lib/utils";
-
-interface Review {
-	id: string;
-	rating: number;
-	content: string;
-	createdAt: Date;
-	author: Pick<User, "name" | "image">;
-}
 
 interface ReviewsOverviewSheetProps {
 	reviews: Review[];
@@ -57,7 +49,7 @@ export function ReviewsOverviewSheet({ reviews, title }: ReviewsOverviewSheetPro
 									</div>
 									<p className="text-sm">{review.content}</p>
 									<p className="text-xs text-muted-foreground">
-										{review.author.name} • {format(review.createdAt, "dd.MM.yyyy")}
+										{format(review.createdAt, "dd.MM.yyyy")}
 									</p>
 								</div>
 							))}

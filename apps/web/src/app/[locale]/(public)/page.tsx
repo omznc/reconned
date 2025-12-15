@@ -49,11 +49,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 				if (error || !data) {
 					return [];
 				}
-				return data.clubs.map((club) => ({
-					id: club.id,
-					name: club.name,
-					logo: club.logo,
-				}));
+				return data.clubIds;
 			})()
 		: Promise.resolve([]);
 

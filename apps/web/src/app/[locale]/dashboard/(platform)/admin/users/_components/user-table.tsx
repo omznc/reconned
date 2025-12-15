@@ -1,21 +1,17 @@
 "use client";
 
-import type { ClubMembership, User } from "@generated/client";
 import { Settings, UserCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
+
+type AdminUser = ApiResponse<"/api/admin/users", "get">["users"][number];
 
 interface UserTableProps {
-	users: (User & {
-		clubMembership: (ClubMembership & {
-			club: {
-				name: string;
-			};
-		})[];
-	})[];
+	users: AdminUser[];
 	totalUsers: number;
 	pageSize: number;
 }

@@ -1,4 +1,3 @@
-import type { Prisma } from "@generated/client";
 import { PlusCircle } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
@@ -7,8 +6,10 @@ import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_co
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+
+type ClubEventsResponse = ApiResponse<"/api/clubs/{clubId}/events", "get">;
 
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
 	const { clubId } = await props.params;
@@ -21,52 +22,23 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[c
 		return notFound();
 	}
 
-	const where = {
-		club: {
-			id: clubId,
-			members: {
-				some: {
-					userId: user.id,
-				},
+	const { data } = await apiClient.GET("/api/clubs/{clubId}/events", {
+		params: {
+			path: {
+				clubId,
+			},
+			query: {
+				page: currentPage,
+				perPage: pageSize,
+				...(search ? { search: search as string } : {}),
+				...(sortBy ? { sortBy: sortBy as ClubEventsResponse["sortBy"] } : {}),
+				sortOrder: sortOrder === "asc" ? "asc" : "desc",
 			},
 		},
-		...(search
-			? {
-					OR: [
-						{ name: { contains: search as string, mode: "insensitive" } },
-						{
-							description: {
-								contains: search as string,
-								mode: "insensitive",
-							},
-						},
-						{ location: { contains: search as string, mode: "insensitive" } },
-					],
-				}
-			: {}),
-	} satisfies Prisma.EventWhereInput;
-
-	const orderBy: Prisma.EventOrderByWithRelationInput = sortBy
-		? {
-				[sortBy as string]: sortOrder ?? "asc",
-			}
-		: { dateStart: "desc" };
-
-	const events = await prisma.event.findMany({
-		where,
-		orderBy,
-		include: {
-			_count: {
-				select: {
-					eventRegistration: true,
-				},
-			},
-		},
-		take: pageSize,
-		skip: (currentPage - 1) * pageSize,
 	});
 
-	const totalEvents = await prisma.event.count({ where });
+	const events = data?.events ?? [];
+	const totalEvents = data?.pagination.total ?? 0;
 
 	return (
 		<EventsTable

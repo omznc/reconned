@@ -1,6 +1,5 @@
 "use client";
 
-import type { InviteStatus } from "@generated/client";
 import { Ban } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
@@ -9,8 +8,10 @@ import { toast } from "sonner";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
+import type { InviteStatus } from "@/lib/api-type-helpers";
 import { ClubInviteActions } from "./club-invite-actions.tsx";
-import { revokeInvitation } from "./invitations.action.tsx";
 
 interface FormattedInvite {
 	id: string;
@@ -61,17 +62,26 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 			return;
 		}
 
-		const response = await revokeInvitation({
-			inviteId: invite.id,
-			clubId: clubId,
-		});
+		try {
+			const { error } = await apiClient.PUT("/api/clubs/{id}/invites/{inviteId}/revoke", {
+				params: {
+					path: {
+						id: clubId,
+						inviteId: invite.id,
+					},
+				},
+			});
 
-		if (!response?.data?.success) {
-			toast.error(response?.data?.error || t("An error occurred while revoking the invitation"));
-			return;
+			if (error) {
+				throw new ActionError(error.error || t("An error occurred while revoking the invitation"));
+			}
+
+			toast.success(t("Invitation successfully revoked"));
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : t("An error occurred while revoking the invitation");
+			toast.error(message);
 		}
-
-		toast.success(t("Invitation successfully revoked"));
 	};
 
 	return (

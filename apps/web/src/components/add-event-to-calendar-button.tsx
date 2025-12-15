@@ -1,13 +1,13 @@
 "use client";
 
-import type { ClubRule, Event } from "@generated/client";
 import { AddToCalendarButton as CalendarButtonBase } from "add-to-calendar-button-react";
 import { format } from "date-fns";
 import { useExtracted } from "next-intl";
+import type { ClubRule, Event } from "@/lib/api-type-helpers";
 
 export default function AddEventToCalendarButton({ event }: { event: Event & { rules: ClubRule[] } }) {
 	const t = useExtracted();
-	const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
+	const formatDate = (date: string) => format(new Date(date), "yyyy-MM-dd");
 
 	const startDate = formatDate(event.dateStart);
 	let description = `${event.description}\n\n`;
@@ -43,7 +43,7 @@ export default function AddEventToCalendarButton({ event }: { event: Event & { r
 		description += "\n";
 	}
 
-	if (event.gearRequirements.length > 0) {
+	if (event.gearRequirements && event.gearRequirements.length > 0) {
 		description += `${t("Equipment")}:\n`;
 		for (const gear of event.gearRequirements) {
 			// @ts-expect-error

@@ -1,6 +1,5 @@
 "use client";
 
-import type { ClubMembership } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
 import { bs, enUS } from "date-fns/locale";
@@ -29,6 +28,7 @@ import {
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import apiClient from "@/lib/api";
+import type { ClubMembership } from "@/lib/api-type-helpers";
 
 interface MembershipExtensionFormProps {
 	clubId: string;

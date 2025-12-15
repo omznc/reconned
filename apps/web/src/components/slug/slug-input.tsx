@@ -30,11 +30,10 @@ export function SlugInput(props: SlugInputProps) {
 		validateSlug({
 			type: props.type,
 			slug: debouncedSlug,
-		}).then((resp) => {
-			const valid = resp?.data ?? false;
-			setValid(valid);
-			props.onValidityChange(valid);
-			if (valid) {
+		}).then((isAvailable) => {
+			setValid(isAvailable);
+			props.onValidityChange(isAvailable);
+			if (isAvailable) {
 				props.onValid(debouncedSlug);
 			}
 		});

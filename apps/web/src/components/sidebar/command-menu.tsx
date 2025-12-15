@@ -1,6 +1,5 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import type { User } from "better-auth";
 import Fuse from "fuse.js";
 import { Building2, Settings, Square } from "lucide-react";
@@ -38,6 +37,7 @@ import {
 } from "@/components/ui/command";
 import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
+import type { Club } from "@/lib/api-type-helpers";
 
 interface CommandMenuProps {
 	clubs: Club[];

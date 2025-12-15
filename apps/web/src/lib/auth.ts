@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { fetchManagedClubs } from "@/app/api/club/managed/fetch-managed-clubs";
+import apiClient from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 
 export const isAuthenticated = async () => {
@@ -14,7 +14,10 @@ export const isAuthenticated = async () => {
 		return null;
 	}
 
-	const managedClubs = await fetchManagedClubs(result.data.user.id);
+	// Fetch managed clubs from backend API
+	const { data: managedClubsData } = await apiClient.GET("/api/users/me/managed-clubs", {});
+
+	const managedClubs = managedClubsData?.clubIds || [];
 
 	return {
 		...result.data.user,

@@ -1,10 +1,5 @@
 import "server-only";
 import type { JsonValue } from "@prisma/client/runtime/client";
-import { headers } from "next/headers";
-import { after } from "next/server";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { logger } from "./logger";
 
 type ClubActionType =
 	| "CLUB_CREATE"
@@ -45,31 +40,7 @@ interface AuditLogOptions {
  * This runs with `after` so you can call it whenever
  */
 export async function logClubAudit({ clubId, actionType, actionData }: AuditLogOptions) {
-	// You can't use `headers` in the `after()` callback, so we call it here.
-	const headersList = await headers();
-
-	after(async () => {
-		try {
-			const user = await isAuthenticated();
-			if (!user) {
-				return;
-			}
-
-			const ipAddress = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "unknown";
-			const userAgent = headersList.get("user-agent") || "unknown";
-
-			await prisma.clubAuditLog.create({
-				data: {
-					userId: user.id,
-					clubId,
-					actionType,
-					actionData: actionData ?? {},
-					ipAddress,
-					userAgent,
-				},
-			});
-		} catch (error) {
-			logger.error("Failed to create audit log", { error, actionType, clubId, actionData });
-		}
-	});
+	void clubId;
+	void actionType;
+	void actionData;
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import type { Post } from "@generated/client";
 import { formatRelative } from "date-fns";
 import { bs } from "date-fns/locale";
 import { Pencil } from "lucide-react";
@@ -8,6 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import type { Post } from "@/lib/api-type-helpers";
 import "@/components/editor/editor.css";
 import DOMPurify from "isomorphic-dompurify";
 import { useExtracted } from "next-intl";
@@ -15,7 +15,7 @@ import { useOverflow } from "@/hooks/use-overflow";
 import { cn } from "@/lib/utils";
 
 interface ClubPostProps {
-	post: Post & { createdAt: Date };
+	post: Post;
 	clubId: string;
 	isManager?: boolean;
 }
@@ -32,7 +32,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					<h3 className="font-medium">{post.title}</h3>
 					<p className="text-sm text-muted-foreground">
 						{t("Posted on {date}", {
-							date: formatRelative(post.createdAt, new Date(), {
+							date: formatRelative(new Date(post.createdAt), new Date(), {
 								locale: bs,
 							}),
 						})}
@@ -54,7 +54,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 						__html: DOMPurify.sanitize(post.content),
 					}}
 				/>
-				{post.images?.length > 0 && post.images[0] && (
+				{post.images && post.images.length > 0 && post.images[0] && (
 					<div className="relative w-full">
 						<Image
 							src={post.images[0]}

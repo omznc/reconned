@@ -9,12 +9,13 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
-import { promoteToManager } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.action";
 import { promoteToManagerSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type Member = {
@@ -32,7 +33,7 @@ async function searchMembers(clubId: string, query: string) {
 	if (!response.ok) {
 		throw new ActionError("Neuspjela pretraga članova");
 	}
-	return response.json();
+	return (await response.json()) as Member[];
 }
 
 export function AddManagerForm() {
@@ -77,11 +78,20 @@ export function AddManagerForm() {
 
 	async function onSubmit(values: z.infer<typeof promoteToManagerSchema>) {
 		try {
-			const response = await promoteToManager(values);
+			const { error } = await apiClient.PUT("/api/clubs/{id}/members/{memberId}", {
+				params: {
+					path: {
+						id: values.clubId,
+						memberId: values.memberId,
+					},
+				},
+				body: {
+					role: "MANAGER",
+				},
+			});
 
-			if (!response?.data?.success) {
-				toast.error(response?.data?.error || t("There's been a problem while promoting that user, try again."));
-				return;
+			if (error) {
+				throw new ActionError(error.error || t("There's been a problem while promoting that user, try again."));
 			}
 
 			toast(t("Successfully promoted to manager"));

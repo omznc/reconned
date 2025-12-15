@@ -1,69 +1,41 @@
-import type { Prisma } from "@generated/client";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { prisma } from "@/lib/prisma";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { ClubsSheet } from "./_components/clubs.sheet.tsx";
 import { ClubsTable } from "./_components/clubs.table.tsx";
 
+type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
+
 export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
-	const searchParams = await props.searchParams;
-	const { search, sortBy, sortOrder, page, clubId, perPage } = await searchParams;
+	const { search, sortBy, sortOrder, page, clubId, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const where = {
-		...(search
-			? {
-					OR: [
-						{
-							name: {
-								contains: search as string,
-								mode: "insensitive" as const,
-							},
-						},
-						{
-							location: {
-								contains: search as string,
-								mode: "insensitive" as const,
-							},
-						},
-					],
-				}
-			: {}),
-		members: {
-			some: {
-				role: "CLUB_OWNER" as const,
+	const { data: listData } = await apiClient.GET("/api/admin/clubs", {
+		params: {
+			query: {
+				page: currentPage,
+				perPage: pageSize,
+				...(search ? { search: search as string } : {}),
+				...(sortBy ? { sortBy: sortBy as "name" | "location" | "createdAt" } : {}),
+				sortOrder: sortOrder === "asc" ? "asc" : "desc",
 			},
 		},
-	};
-
-	const orderBy: Prisma.ClubOrderByWithRelationInput = sortBy
-		? { [sortBy as string]: sortOrder ?? ("asc" as "asc" | "desc") }
-		: { createdAt: "desc" };
-
-	const clubs = await prisma.club.findMany({
-		where,
-		orderBy,
-		take: pageSize,
-		skip: (currentPage - 1) * pageSize,
 	});
 
-	const totalClubs = await prisma.club.count({ where });
+	const clubs = (listData?.clubs ?? []) as AdminClub[];
+	const totalClubs = listData?.pagination.total ?? 0;
 
-	// Fetch selected club separately if clubId is present
 	const selectedClub = clubId
-		? await prisma.club.findUnique({
-				where: {
-					id: clubId as string,
-					members: {
-						some: {
-							role: "CLUB_OWNER" as const,
-						},
+		? (
+				await apiClient.GET("/api/admin/clubs/{id}", {
+					params: {
+						path: { id: clubId as string },
 					},
-				},
-			})
-		: null;
+				})
+			).data
+		: undefined;
 
 	return (
 		<>

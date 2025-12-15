@@ -13,8 +13,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { demoteFromManager } from "./manager.action.tsx";
 
 type Role = "CLUB_OWNER" | "MANAGER" | "USER";
 
@@ -54,17 +55,28 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 			return;
 		}
 
-		const response = await demoteFromManager({
-			memberId: manager.id,
-			clubId: params.clubId,
-		});
+		try {
+			const { error } = await apiClient.PUT("/api/clubs/{id}/members/{memberId}", {
+				params: {
+					path: {
+						id: params.clubId,
+						memberId: manager.id,
+					},
+				},
+				body: {
+					role: "USER",
+				},
+			});
 
-		if (!response?.data?.success) {
-			toast.error(response?.data?.error || "Neuspjelo demotovanje menadžera.");
-			return;
+			if (error) {
+				throw new ActionError(error.error ?? "Neuspjelo demotovanje menadžera.");
+			}
+
+			toast.success("Menadžer je uspješno demotovan u korisnika.");
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Neuspjelo demotovanje menadžera.";
+			toast.error(message);
 		}
-
-		toast.success("Menadžer je uspješno demotovan u korisnika.");
 	};
 
 	return (

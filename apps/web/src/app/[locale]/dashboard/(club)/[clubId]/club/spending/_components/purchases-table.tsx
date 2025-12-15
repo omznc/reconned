@@ -1,6 +1,5 @@
 "use client";
 
-import type { ClubPurchase } from "@generated/client";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useExtracted } from "next-intl";
@@ -18,7 +17,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/navigation";
-import { deletePurchase } from "./spending.action.ts";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
+import type { ClubPurchase } from "@/lib/api-type-helpers";
 
 interface PurchasesTableProps {
 	purchases: ClubPurchase[];
@@ -155,17 +156,34 @@ export function PurchasesTable(props: PurchasesTableProps) {
 													return;
 												}
 
-												return deletePurchase({
-													id: row.id,
-													clubId: row.clubId,
-												}).then((result) => {
-													if (result?.data) {
-														toast.success(t("Expense successfully deleted"));
-														router.refresh();
-													} else {
-														toast.error(t("Error while deleting expense item"));
+												try {
+													const { error } = await apiClient.DELETE(
+														"/api/clubs/{id}/purchases/{purchaseId}",
+														{
+															params: {
+																path: {
+																	id: row.clubId,
+																	purchaseId: row.id,
+																},
+															},
+														},
+													);
+
+													if (error) {
+														throw new ActionError(
+															error.error ?? t("Error while deleting expense item"),
+														);
 													}
-												});
+
+													toast.success(t("Expense successfully deleted"));
+													router.refresh();
+												} catch (error) {
+													const message =
+														error instanceof Error
+															? error.message
+															: t("Error while deleting expense item");
+													toast.error(message);
+												}
 											}}
 										>
 											<Trash2 className="size-4 mr-2" />

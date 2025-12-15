@@ -47,7 +47,7 @@ export class AppError extends Error {
 	public readonly code: string;
 	public readonly statusCode: number;
 	public readonly details?: unknown;
-	public readonly cause?: unknown;
+	public override readonly cause?: unknown;
 
 	constructor(code: string, message: string, statusCode: number, details?: unknown, cause?: unknown) {
 		super(message);

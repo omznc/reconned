@@ -14,6 +14,7 @@ import { countriesRouter } from "./routes/countries";
 import { dashboardRouter } from "./routes/dashboard";
 import { eventsRouter } from "./routes/events";
 import { publicRouter } from "./routes/public";
+import { reviewsRouter } from "./routes/reviews";
 import { usersRouter } from "./routes/users";
 import { utilsRouter } from "./routes/utils";
 
@@ -57,6 +58,7 @@ async function handleRequest(request: Request): Promise<Response> {
 			usersRouter,
 			clubsRouter,
 			eventsRouter,
+			reviewsRouter,
 			dashboardRouter,
 			utilsRouter,
 			adminRouter,
@@ -119,6 +121,7 @@ mainRouter.use(countriesRouter);
 mainRouter.use(usersRouter);
 mainRouter.use(clubsRouter);
 mainRouter.use(eventsRouter);
+mainRouter.use(reviewsRouter);
 mainRouter.use(dashboardRouter);
 mainRouter.use(utilsRouter);
 mainRouter.use(adminRouter);

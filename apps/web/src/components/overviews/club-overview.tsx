@@ -1,22 +1,9 @@
-import type { Club, ClubMembership, Post, User } from "@generated/client";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
-import {
-	ArrowUpRight,
-	Cog,
-	Eye,
-	EyeOff,
-	Handshake,
-	MailOpenIcon,
-	MapIcon,
-	MapPin,
-	Pencil,
-	Phone,
-	ShieldBan,
-} from "lucide-react";
+import { Cog, Eye, EyeOff, Handshake, MailOpenIcon, MapIcon, MapPin, Pencil, Phone, ShieldBan } from "lucide-react";
 import Image from "next/image";
 import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
-import { AdminIcon, ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
+import { VerifiedClubIcon } from "@/components/icons";
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
 import { ClubPost } from "@/components/overviews/club-post";
@@ -27,19 +14,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
-import { checkAndRefreshToken, getInstagramMedia, type InstagramMedia } from "@/lib/instagram";
+import apiClient, { type ApiResponse } from "@/lib/api";
+import type { ClubMembership, Post } from "@/lib/api-type-helpers";
+
+type InstagramMedia = {
+	id: string;
+	caption: string | null;
+	media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
+	media_url: string;
+	permalink: string;
+	thumbnail_url?: string;
+	timestamp: string;
+	username: string;
+};
+
 import { cn } from "@/lib/utils";
 
 interface ClubOverviewProps {
-	club: Club & {
-		_count: {
-			members: number;
-		};
-		posts: (Post & { createdAt: Date })[];
-		members?: (ClubMembership & {
-			user: Pick<User, "role" | "id" | "image" | "name" | "callsign" | "slug">;
-		})[];
-	};
+	club: ApiResponse<"/api/clubs/{id}", "get">;
 	isManager?: boolean;
 	isMember?: boolean;
 	currentUserMembership?: ClubMembership | null;
@@ -49,18 +41,20 @@ interface ClubOverviewProps {
 
 async function fetchInstagramPhotos(clubId: string): Promise<{ photos: InstagramMedia[]; username: string | null }> {
 	try {
-		// Check token validity and refresh if needed
-		const { token, igBusinessId } = await checkAndRefreshToken(clubId);
+		const { data, error } = await apiClient.GET("/api/clubs/{id}/instagram/media", {
+			params: {
+				path: { id: clubId },
+				query: { limit: 20 },
+			},
+		});
 
-		if (!(token && igBusinessId)) {
+		if (error || !data) {
 			return { photos: [], username: null };
 		}
 
-		// Fetch Instagram photos
-		const instagramMedia = await getInstagramMedia(igBusinessId, token, 20);
 		return {
-			photos: instagramMedia.data || [],
-			username: instagramMedia.data[0]?.username || null,
+			photos: data.media || [],
+			username: data.username || null,
 		};
 	} catch {
 		return { photos: [], username: null };
@@ -87,11 +81,13 @@ export async function ClubOverview({
 	]);
 	const t = await getExtracted();
 	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
-	const posts = club.posts.sort((a, b) => {
-		if (a.createdAt < b.createdAt) {
+	const posts = [...((club as unknown as { posts?: Post[] }).posts ?? [])].sort((a, b) => {
+		const aDate = new Date(a.createdAt).getTime();
+		const bDate = new Date(b.createdAt).getTime();
+		if (aDate < bDate) {
 			return 1;
 		}
-		if (a.createdAt > b.createdAt) {
+		if (aDate > bDate) {
 			return -1;
 		}
 		return 0;
@@ -239,10 +235,10 @@ export async function ClubOverview({
 
 					<div
 						className={cn("grid grid-cols-1 gap-4", {
-							"md:grid-cols-3": (club.members?.length ?? 0) > 0 && club.instagramUsername,
+							"md:grid-cols-3": false && club.instagramUsername,
 						})}
 					>
-						{(club.members?.length ?? 0) > 0 && (
+						{false && (
 							<div className="space-y-4 h-full bg-sidebar border p-4 order-1 md:order-2 md:col-span-1 rounded-md">
 								<div className="flex flex-col gap-2">
 									<div className="flex gap-2 items-center">
@@ -251,67 +247,15 @@ export async function ClubOverview({
 									<p>{t("All members of this club")}</p>
 								</div>
 								<hr />
-								<div className="grid gap-2 max-h-[400px] overflow-auto">
-									{club.members
-										?.sort((a, b) => {
-											if (a.role === "CLUB_OWNER") {
-												return -1;
-											}
-											if (b.role === "CLUB_OWNER") {
-												return 1;
-											}
-											if (a.role === "MANAGER") {
-												return -1;
-											}
-											if (b.role === "MANAGER") {
-												return 1;
-											}
-											return 0;
-										})
-										?.map((membership) => (
-											<Link
-												className="relative flex rounded-md group border p-0.5 border-transparent hover:border-red-500 transiton-all items-center gap-2 h-10"
-												key={membership.user.id}
-												href={`/users/${membership.user.slug ?? membership.user.id}`}
-											>
-												<ArrowUpRight className="h-4 w-4 hidden group-hover:block text-red-500 right-2 top-2 absolute" />
-												{membership.user.image ? (
-													<Image
-														src={membership.user.image}
-														alt={membership.user.name}
-														width={32}
-														height={32}
-														className="size-8 rounded-sm"
-													/>
-												) : (
-													<div className="size-8 bg-muted flex items-center justify-center rounded-sm">
-														<span className="text-xs text-muted-foreground">
-															{membership.user.name.charAt(0)}
-														</span>
-													</div>
-												)}
-												<div className="flex flex-col gap-0">
-													<h3 className="flex items-center gap-2 font-semibold">
-														{membership.user.name}{" "}
-														{membership.user.role === "admin" && <AdminIcon />}{" "}
-														{membership.role === "CLUB_OWNER" && <ClubOwnerIcon />}
-														{membership.role === "MANAGER" && <ClubManagerIcon />}
-													</h3>
-													<p className="text-muted-foreground -mt-2">
-														{membership.user.callsign}
-													</p>
-												</div>
-											</Link>
-										))}
-								</div>
+								<div className="grid gap-2 max-h-[400px] overflow-auto" />
 							</div>
 						)}
 
 						{club.instagramUsername && (
 							<div
 								className={cn("h-full", {
-									"md:col-span-2": (club.members?.length ?? 0) > 0,
-									"md:col-span-3": (club.members?.length ?? 0) === 0,
+									"md:col-span-2": false,
+									"md:col-span-3": true,
 								})}
 							>
 								<div className="border bg-sidebar h-full rounded-md">

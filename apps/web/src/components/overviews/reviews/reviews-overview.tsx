@@ -1,11 +1,10 @@
-import type { Review, User } from "@generated/client";
 import { format } from "date-fns";
 import { Star } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
+import apiClient from "@/lib/api";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { cn } from "@/lib/utils";
 
@@ -20,60 +19,22 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 	if (!FEATURE_FLAGS.REVIEWS) {
 		return;
 	}
-	// Fetch reviews based on type
-	let reviews: (Review & { author: Pick<User, "name" | "image"> })[] = [];
-	switch (type) {
-		case "club": {
-			const club = await prisma.review.findMany({
-				where: { clubId: typeId },
-				include: {
-					author: {
-						select: {
-							name: true,
-							image: true,
-						},
-					},
-				},
-				orderBy: { createdAt: "desc" },
-			});
-			reviews = club;
-			break;
-		}
-		case "event": {
-			const event = await prisma.review.findMany({
-				where: { eventId: typeId },
-				include: {
-					author: {
-						select: {
-							name: true,
-							image: true,
-						},
-					},
-				},
-				orderBy: { createdAt: "desc" },
-			});
-			reviews = event;
-			break;
-		}
-		case "user": {
-			const user = await prisma.review.findMany({
-				where: { userId: typeId },
-				include: {
-					author: {
-						select: {
-							name: true,
-							image: true,
-						},
-					},
-				},
-				orderBy: { createdAt: "desc" },
-			});
-			reviews = user;
-			break;
-		}
-		default:
-			return notFound();
+
+	// Fetch reviews from backend API
+	const { data, error } = await apiClient.GET("/api/reviews/{type}/{id}", {
+		params: {
+			path: {
+				type,
+				id: typeId,
+			},
+		},
+	});
+
+	if (error || !data) {
+		return notFound();
 	}
+
+	const reviews = data.reviews;
 
 	const averageRating =
 		reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
@@ -122,7 +83,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 											{review.content.length > 50 ? "(...)" : ""}
 										</p>
 										<p className="text-xs text-muted-foreground">
-											{review.author.name} • {format(review.createdAt, "dd.MM.yyyy")}
+											{format(review.createdAt, "dd.MM.yyyy")}
 										</p>
 									</div>
 								))}

@@ -1,20 +1,19 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import { ExternalLink, Pencil, Settings } from "lucide-react";
 import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 
+type AdminUnclaimedList = ApiResponse<"/api/admin/unclaimed-clubs", "get">;
+type AdminUnclaimed = AdminUnclaimedList["clubs"][number];
+
 interface UnclaimedClubsTableProps {
-	clubs: (Club & {
-		_count: {
-			members: number;
-		};
-	})[];
+	clubs: AdminUnclaimed[];
 	totalClubs: number;
 	pageSize: number;
 }

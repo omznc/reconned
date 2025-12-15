@@ -1,18 +1,16 @@
 "use client";
-
-import type { Event } from "@generated/client";
 import { Eye, Pen, Users } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
+
+type ClubEventsResponse = ApiResponse<"/api/clubs/{clubId}/events", "get">;
+type ClubEvent = ClubEventsResponse["events"][number];
 
 interface EventsTableProps {
-	events: (Event & {
-		_count: {
-			eventRegistration: number;
-		};
-	})[];
+	events: ClubEvent[];
 	totalEvents: number;
 	clubId: string;
 	pageSize: number;

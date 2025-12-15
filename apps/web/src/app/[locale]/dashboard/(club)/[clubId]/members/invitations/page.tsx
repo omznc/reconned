@@ -1,11 +1,10 @@
-import type { InviteStatus, Prisma } from "@generated/client";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { InvitationsForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.form";
 import { InvitationsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/invitations">) {
 	const params = await props.params;
@@ -16,21 +15,16 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 		return notFound();
 	}
 
-	const club = await prisma.club.findUnique({
-		where: {
-			members: {
-				some: {
-					userId: user.id,
-					role: {
-						in: ["CLUB_OWNER", "MANAGER"],
-					},
-				},
-			},
-			id: params.clubId,
-		},
+	// Check if user is a manager or owner of this club
+	const { data: membershipData, error: membershipError } = await apiClient.GET("/api/clubs/{id}/membership", {
+		params: { path: { id: params.clubId } },
 	});
 
-	if (!club) {
+	if (
+		membershipError ||
+		!membershipData?.membership ||
+		(membershipData.membership.role !== "MANAGER" && membershipData.membership.role !== "CLUB_OWNER")
+	) {
 		return notFound();
 	}
 
@@ -40,69 +34,25 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 			? Number(searchParams.perPage)
 			: 25;
 
-	const where: Prisma.ClubInviteWhereInput = {
-		clubId: params.clubId,
-		...(searchParams.search
-			? {
-					OR: [
-						{
-							email: {
-								contains: searchParams.search as string,
-								mode: "insensitive",
-							},
-						},
-						{
-							user: {
-								name: {
-									contains: searchParams.search as string,
-									mode: "insensitive",
-								},
-							},
-						},
-					],
-				}
-			: {}),
-		...(searchParams.status && searchParams.status !== "all"
-			? {
-					status: searchParams.status as InviteStatus,
-				}
-			: {}),
-	};
-
-	const orderBy: Prisma.ClubInviteOrderByWithRelationInput = searchParams.sortBy
-		? {
-				[searchParams.sortBy as string]: searchParams.sortOrder ?? ("asc" as "asc" | "desc"),
-			}
-		: { createdAt: "desc" };
-
-	const [invitesCount, invites] = await Promise.all([
-		prisma.clubInvite.count({ where }),
-		prisma.clubInvite.findMany({
-			where,
-			orderBy,
-			include: {
-				user: {
-					select: {
-						name: true,
-					},
-				},
-				club: {
-					select: {
-						id: true,
-					},
-				},
+	// Fetch invitations from backend
+	const { data, error } = await apiClient.GET("/api/clubs/{id}/invites", {
+		params: {
+			path: { id: params.clubId },
+			query: {
+				page,
+				perPage: pageSize,
+				search: searchParams.search as string | undefined,
+				status:
+					searchParams.status && searchParams.status !== "all" ? (searchParams.status as string) : undefined,
 			},
-			take: pageSize,
-			skip: (page - 1) * pageSize,
-		}),
-	]);
+		},
+	});
 
-	const formattedInvites = invites.map((invite) => ({
-		...invite,
-		userName: invite.user?.name ?? "",
-	}));
+	if (error || !data) {
+		return <div>Failed to load invitations</div>;
+	}
 
-	return <InvitationsTable invites={formattedInvites} totalPages={Math.ceil(invitesCount / pageSize)} />;
+	return <InvitationsTable invites={data.invites} totalPages={data.pagination.totalPages} />;
 }
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/members/invitations">) {

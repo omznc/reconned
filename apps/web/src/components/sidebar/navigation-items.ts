@@ -1,4 +1,3 @@
-import type { Club } from "@generated/client";
 import {
 	Bell,
 	BookUser,
@@ -24,6 +23,7 @@ import {
 } from "lucide-react";
 import { useExtracted } from "next-intl";
 import type { NavItem } from "@/components/sidebar/types";
+import type { Club } from "@/lib/api-type-helpers";
 
 /**
  * Get application-wide navigation items

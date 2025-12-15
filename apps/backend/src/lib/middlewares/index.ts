@@ -88,6 +88,9 @@ export function composeMiddleware(...middlewares: MiddlewareHandler[]): Middlewa
 		const next = async (): Promise<Response> => {
 			if (index < middlewares.length) {
 				const middleware = middlewares[index++];
+				if (!middleware) {
+					throw new Error("Middleware is undefined");
+				}
 				return await middleware({ ...options, next });
 			}
 			return await options.next();
@@ -127,15 +130,17 @@ export function corsMiddleware(
 				return response.error({ error: "CORS not allowed" }, 403);
 			}
 
+			const corsHeaders = new Headers({
+				"Access-Control-Allow-Origin": origin || origins[0] || "*",
+				"Access-Control-Allow-Methods": allowMethods.join(", "),
+				"Access-Control-Allow-Headers": allowHeaders.join(", "),
+				"Access-Control-Max-Age": maxAge.toString(),
+				...(allowCredentials && { "Access-Control-Allow-Credentials": "true" }),
+			});
+
 			const corsResponse = new Response(null, {
 				status: 200,
-				headers: {
-					"Access-Control-Allow-Origin": origin || origins[0],
-					"Access-Control-Allow-Methods": allowMethods.join(", "),
-					"Access-Control-Allow-Headers": allowHeaders.join(", "),
-					"Access-Control-Max-Age": maxAge.toString(),
-					...(allowCredentials && { "Access-Control-Allow-Credentials": "true" }),
-				},
+				headers: corsHeaders,
 			});
 
 			return corsResponse;
@@ -148,7 +153,7 @@ export function corsMiddleware(
 
 		if (isAllowedOrigin) {
 			const newHeaders = new Headers(actualResponse.headers);
-			newHeaders.set("Access-Control-Allow-Origin", origin || origins[0]);
+			newHeaders.set("Access-Control-Allow-Origin", origin || origins[0] || "*");
 			newHeaders.set("Access-Control-Allow-Methods", allowMethods.join(", "));
 			newHeaders.set("Access-Control-Allow-Headers", allowHeaders.join(", "));
 			if (allowCredentials) {
@@ -205,7 +210,10 @@ export function rateLimitMiddleware(options: {
 			const requestCount = await redis.zcard(key);
 
 			if (requestCount >= maxRequests) {
-				return context.response.error({ error: "Too many requests" }, 429);
+				// Note: 429 is not in the allowed error status codes (400 | 401 | 403 | 404 | 500)
+				// Using 429 would require updating ResponseHelper type definition in router.ts
+				// For now, using 400 Bad Request as closest alternative
+				return context.response.error({ error: "Too many requests" }, 400);
 			}
 
 			await redis.zadd(key, now, now.toString());

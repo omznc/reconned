@@ -1,4 +1,3 @@
-import type { ClubRule, Event } from "@generated/client";
 import { isAfter, isBefore } from "date-fns";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
@@ -13,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
+import type { ClubRule, Event } from "@/lib/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { cn } from "@/lib/utils";

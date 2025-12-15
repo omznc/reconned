@@ -13,7 +13,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 
-	const { data: clubData, error: clubError } = await apiClient.GET("/api/public/clubs/{id}", {
+	const { data: clubData, error: clubError } = await apiClient.GET("/api/clubs/{id}", {
 		params: {
 			path: {
 				id: params.id,
@@ -45,58 +45,15 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		user ? apiClient.GET("/api/clubs/managed") : Promise.resolve({ data: { clubIds: [] }, error: null }),
 	]);
 
+	const club = clubData;
+
 	const isMemberOfClub = !!membershipData?.data?.isMember;
 	const hasOwner = hasOwnerData?.data?.hasOwner ?? false;
 	const managedClubs =
 		managedClubsData?.data && "clubIds" in managedClubsData.data ? managedClubsData.data.clubIds : [];
 
-	const club = {
-		...clubData,
-		createdAt: new Date(clubData.createdAt),
-		updatedAt: new Date(clubData.updatedAt),
-		dateFounded: clubData.dateFounded ? new Date(clubData.dateFounded) : null,
-		instagramTokenExpiry: clubData.instagramTokenExpiry ? new Date(clubData.instagramTokenExpiry) : null,
-		banExpires: clubData.banExpires ? new Date(clubData.banExpires) : null,
-		_count: clubData._count,
-		posts: clubData.posts.map((p) => ({
-			...p,
-			images: p.images ?? [],
-			createdAt: new Date(p.createdAt),
-			updatedAt: new Date(p.updatedAt),
-		})),
-		members: clubData.members
-			.filter((m): m is typeof m & { user: NonNullable<typeof m.user> } => m.user !== null)
-			.map((m) => ({
-				...m,
-				clubId: clubData.id,
-				startDate: null,
-				endDate: null,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				user: {
-					id: m.user.id,
-					name: m.user.name,
-					callsign: m.user.callsign,
-					slug: m.user.slug,
-					image: m.user.image,
-					role: m.user.role,
-				},
-			})),
-	};
-
 	const userMembership =
-		membershipData?.data?.isMember && membershipData?.data?.membership
-			? {
-					id: membershipData.data.membership.id,
-					userId: membershipData.data.membership.userId,
-					clubId: membershipData.data.membership.clubId,
-					role: membershipData.data.membership.role,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					startDate: null,
-					endDate: null,
-				}
-			: null;
+		membershipData?.data?.isMember && membershipData?.data?.membership ? membershipData.data.membership : null;
 
 	if (!club) {
 		notFound();
@@ -115,7 +72,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		sport: "Airsoft",
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
 		logo: club.logo || undefined,
-		foundingDate: club.dateFounded ? club.dateFounded.toISOString() : undefined,
+		foundingDate: club.dateFounded ?? undefined,
 		address: club.location
 			? {
 					"@type": "PostalAddress",
@@ -142,17 +99,6 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 					}
 				: undefined,
 		sameAs: club.website ? [club.website] : undefined,
-		member: club.members
-			.filter(
-				(member): member is typeof member & { user: NonNullable<typeof member.user> } => member.user !== null,
-			)
-			.map((member) => ({
-				"@type": "Person",
-				name: member.user.name,
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${member.user.slug ?? member.user.id}`,
-				image: member.user.image || undefined,
-				additionalName: member.user.callsign || undefined,
-			})),
 		aggregateRating: club.verified
 			? {
 					"@type": "AggregateRating",
@@ -183,7 +129,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const { data: club, error } = await apiClient.GET("/api/public/clubs/{id}", {
+	const { data: club, error } = await apiClient.GET("/api/clubs/{id}", {
 		params: {
 			path: {
 				id: params.id,

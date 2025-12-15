@@ -10,20 +10,13 @@ import {
 	eventInvite,
 	eventRegistration,
 	eventRegistrationToUser,
+	user,
 } from "../drizzle/schema";
 import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
 import { Router, responseSchema } from "../lib/router";
-import {
-	baseClubRuleSchema,
-	baseEventSchema,
-	castClubRuleResults,
-	castEventResult,
-	castEventResults,
-	paginationQuerySchema,
-	paginationResponseSchema,
-} from "../lib/schemas";
+import { baseClubRuleSchema, baseEventSchema, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../lib/storage";
 
 const eventsRouter = new Router();
@@ -90,7 +83,7 @@ eventsRouter.get(
 		const total = totalData[0]?.count || 0;
 
 		return response.json({
-			events: castEventResults(events),
+			events,
 			pagination: {
 				page,
 				perPage,
@@ -153,7 +146,7 @@ eventsRouter.get(
 			? await db.select().from(event).where(whereClause).orderBy(event.dateStart).limit(limit)
 			: await db.select().from(event).orderBy(event.dateStart).limit(limit);
 
-		const eventsWithClubs = await Promise.all(
+		const eventsWithDetails = await Promise.all(
 			events.map(async (e) => {
 				const clubData = await db
 					.select({ name: club.name, verified: club.verified })
@@ -162,14 +155,14 @@ eventsRouter.get(
 					.limit(1);
 
 				return {
-					...castEventResult(e),
+					...e,
 					club: clubData[0] || null,
 				};
 			}),
 		);
 
 		return response.json({
-			events: eventsWithClubs,
+			events: eventsWithDetails,
 		});
 	},
 	{
@@ -214,12 +207,17 @@ eventsRouter.get(
 			.limit(1);
 
 		if (!eventData[0]) {
-			throw apiError.notFound("Event");
+			throw apiError.notFound("Event not found");
 		}
 
 		const eventRecord = eventData[0];
 
-		if (eventRecord.isPrivate && context.user) {
+		// Hide private events from non-members
+		if (eventRecord.isPrivate) {
+			if (!context.user) {
+				throw apiError.notFound("Event not found");
+			}
+
 			const userMembership = await db
 				.select()
 				.from(clubMembership)
@@ -227,10 +225,8 @@ eventsRouter.get(
 				.limit(1);
 
 			if (!userMembership[0]) {
-				throw apiError.notFound("Event");
+				throw apiError.notFound("Event not found");
 			}
-		} else if (eventRecord.isPrivate && !context.user) {
-			throw apiError.notFound("Event");
 		}
 
 		const registrationCount = await db
@@ -238,11 +234,25 @@ eventsRouter.get(
 			.from(eventRegistration)
 			.where(eq(eventRegistration.eventId, eventRecord.id));
 
-		const clubData = await db.select().from(club).where(eq(club.id, eventRecord.clubId)).limit(1);
+		const clubData = await db
+			.select({
+				id: club.id,
+				name: club.name,
+				slug: club.slug,
+				logo: club.logo,
+				verified: club.verified,
+			})
+			.from(club)
+			.where(eq(club.id, eventRecord.clubId))
+			.limit(1);
 
 		return response.json({
-			event: castEventResult(eventRecord),
-			club: clubData[0],
+			event: {
+				...eventRecord,
+				gearRequirements: eventRecord.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
+				mapData: eventRecord.mapData as z.infer<typeof baseEventSchema>["mapData"],
+			},
+			club: clubData[0] || null,
 			registrationCount: Number(registrationCount[0]?.count || 0),
 		});
 	},
@@ -256,8 +266,19 @@ eventsRouter.get(
 			}),
 			response: {
 				200: z.object({
-					event: baseEventSchema,
-					club: z.any(),
+					event: baseEventSchema.extend({
+						gearRequirements: baseEventSchema.shape.gearRequirements,
+						mapData: baseEventSchema.shape.mapData,
+					}),
+					club: z
+						.object({
+							id: z.string(),
+							name: z.string(),
+							slug: z.string().nullable(),
+							logo: z.string().nullable(),
+							verified: z.boolean(),
+						})
+						.nullable(),
 					registrationCount: z.number(),
 				}),
 				400: z.object({ error: z.string() }),
@@ -300,7 +321,7 @@ eventsRouter.get(
 			? await db.select().from(event).where(whereClause).orderBy(event.dateStart).limit(limit)
 			: await db.select().from(event).orderBy(event.dateStart).limit(limit);
 
-		const eventsWithClubs = await Promise.all(
+		const eventsWithDetails = await Promise.all(
 			events.map(async (e) => {
 				const clubData = await db
 					.select({ name: club.name, verified: club.verified })
@@ -309,14 +330,14 @@ eventsRouter.get(
 					.limit(1);
 
 				return {
-					...castEventResult(e),
+					...e,
 					club: clubData[0] || null,
 				};
 			}),
 		);
 
 		return response.json({
-			events: eventsWithClubs,
+			events: eventsWithDetails,
 		});
 	},
 	{
@@ -381,7 +402,7 @@ eventsRouter.get(
 
 		const events = await db.select().from(event).where(whereClause).orderBy(event.dateStart);
 
-		const eventsWithClubs = await Promise.all(
+		const eventsWithDetails = await Promise.all(
 			events.map(async (e) => {
 				const clubData = await db
 					.select({ name: club.name, verified: club.verified })
@@ -390,14 +411,14 @@ eventsRouter.get(
 					.limit(1);
 
 				return {
-					...castEventResult(e),
+					...e,
 					club: clubData[0] || null,
 				};
 			}),
 		);
 
 		return response.json({
-			events: eventsWithClubs,
+			events: eventsWithDetails,
 		});
 	},
 	{
@@ -414,61 +435,6 @@ eventsRouter.get(
 					events: z.array(baseEventSchema),
 				}),
 				400: z.object({ error: z.string() }),
-			},
-		},
-	},
-);
-
-eventsRouter.get(
-	"/api/events/count",
-	async ({ query, context, response }) => {
-		const isPrivateFilter = query?.isPrivate;
-
-		const whereConditions = [];
-
-		if (isPrivateFilter !== null && isPrivateFilter !== undefined) {
-			whereConditions.push(eq(event.isPrivate, isPrivateFilter === "true"));
-		} else if (!context.user) {
-			whereConditions.push(eq(event.isPrivate, false));
-		} else {
-			const userClubMemberships = await db
-				.select({ clubId: clubMembership.clubId })
-				.from(clubMembership)
-				.where(eq(clubMembership.userId, context.user.id));
-
-			const userClubIds = userClubMemberships.map((m) => m.clubId);
-
-			if (userClubIds.length > 0) {
-				const privacyCondition = or(eq(event.isPrivate, false), sql`${event.clubId} = ANY(${userClubIds})`);
-				if (privacyCondition) {
-					whereConditions.push(privacyCondition);
-				}
-			} else {
-				whereConditions.push(eq(event.isPrivate, false));
-			}
-		}
-
-		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const totalData = whereClause
-			? await db.select({ count: count() }).from(event).where(whereClause)
-			: await db.select({ count: count() }).from(event);
-		const total = totalData[0]?.count || 0;
-
-		return response.json({ count: total });
-	},
-	{
-		schema: {
-			tags: ["Events"],
-			summary: "Count events",
-			description: "Count events with optional privacy filtering",
-			query: z.object({
-				isPrivate: z.string().optional(),
-			}),
-			response: {
-				200: z.object({
-					count: z.number(),
-				}),
 			},
 		},
 	},
@@ -569,7 +535,7 @@ eventsRouter.post(
 
 		return response.json({
 			success: true,
-			event: castEventResult(newEvent[0]),
+			event: newEvent[0],
 		});
 	},
 	{
@@ -710,7 +676,7 @@ eventsRouter.put(
 
 		return response.json({
 			success: true,
-			event: castEventResult(updatedEvent[0]),
+			event: updatedEvent[0],
 		});
 	},
 	{
@@ -869,7 +835,7 @@ eventsRouter.get(
 		const total = totalData[0]?.count || 0;
 
 		return response.json({
-			events: castEventResults(events),
+			events,
 			pagination: {
 				page,
 				perPage,
@@ -1253,6 +1219,69 @@ eventsRouter.post(
 	},
 );
 
+eventsRouter.delete(
+	"/api/events/:id/registrations",
+	async ({ params, context, response }) => {
+		const eventId = params.id;
+
+		if (!eventId) {
+			throw apiError.validation("Event ID is required");
+		}
+
+		if (!context.user) {
+			throw apiError.unauthorized("Authentication required");
+		}
+
+		const eventData = await db.select().from(event).where(eq(event.id, eventId)).limit(1);
+
+		if (!eventData[0]) {
+			throw apiError.notFound("Event not found");
+		}
+
+		const existingRegistrationData = await db
+			.select()
+			.from(eventRegistration)
+			.where(and(eq(eventRegistration.eventId, eventId), eq(eventRegistration.createdById, context.user.id)))
+			.limit(1);
+
+		if (!existingRegistrationData[0]) {
+			throw apiError.notFound("Registration not found");
+		}
+
+		const registrationId = existingRegistrationData[0].id;
+
+		await db.transaction(async (tx) => {
+			// Delete related records first
+			await tx.delete(eventRegistrationToUser).where(eq(eventRegistrationToUser.a, registrationId));
+
+			await tx.delete(eventInvite).where(eq(eventInvite.eventRegistrationId, registrationId));
+
+			// Delete the registration
+			await tx.delete(eventRegistration).where(eq(eventRegistration.id, registrationId));
+		});
+
+		return response.json({
+			success: true,
+		});
+	},
+	{
+		schema: {
+			tags: ["Events"],
+			summary: "Delete event registration",
+			description: "Delete the current user's registration for an event",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					success: z.boolean(),
+				}),
+				...responseSchema([400, 401, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
 eventsRouter.put(
 	"/api/events/:id/registrations/:registrationId/attendance",
 	async ({ params, context, body, response }) => {
@@ -1356,8 +1385,78 @@ eventsRouter.get(
 
 		const registrations = await db.select().from(eventRegistration).where(eq(eventRegistration.eventId, eventId));
 
+		// Enhance registrations with invited users and creator info
+		const registrationsWithDetails = await Promise.all(
+			registrations.map(async (registration) => {
+				// Get creator info
+				const creatorData = await db
+					.select({
+						id: user.id,
+						name: user.name,
+						email: user.email,
+						callsign: user.callsign,
+						image: user.image,
+					})
+					.from(user)
+					.where(eq(user.id, registration.createdById))
+					.limit(1);
+
+				// Get invited users (on platform)
+				const invitedUsersData = await db
+					.select()
+					.from(eventRegistrationToUser)
+					.where(eq(eventRegistrationToUser.a, registration.id));
+
+				const invitedUsers = await Promise.all(
+					invitedUsersData.map(async (regToUser) => {
+						const userData = await db
+							.select({
+								id: user.id,
+								name: user.name,
+								email: user.email,
+								callsign: user.callsign,
+								image: user.image,
+							})
+							.from(user)
+							.where(eq(user.id, regToUser.b))
+							.limit(1);
+						return userData[0];
+					}),
+				);
+
+				// Get invited users not on platform
+				const invitedUsersNotOnApp = await db
+					.select()
+					.from(eventInvite)
+					.where(eq(eventInvite.eventRegistrationId, registration.id));
+
+				return {
+					...registration,
+					createdBy: creatorData[0]
+						? {
+								id: String(creatorData[0].id),
+								name: String(creatorData[0].name),
+								email: String(creatorData[0].email),
+								callsign: creatorData[0].callsign ? String(creatorData[0].callsign) : null,
+								image: creatorData[0].image ? String(creatorData[0].image) : null,
+							}
+						: null,
+					invitedUsers: invitedUsers
+						.filter((u): u is NonNullable<typeof u> => u !== undefined)
+						.map((u) => ({
+							id: String(u.id),
+							name: String(u.name),
+							email: String(u.email),
+							callsign: u.callsign ? String(u.callsign) : null,
+							image: u.image ? String(u.image) : null,
+						})),
+					invitedUsersNotOnApp,
+				};
+			}),
+		);
+
 		return response.json({
-			registrations,
+			registrations: registrationsWithDetails,
 		});
 	},
 	{
@@ -1371,7 +1470,40 @@ eventsRouter.get(
 			}),
 			response: {
 				200: z.object({
-					registrations: z.array(baseEventRegistrationSchema),
+					registrations: z.array(
+						baseEventRegistrationSchema.extend({
+							createdBy: z
+								.object({
+									id: z.string(),
+									name: z.string(),
+									email: z.string(),
+									callsign: z.string().nullable(),
+									image: z.string().nullable(),
+								})
+								.nullable(),
+							invitedUsers: z.array(
+								z.object({
+									id: z.string(),
+									name: z.string(),
+									email: z.string(),
+									callsign: z.string().nullable(),
+									image: z.string().nullable(),
+								}),
+							),
+							invitedUsersNotOnApp: z.array(
+								z.object({
+									id: z.string(),
+									eventId: z.string(),
+									eventRegistrationId: z.string().nullable(),
+									email: z.string(),
+									name: z.string(),
+									createdAt: z.string(),
+									updatedAt: z.string(),
+									expiresAt: z.string(),
+								}),
+							),
+						}),
+					),
 				}),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
@@ -1426,7 +1558,7 @@ eventsRouter.get(
 		const rules = await db.select().from(clubRule).where(eq(clubRule.eventId, eventId));
 
 		return response.json({
-			rules: castClubRuleResults(rules),
+			rules,
 		});
 	},
 	{
@@ -1442,6 +1574,153 @@ eventsRouter.get(
 					rules: z.array(baseClubRuleSchema),
 				}),
 				400: z.object({ error: z.string() }),
+			},
+		},
+	},
+);
+
+eventsRouter.get(
+	"/api/events/:id/apply-data",
+	async ({ params, context, response }) => {
+		const eventId = params.id;
+
+		if (!eventId) {
+			throw apiError.validation("Event ID is required");
+		}
+
+		if (!context.user) {
+			throw apiError.unauthorized("Authentication required");
+		}
+
+		// Get event with conditional private check
+		const eventData = await db
+			.select()
+			.from(event)
+			.where(or(eq(event.id, eventId), eq(event.slug, eventId)))
+			.limit(1);
+
+		if (!eventData[0]) {
+			throw apiError.notFound("Event");
+		}
+
+		const eventRecord = eventData[0];
+
+		// Check if user has access to private event
+		if (eventRecord.isPrivate) {
+			const userMembership = await db
+				.select()
+				.from(clubMembership)
+				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
+				.limit(1);
+
+			if (!userMembership[0]) {
+				throw apiError.notFound("Event");
+			}
+		}
+
+		// Get event rules
+		const rules = await db.select().from(clubRule).where(eq(clubRule.eventId, eventRecord.id));
+
+		// Get club info
+		const clubData = await db.select().from(club).where(eq(club.id, eventRecord.clubId)).limit(1);
+
+		// Get existing registration for this user
+		const existingRegistration = await db
+			.select()
+			.from(eventRegistration)
+			.where(
+				and(eq(eventRegistration.eventId, eventRecord.id), eq(eventRegistration.createdById, context.user.id)),
+			)
+			.limit(1);
+
+		let registrationWithInvites = null;
+
+		if (existingRegistration[0]) {
+			// Get invited users (on platform)
+			const invitedUsersData = await db
+				.select()
+				.from(eventRegistrationToUser)
+				.where(eq(eventRegistrationToUser.a, existingRegistration[0].id));
+
+			const invitedUsers = (
+				await Promise.all(
+					invitedUsersData.map(async (regToUser) => {
+						const userData = await db
+							.select({
+								id: user.id,
+								name: user.name,
+								email: user.email,
+								callsign: user.callsign,
+								image: user.image,
+							})
+							.from(user)
+							.where(eq(user.id, regToUser.b))
+							.limit(1);
+						return userData[0];
+					}),
+				)
+			).filter(
+				(
+					u,
+				): u is {
+					id: string;
+					name: string;
+					email: string;
+					callsign: string | null;
+					image: string | null;
+				} => u !== undefined,
+			);
+
+			// Get invited users not on platform
+			const invitedUsersNotOnApp = await db
+				.select()
+				.from(eventInvite)
+				.where(eq(eventInvite.eventRegistrationId, existingRegistration[0].id));
+
+			registrationWithInvites = {
+				...existingRegistration[0],
+				invitedUsers,
+				invitedUsersNotOnApp,
+			};
+		}
+
+		return response.json({
+			event: {
+				...eventRecord,
+				club: clubData[0]
+					? {
+							id: clubData[0].id,
+						}
+					: undefined,
+				rules,
+			},
+			existingRegistration: registrationWithInvites,
+		});
+	},
+	{
+		schema: {
+			tags: ["Events"],
+			summary: "Get event application data",
+			description:
+				"Get event details with rules and user's existing registration for the application form. Requires authentication.",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					event: baseEventSchema.extend({
+						club: z
+							.object({
+								id: z.string(),
+							})
+							.optional(),
+						rules: z.array(baseClubRuleSchema),
+					}),
+					existingRegistration: z.any().nullable(),
+				}),
+				400: z.object({ error: z.string() }),
+				401: z.object({ error: z.string() }),
+				404: z.object({ error: z.string() }),
 			},
 		},
 	},

@@ -12,6 +12,7 @@ import {
 	clubRule,
 	event,
 	eventRegistration,
+	instagramPageSelection,
 	post,
 	user,
 } from "../drizzle/schema";
@@ -20,6 +21,14 @@ import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
 import { env } from "../lib/env";
 import { apiError } from "../lib/errors";
+import {
+	debugToken,
+	exchangeCodeForToken,
+	exchangeForLongLivedToken,
+	getInstagramBusinessAccount,
+	getNonExpiringPageAccessToken,
+	getUserPages,
+} from "../lib/instagram";
 import { sendEmail } from "../lib/mail";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
@@ -1124,12 +1133,12 @@ clubsRouter.get(
 				FROM dates
 				WHERE date < DATE(NOW())
 			)
-			SELECT 
+			SELECT
 				d.date::date as date,
 				COUNT(DISTINCT cm.id)::integer as count
 			FROM dates d
-			LEFT JOIN "ClubMembership" cm ON 
-				DATE(cm."createdAt") <= d.date::date 
+			LEFT JOIN "ClubMembership" cm ON
+				DATE(cm."createdAt") <= d.date::date
 				AND cm."clubId" = ${clubId}
 			GROUP BY d.date
 			ORDER BY d.date ASC
@@ -1152,12 +1161,12 @@ clubsRouter.get(
 				FROM months
 				WHERE month < DATE_TRUNC('month', NOW())
 			)
-			SELECT 
+			SELECT
 				m.month,
 				COUNT(e.id)::integer as count
 			FROM months m
-			LEFT JOIN "Event" e ON 
-				DATE_TRUNC('month', e."dateStart") = m.month 
+			LEFT JOIN "Event" e ON
+				DATE_TRUNC('month', e."dateStart") = m.month
 				AND e."clubId" = ${clubId}
 			GROUP BY m.month
 			ORDER BY m.month ASC
@@ -2631,7 +2640,7 @@ async function validateSlug(slug: string, excludeClubId?: string): Promise<boole
 
 clubsRouter.get(
 	"/api/clubs/:id",
-	async ({ params, response }) => {
+	async ({ params, response, context }) => {
 		const clubId = params.id;
 
 		if (!clubId) {
@@ -2646,6 +2655,23 @@ clubsRouter.get(
 
 		if (!clubData[0]) {
 			throw apiError.notFound("Club not found");
+		}
+
+		// Do not expose private clubs to non-members
+		if (clubData[0].isPrivate) {
+			if (!context.user) {
+				throw apiError.notFound("Club not found");
+			}
+
+			const membership = await db
+				.select()
+				.from(clubMembership)
+				.where(and(eq(clubMembership.clubId, clubData[0].id), eq(clubMembership.userId, context.user.id)))
+				.limit(1);
+
+			if (!membership[0]) {
+				throw apiError.notFound("Club not found");
+			}
 		}
 
 		const membersCount = await db
@@ -2668,7 +2694,7 @@ clubsRouter.get(
 		schema: {
 			tags: ["Clubs"],
 			summary: "Get club by ID or slug",
-			description: "Get club information by ID or slug",
+			description: "Get club information by ID or slug (private clubs hidden from non-members)",
 			params: z.object({
 				id: z.string(),
 			}),
@@ -3607,36 +3633,6 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/count",
-	async ({ query, response }) => {
-		const isPrivate = query?.isPrivate;
-
-		const whereClause =
-			isPrivate === "true" || isPrivate === "false" ? eq(club.isPrivate, isPrivate === "true") : undefined;
-
-		const totalData = await db.select({ count: count() }).from(club).where(whereClause);
-
-		return response.json({ count: totalData[0]?.count || 0 });
-	},
-	{
-		auth: false,
-		schema: {
-			tags: ["Clubs"],
-			summary: "Count clubs",
-			description: "Get count of clubs with optional filters",
-			query: z.object({
-				isPrivate: z.string().optional(),
-			}),
-			response: {
-				200: z.object({
-					count: z.number(),
-				}),
-			},
-		},
-	},
-);
-
-clubsRouter.get(
 	"/api/clubs/:clubId/events",
 	async ({ params, response, context, query }) => {
 		const clubId = params.clubId;
@@ -3842,12 +3838,12 @@ clubsRouter.get(
 				FROM dates
 				WHERE date < DATE(NOW())
 			)
-			SELECT 
+			SELECT
 				d.date::date as date,
 				COUNT(DISTINCT cm.id)::int as count
 			FROM dates d
-			LEFT JOIN "ClubMembership" cm ON 
-				DATE(cm."createdAt") <= d.date::date 
+			LEFT JOIN "ClubMembership" cm ON
+				DATE(cm."createdAt") <= d.date::date
 				AND cm."clubId" = ${clubId}
 			GROUP BY d.date
 			ORDER BY d.date ASC
@@ -3870,12 +3866,12 @@ clubsRouter.get(
 				FROM months
 				WHERE month < DATE_TRUNC('month', NOW())
 			)
-			SELECT 
+			SELECT
 				m.month,
 				COUNT(e.id)::int as count
 			FROM months m
-			LEFT JOIN "Event" e ON 
-				DATE_TRUNC('month', e."dateStart") = m.month 
+			LEFT JOIN "Event" e ON
+				DATE_TRUNC('month', e."dateStart") = m.month
 				AND e."clubId" = ${clubId}
 			GROUP BY m.month
 			ORDER BY m.month ASC
@@ -4083,95 +4079,6 @@ clubsRouter.get(
 						}),
 					),
 					pagination: paginationResponseSchema,
-				}),
-				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
-			},
-		},
-	},
-);
-
-const addMemberBodySchema = z.object({
-	userId: z.string(),
-	role: z.enum(["USER", "MANAGER", "CLUB_OWNER"]).optional(),
-});
-
-clubsRouter.post(
-	"/api/clubs/:id/members",
-	async ({ params, context, body, response }) => {
-		const clubId = params.id;
-
-		if (!clubId) {
-			throw apiError.validation("Club ID is required");
-		}
-
-		const existingMembershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, body.userId)))
-			.limit(1);
-
-		if (existingMembershipData[0]) {
-			throw apiError.validation("User is already a member of this club");
-		}
-
-		const managerMembershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
-
-		const newMembership = await db
-			.insert(clubMembership)
-			.values({
-				id: randomUUIDv7(),
-				clubId,
-				userId: body.userId,
-				role: body.role || "USER",
-				startDate: new Date().toISOString(),
-				createdAt: new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
-			})
-			.returning();
-
-		await logClubAudit({
-			clubId,
-			actionType: "MEMBER_ADD",
-			actionData: {
-				userId: body.userId,
-				role: body.role || "USER",
-			},
-			userId: context.user.id,
-		});
-
-		if (!newMembership[0]) {
-			throw apiError.internal("Failed to add member");
-		}
-
-		return response.json({
-			success: true,
-			membership: newMembership[0],
-		});
-	},
-	{
-		auth: true,
-		schema: {
-			tags: ["Clubs"],
-			summary: "Add member to club",
-			description: "Add a member to a club",
-			params: z.object({
-				id: z.string(),
-			}),
-			body: addMemberBodySchema,
-			response: {
-				200: z.object({
-					success: z.boolean(),
-					membership: baseClubMembershipSchema,
 				}),
 				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
 			},
@@ -4528,6 +4435,627 @@ clubsRouter.get(
 					igBusinessId: z.string().nullable(),
 				}),
 				...responseSchema([400, 401, 403, 404, 500], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.post(
+	"/api/clubs/:id/instagram/exchange-code",
+	async ({ params, body, response }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const { code } = body;
+
+		const shortLivedTokenResponse = await exchangeCodeForToken(code);
+		const longLivedTokenResponse = await exchangeForLongLivedToken(shortLivedTokenResponse.access_token);
+		const pagesResponse = await getUserPages(longLivedTokenResponse.access_token);
+
+		if (!pagesResponse.data || pagesResponse.data.length === 0) {
+			return response.json({
+				outcome: "NO_PAGES",
+				sessionId: null,
+				pages: [],
+				page: null,
+				accessToken: null,
+			});
+		}
+
+		if (pagesResponse.data.length === 1) {
+			const page = pagesResponse.data[0];
+			if (!page) {
+				return response.json({
+					outcome: "NO_PAGES",
+					sessionId: null,
+					pages: [],
+					page: null,
+					accessToken: null,
+				});
+			}
+
+			// For single page, return access token so client can proceed to selection directly
+			return response.json({
+				outcome: "SINGLE_PAGE",
+				sessionId: null,
+				pages: [],
+				page: { id: page.id, name: page.name },
+				accessToken: longLivedTokenResponse.access_token,
+			});
+		}
+
+		// Multiple pages: store in DB and return session ID
+		const sessionId = randomUUIDv7();
+		await db.insert(instagramPageSelection).values({
+			id: sessionId,
+			clubId,
+			accessToken: longLivedTokenResponse.access_token,
+			pages: JSON.stringify(pagesResponse.data),
+			expiresAt: new Date(Date.now() + 1000 * 60 * 15).toISOString(), // 15 minutes
+			createdAt: new Date().toISOString(),
+		});
+
+		return response.json({
+			outcome: "MULTIPLE_PAGES",
+			sessionId,
+			pages: pagesResponse.data.map((p) => ({ id: p.id, name: p.name })),
+			page: null,
+			accessToken: null,
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Exchange Instagram auth code",
+			description: "Exchange auth code for token and get pages",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: z.object({
+				code: z.string(),
+			}),
+			response: {
+				200: z.object({
+					outcome: z.enum(["SINGLE_PAGE", "MULTIPLE_PAGES", "NO_PAGES"]),
+					sessionId: z.string().nullable(),
+					pages: z.array(z.object({ id: z.string(), name: z.string() })).default([]),
+					page: z.object({ id: z.string(), name: z.string() }).nullable(),
+					accessToken: z.string().nullable(),
+				}),
+				...responseSchema([400, 401, 500], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.post(
+	"/api/clubs/:id/instagram/select-page",
+	async ({ params, body, response, context }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const { pageId, accessToken, sessionId } = body;
+
+		let validAccessToken = accessToken;
+
+		// If session ID provided, look up token
+		if (sessionId && !accessToken) {
+			const session = await db
+				.select()
+				.from(instagramPageSelection)
+				.where(eq(instagramPageSelection.id, sessionId))
+				.limit(1);
+
+			if (!session[0]) {
+				throw apiError.validation("Invalid or expired session");
+			}
+			validAccessToken = session[0].accessToken;
+		}
+
+		if (!validAccessToken) {
+			throw apiError.validation("Access token or session ID required");
+		}
+
+		const nonExpiringToken = await getNonExpiringPageAccessToken(validAccessToken, pageId);
+
+		// First check if the Instagram business account exists on the page
+		const igBusinessResponse = await getInstagramBusinessAccount(pageId, nonExpiringToken);
+
+		if (!igBusinessResponse?.instagram_business_account?.id) {
+			// This covers both personal account and no business account cases reasonably well for the API
+			// Frontend can differentiate error messages if needed based on additional info, but strict check here
+			throw apiError.validation("No Instagram Business Account found connected to this Facebook Page.");
+		}
+
+		const tokenInfo = await debugToken(nonExpiringToken);
+		const isPermanentToken = !tokenInfo.data.expires_at || tokenInfo.data.expires_at === 0;
+
+		await db
+			.update(club)
+			.set({
+				instagramUsername: igBusinessResponse.instagram_business_account.username,
+				instagramProfilePictureUrl: igBusinessResponse.instagram_business_account.profile_picture_url,
+				instagramAccessToken: nonExpiringToken,
+				instagramConnected: true,
+				instagramTokenExpiry: isPermanentToken
+					? null
+					: new Date((tokenInfo.data.expires_at ?? 0) * 1000).toISOString(),
+				instagramBusinessId: igBusinessResponse.instagram_business_account.id,
+				facebookPageId: pageId,
+				instagramTokenType: isPermanentToken ? "PERMANENT" : "TEMPORARY",
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(club.id, clubId));
+
+		// Cleanup session if it was used
+		if (sessionId) {
+			await db.delete(instagramPageSelection).where(eq(instagramPageSelection.id, sessionId));
+		}
+
+		await logClubAudit({
+			clubId,
+			actionType: "INSTAGRAM_CONNECT",
+			actionData: {
+				instagramUsername: igBusinessResponse.instagram_business_account.username,
+				pageId,
+			},
+			userId: context.user.id,
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Select Facebook Page for Instagram",
+			description: "Connect selected Facebook Page and its Instagram Business Account",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: z.object({
+				pageId: z.string(),
+				accessToken: z.string().optional(),
+				sessionId: z.string().optional(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 500], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.get(
+	"/api/clubs/:id/instagram/media",
+	async ({ params, query, response }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!clubData[0]) {
+			throw apiError.notFound("Club");
+		}
+
+		const clubRecord = clubData[0];
+
+		if (!clubRecord.instagramAccessToken || !clubRecord.instagramBusinessId) {
+			return response.json({ media: [], username: null });
+		}
+
+		try {
+			const limit = query.limit || 20;
+
+			// Fetch Instagram media
+			const mediaResponse = await fetch(
+				`https://graph.facebook.com/v19.0/${clubRecord.instagramBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${clubRecord.instagramAccessToken}`,
+			);
+
+			if (!mediaResponse.ok) {
+				return response.json({ media: [], username: null });
+			}
+
+			const mediaData = (await mediaResponse.json()) as {
+				data?: Array<{
+					id: string;
+					caption: string | null;
+					media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
+					media_url: string;
+					permalink: string;
+					thumbnail_url?: string;
+					timestamp: string;
+					username: string;
+				}>;
+			};
+
+			return response.json({
+				media: mediaData.data || [],
+				username: mediaData.data?.[0]?.username || clubRecord.instagramUsername || null,
+			});
+		} catch (_error) {
+			return response.json({ media: [], username: null });
+		}
+	},
+	{
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get Instagram media",
+			description: "Fetch Instagram photos for a club",
+			params: z.object({
+				id: z.string(),
+			}),
+			query: z.object({
+				limit: z.number().optional(),
+			}),
+			response: {
+				200: z.object({
+					media: z.array(
+						z.object({
+							id: z.string(),
+							caption: z.string().nullable(),
+							media_type: z.enum(["IMAGE", "VIDEO", "CAROUSEL_ALBUM"]),
+							media_url: z.string(),
+							permalink: z.string(),
+							thumbnail_url: z.string().optional(),
+							timestamp: z.string(),
+							username: z.string(),
+						}),
+					),
+					username: z.string().nullable(),
+				}),
+			},
+		},
+	},
+);
+
+clubsRouter.get(
+	"/api/clubs/:id/stats",
+	async ({ params, context, response }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		// Check if user is a manager of the club
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
+		}
+
+		// Get club creation date
+		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!clubData[0]) {
+			throw apiError.notFound("Club");
+		}
+
+		const clubRecord = clubData[0];
+
+		// Members growth over time (daily since club creation)
+		const membersGrowth = await db.execute<{ date: string; count: string }>(sql`
+			WITH RECURSIVE dates AS (
+				SELECT DATE(date_trunc('day', ${clubRecord.createdAt}))::timestamp as date
+				UNION ALL
+				SELECT (date + INTERVAL '1 day')::timestamp
+				FROM dates
+				WHERE date < DATE(NOW())
+			)
+			SELECT
+				d.date::date::text as date,
+				COUNT(DISTINCT cm.id)::text as count
+			FROM dates d
+			LEFT JOIN "ClubMembership" cm ON
+				DATE(cm."createdAt") <= d.date::date
+				AND cm."clubId" = ${clubId}
+			GROUP BY d.date
+			ORDER BY d.date ASC
+		`);
+
+		// Role distribution
+		const roleDistribution = await db
+			.select({
+				role: clubMembership.role,
+				count: count(),
+			})
+			.from(clubMembership)
+			.where(eq(clubMembership.clubId, clubId))
+			.groupBy(clubMembership.role);
+
+		// Events per month (last 12 months)
+		const eventsPerMonth = await db.execute<{ month: string; count: string }>(sql`
+			WITH RECURSIVE months AS (
+				SELECT DATE_TRUNC('month', NOW() - INTERVAL '11 months')::date as month
+				UNION ALL
+				SELECT (month + INTERVAL '1 month')::date
+				FROM months
+				WHERE month < DATE_TRUNC('month', NOW())
+			)
+			SELECT
+				m.month::text,
+				COUNT(e.id)::text as count
+			FROM months m
+			LEFT JOIN "Event" e ON
+				DATE_TRUNC('month', e."dateStart") = m.month
+				AND e."clubId" = ${clubId}
+			GROUP BY m.month
+			ORDER BY m.month ASC
+		`);
+
+		// Recent events with registration counts
+		const recentEvents = await db
+			.select()
+			.from(event)
+			.where(eq(event.clubId, clubId))
+			.orderBy(desc(event.dateStart))
+			.limit(10);
+
+		const recentEventsWithCounts = await Promise.all(
+			recentEvents.map(async (evt) => {
+				const countResult = await db
+					.select({ count: count() })
+					.from(eventRegistration)
+					.where(eq(eventRegistration.eventId, evt.id));
+
+				return {
+					...evt,
+					registrationCount: Number(countResult[0]?.count || 0),
+				};
+			}),
+		);
+
+		return response.json({
+			members: (membersGrowth as unknown as { rows: Array<{ date: string; count: string }> }).rows.map((row) => ({
+				date: row.date,
+				count: Number(row.count),
+			})),
+			roles: roleDistribution.map((item) => ({
+				role: item.role,
+				count: Number(item.count),
+			})),
+			events: (eventsPerMonth as unknown as { rows: Array<{ month: string; count: string }> }).rows.map(
+				(row) => ({
+					month: row.month,
+					count: Number(row.count),
+				}),
+			),
+			recentEvents: recentEventsWithCounts.map((evt) => ({
+				id: evt.id,
+				name: evt.name,
+				dateStart: evt.dateStart,
+				registrationCount: evt.registrationCount,
+			})),
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get club statistics",
+			description:
+				"Get statistics for a club including member growth, role distribution, events, and registrations",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					members: z.array(
+						z.object({
+							date: z.string(),
+							count: z.number(),
+						}),
+					),
+					roles: z.array(
+						z.object({
+							role: z.string(),
+							count: z.number(),
+						}),
+					),
+					events: z.array(
+						z.object({
+							month: z.string(),
+							count: z.number(),
+						}),
+					),
+					recentEvents: z.array(
+						z.object({
+							id: z.string(),
+							name: z.string(),
+							dateStart: z.string(),
+							registrationCount: z.number(),
+						}),
+					),
+				}),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+clubsRouter.get(
+	"/api/clubs/:id/members",
+	async ({ params, query, context, response }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		// Check if user has access to view members
+		const membershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		if (!membershipData[0]) {
+			throw apiError.forbidden("You must be a member to view club members");
+		}
+
+		const { page, perPage, search, role, sortBy, sortOrder } = query;
+		const offset = (page - 1) * perPage;
+
+		// Build where conditions
+		const whereConditions = [eq(clubMembership.clubId, clubId)];
+
+		if (role && role !== "all") {
+			whereConditions.push(eq(clubMembership.role, role as "USER" | "MANAGER" | "CLUB_OWNER"));
+		}
+
+		// Build the query with all conditions upfront
+		const searchConditions = search
+			? or(ilike(user.name, `%${search}%`), ilike(user.email, `%${search}%`), ilike(user.callsign, `%${search}%`))
+			: undefined;
+
+		const allConditions = searchConditions ? and(...whereConditions, searchConditions) : and(...whereConditions);
+
+		const membersQuery = db
+			.select({
+				id: clubMembership.id,
+				userId: clubMembership.userId,
+				clubId: clubMembership.clubId,
+				role: clubMembership.role,
+				startDate: clubMembership.startDate,
+				endDate: clubMembership.endDate,
+				createdAt: clubMembership.createdAt,
+				updatedAt: clubMembership.updatedAt,
+				userName: user.name,
+				userEmail: user.email,
+				userImage: user.image,
+				userCallsign: user.callsign,
+				userLocation: user.location,
+				userBio: user.bio,
+				userWebsite: user.website,
+				userCreatedAt: user.createdAt,
+				userSlug: user.slug,
+				userUserId: user.id,
+			})
+			.from(clubMembership)
+			.innerJoin(user, eq(clubMembership.userId, user.id))
+			.where(allConditions);
+
+		// Apply sorting - determine sort field
+		let sortField:
+			| typeof user.name
+			| typeof user.callsign
+			| typeof clubMembership.role
+			| typeof clubMembership.createdAt
+			| ReturnType<typeof desc>
+			| undefined;
+		if (sortBy === "userName") {
+			sortField = sortOrder === "desc" ? desc(user.name) : user.name;
+		} else if (sortBy === "userCallsign") {
+			sortField = sortOrder === "desc" ? desc(user.callsign) : user.callsign;
+		} else if (sortBy === "role") {
+			sortField = sortOrder === "desc" ? desc(clubMembership.role) : clubMembership.role;
+		} else if (sortBy === "createdAt") {
+			sortField = sortOrder === "desc" ? desc(clubMembership.createdAt) : clubMembership.createdAt;
+		} else {
+			sortField = desc(clubMembership.createdAt);
+		}
+
+		// Apply pagination
+		const members = await membersQuery.orderBy(sortField).limit(perPage).offset(offset);
+
+		// Get total count using the same conditions
+		const totalResult = await db
+			.select({ count: count() })
+			.from(clubMembership)
+			.innerJoin(user, eq(clubMembership.userId, user.id))
+			.where(allConditions);
+		const total = Number(totalResult[0]?.count || 0);
+
+		// Format members to match frontend expectations
+		const formattedMembers = members.map((member) => ({
+			id: member.id,
+			userId: member.userId,
+			clubId: member.clubId,
+			role: member.role,
+			startDate: member.startDate,
+			endDate: member.endDate,
+			createdAt: member.createdAt,
+			updatedAt: member.updatedAt,
+			userName: member.userName,
+			userCallsign: member.userCallsign,
+			userAvatar: member.userImage,
+			userSlug: member.userSlug,
+			user: {
+				id: member.userUserId,
+				name: member.userName,
+				email: member.userEmail,
+				image: member.userImage,
+				callsign: member.userCallsign,
+				location: member.userLocation,
+				bio: member.userBio,
+				website: member.userWebsite,
+				createdAt: member.userCreatedAt,
+				slug: member.userSlug,
+			},
+		}));
+
+		return response.json({
+			members: formattedMembers,
+			total,
+			page,
+			perPage,
+			totalPages: Math.ceil(total / perPage),
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get club members",
+			description: "Get paginated list of club members with search and filtering",
+			params: z.object({
+				id: z.string(),
+			}),
+			query: paginationQuerySchema.extend({
+				search: z.string().optional(),
+				role: z.enum(["all", "USER", "MANAGER", "CLUB_OWNER"]).optional(),
+				sortBy: z.enum(["userName", "userCallsign", "role", "createdAt"]).optional(),
+				sortOrder: z.enum(["asc", "desc"]).optional(),
+			}),
+			response: {
+				200: paginationResponseSchema.extend({
+					members: z.array(
+						baseClubMembershipSchema.extend({
+							userName: z.string(),
+							userCallsign: z.string().nullable(),
+							userAvatar: z.string().nullable(),
+							userSlug: z.string().nullable(),
+							user: z.object({
+								id: z.string(),
+								name: z.string(),
+								email: z.string(),
+								image: z.string().nullable(),
+								callsign: z.string().nullable(),
+								location: z.string().nullable(),
+								bio: z.string().nullable(),
+								website: z.string().nullable(),
+								createdAt: z.string(),
+								slug: z.string().nullable(),
+							}),
+						}),
+					),
+				}),
+				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
 			},
 		},
 	},

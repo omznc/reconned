@@ -22,7 +22,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 
 const geistSans = Geist({
 	fallback: ["sans-serif"],
@@ -44,17 +43,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		notFound();
 	}
 
-	const user = session?.id
-		? await prisma.user.findUnique({
-				where: {
-					id: session.id,
-				},
-			})
-		: null;
-
-	const font = user?.font ? (user.font as "sans" | "mono") : "mono";
-	const style = user?.style ? (user.style as "sharp" | "relaxed") : "relaxed";
-	const theme = user?.theme ? (user.theme as "dark" | "light") : "dark";
+	const font = (session?.font as "sans" | "mono" | null | undefined) ?? "mono";
+	const style = (session?.style as "sharp" | "relaxed" | null | undefined) ?? "relaxed";
+	const theme = (session?.theme as "dark" | "light" | null | undefined) ?? "dark";
 
 	const websiteSchema = {
 		"@context": "https://schema.org",

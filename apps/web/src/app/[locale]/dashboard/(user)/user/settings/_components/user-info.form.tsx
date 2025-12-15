@@ -1,5 +1,4 @@
 "use client";
-import type { User } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Phone, Shield, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -22,11 +21,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api";
+import type { UserProfile } from "@/lib/api-type-helpers";
 import { addImageVersion } from "@/lib/utils";
 import { ImageCropDialog } from "./image-crop-dialog.tsx";
 
 interface UserInfoFormProps {
-	user: User | null;
+	user: UserProfile | null;
 }
 
 export function UserInfoForm(props: UserInfoFormProps) {
@@ -186,7 +186,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					type: "user",
 					slug: values.slug,
 				});
-				if (!valid?.data) {
+				if (!valid) {
 					toast.error(t("Link taken"));
 					setIsLoading(false);
 					return;

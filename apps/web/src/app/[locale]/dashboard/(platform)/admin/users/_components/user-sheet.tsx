@@ -1,6 +1,5 @@
 "use client";
 
-import type { ClubMembership, User } from "@generated/client";
 import { format } from "date-fns";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
@@ -13,15 +12,12 @@ import {
 	CredenzaHeader,
 	CredenzaTitle,
 } from "@/components/ui/credenza";
+import type { ApiResponse } from "@/lib/api";
+
+type AdminUserDetail = ApiResponse<"/api/admin/users/{id}", "get">;
 
 type Props = {
-	user?: User & {
-		clubMembership: (ClubMembership & {
-			club: {
-				name: string;
-			};
-		})[];
-	};
+	user?: AdminUserDetail;
 };
 
 export function UserSheet({ user }: Props) {
@@ -71,8 +67,8 @@ export function UserSheet({ user }: Props) {
 								<h4 className="font-medium">Klubovi</h4>
 								<div className="flex gap-1">
 									{user.clubMembership.map((m) => (
-										<Badge variant="outline" key={m.club.name}>
-											{m.club.name}
+										<Badge variant="outline" key={m.id}>
+											{m.club?.name ?? m.clubId}
 										</Badge>
 									))}
 								</div>

@@ -15,7 +15,8 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
-		"db:seed": "bun run src/drizzle/seed.ts"
+		"db:seed": "bun run src/drizzle/seed.ts",
+		"typecheck": "bunx tsc --noEmit"
 	},
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "^8.2.0",

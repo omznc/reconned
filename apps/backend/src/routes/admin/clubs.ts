@@ -166,53 +166,6 @@ adminClubsRouter.get(
 	},
 );
 
-adminClubsRouter.get(
-	"/api/admin/clubs/count",
-	async ({ query, response, context: _context }) => {
-		const { search = "" } = query || {};
-
-		const whereConditions = [];
-
-		if (search) {
-			whereConditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)));
-		}
-
-		const ownerMemberships = await db
-			.select({ clubId: clubMembership.clubId })
-			.from(clubMembership)
-			.where(eq(clubMembership.role, "CLUB_OWNER"));
-
-		const ownedClubIds = ownerMemberships.map((m) => m.clubId);
-
-		if (ownedClubIds.length > 0) {
-			whereConditions.push(inArray(club.id, ownedClubIds));
-		} else {
-			return response.json({ count: 0 });
-		}
-
-		const where = and(...whereConditions);
-
-		const total = await db.select({ count: count() }).from(club).where(where);
-
-		return response.json({ count: total[0]?.count || 0 });
-	},
-	{
-		auth: true,
-		schema: {
-			tags: ["Admin"],
-			summary: "Count clubs",
-			description: "Admin endpoint to count clubs with optional search filter",
-			query: z.object({
-				search: z.string().optional(),
-			}),
-			response: {
-				200: z.object({ count: z.number() }),
-				...responseSchema([401, 403], z.object({ error: z.string() })),
-			},
-		},
-	},
-);
-
 adminClubsRouter.put(
 	"/api/admin/clubs/:id/ban",
 	async ({ params, response, context: _context }) => {

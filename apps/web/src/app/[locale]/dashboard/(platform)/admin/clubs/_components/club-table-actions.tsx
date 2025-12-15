@@ -1,6 +1,5 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import { BanIcon, CheckCircle, TrashIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -8,8 +7,11 @@ import { clubAdminAction } from "@/app/[locale]/dashboard/(platform)/admin/clubs
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
 
-export function ClubActions({ club }: { club: Club }) {
+type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
+
+export function ClubActions({ club }: { club: AdminClub }) {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const confirm = useConfirm();
@@ -34,13 +36,10 @@ export function ClubActions({ club }: { club: Club }) {
 		}
 
 		try {
-			const resp = await clubAdminAction({
+			await clubAdminAction({
 				clubId: club.id,
 				action: action === "ban" ? (club.banned ? "unban" : "ban") : "remove",
 			});
-			if (!resp?.data?.success) {
-				throw new ActionError("Došlo je do greške prilikom izvršavanja akcije.");
-			}
 			// Optionally toast success message or refresh data
 		} catch {
 			toast.error("Došlo je do greške prilikom izvršavanja akcije.");

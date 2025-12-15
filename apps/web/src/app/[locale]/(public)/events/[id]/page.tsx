@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const params = await props.params;
 
-	const { data: eventData, error: eventError } = await apiClient.GET("/api/public/events/{id}", {
+	const { data: eventData, error: eventError } = await apiClient.GET("/api/events/{id}", {
 		params: {
 			path: {
 				id: params.id,
@@ -29,7 +29,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const { data: rulesData } = await apiClient.GET("/api/events/{id}/rules", {
 		params: {
 			path: {
-				id: eventData.id,
+				id: eventData.event.id,
 			},
 		},
 	});
@@ -37,7 +37,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const { data: registrationsCountData } = await apiClient.GET("/api/events/{id}/registrations/count", {
 		params: {
 			path: {
-				id: eventData.id,
+				id: eventData.event.id,
 			},
 		},
 	});
@@ -46,8 +46,10 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		notFound();
 	}
 
+	const base = eventData.event;
+
 	const event = {
-		...eventData,
+		...base,
 		_count: {
 			eventRegistration: registrationsCountData?.count ?? 0,
 		},
@@ -63,14 +65,14 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			logo: eventData.club.logo,
 			verified: eventData.club.verified,
 		},
-		gearRequirements: (eventData.gearRequirements ?? []) as runtime.JsonValue[],
-		mapData: (eventData.mapData ?? null) as runtime.JsonValue | null,
-		dateStart: new Date(eventData.dateStart),
-		dateEnd: new Date(eventData.dateEnd),
-		dateRegistrationsOpen: new Date(eventData.dateRegistrationsOpen),
-		dateRegistrationsClose: new Date(eventData.dateRegistrationsClose),
-		createdAt: new Date(eventData.createdAt),
-		updatedAt: new Date(eventData.updatedAt),
+		gearRequirements: (base.gearRequirements ?? []) as runtime.JsonValue[],
+		mapData: (base.mapData ?? null) as runtime.JsonValue | null,
+		dateStart: new Date(base.dateStart),
+		dateEnd: new Date(base.dateEnd),
+		dateRegistrationsOpen: new Date(base.dateRegistrationsOpen),
+		dateRegistrationsClose: new Date(base.dateRegistrationsClose),
+		createdAt: new Date(base.createdAt),
+		updatedAt: new Date(base.updatedAt),
 	};
 
 	const locale = await getLocale();
@@ -145,7 +147,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const { data: event, error } = await apiClient.GET("/api/public/events/{id}", {
+	const { data: event, error } = await apiClient.GET("/api/events/{id}", {
 		params: {
 			path: {
 				id: params.id,

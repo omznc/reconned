@@ -1,6 +1,5 @@
 "use client";
 
-import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "better-auth";
 import DOMPurify from "isomorphic-dompurify";
@@ -18,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@/lib/api-type-helpers";
 import "@/components/editor/editor.css";
 
 import debounce from "lodash/debounce";

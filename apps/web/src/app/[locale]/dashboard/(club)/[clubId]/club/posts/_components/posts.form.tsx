@@ -1,6 +1,4 @@
 "use client";
-
-import type { Post } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
@@ -17,25 +15,28 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { deletePost, getPostImageUploadUrl, savePost } from "./posts.action.ts";
+import { ActionError } from "@/lib/action-error";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { postSchema } from "./posts.schema.ts";
+
+type ClubPost = ApiResponse<"/api/clubs/{id}/posts/{postId}", "get">;
 
 interface PostsFormProps {
 	clubId: string;
-	editingPost: Post | null;
+	editingPost: ClubPost | null;
 }
 
 export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const [_, setPostId] = useQueryState("postId");
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
-	const [editorContent, setEditorContent] = useState<string>(editingPost?.content ?? "");
+	const [editorContent, setEditorContent] = useState<string>(editingPost?.post.content ?? "");
 	const confirm = useConfirm();
 	const t = useExtracted();
 
 	// Initialize file upload system for post images
-	const initialFiles: FileUploadItem[] = editingPost?.images
-		? editingPost.images.map((url, index) => ({
+	const initialFiles: FileUploadItem[] = editingPost?.post.images
+		? editingPost.post.images.map((url: string, index: number) => ({
 				id: `existing-${index}`,
 				url,
 				name: `Post image ${index + 1}`,
@@ -46,20 +47,26 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 
 	const imageUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			const resp = await getPostImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
-					name: file.name,
+			const { data, error } = await apiClient.POST("/api/clubs/{id}/posts/images/upload-url", {
+				params: {
+					path: {
+						id: clubId,
+					},
 				},
-				clubId,
+				body: {
+					file: {
+						name: file.name,
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
-				throw new ActionError("Failed to get upload URL");
+			if (error || !data?.url) {
+				throw new ActionError(error?.error ?? t("Failed to get upload URL"));
 			}
 
-			const response = await fetch(resp.data.url, {
+			const response = await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -69,10 +76,14 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			});
 
 			if (!response.ok) {
-				throw new ActionError(`Upload failed with status ${response.status}`);
+				throw new ActionError(
+					t("Upload failed with status {status}", {
+						status: response.status.toString(),
+					}),
+				);
 			}
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 5,
 		initialFiles,
@@ -81,11 +92,11 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
 		defaultValues: {
-			id: editingPost?.id,
-			title: editingPost?.title ?? "",
+			id: editingPost?.post.id,
+			title: editingPost?.post.title ?? "",
 			content: editorContent,
-			images: editingPost?.images ?? [],
-			isPublic: editingPost?.isPublic ?? false,
+			images: editingPost?.post.images ?? [],
+			isPublic: editingPost?.post.isPublic ?? false,
 			clubId,
 		},
 	});
@@ -98,20 +109,52 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	async function onSubmit(values: z.infer<typeof postSchema>) {
 		setIsLoading(true);
 		try {
-			// Upload any new images
 			const uploadedUrls = await imageUpload.uploadAllFiles();
 			values.images = uploadedUrls;
 
-			await savePost(values);
+			const isEditing = Boolean(values.id);
 
-			// Mark files as saved and clear unsaved changes
+			const { error } = isEditing
+				? await apiClient.PUT("/api/clubs/{id}/posts/{postId}", {
+						params: {
+							path: {
+								id: clubId,
+								postId: values.id ?? editingPost?.post.id ?? "",
+							},
+						},
+						body: {
+							title: values.title,
+							content: values.content,
+							images: values.images ?? [],
+							isPublic: values.isPublic,
+						},
+					})
+				: await apiClient.POST("/api/clubs/{id}/posts", {
+						params: {
+							path: {
+								id: clubId,
+							},
+						},
+						body: {
+							title: values.title,
+							content: values.content,
+							images: values.images ?? [],
+							isPublic: values.isPublic,
+						},
+					});
+
+			if (error) {
+				throw new ActionError(error.error ?? t("An error occurred"));
+			}
+
 			imageUpload.markAsSaved();
 
 			form.reset();
 			setPostId(null);
 			toast.success(values.id ? t("Post successfully modified") : t("Post successfully created"));
-		} catch {
-			toast.error(t("An error occurred"));
+		} catch (error) {
+			const message = error instanceof Error ? error.message : t("An error occurred");
+			toast.error(message);
 		} finally {
 			if (values.id) {
 				router.back();
@@ -139,14 +182,24 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 
 		setIsLoading(true);
 		try {
-			await deletePost({
-				postId: editingPost.id,
-				clubId,
+			const { error } = await apiClient.DELETE("/api/clubs/{id}/posts/{postId}", {
+				params: {
+					path: {
+						id: clubId,
+						postId: editingPost.post.id,
+					},
+				},
 			});
+
+			if (error) {
+				throw new ActionError(error.error ?? t("An error occurred while deleting the post"));
+			}
+
 			setPostId(null);
 			toast.success(t("Post successfully deleted"));
-		} catch {
-			toast.error(t("An error occurred while deleting the post"));
+		} catch (error) {
+			const message = error instanceof Error ? error.message : t("An error occurred while deleting the post");
+			toast.error(message);
 		} finally {
 			router.back();
 		}

@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { AttendanceTracker } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
 import { ErrorPage } from "@/components/error-page";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]/attendance">) {
@@ -20,27 +20,35 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return notFound();
 	}
 
-	const event = await prisma.event.findFirst({
-		where: {
-			id: params.id,
-			clubId: params.clubId,
-		},
-		include: {
-			eventRegistration: {
-				include: {
-					invitedUsers: true,
-					invitedUsersNotOnApp: true,
-					createdBy: true,
-				},
-			},
-		},
+	// Fetch event from backend
+	const { data: eventData, error: eventError } = await apiClient.GET("/api/events/{id}", {
+		params: { path: { id: params.id } },
 	});
 
-	if (!event) {
+	if (eventError || !eventData) {
 		return notFound();
 	}
 
-	if (new Date() < event.dateRegistrationsClose) {
+	const { event } = eventData;
+
+	// Verify event belongs to this club
+	if (event.clubId !== params.clubId) {
+		return notFound();
+	}
+
+	// Fetch event registrations with details
+	const { data: registrationsData, error: registrationsError } = await apiClient.GET(
+		"/api/events/{id}/registrations",
+		{
+			params: { path: { id: params.id } },
+		},
+	);
+
+	if (registrationsError || !registrationsData) {
+		return notFound();
+	}
+
+	if (new Date() < new Date(event.dateRegistrationsClose)) {
 		return (
 			<ErrorPage
 				title={t("Applications are still open")}
@@ -50,7 +58,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		);
 	}
 
-	if (new Date() > event.dateEnd) {
+	if (new Date() > new Date(event.dateEnd)) {
 		return (
 			<ErrorPage
 				title={t("The event is over")}
@@ -60,5 +68,11 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		);
 	}
 
-	return <AttendanceTracker event={event} />;
+	// Combine event with registrations for the attendance tracker
+	const eventWithRegistrations = {
+		...event,
+		eventRegistration: registrationsData.registrations,
+	};
+
+	return <AttendanceTracker event={eventWithRegistrations} />;
 }

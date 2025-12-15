@@ -1,33 +1,21 @@
-"use server";
+import apiClient from "@/lib/api";
 
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { safeActionClient } from "@/lib/safe-action";
+type ClubAdminAction = "ban" | "unban" | "remove";
 
-// Define schema for club admin actions
-const clubAdminActionSchema = z.object({
-	clubId: z.string(),
-	action: z.enum(["ban", "unban", "remove"]),
-});
-
-export const clubAdminAction = safeActionClient.inputSchema(clubAdminActionSchema).action(async ({ parsedInput }) => {
-	const { clubId, action } = parsedInput;
-
-	if (action === "ban") {
-		await prisma.club.update({
-			where: { id: clubId },
-			data: { banned: true },
-		});
-	} else if (action === "unban") {
-		await prisma.club.update({
-			where: { id: clubId },
-			data: { banned: false, banReason: null, banExpires: null },
-		});
-	} else if (action === "remove") {
-		await prisma.club.delete({
-			where: { id: clubId },
+export async function clubAdminAction(params: { clubId: string; action: ClubAdminAction }) {
+	if (params.action === "ban") {
+		return apiClient.PUT("/api/admin/clubs/{id}/ban", {
+			params: { path: { id: params.clubId } },
 		});
 	}
 
-	return { success: true };
-});
+	if (params.action === "unban") {
+		return apiClient.PUT("/api/admin/clubs/{id}/unban", {
+			params: { path: { id: params.clubId } },
+		});
+	}
+
+	return apiClient.DELETE("/api/admin/clubs/{id}", {
+		params: { path: { id: params.clubId } },
+	});
+}

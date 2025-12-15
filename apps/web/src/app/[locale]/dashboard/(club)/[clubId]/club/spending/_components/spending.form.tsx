@@ -25,7 +25,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { createPurchase, getPurchaseReceiptUploadUrl } from "./spending.action.ts";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
 
 export function AddPurchaseModal() {
 	const [open, setOpen] = useState(false);
@@ -46,20 +47,26 @@ export function AddPurchaseModal() {
 
 	const receiptUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
-			const resp = await getPurchaseReceiptUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
-					name: file.name,
+			const { data, error } = await apiClient.POST("/api/clubs/{id}/purchases/receipts/upload-url", {
+				params: {
+					path: {
+						id: params.clubId,
+					},
 				},
-				clubId: params.clubId,
+				body: {
+					file: {
+						name: file.name,
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
-				throw new ActionError("Failed to get upload URL");
+			if (error || !data?.url) {
+				throw new ActionError(error?.error ?? t("Failed to get upload URL"));
 			}
 
-			const response = await fetch(resp.data.url, {
+			const response = await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -69,10 +76,14 @@ export function AddPurchaseModal() {
 			});
 
 			if (!response.ok) {
-				throw new ActionError(`Upload failed with status ${response.status}`);
+				throw new ActionError(
+					t("Upload failed with status {status}", {
+						status: response.status.toString(),
+					}),
+				);
 			}
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 3,
 	});
@@ -82,20 +93,35 @@ export function AddPurchaseModal() {
 	const onSubmit = async (data: PurchaseFormValues) => {
 		setIsLoading(true);
 		try {
-			// Upload files first
 			const uploadedUrls = await receiptUpload.uploadAllFiles();
 			data.receiptUrls = uploadedUrls;
 
-			const result = await createPurchase(data);
-			if (result?.data?.purchase) {
-				toast.success(t("Expense successfully added"));
-				setOpen(false);
-				receiptUpload.resetToInitial();
-				form.reset();
-				router.refresh();
+			const { error } = await apiClient.POST("/api/clubs/{id}/purchases", {
+				params: {
+					path: {
+						id: params.clubId,
+					},
+				},
+				body: {
+					title: data.title,
+					description: data.description,
+					amount: data.amount,
+					receiptUrls: data.receiptUrls,
+				},
+			});
+
+			if (error) {
+				throw new ActionError(error.error ?? t("Error while saving expense data"));
 			}
-		} catch {
-			toast.error(t("Error while saving expense data"));
+
+			toast.success(t("Expense successfully added"));
+			setOpen(false);
+			receiptUpload.resetToInitial();
+			form.reset();
+			router.refresh();
+		} catch (error) {
+			const message = error instanceof Error ? error.message : t("Error while saving expense data");
+			toast.error(message);
 		}
 		setIsLoading(false);
 	};

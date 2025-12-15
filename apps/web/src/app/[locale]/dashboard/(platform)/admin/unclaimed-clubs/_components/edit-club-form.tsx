@@ -1,6 +1,4 @@
 "use client";
-
-import type { Club } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ArrowUpRight, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
@@ -10,11 +8,6 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
-import {
-	getClubHeaderImageUploadUrl,
-	getClubImageUploadUrl,
-	saveClubInformation,
-} from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
@@ -32,14 +25,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
+import { ActionError } from "@/lib/action-error";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
 	ssr: false,
 });
 
+type AdminUnclaimed = ApiResponse<"/api/admin/unclaimed-clubs/{id}", "get">;
+type Country = ApiResponse<"/api/countries", "get">[number];
+
 interface EditClubFormProps {
-	club: Club;
+	club: AdminUnclaimed;
 	countries: Country[];
 }
 
@@ -74,19 +72,25 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 				throw new ActionError("Must save club first");
 			}
 
-			const resp = await getClubImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
+			const { data, error } = await apiClient.POST("/api/clubs/{id}/logo/upload-url", {
+				params: {
+					path: {
+						id: club.id,
+					},
 				},
-				clubId: club.id,
+				body: {
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -95,7 +99,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles,
@@ -119,19 +123,25 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 				throw new ActionError("Must save club first");
 			}
 
-			const resp = await getClubHeaderImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
+			const { data, error } = await apiClient.POST("/api/clubs/{id}/header-image/upload-url", {
+				params: {
+					path: {
+						id: club.id,
+					},
 				},
-				clubId: club.id,
+				body: {
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -140,7 +150,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles: initialHeaderFiles,
@@ -279,14 +289,40 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
 			values.headerImage = uploadedHeaderUrls.length > 0 ? uploadedHeaderUrls[0] : undefined;
 
-			const result = await saveClubInformation(values);
+			const { error } = await apiClient.PUT("/api/admin/unclaimed-clubs/{id}", {
+				params: {
+					path: {
+						id: club.id,
+					},
+				},
+				body: {
+					name: values.name,
+					location: values.location,
+					description: values.description,
+					dateFounded: values.dateFounded?.toISOString() ?? null,
+					isAllied: values.isAllied,
+					isPrivate: values.isPrivate,
+					isPrivateStats: values.isPrivateStats,
+					logo: values.logo,
+					headerImage: values.headerImage,
+					contactPhone: values.contactPhone,
+					contactEmail: values.contactEmail,
+					slug: values.slug,
+					latitude: values.latitude,
+					longitude: values.longitude,
+					countryId: values.countryId,
+					website: values.website,
+				},
+			});
 
-			if (result?.data?.id) {
-				logoUpload.markAsSaved();
-				headerUpload.markAsSaved();
-				toast.success(t("Club information has been saved"));
-				router.push("/dashboard/admin/unclaimed-clubs");
+			if (error) {
+				throw new ActionError(error.error ?? t("An error occurred"));
 			}
+
+			logoUpload.markAsSaved();
+			headerUpload.markAsSaved();
+			toast.success(t("Club information has been saved"));
+			router.push("/dashboard/admin/unclaimed-clubs");
 		} catch {
 			toast.error(t("An error occurred"));
 		}

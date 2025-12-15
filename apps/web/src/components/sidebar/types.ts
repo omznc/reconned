@@ -1,5 +1,5 @@
-import type { Club } from "@generated/client";
 import type { LucideIcon } from "lucide-react";
+import type { Club } from "@/lib/api-type-helpers";
 
 export interface NavItem {
 	title: string;

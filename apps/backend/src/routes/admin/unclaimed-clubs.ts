@@ -10,6 +10,7 @@ import { apiError } from "../../lib/errors";
 import { sendEmail } from "../../lib/mail";
 import { Router, responseSchema } from "../../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
+import { getS3UploadUrl } from "../../lib/storage";
 
 const adminUnclaimedClubsRouter = new Router();
 
@@ -46,6 +47,13 @@ const baseClubSchema = z.object({
 	createdAt: z.string(),
 	updatedAt: z.string(),
 	headerImage: z.string().nullable(),
+});
+
+const uploadFileSchema = z.object({
+	file: z.object({
+		type: z.string(),
+		size: z.number().min(1),
+	}),
 });
 
 adminUnclaimedClubsRouter.get(
@@ -187,51 +195,6 @@ adminUnclaimedClubsRouter.get(
 	},
 );
 
-adminUnclaimedClubsRouter.get(
-	"/api/admin/unclaimed-clubs/count",
-	async ({ query, response, context: _context }) => {
-		const { search = "" } = query || {};
-
-		const whereConditions = [];
-
-		if (search) {
-			whereConditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)));
-		}
-
-		const ownerMemberships = await db
-			.select({ clubId: clubMembership.clubId })
-			.from(clubMembership)
-			.where(eq(clubMembership.role, "CLUB_OWNER"));
-
-		const ownedClubIds = ownerMemberships.map((m) => m.clubId);
-
-		if (ownedClubIds.length > 0) {
-			whereConditions.push(not(inArray(club.id, ownedClubIds)));
-		}
-
-		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const total = await db.select({ count: count() }).from(club).where(where);
-
-		return response.json({ count: total[0]?.count || 0 });
-	},
-	{
-		auth: true,
-		schema: {
-			tags: ["Admin"],
-			summary: "Count unclaimed clubs",
-			description: "Admin endpoint to count unclaimed clubs with optional search filter",
-			query: z.object({
-				search: z.string().optional(),
-			}),
-			response: {
-				200: z.object({ count: z.number() }),
-				...responseSchema([401, 403], z.object({ error: z.string() })),
-			},
-		},
-	},
-);
-
 adminUnclaimedClubsRouter.post(
 	"/api/admin/unclaimed-clubs",
 	async ({ body, response, context }) => {
@@ -361,6 +324,40 @@ adminUnclaimedClubsRouter.put(
 	},
 );
 
+adminUnclaimedClubsRouter.post(
+	"/api/admin/unclaimed-clubs/:id/logo/upload-url",
+	async ({ params, body, response }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const uploadUrl = await getS3UploadUrl(`club/${clubId}/logo`, body.file.type, body.file.size);
+
+		return response.json(uploadUrl);
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Admin"],
+			summary: "Get upload URL for unclaimed club logo",
+			description: "Presigned URL for uploading unclaimed club logo",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: uploadFileSchema,
+			response: {
+				200: z.object({
+					url: z.string(),
+					cdnUrl: z.string(),
+					key: z.string(),
+				}),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
 adminUnclaimedClubsRouter.put(
 	"/api/admin/unclaimed-clubs/:id/header-image",
 	async ({ params, body, response, context: _context }) => {
@@ -399,6 +396,40 @@ adminUnclaimedClubsRouter.put(
 			}),
 			response: {
 				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+adminUnclaimedClubsRouter.post(
+	"/api/admin/unclaimed-clubs/:id/header-image/upload-url",
+	async ({ params, body, response }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const uploadUrl = await getS3UploadUrl(`club/${clubId}/header`, body.file.type, body.file.size);
+
+		return response.json(uploadUrl);
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Admin"],
+			summary: "Get upload URL for unclaimed club header image",
+			description: "Presigned URL for uploading unclaimed club header image",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: uploadFileSchema,
+			response: {
+				200: z.object({
+					url: z.string(),
+					cdnUrl: z.string(),
+					key: z.string(),
+				}),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
 		},

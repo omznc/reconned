@@ -1,5 +1,4 @@
 "use client";
-import type { Club } from "@generated/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { format } from "date-fns";
@@ -21,13 +20,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { BannerCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/banner-crop-dialog";
-import {
-	deleteClub,
-	disconnectInstagramAccount,
-	getClubHeaderImageUploadUrl,
-	getClubImageUploadUrl,
-	saveClubInformation,
-} from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.action";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
@@ -47,7 +39,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
+import { ActionError } from "@/lib/action-error";
+import apiClient, { type ApiResponse } from "@/lib/api";
+import type { Club } from "@/lib/api-type-helpers";
 import { cn } from "@/lib/utils";
+
+type Country = ApiResponse<"/api/countries", "get">[number];
 
 // Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
@@ -59,6 +56,52 @@ interface ClubInfoFormProps {
 	isClubOwner?: boolean;
 	countries: Country[];
 	instagramConnectionUrl?: string;
+}
+
+async function saveClubInformation(values: z.infer<typeof clubInfoSchema>, clubId?: string) {
+	const { clubId: _clubId, dateFounded, ...rest } = values;
+
+	const body = {
+		...rest,
+		...(dateFounded ? { dateFounded: dateFounded.toISOString() } : {}),
+	};
+
+	if (clubId) {
+		const { data, error } = await apiClient.PUT("/api/clubs/{id}", {
+			params: {
+				path: { id: clubId },
+			},
+			body,
+		});
+
+		if (error || !data?.success) {
+			throw new ActionError(error?.error ?? "Failed to update club");
+		}
+
+		return { id: clubId };
+	}
+
+	const { data, error } = await apiClient.POST("/api/clubs", {
+		body,
+	});
+
+	if (error || !data?.id) {
+		throw new ActionError(error?.error ?? "Failed to create club");
+	}
+
+	return { id: data.id };
+}
+
+async function deleteClub(_: unknown, clubId: string) {
+	const { error } = await apiClient.DELETE("/api/clubs/{id}", {
+		params: {
+			path: { id: clubId },
+		},
+	});
+
+	if (error) {
+		throw new ActionError(error.error ?? "Failed to delete club");
+	}
 }
 
 export function ClubInfoForm(props: ClubInfoFormProps) {
@@ -99,19 +142,23 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				throw new ActionError("Must save club first");
 			}
 
-			const resp = await getClubImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
+			const { data, error } = await apiClient.POST("/api/clubs/{id}/logo/upload-url", {
+				params: {
+					path: { id: currentClubId },
 				},
-				clubId: currentClubId,
+				body: {
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -120,7 +167,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles,
@@ -146,19 +193,23 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				throw new ActionError("Must save club first");
 			}
 
-			const resp = await getClubHeaderImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
+			const { data, error } = await apiClient.POST("/api/clubs/{id}/header-image/upload-url", {
+				params: {
+					path: { id: currentClubId },
 				},
-				clubId: currentClubId,
+				body: {
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -167,7 +218,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles: initialHeaderFiles,
@@ -257,7 +308,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		}
 
 		const selectedCountry = props.countries.find((country) => country.id === selectedCountryId);
-		if (selectedCountry?.latitude && selectedCountry?.longitude) {
+		if (typeof selectedCountry?.latitude === "number" && typeof selectedCountry.longitude === "number") {
 			setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
 			setMapZoom(6);
 		}
@@ -303,12 +354,12 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 		setIsDisconnectingInstagram(true);
 		try {
-			const result = await disconnectInstagramAccount({
-				clubId: props.club.id,
+			const { error } = await apiClient.POST("/api/clubs/{id}/instagram/disconnect", {
+				params: { path: { id: props.club.id } },
 			});
 
-			if (!result?.data?.success) {
-				throw new ActionError(result?.serverError);
+			if (error) {
+				throw new ActionError(error.error ?? "An error occurred while disconnecting Instagram account");
 			}
 
 			toast.success(t("Instagram account successfully disconnected"));
@@ -327,7 +378,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		}
 		if (selectedCountryId) {
 			const selectedCountry = props.countries.find((c) => c.id === selectedCountryId);
-			if (selectedCountry?.latitude && selectedCountry?.longitude) {
+			if (typeof selectedCountry?.latitude === "number" && typeof selectedCountry.longitude === "number") {
 				setMapCenter([selectedCountry.latitude, selectedCountry.longitude]);
 				setMapZoom(6);
 			}
@@ -438,11 +489,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				values.logo = undefined;
 				const result = await saveClubInformation(values);
 
-				if (!result?.data?.id) {
+				if (!result?.id) {
 					throw new ActionError("Failed to create club");
 				}
 
-				clubId = result.data.id;
+				clubId = result.id;
 				clubIdRef.current = clubId;
 			}
 
@@ -478,7 +529,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			}
 
 			if (!isCreating || filesToUpload.length > 0 || headerFilesToUpload.length > 0) {
-				await saveClubInformation(values);
+				if (!clubId) {
+					throw new ActionError("Club ID is missing");
+				}
+				await saveClubInformation(values, clubId);
 			}
 
 			logoUpload.markAsSaved();
@@ -523,9 +577,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											});
 											if (resp) {
 												setIsLoading(true);
-												await deleteClub({
-													clubId: props.club?.id ?? "",
-												});
+												if (!props.club?.id) {
+													throw new ActionError("Club ID is missing");
+												}
+												await deleteClub({}, props.club.id);
 												setIsLoading(false);
 											}
 										}}
@@ -641,10 +696,35 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 													!field.value && "text-muted-foreground",
 												)}
 											>
-												{field.value
-													? props.countries.find((country) => country.id === field.value)
-															?.translations[locale]
-													: t("Select a country")}
+												{(() => {
+													if (!field.value) {
+														return t("Select a country");
+													}
+
+													const selectedCountry = props.countries.find(
+														(country) => country.id === field.value,
+													);
+
+													if (!selectedCountry) {
+														return t("Select a country");
+													}
+
+													const translations = selectedCountry.translations;
+
+													if (
+														translations &&
+														typeof translations === "object" &&
+														!Array.isArray(translations)
+													) {
+														const typedTranslations = translations as Record<
+															string,
+															string
+														>;
+														return typedTranslations[locale] ?? selectedCountry.name;
+													}
+
+													return selectedCountry.name;
+												})()}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 											</Button>
 										</FormControl>
@@ -655,7 +735,20 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											<CommandEmpty>{t("No results")}</CommandEmpty>
 											<CommandGroup className="h-[300px] overflow-y-scroll">
 												{props.countries.map((country) => {
-													const countryName = country.translations[locale];
+													const translations = country.translations;
+													let countryName = country.name;
+
+													if (
+														translations &&
+														typeof translations === "object" &&
+														!Array.isArray(translations)
+													) {
+														const typedTranslations = translations as Record<
+															string,
+															string
+														>;
+														countryName = typedTranslations[locale] ?? country.name;
+													}
 
 													return (
 														<CommandItem

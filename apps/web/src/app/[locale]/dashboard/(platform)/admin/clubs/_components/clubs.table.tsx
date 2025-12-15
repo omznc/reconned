@@ -1,16 +1,18 @@
 "use client";
 
-import type { Club } from "@generated/client";
 import { ExternalLink, Settings } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 
+type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
+
 interface ClubsTableProps {
-	clubs: Club[];
+	clubs: AdminClub[];
 	totalClubs: number;
 	pageSize: number;
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import type { ClubMembership } from "@generated/client";
 import { Calendar, LogOut, UserCircle, UserMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
@@ -15,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 import apiClient from "@/lib/api";
+import type { ClubMembership } from "@/lib/api-type-helpers";
 
 interface MembersTableProps {
 	members: (ClubMembership & {

@@ -1,12 +1,12 @@
 "use client";
 
-import type { User } from "@generated/client";
 import { BanIcon, CheckCircle, TrashIcon, UserIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
+import type { User } from "@/lib/api-type-helpers";
 import { authClient } from "@/lib/auth-client";
 
 export function UserActions({ user }: { user: User }) {

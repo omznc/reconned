@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import { ClubOverview } from "@/components/overviews/club-overview";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+
+type ClubResponse = ApiResponse<"/api/clubs/{id}", "get">;
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club">) {
 	const params = await props.params;
@@ -9,38 +11,22 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	if (!user) {
 		return notFound();
 	}
-	const [userMembership, club] = await Promise.all([
-		prisma.clubMembership.findFirst({
-			where: {
-				userId: user.id,
-				clubId: params.clubId,
-			},
-		}),
-		prisma.club.findUnique({
-			where: {
-				members: {
-					some: {
-						userId: user.id,
-					},
-				},
+
+	const { data } = await apiClient.GET("/api/clubs/{id}", {
+		params: {
+			path: {
 				id: params.clubId,
 			},
-			include: {
-				_count: {
-					select: {
-						members: true,
-					},
-				},
-				posts: true,
-			},
-		}),
-	]);
+		},
+	});
+
+	const club = data as ClubResponse | undefined;
 
 	if (!club) {
 		return notFound();
 	}
 
-	const isManager = user.managedClubs.includes(club.id);
+	const isManager = user.managedClubs.includes(club.id) || Boolean(user.role === "admin");
 
-	return <ClubOverview club={club} isManager={isManager} isMember={true} currentUserMembership={userMembership} />;
+	return <ClubOverview club={club} isManager={isManager} isMember={true} currentUserMembership={null} />;
 }

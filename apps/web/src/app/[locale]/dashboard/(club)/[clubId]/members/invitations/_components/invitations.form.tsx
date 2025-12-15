@@ -14,9 +14,10 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
-import { sendInvitation } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.action";
 import { sendInvitationSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
 import { useRouter } from "@/i18n/navigation";
+import { ActionError } from "@/lib/action-error";
+import apiClient from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type SearchUser = {
@@ -84,18 +85,31 @@ export function InvitationsForm() {
 
 	async function onSubmit(values: z.infer<typeof sendInvitationSchema>) {
 		try {
-			const response = await sendInvitation(values);
+			const { error } = await apiClient.POST("/api/clubs/{id}/invites", {
+				params: {
+					path: {
+						id: values.clubId,
+					},
+				},
+				body: {
+					userEmail: values.userEmail,
+					userName: values.userName,
+				},
+			});
 
-			if (!response?.data?.success) {
-				toast.error(
-					response?.data?.error || t("An error occurred while sending the invitation. Please try again."),
+			if (error) {
+				throw new ActionError(
+					error.error || t("An error occurred while sending the invitation. Please try again."),
 				);
-				return;
 			}
 
 			toast.success(t("Invitation sent successfully"));
-		} catch (_error) {
-			toast.error(t("An error occurred while sending the invitation. Please try again."));
+		} catch (error) {
+			const message =
+				error instanceof Error
+					? error.message
+					: t("An error occurred while sending the invitation. Please try again.");
+			toast.error(message);
 		} finally {
 			form.reset({ userName: "", userEmail: "", clubId: params.clubId });
 			router.refresh();

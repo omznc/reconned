@@ -7,9 +7,9 @@ import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { redirect } from "@/i18n/navigation";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
@@ -28,93 +28,25 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 		});
 	}
 
-	const conditionalPrivateWhere = user
-		? {
-				OR: [
-					{
-						isPrivate: false,
-					},
-					{
-						club: {
-							members: {
-								some: {
-									userId: user?.id,
-								},
-							},
-						},
-					},
-				],
-			}
-		: {
-				isPrivate: false,
-			};
-
-	const event = await prisma.event.findFirst({
-		where: {
-			OR: [
-				{
-					id: params.id,
-				},
-				{
-					slug: params.id,
-				},
-			],
-			...conditionalPrivateWhere,
-		},
-		include: {
-			club: {
-				select: {
-					id: true,
-				},
-			},
-			rules: true,
-		},
+	// Fetch event application data from backend
+	const { data: applyData, error: applyError } = await apiClient.GET("/api/events/{id}/apply-data", {
+		params: { path: { id: params.id } },
 	});
 
-	if (!event) {
+	if (applyError || !applyData) {
 		return notFound();
 	}
 
-	const [currentUserClubs, existingApplication] = await Promise.all([
-		prisma.club.findMany({
-			where: {
-				members: {
-					some: {
-						userId: user.id,
-					},
-				},
-			},
-		}),
-		prisma.eventRegistration.findFirst({
-			where: {
-				eventId: event.id,
-				createdById: user.id,
-			},
-			include: {
-				invitedUsers: {
-					select: {
-						id: true,
-						email: true,
-						name: true,
-						callsign: true,
-						image: true,
-					},
-				},
-				invitedUsersNotOnApp: {
-					select: {
-						eventId: true,
-						id: true,
-						email: true,
-						name: true,
-						createdAt: true,
-						updatedAt: true,
-						expiresAt: true,
-						eventRegistrationId: true,
-					},
-				},
-			},
-		}),
-	]);
+	const { event, existingRegistration } = applyData;
+
+	// Fetch user's clubs from backend
+	const { data: clubsData, error: clubsError } = await apiClient.GET("/api/users/me/clubs", {});
+
+	if (clubsError || !clubsData) {
+		return <ErrorPage title={t("Failed to load user data")} />;
+	}
+
+	const currentUserClubs = clubsData.clubs;
 
 	const canApplyToEvent =
 		isAfter(new Date(), new Date(event.dateRegistrationsOpen)) &&
@@ -134,7 +66,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
 		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
-		name: `${existingApplication ? t("Edit event application") : t("Apply to event")}: ${event.name}`,
+		name: `${existingRegistration ? t("Edit event application") : t("Apply to event")}: ${event.name}`,
 		description: t("Applying to {eventName}", { eventName: event.name }),
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
 		mainEntity: {
@@ -142,8 +74,8 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
 			name: event.name,
 			sport: "Airsoft",
-			startDate: event.dateStart.toISOString(),
-			endDate: event.dateEnd.toISOString(),
+			startDate: event.dateStart,
+			endDate: event.dateEnd,
 			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
 		},
 		breadcrumb: {
@@ -181,10 +113,10 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 		<div className="container mx-auto max-w-[1200px] py-8">
 			<JsonLdScript data={applicationPageSchema} />
 			<h1 className="text-3xl font-bold mb-8">
-				{existingApplication ? t("Edit event application") : t("Apply to event")}: {event.name}
+				{existingRegistration ? t("Edit event application") : t("Apply to event")}: {event.name}
 			</h1>
 			<EventApplicationForm
-				existingApplication={existingApplication}
+				existingApplication={existingRegistration}
 				event={event}
 				user={user}
 				currentUserClubs={currentUserClubs}
@@ -197,31 +129,17 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/a
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const event = await prisma.event.findFirst({
-		where: {
-			OR: [
-				{
-					id: params.id,
-				},
-				{
-					slug: params.id,
-				},
-			],
-		},
-		select: {
-			id: true,
-			slug: true,
-			name: true,
-			description: true,
-		},
+	const { data: eventData } = await apiClient.GET("/api/events/{id}", {
+		params: { path: { id: params.id } },
 	});
 
-	if (!event) {
+	if (!eventData) {
 		return {
 			title: t("Event Not Found - RECONNED"),
 		};
 	}
 
+	const event = eventData.event;
 	const pathPrefix = "/events";
 	const slugOrId = event.slug || event.id;
 	const canonicalUrl = constructCanonicalUrl(

@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { EditClubForm } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/edit-club-form";
-import api from "@/lib/api";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+
+type AdminUnclaimed = ApiResponse<"/api/admin/unclaimed-clubs/{id}", "get">;
+type CountriesResponse = ApiResponse<"/api/countries", "get">;
 
 export default async function EditUnclaimedClubPage(
 	props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs/edit">,
@@ -20,21 +22,19 @@ export default async function EditUnclaimedClubPage(
 		return notFound();
 	}
 
-	const [club, countriesResponse] = await Promise.all([
-		prisma.club.findUnique({
-			where: { id: clubId as string },
-			include: {
-				members: {
-					where: {
-						role: "CLUB_OWNER",
-					},
-				},
+	const [clubResp, countriesResp] = await Promise.all([
+		apiClient.GET("/api/admin/unclaimed-clubs/{id}", {
+			params: {
+				path: { id: clubId as string },
 			},
 		}),
-		api.countries.get(),
+		apiClient.GET("/api/countries"),
 	]);
 
-	if (!club || club.members.length > 0 || countriesResponse.error) {
+	const club = clubResp.data as AdminUnclaimed | undefined;
+	const countries = countriesResp.data as CountriesResponse | undefined;
+
+	if (!club || !countries || club.hasOwner) {
 		return notFound();
 	}
 
@@ -46,7 +46,7 @@ export default async function EditUnclaimedClubPage(
 				<h3 className="text-lg font-semibold">{t("Edit unclaimed club")}</h3>
 				<p className="text-muted-foreground">{t("Edit the information for this unclaimed club.")}</p>
 			</div>
-			<EditClubForm club={club} countries={countriesResponse.data} />
+			<EditClubForm club={club} countries={countries} />
 		</div>
 	);
 }

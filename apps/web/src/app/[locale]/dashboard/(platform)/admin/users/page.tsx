@@ -1,9 +1,10 @@
-import type { Prisma } from "@generated/client";
 import { Suspense } from "react";
 import { UserSheet } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-sheet";
 import { UserTable } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { prisma } from "@/lib/prisma";
+import apiClient, { type ApiResponse } from "@/lib/api";
+
+type AdminUser = ApiResponse<"/api/admin/users", "get">["users"][number];
 
 export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/admin/users">) {
 	const searchParams = await props.searchParams;
@@ -11,66 +12,30 @@ export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	// Fetch selected user separately if userId is present
-	const selectedUser = userId
-		? await prisma.user.findUnique({
-				where: { id: userId as string },
-				include: {
-					clubMembership: {
-						include: {
-							club: {
-								select: {
-									name: true,
-								},
-							},
-						},
-					},
-				},
-			})
-		: null;
-
-	const where = {
-		...(search
-			? {
-					OR: [
-						{ name: { contains: search as string, mode: "insensitive" } },
-						{ email: { contains: search as string, mode: "insensitive" } },
-						{ callsign: { contains: search as string, mode: "insensitive" } },
-					],
-				}
-			: {}),
-	} satisfies Prisma.UserWhereInput;
-
-	const orderBy: Prisma.UserOrderByWithRelationInput = sortBy
-		? {
-				...(sortBy === "name" && { name: sortOrder === "desc" ? "desc" : "asc" }),
-				...(sortBy === "email" && { email: sortOrder === "desc" ? "desc" : "asc" }),
-				...(sortBy === "callsign" && { callsign: sortOrder === "desc" ? "desc" : "asc" }),
-				...(sortBy === "createdAt" && {
-					createdAt: sortOrder === "desc" ? "desc" : "asc",
-				}),
-			}
-		: { createdAt: "desc" };
-
-	const users = await prisma.user.findMany({
-		where,
-		orderBy,
-		include: {
-			clubMembership: {
-				include: {
-					club: {
-						select: {
-							name: true,
-						},
-					},
-				},
+	const { data: listData } = await apiClient.GET("/api/admin/users", {
+		params: {
+			query: {
+				page: currentPage,
+				perPage: pageSize,
+				...(search ? { search: search as string } : {}),
+				...(sortBy ? { sortBy: sortBy as "name" | "email" | "callsign" | "createdAt" } : {}),
+				sortOrder: sortOrder === "asc" ? "asc" : "desc",
 			},
 		},
-		take: pageSize,
-		skip: (currentPage - 1) * pageSize,
 	});
 
-	const totalUsers = await prisma.user.count({ where });
+	const users = (listData?.users ?? []) as AdminUser[];
+	const totalUsers = listData?.pagination.total ?? 0;
+
+	const selectedUser = userId
+		? (
+				await apiClient.GET("/api/admin/users/{id}", {
+					params: {
+						path: { id: userId as string },
+					},
+				})
+			).data
+		: undefined;
 
 	return (
 		<>

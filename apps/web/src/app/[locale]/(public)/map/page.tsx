@@ -8,7 +8,7 @@ import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function MapPage() {
-	const { data, error } = await apiClient.GET("/api/public/clubs/map");
+	const { data, error } = await apiClient.GET("/api/clubs");
 
 	if (error) {
 		console.error("Error loading clubs:", error);
@@ -19,12 +19,14 @@ export default async function MapPage() {
 		return <div>Error loading clubs</div>;
 	}
 
-	const transformedClubs = data.clubs.map((club) => ({
-		...club,
-		location: club.location ?? undefined,
-		slug: club.slug ?? undefined,
-		logo: club.logo ?? undefined,
-	}));
+	const transformedClubs = data.clubs
+		.filter((club) => !club.isPrivate && club.latitude && club.longitude)
+		.map((club) => ({
+			...club,
+			location: club.location ?? undefined,
+			slug: club.slug ?? undefined,
+			logo: club.logo ?? undefined,
+		}));
 
 	const t = await getExtracted();
 

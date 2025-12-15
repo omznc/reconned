@@ -1,51 +1,36 @@
-import type { Prisma } from "@generated/client";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { PurchasesTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/purchases-table";
 import { AddPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.form";
 import { ErrorPage } from "@/components/error-page";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import { prisma } from "@/lib/prisma";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
+
+type PurchasesResponse = ApiResponse<"/api/clubs/{id}/purchases", "get">;
 
 export async function SpendingPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/club/spending">) {
 	const { clubId } = await props.params;
-	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
+	const { page, perPage } = await props.searchParams;
 
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const where = {
-		clubId,
-		...(search
-			? {
-					OR: [
-						{ title: { contains: search as string, mode: "insensitive" } },
-						{
-							description: {
-								contains: search as string,
-								mode: "insensitive",
-							},
-						},
-					],
-				}
-			: {}),
-	} satisfies Prisma.ClubPurchaseWhereInput;
-
-	const orderBy: Prisma.ClubPurchaseOrderByWithRelationInput = sortBy
-		? {
-				[sortBy as string]: sortOrder ?? "asc",
-			}
-		: { createdAt: "desc" };
-
-	const purchases = await prisma.clubPurchase.findMany({
-		where,
-		orderBy,
-		take: pageSize,
-		skip: (currentPage - 1) * pageSize,
+	const { data } = await apiClient.GET("/api/clubs/{id}/purchases", {
+		params: {
+			path: {
+				id: clubId,
+			},
+			query: {
+				page: currentPage,
+				perPage: pageSize,
+			},
+		},
 	});
 
-	const totalPurchases = await prisma.clubPurchase.count({ where });
+	const resp = data as PurchasesResponse | undefined;
+	const purchases = resp?.purchases ?? [];
+	const totalPurchases = resp?.pagination.total ?? 0;
 
 	return <PurchasesTable purchases={purchases} totalPurchases={totalPurchases} pageSize={pageSize} />;
 }

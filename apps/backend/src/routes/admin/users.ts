@@ -13,9 +13,13 @@ const baseUserSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	email: z.string(),
+	slug: z.string().nullable(),
+	image: z.string().nullable(),
 	callsign: z.string().nullable(),
 	role: z.string().nullable(),
 	gear: z.any(),
+	banned: z.boolean().nullable(),
+	banExpires: z.string().nullable(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });
@@ -194,46 +198,6 @@ adminUsersRouter.get(
 					),
 				}),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
-			},
-		},
-	},
-);
-
-adminUsersRouter.get(
-	"/api/admin/users/count",
-	async ({ query, response, context: _context }) => {
-		const { search = "" } = query || {};
-
-		const whereConditions = [];
-
-		if (search) {
-			whereConditions.push(
-				or(
-					ilike(user.name, `%${search}%`),
-					ilike(user.email, `%${search}%`),
-					ilike(user.callsign, `%${search}%`),
-				),
-			);
-		}
-
-		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const total = await db.select({ count: count() }).from(user).where(where);
-
-		return response.json({ count: total[0]?.count || 0 });
-	},
-	{
-		auth: true,
-		schema: {
-			tags: ["Admin"],
-			summary: "Count users",
-			description: "Admin endpoint to count users with optional search filter",
-			query: z.object({
-				search: z.string().optional(),
-			}),
-			response: {
-				200: z.object({ count: z.number() }),
-				...responseSchema([401, 403], z.object({ error: z.string() })),
 			},
 		},
 	},
