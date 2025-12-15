@@ -165,7 +165,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			name: club?.name || "",
 			location: club?.location || "",
 			description: club?.description || "",
-			dateFounded: club?.dateFounded || new Date(),
+			dateFounded: club?.dateFounded ? new Date(club.dateFounded) : undefined,
 			isAllied: club?.isAllied,
 			isPrivate: club?.isPrivate,
 			isPrivateStats: club?.isPrivateStats,
@@ -374,9 +374,8 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 											)}
 										>
 											{field.value
-												? countries.find((country) => country.id === field.value)?.translations[
-														locale
-													]
+												? countries?.find((country) => country.id === field.value)
+														?.translations?.[locale]
 												: t("Select a country")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -388,7 +387,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 										<CommandEmpty>{t("No results")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
 											{countries.map((country) => {
-												const countryName = country.translations[locale];
+												const countryName = country.translations?.[locale] ?? country.name;
 												return (
 													<CommandItem
 														key={country.id}

@@ -49,7 +49,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 				if (error || !data) {
 					return [];
 				}
-				return data.clubIds;
+				return data.clubs;
 			})()
 		: Promise.resolve([]);
 
@@ -322,7 +322,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 										{event.isPrivate && (
 											<span className="text-xs text-muted-foreground">
 												{t("This is a private event, but you are in the {clubName} club.", {
-													clubName: event.club?.name,
+													clubName: event.club?.name ?? "",
 												})}
 											</span>
 										)}

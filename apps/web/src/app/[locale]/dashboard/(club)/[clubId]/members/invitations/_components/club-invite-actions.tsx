@@ -9,11 +9,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
 
-interface ClubInvite {
-	inviteCode: string;
-	club: { id: string };
-}
+type ClubInvite = ApiResponse<"/api/clubs/{id}/invites", "get">["invites"][number];
 
 interface ClubInviteActionsProps {
 	invite: ClubInvite;

@@ -60,7 +60,7 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 						}
 					: undefined,
 				additionalName: user.callsign || undefined,
-				jobTitle: user.role === "admin" ? "Administrator" : undefined,
+				jobTitle: user.isAdmin ? "Administrator" : undefined,
 			},
 		})),
 	};
@@ -78,7 +78,7 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 						title={
 							<span className="flex gap-2 items-center">
 								{user.name} {user.callsign ? `(${user.callsign})` : ""}
-								{user.role === "admin" && <AdminIcon />}
+								{user.isAdmin && <AdminIcon />}
 							</span>
 						}
 						description={null}

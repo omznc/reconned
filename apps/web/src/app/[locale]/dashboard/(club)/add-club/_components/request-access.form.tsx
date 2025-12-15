@@ -43,6 +43,7 @@ async function requestAccess(input: RequestAccessSchema) {
 		params: {
 			path: { id: parsed.data.clubIdTarget },
 		},
+		body: {},
 	});
 
 	if (error || !data?.success) {

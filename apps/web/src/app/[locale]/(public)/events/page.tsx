@@ -65,7 +65,7 @@ export default async function Page() {
 				description: event.description,
 				sport: "Airsoft",
 				startDate: event.dateStart.toISOString(),
-				endDate: event.dateEnd.toISOString(),
+				endDate: event.dateEnd?.toISOString() ?? undefined,
 				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
 				image: event.image || undefined,
 				location: {

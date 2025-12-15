@@ -6,8 +6,10 @@ import { toast } from "sonner";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
-import type { User } from "@/lib/api-type-helpers";
+import type { ApiResponse } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
+
+type User = ApiResponse<"/api/admin/users/{id}", "get">;
 
 export function UserActions({ user }: { user: User }) {
 	const searchParams = useSearchParams();

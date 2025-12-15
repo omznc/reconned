@@ -71,7 +71,7 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => {
-							const { label, className } = getEventStatus(row.dateStart, row.dateEnd);
+							const { label, className } = getEventStatus(new Date(row.dateStart), new Date(row.dateEnd));
 							return <Badge className={cn("pointer-events-none", className)}>{label}</Badge>;
 						},
 					},

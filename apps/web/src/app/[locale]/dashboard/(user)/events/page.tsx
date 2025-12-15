@@ -3,10 +3,8 @@ import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-
-type EventsListResponse = ApiResponse<"/api/events", "get">;
 
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/events">) {
 	const user = await isAuthenticated();
@@ -24,7 +22,7 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/ev
 				page: currentPage,
 				perPage: pageSize,
 				...(search ? { search: search as string } : {}),
-				...(sortBy ? { sortBy: sortBy as EventsListResponse["sortBy"] } : {}),
+				...(sortBy ? { sortBy: sortBy as "name" | "dateStart" } : {}),
 				sortOrder: sortOrder === "asc" ? "asc" : "desc",
 				filter: "mine",
 			},

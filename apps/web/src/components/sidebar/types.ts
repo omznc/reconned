@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { Club } from "@/lib/api-type-helpers";
+import type { ApiResponse } from "@/lib/api";
 
 export interface NavItem {
 	title: string;
@@ -11,7 +11,7 @@ export interface NavItem {
 	items?: NavSubItem[];
 	isNav?: boolean;
 	shortcut?: string;
-	club?: Club;
+	club?: Omit<ApiResponse<"/api/dashboard/clubs", "get">["clubs"], "reviews" | "posts" | "_count">[number];
 }
 
 export interface NavSubItem {

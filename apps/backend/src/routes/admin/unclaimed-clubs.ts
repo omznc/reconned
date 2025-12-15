@@ -281,6 +281,105 @@ adminUnclaimedClubsRouter.post(
 );
 
 adminUnclaimedClubsRouter.put(
+	"/api/admin/unclaimed-clubs/:id",
+	async ({ params, body, response, context }) => {
+		const clubId = params.id;
+
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const existingClub = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!existingClub[0]) {
+			throw apiError.notFound("Club not found");
+		}
+
+		const updateData: Record<string, unknown> = {
+			updatedAt: new Date().toISOString(),
+		};
+
+		const updatableFields = [
+			"name",
+			"countryId",
+			"location",
+			"latitude",
+			"longitude",
+			"description",
+			"slug",
+			"dateFounded",
+			"isAllied",
+			"isPrivate",
+			"isPrivateStats",
+			"logo",
+			"headerImage",
+			"contactPhone",
+			"contactEmail",
+			"website",
+			"instagramUsername",
+		] as const;
+
+		for (const field of updatableFields) {
+			if (body[field] !== undefined) {
+				updateData[field] = body[field];
+			}
+		}
+
+		const updatedClub = await db.update(club).set(updateData).where(eq(club.id, clubId)).returning();
+
+		if (!updatedClub[0]) {
+			throw apiError.notFound("Club not found");
+		}
+
+		await logClubAudit({
+			clubId,
+			actionType: "CLUB_UPDATE",
+			actionData: {
+				updatedByAdmin: true,
+				unclaimed: true,
+			},
+			userId: context.user.id,
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Admin"],
+			summary: "Update unclaimed club",
+			description: "Admin endpoint to update unclaimed club details",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: z.object({
+				name: z.string().min(1).optional(),
+				countryId: z.number().optional(),
+				location: z.string().optional(),
+				latitude: z.number().optional(),
+				longitude: z.number().optional(),
+				description: z.string().optional(),
+				slug: z.string().optional(),
+				dateFounded: z.string().optional(),
+				isAllied: z.boolean().optional(),
+				isPrivate: z.boolean().optional(),
+				isPrivateStats: z.boolean().optional(),
+				logo: z.string().optional(),
+				headerImage: z.string().optional(),
+				contactPhone: z.string().optional(),
+				contactEmail: z.string().email().optional(),
+				website: z.string().url().optional(),
+				instagramUsername: z.string().optional(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403, 404, 500], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+adminUnclaimedClubsRouter.put(
 	"/api/admin/unclaimed-clubs/:id/logo",
 	async ({ params, body, response, context: _context }) => {
 		const clubId = params.id;

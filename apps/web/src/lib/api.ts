@@ -30,11 +30,8 @@ import { env } from "./env";
  * ```bash
  * bun run api:generate-types
  * ```
- *
- * Note: Some endpoints use `passthrough()` schemas which result in `{ [key: string]: unknown }` types.
- * These should be updated in the backend to use explicit Zod schemas for proper type inference.
  */
-export const apiClient = createClient<paths>({
+const apiClient = createClient<paths>({
 	baseUrl: env.NEXT_PUBLIC_BACKEND_URL,
 	credentials: "include",
 });

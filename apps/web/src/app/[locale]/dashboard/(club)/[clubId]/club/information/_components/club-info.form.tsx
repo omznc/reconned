@@ -52,7 +52,7 @@ const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").the
 });
 
 interface ClubInfoFormProps {
-	club?: Club | null;
+	club?: Omit<Club, "_count"> | null;
 	isClubOwner?: boolean;
 	countries: Country[];
 	instagramConnectionUrl?: string;
@@ -263,7 +263,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			name: props.club?.name || "",
 			location: props.club?.location || "",
 			description: props.club?.description || "",
-			dateFounded: props.club?.dateFounded || new Date(),
+			dateFounded: props.club?.dateFounded ? new Date(props.club.dateFounded) : undefined,
 			isAllied: props.club?.isAllied,
 			isPrivate: props.club?.isPrivate,
 			isPrivateStats: props.club?.isPrivateStats,

@@ -15,13 +15,13 @@ export const isAuthenticated = async () => {
 	}
 
 	// Fetch managed clubs from backend API
-	const { data: managedClubsData } = await apiClient.GET("/api/users/me/managed-clubs", {});
+	const { data: managedClubsData } = await apiClient.GET("/api/clubs/managed", {});
 
-	const managedClubs = managedClubsData?.clubIds || [];
+	const managedClubs = managedClubsData?.clubs || [];
 
 	return {
 		...result.data.user,
-		managedClubs,
+		managedClubs: managedClubs.map((club) => club.id),
 		session: result.data.session,
 	};
 };

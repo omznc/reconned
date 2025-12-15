@@ -432,7 +432,16 @@ eventsRouter.get(
 			}),
 			response: {
 				200: z.object({
-					events: z.array(baseEventSchema),
+					events: z.array(
+						baseEventSchema.extend({
+							club: z
+								.object({
+									name: z.string(),
+									verified: z.boolean(),
+								})
+								.nullable(),
+						}),
+					),
 				}),
 				400: z.object({ error: z.string() }),
 			},
@@ -1681,6 +1690,8 @@ eventsRouter.get(
 				...existingRegistration[0],
 				invitedUsers,
 				invitedUsersNotOnApp,
+				type: existingRegistration[0].type as "solo" | "team",
+				paymentMethod: existingRegistration[0].paymentMethod as "cash" | "bank",
 			};
 		}
 
@@ -1716,7 +1727,31 @@ eventsRouter.get(
 							.optional(),
 						rules: z.array(baseClubRuleSchema),
 					}),
-					existingRegistration: z.any().nullable(),
+					existingRegistration: z
+						.object({
+							id: z.string(),
+							type: z.enum(["solo", "team"]),
+							paymentMethod: z.enum(["cash", "bank"]),
+							invitedUsers: z.array(
+								z.object({
+									id: z.string(),
+									name: z.string(),
+									email: z.string(),
+									callsign: z.string().nullable(),
+									image: z.string().nullable(),
+								}),
+							),
+							invitedUsersNotOnApp: z.array(
+								z.object({
+									id: z.string(),
+									eventId: z.string(),
+									eventRegistrationId: z.string().nullable(),
+									email: z.string(),
+									name: z.string(),
+								}),
+							),
+						})
+						.nullable(),
 				}),
 				400: z.object({ error: z.string() }),
 				401: z.object({ error: z.string() }),

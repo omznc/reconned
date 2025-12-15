@@ -53,11 +53,6 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		_count: {
 			eventRegistration: registrationsCountData?.count ?? 0,
 		},
-		rules: (rulesData?.rules ?? []).map((rule) => ({
-			...rule,
-			createdAt: new Date(rule.createdAt),
-			updatedAt: new Date(rule.updatedAt),
-		})),
 		club: {
 			id: eventData.club.id,
 			name: eventData.club.name,
@@ -65,14 +60,9 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			logo: eventData.club.logo,
 			verified: eventData.club.verified,
 		},
+		rules: rulesData?.rules ?? [],
 		gearRequirements: (base.gearRequirements ?? []) as runtime.JsonValue[],
 		mapData: (base.mapData ?? null) as runtime.JsonValue | null,
-		dateStart: new Date(base.dateStart),
-		dateEnd: new Date(base.dateEnd),
-		dateRegistrationsOpen: new Date(base.dateRegistrationsOpen),
-		dateRegistrationsClose: new Date(base.dateRegistrationsClose),
-		createdAt: new Date(base.createdAt),
-		updatedAt: new Date(base.updatedAt),
 	};
 
 	const locale = await getLocale();
@@ -83,8 +73,8 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		name: event.name,
 		description: event.description,
 		sport: "Airsoft",
-		startDate: event.dateStart.toISOString(),
-		endDate: event.dateEnd?.toISOString(),
+		startDate: event.dateStart,
+		endDate: event.dateEnd,
 		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
 		image: event.image || undefined,
 		location: {
@@ -115,12 +105,8 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 						price: event.costPerPerson,
 						priceCurrency: "BAM",
 						availability: "https://schema.org/InStock",
-						...(event.dateRegistrationsOpen
-							? { validFrom: event.dateRegistrationsOpen.toISOString() }
-							: {}),
-						...(event.dateRegistrationsClose
-							? { validThrough: event.dateRegistrationsClose.toISOString() }
-							: {}),
+						...(event.dateRegistrationsOpen ? { validFrom: event.dateRegistrationsOpen } : {}),
+						...(event.dateRegistrationsClose ? { validThrough: event.dateRegistrationsClose } : {}),
 					}
 				: undefined,
 		eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
@@ -147,7 +133,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const { data: event, error } = await apiClient.GET("/api/events/{id}", {
+	const { data, error } = await apiClient.GET("/api/events/{id}", {
 		params: {
 			path: {
 				id: params.id,
@@ -155,9 +141,10 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 		},
 	});
 
-	if (error || !event) {
+	if (error || !data) {
 		return notFound();
 	}
+	const event = data.event;
 
 	const ogUrl = new URL(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/og/event`);
 	ogUrl.searchParams.set("title", event.name);

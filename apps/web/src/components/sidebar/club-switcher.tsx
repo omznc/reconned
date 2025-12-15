@@ -17,10 +17,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { Link, useRouter } from "@/i18n/navigation";
-import type { Club } from "@/lib/api-type-helpers";
+import type { ApiResponse } from "@/lib/api";
+
+type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 interface ClubSwitcherProps {
-	clubs: Club[];
+	clubs: DashboardClubs;
 	user: { managedClubs: string[] };
 }
 
@@ -71,7 +73,7 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 		return () => document.removeEventListener("keydown", handleKeyDown);
 	}, [clubId, clubs]);
 
-	const navigateToClub = (club: Club) => {
+	const navigateToClub = (club: DashboardClubs[number]) => {
 		const currentFullUrl = window.location.href;
 
 		if (!(clubId && currentFullUrl.includes(clubId))) {

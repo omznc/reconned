@@ -34,7 +34,7 @@ export default async function EditUnclaimedClubPage(
 	const club = clubResp.data as AdminUnclaimed | undefined;
 	const countries = countriesResp.data as CountriesResponse | undefined;
 
-	if (!club || !countries || club.hasOwner) {
+	if (!club || !countries || club._count.members > 0) {
 		return notFound();
 	}
 

@@ -199,7 +199,7 @@ export function MembersTable(props: MembersTableProps) {
 							component: (_, row) => (
 								<span>
 									{row.startDate
-										? row.startDate.toLocaleDateString(locale, {
+										? new Date(row.startDate).toLocaleDateString(locale, {
 												day: "2-digit",
 												month: "long",
 												year: "numeric",
@@ -218,7 +218,7 @@ export function MembersTable(props: MembersTableProps) {
 							component: (_, row) => (
 								<span>
 									{row.endDate
-										? row.endDate.toLocaleDateString(locale, {
+										? new Date(row.endDate).toLocaleDateString(locale, {
 												day: "2-digit",
 												month: "long",
 												year: "numeric",

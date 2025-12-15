@@ -30,6 +30,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
@@ -37,7 +38,7 @@ const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").the
 });
 
 interface CreateUnclaimedClubFormProps {
-	countries: Country[];
+	countries: ApiResponse<"/api/countries", "get">;
 }
 
 export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormProps) {
@@ -346,9 +347,8 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 											)}
 										>
 											{field.value
-												? countries.find((country) => country.id === field.value)?.translations[
-														locale
-													]
+												? countries.find((country) => country.id === field.value)
+														?.translations?.[locale]
 												: t("Select a country")}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -360,7 +360,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 										<CommandEmpty>{t("No results")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
 											{countries.map((country) => {
-												const countryName = country.translations[locale];
+												const countryName = country.translations?.[locale] ?? country.name;
 												return (
 													<CommandItem
 														key={country.id}

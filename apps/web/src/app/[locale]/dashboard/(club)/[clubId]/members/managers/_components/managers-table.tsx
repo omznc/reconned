@@ -2,6 +2,7 @@
 
 import { MoreHorizontal, UserMinus } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useExtracted } from "next-intl";
 import { toast } from "sonner";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
@@ -14,40 +15,29 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
-type Role = "CLUB_OWNER" | "MANAGER" | "USER";
-
-type Manager = {
-	id: string;
-	role: Role;
-	createdAt: Date;
-	user: {
-		id: string;
-		name: string;
-		email: string;
-		image: string | null;
-		callsign: string | null;
-	};
-};
-
+type Managers = ApiResponse<"/api/clubs/{id}/members", "get">["members"];
 interface ManagersTableProps {
-	managers: Manager[];
+	managers: Managers;
 	totalManagers: number;
 	pageSize: number;
 }
 
 export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTableProps) {
 	const confirm = useConfirm();
+	const t = useExtracted();
 	const params = useParams<{ clubId: string }>();
 
-	const handleDemote = async (manager: Manager) => {
+	const handleDemote = async (manager: Managers[number]) => {
 		const confirmed = await confirm({
-			title: "Demotuj menadžera",
-			body: `Da li ste sigurni da želite demotovati ${manager.user.name} u običnog korisnika?`,
-			cancelButton: "Odustani",
-			actionButton: "Demotuj",
+			title: t("Demote manager"),
+			body: t("Are you sure you want to demote {managerName} to a regular user?", {
+				managerName: manager.user.name,
+			}),
+			cancelButton: t("Cancel"),
+			actionButton: t("Demote"),
 			actionButtonVariant: "destructive",
 		});
 
@@ -69,12 +59,12 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? "Neuspjelo demotovanje menadžera.");
+				throw new ActionError(error.error ?? t("Failed to demote manager."));
 			}
 
-			toast.success("Menadžer je uspješno demotovan u korisnika.");
+			toast.success(t("Manager has been demoted to a regular user."));
 		} catch (error) {
-			const message = error instanceof Error ? error.message : "Neuspjelo demotovanje menadžera.";
+			const message = error instanceof Error ? error.message : t("Failed to demote manager.");
 			toast.error(message);
 		}
 	};
@@ -83,11 +73,11 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 		<GenericDataTable
 			data={managers}
 			totalPages={Math.ceil(totalManagers / pageSize)}
-			searchPlaceholder="Pretraži menadžere..."
+			searchPlaceholder={t("Search managers...")}
 			columns={[
 				{
 					key: "user",
-					header: "Član",
+					header: t("Member"),
 					sortable: true,
 					cellConfig: {
 						variant: "custom",
@@ -112,17 +102,17 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 				},
 				{
 					key: "user.email",
-					header: "Email",
+					header: t("Email"),
 					sortable: true,
 				},
 				{
 					key: "createdAt",
-					header: "Datum pristupa",
+					header: t("Access date"),
 					sortable: true,
 				},
 				{
 					key: "actions",
-					header: "Akcije",
+					header: t("Actions"),
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => {
@@ -131,7 +121,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
 										<Button variant="ghost" className="h-8 w-8 p-0">
-											<span className="sr-only">Otvori meni</span>
+											<span className="sr-only">{t("Open menu")}</span>
 											<MoreHorizontal className="h-4 w-4" />
 										</Button>
 									</DropdownMenuTrigger>
@@ -142,7 +132,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 											className={cn(!isOwner && "text-destructive focus:text-destructive")}
 										>
 											<UserMinus className="size-4 mr-2" />
-											{isOwner ? "Vlasnik kluba" : "Demotuj"}
+											{isOwner ? t("Club owner") : t("Demote")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>

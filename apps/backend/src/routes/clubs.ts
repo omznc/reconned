@@ -72,11 +72,6 @@ const updatePurchaseBodySchema = z.object({
 	receiptUrls: z.array(z.string().url()).max(3).optional(),
 });
 
-const createInviteBodySchema = z.object({
-	userEmail: z.string().email(),
-	userName: z.string().optional(),
-});
-
 const createClubBodySchema = z.object({
 	name: z.string().min(1).max(50),
 	countryId: z.number(),
@@ -2298,6 +2293,11 @@ clubsRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
+		const target = {
+			email: body?.userEmail ?? context.user.email,
+			name: body?.userName ?? context.user.name,
+		};
+
 		const managerMembershipData = await db
 			.select()
 			.from(clubMembership)
@@ -2321,7 +2321,7 @@ clubsRouter.post(
 			.from(clubInvite)
 			.where(
 				and(
-					eq(clubInvite.email, body.userEmail),
+					eq(clubInvite.email, target.email),
 					eq(clubInvite.clubId, clubId),
 					eq(clubInvite.status, "PENDING"),
 					gt(clubInvite.expiresAt, new Date().toISOString()),
@@ -2333,7 +2333,7 @@ clubsRouter.post(
 			throw apiError.validation("Invitation already sent to this email");
 		}
 
-		const existingUser = await db.select().from(user).where(eq(user.email, body.userEmail)).limit(1);
+		const existingUser = await db.select().from(user).where(eq(user.email, target.email)).limit(1);
 
 		if (existingUser[0]) {
 			const existingMembership = await db
@@ -2355,7 +2355,7 @@ clubsRouter.post(
 			.insert(clubInvite)
 			.values({
 				id: inviteId,
-				email: body.userEmail,
+				email: target.email,
 				clubId,
 				status: "PENDING",
 				inviteCode,
@@ -2377,7 +2377,7 @@ clubsRouter.post(
 				inviteId: newInvite[0].id,
 				inviteCode: newInvite[0].inviteCode,
 				email: newInvite[0].email,
-				userName: body.userName,
+				userName: target.name,
 				existingUserId: existingUser[0]?.id,
 			},
 			userId: context.user.id,
@@ -2387,13 +2387,13 @@ clubsRouter.post(
 
 		try {
 			await sendEmail({
-				to: body.userEmail,
+				to: target.email,
 				subject: `Invitation to join ${clubData[0].name}`,
 				html: await render(
 					ClubInvitationEmail({
 						code: newInvite[0].inviteCode,
 						url: inviteUrl,
-						name: body.userName,
+						name: target.name,
 						clubLogo: clubData[0].logo || `${env.BETTER_AUTH_URL}/logo.png`,
 						clubName: clubData[0].name,
 						clubLocation: clubData[0].location || "",
@@ -2418,7 +2418,10 @@ clubsRouter.post(
 			params: z.object({
 				id: z.string(),
 			}),
-			body: createInviteBodySchema,
+			body: z.object({
+				userEmail: z.email().optional(),
+				userName: z.string().optional(),
+			}),
 			response: {
 				200: z.object({
 					success: z.boolean(),
@@ -2739,7 +2742,10 @@ clubsRouter.get(
 			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
-		return response.json(clubData[0]);
+		return response.json({
+			...clubData[0],
+			isCurrentUserOwner: membership.role === "CLUB_OWNER",
+		});
 	},
 	{
 		auth: true,
@@ -2751,7 +2757,9 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			response: {
-				200: baseClubSchema,
+				200: baseClubSchema.extend({
+					isCurrentUserOwner: z.boolean(),
+				}),
 				400: z.object({ error: z.string() }),
 				401: z.object({ error: z.string() }),
 				403: z.object({ error: z.string() }),
@@ -3523,8 +3531,11 @@ clubsRouter.get(
 		const managedClubs = await db
 			.select({
 				clubId: clubMembership.clubId,
+				name: club.name,
+				logo: club.logo,
 			})
 			.from(clubMembership)
+			.leftJoin(club, eq(clubMembership.clubId, club.id))
 			.where(
 				and(
 					eq(clubMembership.userId, context.user.id),
@@ -3533,7 +3544,11 @@ clubsRouter.get(
 			);
 
 		return response.json({
-			clubIds: managedClubs.map((m) => m.clubId),
+			clubs: managedClubs.map((m) => ({
+				id: m.clubId,
+				name: m.name,
+				logo: m.logo,
+			})),
 		});
 	},
 	{
@@ -3544,7 +3559,13 @@ clubsRouter.get(
 			description: "Get list of club IDs managed by current user",
 			response: {
 				200: z.object({
-					clubIds: z.array(z.string()),
+					clubs: z.array(
+						z.object({
+							id: z.string(),
+							name: z.string().nullable(),
+							logo: z.string().nullable(),
+						}),
+					),
 				}),
 				401: z.object({ error: z.string() }),
 			},

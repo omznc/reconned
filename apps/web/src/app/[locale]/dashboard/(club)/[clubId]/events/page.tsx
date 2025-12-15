@@ -6,10 +6,8 @@ import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_co
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-
-type ClubEventsResponse = ApiResponse<"/api/clubs/{clubId}/events", "get">;
 
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
 	const { clubId } = await props.params;
@@ -31,7 +29,7 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[c
 				page: currentPage,
 				perPage: pageSize,
 				...(search ? { search: search as string } : {}),
-				...(sortBy ? { sortBy: sortBy as ClubEventsResponse["sortBy"] } : {}),
+				...(sortBy ? { sortBy: sortBy as "name" | "dateStart" } : {}),
 				sortOrder: sortOrder === "asc" ? "asc" : "desc",
 			},
 		},

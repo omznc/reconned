@@ -39,15 +39,15 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
-import type { Club, Event } from "@/lib/api-type-helpers";
+import type { ApiResponse } from "@/lib/api";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
+type Event = ApiResponse<"/api/events/calendar", "get">["events"][number];
+
 interface EventCalendarProps {
-	events: (Event & {
-		club: Pick<Club, "id" | "name" | "verified" | "logo">;
-	})[];
-	managedClubs?: Array<{ id: string; name: string; logo: string | null }>;
+	events: Event[];
+	managedClubs?: ApiResponse<"/api/clubs/managed", "get">["clubs"];
 }
 
 type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "sep" | "oct" | "nov" | "dec";
@@ -108,7 +108,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		}
 
 		const query = searchQuery.toLowerCase();
-		return props.managedClubs.filter((club) => club.name.toLowerCase().includes(query));
+		return props.managedClubs.filter((club) => club.name?.toLowerCase().includes(query));
 	}, [props.managedClubs, searchQuery]);
 
 	useEffect(() => {
@@ -276,7 +276,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		}
 
 		if (props.managedClubs.length === 1) {
-			router.push(`/dashboard/${props.managedClubs[0]?.id}/events/create?date=${formattedDate}`);
+			router.push(`/dashboard/${props.managedClubs[0]}/events/create?date=${formattedDate}`);
 			return;
 		}
 
@@ -366,9 +366,25 @@ export function EventCalendar(props: EventCalendarProps) {
 
 					{weeks.map((week, weekIndex) => {
 						const weekEvents = props.events.filter((event) =>
-							week.some((day) => getEventsForDay(day).includes(event)),
+							week.some((day) =>
+								getEventsForDay(day).includes({
+									...event,
+									dateStart: new Date(event.dateStart),
+									dateEnd: event.dateEnd ? new Date(event.dateEnd) : null,
+									dateRegistrationsOpen: new Date(event.dateRegistrationsOpen),
+									dateRegistrationsClose: new Date(event.dateRegistrationsClose),
+								}),
+							),
 						);
-						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents);
+						const { positions: eventPositions, maxLayer } = getEventPositions(
+							weekEvents.map((event) => ({
+								...event,
+								dateStart: new Date(event.dateStart),
+								dateEnd: event.dateEnd ? new Date(event.dateEnd) : null,
+								dateRegistrationsOpen: new Date(event.dateRegistrationsOpen),
+								dateRegistrationsClose: new Date(event.dateRegistrationsClose),
+							})),
+						);
 						const weekHeight = Math.max(8, (maxLayer + 1) * 2); // 8rem minimum, 2rem per layer
 						const isLastWeek = weekIndex === weeks.length - 1;
 
@@ -430,7 +446,20 @@ export function EventCalendar(props: EventCalendarProps) {
 																<Button
 																	onClick={(clickEvent) => {
 																		clickEvent.stopPropagation();
-																		router.push(getEventUrl(event));
+																		router.push(
+																			getEventUrl({
+																				...event,
+																				dateStart:
+																					event.dateStart.toISOString(),
+																				dateEnd: event.dateEnd
+																					? event.dateEnd.toISOString()
+																					: "",
+																				dateRegistrationsOpen:
+																					event.dateRegistrationsOpen.toISOString(),
+																				dateRegistrationsClose:
+																					event.dateRegistrationsClose.toISOString(),
+																			}),
+																		);
 																	}}
 																	variant="ghost"
 																	style={{
@@ -478,8 +507,8 @@ export function EventCalendar(props: EventCalendarProps) {
 																	<div>
 																		<h4 className="font-semibold">{event.name}</h4>
 																		<p className="text-sm flex items-center gap-2 text-muted-foreground">
-																			{event.club.name}{" "}
-																			{event.club.verified && (
+																			{event.club?.name ?? ""}{" "}
+																			{event.club?.verified && (
 																				<VerifiedClubIcon />
 																			)}
 																		</p>
@@ -547,7 +576,17 @@ export function EventCalendar(props: EventCalendarProps) {
 																		</div>
 																	)}
 
-																	{canApplyToEvent(event) ? (
+																	{canApplyToEvent({
+																		...event,
+																		dateStart: event.dateStart.toISOString(),
+																		dateEnd: event.dateEnd
+																			? event.dateEnd.toISOString()
+																			: "",
+																		dateRegistrationsOpen:
+																			event.dateRegistrationsOpen.toISOString(),
+																		dateRegistrationsClose:
+																			event.dateRegistrationsClose.toISOString(),
+																	}) ? (
 																		<Button
 																			variant="default"
 																			className="w-full mt-2"
@@ -621,7 +660,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																width={40}
 																height={40}
 																src={club.logo}
-																alt={club.name}
+																alt={club.name ?? ""}
 																className="rounded-lg object-cover"
 															/>
 														) : (

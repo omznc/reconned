@@ -17,17 +17,6 @@ import { getPageViews } from "@/lib/analytics";
 import apiClient, { type ApiResponse } from "@/lib/api";
 import type { ClubMembership, Post } from "@/lib/api-type-helpers";
 
-type InstagramMedia = {
-	id: string;
-	caption: string | null;
-	media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
-	media_url: string;
-	permalink: string;
-	thumbnail_url?: string;
-	timestamp: string;
-	username: string;
-};
-
 import { cn } from "@/lib/utils";
 
 interface ClubOverviewProps {
@@ -39,27 +28,7 @@ interface ClubOverviewProps {
 	user?: { id: string; name: string; email: string; callsign?: string | null } | null;
 }
 
-async function fetchInstagramPhotos(clubId: string): Promise<{ photos: InstagramMedia[]; username: string | null }> {
-	try {
-		const { data, error } = await apiClient.GET("/api/clubs/{id}/instagram/media", {
-			params: {
-				path: { id: clubId },
-				query: { limit: 20 },
-			},
-		});
-
-		if (error || !data) {
-			return { photos: [], username: null };
-		}
-
-		return {
-			photos: data.media || [],
-			username: data.username || null,
-		};
-	} catch {
-		return { photos: [], username: null };
-	}
-}
+type InstagramMediaResponse = ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
 
 export async function ClubOverview({
 	club,
@@ -73,9 +42,25 @@ export async function ClubOverview({
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
 		club.instagramConnected
-			? fetchInstagramPhotos(club.id)
-			: Promise.resolve({
-					photos: [],
+			? apiClient
+					.GET("/api/clubs/{id}/instagram/media", {
+						params: {
+							path: { id: club.id },
+							query: { limit: 20 },
+						},
+					})
+					.then((response) => {
+						if (response.data) {
+							return response.data;
+						}
+
+						return {
+							media: [],
+							username: club.instagramUsername || null,
+						} as InstagramMediaResponse;
+					})
+			: Promise.resolve<InstagramMediaResponse>({
+					media: [],
 					username: club.instagramUsername || null,
 				}),
 	]);
@@ -269,10 +254,7 @@ export async function ClubOverview({
 										</div>
 									</div>
 									<div className="p-4">
-										<ClubInstagram
-											photos={instagramData.photos}
-											username={instagramData.username || club.instagramUsername || undefined}
-										/>
+										<ClubInstagram data={instagramData} />
 									</div>
 								</div>
 							</div>

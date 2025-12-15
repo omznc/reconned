@@ -1,10 +1,7 @@
 import { notFound } from "next/navigation";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api";
 import { isAuthenticated } from "@/lib/auth";
-
-type ClubInfoResponse = ApiResponse<"/api/clubs/{id}/information", "get">;
-type CountriesResponse = ApiResponse<"/api/countries", "get">;
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/information">) {
 	const params = await props.params;
@@ -22,8 +19,8 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		apiClient.GET("/api/countries"),
 	]);
 
-	const club = clubResp.data as ClubInfoResponse | undefined;
-	const countriesData = countries.data as CountriesResponse | undefined;
+	const club = clubResp.data;
+	const countriesData = countries.data;
 
 	if (!club || !countriesData) {
 		return notFound();
@@ -41,7 +38,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 			<ClubInfoForm
 				club={club}
 				countries={countriesData}
-				isClubOwner={club.isOwner === true}
+				isClubOwner={club.isCurrentUserOwner}
 				instagramConnectionUrl={authUrl}
 			/>
 		</div>

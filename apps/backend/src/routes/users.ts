@@ -334,6 +334,7 @@ usersRouter.get(
 				isPrivateEmail: user.isPrivateEmail,
 				isPrivatePhone: user.isPrivatePhone,
 				isPrivateStats: user.isPrivateStats,
+				role: user.role,
 				email: isAdmin
 					? user.email
 					: requestingUserId
@@ -366,7 +367,10 @@ usersRouter.get(
 		const total = await db.select({ count: count() }).from(user).where(where);
 
 		return response.json({
-			users,
+			users: users.map((user) => ({
+				...user,
+				isAdmin: user.role?.toUpperCase() === "ADMIN",
+			})),
 			pagination: {
 				page,
 				perPage,
@@ -386,7 +390,11 @@ usersRouter.get(
 			}),
 			response: {
 				200: z.object({
-					users: z.array(userSchema),
+					users: z.array(
+						userSchema.extend({
+							isAdmin: z.boolean(),
+						}),
+					),
 					pagination: paginationResponseSchema,
 				}),
 			},
@@ -1312,42 +1320,6 @@ usersRouter.get(
 			response: {
 				200: z.object({
 					clubs: z.array(baseClubSchema),
-				}),
-				401: z.object({ error: z.string() }),
-			},
-		},
-	},
-);
-
-usersRouter.get(
-	"/api/users/me/managed-clubs",
-	async ({ context, response }) => {
-		if (!context.user) {
-			throw apiError.unauthorized("Authentication required");
-		}
-
-		const memberships = await db
-			.select()
-			.from(clubMembership)
-			.where(
-				and(
-					eq(clubMembership.userId, context.user.id),
-					or(eq(clubMembership.role, "MANAGER"), eq(clubMembership.role, "CLUB_OWNER")),
-				),
-			);
-
-		const clubIds = memberships.map((membership) => membership.clubId);
-
-		return response.json({ clubIds });
-	},
-	{
-		schema: {
-			tags: ["Users"],
-			summary: "Get current user's managed clubs",
-			description: "Get list of club IDs that the authenticated user manages or owns",
-			response: {
-				200: z.object({
-					clubIds: z.array(z.string()),
 				}),
 				401: z.object({ error: z.string() }),
 			},

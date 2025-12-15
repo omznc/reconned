@@ -23,11 +23,13 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
-import type { Club } from "@/lib/api-type-helpers";
+import type { ApiResponse } from "@/lib/api";
 import { env } from "@/lib/env";
 
+type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
+
 interface AppSidebarProps {
-	clubs: Club[];
+	clubs: DashboardClubs;
 	user: User & { managedClubs: string[]; role?: string | null | undefined };
 	invitesCount: number;
 	inviteRequestsCount: {

@@ -42,16 +42,14 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 				},
 			},
 		}),
-		user ? apiClient.GET("/api/clubs/managed") : Promise.resolve({ data: { clubIds: [] }, error: null }),
+		user ? apiClient.GET("/api/clubs/managed") : Promise.resolve({ data: { clubs: [] }, error: null }),
 	]);
 
 	const club = clubData;
 
 	const isMemberOfClub = !!membershipData?.data?.isMember;
 	const hasOwner = hasOwnerData?.data?.hasOwner ?? false;
-	const managedClubs =
-		managedClubsData?.data && "clubIds" in managedClubsData.data ? managedClubsData.data.clubIds : [];
-
+	const managedClubs = managedClubsData?.data?.clubs.map((club) => club.id) ?? [];
 	const userMembership =
 		membershipData?.data?.isMember && membershipData?.data?.membership ? membershipData.data.membership : null;
 

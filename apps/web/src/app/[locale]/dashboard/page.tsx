@@ -164,15 +164,15 @@ export default async function DashboardPage() {
 					<div className="space-y-2">
 						{userWithDetails.eventRegistration.slice(0, 5).map((registration) => (
 							<Link
-								key={registration.event.id}
-								href={`/events/${registration.event.slug ?? registration.event.id}`}
+								key={registration.event?.id}
+								href={`/events/${registration.event?.slug ?? registration.event?.id ?? ""}`}
 								className="p-4 border rounded-lg block hover:bg-muted/50 transition-colors"
 							>
 								<div className="flex justify-between items-center">
 									<div>
-										<div className="font-medium">{registration.event.name}</div>
+										<div className="font-medium">{registration.event?.name ?? ""}</div>
 										<div className="text-sm text-muted-foreground">
-											{new Date(registration.event.dateStart).toLocaleDateString("bs")}
+											{new Date(registration.event?.dateStart ?? "").toLocaleDateString("bs")}
 										</div>
 									</div>
 									<div className="text-sm capitalize">{registration.type.toLowerCase()}</div>

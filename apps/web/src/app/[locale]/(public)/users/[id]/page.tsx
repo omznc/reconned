@@ -4,7 +4,7 @@ import { getExtracted, getLocale } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
-import { apiClient } from "@/lib/api";
+import apiClient from "@/lib/api";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 

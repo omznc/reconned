@@ -4,20 +4,20 @@ import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { ExternalLink, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
-import type { InstagramMedia } from "@/lib/instagram";
+import type { ApiResponse } from "@/lib/api";
+
+type InstagramMediaResponse = ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
 
 interface ClubInstagramProps {
-	clubId?: string;
-	photos: InstagramMedia[];
-	username?: string;
+	data: InstagramMediaResponse;
 	limit?: number;
 }
 
-export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProps) {
+export function ClubInstagram({ data, limit = 7 }: ClubInstagramProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 
-	if (photos.length === 0) {
+	if (data.media.length === 0) {
 		return (
 			<div className="text-center py-8 text-muted-foreground">
 				<p>{t("Nothing to show here")}</p>
@@ -26,10 +26,10 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 	}
 
 	// Display only the first 'limit' photos
-	const displayPhotos = photos.slice(0, limit);
-	const hasMorePhotos = photos.length > limit;
+	const displayPhotos = data.media.slice(0, limit);
+	const hasMorePhotos = data.media.length > limit;
 
-	const renderMedia = (photo: InstagramMedia) => {
+	const renderMedia = (photo: InstagramMediaResponse["media"][number]) => {
 		const imageUrl = photo.media_type === "VIDEO" ? photo.thumbnail_url || photo.media_url : photo.media_url;
 
 		return (
@@ -86,9 +86,9 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 			{displayPhotos.map(renderMedia)}
 
 			{/* "View more" box that links to Instagram */}
-			{hasMorePhotos && username && (
+			{hasMorePhotos && data.username && (
 				<a
-					href={`https://instagram.com/${username}`}
+					href={`https://instagram.com/${data.username}`}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="overflow-hidden rounded-md aspect-square relative group hover:opacity-70 transition-opacity flex flex-col items-center justify-center bg-sidebar border border-border"
@@ -96,7 +96,7 @@ export function ClubInstagram({ photos, username, limit = 7 }: ClubInstagramProp
 					<SiInstagram className="h-8 w-8 mb-2" />
 					<p className="text-sm text-center font-medium">{t("View more on Instagram")}</p>
 					<div className="flex items-center text-xs text-muted-foreground mt-1">
-						<span>{photos.length - limit}+ </span>
+						<span>{data.media.length - displayPhotos.length}+ </span>
 						<ExternalLink className="h-3 w-3 ml-1" />
 					</div>
 				</a>

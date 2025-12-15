@@ -10,30 +10,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
-import type { Event, EventRegistration, User } from "@/lib/api-type-helpers";
-
-type ExtendedEventRegistration = EventRegistration & {
-	invitedUsers: User[];
-	createdBy: User;
-	invitedUsersNotOnApp: {
-		name: string;
-		email: string;
-	}[];
-};
+import apiClient, { type ApiResponse } from "@/lib/api";
+import type { Event, EventRegistration } from "@/lib/api-type-helpers";
 
 interface AttendanceTrackerProps {
 	event: Event & {
-		eventRegistration: ExtendedEventRegistration[];
+		eventRegistration: ApiResponse<"/api/events/{id}/registrations", "get">["registrations"];
 	};
 }
 
 export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const [search, setSearch] = useState("");
 	const [isLoading, setIsLoading] = useState<string | null>(null);
-	const [optimisticRegistrations, setOptimisticRegistrations] = useState<Record<string, ExtendedEventRegistration>>(
-		{},
-	);
+	const [optimisticRegistrations, setOptimisticRegistrations] = useState<Record<string, EventRegistration>>({});
 	const t = useExtracted();
 
 	const registrations = event.eventRegistration.map((reg) => ({
@@ -44,8 +33,8 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const filteredRegistrations = registrations.filter((reg) => {
 		const searchTerms = search.toLowerCase().split(" ");
 		const searchableText = [
-			reg.createdBy.name,
-			reg.createdBy.email,
+			reg.createdBy?.name,
+			reg.createdBy?.email,
 			...reg.invitedUsers.map((u) => u.name),
 			...reg.invitedUsers.map((u) => u.email),
 			...reg.invitedUsersNotOnApp.map((u) => u.name),
@@ -60,7 +49,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 	const attendees = filteredRegistrations.filter((r) => r.attended);
 	const notAttending = filteredRegistrations.filter((r) => !r.attended);
 
-	async function handleToggleAttendance(registration: ExtendedEventRegistration) {
+	async function handleToggleAttendance(registration: EventRegistration) {
 		try {
 			setIsLoading(registration.id);
 			setOptimisticRegistrations((prev) => ({
@@ -98,21 +87,21 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 		}
 	}
 
-	function RegistrationCard({ registration }: { registration: ExtendedEventRegistration }) {
+	function RegistrationCard({ registration }: { registration: EventRegistration }) {
 		return (
 			<Card>
 				<CardContent className="p-4 flex justify-between items-center">
 					<div className="flex gap-3 items-center">
 						<Avatar>
-							<AvatarImage src={registration.createdBy.image ?? ""} />
-							{!registration.createdBy.image && (
+							<AvatarImage src={registration.createdBy?.image ?? ""} />
+							{!registration.createdBy?.image && (
 								<AvatarFallback>
-									{registration.createdBy.name?.slice(0, 2).toUpperCase()}
+									{registration.createdBy?.name?.slice(0, 2).toUpperCase()}
 								</AvatarFallback>
 							)}
 						</Avatar>
 						<div className="flex flex-col gap-1">
-							<p className="font-semibold">{registration.createdBy.name}</p>
+							<p className="font-semibold">{registration.createdBy?.name}</p>
 							{(registration.invitedUsers.length > 0 || registration.invitedUsersNotOnApp.length > 0) && (
 								<HoverCard openDelay={100}>
 									<HoverCardTrigger asChild>

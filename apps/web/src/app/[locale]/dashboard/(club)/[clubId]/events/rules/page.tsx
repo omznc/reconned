@@ -1,7 +1,5 @@
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api";
 import { RulesForm } from "./_components/rules.form.tsx";
-
-type ClubRulesResponse = ApiResponse<"/api/clubs/{id}/rules", "get">;
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/rules">) {
 	const params = await props.params;
@@ -15,7 +13,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		},
 	});
 
-	const rules = (data as ClubRulesResponse | undefined) ?? [];
+	const rules = data?.rules ?? [];
 	const editingRule = searchParams?.ruleId
 		? (rules.find((rule) => rule.id === (searchParams.ruleId as string)) ?? null)
 		: null;

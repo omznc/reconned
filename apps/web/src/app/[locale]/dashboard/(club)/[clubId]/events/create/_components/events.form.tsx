@@ -193,10 +193,12 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		costPerPerson: props.event?.costPerPerson || 0,
 		location: props.event?.location || "",
 		googleMapsLink: props.event?.googleMapsLink || "",
-		dateStart: defaultStartDate,
-		dateEnd: defaultEndDate,
-		dateRegistrationsOpen: props.event?.dateRegistrationsOpen || new Date(),
-		dateRegistrationsClose: defaultRegistrationCloseDate,
+		dateStart: defaultStartDate ? new Date(defaultStartDate) : new Date(),
+		dateEnd: defaultEndDate ? new Date(defaultEndDate) : new Date(),
+		dateRegistrationsOpen: props.event?.dateRegistrationsOpen
+			? new Date(props.event.dateRegistrationsOpen)
+			: new Date(),
+		dateRegistrationsClose: defaultRegistrationCloseDate ? new Date(defaultRegistrationCloseDate) : new Date(),
 		image: props.event?.image || "",
 		isPrivate: props.event?.isPrivate,
 		allowFreelancers: props.event?.allowFreelancers,
@@ -324,11 +326,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						body,
 					});
 
-			if (createError || !createdOrUpdated?.id) {
+			if (createError || !createdOrUpdated?.event.id) {
 				throw new ActionError(createError?.error ?? t("An error occurred while saving data"));
 			}
 
-			const eventId = createdOrUpdated.id;
+			const eventId = createdOrUpdated.event.id;
 			eventIdRef.current = eventId;
 
 			const filesToUpload = eventImageUpload.files.filter((f) => f.file && !f.isExisting);
@@ -339,6 +341,15 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 						params: { path: { id: eventId } },
 						body: {
 							image: uploadedUrls[0],
+							clubId,
+							name: values.name,
+							description: values.description,
+							costPerPerson: values.costPerPerson,
+							location: values.location,
+							dateStart: values.dateStart.toISOString(),
+							dateEnd: values.dateEnd.toISOString(),
+							dateRegistrationsOpen: values.dateRegistrationsOpen.toISOString(),
+							dateRegistrationsClose: values.dateRegistrationsClose.toISOString(),
 						},
 					});
 

@@ -37,10 +37,12 @@ import {
 } from "@/components/ui/command";
 import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
-import type { Club } from "@/lib/api-type-helpers";
+import type { ApiResponse } from "@/lib/api";
+
+type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 interface CommandMenuProps {
-	clubs: Club[];
+	clubs: DashboardClubs;
 	user: User & { managedClubs: string[]; role?: string | null | undefined };
 }
 
@@ -81,7 +83,7 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 		posts: t("New post"),
 	};
 
-	const handleClubSelection = (club: Club) => {
+	const handleClubSelection = (club: DashboardClubs[number]) => {
 		const currentFullUrl = window.location.href;
 
 		if (clubId && currentFullUrl.includes(clubId)) {

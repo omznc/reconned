@@ -20,13 +20,13 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
-import type { UserProfile } from "@/lib/api-type-helpers";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { addImageVersion } from "@/lib/utils";
 import { ImageCropDialog } from "./image-crop-dialog.tsx";
 
+type User = ApiResponse<"/api/users/{id}", "get">;
 interface UserInfoFormProps {
-	user: UserProfile | null;
+	user: User | null;
 }
 
 export function UserInfoForm(props: UserInfoFormProps) {

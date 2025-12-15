@@ -1329,26 +1329,6 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/me/managed-clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get current user's managed clubs
-		 * @description Get list of club IDs that the authenticated user manages or owns
-		 */
-		get: operations["usersmemanagedClubsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
 	"/api/clubs/{id}/members/{memberId}": {
 		parameters: {
 			query?: never;
@@ -2789,7 +2769,11 @@ export interface paths {
 		 * @description Admin endpoint to get unclaimed club details
 		 */
 		get: operations["adminunclaimedClubsidGet"];
-		put?: never;
+		/**
+		 * Update unclaimed club
+		 * @description Admin endpoint to update unclaimed club details
+		 */
+		put: operations["adminunclaimedClubsidPut"];
 		post?: never;
 		delete?: never;
 		options?: never;
@@ -9164,6 +9148,7 @@ export interface operations {
 							isPrivateStats: boolean;
 							email: string | null;
 							phone: string | null;
+							isAdmin: boolean;
 						}[];
 						pagination: {
 							page: number;
@@ -9877,39 +9862,6 @@ export interface operations {
 							updatedAt: string;
 							headerImage: string | null;
 						}[];
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersmemanagedClubsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubIds: string[];
 					};
 				};
 			};
@@ -12197,7 +12149,7 @@ export interface operations {
 			content: {
 				"application/json": {
 					/** Format: email */
-					userEmail: string;
+					userEmail?: string;
 					userName?: string;
 				};
 			};
@@ -12780,6 +12732,7 @@ export interface operations {
 						createdAt: string;
 						updatedAt: string;
 						headerImage: string | null;
+						isCurrentUserOwner: boolean;
 					};
 				};
 			};
@@ -13236,7 +13189,11 @@ export interface operations {
 				};
 				content: {
 					"application/json": {
-						clubIds: string[];
+						clubs: {
+							id: string;
+							name: string | null;
+							logo: string | null;
+						}[];
 					};
 				};
 			};
@@ -14365,6 +14322,10 @@ export interface operations {
 							mapData: unknown;
 							createdAt: string;
 							updatedAt: string;
+							club: {
+								name: string;
+								verified: boolean;
+							} | null;
 						}[];
 					};
 				};
@@ -14991,7 +14952,27 @@ export interface operations {
 								updatedAt: string;
 							}[];
 						};
-						existingRegistration: unknown;
+						existingRegistration: {
+							id: string;
+							/** @enum {string} */
+							type: "solo" | "team";
+							/** @enum {string} */
+							paymentMethod: "cash" | "bank";
+							invitedUsers: {
+								id: string;
+								name: string;
+								email: string;
+								callsign: string | null;
+								image: string | null;
+							}[];
+							invitedUsersNotOnApp: {
+								id: string;
+								eventId: string;
+								eventRegistrationId: string | null;
+								email: string;
+								name: string;
+							}[];
+						} | null;
 					};
 				};
 			};
@@ -16420,6 +16401,109 @@ export interface operations {
 			};
 			/** @description Not Found */
 			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminunclaimedClubsidPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					name?: string;
+					countryId?: number;
+					location?: string;
+					latitude?: number;
+					longitude?: number;
+					description?: string;
+					slug?: string;
+					dateFounded?: string;
+					isAllied?: boolean;
+					isPrivate?: boolean;
+					isPrivateStats?: boolean;
+					logo?: string;
+					headerImage?: string;
+					contactPhone?: string;
+					/** Format: email */
+					contactEmail?: string;
+					/** Format: uri */
+					website?: string;
+					instagramUsername?: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Internal Server Error */
+			500: {
 				headers: {
 					[name: string]: unknown;
 				};

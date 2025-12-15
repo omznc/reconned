@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Club, ClubRule, Event, EventInvite, EventRegistration } from "@/lib/api-type-helpers";
+import type { Club, ClubRule, Event } from "@/lib/api-type-helpers";
 import "@/components/editor/editor.css";
 
 import debounce from "lodash/debounce";
@@ -31,24 +31,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api";
 import { cn, isValidEmail } from "@/lib/utils"; // Add this utility function if not exists
 
 interface EventApplicationProps {
-	existingApplication:
-		| (EventRegistration & {
-				invitedUsers: {
-					email: string;
-					image: string | null;
-					callsign: string | null;
-					name: string;
-					id: string;
-				}[];
-				invitedUsersNotOnApp: Omit<EventInvite, "token">[];
-		  })
-		| null;
+	existingApplication: ApiResponse<"/api/events/{id}/apply-data", "get">["existingRegistration"];
 	event: Event & { rules: ClubRule[] };
 	user: User;
-	currentUserClubs: Club[];
+	currentUserClubs: Omit<Club, "_count">[];
 }
 
 type SearchUser = {

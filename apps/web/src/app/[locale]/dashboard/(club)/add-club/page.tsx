@@ -4,16 +4,16 @@ import { getExtracted } from "next-intl/server";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import api from "@/lib/api";
+import apiClient from "@/lib/api";
 import { RequestAccessForm } from "./_components/request-access.form.tsx";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/add-club">) {
 	const searchParams = await props.searchParams;
-	const countriesResponse = await api.countries.get();
+	const { data, error } = await apiClient.GET("/api/countries");
 	const t = await getExtracted();
 	const type = searchParams.type as "invite" | "new" | string;
 
-	if (countriesResponse.error) {
+	if (error) {
 		notFound();
 	}
 
@@ -28,7 +28,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/add-clu
 	}
 
 	if (type === "new") {
-		return <ClubInfoForm countries={countriesResponse.data} />;
+		return <ClubInfoForm countries={data} />;
 	}
 	return (
 		<>

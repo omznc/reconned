@@ -23,7 +23,9 @@ import {
 } from "lucide-react";
 import { useExtracted } from "next-intl";
 import type { NavItem } from "@/components/sidebar/types";
-import type { Club } from "@/lib/api-type-helpers";
+import type { ApiResponse } from "@/lib/api";
+
+type DashboardClubs = Omit<ApiResponse<"/api/dashboard/clubs", "get">["clubs"], "reviews" | "posts" | "_count">;
 
 /**
  * Get application-wide navigation items
@@ -231,12 +233,12 @@ export function useClubNavigationItems(clubId: string, isManager: boolean, flat 
 }
 
 export function useClubsNavigationItems(
-	clubs: Club[],
+	clubs: DashboardClubs,
 	isManagerFn: (clubId: string) => boolean,
 	flat = false,
 ): NavItem[] {
 	const t = useExtracted();
-	const allItems: NavItem[] = [];
+	const allItems: Omit<NavItem, "club">[] = [];
 
 	for (const club of clubs) {
 		const isManager = isManagerFn(club.id);

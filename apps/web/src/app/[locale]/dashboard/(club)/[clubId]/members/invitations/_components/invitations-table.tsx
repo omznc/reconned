@@ -9,25 +9,12 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
-import type { InviteStatus } from "@/lib/api-type-helpers";
+import apiClient, { type ApiResponse } from "@/lib/api";
 import { ClubInviteActions } from "./club-invite-actions.tsx";
 
-interface FormattedInvite {
-	id: string;
-	email: string;
-	userName: string;
-	status: InviteStatus;
-	createdAt: Date;
-	expiresAt: Date;
-	inviteCode: string;
-	club: {
-		id: string;
-	};
-}
-
+type Invites = ApiResponse<"/api/clubs/{id}/invites", "get">["invites"];
 interface InvitationsTableProps {
-	invites: FormattedInvite[];
+	invites: Invites;
 	totalPages: number;
 }
 
@@ -45,7 +32,7 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 		}
 	}, [message]);
 
-	const handleRevoke = async (invite: FormattedInvite, clubId: string) => {
+	const handleRevoke = async (invite: Invites[number], clubId: string) => {
 		if (invite.status !== "PENDING") {
 			return;
 		}
@@ -145,7 +132,7 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 							return [
 								<DropdownMenuItem
 									key="revoke"
-									onClick={() => handleRevoke(row, row.club.id)}
+									onClick={() => handleRevoke(row, row.clubId)}
 									disabled={row.status !== "PENDING"}
 									className={
 										row.status === "PENDING" ? "text-destructive focus:text-destructive" : ""

@@ -39,8 +39,11 @@ export default async function Page() {
 			sessions={sessions.data?.map((session) => ({
 				...session,
 				isCurrentSession: session.id === user.session.id,
-				ipAddress: session.ipAddress ?? null,
-				userAgent: session.userAgent ?? null,
+				ipAddress: session.ipAddress ?? undefined,
+				userAgent: session.userAgent ?? undefined,
+				createdAt: session.createdAt.toISOString(),
+				updatedAt: session.updatedAt.toISOString(),
+				expiresAt: session.expiresAt.toISOString(),
 			}))}
 		/>
 	);
