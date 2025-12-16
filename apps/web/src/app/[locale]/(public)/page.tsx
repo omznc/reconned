@@ -76,12 +76,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 			? []
 			: calendarEventsResult.data.events.map((event) => ({
 					...event,
-					club: event.club
-						? {
-								name: event.club.name,
-								verified: event.club.verified ?? false,
-							}
-						: null,
+					club: event.club ?? null,
 				}));
 
 	const upcomingEvents =
@@ -89,12 +84,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 			? []
 			: upcomingEventsResult.data.events.map((event) => ({
 					...event,
-					club: event.club
-						? {
-								name: event.club.name,
-								verified: event.club.verified ?? false,
-							}
-						: null,
+					club: event.club ?? null,
 				}));
 
 	const t = await getExtracted();
@@ -360,7 +350,9 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							? managedClubs.map((club) => ({
 									id: club.id,
 									name: club.name,
-									membershipRole: club.membershipRole,
+									verified: (club as { verified?: boolean }).verified ?? false,
+									logo: (club as { logo?: string | null }).logo ?? null,
+									slug: (club as { slug?: string | null }).slug ?? null,
 								}))
 							: undefined
 					}

@@ -1,5 +1,9 @@
 import type { components, paths } from "@/lib/api/api-types";
 
+type ApiPaths = paths & {
+	[K in keyof paths as K extends string ? `/api${K}` : never]: paths[K];
+};
+
 /**
  * Shared API type helpers to replace @generated/client imports.
  *
@@ -62,6 +66,8 @@ type ExtractJsonResponse<T> = T extends { responses: { 200: { content: { "applic
 	? U
 	: never;
 
-export type ApiResponse<Path extends keyof paths, Method extends keyof paths[Path]> = ExtractJsonResponse<
-	paths[Path][Method]
+type ApiPathKey = keyof ApiPaths;
+
+export type ApiResponse<Path extends ApiPathKey, Method extends keyof ApiPaths[Path]> = ExtractJsonResponse<
+	ApiPaths[Path][Method]
 >;

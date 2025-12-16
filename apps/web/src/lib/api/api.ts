@@ -5,9 +5,20 @@ import createClient from "openapi-fetch";
 import { env } from "../env";
 import type { paths } from "./api-types";
 
-// Similar to api.client.ts but for server components (gotta include headers)
-const apiServer = createClient<paths>({
-	baseUrl: env.NEXT_PUBLIC_BACKEND_URL,
+type ApiPaths = paths & {
+	[K in keyof paths as K extends string ? `/api${K}` : never]: paths[K];
+};
+
+// Normalize backend base URL: strip trailing slashes only; keep explicit /api suffix if provided.
+const backendBaseUrl = (() => {
+	const raw = env.NEXT_PUBLIC_BACKEND_URL?.trim();
+	if (!raw) return undefined;
+
+	return raw.replace(/\/+$/, "");
+})();
+
+const apiServer = createClient<ApiPaths>({
+	baseUrl: backendBaseUrl,
 	credentials: "include",
 	fetch: async (request) => {
 		const headersList = await headers();

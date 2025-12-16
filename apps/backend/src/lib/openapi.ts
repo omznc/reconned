@@ -98,15 +98,25 @@ export async function generateOpenAPISpec(baseUrl: string, routers: Router[]): P
 				paths?: Record<string, Record<string, unknown>>;
 				components?: Record<string, unknown>;
 			};
-			authPaths = schema.paths || {};
+
+			const originalPaths = (schema.paths || {}) as Record<string, Record<string, unknown>>;
+			const prefixedAuthPaths: Record<string, Record<string, unknown>> = {};
+
+			for (const [path, methods] of Object.entries(originalPaths)) {
+				const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+				const prefixedPath =
+					normalizedPath === "/auth" || normalizedPath.startsWith("/auth/")
+						? normalizedPath
+						: `/auth${normalizedPath}`;
+				prefixedAuthPaths[prefixedPath] = methods;
+			}
+
+			authPaths = prefixedAuthPaths;
 			authComponents = schema.components || {};
 
-			// Tag all Better Auth routes with "Auth" tag and ensure unique operationIds
-			// This includes all plugin endpoints (passkey, 2factor, onetap, etc.)
 			for (const path in authPaths) {
 				for (const method in authPaths[path]) {
 					const operation = authPaths[path][method] as Record<string, unknown>;
-					// Replace all tags with just "Auth" to group all auth-related endpoints together
 					operation.tags = ["Auth"];
 
 					// Ensure unique operationId
@@ -126,7 +136,6 @@ export async function generateOpenAPISpec(baseUrl: string, routers: Router[]): P
 		console.warn("Could not generate Better Auth OpenAPI schema:", error);
 	}
 
-	// Generate paths from routes
 	const paths: Record<string, Record<string, unknown>> = { ...authPaths };
 
 	for (const router of routers) {

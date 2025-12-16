@@ -8,12 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
-import type { paths } from "@/lib/api/api-types";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
-type UserResponse = paths["/api/users/{id}"]["get"]["responses"]["200"]["content"]["application/json"];
-type UserProfileResponse = paths["/api/users/{id}/profile"]["get"]["responses"]["200"]["content"]["application/json"];
+type UserResponse = ApiResponse<"/api/users/{id}", "get">;
+type UserProfileResponse = ApiResponse<"/api/users/{id}/profile", "get">;
 type UserOverviewUser = UserResponse | UserProfileResponse;
 
 interface UserOverviewProps {

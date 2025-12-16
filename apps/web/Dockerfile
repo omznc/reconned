@@ -2,17 +2,21 @@ FROM oven/bun:1.3.4 AS base
 
 WORKDIR /app
 
-RUN apt-get update -y && apt-get install -y openssl curl wget adduser && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y openssl curl wget adduser nodejs && rm -rf /var/lib/apt/lists/*
 
 FROM base AS deps
 COPY package.json bun.lock* ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/backend/package.json ./apps/backend/
+
+WORKDIR /app
 RUN bun install --no-save --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+COPY --from=deps /app/apps/backend/node_modules ./apps/backend/node_modules
 COPY package.json bun.lock* ./
 COPY apps/web ./apps/web
 COPY apps/backend ./apps/backend
@@ -22,6 +26,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG CI
 ARG NEXT_PUBLIC_CDN_URL
 ARG NEXT_PUBLIC_WEB_URL
+ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ARG NEXT_PUBLIC_SOURCE_COMMIT
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
@@ -29,18 +34,19 @@ ARG NEXT_PUBLIC_AXIOM_DATASET
 ARG NEXT_PUBLIC_AXIOM_TOKEN
 ARG NEXT_PUBLIC_BETA
 
-ENV CI=${CI:-false}
-ENV NEXT_PUBLIC_CDN_URL=$NEXT_PUBLIC_CDN_URL
-ENV NEXT_PUBLIC_WEB_URL=$NEXT_PUBLIC_WEB_URL
-ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
-ENV NEXT_PUBLIC_SOURCE_COMMIT=$NEXT_PUBLIC_SOURCE_COMMIT
-ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
-ENV NEXT_PUBLIC_AXIOM_DATASET=$NEXT_PUBLIC_AXIOM_DATASET
-ENV NEXT_PUBLIC_AXIOM_TOKEN=$NEXT_PUBLIC_AXIOM_TOKEN
-ENV NEXT_PUBLIC_BETA=$NEXT_PUBLIC_BETA
+ENV CI=${CI:-false} \
+    NEXT_PUBLIC_CDN_URL=${NEXT_PUBLIC_CDN_URL:-http://localhost:3000} \
+    NEXT_PUBLIC_WEB_URL=${NEXT_PUBLIC_WEB_URL:-http://localhost:3000} \
+    NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL:-http://localhost:3002} \
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-local-google-client-id} \
+    NEXT_PUBLIC_SOURCE_COMMIT=${NEXT_PUBLIC_SOURCE_COMMIT:-local-build} \
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-local-turnstile-key} \
+    NEXT_PUBLIC_AXIOM_DATASET=${NEXT_PUBLIC_AXIOM_DATASET:-local} \
+    NEXT_PUBLIC_AXIOM_TOKEN=${NEXT_PUBLIC_AXIOM_TOKEN:-local} \
+    NEXT_PUBLIC_BETA=${NEXT_PUBLIC_BETA:-false}
 
 WORKDIR /app/apps/web
-RUN bun run build
+RUN node node_modules/next/dist/bin/next build --turbo
 
 FROM base AS runner
 WORKDIR /app
@@ -63,4 +69,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["bun", "./server.js"]
+CMD ["node", "./server.js"]

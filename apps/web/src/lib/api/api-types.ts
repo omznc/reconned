@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-	"/sign-in/social": {
+	"/auth/sign-in/social": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -21,7 +21,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/get-session": {
+	"/auth/get-session": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -38,7 +38,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/sign-out": {
+	"/auth/sign-out": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -55,7 +55,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/sign-up/email": {
+	"/auth/sign-up/email": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -72,7 +72,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/sign-in/email": {
+	"/auth/sign-in/email": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -89,7 +89,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/reset-password": {
+	"/auth/reset-password": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -106,7 +106,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/verify-email": {
+	"/auth/verify-email": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -114,7 +114,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** @description Verify the email of the user */
-		get: operations["verifyEmailGet"];
+		get: operations["authverifyEmailGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -123,7 +123,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/send-verification-email": {
+	"/auth/send-verification-email": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -140,7 +140,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/change-email": {
+	"/auth/change-email": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -156,7 +156,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/change-password": {
+	"/auth/change-password": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -173,7 +173,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/update-user": {
+	"/auth/update-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -190,7 +190,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/delete-user": {
+	"/auth/delete-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -207,7 +207,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/request-password-reset": {
+	"/auth/request-password-reset": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -224,7 +224,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/reset-password/{token}": {
+	"/auth/reset-password/{token}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -241,7 +241,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/list-sessions": {
+	"/auth/list-sessions": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -258,7 +258,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/revoke-session": {
+	"/auth/revoke-session": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -268,14 +268,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Revoke a single session */
-		post: operations["revokeSessionPost"];
+		post: operations["authrevokeSessionPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/revoke-sessions": {
+	"/auth/revoke-sessions": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -285,14 +285,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Revoke all sessions for the user */
-		post: operations["revokeSessionsPost"];
+		post: operations["authrevokeSessionsPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/revoke-other-sessions": {
+	"/auth/revoke-other-sessions": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -302,14 +302,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Revoke all other sessions for the user except the current one */
-		post: operations["revokeOtherSessionsPost"];
+		post: operations["authrevokeOtherSessionsPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/link-social": {
+	"/auth/link-social": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -326,7 +326,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/list-accounts": {
+	"/auth/list-accounts": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -343,7 +343,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/delete-user/callback": {
+	"/auth/delete-user/callback": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -351,7 +351,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** @description Callback to complete user deletion with verification token */
-		get: operations["deleteUsercallbackGet"];
+		get: operations["authdeleteUsercallbackGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -360,7 +360,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/unlink-account": {
+	"/auth/unlink-account": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -370,14 +370,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Unlink an account */
-		post: operations["unlinkAccountPost"];
+		post: operations["authunlinkAccountPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/refresh-token": {
+	"/auth/refresh-token": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -387,14 +387,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Refresh the access token using a refresh token */
-		post: operations["refreshTokenPost"];
+		post: operations["authrefreshTokenPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/get-access-token": {
+	"/auth/get-access-token": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -404,14 +404,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Get a valid access token, doing a refresh if needed */
-		post: operations["getAccessTokenPost"];
+		post: operations["authgetAccessTokenPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/account-info": {
+	"/auth/account-info": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -419,7 +419,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** @description Get the account info provided by the provider */
-		get: operations["accountInfoGet"];
+		get: operations["authaccountInfoGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -428,7 +428,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/ok": {
+	"/auth/ok": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -436,7 +436,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** @description Check if the API is working */
-		get: operations["okGet"];
+		get: operations["authokGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -445,7 +445,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/error": {
+	"/auth/error": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -453,7 +453,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** @description Displays an error page */
-		get: operations["errorGet"];
+		get: operations["autherrorGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -462,7 +462,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/passkey/generate-register-options": {
+	"/auth/passkey/generate-register-options": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -479,7 +479,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/passkey/generate-authenticate-options": {
+	"/auth/passkey/generate-authenticate-options": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -496,7 +496,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/passkey/verify-registration": {
+	"/auth/passkey/verify-registration": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -513,7 +513,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/passkey/verify-authentication": {
+	"/auth/passkey/verify-authentication": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -530,7 +530,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/passkey/list-user-passkeys": {
+	"/auth/passkey/list-user-passkeys": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -538,7 +538,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** @description List all passkeys for the authenticated user */
-		get: operations["passkeylistUserPasskeysGet"];
+		get: operations["authpasskeylistUserPasskeysGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -547,7 +547,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/passkey/delete-passkey": {
+	"/auth/passkey/delete-passkey": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -557,14 +557,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Delete a specific passkey */
-		post: operations["passkeydeletePasskeyPost"];
+		post: operations["authpasskeydeletePasskeyPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/passkey/update-passkey": {
+	"/auth/passkey/update-passkey": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -574,14 +574,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Update a specific passkey's name */
-		post: operations["passkeyupdatePasskeyPost"];
+		post: operations["authpasskeyupdatePasskeyPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/get-totp-uri": {
+	"/auth/two-factor/get-totp-uri": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -591,14 +591,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Use this endpoint to get the TOTP URI */
-		post: operations["twoFactorgetTotpUriPost"];
+		post: operations["authtwoFactorgetTotpUriPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/verify-totp": {
+	"/auth/two-factor/verify-totp": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -608,14 +608,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Verify two factor TOTP */
-		post: operations["twoFactorverifyTotpPost"];
+		post: operations["authtwoFactorverifyTotpPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/send-otp": {
+	"/auth/two-factor/send-otp": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -625,14 +625,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Send two factor OTP to the user */
-		post: operations["twoFactorsendOtpPost"];
+		post: operations["authtwoFactorsendOtpPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/verify-otp": {
+	"/auth/two-factor/verify-otp": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -642,14 +642,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Verify two factor OTP */
-		post: operations["twoFactorverifyOtpPost"];
+		post: operations["authtwoFactorverifyOtpPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/verify-backup-code": {
+	"/auth/two-factor/verify-backup-code": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -659,14 +659,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Verify a backup code for two-factor authentication */
-		post: operations["twoFactorverifyBackupCodePost"];
+		post: operations["authtwoFactorverifyBackupCodePost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/generate-backup-codes": {
+	"/auth/two-factor/generate-backup-codes": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -676,14 +676,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Generate new backup codes for two-factor authentication */
-		post: operations["twoFactorgenerateBackupCodesPost"];
+		post: operations["authtwoFactorgenerateBackupCodesPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/enable": {
+	"/auth/two-factor/enable": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -693,14 +693,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled. */
-		post: operations["twoFactorenablePost"];
+		post: operations["authtwoFactorenablePost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/two-factor/disable": {
+	"/auth/two-factor/disable": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -710,14 +710,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Use this endpoint to disable two factor authentication. */
-		post: operations["twoFactordisablePost"];
+		post: operations["authtwoFactordisablePost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/one-tap/callback": {
+	"/auth/one-tap/callback": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -727,14 +727,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Use this endpoint to authenticate with Google One Tap */
-		post: operations["oneTapcallbackPost"];
+		post: operations["authoneTapcallbackPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/set-role": {
+	"/auth/admin/set-role": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -751,7 +751,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/get-user": {
+	"/auth/admin/get-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -768,7 +768,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/create-user": {
+	"/auth/admin/create-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -785,7 +785,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/update-user": {
+	"/auth/admin/update-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -802,7 +802,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/list-users": {
+	"/auth/admin/list-users": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -819,7 +819,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/list-user-sessions": {
+	"/auth/admin/list-user-sessions": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -836,7 +836,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/unban-user": {
+	"/auth/admin/unban-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -853,7 +853,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/ban-user": {
+	"/auth/admin/ban-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -870,7 +870,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/impersonate-user": {
+	"/auth/admin/impersonate-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -887,7 +887,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/stop-impersonating": {
+	"/auth/admin/stop-impersonating": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -896,14 +896,14 @@ export interface paths {
 		};
 		get?: never;
 		put?: never;
-		post: operations["adminstopImpersonatingPost"];
+		post: operations["authadminstopImpersonatingPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/revoke-user-session": {
+	"/auth/admin/revoke-user-session": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -920,7 +920,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/revoke-user-sessions": {
+	"/auth/admin/revoke-user-sessions": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -937,7 +937,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/remove-user": {
+	"/auth/admin/remove-user": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -954,7 +954,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/set-user-password": {
+	"/auth/admin/set-user-password": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -971,7 +971,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/admin/has-permission": {
+	"/auth/admin/has-permission": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -981,7 +981,7 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Check if the user has permission */
-		post: operations["adminhasPermissionPost"];
+		post: operations["authadminhasPermissionPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -3754,7 +3754,7 @@ export interface operations {
 			};
 		};
 	};
-	verifyEmailGet: {
+	authverifyEmailGet: {
 		parameters: {
 			query: {
 				/** @description The token to verify the email */
@@ -4683,7 +4683,7 @@ export interface operations {
 			};
 		};
 	};
-	revokeSessionPost: {
+	authrevokeSessionPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -4779,7 +4779,7 @@ export interface operations {
 			};
 		};
 	};
-	revokeSessionsPost: {
+	authrevokeSessionsPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -4872,7 +4872,7 @@ export interface operations {
 			};
 		};
 	};
-	revokeOtherSessionsPost: {
+	authrevokeOtherSessionsPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -5176,7 +5176,7 @@ export interface operations {
 			};
 		};
 	};
-	deleteUsercallbackGet: {
+	authdeleteUsercallbackGet: {
 		parameters: {
 			query?: {
 				token?: string;
@@ -5273,7 +5273,7 @@ export interface operations {
 			};
 		};
 	};
-	unlinkAccountPost: {
+	authunlinkAccountPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -5368,7 +5368,7 @@ export interface operations {
 			};
 		};
 	};
-	refreshTokenPost: {
+	authrefreshTokenPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -5470,7 +5470,7 @@ export interface operations {
 			};
 		};
 	};
-	getAccessTokenPost: {
+	authgetAccessTokenPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -5572,7 +5572,7 @@ export interface operations {
 			};
 		};
 	};
-	accountInfoGet: {
+	authaccountInfoGet: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -5669,7 +5669,7 @@ export interface operations {
 			};
 		};
 	};
-	okGet: {
+	authokGet: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -5758,7 +5758,7 @@ export interface operations {
 			};
 		};
 	};
-	errorGet: {
+	autherrorGet: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6253,7 +6253,7 @@ export interface operations {
 			};
 		};
 	};
-	passkeylistUserPasskeysGet: {
+	authpasskeylistUserPasskeysGet: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6339,7 +6339,7 @@ export interface operations {
 			};
 		};
 	};
-	passkeydeletePasskeyPost: {
+	authpasskeydeletePasskeyPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6435,7 +6435,7 @@ export interface operations {
 			};
 		};
 	};
-	passkeyupdatePasskeyPost: {
+	authpasskeyupdatePasskeyPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6532,7 +6532,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactorgetTotpUriPost: {
+	authtwoFactorgetTotpUriPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6627,7 +6627,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactorverifyTotpPost: {
+	authtwoFactorverifyTotpPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6724,7 +6724,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactorsendOtpPost: {
+	authtwoFactorsendOtpPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6812,7 +6812,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactorverifyOtpPost: {
+	authtwoFactorverifyOtpPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -6938,7 +6938,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactorverifyBackupCodePost: {
+	authtwoFactorverifyBackupCodePost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -7084,7 +7084,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactorgenerateBackupCodesPost: {
+	authtwoFactorgenerateBackupCodesPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -7185,7 +7185,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactorenablePost: {
+	authtwoFactorenablePost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -7285,7 +7285,7 @@ export interface operations {
 			};
 		};
 	};
-	twoFactordisablePost: {
+	authtwoFactordisablePost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -7380,7 +7380,7 @@ export interface operations {
 			};
 		};
 	};
-	oneTapcallbackPost: {
+	authoneTapcallbackPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -8344,7 +8344,7 @@ export interface operations {
 			};
 		};
 	};
-	adminstopImpersonatingPost: {
+	authadminstopImpersonatingPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -8803,7 +8803,7 @@ export interface operations {
 			};
 		};
 	};
-	adminhasPermissionPost: {
+	authadminhasPermissionPost: {
 		parameters: {
 			query?: never;
 			header?: never;
