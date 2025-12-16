@@ -7,6 +7,7 @@ RUN apt-get update -y && apt-get install -y openssl curl wget adduser && rm -rf 
 FROM base AS deps
 COPY package.json bun.lock* ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/backend/package.json ./apps/backend/
 RUN bun install --no-save --frozen-lockfile
 
 FROM base AS builder
