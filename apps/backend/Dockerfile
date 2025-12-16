@@ -26,9 +26,10 @@ ENV NODE_ENV=production \
     PORT=3001 \
     HOSTNAME="0.0.0.0"
 
-COPY --from=builder /app/apps/backend/dist ./dist
+COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 
 EXPOSE 3001
 
-CMD ["bun", "run", "dist/index.js"]
+CMD ["bun", "run", "apps/backend/dist/index.js"]
