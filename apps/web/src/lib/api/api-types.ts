@@ -988,7 +988,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/countries": {
+	"/countries": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1008,7 +1008,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}": {
+	"/users/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1032,7 +1032,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users": {
+	"/users": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1052,7 +1052,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/profile": {
+	"/users/{id}/profile": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1072,7 +1072,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/image": {
+	"/users/{id}/image": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1092,7 +1092,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/header-image": {
+	"/users/{id}/header-image": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1109,7 +1109,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/stats": {
+	"/users/{id}/stats": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1129,7 +1129,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/account": {
+	"/users/{id}/account": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1149,7 +1149,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/theme": {
+	"/users/{id}/theme": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1169,7 +1169,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/font": {
+	"/users/{id}/font": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1189,7 +1189,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/style": {
+	"/users/{id}/style": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1209,7 +1209,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/invites": {
+	"/users/invites": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1229,7 +1229,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/invites/count": {
+	"/users/invites/count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1249,7 +1249,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/image/upload-url": {
+	"/users/{id}/image/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1269,7 +1269,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/header-image/upload-url": {
+	"/users/{id}/header-image/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1289,7 +1289,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/{id}/daily-quota": {
+	"/users/{id}/daily-quota": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1309,7 +1309,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/users/me/clubs": {
+	"/users/me/clubs": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1329,7 +1329,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/members/{memberId}": {
+	"/clubs/{id}/members/{memberId}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1353,7 +1353,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/members": {
+	"/clubs/{id}/members": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1377,7 +1377,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/members/{memberId}/extend": {
+	"/clubs/{id}/members/{memberId}/extend": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1397,7 +1397,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/members/leave": {
+	"/clubs/{id}/members/leave": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1417,7 +1417,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs": {
+	"/clubs": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1441,7 +1441,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/rules": {
+	"/clubs/{id}/rules": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1465,7 +1465,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/rules/{ruleId}": {
+	"/clubs/{id}/rules/{ruleId}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1493,7 +1493,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/posts": {
+	"/clubs/{id}/posts": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1517,7 +1517,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/posts/{postId}": {
+	"/clubs/{id}/posts/{postId}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1545,7 +1545,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/stats": {
+	"/clubs/{id}/stats": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1565,7 +1565,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/storage-quota": {
+	"/clubs/{id}/storage-quota": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1585,7 +1585,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/posts/images/upload-url": {
+	"/clubs/{id}/posts/images/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1605,7 +1605,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/purchases": {
+	"/clubs/{id}/purchases": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1629,7 +1629,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/audit-logs": {
+	"/clubs/{id}/audit-logs": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1649,7 +1649,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/purchases/{purchaseId}": {
+	"/clubs/{id}/purchases/{purchaseId}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1677,7 +1677,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/purchases/receipts/upload-url": {
+	"/clubs/{id}/purchases/receipts/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1697,7 +1697,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/invites": {
+	"/clubs/{id}/invites": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1721,7 +1721,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/invites/{inviteId}/revoke": {
+	"/clubs/{id}/invites/{inviteId}/revoke": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1741,7 +1741,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/invites/count": {
+	"/clubs/{id}/invites/count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1761,7 +1761,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/invites/requests-count": {
+	"/clubs/{id}/invites/requests-count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1781,7 +1781,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}": {
+	"/clubs/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1809,7 +1809,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/information": {
+	"/clubs/{id}/information": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1829,7 +1829,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/logo/upload-url": {
+	"/clubs/{id}/logo/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1849,7 +1849,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/header-image/upload-url": {
+	"/clubs/{id}/header-image/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1869,7 +1869,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/logo": {
+	"/clubs/{id}/logo": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1889,7 +1889,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/header-image": {
+	"/clubs/{id}/header-image": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1909,7 +1909,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/managers": {
+	"/clubs/{id}/managers": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1929,7 +1929,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/members/count": {
+	"/clubs/{id}/members/count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1949,7 +1949,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/managed": {
+	"/clubs/managed": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1969,7 +1969,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/membership": {
+	"/clubs/{id}/membership": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -1989,7 +1989,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/has-owner": {
+	"/clubs/{id}/has-owner": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2009,7 +2009,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{clubId}/events": {
+	"/clubs/{clubId}/events": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2029,7 +2029,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{clubId}/events/count": {
+	"/clubs/{clubId}/events/count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2049,7 +2049,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/instagram/auth-url": {
+	"/clubs/{id}/instagram/auth-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2069,7 +2069,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/instagram/disconnect": {
+	"/clubs/{id}/instagram/disconnect": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2089,7 +2089,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/instagram/check-token": {
+	"/clubs/{id}/instagram/check-token": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2109,7 +2109,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/instagram/exchange-code": {
+	"/clubs/{id}/instagram/exchange-code": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2129,7 +2129,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/instagram/select-page": {
+	"/clubs/{id}/instagram/select-page": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2149,7 +2149,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/clubs/{id}/instagram/media": {
+	"/clubs/{id}/instagram/media": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2169,7 +2169,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events": {
+	"/events": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2193,7 +2193,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/upcoming": {
+	"/events/upcoming": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2213,7 +2213,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}": {
+	"/events/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2241,7 +2241,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/calendar": {
+	"/events/calendar": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2261,7 +2261,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}/image/upload-url": {
+	"/events/{id}/image/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2281,7 +2281,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}/image": {
+	"/events/{id}/image": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2301,7 +2301,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}/registrations": {
+	"/events/{id}/registrations": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2329,7 +2329,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}/registrations/{registrationId}/attendance": {
+	"/events/{id}/registrations/{registrationId}/attendance": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2349,7 +2349,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}/registrations/count": {
+	"/events/{id}/registrations/count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2369,7 +2369,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}/rules": {
+	"/events/{id}/rules": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2389,7 +2389,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/events/{id}/apply-data": {
+	"/events/{id}/apply-data": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2409,7 +2409,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/reviews/{type}/{id}": {
+	"/reviews/{type}/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2429,7 +2429,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/dashboard/clubs": {
+	"/dashboard/clubs": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2449,7 +2449,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/dashboard/invites-count": {
+	"/dashboard/invites-count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2469,7 +2469,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/dashboard/invite-requests-count": {
+	"/dashboard/invite-requests-count": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2489,7 +2489,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/dashboard/stats": {
+	"/dashboard/stats": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2509,7 +2509,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/search": {
+	"/search": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2529,7 +2529,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/validate-slug": {
+	"/validate-slug": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2549,7 +2549,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/reviews": {
+	"/reviews": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2569,7 +2569,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/sitemap": {
+	"/sitemap": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2589,7 +2589,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/health": {
+	"/health": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2901,7 +2901,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/public/clubs/map": {
+	"/public/clubs/map": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2921,7 +2921,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/public/sitemap/clubs": {
+	"/public/sitemap/clubs": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2941,7 +2941,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/public/sitemap/events": {
+	"/public/sitemap/events": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2961,7 +2961,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/public/sitemap/users": {
+	"/public/sitemap/users": {
 		parameters: {
 			query?: never;
 			header?: never;

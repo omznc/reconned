@@ -128,7 +128,7 @@ const membershipWithUserSchema = baseClubMembershipSchema.extend({
 });
 
 clubsRouter.delete(
-	"/api/clubs/:id/members/:memberId",
+	"/clubs/:id/members/:memberId",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const memberId = params.memberId;
@@ -235,7 +235,7 @@ clubsRouter.delete(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/members",
+	"/clubs/:id/members",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -331,7 +331,7 @@ clubsRouter.post(
 );
 
 clubsRouter.put(
-	"/api/clubs/:id/members/:memberId/extend",
+	"/clubs/:id/members/:memberId/extend",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const memberId = params.memberId;
@@ -468,7 +468,7 @@ clubsRouter.put(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/members/leave",
+	"/clubs/:id/members/leave",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -529,7 +529,7 @@ clubsRouter.post(
 );
 
 clubsRouter.get(
-	"/api/clubs",
+	"/clubs",
 	async ({ response, query, context }) => {
 		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query;
 		const offset = (page - 1) * perPage;
@@ -615,7 +615,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/rules",
+	"/clubs/:id/rules",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -661,7 +661,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/rules/:ruleId",
+	"/clubs/:id/rules/:ruleId",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const ruleId = params.ruleId;
@@ -718,7 +718,7 @@ clubsRouter.get(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/rules",
+	"/clubs/:id/rules",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -794,7 +794,7 @@ clubsRouter.post(
 );
 
 clubsRouter.put(
-	"/api/clubs/:id/rules/:ruleId",
+	"/clubs/:id/rules/:ruleId",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const ruleId = params.ruleId;
@@ -879,7 +879,7 @@ clubsRouter.put(
 );
 
 clubsRouter.delete(
-	"/api/clubs/:id/rules/:ruleId",
+	"/clubs/:id/rules/:ruleId",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const ruleId = params.ruleId;
@@ -945,7 +945,7 @@ clubsRouter.delete(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/posts",
+	"/clubs/:id/posts",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -991,7 +991,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/posts/:postId",
+	"/clubs/:id/posts/:postId",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const postId = params.postId;
@@ -1048,7 +1048,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/posts",
+	"/clubs/:id/posts",
 	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
@@ -1114,7 +1114,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/stats",
+	"/clubs/:id/stats",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -1277,7 +1277,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/storage-quota",
+	"/clubs/:id/storage-quota",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -1347,7 +1347,7 @@ clubsRouter.get(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/posts",
+	"/clubs/:id/posts",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -1426,7 +1426,7 @@ clubsRouter.post(
 );
 
 clubsRouter.put(
-	"/api/clubs/:id/posts/:postId",
+	"/clubs/:id/posts/:postId",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const postId = params.postId;
@@ -1530,7 +1530,7 @@ clubsRouter.put(
 );
 
 clubsRouter.delete(
-	"/api/clubs/:id/posts/:postId",
+	"/clubs/:id/posts/:postId",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const postId = params.postId;
@@ -1604,7 +1604,7 @@ clubsRouter.delete(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/posts/images/upload-url",
+	"/clubs/:id/posts/images/upload-url",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -1665,7 +1665,7 @@ clubsRouter.post(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/purchases",
+	"/clubs/:id/purchases",
 	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
@@ -1734,7 +1734,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/audit-logs",
+	"/clubs/:id/audit-logs",
 	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
@@ -1825,7 +1825,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/purchases/:purchaseId",
+	"/clubs/:id/purchases/:purchaseId",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const purchaseId = params.purchaseId;
@@ -1882,7 +1882,7 @@ clubsRouter.get(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/purchases",
+	"/clubs/:id/purchases",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -1965,7 +1965,7 @@ clubsRouter.post(
 );
 
 clubsRouter.put(
-	"/api/clubs/:id/purchases/:purchaseId",
+	"/clubs/:id/purchases/:purchaseId",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const purchaseId = params.purchaseId;
@@ -2057,7 +2057,7 @@ clubsRouter.put(
 );
 
 clubsRouter.delete(
-	"/api/clubs/:id/purchases/:purchaseId",
+	"/clubs/:id/purchases/:purchaseId",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const purchaseId = params.purchaseId;
@@ -2131,7 +2131,7 @@ clubsRouter.delete(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/purchases/receipts/upload-url",
+	"/clubs/:id/purchases/receipts/upload-url",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -2192,7 +2192,7 @@ clubsRouter.post(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/invites",
+	"/clubs/:id/invites",
 	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
@@ -2307,7 +2307,7 @@ clubsRouter.get(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/invites",
+	"/clubs/:id/invites",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -2459,7 +2459,7 @@ clubsRouter.post(
 );
 
 clubsRouter.put(
-	"/api/clubs/:id/invites/:inviteId/revoke",
+	"/clubs/:id/invites/:inviteId/revoke",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		const inviteId = params.inviteId;
@@ -2538,7 +2538,7 @@ clubsRouter.put(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/invites/count",
+	"/clubs/:id/invites/count",
 	async ({ params, response, query, context }) => {
 		const clubId = params.id;
 
@@ -2602,7 +2602,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/invites/requests-count",
+	"/clubs/:id/invites/requests-count",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -2664,7 +2664,7 @@ async function validateSlug(slug: string, excludeClubId?: string): Promise<boole
 }
 
 clubsRouter.get(
-	"/api/clubs/:id",
+	"/clubs/:id",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -2738,7 +2738,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/information",
+	"/clubs/:id/information",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -2792,7 +2792,7 @@ clubsRouter.get(
 );
 
 clubsRouter.post(
-	"/api/clubs",
+	"/clubs",
 	async ({ context, response, body }) => {
 		if (body.slug) {
 			const valid = await validateSlug(body.slug);
@@ -2878,7 +2878,7 @@ clubsRouter.post(
 );
 
 clubsRouter.put(
-	"/api/clubs/:id",
+	"/clubs/:id",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -2969,7 +2969,7 @@ clubsRouter.put(
 );
 
 clubsRouter.delete(
-	"/api/clubs/:id",
+	"/clubs/:id",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -3045,7 +3045,7 @@ clubsRouter.delete(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/logo/upload-url",
+	"/clubs/:id/logo/upload-url",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -3095,7 +3095,7 @@ clubsRouter.post(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/header-image/upload-url",
+	"/clubs/:id/header-image/upload-url",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 
@@ -3150,7 +3150,7 @@ clubsRouter.post(
 );
 
 clubsRouter.delete(
-	"/api/clubs/:id/logo",
+	"/clubs/:id/logo",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -3211,7 +3211,7 @@ clubsRouter.delete(
 );
 
 clubsRouter.delete(
-	"/api/clubs/:id/header-image",
+	"/clubs/:id/header-image",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -3272,7 +3272,7 @@ clubsRouter.delete(
 );
 
 clubsRouter.put(
-	"/api/clubs/:id/members/:memberId",
+	"/clubs/:id/members/:memberId",
 	async ({ params, response, context, body }) => {
 		const clubId = params.id;
 		const memberId = params.memberId;
@@ -3378,7 +3378,7 @@ clubsRouter.put(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/managers",
+	"/clubs/:id/managers",
 	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
@@ -3491,7 +3491,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/members/count",
+	"/clubs/:id/members/count",
 	async ({ params, response, query, context }) => {
 		const clubId = params.id;
 
@@ -3548,7 +3548,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/managed",
+	"/clubs/managed",
 	async ({ context, response }) => {
 		const managedClubs = await db
 			.select({
@@ -3596,7 +3596,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/membership",
+	"/clubs/:id/membership",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 
@@ -3640,7 +3640,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/has-owner",
+	"/clubs/:id/has-owner",
 	async ({ params, response }) => {
 		const clubId = params.id;
 
@@ -3676,7 +3676,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:clubId/events",
+	"/clubs/:clubId/events",
 	async ({ params, response, context, query }) => {
 		const clubId = params.clubId;
 
@@ -3787,7 +3787,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:clubId/events/count",
+	"/clubs/:clubId/events/count",
 	async ({ params, response, query, context }) => {
 		const clubId = params.clubId;
 
@@ -3845,7 +3845,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/stats",
+	"/clubs/:id/stats",
 	async ({ params, context, response }) => {
 		const clubId = params.id;
 
@@ -4005,7 +4005,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/audit-logs",
+	"/clubs/:id/audit-logs",
 	async ({ params, context, query, response }) => {
 		const clubId = params.id;
 
@@ -4135,7 +4135,7 @@ const STORAGE_LIMITS = {
 } as const;
 
 clubsRouter.get(
-	"/api/clubs/:id/storage-quota",
+	"/clubs/:id/storage-quota",
 	async ({ params, context, response }) => {
 		const clubId = params.id;
 
@@ -4205,7 +4205,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/instagram/auth-url",
+	"/clubs/:id/instagram/auth-url",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -4257,7 +4257,7 @@ clubsRouter.get(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/instagram/disconnect",
+	"/clubs/:id/instagram/disconnect",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -4321,7 +4321,7 @@ clubsRouter.post(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/instagram/check-token",
+	"/clubs/:id/instagram/check-token",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -4484,7 +4484,7 @@ clubsRouter.get(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/instagram/exchange-code",
+	"/clubs/:id/instagram/exchange-code",
 	async ({ params, body, response }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -4575,7 +4575,7 @@ clubsRouter.post(
 );
 
 clubsRouter.post(
-	"/api/clubs/:id/instagram/select-page",
+	"/clubs/:id/instagram/select-page",
 	async ({ params, body, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -4675,7 +4675,7 @@ clubsRouter.post(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/instagram/media",
+	"/clubs/:id/instagram/media",
 	async ({ params, query, response }) => {
 		const clubId = params.id;
 
@@ -4761,7 +4761,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/stats",
+	"/clubs/:id/stats",
 	async ({ params, context, response }) => {
 		const clubId = params.id;
 
@@ -4932,7 +4932,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/api/clubs/:id/members",
+	"/clubs/:id/members",
 	async ({ params, query, context, response }) => {
 		const clubId = params.id;
 

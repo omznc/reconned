@@ -8,7 +8,7 @@ import { Router } from "../lib/router";
 const dashboardRouter = new Router();
 
 dashboardRouter.get(
-	"/api/dashboard/clubs",
+	"/dashboard/clubs",
 	async ({ context, response }) => {
 		const userClubs = await db
 			.select({
@@ -110,7 +110,7 @@ dashboardRouter.get(
 );
 
 dashboardRouter.get(
-	"/api/dashboard/invites-count",
+	"/dashboard/invites-count",
 	async ({ context, response }) => {
 		const userData = await db.select({ email: user.email }).from(user).where(eq(user.id, context.user.id)).limit(1);
 
@@ -143,7 +143,7 @@ dashboardRouter.get(
 );
 
 dashboardRouter.get(
-	"/api/dashboard/invite-requests-count",
+	"/dashboard/invite-requests-count",
 	async ({ context, response }) => {
 		const managedClubs = await db
 			.select({ clubId: clubMembership.clubId })
@@ -199,7 +199,7 @@ dashboardRouter.get(
 );
 
 dashboardRouter.get(
-	"/api/dashboard/stats",
+	"/dashboard/stats",
 	async ({ context, response }) => {
 		const userData = await db
 			.select({

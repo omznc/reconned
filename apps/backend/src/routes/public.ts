@@ -9,7 +9,7 @@ const publicRouter = new Router();
 // NOTE: Public club endpoints have been removed in favor of using /api/clubs with in-route sanitization.
 
 publicRouter.get(
-	"/api/public/clubs/map",
+	"/public/clubs/map",
 	async ({ response }) => {
 		const clubs = await db
 			.select({
@@ -55,7 +55,7 @@ publicRouter.get(
 // NOTE: Public event endpoint removed; /api/events/:id now enforces privacy and is safe for public use.
 
 publicRouter.get(
-	"/api/public/sitemap/clubs",
+	"/public/sitemap/clubs",
 	async ({ response }) => {
 		const clubs = await db
 			.select({
@@ -89,7 +89,7 @@ publicRouter.get(
 );
 
 publicRouter.get(
-	"/api/public/sitemap/events",
+	"/public/sitemap/events",
 	async ({ response }) => {
 		const events = await db
 			.select({
@@ -135,7 +135,7 @@ publicRouter.get(
 );
 
 publicRouter.get(
-	"/api/public/sitemap/users",
+	"/public/sitemap/users",
 	async ({ response }) => {
 		const users = await db
 			.select({

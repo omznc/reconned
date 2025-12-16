@@ -116,15 +116,15 @@ async function handleRequest(request: Request): Promise<Response> {
 	return addCORSHeaders(response, request, corsOrigins);
 }
 
-mainRouter.use(countriesRouter);
-mainRouter.use(usersRouter);
-mainRouter.use(clubsRouter);
-mainRouter.use(eventsRouter);
-mainRouter.use(reviewsRouter);
-mainRouter.use(dashboardRouter);
-mainRouter.use(utilsRouter);
-mainRouter.use(adminRouter);
-mainRouter.use(publicRouter);
+mainRouter.use(countriesRouter, "/api");
+mainRouter.use(usersRouter, "/api");
+mainRouter.use(clubsRouter, "/api");
+mainRouter.use(eventsRouter, "/api");
+mainRouter.use(reviewsRouter, "/api");
+mainRouter.use(dashboardRouter, "/api");
+mainRouter.use(utilsRouter, "/api");
+mainRouter.use(adminRouter, "/api");
+mainRouter.use(publicRouter, "/api");
 
 Bun.serve({
 	port: 3002,

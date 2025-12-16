@@ -15,7 +15,7 @@ const baseEventSchema = createSelectSchema(event);
 const baseReviewSchema = createSelectSchema(review);
 
 utilsRouter.get(
-	"/api/search",
+	"/search",
 	async ({ query, response, context }) => {
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
@@ -405,7 +405,7 @@ const validateSlugBodySchema = z.object({
 });
 
 utilsRouter.post(
-	"/api/validate-slug",
+	"/validate-slug",
 	async ({ body, response }) => {
 		switch (body.type) {
 			case "club": {
@@ -456,7 +456,7 @@ utilsRouter.post(
 );
 
 utilsRouter.get(
-	"/api/reviews",
+	"/reviews",
 	async ({ query, response }) => {
 		const clubId = query?.clubId;
 		const eventId = query?.eventId;
@@ -506,7 +506,7 @@ utilsRouter.get(
 );
 
 utilsRouter.get(
-	"/api/reviews/{type}/{id}",
+	"/reviews/{type}/{id}",
 	async ({ params, response }) => {
 		const type = params?.type;
 		const id = params?.id;
@@ -554,7 +554,7 @@ utilsRouter.get(
 );
 
 utilsRouter.get(
-	"/api/sitemap",
+	"/sitemap",
 	async ({ response }) => {
 		const [clubs, events, users] = await Promise.all([
 			db
@@ -636,7 +636,7 @@ utilsRouter.get(
 );
 
 utilsRouter.get(
-	"/api/health",
+	"/health",
 	async ({ response }) => {
 		const timestamp = new Date().toISOString();
 		let databaseStatus = "disconnected";

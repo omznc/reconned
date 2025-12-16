@@ -19,7 +19,7 @@ const countrySchema = z.object({
 export const countriesRouter = new Router();
 
 countriesRouter.get(
-	"/api/countries",
+	"/countries",
 	async ({ response }) => {
 		const countries = await db
 			.select({

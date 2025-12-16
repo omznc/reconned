@@ -28,7 +28,7 @@ const reviewWithAuthorSchema = z.object({
 });
 
 reviewsRouter.get(
-	"/api/reviews/:type/:id",
+	"/reviews/:type/:id",
 	async ({ params, response }) => {
 		const { type, id } = params;
 

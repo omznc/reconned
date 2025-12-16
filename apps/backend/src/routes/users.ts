@@ -143,7 +143,7 @@ function selectSafeUserFields(requestingUserId?: string, isAdmin?: boolean, targ
 export const usersRouter = new Router();
 
 usersRouter.get(
-	"/api/users/:id",
+	"/users/:id",
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -301,7 +301,7 @@ usersRouter.get(
 );
 
 usersRouter.get(
-	"/api/users",
+	"/users",
 	async ({ response, context, query }) => {
 		const requestingUserId = context.user?.id;
 		const isAdmin = context.isAdmin;
@@ -420,7 +420,7 @@ usersRouter.get(
 );
 
 usersRouter.get(
-	"/api/users/:id/profile",
+	"/users/:id/profile",
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -600,7 +600,7 @@ usersRouter.get(
 );
 
 usersRouter.put(
-	"/api/users/:id",
+	"/users/:id",
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -692,7 +692,7 @@ usersRouter.put(
 );
 
 usersRouter.delete(
-	"/api/users/:id/image",
+	"/users/:id/image",
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -731,7 +731,7 @@ usersRouter.delete(
 );
 
 usersRouter.delete(
-	"/api/users/:id/header-image",
+	"/users/:id/header-image",
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -768,7 +768,7 @@ usersRouter.delete(
 );
 
 usersRouter.get(
-	"/api/users/:id/stats",
+	"/users/:id/stats",
 	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -950,7 +950,7 @@ usersRouter.get(
 );
 
 usersRouter.get(
-	"/api/users/:id/account",
+	"/users/:id/account",
 	async ({ params, response }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -981,7 +981,7 @@ usersRouter.get(
 );
 
 usersRouter.put(
-	"/api/users/:id/theme",
+	"/users/:id/theme",
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -1023,7 +1023,7 @@ usersRouter.put(
 );
 
 usersRouter.put(
-	"/api/users/:id/font",
+	"/users/:id/font",
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -1065,7 +1065,7 @@ usersRouter.put(
 );
 
 usersRouter.put(
-	"/api/users/:id/style",
+	"/users/:id/style",
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -1107,7 +1107,7 @@ usersRouter.put(
 );
 
 usersRouter.get(
-	"/api/users/invites",
+	"/users/invites",
 	async ({ context, response }) => {
 		const invitesData = await db
 			.select()
@@ -1152,7 +1152,7 @@ usersRouter.get(
 );
 
 usersRouter.get(
-	"/api/users/invites/count",
+	"/users/invites/count",
 	async ({ context, response }) => {
 		const result = await db
 			.select({ count: count() })
@@ -1177,7 +1177,7 @@ usersRouter.get(
 );
 
 usersRouter.post(
-	"/api/users/:id/image/upload-url",
+	"/users/:id/image/upload-url",
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -1222,7 +1222,7 @@ usersRouter.post(
 );
 
 usersRouter.post(
-	"/api/users/:id/header-image/upload-url",
+	"/users/:id/header-image/upload-url",
 	async ({ params, response, context, body }) => {
 		const userId = params.id;
 		if (!userId) {
@@ -1267,7 +1267,7 @@ usersRouter.post(
 );
 
 usersRouter.get(
-	"/api/users/:id/daily-quota",
+	"/users/:id/daily-quota",
 	async ({ params, response, context }) => {
 		const userId = params.id;
 
@@ -1331,7 +1331,7 @@ usersRouter.get(
 );
 
 usersRouter.get(
-	"/api/users/me/clubs",
+	"/users/me/clubs",
 	async ({ context, response }) => {
 		if (!context.user) {
 			throw apiError.unauthorized("Authentication required");

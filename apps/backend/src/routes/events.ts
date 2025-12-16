@@ -22,7 +22,7 @@ import { deleteS3Files, getS3UploadUrl } from "../lib/storage";
 const eventsRouter = new Router();
 
 eventsRouter.get(
-	"/api/events",
+	"/events",
 	async ({ context, query, response }) => {
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
@@ -129,7 +129,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/events/upcoming",
+	"/events/upcoming",
 	async ({ query, context, response }) => {
 		const limit = query.limit ?? 25;
 
@@ -223,7 +223,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/events/:id",
+	"/events/:id",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
 
@@ -335,7 +335,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/events/upcoming",
+	"/events/upcoming",
 	async ({ query, context, response }) => {
 		const limit = query.limit ?? 25;
 
@@ -413,7 +413,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/events/calendar",
+	"/events/calendar",
 	async ({ query, context, response }) => {
 		const startDate = query?.startDate;
 		const endDate = query?.endDate;
@@ -528,7 +528,7 @@ async function validateEventSlug(slug: string, excludeEventId?: string): Promise
 }
 
 eventsRouter.post(
-	"/api/events",
+	"/events",
 	async ({ context, body, response }) => {
 		const managerMembershipData = await db
 			.select()
@@ -654,7 +654,7 @@ eventsRouter.post(
 );
 
 eventsRouter.put(
-	"/api/events/:id",
+	"/events/:id",
 	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 
@@ -798,7 +798,7 @@ eventsRouter.put(
 );
 
 eventsRouter.delete(
-	"/api/events/:id",
+	"/events/:id",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
 
@@ -865,7 +865,7 @@ eventsRouter.delete(
 );
 
 eventsRouter.get(
-	"/api/clubs/:clubId/events",
+	"/clubs/:clubId/events",
 	async ({ params, query, response }) => {
 		const clubId = params.clubId;
 
@@ -943,7 +943,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/clubs/:clubId/events/count",
+	"/clubs/:clubId/events/count",
 	async ({ params, query, response }) => {
 		const clubId = params.clubId;
 
@@ -998,7 +998,7 @@ const eventImageUploadBodySchema = z.object({
 });
 
 eventsRouter.post(
-	"/api/events/:id/image/upload-url",
+	"/events/:id/image/upload-url",
 	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 
@@ -1057,7 +1057,7 @@ eventsRouter.post(
 );
 
 eventsRouter.delete(
-	"/api/events/:id/image",
+	"/events/:id/image",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
 
@@ -1140,7 +1140,7 @@ const createEventRegistrationBodySchema = z.object({
 });
 
 eventsRouter.post(
-	"/api/events/:id/registrations",
+	"/events/:id/registrations",
 	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 
@@ -1294,7 +1294,7 @@ eventsRouter.post(
 );
 
 eventsRouter.delete(
-	"/api/events/:id/registrations",
+	"/events/:id/registrations",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
 
@@ -1357,7 +1357,7 @@ eventsRouter.delete(
 );
 
 eventsRouter.put(
-	"/api/events/:id/registrations/:registrationId/attendance",
+	"/events/:id/registrations/:registrationId/attendance",
 	async ({ params, context, body, response }) => {
 		const eventId = params.id;
 		const registrationId = params.registrationId;
@@ -1429,7 +1429,7 @@ eventsRouter.put(
 );
 
 eventsRouter.get(
-	"/api/events/:id/registrations",
+	"/events/:id/registrations",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
 
@@ -1586,7 +1586,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/events/:id/registrations/count",
+	"/events/:id/registrations/count",
 	async ({ params, response }) => {
 		const eventId = params.id;
 
@@ -1621,7 +1621,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/events/:id/rules",
+	"/events/:id/rules",
 	async ({ params, response }) => {
 		const eventId = params.id;
 
@@ -1654,7 +1654,7 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
-	"/api/events/:id/apply-data",
+	"/events/:id/apply-data",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
 
