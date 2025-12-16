@@ -7,6 +7,7 @@ RUN apt-get update -y && apt-get install -y openssl curl wget && rm -rf /var/lib
 FROM base AS deps
 COPY package.json bun.lock* ./
 COPY apps/backend/package.json ./apps/backend/
+COPY apps/web/package.json ./apps/web/
 RUN bun install --no-save --frozen-lockfile
 
 FROM base AS builder
@@ -31,4 +32,3 @@ COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 3001
 
 CMD ["bun", "run", "dist/index.js"]
-
