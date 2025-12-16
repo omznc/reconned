@@ -15,6 +15,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json bun.lock* ./
 COPY apps/web ./apps/web
+COPY apps/backend ./apps/backend
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -39,7 +40,6 @@ ENV NEXT_PUBLIC_AXIOM_TOKEN=$NEXT_PUBLIC_AXIOM_TOKEN
 ENV NEXT_PUBLIC_BETA=$NEXT_PUBLIC_BETA
 
 WORKDIR /app/apps/web
-RUN bunx prisma generate --no-hints
 RUN bun run build
 
 FROM base AS runner
