@@ -7,13 +7,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { claimClubRequest } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
+import apiClient from "@/lib/api/api.client";
 
 const claimClubSchema = z.object({
 	message: z.string().optional(),
@@ -40,12 +40,18 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 	async function onSubmit(values: z.infer<typeof claimClubSchema>) {
 		setIsLoading(true);
 		try {
-			const result = await claimClubRequest({
-				clubId,
-				message: values.message,
+			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/claim-request", {
+				params: {
+					path: {
+						id: clubId,
+					},
+				},
+				body: {
+					message: values.message,
+				},
 			});
 
-			if (result?.data?.success) {
+			if (!error && data?.success) {
 				toast.success(
 					t("Claim request submitted successfully. We'll review your request and get back to you soon."),
 				);

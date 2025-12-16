@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
+import { Logger } from "next-axiom";
 import { routing } from "@/i18n/routing";
-import apiClient from "@/lib/api";
-import { getCached } from "@/lib/cache";
+import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import {
 	constructCanonicalUrl,
@@ -14,39 +14,29 @@ export const dynamic = "force-dynamic";
 const defaultLocale = routing.defaultLocale;
 const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 
+const logger = new Logger({ source: "sitemap" });
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	// Get all data concurrently with caching
-	const [clubs, events, users] = await Promise.all([
-		// Get public clubs (cached for 30 minutes)
-		getCached(
-			"sitemap:clubs",
-			async () => {
-				const { data } = await apiClient.GET("/api/public/sitemap/clubs", {});
-				return data?.clubs || [];
-			},
-			{ ttl: 1800 }, // 30 minutes
-		),
+	const [clubsResponse, eventsResponse, usersResponse] = await Promise.all([
+		apiServer.GET("/api/public/sitemap/clubs", {}),
 
-		// Get public events (cached for 30 minutes)
-		getCached(
-			"sitemap:events",
-			async () => {
-				const { data } = await apiClient.GET("/api/public/sitemap/events", {});
-				return data?.events || [];
-			},
-			{ ttl: 1800 }, // 30 minutes
-		),
+		apiServer.GET("/api/public/sitemap/events", {}),
 
-		// Get public user profiles (cached for 30 minutes)
-		getCached(
-			"sitemap:users",
-			async () => {
-				const { data } = await apiClient.GET("/api/public/sitemap/users", {});
-				return data?.users || [];
-			},
-			{ ttl: 1800 }, // 30 minutes
-		),
+		apiServer.GET("/api/public/sitemap/users", {}),
 	]);
+
+	const clubs = clubsResponse?.data?.clubs || [];
+	const events = eventsResponse?.data?.events || [];
+	const users = usersResponse?.data?.users || [];
+
+	if (clubsResponse.error || eventsResponse.error || usersResponse.error) {
+		logger.error("Error fetching sitemap data", {
+			clubsResponse,
+			eventsResponse,
+			usersResponse,
+		});
+	}
 
 	// Static routes with their properties
 	const staticRoutes: MetadataRoute.Sitemap = [

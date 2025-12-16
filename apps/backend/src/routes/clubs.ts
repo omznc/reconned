@@ -530,14 +530,36 @@ clubsRouter.post(
 
 clubsRouter.get(
 	"/api/clubs",
-	async ({ response, query }) => {
+	async ({ response, query, context }) => {
 		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query;
 		const offset = (page - 1) * perPage;
 
 		const whereConditions = [];
 
+		const isAdmin = context.isAdmin;
+		const requestingUserId = context.user?.id;
+
 		if (search) {
 			whereConditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)));
+		}
+
+		if (!isAdmin) {
+			if (requestingUserId) {
+				const userMemberships = await db
+					.select({ clubId: clubMembership.clubId })
+					.from(clubMembership)
+					.where(eq(clubMembership.userId, requestingUserId));
+
+				const memberClubIds = userMemberships.map((m) => m.clubId);
+
+				if (memberClubIds.length > 0) {
+					whereConditions.push(or(eq(club.isPrivate, false), sql`${club.id} = ANY(${memberClubIds})`));
+				} else {
+					whereConditions.push(eq(club.isPrivate, false));
+				}
+			} else {
+				whereConditions.push(eq(club.isPrivate, false));
+			}
 		}
 
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;

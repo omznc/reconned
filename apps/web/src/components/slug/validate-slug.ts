@@ -1,4 +1,4 @@
-import apiClient from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
 
 type ValidateSlugArgs = {
 	type: "club" | "event" | "user";

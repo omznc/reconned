@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, type ReactNode, useContext, useState } from "react";
+import { ActionError } from "@/lib/action-error";
 
 type FontType = "mono" | "sans";
 
@@ -12,7 +13,23 @@ type FontContextType = {
 const FontContext = createContext<FontContextType | undefined>(undefined);
 
 export function FontProvider({ initial, children }: { initial: "mono" | "sans"; children: ReactNode }) {
-	const [font, setFont] = useState<FontType>(initial);
+	const [font, setFontState] = useState<FontType>(initial);
+
+	if (typeof window !== "undefined") {
+		const stored = window.localStorage.getItem("reconned-font");
+		if (stored === "mono" || stored === "sans") {
+			if (stored !== font) {
+				setFontState(stored);
+			}
+		}
+	}
+
+	const setFont = (newFont: FontType) => {
+		setFontState(newFont);
+		if (typeof window !== "undefined") {
+			window.localStorage.setItem("reconned-font", newFont);
+		}
+	};
 
 	return <FontContext.Provider value={{ font, setFont }}>{children}</FontContext.Provider>;
 }

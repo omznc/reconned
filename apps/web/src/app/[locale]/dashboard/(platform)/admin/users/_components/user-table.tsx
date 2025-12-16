@@ -6,7 +6,7 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminUser = ApiResponse<"/api/admin/users", "get">["users"][number];
 

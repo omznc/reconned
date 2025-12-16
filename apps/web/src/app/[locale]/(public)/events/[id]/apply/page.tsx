@@ -7,7 +7,7 @@ import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { redirect } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
@@ -29,7 +29,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 	}
 
 	// Fetch event application data from backend
-	const { data: applyData, error: applyError } = await apiClient.GET("/api/events/{id}/apply-data", {
+	const { data: applyData, error: applyError } = await apiServer.GET("/api/events/{id}/apply-data", {
 		params: { path: { id: params.id } },
 	});
 
@@ -40,7 +40,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 	const { event, existingRegistration } = applyData;
 
 	// Fetch user's clubs from backend
-	const { data: clubsData, error: clubsError } = await apiClient.GET("/api/users/me/clubs", {});
+	const { data: clubsData, error: clubsError } = await apiServer.GET("/api/users/me/clubs", {});
 
 	if (clubsError || !clubsData) {
 		return <ErrorPage title={t("Failed to load user data")} />;
@@ -129,7 +129,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/a
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const { data: eventData } = await apiClient.GET("/api/events/{id}", {
+	const { data: eventData } = await apiServer.GET("/api/events/{id}", {
 		params: { path: { id: params.id } },
 	});
 

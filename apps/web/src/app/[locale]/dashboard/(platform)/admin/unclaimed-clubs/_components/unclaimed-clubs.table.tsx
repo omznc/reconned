@@ -6,7 +6,7 @@ import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 type AdminUnclaimedList = ApiResponse<"/api/admin/unclaimed-clubs", "get">;

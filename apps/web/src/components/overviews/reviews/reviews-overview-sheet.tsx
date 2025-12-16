@@ -5,7 +5,7 @@ import { Star } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 type Review = ApiResponse<"/api/reviews/{type}/{id}", "get">["reviews"][number];

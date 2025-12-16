@@ -4,7 +4,7 @@ import { getExtracted } from "next-intl/server";
 import { EventOverview } from "@/components/overviews/event-overview";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]">) {
@@ -17,7 +17,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	}
 
 	// Fetch event from backend
-	const { data: eventData, error: eventError } = await apiClient.GET("/api/events/{id}", {
+	const { data: eventData, error: eventError } = await apiServer.GET("/api/events/{id}", {
 		params: { path: { id: params.id } },
 	});
 
@@ -28,7 +28,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const { event, registrationCount } = eventData;
 
 	// Check if user is a member of the club
-	const { data: clubData, error: clubError } = await apiClient.GET("/api/clubs/{id}/membership", {
+	const { data: clubData, error: clubError } = await apiServer.GET("/api/clubs/{id}/membership", {
 		params: { path: { id: params.clubId } },
 	});
 
@@ -37,14 +37,15 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	}
 
 	// Fetch event rules
-	const { data: rulesData } = await apiClient.GET("/api/events/{id}/rules", {
+	const { data: rulesData } = await apiServer.GET("/api/events/{id}/rules", {
 		params: { path: { id: params.id } },
 	});
 
+	const role = clubData.membership.role;
+	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
+
 	const disabledAttendence =
-		!(user.managedClubs.includes(params.clubId) || user.role === "admin") ||
-		new Date() < new Date(event.dateRegistrationsClose) ||
-		new Date() > new Date(event.dateEnd);
+		!isManager || new Date() < new Date(event.dateRegistrationsClose) || new Date() > new Date(event.dateEnd);
 
 	// Combine event with rules and count for the overview component
 	const eventWithDetails = {

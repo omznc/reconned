@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import { UserSheet } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-sheet";
 import { UserTable } from "@/app/[locale]/dashboard/(platform)/admin/users/_components/user-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminUser = ApiResponse<"/api/admin/users", "get">["users"][number];
 
@@ -12,7 +13,7 @@ export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const { data: listData } = await apiClient.GET("/api/admin/users", {
+	const { data: listData } = await apiServer.GET("/api/admin/users", {
 		params: {
 			query: {
 				page: currentPage,
@@ -29,7 +30,7 @@ export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 
 	const selectedUser = userId
 		? (
-				await apiClient.GET("/api/admin/users/{id}", {
+				await apiServer.GET("/api/admin/users/{id}", {
 					params: {
 						path: { id: userId as string },
 					},

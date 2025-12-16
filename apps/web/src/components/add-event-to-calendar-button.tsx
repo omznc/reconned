@@ -3,7 +3,7 @@
 import { AddToCalendarButton as CalendarButtonBase } from "add-to-calendar-button-react";
 import { format } from "date-fns";
 import { useExtracted } from "next-intl";
-import type { ClubRule, Event } from "@/lib/api-type-helpers";
+import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 
 export default function AddEventToCalendarButton({ event }: { event: Event & { rules: ClubRule[] } }) {
 	const t = useExtracted();

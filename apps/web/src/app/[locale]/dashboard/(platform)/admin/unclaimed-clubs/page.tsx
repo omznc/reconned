@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api.ts";
+import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { UnclaimedClubsSheet } from "./_components/unclaimed-clubs.sheet.tsx";
 import { UnclaimedClubsTable } from "./_components/unclaimed-clubs.table.tsx";
 
@@ -16,7 +17,7 @@ export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dash
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const { data: listData } = await apiClient.GET("/api/admin/unclaimed-clubs", {
+	const { data: listData } = await apiServer.GET("/api/admin/unclaimed-clubs", {
 		params: {
 			query: {
 				page: currentPage,
@@ -33,7 +34,7 @@ export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dash
 
 	const selectedClub = clubId
 		? (
-				await apiClient.GET("/api/admin/unclaimed-clubs/{id}", {
+				await apiServer.GET("/api/admin/unclaimed-clubs/{id}", {
 					params: {
 						path: { id: clubId as string },
 					},

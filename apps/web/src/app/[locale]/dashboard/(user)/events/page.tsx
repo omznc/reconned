@@ -3,7 +3,7 @@ import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/events">) {
@@ -16,7 +16,7 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/ev
 		return notFound();
 	}
 
-	const { data } = await apiClient.GET("/api/events", {
+	const { data } = await apiServer.GET("/api/events", {
 		params: {
 			query: {
 				page: currentPage,

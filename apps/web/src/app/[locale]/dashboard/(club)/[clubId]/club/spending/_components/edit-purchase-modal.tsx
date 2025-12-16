@@ -24,8 +24,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
-import type { ClubPurchase } from "@/lib/api-type-helpers";
+import apiClient from "@/lib/api/api.client";
+import type { ClubPurchase } from "@/lib/api/api-type-helpers";
 
 interface EditPurchaseModalProps {
 	purchase: ClubPurchase;

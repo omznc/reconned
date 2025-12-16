@@ -4,7 +4,7 @@ import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { ExternalLink, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type InstagramMediaResponse = ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
 

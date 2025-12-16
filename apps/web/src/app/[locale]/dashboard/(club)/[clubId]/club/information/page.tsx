@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/information">) {
@@ -11,12 +11,12 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	}
 
 	const [clubResp, countries] = await Promise.all([
-		apiClient.GET("/api/clubs/{id}/information", {
+		apiServer.GET("/api/clubs/{id}/information", {
 			params: {
 				path: { id: params.clubId },
 			},
 		}),
-		apiClient.GET("/api/countries"),
+		apiServer.GET("/api/countries"),
 	]);
 
 	const club = clubResp.data;
@@ -27,7 +27,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	}
 
 	// Fetch Instagram auth URL from backend
-	const { data: authUrlData } = await apiClient.GET("/api/clubs/{id}/instagram/auth-url", {
+	const { data: authUrlData } = await apiServer.GET("/api/clubs/{id}/instagram/auth-url", {
 		params: { path: { id: params.clubId } },
 	});
 

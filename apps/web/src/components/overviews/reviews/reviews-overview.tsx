@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 	}
 
 	// Fetch reviews from backend API
-	const { data, error } = await apiClient.GET("/api/reviews/{type}/{id}", {
+	const { data, error } = await apiServer.GET("/api/reviews/{type}/{id}", {
 		params: {
 			path: {
 				type,

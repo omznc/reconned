@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { AttendanceTracker } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
 import { ErrorPage } from "@/components/error-page";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 
@@ -16,12 +16,23 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const params = await props.params;
 	const user = await isAuthenticated();
 
-	if (!user?.managedClubs.some((club) => club === params.clubId)) {
+	if (!user) {
+		return notFound();
+	}
+
+	const { data: membershipData } = await apiServer.GET("/api/clubs/{id}/membership", {
+		params: { path: { id: params.clubId } },
+	});
+
+	const role = membershipData?.membership?.role;
+	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
+
+	if (!isManager) {
 		return notFound();
 	}
 
 	// Fetch event from backend
-	const { data: eventData, error: eventError } = await apiClient.GET("/api/events/{id}", {
+	const { data: eventData, error: eventError } = await apiServer.GET("/api/events/{id}", {
 		params: { path: { id: params.id } },
 	});
 
@@ -37,7 +48,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	}
 
 	// Fetch event registrations with details
-	const { data: registrationsData, error: registrationsError } = await apiClient.GET(
+	const { data: registrationsData, error: registrationsError } = await apiServer.GET(
 		"/api/events/{id}/registrations",
 		{
 			params: { path: { id: params.id } },

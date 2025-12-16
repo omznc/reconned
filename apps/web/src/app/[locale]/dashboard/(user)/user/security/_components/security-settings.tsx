@@ -18,7 +18,7 @@ import { usePrompt } from "@/components/ui/alert-dialog-provider";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
-import type { Session } from "@/lib/api-type-helpers";
+import type { Session } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 interface SecuritySettingsProps {

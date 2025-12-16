@@ -11,7 +11,7 @@ import {
 	CredenzaTitle,
 } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminUnclaimedList = ApiResponse<"/api/admin/unclaimed-clubs", "get">;
 type AdminUnclaimed = AdminUnclaimedList["clubs"][number];

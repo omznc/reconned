@@ -40,8 +40,8 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ActionError } from "@/lib/action-error";
-import apiClient, { type ApiResponse } from "@/lib/api";
-import type { Club } from "@/lib/api-type-helpers";
+import apiClient from "@/lib/api/api.client";
+import type { ApiResponse, Club } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 type Country = ApiResponse<"/api/countries", "get">[number];

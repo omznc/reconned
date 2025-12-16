@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useExtracted } from "next-intl";
 import type { NavItem } from "@/components/sidebar/types";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type DashboardClubs = Omit<ApiResponse<"/api/dashboard/clubs", "get">["clubs"], "reviews" | "posts" | "_count">;
 

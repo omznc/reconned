@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { UserInfoForm } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.form";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page() {
@@ -9,7 +9,7 @@ export default async function Page() {
 		return notFound();
 	}
 
-	const { data: userFromDb, error } = await apiClient.GET("/api/users/{id}", {
+	const { data: userFromDb, error } = await apiServer.GET("/api/users/{id}", {
 		params: {
 			path: {
 				id: user.id,

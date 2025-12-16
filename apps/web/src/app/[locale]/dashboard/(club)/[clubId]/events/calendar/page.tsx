@@ -1,6 +1,6 @@
 import { addMonths, endOfMonth, parse as parseDateFns, startOfMonth, subMonths } from "date-fns";
 import { EventCalendar } from "@/components/event-calendar";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/calendar">) {
 	const params = await props.params;
@@ -10,7 +10,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 
-	const { data, error } = await apiClient.GET("/api/events/calendar", {
+	const { data, error } = await apiServer.GET("/api/events/calendar", {
 		params: {
 			query: {
 				startDate: startDate.toISOString(),

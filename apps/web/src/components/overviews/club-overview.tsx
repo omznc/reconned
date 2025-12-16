@@ -1,6 +1,7 @@
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { Cog, Eye, EyeOff, Handshake, MailOpenIcon, MapIcon, MapPin, Pencil, Phone, ShieldBan } from "lucide-react";
 import Image from "next/image";
+import { Logger } from "next-axiom";
 import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
 import { VerifiedClubIcon } from "@/components/icons";
@@ -14,9 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
-import apiClient, { type ApiResponse } from "@/lib/api";
-import type { ClubMembership, Post } from "@/lib/api-type-helpers";
-
+import apiServer from "@/lib/api/api";
+import type { ApiResponse, ClubMembership } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 interface ClubOverviewProps {
@@ -27,6 +27,8 @@ interface ClubOverviewProps {
 	hasOwner?: boolean;
 	user?: { id: string; name: string; email: string; callsign?: string | null } | null;
 }
+
+const logger = new Logger({ source: "ClubOverview" });
 
 type InstagramMediaResponse = ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
 
@@ -42,7 +44,7 @@ export async function ClubOverview({
 		getPageViews(`/clubs/${club.id}`),
 		getPageViews(`/clubs/${club.slug}`),
 		club.instagramConnected
-			? apiClient
+			? apiServer
 					.GET("/api/clubs/{id}/instagram/media", {
 						params: {
 							path: { id: club.id },
@@ -66,17 +68,17 @@ export async function ClubOverview({
 	]);
 	const t = await getExtracted();
 	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
-	const posts = [...((club as unknown as { posts?: Post[] }).posts ?? [])].sort((a, b) => {
-		const aDate = new Date(a.createdAt).getTime();
-		const bDate = new Date(b.createdAt).getTime();
-		if (aDate < bDate) {
-			return 1;
-		}
-		if (aDate > bDate) {
-			return -1;
-		}
-		return 0;
+	const postsResponse = await apiServer.GET("/api/clubs/{id}/posts", {
+		params: {
+			path: { id: club.id },
+		},
 	});
+
+	const posts = postsResponse.data?.posts ?? [];
+
+	if (postsResponse.error) {
+		logger.error("Error fetching club posts", { error: postsResponse.error });
+	}
 
 	const isClubOwner = currentUserMembership?.role === "CLUB_OWNER";
 

@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { bs } from "date-fns/locale";
 import { notFound } from "next/navigation";
 import { StatsCharts } from "@/app/[locale]/dashboard/(club)/[clubId]/club/stats/_components/stats-charts";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/stats">) {
@@ -14,12 +14,19 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	}
 
 	// Check if user manages this club
-	if (!user.managedClubs.includes(params.clubId) && user.role !== "admin") {
+	const { data: membershipData } = await apiServer.GET("/api/clubs/{id}/membership", {
+		params: { path: { id: params.clubId } },
+	});
+
+	const role = membershipData?.membership?.role;
+	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
+
+	if (!isManager) {
 		return notFound();
 	}
 
 	// Fetch club stats from backend
-	const { data: stats, error } = await apiClient.GET("/api/clubs/{id}/stats", {
+	const { data: stats, error } = await apiServer.GET("/api/clubs/{id}/stats", {
 		params: { path: { id: params.clubId } },
 	});
 

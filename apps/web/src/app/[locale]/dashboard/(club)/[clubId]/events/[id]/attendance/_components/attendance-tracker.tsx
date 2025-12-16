@@ -10,8 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { ActionError } from "@/lib/action-error";
-import apiClient, { type ApiResponse } from "@/lib/api";
-import type { Event, EventRegistration } from "@/lib/api-type-helpers";
+import apiClient from "@/lib/api/api.client";
+import type { ApiResponse, Event, EventRegistration } from "@/lib/api/api-type-helpers";
 
 interface AttendanceTrackerProps {
 	event: Event & {

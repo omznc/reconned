@@ -10,7 +10,7 @@ const handleI18nRouting = createMiddleware(routing);
 export default async function authProxy(request: NextRequest) {
 	after(async () => {
 		const logger = new Logger({ source: "middleware" });
-		logger.middleware(request);
+		logger.info("Middleware request", { path: request.nextUrl.pathname });
 	});
 
 	if (request.nextUrl.pathname.includes("/dashboard")) {

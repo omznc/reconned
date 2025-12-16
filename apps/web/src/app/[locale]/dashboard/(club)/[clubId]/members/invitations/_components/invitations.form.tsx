@@ -17,7 +17,7 @@ import type { z } from "zod";
 import { sendInvitationSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
 import { useRouter } from "@/i18n/navigation";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
 type SearchUser = {

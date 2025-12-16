@@ -16,7 +16,8 @@ import { Switch } from "@/components/ui/switch";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { ActionError } from "@/lib/action-error";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api/api.client.ts";
+import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { postSchema } from "./posts.schema.ts";
 
 type ClubPost = ApiResponse<"/api/clubs/{id}/posts/{postId}", "get">;

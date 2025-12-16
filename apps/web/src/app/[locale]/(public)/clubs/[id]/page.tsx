@@ -4,7 +4,7 @@ import { getExtracted, getLocale } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
@@ -13,7 +13,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
 
-	const { data: clubData, error: clubError } = await apiClient.GET("/api/clubs/{id}", {
+	const { data: clubData, error: clubError } = await apiServer.GET("/api/clubs/{id}", {
 		params: {
 			path: {
 				id: params.id,
@@ -25,9 +25,9 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		notFound();
 	}
 
-	const [membershipData, hasOwnerData, managedClubsData] = await Promise.all([
+	const [membershipData, hasOwnerData] = await Promise.all([
 		user
-			? apiClient.GET("/api/clubs/{id}/membership", {
+			? apiServer.GET("/api/clubs/{id}/membership", {
 					params: {
 						path: {
 							id: clubData.id,
@@ -35,21 +35,21 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 					},
 				})
 			: Promise.resolve({ data: null, error: null }),
-		apiClient.GET("/api/clubs/{id}/has-owner", {
+		apiServer.GET("/api/clubs/{id}/has-owner", {
 			params: {
 				path: {
 					id: clubData.id,
 				},
 			},
 		}),
-		user ? apiClient.GET("/api/clubs/managed") : Promise.resolve({ data: { clubs: [] }, error: null }),
 	]);
 
 	const club = clubData;
 
 	const isMemberOfClub = !!membershipData?.data?.isMember;
 	const hasOwner = hasOwnerData?.data?.hasOwner ?? false;
-	const managedClubs = managedClubsData?.data?.clubs.map((club) => club.id) ?? [];
+	const role = membershipData?.data?.membership?.role;
+	const isManager = role === "MANAGER" || role === "CLUB_OWNER";
 	const userMembership =
 		membershipData?.data?.isMember && membershipData?.data?.membership ? membershipData.data.membership : null;
 
@@ -113,7 +113,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 			<JsonLdScript data={sportsOrganizationSchema} />
 			<ClubOverview
 				club={club}
-				isManager={managedClubs.includes(club.id)}
+				isManager={isManager}
 				isMember={isMemberOfClub}
 				currentUserMembership={userMembership}
 				hasOwner={hasOwner}
@@ -127,7 +127,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const { data: club, error } = await apiClient.GET("/api/clubs/{id}", {
+	const { data: club, error } = await apiServer.GET("/api/clubs/{id}", {
 		params: {
 			path: {
 				id: params.id,

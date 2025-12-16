@@ -1,22 +1,26 @@
 "use client";
 
-import type { User } from "better-auth";
 import { useExtracted } from "next-intl";
 import { useClubNavigationItems } from "@/components/sidebar/navigation-items";
 import { renderCollapsedItem, renderExpandedItem } from "@/components/sidebar/utils";
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "@/i18n/navigation";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
+
+type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 interface NavClubProps {
-	user: User & { managedClubs: string[] };
 	clubId: string;
+	clubs: DashboardClubs;
 }
 
-export function NavClub({ user, clubId }: NavClubProps) {
+export function NavClub({ clubId, clubs }: NavClubProps) {
 	const path = usePathname();
 	const { open: sidebarOpen, isMobile } = useSidebar();
 	const t = useExtracted();
-	const isManager = user?.managedClubs?.includes(clubId);
+	const club = clubs.find((c) => c.id === clubId);
+	const role = club?.membershipRole;
+	const isManager = role === "MANAGER" || role === "CLUB_OWNER";
 	const items = useClubNavigationItems(clubId, isManager);
 
 	return (

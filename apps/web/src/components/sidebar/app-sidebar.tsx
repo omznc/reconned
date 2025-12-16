@@ -23,14 +23,14 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
 
 type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 interface AppSidebarProps {
 	clubs: DashboardClubs;
-	user: User & { managedClubs: string[]; role?: string | null | undefined };
+	user: User & { role?: string | null | undefined };
 	invitesCount: number;
 	inviteRequestsCount: {
 		id: string;
@@ -93,12 +93,12 @@ export function AppSidebar(props: AppSidebarProps) {
 	return (
 		<Sidebar collapsible="icon" variant="inset">
 			<SidebarHeader>
-				<ClubSwitcher clubs={props.clubs} user={props.user} />
+				<ClubSwitcher clubs={props.clubs} />
 				<SearchButton isMac={isMac} />
 			</SidebarHeader>
 			<SidebarContent>
 				<NavApp isAdmin={props.user.role === "admin"} pendingInvites={props.invitesCount} />
-				{clubId && <NavClub user={props.user} clubId={clubId} />}
+				{clubId && <NavClub clubId={clubId} clubs={props.clubs} />}
 			</SidebarContent>
 			<SidebarFooter>
 				{props.invitesCount > 0 &&

@@ -1,7 +1,8 @@
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api.ts";
+import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { ClubsSheet } from "./_components/clubs.sheet.tsx";
 import { ClubsTable } from "./_components/clubs.table.tsx";
 
@@ -12,7 +13,7 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const { data: listData } = await apiClient.GET("/api/admin/clubs", {
+	const { data: listData } = await apiServer.GET("/api/admin/clubs", {
 		params: {
 			query: {
 				page: currentPage,
@@ -29,7 +30,7 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 
 	const selectedClub = clubId
 		? (
-				await apiClient.GET("/api/admin/clubs/{id}", {
+				await apiServer.GET("/api/admin/clubs/{id}", {
 					params: {
 						path: { id: clubId as string },
 					},

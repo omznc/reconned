@@ -1,5 +1,4 @@
-import type { ApiResponse } from "@/lib/api";
-import type { components } from "@/lib/api-types";
+import type { components, paths } from "@/lib/api-types";
 
 /**
  * Shared API type helpers to replace @generated/client imports.
@@ -51,3 +50,18 @@ export const Role = {
 	MANAGER: "MANAGER" as const,
 	CLUB_OWNER: "CLUB_OWNER" as const,
 };
+/**
+ * Helper type to extract the response data type from an API endpoint.
+ *
+ * @example
+ * ```ts
+ * type UserResponse = ApiResponse<"/api/users/{id}", "get">;
+ * ```
+ */
+type ExtractJsonResponse<T> = T extends { responses: { 200: { content: { "application/json": infer U } } } }
+	? U
+	: never;
+
+export type ApiResponse<Path extends keyof paths, Method extends keyof paths[Path]> = ExtractJsonResponse<
+	paths[Path][Method]
+>;

@@ -6,7 +6,7 @@ import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_co
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
@@ -20,23 +20,33 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[c
 		return notFound();
 	}
 
-	const { data } = await apiClient.GET("/api/clubs/{clubId}/events", {
-		params: {
-			path: {
-				clubId,
+	const [{ data }, { data: membershipData }] = await Promise.all([
+		apiServer.GET("/api/clubs/{clubId}/events", {
+			params: {
+				path: {
+					clubId,
+				},
+				query: {
+					page: currentPage,
+					perPage: pageSize,
+					...(search ? { search: search as string } : {}),
+					...(sortBy ? { sortBy: sortBy as "name" | "dateStart" } : {}),
+					sortOrder: sortOrder === "asc" ? "asc" : "desc",
+				},
 			},
-			query: {
-				page: currentPage,
-				perPage: pageSize,
-				...(search ? { search: search as string } : {}),
-				...(sortBy ? { sortBy: sortBy as "name" | "dateStart" } : {}),
-				sortOrder: sortOrder === "asc" ? "asc" : "desc",
+		}),
+		apiServer.GET("/api/clubs/{id}/membership", {
+			params: {
+				path: { id: clubId },
 			},
-		},
-	});
+		}),
+	]);
 
 	const events = data?.events ?? [];
 	const totalEvents = data?.pagination.total ?? 0;
+
+	const role = membershipData?.membership?.role;
+	const userIsManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
 
 	return (
 		<EventsTable
@@ -44,7 +54,7 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[c
 			totalEvents={totalEvents}
 			clubId={clubId}
 			pageSize={pageSize}
-			userIsManager={user.managedClubs.includes(clubId) || Boolean(user.role === "admin")}
+			userIsManager={userIsManager}
 		/>
 	);
 }

@@ -12,7 +12,7 @@ import {
 	CredenzaHeader,
 	CredenzaTitle,
 } from "@/components/ui/credenza";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminUserDetail = ApiResponse<"/api/admin/users/{id}", "get">;
 

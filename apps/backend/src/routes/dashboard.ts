@@ -13,6 +13,7 @@ dashboardRouter.get(
 		const userClubs = await db
 			.select({
 				clubId: clubMembership.clubId,
+				role: clubMembership.role,
 			})
 			.from(clubMembership)
 			.where(eq(clubMembership.userId, context.user.id));
@@ -27,6 +28,8 @@ dashboardRouter.get(
 
 		const clubsWithEvents = await Promise.all(
 			clubsData.map(async (c) => {
+				const membership = userClubs.find((uc) => uc.clubId === c.id);
+
 				const [membersCount, eventsCount, reviewsCount, upcomingEvents, latestReviews] = await Promise.all([
 					db.select({ count: count() }).from(clubMembership).where(eq(clubMembership.clubId, c.id)),
 					db.select({ count: count() }).from(event).where(eq(event.clubId, c.id)),
@@ -56,6 +59,7 @@ dashboardRouter.get(
 					id: c.id,
 					name: c.name,
 					logo: c.logo,
+					membershipRole: membership?.role ?? "USER",
 					events: upcomingEvents,
 					_count: {
 						members: Number(membersCount[0]?.count || 0),
@@ -82,6 +86,7 @@ dashboardRouter.get(
 							id: z.string(),
 							name: z.string(),
 							logo: z.string().nullable(),
+							membershipRole: z.enum(["USER", "MANAGER", "CLUB_OWNER"]),
 							events: z.array(
 								z.object({
 									id: z.string(),

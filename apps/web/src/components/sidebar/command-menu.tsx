@@ -37,13 +37,13 @@ import {
 } from "@/components/ui/command";
 import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 interface CommandMenuProps {
 	clubs: DashboardClubs;
-	user: User & { managedClubs: string[]; role?: string | null | undefined };
+	user: User & { role?: string | null | undefined };
 }
 
 export function CommandMenu({ clubs, user }: CommandMenuProps) {
@@ -130,7 +130,17 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 	}
 
 	const appItems = useAppNavigationItems(user.role === "admin", 0);
-	const clubItems = useClubsNavigationItems(clubs, (clubId) => user?.managedClubs?.includes(clubId) ?? false, true);
+	const clubItems = useClubsNavigationItems(
+		clubs,
+		(clubId) => {
+			const club = clubs.find((c) => c.id === clubId);
+			if (!club?.membershipRole) {
+				return false;
+			}
+			return club.membershipRole === "MANAGER" || club.membershipRole === "CLUB_OWNER";
+		},
+		true,
+	);
 
 	const allItems = useMemo(() => {
 		const flatAppItems = flattenNavigationItems(appItems);

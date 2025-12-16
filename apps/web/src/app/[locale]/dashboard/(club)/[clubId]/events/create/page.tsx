@@ -1,7 +1,8 @@
 import { parse as parseDateFns } from "date-fns";
 import { notFound } from "next/navigation";
 import CreateEventForm from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.form";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 
 type EventResponse = ApiResponse<"/api/events/{id}", "get">;
@@ -11,14 +12,27 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const params = await props.params;
 	const user = await isAuthenticated();
 
-	if (!user?.managedClubs.some((club) => club === params.clubId)) {
+	if (!user) {
+		return notFound();
+	}
+
+	const { data: membershipData } = await apiServer.GET("/api/clubs/{id}/membership", {
+		params: {
+			path: { id: params.clubId },
+		},
+	});
+
+	const role = membershipData?.membership?.role;
+	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
+
+	if (!isManager) {
 		return notFound();
 	}
 
 	let existingEvent: EventResponse | null = null;
 
 	if (searchParams?.id) {
-		const { data } = await apiClient.GET("/api/events/{id}", {
+		const { data } = await apiServer.GET("/api/events/{id}", {
 			params: {
 				path: { id: searchParams.id as string },
 			},
@@ -26,7 +40,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		existingEvent = data ?? null;
 	}
 
-	const { data: rulesData } = await apiClient.GET("/api/clubs/{id}/rules", {
+	const { data: rulesData } = await apiServer.GET("/api/clubs/{id}/rules", {
 		params: {
 			path: { id: params.clubId },
 		},

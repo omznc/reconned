@@ -15068,6 +15068,8 @@ export interface operations {
 							id: string;
 							name: string;
 							logo: string | null;
+							/** @enum {string} */
+							membershipRole: "USER" | "MANAGER" | "CLUB_OWNER";
 							events: {
 								id: string;
 								name: string;

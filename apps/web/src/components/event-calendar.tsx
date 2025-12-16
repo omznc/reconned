@@ -39,15 +39,21 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 type Event = ApiResponse<"/api/events/calendar", "get">["events"][number];
 
+type ManagedClub = {
+	id: string;
+	name: string | null;
+	membershipRole?: "USER" | "MANAGER" | "CLUB_OWNER";
+};
+
 interface EventCalendarProps {
 	events: Event[];
-	managedClubs?: ApiResponse<"/api/clubs/managed", "get">["clubs"];
+	managedClubs?: ManagedClub[];
 }
 
 type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "sep" | "oct" | "nov" | "dec";
@@ -365,26 +371,19 @@ export function EventCalendar(props: EventCalendarProps) {
 					))}
 
 					{weeks.map((week, weekIndex) => {
-						const weekEvents = props.events.filter((event) =>
-							week.some((day) =>
-								getEventsForDay(day).includes({
-									...event,
-									dateStart: new Date(event.dateStart),
-									dateEnd: event.dateEnd ? new Date(event.dateEnd) : null,
-									dateRegistrationsOpen: new Date(event.dateRegistrationsOpen),
-									dateRegistrationsClose: new Date(event.dateRegistrationsClose),
-								}),
-							),
-						);
-						const { positions: eventPositions, maxLayer } = getEventPositions(
-							weekEvents.map((event) => ({
-								...event,
-								dateStart: new Date(event.dateStart),
-								dateEnd: event.dateEnd ? new Date(event.dateEnd) : null,
-								dateRegistrationsOpen: new Date(event.dateRegistrationsOpen),
-								dateRegistrationsClose: new Date(event.dateRegistrationsClose),
-							})),
-						);
+						const weekEvents = eventsWithParsedDates.filter((event) => {
+							for (const day of week) {
+								const eventsForDay = getEventsForDay(day);
+								for (const dayEvent of eventsForDay) {
+									if (dayEvent.id === event.id) {
+										return true;
+									}
+								}
+							}
+							return false;
+						});
+
+						const { positions: eventPositions, maxLayer } = getEventPositions(weekEvents);
 						const weekHeight = Math.max(8, (maxLayer + 1) * 2); // 8rem minimum, 2rem per layer
 						const isLastWeek = weekIndex === weeks.length - 1;
 

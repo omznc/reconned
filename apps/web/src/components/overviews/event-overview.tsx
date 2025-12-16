@@ -12,7 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
-import type { ClubRule, Event } from "@/lib/api-type-helpers";
+import apiServer from "@/lib/api/api";
+import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { cn } from "@/lib/utils";
@@ -30,11 +31,25 @@ interface EventOverviewProps {
 export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	const t = await getExtracted();
 	const user = await isAuthenticated();
-	const canEdit = user?.managedClubs.some((club) => club === clubId);
-	const [analyticsId, analyticsSlug] = await Promise.all([
+	const membershipPromise =
+		user && clubId
+			? apiServer.GET("/api/clubs/{id}/membership", {
+					params: {
+						path: {
+							id: clubId,
+						},
+					},
+				})
+			: Promise.resolve({ data: null, error: null });
+
+	const [analyticsId, analyticsSlug, membershipResult] = await Promise.all([
 		getPageViews(`/events/${event.id}`),
 		getPageViews(`/events/${event.slug}`),
+		membershipPromise,
 	]);
+
+	const role = membershipResult.data?.membership?.role;
+	const canEdit = !!clubId && !!user && (role === "MANAGER" || role === "CLUB_OWNER");
 	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const mapSnapshot = normalizeMapData(event.mapData);
 	const hasMap = snapshotHasData(mapSnapshot);

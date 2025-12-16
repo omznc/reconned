@@ -32,7 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
@@ -43,23 +43,18 @@ export default async function Home(props: PageProps<"/[locale]">) {
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
 
-	const managedClubs = user
-		? (async () => {
-				const { data, error } = await apiClient.GET("/api/clubs/managed");
-				if (error || !data) {
-					return [];
-				}
-				return data.clubs;
-			})()
-		: Promise.resolve([]);
-
 	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 
-	const [managedClubsResult, calendarEventsResult, upcomingEventsResult] = await Promise.all([
-		managedClubs,
-		apiClient.GET("/api/events/calendar", {
+	const [dashboardClubsResult, calendarEventsResult, upcomingEventsResult] = await Promise.all([
+		user
+			? apiServer.GET("/api/dashboard/clubs")
+			: Promise.resolve({
+					data: null,
+					error: null,
+				}),
+		apiServer.GET("/api/events/calendar", {
 			params: {
 				query: {
 					startDate: startDate.toISOString(),
@@ -67,7 +62,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 				},
 			},
 		}),
-		apiClient.GET("/api/events/upcoming", {
+		apiServer.GET("/api/events/upcoming", {
 			params: {
 				query: {
 					limit: 3,
@@ -103,6 +98,13 @@ export default async function Home(props: PageProps<"/[locale]">) {
 				}));
 
 	const t = await getExtracted();
+
+	const managedClubs =
+		dashboardClubsResult.error || !dashboardClubsResult.data
+			? []
+			: dashboardClubsResult.data.clubs.filter(
+					(club) => club.membershipRole === "MANAGER" || club.membershipRole === "CLUB_OWNER",
+				);
 
 	return (
 		<>
@@ -353,7 +355,15 @@ export default async function Home(props: PageProps<"/[locale]">) {
 				</div>
 				<EventCalendar
 					events={events}
-					managedClubs={managedClubsResult.length > 0 ? managedClubsResult : undefined}
+					managedClubs={
+						managedClubs.length > 0
+							? managedClubs.map((club) => ({
+									id: club.id,
+									name: club.name,
+									membershipRole: club.membershipRole,
+								}))
+							: undefined
+					}
 				/>
 			</div>
 		</>

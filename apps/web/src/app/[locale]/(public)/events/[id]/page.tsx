@@ -5,7 +5,7 @@ import { getExtracted, getLocale } from "next-intl/server";
 import type { SportsEvent, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const params = await props.params;
 
-	const { data: eventData, error: eventError } = await apiClient.GET("/api/events/{id}", {
+	const { data: eventData, error: eventError } = await apiServer.GET("/api/events/{id}", {
 		params: {
 			path: {
 				id: params.id,
@@ -26,7 +26,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		notFound();
 	}
 
-	const { data: rulesData } = await apiClient.GET("/api/events/{id}/rules", {
+	const { data: rulesData } = await apiServer.GET("/api/events/{id}/rules", {
 		params: {
 			path: {
 				id: eventData.event.id,
@@ -34,7 +34,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		},
 	});
 
-	const { data: registrationsCountData } = await apiClient.GET("/api/events/{id}/registrations/count", {
+	const { data: registrationsCountData } = await apiServer.GET("/api/events/{id}/registrations/count", {
 		params: {
 			path: {
 				id: eventData.event.id,
@@ -133,7 +133,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
 	const t = await getExtracted();
 
-	const { data, error } = await apiClient.GET("/api/events/{id}", {
+	const { data, error } = await apiServer.GET("/api/events/{id}", {
 		params: {
 			path: {
 				id: params.id,

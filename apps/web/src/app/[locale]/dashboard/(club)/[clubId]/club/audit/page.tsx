@@ -3,7 +3,7 @@ import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 
 export async function generateMetadata() {
 	const t = await getExtracted();
@@ -21,7 +21,7 @@ async function AuditLogsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubI
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const { data, error } = await apiClient.GET("/api/clubs/{id}/audit-logs", {
+	const { data, error } = await apiServer.GET("/api/clubs/{id}/audit-logs", {
 		params: {
 			path: { id: clubId },
 			query: {

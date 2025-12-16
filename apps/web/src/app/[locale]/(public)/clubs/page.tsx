@@ -5,7 +5,7 @@ import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
 import { VerifiedClubIcon } from "@/components/icons";
 import JsonLdScript from "@/components/json-ld-script";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	const t = await getExtracted();
 	const page = Number(searchParams.page) || 1;
 
-	const { data, error } = await apiClient.GET("/api/clubs", {
+	const { data, error } = await apiServer.GET("/api/clubs", {
 		params: {
 			query: {
 				page: String(page),

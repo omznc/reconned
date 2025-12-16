@@ -16,7 +16,7 @@ const baseReviewSchema = createSelectSchema(review);
 
 utilsRouter.get(
 	"/api/search",
-	async ({ query, response }) => {
+	async ({ query, response, context }) => {
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 		const search = query?.search || "";
@@ -106,7 +106,7 @@ utilsRouter.get(
 		if (includeUsers) {
 			const userWhereConditions = [eq(user.isPrivate, false)];
 			if (search) {
-				const searchCondition = or(ilike(user.name, `%${search}%`), ilike(user.email, `%${search}%`));
+				const searchCondition = ilike(user.name, `%${search}%`);
 				if (searchCondition) {
 					userWhereConditions.push(searchCondition);
 				}
@@ -114,10 +114,16 @@ utilsRouter.get(
 			const userWhere = and(...userWhereConditions);
 
 			const usersData = await db
-				.select()
+				.select({
+					id: user.id,
+					name: user.name,
+					slug: user.slug,
+					image: user.image,
+					callsign: user.callsign,
+				})
 				.from(user)
 				.where(userWhere)
-				.orderBy(user.role, desc(user.createdAt))
+				.orderBy(desc(user.createdAt))
 				.limit(1000);
 
 			const usersWithMemberships = await Promise.all(
@@ -169,15 +175,11 @@ utilsRouter.get(
 				let relevanceScore = 0;
 				if (search) {
 					const nameMatch = user.name?.toLowerCase().includes(search.toLowerCase());
-					const emailMatch = user.email?.toLowerCase().includes(search.toLowerCase());
 					if (nameMatch) {
 						relevanceScore += 10;
 						if (user.name?.toLowerCase().startsWith(search.toLowerCase())) {
 							relevanceScore += 5;
 						}
-					}
-					if (emailMatch) {
-						relevanceScore += 3;
 					}
 				} else {
 					relevanceScore = 1;
@@ -186,22 +188,65 @@ utilsRouter.get(
 				allItems.push({
 					type: "user",
 					id: user.id,
-					name: user.name || user.email || "",
+					name: user.name || "",
 					relevanceScore,
-					data: user as z.infer<typeof baseUserSchema>,
+					data: {
+						id: user.id,
+						name: user.name,
+						slug: user.slug,
+						image: user.image,
+						callsign: user.callsign,
+					},
 				});
 			}
 		}
 
 		if (includeEvents) {
-			const eventWhereConditions = [eq(event.isPrivate, false)];
+			const eventWhereConditions = [];
 			if (search) {
 				const searchCondition = or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`));
 				if (searchCondition) {
 					eventWhereConditions.push(searchCondition);
 				}
 			}
-			const eventWhere = and(...eventWhereConditions);
+
+			const isAdmin = context.isAdmin;
+			const requestingUserId = context.user?.id;
+
+			const publicClubCondition = sql`
+				EXISTS (
+					SELECT 1
+					FROM "Club" c
+					WHERE c."id" = ${event.clubId}
+					AND c."isPrivate" = false
+				)
+			`;
+
+			if (!requestingUserId || !context.user) {
+				eventWhereConditions.push(eq(event.isPrivate, false));
+				eventWhereConditions.push(publicClubCondition);
+			} else if (!isAdmin) {
+				const userClubMemberships = await db
+					.select({ clubId: clubMembership.clubId })
+					.from(clubMembership)
+					.where(eq(clubMembership.userId, requestingUserId));
+
+				const userClubIds = userClubMemberships.map((m) => m.clubId);
+
+				if (userClubIds.length > 0) {
+					eventWhereConditions.push(
+						or(
+							and(eq(event.isPrivate, false), publicClubCondition),
+							sql`${event.clubId} = ANY(${userClubIds})`,
+						),
+					);
+				} else {
+					eventWhereConditions.push(eq(event.isPrivate, false));
+					eventWhereConditions.push(publicClubCondition);
+				}
+			}
+
+			const eventWhere = eventWhereConditions.length > 0 ? and(...eventWhereConditions) : undefined;
 
 			const eventsData = await db.select().from(event).where(eventWhere).orderBy(event.dateStart).limit(1000);
 

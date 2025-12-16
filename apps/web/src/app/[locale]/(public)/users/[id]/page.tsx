@@ -4,14 +4,14 @@ import { getExtracted, getLocale } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
 
-	const { data: user, error } = await apiClient.GET("/api/users/{id}/profile", {
+	const { data: user, error } = await apiServer.GET("/api/users/{id}/profile", {
 		params: {
 			path: {
 				id: params.id,
@@ -81,7 +81,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 	const t = await getExtracted();
 	const locale = await getLocale();
 
-	const { data: user, error } = await apiClient.GET("/api/users/{id}/profile", {
+	const { data: user, error } = await apiServer.GET("/api/users/{id}/profile", {
 		params: {
 			path: {
 				id: params.id,

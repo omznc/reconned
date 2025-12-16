@@ -4,7 +4,8 @@ import { PurchasesTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/sp
 import { AddPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.form";
 import { ErrorPage } from "@/components/error-page";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 
 type PurchasesResponse = ApiResponse<"/api/clubs/{id}/purchases", "get">;
@@ -16,7 +17,7 @@ export async function SpendingPageFetcher(props: PageProps<"/[locale]/dashboard/
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
-	const { data } = await apiClient.GET("/api/clubs/{id}/purchases", {
+	const { data } = await apiServer.GET("/api/clubs/{id}/purchases", {
 		params: {
 			path: {
 				id: clubId,

@@ -2,7 +2,7 @@
 
 import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
 import { useIsAuthenticated } from "@/lib/auth-client";
 
 type StyleType = "sharp" | "relaxed";
@@ -19,12 +19,33 @@ export function StyleProvider({ children, initial }: { children: ReactNode; init
 	const { user } = useIsAuthenticated();
 
 	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		const stored = window.localStorage.getItem("reconned-style");
+		if (stored === "sharp" || stored === "relaxed") {
+			if (stored !== style) {
+				setStyleState(stored);
+				applyStyle(stored);
+				return;
+			}
+		}
+
+		applyStyle(style);
+	}, []);
+
+	useEffect(() => {
 		applyStyle(style);
 	}, [style]);
 
 	const setStyle = (newStyle: StyleType) => {
 		setStyleState(newStyle);
 		applyStyle(newStyle);
+
+		if (typeof window !== "undefined") {
+			window.localStorage.setItem("reconned-style", newStyle);
+		}
 
 		if (!user?.id) {
 			return;

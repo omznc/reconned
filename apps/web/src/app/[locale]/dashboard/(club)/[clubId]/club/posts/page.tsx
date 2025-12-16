@@ -1,5 +1,6 @@
 import { PostsForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/posts/_components/posts.form";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type ClubPost = ApiResponse<"/api/clubs/{id}/posts/{postId}", "get">;
 
@@ -10,7 +11,7 @@ export default async function Page({ params, searchParams }: PageProps<"/[locale
 	let editingPost: ClubPost | null = null;
 
 	if (postId) {
-		const { data } = await apiClient.GET("/api/clubs/{id}/posts/{postId}", {
+		const { data } = await apiServer.GET("/api/clubs/{id}/posts/{postId}", {
 			params: {
 				path: {
 					id: clubId,

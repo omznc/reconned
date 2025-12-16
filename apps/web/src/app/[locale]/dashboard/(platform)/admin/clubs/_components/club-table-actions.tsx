@@ -3,11 +3,11 @@
 import { BanIcon, CheckCircle, TrashIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { clubAdminAction } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club.actions";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
 
@@ -36,11 +36,30 @@ export function ClubActions({ club }: { club: AdminClub }) {
 		}
 
 		try {
-			await clubAdminAction({
-				clubId: club.id,
-				action: action === "ban" ? (club.banned ? "unban" : "ban") : "remove",
-			});
-			// Optionally toast success message or refresh data
+			if (action === "ban") {
+				const path = club.banned ? "/api/admin/clubs/{id}/unban" : "/api/admin/clubs/{id}/ban";
+				const { error } = await apiClient.PUT(path, {
+					params: {
+						path: {
+							id: club.id,
+						},
+					},
+				});
+				if (error) {
+					throw new Error(error.error ?? "Greška prilikom izmjene statusa kluba.");
+				}
+			} else {
+				const { error } = await apiClient.DELETE("/api/admin/clubs/{id}", {
+					params: {
+						path: {
+							id: club.id,
+						},
+					},
+				});
+				if (error) {
+					throw new Error(error.error ?? "Greška prilikom brisanja kluba.");
+				}
+			}
 		} catch {
 			toast.error("Došlo je do greške prilikom izvršavanja akcije.");
 		} finally {

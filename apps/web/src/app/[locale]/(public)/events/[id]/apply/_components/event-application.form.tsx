@@ -17,22 +17,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Club, ClubRule, Event } from "@/lib/api-type-helpers";
+import type { Club, ClubRule, Event } from "@/lib/api/api-type-helpers";
 import "@/components/editor/editor.css";
 
 import debounce from "lodash/debounce";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import {
-	deleteRegistration,
-	submitEventApplication,
-} from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
-import { cn, isValidEmail } from "@/lib/utils"; // Add this utility function if not exists
+import apiClient from "@/lib/api/api.client";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { cn, isValidEmail } from "@/lib/utils";
 
 interface EventApplicationProps {
 	existingApplication: ApiResponse<"/api/events/{id}/apply-data", "get">["existingRegistration"];
@@ -118,10 +115,30 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	const onSubmit = async (data: EventApplicationSchemaType) => {
 		toast.promise(
-			submitEventApplication({
-				...data,
-				eventId: event.id,
-			}),
+			(async () => {
+				const { error } = await apiClient.POST("/api/events/{id}/registrations", {
+					params: {
+						path: {
+							id: event.id,
+						},
+					},
+					body: {
+						type: data.type,
+						paymentMethod: data.paymentMethod,
+						invitedUsers: data.invitedUsers.map((user) => ({
+							id: user.id,
+						})),
+						invitedUsersNotOnApp: data.invitedUsersNotOnApp.map((user) => ({
+							name: user.name,
+							email: user.email,
+						})),
+					},
+				});
+
+				if (error) {
+					throw new Error(error.error ?? t("An error occurred while applying"));
+				}
+			})(),
 			{
 				loading: t("Submitting application..."),
 				success: () => {
@@ -241,15 +258,30 @@ export function EventApplicationForm({ existingApplication, event, user, current
 		);
 
 		if (confirm) {
-			toast.promise(deleteRegistration({ eventId: event.id }), {
-				loading: t("Deleting application..."),
-				success: () => {
-					router.refresh();
-					router.push(`/events/${event.id}`);
-					return t("Successfully deleted application!");
+			toast.promise(
+				(async () => {
+					const { error } = await apiClient.DELETE("/api/events/{id}/registrations", {
+						params: {
+							path: {
+								id: event.id,
+							},
+						},
+					});
+
+					if (error) {
+						throw new Error(error.error ?? t("An error occurred while deleting application"));
+					}
+				})(),
+				{
+					loading: t("Deleting application..."),
+					success: () => {
+						router.refresh();
+						router.push(`/events/${event.id}`);
+						return t("Successfully deleted application!");
+					},
+					error: t("An error occurred while deleting application"),
 				},
-				error: t("An error occurred while deleting application"),
-			});
+			);
 		}
 	};
 

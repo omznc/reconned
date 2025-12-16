@@ -1,5 +1,5 @@
 import { randomUUIDv7 } from "bun";
-import { and, count, desc, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, lte, or, type SQL, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import {
@@ -34,31 +34,46 @@ eventsRouter.get(
 		const whereConditions = [];
 
 		if (search) {
-			const searchCondition = or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`));
-			if (searchCondition) {
-				whereConditions.push(searchCondition);
-			}
+			whereConditions.push(or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`)));
 		}
+
+		const isAdmin = context.isAdmin;
+		const requestingUserId = context.user?.id;
 
 		if (isPrivateFilter !== null && isPrivateFilter !== undefined) {
 			whereConditions.push(eq(event.isPrivate, isPrivateFilter === "true"));
-		} else if (!context.user) {
+		}
+
+		const publicClubCondition = sql`
+			EXISTS (
+				SELECT 1
+				FROM "Club" c
+				WHERE c."id" = ${event.clubId}
+				AND c."isPrivate" = false
+			)
+		`;
+
+		if (!requestingUserId || !context.user) {
 			whereConditions.push(eq(event.isPrivate, false));
-		} else {
+			whereConditions.push(publicClubCondition);
+		} else if (!isAdmin) {
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, context.user.id));
+				.where(eq(clubMembership.userId, requestingUserId));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
 			if (userClubIds.length > 0) {
-				const privacyCondition = or(eq(event.isPrivate, false), sql`${event.clubId} = ANY(${userClubIds})`);
-				if (privacyCondition) {
-					whereConditions.push(privacyCondition);
-				}
+				whereConditions.push(
+					or(
+						and(eq(event.isPrivate, false), publicClubCondition),
+						sql`${event.clubId} = ANY(${userClubIds})`,
+					),
+				);
 			} else {
 				whereConditions.push(eq(event.isPrivate, false));
+				whereConditions.push(publicClubCondition);
 			}
 		}
 
@@ -120,23 +135,39 @@ eventsRouter.get(
 
 		const whereConditions = [gte(event.dateStart, new Date().toISOString())];
 
-		if (!context.user) {
+		const isAdmin = context.isAdmin;
+		const requestingUserId = context.user?.id;
+
+		const publicClubCondition = sql`
+			EXISTS (
+				SELECT 1
+				FROM "Club" c
+				WHERE c."id" = ${event.clubId}
+				AND c."isPrivate" = false
+			)
+		`;
+
+		if (!requestingUserId || !context.user) {
 			whereConditions.push(eq(event.isPrivate, false));
-		} else {
+			whereConditions.push(publicClubCondition);
+		} else if (!isAdmin) {
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, context.user.id));
+				.where(eq(clubMembership.userId, requestingUserId));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
 			if (userClubIds.length > 0) {
-				const privacyCondition = or(eq(event.isPrivate, false), sql`${event.clubId} = ANY(${userClubIds})`);
-				if (privacyCondition) {
-					whereConditions.push(privacyCondition);
-				}
+				whereConditions.push(
+					or(
+						and(eq(event.isPrivate, false), publicClubCondition),
+						sql`${event.clubId} = ANY(${userClubIds})`,
+					) as SQL,
+				);
 			} else {
 				whereConditions.push(eq(event.isPrivate, false));
+				whereConditions.push(publicClubCondition);
 			}
 		}
 
@@ -211,17 +242,38 @@ eventsRouter.get(
 		}
 
 		const eventRecord = eventData[0];
+		const clubData = await db
+			.select({
+				id: club.id,
+				name: club.name,
+				slug: club.slug,
+				logo: club.logo,
+				verified: club.verified,
+				isPrivate: club.isPrivate,
+			})
+			.from(club)
+			.where(eq(club.id, eventRecord.clubId))
+			.limit(1);
 
-		// Hide private events from non-members
-		if (eventRecord.isPrivate) {
-			if (!context.user) {
+		if (!clubData[0]) {
+			throw apiError.notFound("Event not found");
+		}
+
+		const clubRecord = clubData[0];
+
+		const isAdmin = context.isAdmin;
+		const requestingUserId = context.user?.id;
+		const isEffectivePrivate = eventRecord.isPrivate || clubRecord.isPrivate;
+
+		if (isEffectivePrivate && !isAdmin) {
+			if (!requestingUserId || !context.user) {
 				throw apiError.notFound("Event not found");
 			}
 
 			const userMembership = await db
 				.select()
 				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
+				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, requestingUserId)))
 				.limit(1);
 
 			if (!userMembership[0]) {
@@ -234,25 +286,19 @@ eventsRouter.get(
 			.from(eventRegistration)
 			.where(eq(eventRegistration.eventId, eventRecord.id));
 
-		const clubData = await db
-			.select({
-				id: club.id,
-				name: club.name,
-				slug: club.slug,
-				logo: club.logo,
-				verified: club.verified,
-			})
-			.from(club)
-			.where(eq(club.id, eventRecord.clubId))
-			.limit(1);
-
 		return response.json({
 			event: {
 				...eventRecord,
 				gearRequirements: eventRecord.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
 				mapData: eventRecord.mapData as z.infer<typeof baseEventSchema>["mapData"],
 			},
-			club: clubData[0] || null,
+			club: {
+				id: clubRecord.id,
+				name: clubRecord.name,
+				slug: clubRecord.slug,
+				logo: clubRecord.logo,
+				verified: clubRecord.verified,
+			},
 			registrationCount: Number(registrationCount[0]?.count || 0),
 		});
 	},
@@ -378,23 +424,39 @@ eventsRouter.get(
 
 		const whereConditions = [gte(event.dateStart, startDate), lte(event.dateStart, endDate)];
 
-		if (!context.user) {
+		const isAdmin = context.isAdmin;
+		const requestingUserId = context.user?.id;
+
+		const publicClubCondition = sql`
+			EXISTS (
+				SELECT 1
+				FROM "Club" c
+				WHERE c."id" = ${event.clubId}
+				AND c."isPrivate" = false
+			)
+		`;
+
+		if (!requestingUserId || !context.user) {
 			whereConditions.push(eq(event.isPrivate, false));
-		} else {
+			whereConditions.push(publicClubCondition);
+		} else if (!isAdmin) {
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, context.user.id));
+				.where(eq(clubMembership.userId, requestingUserId));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
 			if (userClubIds.length > 0) {
-				const privacyCondition = or(eq(event.isPrivate, false), sql`${event.clubId} = ANY(${userClubIds})`);
-				if (privacyCondition) {
-					whereConditions.push(privacyCondition);
-				}
+				whereConditions.push(
+					or(
+						and(eq(event.isPrivate, false), publicClubCondition),
+						sql`${event.clubId} = ANY(${userClubIds})`,
+					) as SQL,
+				);
 			} else {
 				whereConditions.push(eq(event.isPrivate, false));
+				whereConditions.push(publicClubCondition);
 			}
 		}
 

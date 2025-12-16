@@ -6,7 +6,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { CommandMenu, CommandMenuProvider } from "@/components/sidebar/command-menu";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { redirect } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 interface DashboardLayoutProps {
@@ -19,7 +19,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		return redirect({ href: "/login", locale });
 	}
 
-	const { data: clubsData, error: clubsError } = await apiClient.GET("/api/dashboard/clubs");
+	const { data: clubsData, error: clubsError } = await apiServer.GET("/api/dashboard/clubs");
 
 	if (clubsError || !clubsData) {
 		return redirect({ href: "/login", locale });
@@ -41,10 +41,10 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		events: club.events,
 	}));
 
-	const { data: invitesCountData, error: invitesCountError } = await apiClient.GET("/api/users/invites/count");
+	const { data: invitesCountData, error: invitesCountError } = await apiServer.GET("/api/users/invites/count");
 	const invitesCountForUser = invitesCountError || !invitesCountData ? 0 : (invitesCountData.count ?? 0);
 
-	const { data: inviteRequestsData, error: inviteRequestsError } = await apiClient.GET(
+	const { data: inviteRequestsData, error: inviteRequestsError } = await apiServer.GET(
 		"/api/dashboard/invite-requests-count",
 	);
 

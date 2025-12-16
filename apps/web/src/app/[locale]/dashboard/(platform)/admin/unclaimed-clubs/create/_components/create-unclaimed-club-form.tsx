@@ -9,13 +9,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { createUnclaimedClubSchema } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-club.schema";
-import {
-	createUnclaimedClub,
-	getUnclaimedClubHeaderImageUploadUrl,
-	getUnclaimedClubLogoUploadUrl,
-	updateUnclaimedClubHeaderImage,
-	updateUnclaimedClubLogo,
-} from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
 import { Button } from "@/components/ui/button";
@@ -30,7 +23,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
@@ -56,19 +50,25 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				throw new ActionError("Must create club first");
 			}
 
-			const resp = await getUnclaimedClubLogoUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
+			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/logo/upload-url", {
+				params: {
+					path: {
+						id: currentClubId,
+					},
 				},
-				clubId: currentClubId,
+				body: {
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -77,7 +77,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles: [],
@@ -90,19 +90,25 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				throw new ActionError("Must create club first");
 			}
 
-			const resp = await getUnclaimedClubHeaderImageUploadUrl({
-				file: {
-					type: file.type,
-					size: file.size,
+			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/header-image/upload-url", {
+				params: {
+					path: {
+						id: currentClubId,
+					},
 				},
-				clubId: currentClubId,
+				body: {
+					file: {
+						type: file.type,
+						size: file.size,
+					},
+				},
 			});
 
-			if (!resp?.data?.url) {
+			if (error || !data?.url) {
 				throw new ActionError("Failed to get upload URL");
 			}
 
-			await fetch(resp.data?.url, {
+			await fetch(data.url, {
 				method: "PUT",
 				body: file,
 				headers: {
@@ -111,7 +117,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				},
 			});
 
-			return resp.data.cdnUrl;
+			return data.cdnUrl;
 		},
 		maxFiles: 1,
 		initialFiles: [],
@@ -242,28 +248,30 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 	async function onSubmit(values: z.infer<typeof createUnclaimedClubSchema>) {
 		setIsLoading(true);
 		try {
-			const result = await createUnclaimedClub({
-				name: values.name,
-				countryId: values.countryId,
-				location: values.location,
-				description: values.description,
-				dateFounded: values.dateFounded,
-				isAllied: values.isAllied,
-				isPrivate: values.isPrivate,
-				isPrivateStats: values.isPrivateStats,
-				contactPhone: values.contactPhone,
-				contactEmail: values.contactEmail,
-				slug: values.slug,
-				latitude: values.latitude,
-				longitude: values.longitude,
-				website: values.website,
+			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs", {
+				body: {
+					name: values.name,
+					countryId: values.countryId,
+					location: values.location,
+					description: values.description,
+					dateFounded: values.dateFounded ? values.dateFounded.toISOString() : undefined,
+					isAllied: values.isAllied,
+					isPrivate: values.isPrivate,
+					isPrivateStats: values.isPrivateStats,
+					contactPhone: values.contactPhone,
+					contactEmail: values.contactEmail,
+					slug: values.slug,
+					latitude: values.latitude,
+					longitude: values.longitude,
+					website: values.website,
+				},
 			});
 
-			if (!result?.data?.id) {
+			if (error || !data?.id) {
 				throw new ActionError();
 			}
 
-			const newClubId = result.data.id;
+			const newClubId = data.id;
 			clubIdRef.current = newClubId;
 
 			const filesToUpload = logoUpload.files.filter((f) => f.file && !f.isExisting);
@@ -271,9 +279,15 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				const uploadedUrls = await logoUpload.uploadAllFiles();
 				const logoUrl = uploadedUrls[0];
 				if (logoUrl) {
-					await updateUnclaimedClubLogo({
-						clubId: newClubId,
-						logo: logoUrl,
+					await apiClient.PUT("/api/admin/unclaimed-clubs/{id}/logo", {
+						params: {
+							path: {
+								id: newClubId,
+							},
+						},
+						body: {
+							logo: logoUrl,
+						},
 					});
 				}
 			}
@@ -283,9 +297,15 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 				const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
 				const headerUrl = uploadedHeaderUrls[0];
 				if (headerUrl) {
-					await updateUnclaimedClubHeaderImage({
-						clubId: newClubId,
-						headerImage: headerUrl,
+					await apiClient.PUT("/api/admin/unclaimed-clubs/{id}/header-image", {
+						params: {
+							path: {
+								id: newClubId,
+							},
+						},
+						body: {
+							headerImage: headerUrl,
+						},
 					});
 				}
 			}

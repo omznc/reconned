@@ -98,7 +98,19 @@ publicRouter.get(
 				updatedAt: event.updatedAt,
 			})
 			.from(event)
-			.where(eq(event.isPrivate, false));
+			.where(
+				and(
+					eq(event.isPrivate, false),
+					sql`
+						EXISTS (
+							SELECT 1
+							FROM "Club" c
+							WHERE c."id" = ${event.clubId}
+							AND c."isPrivate" = false
+						)
+					`,
+				),
+			);
 
 		return response.json({ events });
 	},

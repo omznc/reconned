@@ -5,7 +5,7 @@ import { useExtracted } from "next-intl";
 import { useEffect } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
 import { Button } from "@/components/ui/button";
-import apiClient from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
 import { useIsAuthenticated } from "@/lib/auth-client";
 
 export function FontSwitcher() {

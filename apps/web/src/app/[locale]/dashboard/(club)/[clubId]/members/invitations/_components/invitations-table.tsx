@@ -9,7 +9,8 @@ import { GenericDataTable } from "@/components/generic-data-table";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ActionError } from "@/lib/action-error";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api/api.client.ts";
+import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { ClubInviteActions } from "./club-invite-actions.tsx";
 
 type Invites = ApiResponse<"/api/clubs/{id}/invites", "get">["invites"];

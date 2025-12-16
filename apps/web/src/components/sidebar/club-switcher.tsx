@@ -4,7 +4,7 @@ import { ChevronsUpDown, Plus, Square } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,25 +17,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { Link, useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 interface ClubSwitcherProps {
 	clubs: DashboardClubs;
-	user: { managedClubs: string[] };
 }
 
-export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
+export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 	const router = useRouter();
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const t = useExtracted();
 	const sidebar = useSidebar();
 
-	const activeClub = useMemo(() => clubs.find((club) => club.id === params.clubId), [clubs, params.clubId, clubId]);
-
 	const selectedClub = clubs.find((club) => club.id === clubId);
+	const selectedRole = selectedClub?.membershipRole;
 
 	// Auto-select first club if no club is selected and clubs exist
 	useEffect(() => {
@@ -99,7 +97,6 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild={true}>
 						<SidebarMenuButton
-							key={activeClub?.id}
 							size="lg"
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
@@ -118,19 +115,18 @@ export function ClubSwitcher({ clubs, user }: ClubSwitcherProps) {
 											<Square className="size-4" />
 										)}
 									</div>
-									{clubId ? (
-										<div className="grid flex-1 text-left text-sm leading-tight">
-											<span className="truncate font-semibold">{selectedClub?.name}</span>
-											<span className="truncate text-xs fade-in">
-												{user?.managedClubs?.includes(clubId) ? t("Manager") : t("Member")}
-											</span>
-										</div>
-									) : (
-										<div className="grid flex-1 text-left text-sm leading-tight">
-											<span className="truncate fade-in font-semibold">{t("Clubs")}</span>
-											<span className="truncate fade-in text-xs">{t("Select a club")}</span>
-										</div>
-									)}
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate font-semibold">{selectedClub?.name}</span>
+										<span className="truncate text-xs fade-in">
+											{
+												{
+													CLUB_OWNER: t("Owner"),
+													MANAGER: t("Manager"),
+													USER: t("Member"),
+												}[selectedRole ?? "USER"]
+											}
+										</span>
+									</div>
 								</>
 							) : (
 								<>

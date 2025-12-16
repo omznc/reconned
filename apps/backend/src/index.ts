@@ -113,7 +113,6 @@ async function handleRequest(request: Request): Promise<Response> {
 	};
 
 	const response = await mainRouter.handle(request, context, jsonResponse);
-	console.log(`${request.method} ${new URL(request.url).pathname} - ${response.status}`);
 	return addCORSHeaders(response, request, corsOrigins);
 }
 

@@ -26,7 +26,8 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ActionError } from "@/lib/action-error";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {

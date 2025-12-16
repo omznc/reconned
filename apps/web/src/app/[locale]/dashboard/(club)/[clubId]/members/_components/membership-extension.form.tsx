@@ -27,8 +27,8 @@ import {
 } from "@/components/ui/credenza";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import apiClient from "@/lib/api";
-import type { ClubMembership } from "@/lib/api-type-helpers";
+import apiClient from "@/lib/api/api.client";
+import type { ClubMembership } from "@/lib/api/api-type-helpers";
 
 interface MembershipExtensionFormProps {
 	clubId: string;

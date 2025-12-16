@@ -4,7 +4,7 @@ import { useExtracted } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import apiClient from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
 import { useIsAuthenticated } from "@/lib/auth-client";
 
 export function ThemeSwitcher() {

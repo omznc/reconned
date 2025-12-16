@@ -5,7 +5,7 @@ import { UserOverview } from "@/components/overviews/user-overview";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page() {
@@ -16,7 +16,7 @@ export default async function Page() {
 
 	const t = await getExtracted();
 
-	const { data: userFromDb, error } = await apiClient.GET("/api/users/{id}", {
+	const { data: userFromDb, error } = await apiServer.GET("/api/users/{id}", {
 		params: {
 			path: {
 				id: user.id,

@@ -4,7 +4,7 @@ import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type ClubEventsResponse = ApiResponse<"/api/clubs/{clubId}/events", "get">;
 type ClubEvent = ClubEventsResponse["events"][number];

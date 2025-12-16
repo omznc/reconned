@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 export interface NavItem {
 	title: string;

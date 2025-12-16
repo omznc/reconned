@@ -2,7 +2,7 @@ import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { MembersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/members-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members">) {
@@ -18,7 +18,7 @@ export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[
 	const user = await isAuthenticated();
 
 	// Fetch members from backend
-	const { data, error } = await apiClient.GET("/api/clubs/{id}/members", {
+	const { data, error } = await apiServer.GET("/api/clubs/{id}/members", {
 		params: {
 			path: { id: clubId },
 			query: {

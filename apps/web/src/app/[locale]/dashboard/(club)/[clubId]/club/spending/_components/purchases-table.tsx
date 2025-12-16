@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/navigation";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
-import type { ClubPurchase } from "@/lib/api-type-helpers";
+import apiClient from "@/lib/api/api.client";
+import type { ClubPurchase } from "@/lib/api/api-type-helpers";
 
 interface PurchasesTableProps {
 	purchases: ClubPurchase[];

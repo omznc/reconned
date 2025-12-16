@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { CreateUnclaimedClubForm } from "./_components/create-unclaimed-club-form";
 
 export default async function CreateUnclaimedClubPage() {
 	const t = await getExtracted();
-	const { data, error } = await apiClient.GET("/api/countries");
+	const { data, error } = await apiServer.GET("/api/countries");
 
 	if (error) {
 		notFound();

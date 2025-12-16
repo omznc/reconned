@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ClubOverview } from "@/components/overviews/club-overview";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 
 type ClubResponse = ApiResponse<"/api/clubs/{id}", "get">;
@@ -12,13 +13,22 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return notFound();
 	}
 
-	const { data } = await apiClient.GET("/api/clubs/{id}", {
-		params: {
-			path: {
-				id: params.clubId,
+	const [{ data }, { data: membershipData }] = await Promise.all([
+		apiServer.GET("/api/clubs/{id}", {
+			params: {
+				path: {
+					id: params.clubId,
+				},
 			},
-		},
-	});
+		}),
+		apiServer.GET("/api/clubs/{id}/membership", {
+			params: {
+				path: {
+					id: params.clubId,
+				},
+			},
+		}),
+	]);
 
 	const club = data as ClubResponse | undefined;
 
@@ -26,7 +36,16 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return notFound();
 	}
 
-	const isManager = user.managedClubs.includes(club.id) || Boolean(user.role === "admin");
+	const role = membershipData?.membership?.role;
+	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
+	const isMember = membershipData?.isMember ?? false;
 
-	return <ClubOverview club={club} isManager={isManager} isMember={true} currentUserMembership={null} />;
+	return (
+		<ClubOverview
+			club={club}
+			isManager={isManager}
+			isMember={isMember}
+			currentUserMembership={membershipData?.membership ?? null}
+		/>
+	);
 }

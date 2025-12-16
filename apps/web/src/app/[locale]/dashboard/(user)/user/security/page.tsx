@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { SecuritySettings } from "@/app/[locale]/dashboard/(user)/user/security/_components/security-settings";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 
@@ -11,7 +11,7 @@ export default async function Page() {
 		return notFound();
 	}
 
-	const { data: accountData, error } = await apiClient.GET("/api/users/{id}/account", {
+	const { data: accountData, error } = await apiServer.GET("/api/users/{id}/account", {
 		params: {
 			path: {
 				id: user.id,

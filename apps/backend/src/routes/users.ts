@@ -154,7 +154,11 @@ usersRouter.get(
 		const isAdmin = context.isAdmin;
 
 		const targetUser = await db
-			.select(selectSafeUserFields(requestingUserId, isAdmin, userId))
+			.select({
+				...selectSafeUserFields(requestingUserId, isAdmin, userId),
+				isPrivate: user.isPrivate,
+				id: user.id,
+			})
 			.from(user)
 			.where(or(eq(user.id, userId), eq(user.slug, userId)))
 			.limit(1);
@@ -164,6 +168,11 @@ usersRouter.get(
 		}
 
 		const u = targetUser[0];
+
+		const isSelf = requestingUserId && u.id === requestingUserId;
+		if (u.isPrivate && !isAdmin && !isSelf) {
+			throw apiError.notFound("User not found");
+		}
 
 		const memberships = await db
 			.select({
@@ -315,6 +324,14 @@ usersRouter.get(
 					ilike(user.callsign, `%${search}%`),
 				),
 			);
+		}
+
+		if (!isAdmin) {
+			if (requestingUserId) {
+				whereConditions.push(or(eq(user.isPrivate, false), eq(user.id, requestingUserId)));
+			} else {
+				whereConditions.push(eq(user.isPrivate, false));
+			}
 		}
 
 		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
@@ -752,10 +769,31 @@ usersRouter.delete(
 
 usersRouter.get(
 	"/api/users/:id/stats",
-	async ({ params, response }) => {
+	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
 			throw apiError.validation("User ID is required");
+		}
+
+		const requestingUserId = context.user?.id;
+		const isAdmin = context.isAdmin;
+
+		const targetUser = await db
+			.select({
+				id: user.id,
+				isPrivateStats: user.isPrivateStats,
+			})
+			.from(user)
+			.where(or(eq(user.id, userId), eq(user.slug, userId)))
+			.limit(1);
+
+		if (!targetUser[0]) {
+			throw apiError.notFound("User not found");
+		}
+
+		const isSelf = requestingUserId && targetUser[0].id === requestingUserId;
+		if (targetUser[0].isPrivateStats && !isAdmin && !isSelf) {
+			throw apiError.notFound("User not found");
 		}
 
 		const eventRegCount = await db

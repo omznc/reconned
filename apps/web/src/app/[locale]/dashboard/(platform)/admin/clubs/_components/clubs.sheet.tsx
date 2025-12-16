@@ -11,7 +11,7 @@ import {
 	CredenzaTitle,
 } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
 

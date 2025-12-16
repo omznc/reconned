@@ -1,11 +1,11 @@
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api.ts";
 import { RulesForm } from "./_components/rules.form.tsx";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/rules">) {
 	const params = await props.params;
 	const searchParams = await props.searchParams;
 
-	const { data } = await apiClient.GET("/api/clubs/{id}/rules", {
+	const { data } = await apiServer.GET("/api/clubs/{id}/rules", {
 		params: {
 			path: {
 				id: params.clubId,

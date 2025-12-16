@@ -4,11 +4,11 @@ import { Check, ChevronsUpDown, LoaderIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { assignClubOwner } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.actions";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRouter } from "@/i18n/navigation";
+import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
 interface AssignClubOwnerFormProps {
@@ -54,12 +54,18 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 
 		setIsLoading(true);
 		try {
-			const result = await assignClubOwner({
-				clubId,
-				userId: selectedUserId,
+			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/assign-owner", {
+				params: {
+					path: {
+						id: clubId,
+					},
+				},
+				body: {
+					userId: selectedUserId,
+				},
 			});
 
-			if (result?.data?.success) {
+			if (!error && data?.success) {
 				toast.success(t("Club owner assigned successfully"));
 				const params = new URLSearchParams(window.location.search);
 				params.delete("clubId");

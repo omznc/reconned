@@ -7,10 +7,11 @@
 		"apps/*"
 	],
 	"scripts": {
-		"dev": "bun run dev:backend & timeout 10 sh -c 'until curl -sf http://localhost:3002/api/openapi.json > /dev/null 2>&1; do sleep 0.5; done' && bun run dev:web",
+		"backend:wait": "sh -c \"until curl -sf http://localhost:3002/api/openapi.json > /dev/null 2>&1; do sleep 0.5; done\"",
+		"dev": "sh -c 'bun run dev:backend & BACK_PID=$!; bun run backend:wait; bun run dev:web; kill $BACK_PID 2>/dev/null || true'",
 		"dev:backend": "bun run --filter 'backend' dev",
 		"dev:web": "bun run --filter 'web' dev",
-		"build": "bun run --filter '*' build",
+		"build": "sh -c 'bun run dev:backend & BACK_PID=$!; bun run backend:wait; bun run --filter backend build; bun run --filter web build; kill $BACK_PID 2>/dev/null || true'",
 		"check": "bunx --bun @biomejs/biome check --write .",
 		"format": "bunx --bun @biomejs/biome format --write .",
 		"lint": "bunx biome lint --write .",

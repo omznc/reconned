@@ -8,7 +8,6 @@
 		"start": "next start",
 		"lighthouse": "bunx unlighthouse --site https://reconned.com --sitemaps https://reconned.com/sitemap.xml",
 		"api:generate-types": "curl -s \"${NEXT_PUBLIC_BACKEND_URL:-http://localhost:3002}/api/openapi.json\" | bunx openapi-typescript -o ./src/lib/api-types.ts",
-		"prebuild": "bun run api:generate-types",
 		"predev": "bun run api:generate-types",
 		"typecheck": "bunx tsc --noEmit"
 	},

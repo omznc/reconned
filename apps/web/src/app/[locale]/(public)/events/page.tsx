@@ -10,15 +10,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
-	const [locale] = await Promise.all([getLocale()]);
+	const locale = await getLocale();
 	const t = await getExtracted();
 
-	const { data, error } = await apiClient.GET("/api/events/upcoming", {
+	const { data, error } = await apiServer.GET("/api/events/upcoming", {
 		params: {
 			query: {
 				limit: 100,

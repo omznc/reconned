@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { EditClubForm } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/edit-club-form";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 
 type AdminUnclaimed = ApiResponse<"/api/admin/unclaimed-clubs/{id}", "get">;
@@ -23,12 +24,12 @@ export default async function EditUnclaimedClubPage(
 	}
 
 	const [clubResp, countriesResp] = await Promise.all([
-		apiClient.GET("/api/admin/unclaimed-clubs/{id}", {
+		apiServer.GET("/api/admin/unclaimed-clubs/{id}", {
 			params: {
 				path: { id: clubId as string },
 			},
 		}),
-		apiClient.GET("/api/countries"),
+		apiServer.GET("/api/countries"),
 	]);
 
 	const club = clubResp.data as AdminUnclaimed | undefined;

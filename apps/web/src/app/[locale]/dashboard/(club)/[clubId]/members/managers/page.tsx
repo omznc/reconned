@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { AddManagerForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.form";
 import { ManagersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/managers-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/managers">) {
@@ -20,7 +20,7 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 	}
 
 	// Check if user is a manager or owner of this club
-	const { data: clubData, error: clubError } = await apiClient.GET("/api/clubs/{id}", {
+	const { data: clubData, error: clubError } = await apiServer.GET("/api/clubs/{id}", {
 		params: { path: { id: params.clubId } },
 	});
 
@@ -29,7 +29,7 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 	}
 
 	// Verify user is a manager or owner
-	const { data: membershipData, error: membershipError } = await apiClient.GET("/api/clubs/{id}/membership", {
+	const { data: membershipData, error: membershipError } = await apiServer.GET("/api/clubs/{id}/membership", {
 		params: { path: { id: params.clubId } },
 	});
 
@@ -42,7 +42,7 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 	}
 
 	// Fetch managers from backend - use the members endpoint with role filter
-	const { data, error } = await apiClient.GET("/api/clubs/{id}/members", {
+	const { data, error } = await apiServer.GET("/api/clubs/{id}/members", {
 		params: {
 			path: { id: params.clubId },
 			query: {

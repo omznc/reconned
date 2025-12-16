@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getExtracted, getLocale } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
 import { Link, redirect } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 
@@ -18,7 +18,7 @@ export default async function DashboardPage() {
 		return redirect({ href: "/login", locale });
 	}
 
-	const { data: statsData, error: statsError } = await apiClient.GET("/api/users/{id}/stats", {
+	const { data: statsData, error: statsError } = await apiServer.GET("/api/users/{id}/stats", {
 		params: {
 			path: {
 				id: user.id,

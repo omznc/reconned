@@ -38,8 +38,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { Link, useRouter } from "@/i18n/navigation";
 import { ActionError } from "@/lib/action-error";
-import apiClient from "@/lib/api";
-import type { ClubRule, Event } from "@/lib/api-type-helpers";
+import apiClient from "@/lib/api/api.client";
+import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
 interface CreateEventFormProps {

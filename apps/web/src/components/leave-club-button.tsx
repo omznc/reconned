@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
-import apiClient from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
 interface LeaveClubButtonProps extends Omit<ButtonProps, "onClick"> {

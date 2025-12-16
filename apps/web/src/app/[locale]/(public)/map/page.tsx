@@ -3,12 +3,12 @@ import { getExtracted, getLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
 import JsonLdScript from "@/components/json-ld-script";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function MapPage() {
-	const { data, error } = await apiClient.GET("/api/clubs");
+	const { data, error } = await apiServer.GET("/api/clubs");
 
 	if (error) {
 		console.error("Error loading clubs:", error);

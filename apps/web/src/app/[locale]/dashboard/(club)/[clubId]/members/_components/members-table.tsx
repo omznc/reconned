@@ -13,8 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
-import apiClient from "@/lib/api";
-import type { ClubMembership } from "@/lib/api-type-helpers";
+import apiClient from "@/lib/api/api.client";
+import type { ClubMembership } from "@/lib/api/api-type-helpers";
 
 interface MembersTableProps {
 	members: (ClubMembership & {

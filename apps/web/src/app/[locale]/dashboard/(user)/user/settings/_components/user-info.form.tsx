@@ -20,7 +20,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { ActionError } from "@/lib/action-error";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api/api.client.ts";
+import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { addImageVersion } from "@/lib/utils";
 import { ImageCropDialog } from "./image-crop-dialog.tsx";
 

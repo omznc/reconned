@@ -8,7 +8,8 @@ import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/sea
 import { SearchResultCardSkeleton } from "@/app/[locale]/(public)/search/_components/search-result-card-skeleton";
 import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import apiClient, { type ApiResponse } from "@/lib/api";
+import apiClient from "@/lib/api/api.client";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 const ITEMS_PER_PAGE = 20;
 

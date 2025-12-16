@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { InvitationsForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.form";
 import { InvitationsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
-import apiClient from "@/lib/api";
+import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/invitations">) {
@@ -16,7 +16,7 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 	}
 
 	// Check if user is a manager or owner of this club
-	const { data: membershipData, error: membershipError } = await apiClient.GET("/api/clubs/{id}/membership", {
+	const { data: membershipData, error: membershipError } = await apiServer.GET("/api/clubs/{id}/membership", {
 		params: { path: { id: params.clubId } },
 	});
 
@@ -35,7 +35,7 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 			: 25;
 
 	// Fetch invitations from backend
-	const { data, error } = await apiClient.GET("/api/clubs/{id}/invites", {
+	const { data, error } = await apiServer.GET("/api/clubs/{id}/invites", {
 		params: {
 			path: { id: params.clubId },
 			query: {
