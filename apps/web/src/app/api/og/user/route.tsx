@@ -24,7 +24,7 @@ export const GET = withAxiom(async (request: Request) => {
 		return new Response("Invalid image URL", { status: 400 });
 	}
 
-	const logoUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-dark.svg`;
+	const logoUrl = `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-dark.svg`;
 
 	return new ImageResponse(
 		<div

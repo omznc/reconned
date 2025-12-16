@@ -26,9 +26,9 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const personSchema: WithContext<Person> = {
 		"@context": "https://schema.org",
 		"@type": "Person",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		name: user.name,
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug ?? user.id}`,
 		image: user.image || undefined,
 		description: user.bio || undefined,
 		address: user.location
@@ -43,7 +43,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 			.filter((membership) => membership.club)
 			.map((membership) => ({
 				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${membership.club.slug ?? membership.club.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${membership.club.slug ?? membership.club.id}`,
 				name: membership.club.name,
 				sport: "Airsoft",
 			})),
@@ -54,7 +54,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		},
 	};
 
-	const userUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/users/${user.slug ?? user.id}`;
+	const userUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug ?? user.id}`;
 	const profilePageSchema: WithContext<ProfilePage> = {
 		"@context": "https://schema.org",
 		"@type": "ProfilePage",
@@ -93,7 +93,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 		return notFound();
 	}
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/og/user`);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/user`);
 	ogUrl.searchParams.set("name", user.name);
 	if (user.bio) {
 		ogUrl.searchParams.set("bio", user.bio);
@@ -107,11 +107,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 
 	const pathPrefix = "/users";
 	const slugOrId = user.slug || user.id;
-	const canonicalUrl = constructCanonicalUrl(
-		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
-		`${pathPrefix}/${slugOrId}`,
-		locale,
-	);
+	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
 
 	return {
 		title: `${user.name} - RECONNED`,
@@ -123,7 +119,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(
-				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				env.NEXT_PUBLIC_WEB_URL || "",
 				pathPrefix,
 				user.id,
 				locale,
@@ -140,6 +136,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 				},
 			],
 		},
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
+		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 	};
 }

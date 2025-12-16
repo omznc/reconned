@@ -52,14 +52,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		"@type": "WebSite",
 		name: "Reconned",
 		description: t("The first universal platform for airsoft clubs, events, and players."),
-		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		url: env.NEXT_PUBLIC_WEB_URL,
+		logo: `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-light.svg`,
 		sameAs: ["https://github.com/omznc/reconned"],
 		potentialAction: {
 			"@type": "SearchAction",
 			target: {
 				"@type": "EntryPoint",
-				urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search?q={search_term_string}`,
+				urlTemplate: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/search?q={search_term_string}`,
 			},
 			"query-input": "required name=search_term_string",
 		},
@@ -77,8 +77,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		name: "Reconned",
 		sport: "Airsoft",
 		description: t("The first universal platform for airsoft clubs, events, and players."),
-		url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-		logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+		url: env.NEXT_PUBLIC_WEB_URL,
+		logo: `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-light.svg`,
 		foundingDate: "2024",
 		address: {
 			"@type": "PostalAddress",
@@ -136,7 +136,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: t("RECONNED - Airsoft clubs, events, and players"),
 		description: t("The first universal platform for airsoft clubs, events, and players."),
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
+		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 		keywords: t(
 			"airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH",
 		)

@@ -60,7 +60,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const sportsOrganizationSchema: WithContext<SportsOrganization> = {
 		"@context": "https://schema.org",
 		"@type": "SportsOrganization",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
 		name: club.name,
 		numberOfEmployees: {
 			"@type": "QuantitativeValue",
@@ -68,7 +68,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		},
 		description: club.description || undefined,
 		sport: "Airsoft",
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
 		logo: club.logo || undefined,
 		foundingDate: club.dateFounded ?? undefined,
 		address: club.location
@@ -139,7 +139,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 		notFound();
 	}
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/og/club`);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/club`);
 	ogUrl.searchParams.set("name", club.name);
 	if (club.description) {
 		ogUrl.searchParams.set("description", club.description);
@@ -150,11 +150,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 
 	const pathPrefix = "/clubs";
 	const slugOrId = club.slug || club.id;
-	const canonicalUrl = constructCanonicalUrl(
-		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
-		`${pathPrefix}/${slugOrId}`,
-		locale,
-	);
+	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
 
 	return {
 		title: `${club.name} - RECONNED`,
@@ -166,7 +162,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(
-				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				env.NEXT_PUBLIC_WEB_URL || "",
 				pathPrefix,
 				club.id,
 				locale,
@@ -183,6 +179,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 				},
 			],
 		},
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
+		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 	};
 }

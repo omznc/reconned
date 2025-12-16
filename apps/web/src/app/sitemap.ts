@@ -12,7 +12,7 @@ import {
 export const dynamic = "force-dynamic";
 
 const defaultLocale = routing.defaultLocale;
-const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
+const baseUrl = env.NEXT_PUBLIC_WEB_URL;
 
 const logger = new Logger({ source: "sitemap" });
 

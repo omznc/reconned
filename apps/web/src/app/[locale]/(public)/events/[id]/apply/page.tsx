@@ -23,7 +23,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 	const locale = params.locale;
 	if (!user) {
 		return redirect({
-			href: `/login?redirectTo=${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${params.id}/apply`,
+			href: `/login?redirectTo=${env.NEXT_PUBLIC_WEB_URL}/events/${params.id}/apply`,
 			locale,
 		});
 	}
@@ -65,18 +65,18 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 	const applicationPageSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/events/${event.slug ?? event.id}/apply`,
 		name: `${existingRegistration ? t("Edit event application") : t("Apply to event")}: ${event.name}`,
 		description: t("Applying to {eventName}", { eventName: event.name }),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/events/${event.slug ?? event.id}/apply`,
 		mainEntity: {
 			"@type": "SportsEvent",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+			"@id": `${env.NEXT_PUBLIC_WEB_URL}/events/${event.slug ?? event.id}`,
 			name: event.name,
 			sport: "Airsoft",
 			startDate: event.dateStart,
 			endDate: event.dateEnd,
-			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+			url: `${env.NEXT_PUBLIC_WEB_URL}/events/${event.slug ?? event.id}`,
 		},
 		breadcrumb: {
 			"@type": "BreadcrumbList",
@@ -85,25 +85,25 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 					"@type": "ListItem",
 					position: 1,
 					name: "Home",
-					item: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+					item: env.NEXT_PUBLIC_WEB_URL,
 				},
 				{
 					"@type": "ListItem",
 					position: 2,
 					name: "Events",
-					item: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events`,
+					item: `${env.NEXT_PUBLIC_WEB_URL}/events`,
 				},
 				{
 					"@type": "ListItem",
 					position: 3,
 					name: event.name,
-					item: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}`,
+					item: `${env.NEXT_PUBLIC_WEB_URL}/events/${event.slug ?? event.id}`,
 				},
 				{
 					"@type": "ListItem",
 					position: 4,
 					name: "Apply",
-					item: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/events/${event.slug ?? event.id}/apply`,
+					item: `${env.NEXT_PUBLIC_WEB_URL}/events/${event.slug ?? event.id}/apply`,
 				},
 			],
 		},
@@ -143,7 +143,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/a
 	const pathPrefix = "/events";
 	const slugOrId = event.slug || event.id;
 	const canonicalUrl = constructCanonicalUrl(
-		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+		env.NEXT_PUBLIC_WEB_URL || "",
 		`${pathPrefix}/${slugOrId}/apply`,
 		locale,
 	);
@@ -154,7 +154,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/a
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(
-				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				env.NEXT_PUBLIC_WEB_URL || "",
 				pathPrefix,
 				event.id,
 				locale,

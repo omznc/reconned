@@ -43,7 +43,7 @@ export function SlugInput(props: SlugInputProps) {
 		<FormItem>
 			<FormLabel>
 				{t("Special link")}
-				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${props.type[0]}/${debouncedSlug ?? t("my-link")}`}</span>
+				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_WEB_URL}/${props.type[0]}/${debouncedSlug ?? t("my-link")}`}</span>
 			</FormLabel>
 			<FormControl>
 				<Input

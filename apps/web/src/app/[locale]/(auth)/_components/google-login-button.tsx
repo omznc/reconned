@@ -15,7 +15,7 @@ export function GoogleLoginButton({
 	return (
 		<Button
 			variant="outline"
-			className="relative w-full plausible-event-name=google-button-click"
+			className="relative w-full"
 			type="button"
 			onClick={async () => {
 				await authClient.signIn.social(

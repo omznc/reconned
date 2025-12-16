@@ -25,7 +25,7 @@ export const ClubClaimRequestEmail = async ({
 	clubId,
 }: ClubClaimRequestEmailProps) => {
 	const t = await getExtracted();
-	const adminUrl = `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/dashboard/admin/unclaimed-clubs?clubId=${clubId}`;
+	const adminUrl = `${env.NEXT_PUBLIC_WEB_URL}/dashboard/admin/unclaimed-clubs?clubId=${clubId}`;
 
 	return (
 		<Html>
@@ -38,7 +38,7 @@ export const ClubClaimRequestEmail = async ({
 							<Img src={clubLogo} alt={clubName} width="100" style={emailStyles.logo} />
 						) : (
 							<Img
-								src={`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/logo.png`}
+								src={`${env.NEXT_PUBLIC_WEB_URL}/logo.png`}
 								alt="RECONNED"
 								width="150"
 								style={emailStyles.logo}

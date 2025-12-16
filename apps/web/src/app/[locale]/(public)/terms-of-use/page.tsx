@@ -17,19 +17,19 @@ export default async function TermsOfUsePage() {
 	const termsPageSchema: WithContext<WebPage> = {
 		"@context": "https://schema.org",
 		"@type": "WebPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/terms-of-use`,
 		name: t("Terms of Use - RECONNED"),
 		description: t(
 			"Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
 		),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/terms-of-use`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/terms-of-use`,
 		dateModified: lastUpdated.toISOString(),
 		datePublished: lastUpdated.toISOString(),
 		publisher: {
 			"@type": "Organization",
 			name: "Reconned",
-			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-			logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+			url: env.NEXT_PUBLIC_WEB_URL,
+			logo: `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-light.svg`,
 		},
 		about: {
 			"@type": "Thing",
@@ -242,7 +242,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/terms-of-use", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -252,8 +252,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/terms-of-use", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/terms-of-use", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/terms-of-use", locale),
 		},
 	};
 }

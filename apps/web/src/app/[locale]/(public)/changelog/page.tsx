@@ -99,12 +99,12 @@ export default async function ChangelogPage() {
 	const changelogSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/changelog`,
 		name: t("Changelog - RECONNED"),
 		description: t(
 			"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
 		),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/changelog`,
 		mainEntity: {
 			"@type": "ItemList",
 			name: "Reconned Releases",
@@ -114,20 +114,20 @@ export default async function ChangelogPage() {
 				position: index + 1,
 				item: {
 					"@type": "Article",
-					"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/changelog#${release.tag_name}`,
+					"@id": `${env.NEXT_PUBLIC_WEB_URL}/changelog#${release.tag_name}`,
 					headline: release.name || `Version ${release.tag_name}`,
 					datePublished: release.published_at,
 					dateModified: release.published_at,
 					author: {
 						"@type": "Organization",
 						name: "Reconned Team",
-						url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+						url: env.NEXT_PUBLIC_WEB_URL,
 					},
 					publisher: {
 						"@type": "Organization",
 						name: "Reconned",
-						url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-						logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+						url: env.NEXT_PUBLIC_WEB_URL,
+						logo: `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-light.svg`,
 					},
 					articleBody: release.body,
 					url: release.html_url,
@@ -270,7 +270,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/changelog", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -280,8 +280,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/changelog", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/changelog", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/changelog", locale),
 		},
 	};
 }

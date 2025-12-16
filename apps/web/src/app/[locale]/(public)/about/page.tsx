@@ -14,12 +14,12 @@ export default async function Home() {
 	const aboutPageSchema: WithContext<AboutPage> = {
 		"@context": "https://schema.org",
 		"@type": "AboutPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/about`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/about`,
 		name: t("About us - RECONNED"),
 		description: t(
 			"About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players.",
 		),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/about`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/about`,
 		mainEntity: {
 			"@type": "SportsOrganization",
 			name: "Reconned",
@@ -27,8 +27,8 @@ export default async function Home() {
 			description: t(
 				"About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players.",
 			),
-			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-			logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+			url: env.NEXT_PUBLIC_WEB_URL,
+			logo: `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-light.svg`,
 			foundingDate: "2024",
 			founder: [
 				{
@@ -143,7 +143,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/about", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/about", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -153,8 +153,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/about", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/about", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/about", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/about", locale),
 		},
 	};
 }

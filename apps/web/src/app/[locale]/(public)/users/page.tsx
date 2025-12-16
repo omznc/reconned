@@ -49,9 +49,9 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 			position: index + 1 + skip,
 			item: {
 				"@type": "Person",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/users/${user.slug ?? user.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug ?? user.id}`,
 				name: user.name,
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/users/${user.slug ?? user.id}`,
+				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug ?? user.id}`,
 				image: user.image || undefined,
 				address: user.location
 					? {
@@ -112,7 +112,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/users", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/users", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -122,8 +122,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/users", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/users", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/users", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/users", locale),
 		},
 	};
 }

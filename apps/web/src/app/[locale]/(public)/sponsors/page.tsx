@@ -40,10 +40,10 @@ export default async function SponsorsPage() {
 	const sponsorPageSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/sponsors`,
 		name: t("Sponsors - RECONNED"),
 		description: t("Our current sponsors and partners. Thank you for your support!"),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/sponsors`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/sponsors`,
 		mainEntity: {
 			"@type": "ItemList",
 			name: "Reconned Sponsors",
@@ -57,7 +57,7 @@ export default async function SponsorsPage() {
 					description: sponsor.description,
 					sport: "Airsoft",
 					url: sponsor.website,
-					logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}${sponsor.logo}`,
+					logo: `${env.NEXT_PUBLIC_WEB_URL}${sponsor.logo}`,
 				},
 			})),
 		},
@@ -178,7 +178,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			title: t("Sponsors - RECONNED"),
 			description: t("Our current sponsors and partners. Thank you for your support!"),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/sponsors", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -186,8 +186,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			description: t("Our current sponsors and partners. Thank you for your support!"),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/sponsors", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/sponsors", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/sponsors", locale),
 		},
 	};
 }

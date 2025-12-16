@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { env } from "@/lib/env";
 
 export const metadata: Metadata = {
-	metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
+	metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 };
 
 // is required, even if it's just passing children through.

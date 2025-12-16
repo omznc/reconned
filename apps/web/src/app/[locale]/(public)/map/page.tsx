@@ -33,12 +33,12 @@ export default async function MapPage() {
 	const mapSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/map`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/map`,
 		name: t("Club Map - RECONNED"),
 		description: t(
 			"Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players.",
 		),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/map`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/map`,
 		mainEntity: {
 			"@type": "ItemList",
 			name: "Airsoft Clubs Map",
@@ -48,10 +48,10 @@ export default async function MapPage() {
 				position: index + 1,
 				item: {
 					"@type": "SportsOrganization",
-					"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+					"@id": `${env.NEXT_PUBLIC_WEB_URL}/clubs/${club.slug ?? club.id}`,
 					name: club.name,
 					sport: "Airsoft",
-					url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/clubs/${club.slug ?? club.id}`,
+					url: `${env.NEXT_PUBLIC_WEB_URL}/clubs/${club.slug ?? club.id}`,
 					logo: club.logo || undefined,
 					address: club.location
 						? {
@@ -95,7 +95,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/map", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -105,8 +105,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/map", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/map", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/map", locale),
 		},
 		keywords: t(
 			"airsoft clubs map bih,airsoft clubs map, airsoft clubs Bosnia and Herzegovina, airsoft clubs BiH, airsoft clubs Sarajevo, airsoft map, airsoft teams, airsoft communities, airsoft federation, airsoft savez, airsoft associations, airsoft locations, find airsoft club, airsoft clubs, airsoft club locator, airsoft club registration, airsoft club map, airsoft club join",

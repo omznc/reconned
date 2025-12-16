@@ -66,13 +66,13 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const sportsEventSchema: WithContext<SportsEvent> = {
 		"@context": "https://schema.org",
 		"@type": "SportsEvent",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
 		name: event.name,
 		description: event.description,
 		sport: "Airsoft",
 		startDate: event.dateStart,
 		endDate: event.dateEnd,
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
 		image: event.image || undefined,
 		location: {
 			"@type": "Place",
@@ -82,15 +82,15 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		},
 		organizer: {
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
+			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
 			name: event.club.name,
 			sport: "Airsoft",
-			url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
+			url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
 			logo: event.club.logo || undefined,
 		},
 		performer: {
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
+			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
 			name: event.club.name,
 			sport: "Airsoft",
 		},
@@ -98,7 +98,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			event.costPerPerson > 0
 				? {
 						"@type": "Offer",
-						url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
+						url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
 						price: event.costPerPerson,
 						priceCurrency: "BAM",
 						availability: "https://schema.org/InStock",
@@ -143,7 +143,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	}
 	const event = data.event;
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/og/event`);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/event`);
 	ogUrl.searchParams.set("title", event.name);
 	if (event.description) {
 		ogUrl.searchParams.set("description", event.description);
@@ -155,11 +155,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 
 	const pathPrefix = "/events";
 	const slugOrId = event.slug || event.id;
-	const canonicalUrl = constructCanonicalUrl(
-		env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
-		`${pathPrefix}/${slugOrId}`,
-		locale,
-	);
+	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
 
 	return {
 		title: `${event.name} - RECONNED`,
@@ -171,7 +167,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(
-				env.NEXT_PUBLIC_BETTER_AUTH_URL || "",
+				env.NEXT_PUBLIC_WEB_URL || "",
 				pathPrefix,
 				event.id,
 				locale,
@@ -188,6 +184,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 				},
 			],
 		},
-		metadataBase: env.NEXT_PUBLIC_BETTER_AUTH_URL ? new URL(env.NEXT_PUBLIC_BETTER_AUTH_URL) : undefined,
+		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 	};
 }

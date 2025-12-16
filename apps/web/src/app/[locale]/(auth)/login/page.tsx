@@ -200,7 +200,7 @@ export default function LoginPage() {
 												setIsForgotPasswordLoading(false);
 											}}
 											variant="ghost"
-											className="ml-auto inline-block text-sm underline plausible-event-name=forgot-password-click"
+											className="ml-auto inline-block text-sm underline"
 											disabled={isLoading || isForgotPasswordLoading}
 										>
 											{isForgotPasswordLoading
@@ -236,7 +236,7 @@ export default function LoginPage() {
 						<LoaderSubmitButton
 							isLoading={isLoading}
 							disabled={isForgotPasswordLoading || !form.formState.isValid}
-							className={cn("relative w-full plausible-event-name=login-button-click", {
+							className={cn("relative w-full", {
 								"mb-4": lastMethod === "email",
 							})}
 						>

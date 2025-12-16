@@ -39,7 +39,7 @@ export const MembershipExpiration = async ({
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
 						<Img
-							src={clubLogo || `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/logo.png`}
+							src={clubLogo || `${env.NEXT_PUBLIC_WEB_URL}/logo.png`}
 							alt={t("Club Logo")}
 							width="100"
 							style={emailStyles.logo}

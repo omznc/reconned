@@ -17,19 +17,19 @@ export default async function PrivacyPolicyPage() {
 	const privacyPageSchema: WithContext<WebPage> = {
 		"@context": "https://schema.org",
 		"@type": "WebPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/privacy-policy`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/privacy-policy`,
 		name: t("Privacy Policy - RECONNED"),
 		description: t(
 			"Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players.",
 		),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/privacy-policy`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/privacy-policy`,
 		dateModified: lastUpdated.toISOString(),
 		datePublished: lastUpdated.toISOString(),
 		publisher: {
 			"@type": "Organization",
 			name: "Reconned",
-			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
-			logo: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/reconned-logo-light.svg`,
+			url: env.NEXT_PUBLIC_WEB_URL,
+			logo: `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-light.svg`,
 		},
 		about: {
 			"@type": "Thing",
@@ -270,7 +270,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/privacy-policy", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/privacy-policy", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -280,8 +280,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/privacy-policy", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/privacy-policy", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/privacy-policy", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/privacy-policy", locale),
 		},
 	};
 }

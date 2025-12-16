@@ -227,7 +227,7 @@ export default function RegisterPage() {
 
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							className="relative w-full plausible-event-name=register-button-click"
+							className="relative w-full"
 							disabled={!form.formState.isValid}
 						>
 							{t("Register")}

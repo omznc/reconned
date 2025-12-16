@@ -386,7 +386,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			title: t("RECONNED - Airsoft clubs, events, and players"),
 			description: t("The first universal platform for airsoft clubs, events, and players."),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -394,8 +394,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			description: t("The first universal platform for airsoft clubs, events, and players."),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/", locale),
 		},
 	};
 }

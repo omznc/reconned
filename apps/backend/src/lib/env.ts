@@ -5,7 +5,6 @@ export const env = createEnv({
 	skipValidation: process.env.CI === "true",
 	server: {
 		DATABASE_URL: z
-			.string()
 			.url("DATABASE_URL must be a valid URL (e.g., postgresql://user:pass@host:5432/db)")
 			.startsWith("postgres", "DATABASE_URL must be a PostgreSQL connection string")
 			.describe("PostgreSQL database connection string"),
@@ -16,7 +15,6 @@ export const env = createEnv({
 			.describe("Secret key for Better Auth sessions"),
 
 		BETTER_AUTH_URL: z
-			.string()
 			.url("BETTER_AUTH_URL must be a valid URL (e.g., http://localhost:4000)")
 			.describe("Better Auth base URL"),
 
@@ -49,13 +47,11 @@ export const env = createEnv({
 			.describe("Google OAuth client secret"),
 
 		REDIS_URL: z
-			.string()
 			.url("REDIS_URL must be a valid URL (e.g., redis://localhost:6379)")
 			.regex(/^redis:\/\//, "REDIS_URL must start with redis://")
 			.describe("Redis connection URL for caching and sessions"),
 
 		ONESIGNAL_APP_ID: z
-			.string()
 			.uuid("ONESIGNAL_APP_ID must be a valid UUID")
 			.describe("OneSignal application ID for push notifications"),
 
@@ -67,7 +63,6 @@ export const env = createEnv({
 			.describe("Cloudflare Turnstile secret key for CAPTCHA verification"),
 
 		S3_ENDPOINT: z
-			.string()
 			.url("S3_ENDPOINT must be a valid URL (e.g., https://s3.amazonaws.com)")
 			.describe("S3-compatible storage endpoint URL"),
 
@@ -83,7 +78,7 @@ export const env = createEnv({
 			.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, "S3_BUCKET_NAME must be a valid S3 bucket name")
 			.describe("S3 bucket name"),
 
-		CDN_URL: z.string().url("CDN_URL must be a valid URL").describe("CDN base URL for serving uploaded assets"),
+		CDN_URL: z.url("CDN_URL must be a valid URL").describe("CDN base URL for serving uploaded assets"),
 
 		FACEBOOK_APP_ID: z
 			.string()

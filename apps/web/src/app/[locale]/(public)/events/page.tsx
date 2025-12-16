@@ -60,13 +60,13 @@ export default async function Page() {
 			position: index + 1,
 			item: {
 				"@type": "SportsEvent",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
 				name: event.name,
 				description: event.description,
 				sport: "Airsoft",
 				startDate: event.dateStart.toISOString(),
 				endDate: event.dateEnd?.toISOString() ?? undefined,
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}`,
+				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
 				image: event.image || undefined,
 				location: {
 					"@type": "Place",
@@ -89,7 +89,7 @@ export default async function Page() {
 					event.costPerPerson > 0
 						? {
 								"@type": "Offer",
-								url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
+								url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
 								price: event.costPerPerson,
 								priceCurrency: "BAM",
 							}
@@ -206,7 +206,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/events", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -216,8 +216,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/events", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/events", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/events", locale),
 		},
 	};
 }

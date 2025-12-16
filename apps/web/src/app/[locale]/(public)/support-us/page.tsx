@@ -16,16 +16,16 @@ export default async function Page() {
 	const supportPageSchema: WithContext<ContactPage> = {
 		"@context": "https://schema.org",
 		"@type": "ContactPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/support-us`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/support-us`,
 		name: t("Support us - RECONNED"),
 		description: t(
 			"Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players.",
 		),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/support-us`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/support-us`,
 		mainEntity: {
 			"@type": "Organization",
 			name: "Reconned",
-			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+			url: env.NEXT_PUBLIC_WEB_URL,
 			contactPoint: {
 				"@type": "ContactPoint",
 				contactType: "customer support",
@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/support-us", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/support-us", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -81,8 +81,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/support-us", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/support-us", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/support-us", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/support-us", locale),
 		},
 	};
 }

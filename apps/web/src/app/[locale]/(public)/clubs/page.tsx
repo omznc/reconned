@@ -70,11 +70,11 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 			position: index + 1 + (page - 1) * ITEMS_PER_PAGE,
 			item: {
 				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${club.slug ?? club.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug ?? club.id}`,
 				name: club.name,
 				description: club.description,
 				sport: "Airsoft",
-				url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/clubs/${club.slug ?? club.id}`,
+				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug ?? club.id}`,
 				logo: club.logo || undefined,
 				address: club.location
 					? {
@@ -139,7 +139,7 @@ export async function generateMetadata(): Promise<Metadata> {
 				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/clubs", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -149,8 +149,8 @@ export async function generateMetadata(): Promise<Metadata> {
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", "/clubs", locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/clubs", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/clubs", locale),
 		},
 	};
 }

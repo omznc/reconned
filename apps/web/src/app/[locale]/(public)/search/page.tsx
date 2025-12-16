@@ -14,23 +14,23 @@ export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 	const searchSchema: WithContext<SearchResultsPage> = {
 		"@context": "https://schema.org",
 		"@type": "SearchResultsPage",
-		"@id": `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
 		name: t("Search for {query} - RECONNED", { query: q }),
 		description: t(
 			"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
 			{ query: q },
 		),
-		url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/search${q ? `?q=${encodeURIComponent(q)}` : ""}`,
 		mainEntity: {
 			"@type": "WebSite",
-			"@id": env.NEXT_PUBLIC_BETTER_AUTH_URL,
+			"@id": env.NEXT_PUBLIC_WEB_URL,
 			name: "Reconned",
-			url: env.NEXT_PUBLIC_BETTER_AUTH_URL,
+			url: env.NEXT_PUBLIC_WEB_URL,
 			potentialAction: {
 				"@type": "SearchAction",
 				target: {
 					"@type": "EntryPoint",
-					urlTemplate: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/${locale}/search?q={search_term_string}`,
+					urlTemplate: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/search?q={search_term_string}`,
 				},
 				"query-input": "required name=search_term_string",
 				// biome-ignore lint/suspicious/noExplicitAny: Idk how else to get this to work
@@ -90,7 +90,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/search">): Pr
 				{ query: q },
 			),
 			type: "website",
-			url: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),
+			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", path, locale),
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -101,8 +101,8 @@ export async function generateMetadata(props: PageProps<"/[locale]/search">): Pr
 			),
 		},
 		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_BETTER_AUTH_URL || "", path, locale),
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", path, locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", path, locale),
 		},
 	};
 }
