@@ -418,7 +418,7 @@ async function handleSwaggerUIAsset(pathname: string): Promise<Response | null> 
 
 async function handleOpenAPISpec(request: Request, routers: Router[], corsOrigins: string[]): Promise<Response> {
 	const url = new URL(request.url);
-	const baseUrl = `${url.protocol}//${url.host}`;
+	const baseUrl = `${url.protocol}//${url.host}/api`;
 	const spec = await generateOpenAPISpec(baseUrl, routers);
 	return addCORSHeaders(jsonResponse(spec), request, corsOrigins);
 }
