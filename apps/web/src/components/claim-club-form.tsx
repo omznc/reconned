@@ -58,7 +58,7 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 				setSubmitted(true);
 				form.reset();
 			} else {
-				throw new ActionError();
+				throw new Error();
 			}
 		} catch {
 			toast.error(t("Failed to submit claim request. Please try again."));

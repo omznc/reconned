@@ -1,4 +1,3 @@
-import type { JsonValue } from "@prisma/client/runtime/client";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { AuditLogsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/club/audit/_components/audit-logs-table";
@@ -37,13 +36,7 @@ async function AuditLogsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubI
 		return <AuditLogsTable logs={[]} totalLogs={0} pageSize={pageSize} />;
 	}
 
-	const logs = data.logs.map((log) => ({
-		...log,
-		createdAt: new Date(log.createdAt),
-		actionData: log.actionData as JsonValue,
-	}));
-
-	return <AuditLogsTable logs={logs} totalLogs={data.pagination.total} pageSize={pageSize} />;
+	return <AuditLogsTable logs={data.logs} totalLogs={data.pagination.total} pageSize={pageSize} />;
 }
 
 export default async function AuditLogsPage(props: PageProps<"/[locale]/dashboard/[clubId]/club/audit">) {

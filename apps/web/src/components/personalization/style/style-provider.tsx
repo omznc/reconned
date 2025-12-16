@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import { useIsAuthenticated } from "@/lib/auth-client";
 
@@ -82,7 +81,7 @@ function applyStyle(style: StyleType) {
 export function useStyle() {
 	const context = useContext(StyleContext);
 	if (!context) {
-		throw new ActionError("useStyle must be used within a StyleProvider");
+		throw new Error("useStyle must be used within a StyleProvider");
 	}
 	return context;
 }

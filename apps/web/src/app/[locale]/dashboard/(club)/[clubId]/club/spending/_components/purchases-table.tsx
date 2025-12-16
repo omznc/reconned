@@ -17,7 +17,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import type { ClubPurchase } from "@/lib/api/api-type-helpers";
 
@@ -170,7 +169,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 													);
 
 													if (error) {
-														throw new ActionError(
+														throw new Error(
 															error.error ?? t("Error while deleting expense item"),
 														);
 													}

@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, type ReactNode, useContext, useState } from "react";
-import { ActionError } from "@/lib/action-error";
 
 type FontType = "mono" | "sans";
 
@@ -37,7 +36,7 @@ export function FontProvider({ initial, children }: { initial: "mono" | "sans"; 
 export function useFont() {
 	const context = useContext(FontContext);
 	if (!context) {
-		throw new ActionError("useFont must be used within a FontProvider");
+		throw new Error("useFont must be used within a FontProvider");
 	}
 	return context;
 }

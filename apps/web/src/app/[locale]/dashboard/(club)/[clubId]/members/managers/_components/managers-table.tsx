@@ -14,7 +14,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
@@ -60,7 +59,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? t("Failed to demote manager."));
+				throw new Error(error.error ?? t("Failed to demote manager."));
 			}
 
 			toast.success(t("Manager has been demoted to a regular user."));

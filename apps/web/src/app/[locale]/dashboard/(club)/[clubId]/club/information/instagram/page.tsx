@@ -112,7 +112,7 @@ export default function InstagramPageSelection() {
 		try {
 			const selectedPage = pages.find((page) => page.id === selectedPageId);
 			if (!selectedPage) {
-				throw new ActionError(t("Selected page not found"));
+				throw new Error(t("Selected page not found"));
 			}
 
 			// Redirect to the callback route with the selected page ID and its page-specific access token

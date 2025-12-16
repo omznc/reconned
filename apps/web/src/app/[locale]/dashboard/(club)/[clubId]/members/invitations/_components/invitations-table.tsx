@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client.ts";
 import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { ClubInviteActions } from "./club-invite-actions.tsx";
@@ -61,7 +60,7 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 			});
 
 			if (error) {
-				throw new ActionError(error.error || t("An error occurred while revoking the invitation"));
+				throw new Error(error.error || t("An error occurred while revoking the invitation"));
 			}
 
 			toast.success(t("Invitation successfully revoked"));

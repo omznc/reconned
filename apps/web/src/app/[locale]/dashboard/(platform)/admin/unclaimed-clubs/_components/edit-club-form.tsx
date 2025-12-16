@@ -25,7 +25,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
@@ -70,7 +69,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const logoUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
 			if (!club?.id) {
-				throw new ActionError("Must save club first");
+				throw new Error("Must save club first");
 			}
 
 			const { data, error } = await apiClient.POST("/api/clubs/{id}/logo/upload-url", {
@@ -88,7 +87,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {
@@ -121,7 +120,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const headerUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
 			if (!club?.id) {
-				throw new ActionError("Must save club first");
+				throw new Error("Must save club first");
 			}
 
 			const { data, error } = await apiClient.POST("/api/clubs/{id}/header-image/upload-url", {
@@ -139,7 +138,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {
@@ -317,7 +316,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? t("An error occurred"));
+				throw new Error(error.error ?? t("An error occurred"));
 			}
 
 			logoUpload.markAsSaved();

@@ -2,8 +2,8 @@ import "server-only";
 
 import { headers } from "next/headers";
 import createClient from "openapi-fetch";
-import type { paths } from "../api-types";
 import { env } from "../env";
+import type { paths } from "./api-types";
 
 // Similar to api.client.ts but for server components (gotta include headers)
 const apiServer = createClient<paths>({

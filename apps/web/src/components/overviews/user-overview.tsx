@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getPageViews } from "@/lib/analytics";
-import type { paths } from "@/lib/api-types";
+import type { paths } from "@/lib/api/api-types";
 import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 

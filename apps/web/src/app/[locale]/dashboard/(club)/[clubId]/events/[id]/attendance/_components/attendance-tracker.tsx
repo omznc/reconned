@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse, Event, EventRegistration } from "@/lib/api/api-type-helpers";
 
@@ -73,7 +72,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? t("An error occurred while saving presence"));
+				throw new Error(error.error ?? t("An error occurred while saving presence"));
 			}
 		} catch (error) {
 			setOptimisticRegistrations((prev) => ({

@@ -46,7 +46,7 @@ export function useFileUpload({
 		}
 
 		if (filesToUpload.length > maxFiles) {
-			throw new ActionError(
+			throw new Error(
 				t("Maximum number of files exceeded: uploaded {files} files, maximum allowed: {maxFiles}", {
 					files: String(filesToUpload.length),
 					maxFiles: String(maxFiles),
@@ -70,7 +70,7 @@ export function useFileUpload({
 					);
 					return url;
 				}
-				throw new ActionError(t("Upload failed"));
+				throw new Error(t("Upload failed"));
 			} catch (error) {
 				toast.error(`Failed to upload ${fileItem.name}`);
 				throw error;
@@ -94,7 +94,7 @@ export function useFileUpload({
 			return [...existingUrls, ...successfulUploads];
 		} catch (error) {
 			logger.error("Some files failed to upload", { error });
-			throw new ActionError(t("Some files failed to upload"));
+			throw new Error(t("Some files failed to upload"));
 		}
 	}, [files, uploadFunction, t, maxFiles]);
 

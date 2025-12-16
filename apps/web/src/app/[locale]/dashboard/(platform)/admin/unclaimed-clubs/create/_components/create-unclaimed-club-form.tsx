@@ -47,7 +47,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 		uploadFunction: async (file: File) => {
 			const currentClubId = clubIdRef.current;
 			if (!currentClubId) {
-				throw new ActionError("Must create club first");
+				throw new Error("Must create club first");
 			}
 
 			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/logo/upload-url", {
@@ -65,7 +65,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {
@@ -87,7 +87,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 		uploadFunction: async (file: File) => {
 			const currentClubId = clubIdRef.current;
 			if (!currentClubId) {
-				throw new ActionError("Must create club first");
+				throw new Error("Must create club first");
 			}
 
 			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/header-image/upload-url", {
@@ -105,7 +105,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {
@@ -268,7 +268,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 			});
 
 			if (error || !data?.id) {
-				throw new ActionError();
+				throw new Error();
 			}
 
 			const newClubId = data.id;

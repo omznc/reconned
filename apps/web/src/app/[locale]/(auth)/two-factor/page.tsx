@@ -46,8 +46,13 @@ export default function LoginPage() {
 						e.preventDefault();
 
 						const formData = new FormData(e.currentTarget);
-						const code = formData.get("totp") as string;
+						const code = formData.get("totp");
 						const rememberDevice = formData.get("rememberDevice") === "on";
+
+						if (!code || typeof code !== "string") {
+							toast.error(t("Please enter a valid code."));
+							return;
+						}
 
 						// Try TOTP first, if it fails try backup code
 						await authClient.twoFactor.verifyTotp(

@@ -25,7 +25,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 
 export function AddPurchaseModal() {
@@ -63,7 +62,7 @@ export function AddPurchaseModal() {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError(error?.error ?? t("Failed to get upload URL"));
+				throw new Error(error?.error ?? t("Failed to get upload URL"));
 			}
 
 			const response = await fetch(data.url, {
@@ -76,7 +75,7 @@ export function AddPurchaseModal() {
 			});
 
 			if (!response.ok) {
-				throw new ActionError(
+				throw new Error(
 					t("Upload failed with status {status}", {
 						status: response.status.toString(),
 					}),
@@ -111,7 +110,7 @@ export function AddPurchaseModal() {
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? t("Error while saving expense data"));
+				throw new Error(error.error ?? t("Error while saving expense data"));
 			}
 
 			toast.success(t("Expense successfully added"));

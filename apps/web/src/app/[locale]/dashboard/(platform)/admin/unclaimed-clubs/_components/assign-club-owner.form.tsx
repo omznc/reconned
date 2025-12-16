@@ -29,7 +29,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 			fetch(`/api/admin/users?query=${encodeURIComponent(searchQuery)}&includeCurrentUser=true`)
 				.then((res) => {
 					if (!res.ok) {
-						throw new ActionError("Failed to fetch users");
+						throw new Error("Failed to fetch users");
 					}
 					return res.json();
 				})
@@ -71,7 +71,7 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 				params.delete("clubId");
 				router.replace(`?${params.toString()}`);
 			} else {
-				throw new ActionError();
+				throw new Error();
 			}
 		} catch {
 			toast.error(t("Failed to assign club owner"));

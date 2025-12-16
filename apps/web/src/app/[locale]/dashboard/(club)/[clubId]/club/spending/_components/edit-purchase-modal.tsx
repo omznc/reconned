@@ -23,7 +23,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import type { ClubPurchase } from "@/lib/api/api-type-helpers";
 
@@ -66,7 +65,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError(error?.error ?? t("Failed to get upload URL"));
+				throw new Error(error?.error ?? t("Failed to get upload URL"));
 			}
 
 			const response = await fetch(data.url, {
@@ -79,7 +78,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			});
 
 			if (!response.ok) {
-				throw new ActionError(
+				throw new Error(
 					t("Upload failed with status {status}", {
 						status: response.status.toString(),
 					}),
@@ -128,7 +127,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? t("Error while saving expense data"));
+				throw new Error(error.error ?? t("Error while saving expense data"));
 			}
 
 			receiptUpload.markAsSaved();

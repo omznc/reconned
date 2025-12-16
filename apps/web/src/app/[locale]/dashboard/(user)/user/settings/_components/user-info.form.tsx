@@ -19,7 +19,6 @@ import { SingleImageUpload } from "@/components/ui/single-image-upload";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client.ts";
 import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { addImageVersion } from "@/lib/utils";
@@ -53,7 +52,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const avatarUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
 			if (!props.user?.id) {
-				throw new ActionError("User not found");
+				throw new Error("User not found");
 			}
 
 			const { data, error } = await apiClient.POST("/api/users/{id}/image/upload-url", {
@@ -69,7 +68,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {
@@ -103,7 +102,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const headerUpload = useFileUpload({
 		uploadFunction: async (file: File) => {
 			if (!props.user?.id) {
-				throw new ActionError("User not found");
+				throw new Error("User not found");
 			}
 
 			const { data, error } = await apiClient.POST("/api/users/{id}/header-image/upload-url", {
@@ -119,7 +118,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {

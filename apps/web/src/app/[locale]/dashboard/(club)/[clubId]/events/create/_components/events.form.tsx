@@ -37,7 +37,6 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { Link, useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
@@ -78,7 +77,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentEventId = eventIdRef.current;
 			if (!currentEventId) {
-				throw new ActionError(t("Save the event first."));
+				throw new Error(t("Save the event first."));
 			}
 
 			const { data, error } = await apiClient.POST("/api/events/{id}/image/upload-url", {
@@ -94,7 +93,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError(t("Could not get upload URL."));
+				throw new Error(t("Could not get upload URL."));
 			}
 
 			await fetch(data.url, {
@@ -327,7 +326,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					});
 
 			if (createError || !createdOrUpdated?.event.id) {
-				throw new ActionError(createError?.error ?? t("An error occurred while saving data"));
+				throw new Error(createError?.error ?? t("An error occurred while saving data"));
 			}
 
 			const eventId = createdOrUpdated.event.id;
@@ -354,7 +353,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					});
 
 					if (updateError) {
-						throw new ActionError(updateError.error ?? t("An error occurred while saving data"));
+						throw new Error(updateError.error ?? t("An error occurred while saving data"));
 					}
 				}
 			}
@@ -412,7 +411,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 											});
 
 											if (error) {
-												throw new ActionError(
+												throw new Error(
 													error.error ?? t("An error occurred while deleting event"),
 												);
 											}

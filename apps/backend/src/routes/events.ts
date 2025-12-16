@@ -467,7 +467,7 @@ eventsRouter.get(
 		const eventsWithDetails = await Promise.all(
 			events.map(async (e) => {
 				const clubData = await db
-					.select({ name: club.name, verified: club.verified })
+					.select({ name: club.name, verified: club.verified, logo: club.logo, id: club.id, slug: club.slug })
 					.from(club)
 					.where(eq(club.id, e.clubId))
 					.limit(1);
@@ -500,6 +500,9 @@ eventsRouter.get(
 								.object({
 									name: z.string(),
 									verified: z.boolean(),
+									logo: z.string().nullable(),
+									slug: z.string().nullable(),
+									id: z.string(),
 								})
 								.nullable(),
 						}),

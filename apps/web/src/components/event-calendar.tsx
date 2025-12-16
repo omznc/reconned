@@ -45,11 +45,7 @@ import { cn } from "@/lib/utils";
 
 type Event = ApiResponse<"/api/events/calendar", "get">["events"][number];
 
-type ManagedClub = {
-	id: string;
-	name: string | null;
-	membershipRole?: "USER" | "MANAGER" | "CLUB_OWNER";
-};
+type ManagedClub = Event["club"];
 
 interface EventCalendarProps {
 	events: Event[];
@@ -104,17 +100,19 @@ export function EventCalendar(props: EventCalendarProps) {
 
 	const canCreateEvent = isDashboardCalendar || (props.managedClubs && props.managedClubs.length > 0);
 
-	const filteredClubs = useMemo(() => {
+	const filteredClubs: NonNullable<ManagedClub>[] = useMemo(() => {
 		if (!props.managedClubs) {
 			return [];
 		}
 
+		const clubs = props.managedClubs.filter((club) => club !== null);
+
 		if (!searchQuery.trim()) {
-			return props.managedClubs;
+			return clubs;
 		}
 
 		const query = searchQuery.toLowerCase();
-		return props.managedClubs.filter((club) => club.name?.toLowerCase().includes(query));
+		return clubs.filter((club) => club?.name?.toLowerCase().includes(query));
 	}, [props.managedClubs, searchQuery]);
 
 	useEffect(() => {

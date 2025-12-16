@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +26,7 @@ type Club = {
 async function searchClubs(query: string) {
 	const response = await fetch(`/api/clubs?query=${encodeURIComponent(query)}`);
 	if (!response.ok) {
-		throw new ActionError("Failed to fetch clubs");
+		throw new Error("Failed to fetch clubs");
 	}
 	return response.json() as Promise<Club[]>;
 }
@@ -36,7 +35,7 @@ async function requestAccess(input: RequestAccessSchema) {
 	const parsed = requestAccessSchema.safeParse(input);
 
 	if (!parsed.success) {
-		throw new ActionError("Invalid request data");
+		throw new Error("Invalid request data");
 	}
 
 	const { data, error } = await apiClient.POST("/api/clubs/{id}/invites", {
@@ -47,7 +46,7 @@ async function requestAccess(input: RequestAccessSchema) {
 	});
 
 	if (error || !data?.success) {
-		throw new ActionError(error?.error ?? "Failed to send access request");
+		throw new Error(error?.error ?? "Failed to send access request");
 	}
 
 	return data;
@@ -94,7 +93,7 @@ export function RequestAccessForm() {
 			toast.success(t("Request sent successfully"));
 			form.reset();
 		} catch (error) {
-			if (error instanceof ActionError) {
+			if (error instanceof Error) {
 				toast.error(error.message);
 				return;
 			}

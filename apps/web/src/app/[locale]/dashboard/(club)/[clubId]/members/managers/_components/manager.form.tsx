@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +30,7 @@ type Member = {
 async function searchMembers(clubId: string, query: string) {
 	const response = await fetch(`/api/club/${clubId}/members?query=${encodeURIComponent(query)}&role=USER`);
 	if (!response.ok) {
-		throw new ActionError("Neuspjela pretraga članova");
+		throw new Error("Neuspjela pretraga članova");
 	}
 	return (await response.json()) as Member[];
 }
@@ -91,7 +90,7 @@ export function AddManagerForm() {
 			});
 
 			if (error) {
-				throw new ActionError(error.error || t("There's been a problem while promoting that user, try again."));
+				throw new Error(error.error || t("There's been a problem while promoting that user, try again."));
 			}
 
 			toast(t("Successfully promoted to manager"));

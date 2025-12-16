@@ -1,6 +1,5 @@
 "use client";
 
-import type { JsonValue } from "@prisma/client/runtime/client";
 import { Code, MoreHorizontal } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
 import { useState } from "react";
@@ -20,31 +19,20 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
-type AuditLog = {
-	id: string;
-	createdAt: Date;
-	actionType: string;
-	actionData: JsonValue;
-	user: {
-		id: string;
-		name: string;
-		email: string;
-	} | null;
-	ipAddress: string | null;
-	userAgent: string | null;
-};
+type AuditLogsResponse = ApiResponse<"/api/clubs/{id}/audit-logs", "get">;
 
 interface AuditLogsTableProps {
-	logs: AuditLog[];
-	totalLogs: number;
-	pageSize: number;
+	logs: AuditLogsResponse["logs"];
+	totalLogs: AuditLogsResponse["pagination"]["total"];
+	pageSize: AuditLogsResponse["pagination"]["perPage"];
 }
 
 export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProps) {
 	const t = useExtracted();
 	const locale = useLocale();
-	const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+	const [selectedLog, setSelectedLog] = useState<AuditLogsResponse["logs"][number] | null>(null);
 
 	const actionTypeMap: Record<string, string> = {
 		CLUB_CREATE: t("Club creation"),
@@ -175,7 +163,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 
 interface LogDetailCredenzaProps {
 	actionTypeMap: Record<string, string>;
-	log: AuditLog | null;
+	log: AuditLogsResponse["logs"][number] | null;
 	onClose: () => void;
 }
 

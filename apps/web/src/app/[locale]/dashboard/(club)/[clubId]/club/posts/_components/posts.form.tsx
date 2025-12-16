@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client.ts";
 import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { postSchema } from "./posts.schema.ts";
@@ -64,7 +63,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError(error?.error ?? t("Failed to get upload URL"));
+				throw new Error(error?.error ?? t("Failed to get upload URL"));
 			}
 
 			const response = await fetch(data.url, {
@@ -77,7 +76,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			});
 
 			if (!response.ok) {
-				throw new ActionError(
+				throw new Error(
 					t("Upload failed with status {status}", {
 						status: response.status.toString(),
 					}),
@@ -145,7 +144,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 					});
 
 			if (error) {
-				throw new ActionError(error.error ?? t("An error occurred"));
+				throw new Error(error.error ?? t("An error occurred"));
 			}
 
 			imageUpload.markAsSaved();
@@ -193,7 +192,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? t("An error occurred while deleting the post"));
+				throw new Error(error.error ?? t("An error occurred while deleting the post"));
 			}
 
 			setPostId(null);

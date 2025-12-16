@@ -17,13 +17,10 @@ const baseUrl = env.NEXT_PUBLIC_BETTER_AUTH_URL;
 const logger = new Logger({ source: "sitemap" });
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	// Get all data concurrently with caching
 	const [clubsResponse, eventsResponse, usersResponse] = await Promise.all([
-		apiServer.GET("/api/public/sitemap/clubs", {}),
-
-		apiServer.GET("/api/public/sitemap/events", {}),
-
-		apiServer.GET("/api/public/sitemap/users", {}),
+		apiServer.GET("/api/public/sitemap/clubs"),
+		apiServer.GET("/api/public/sitemap/events"),
+		apiServer.GET("/api/public/sitemap/users"),
 	]);
 
 	const clubs = clubsResponse?.data?.clubs || [];
@@ -125,6 +122,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		};
 	});
 
-	// Combine all routes
 	return [...staticRoutes, ...clubRoutes, ...eventRoutes, ...userRoutes];
 }

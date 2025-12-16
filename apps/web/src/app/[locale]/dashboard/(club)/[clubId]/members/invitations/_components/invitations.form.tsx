@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { sendInvitationSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
 import { useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +35,7 @@ type SearchUser = {
 async function searchUsers(query: string) {
 	const response = await fetch(`/api/users?query=${encodeURIComponent(query)}`);
 	if (!response.ok) {
-		throw new ActionError("Failed to fetch users");
+		throw new Error("Failed to fetch users");
 	}
 	return (await response.json()) as SearchUser[];
 }
@@ -98,9 +97,7 @@ export function InvitationsForm() {
 			});
 
 			if (error) {
-				throw new ActionError(
-					error.error || t("An error occurred while sending the invitation. Please try again."),
-				);
+				throw new Error(error.error || t("An error occurred while sending the invitation. Please try again."));
 			}
 
 			toast.success(t("Invitation sent successfully"));

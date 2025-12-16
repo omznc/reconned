@@ -1,4 +1,4 @@
-import type { components, paths } from "@/lib/api-types";
+import type { components, paths } from "@/lib/api/api-types";
 
 /**
  * Shared API type helpers to replace @generated/client imports.

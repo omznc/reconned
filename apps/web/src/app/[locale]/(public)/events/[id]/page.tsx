@@ -1,4 +1,3 @@
-import type * as runtime from "@prisma/client/runtime/client";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
@@ -61,8 +60,6 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			verified: eventData.club.verified,
 		},
 		rules: rulesData?.rules ?? [],
-		gearRequirements: (base.gearRequirements ?? []) as runtime.JsonValue[],
-		mapData: (base.mapData ?? null) as runtime.JsonValue | null,
 	};
 
 	const locale = await getLocale();

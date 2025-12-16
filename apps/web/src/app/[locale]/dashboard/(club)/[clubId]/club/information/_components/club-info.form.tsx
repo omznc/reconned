@@ -39,7 +39,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
-import { ActionError } from "@/lib/action-error";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse, Club } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
@@ -75,7 +74,7 @@ async function saveClubInformation(values: z.infer<typeof clubInfoSchema>, clubI
 		});
 
 		if (error || !data?.success) {
-			throw new ActionError(error?.error ?? "Failed to update club");
+			throw new Error(error?.error ?? "Failed to update club");
 		}
 
 		return { id: clubId };
@@ -86,7 +85,7 @@ async function saveClubInformation(values: z.infer<typeof clubInfoSchema>, clubI
 	});
 
 	if (error || !data?.id) {
-		throw new ActionError(error?.error ?? "Failed to create club");
+		throw new Error(error?.error ?? "Failed to create club");
 	}
 
 	return { id: data.id };
@@ -100,7 +99,7 @@ async function deleteClub(_: unknown, clubId: string) {
 	});
 
 	if (error) {
-		throw new ActionError(error.error ?? "Failed to delete club");
+		throw new Error(error.error ?? "Failed to delete club");
 	}
 }
 
@@ -139,7 +138,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentClubId = clubIdRef.current;
 			if (!currentClubId) {
-				throw new ActionError("Must save club first");
+				throw new Error("Must save club first");
 			}
 
 			const { data, error } = await apiClient.POST("/api/clubs/{id}/logo/upload-url", {
@@ -155,7 +154,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {
@@ -190,7 +189,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		uploadFunction: async (file: File) => {
 			const currentClubId = clubIdRef.current;
 			if (!currentClubId) {
-				throw new ActionError("Must save club first");
+				throw new Error("Must save club first");
 			}
 
 			const { data, error } = await apiClient.POST("/api/clubs/{id}/header-image/upload-url", {
@@ -206,7 +205,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new ActionError("Failed to get upload URL");
+				throw new Error("Failed to get upload URL");
 			}
 
 			await fetch(data.url, {
@@ -359,7 +358,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			});
 
 			if (error) {
-				throw new ActionError(error.error ?? "An error occurred while disconnecting Instagram account");
+				throw new Error(error.error ?? "An error occurred while disconnecting Instagram account");
 			}
 
 			toast.success(t("Instagram account successfully disconnected"));
@@ -490,7 +489,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				const result = await saveClubInformation(values);
 
 				if (!result?.id) {
-					throw new ActionError("Failed to create club");
+					throw new Error("Failed to create club");
 				}
 
 				clubId = result.id;
@@ -530,7 +529,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 			if (!isCreating || filesToUpload.length > 0 || headerFilesToUpload.length > 0) {
 				if (!clubId) {
-					throw new ActionError("Club ID is missing");
+					throw new Error("Club ID is missing");
 				}
 				await saveClubInformation(values, clubId);
 			}
@@ -578,7 +577,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											if (resp) {
 												setIsLoading(true);
 												if (!props.club?.id) {
-													throw new ActionError("Club ID is missing");
+													throw new Error("Club ID is missing");
 												}
 												await deleteClub({}, props.club.id);
 												setIsLoading(false);
