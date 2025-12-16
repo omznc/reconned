@@ -1,0 +1,129 @@
+# ==========================================
+# Docker Compose for Coolify
+# ==========================================
+# Use this file for Coolify deployments.
+# Coolify has its own Traefik instance, so this file
+# does NOT include a Traefik service.
+#
+# For self-hosted with Traefik: use docker-compose.yml
+# For Coolify: use this file
+#
+# Routing configuration:
+# - Web:    https://${DOMAIN} (root)
+# - Backend: https://${DOMAIN}/api (strips /api prefix automatically)
+# ==========================================
+
+services:
+    postgres:
+        image: postgres:16-alpine
+        container_name: reconned-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-reconned}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reconned_dev_password}
+            POSTGRES_DB: ${POSTGRES_DB:-reconned}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reconned}"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    dragonfly:
+        image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+        container_name: reconned-dragonfly
+        restart: unless-stopped
+        ulimits:
+            memlock: -1
+        volumes:
+            - dragonfly_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+
+    backend:
+        build:
+            context: .
+            dockerfile: apps/backend/Dockerfile
+        container_name: reconned-backend
+        restart: unless-stopped
+        env_file:
+            - apps/backend/.env
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER:-reconned}:${POSTGRES_PASSWORD:-reconned_dev_password}@postgres:5432/${POSTGRES_DB:-reconned}
+            REDIS_URL: redis://dragonfly:6379
+            BETTER_AUTH_URL: https://${DOMAIN:-reconned.com}/api
+            CDN_URL: https://${DOMAIN:-reconned.com}/cdn
+            CORS_ORIGINS: https://${DOMAIN:-reconned.com}
+        expose:
+            - "4000"
+        depends_on:
+            postgres:
+                condition: service_healthy
+            dragonfly:
+                condition: service_healthy
+        labels:
+            # Coolify labels for routing
+            - "coolify.managed=true"
+            - "coolify.type=application"
+            - "coolify.name=reconned-backend"
+
+            # Route backend to /api path
+            - "traefik.enable=true"
+            - "traefik.http.routers.reconned-backend.rule=Host(`${DOMAIN:-reconned.com}`) && PathPrefix(`/api`)"
+            - "traefik.http.routers.reconned-backend.entrypoints=websecure"
+            - "traefik.http.routers.reconned-backend.tls=true"
+            - "traefik.http.routers.reconned-backend.tls.certresolver=letsencrypt"
+
+            # Strip /api prefix to avoid /api/api duplication
+            - "traefik.http.middlewares.reconned-backend-stripprefix.stripprefix.prefixes=/api"
+            - "traefik.http.routers.reconned-backend.middlewares=reconned-backend-stripprefix"
+
+            # Service configuration
+            - "traefik.http.services.reconned-backend.loadbalancer.server.port=4000"
+
+    web:
+        build:
+            context: .
+            dockerfile: apps/web/Dockerfile
+        container_name: reconned-web
+        restart: unless-stopped
+        env_file:
+            - apps/web/.env
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER:-reconned}:${POSTGRES_PASSWORD:-reconned_dev_password}@postgres:5432/${POSTGRES_DB:-reconned}
+            REDIS_URL: redis://dragonfly:6379
+            NEXT_PUBLIC_BACKEND_URL: https://${DOMAIN:-reconned.com}/api
+            NEXT_PUBLIC_BETTER_AUTH_URL: https://${DOMAIN:-reconned.com}
+            NEXT_PUBLIC_CDN_URL: https://${DOMAIN:-reconned.com}/cdn
+        expose:
+            - "3000"
+        depends_on:
+            - backend
+            - postgres
+            - dragonfly
+        labels:
+            # Coolify labels for routing
+            - "coolify.managed=true"
+            - "coolify.type=application"
+            - "coolify.name=reconned-web"
+
+            # Route web app to root domain
+            - "traefik.enable=true"
+            - "traefik.http.routers.reconned-web.rule=Host(`${DOMAIN:-reconned.com}`)"
+            - "traefik.http.routers.reconned-web.entrypoints=websecure"
+            - "traefik.http.routers.reconned-web.tls=true"
+            - "traefik.http.routers.reconned-web.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.reconned-web.priority=1"
+
+            # Service configuration
+            - "traefik.http.services.reconned-web.loadbalancer.server.port=3000"
+
+volumes:
+    postgres_data:
+        driver: local
+    dragonfly_data:
+        driver: local

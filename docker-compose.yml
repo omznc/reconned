@@ -1,0 +1,202 @@
+# ==========================================
+# Docker Compose with Traefik
+# ==========================================
+# Use this file for:
+# - Self-hosted deployments with your own Traefik
+# - Local development with domain routing
+# - Production deployments without Coolify
+#
+# For Coolify deployments, use docker-compose.coolify.yml instead
+# (Coolify has its own Traefik instance)
+# ==========================================
+
+services:
+    traefik:
+        image: traefik:v3.0
+        container_name: reconned-traefik
+        restart: unless-stopped
+        command:
+            # Enable Docker provider
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--providers.docker.network=${NETWORK_NAME:-reconned-network}"
+
+            # Entry points
+            - "--entrypoints.web.address=:80"
+            - "--entrypoints.websecure.address=:443"
+
+            # HTTP to HTTPS redirect
+            - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+            - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+            # Let's Encrypt / ACME
+            - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL:-admin@reconned.com}"
+            - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+            - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+            - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+            - "--certificatesresolvers.letsencrypt.acme.caserver=${TRAEFIK_ACME_STAGING:-false}==true && https://acme-staging-v02.api.letsencrypt.org/directory || https://acme-v02.api.letsencrypt.org/directory"
+
+            # API and Dashboard (optional)
+            - "--api.dashboard=${TRAEFIK_DASHBOARD_ENABLED:-false}"
+            - "--api.insecure=false"
+
+            # Logging
+            - "--log.level=INFO"
+            - "--accesslog=true"
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - traefik_letsencrypt:/letsencrypt
+        networks:
+            - reconned-network
+        labels:
+            # Dashboard (if enabled)
+            - "traefik.enable=${TRAEFIK_DASHBOARD_ENABLED:-false}"
+            - "traefik.http.routers.traefik-dashboard.rule=Host(`${TRAEFIK_DASHBOARD_DOMAIN:-traefik.reconned.com}`)"
+            - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+            - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.traefik-dashboard.service=api@internal"
+
+    postgres:
+        image: postgres:16-alpine
+        container_name: reconned-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-reconned}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reconned_dev_password}
+            POSTGRES_DB: ${POSTGRES_DB:-reconned}
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - reconned-network
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reconned}"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    dragonfly:
+        image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+        container_name: reconned-dragonfly
+        restart: unless-stopped
+        ulimits:
+            memlock: -1
+        ports:
+            - "6379:6379"
+        volumes:
+            - dragonfly_data:/data
+        networks:
+            - reconned-network
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+
+    backend:
+        build:
+            context: .
+            dockerfile: apps/backend/Dockerfile
+        container_name: reconned-backend
+        restart: unless-stopped
+        env_file:
+            - apps/backend/.env
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER:-reconned}:${POSTGRES_PASSWORD:-reconned_dev_password}@postgres:5432/${POSTGRES_DB:-reconned}
+            REDIS_URL: redis://dragonfly:6379
+            BETTER_AUTH_URL: ${ENVIRONMENT:-development}==production && https://${DOMAIN:-reconned.com}/api || http://localhost:4000
+            CDN_URL: ${ENVIRONMENT:-development}==production && https://${DOMAIN:-reconned.com}/cdn || http://localhost:4000/cdn
+            CORS_ORIGINS: ${ENVIRONMENT:-development}==production && https://${DOMAIN:-reconned.com} || http://localhost:3000,https://reconned.com,https://beta.reconned.com
+        expose:
+            - "4000"
+        ports:
+            - "4000:4000"
+        depends_on:
+            postgres:
+                condition: service_healthy
+            dragonfly:
+                condition: service_healthy
+        networks:
+            - reconned-network
+        labels:
+            - "traefik.enable=true"
+
+            # Backend API routing - strip /api prefix to avoid /api/api
+            - "traefik.http.routers.backend.rule=Host(`${DOMAIN:-reconned.com}`) && PathPrefix(`/api`)"
+            - "traefik.http.routers.backend.entrypoints=websecure"
+            - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+
+            # Strip /api prefix before forwarding to backend
+            - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/api"
+            - "traefik.http.routers.backend.middlewares=backend-stripprefix"
+
+            # Service configuration
+            - "traefik.http.services.backend.loadbalancer.server.port=4000"
+
+            # HTTP to HTTPS redirect for backend
+            - "traefik.http.routers.backend-http.rule=Host(`${DOMAIN:-reconned.com}`) && PathPrefix(`/api`)"
+            - "traefik.http.routers.backend-http.entrypoints=web"
+            - "traefik.http.routers.backend-http.middlewares=redirect-to-https"
+
+            # Redirect middleware
+            - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+            - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+
+    web:
+        build:
+            context: .
+            dockerfile: apps/web/Dockerfile
+        container_name: reconned-web
+        restart: unless-stopped
+        env_file:
+            - apps/web/.env
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER:-reconned}:${POSTGRES_PASSWORD:-reconned_dev_password}@postgres:5432/${POSTGRES_DB:-reconned}
+            REDIS_URL: redis://dragonfly:6379
+            NEXT_PUBLIC_BACKEND_URL: ${ENVIRONMENT:-development}==production && https://${DOMAIN:-reconned.com}/api || http://localhost:4000
+            NEXT_PUBLIC_BETTER_AUTH_URL: ${ENVIRONMENT:-development}==production && https://${DOMAIN:-reconned.com} || http://localhost:3000
+            NEXT_PUBLIC_CDN_URL: ${ENVIRONMENT:-development}==production && https://${DOMAIN:-reconned.com}/cdn || http://localhost:4000/cdn
+        expose:
+            - "3000"
+        ports:
+            - "3000:3000"
+        depends_on:
+            - backend
+            - postgres
+            - dragonfly
+        networks:
+            - reconned-network
+        labels:
+            - "traefik.enable=true"
+
+            # Web app routing - root domain
+            - "traefik.http.routers.web.rule=Host(`${DOMAIN:-reconned.com}`)"
+            - "traefik.http.routers.web.entrypoints=websecure"
+            - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.web.priority=1"
+
+            # Service configuration
+            - "traefik.http.services.web.loadbalancer.server.port=3000"
+
+            # HTTP to HTTPS redirect for web
+            - "traefik.http.routers.web-http.rule=Host(`${DOMAIN:-reconned.com}`)"
+            - "traefik.http.routers.web-http.entrypoints=web"
+            - "traefik.http.routers.web-http.middlewares=redirect-to-https"
+            - "traefik.http.routers.web-http.priority=1"
+
+networks:
+    reconned-network:
+        name: ${NETWORK_NAME:-reconned-network}
+        driver: bridge
+
+volumes:
+    postgres_data:
+        driver: local
+    dragonfly_data:
+        driver: local
+    traefik_letsencrypt:
+        driver: local

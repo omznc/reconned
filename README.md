@@ -1,11 +1,7 @@
 ![Image](logo.svg)
 
-[![Build and Push Docker Image](https://github.com/omznc/reconned/actions/workflows/docker.yml/badge.svg?branch=main)](https://github.com/omznc/reconned/actions/workflows/docker.yml)
 
 A monorepo application for managing airsoft events, clubs, and player profiles with view tracking capabilities.
-
-> [!IMPORTANT]  
-> The prebuilt Docker images you can find under **packages** are for official deployment which will not work for you. You'll need to build it yourself if you want to run RECONNED on your own.
 
 ## Architecture
 
