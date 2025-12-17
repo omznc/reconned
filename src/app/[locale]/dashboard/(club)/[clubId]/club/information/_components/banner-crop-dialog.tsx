@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +29,24 @@ export function BannerCropDialog({ file, onClose, onCrop }: BannerCropDialogProp
 		y: 5,
 	});
 	const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
+	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const t = useExtracted();
+
+	const fileObjectUrl = useMemo(() => {
+		if (!file) {
+			return null;
+		}
+		return URL.createObjectURL(file);
+	}, [file]);
+
+	useEffect(() => {
+		setImageUrl(fileObjectUrl);
+		return () => {
+			if (fileObjectUrl) {
+				URL.revokeObjectURL(fileObjectUrl);
+			}
+		};
+	}, [fileObjectUrl]);
 
 	const onImageLoad = useCallback((img: HTMLImageElement) => {
 		setImageRef(img);
@@ -137,7 +154,7 @@ export function BannerCropDialog({ file, onClose, onCrop }: BannerCropDialogProp
 				<DialogHeader>
 					<DialogTitle>{t("Crop banner image")}</DialogTitle>
 					<DialogDescription>
-						{t("Adjust the crop area for your banner (3:1 ratio) and click save to apply changes")}
+						{t("Adjust the crop area for your banner (4:1 ratio) and click save to apply changes")}
 					</DialogDescription>
 				</DialogHeader>
 				<div className="my-4 flex justify-center">
@@ -145,7 +162,7 @@ export function BannerCropDialog({ file, onClose, onCrop }: BannerCropDialogProp
 						<ReactCrop crop={crop} onChange={(c) => setCrop(c)} aspect={4} className="max-h-[500px] w-auto">
 							{/** biome-ignore lint/performance/noImgElement: Local image */}
 							<img
-								src={URL.createObjectURL(file)}
+								src={imageUrl || ""}
 								alt="Crop"
 								onLoad={(e) => onImageLoad(e.currentTarget)}
 								className="max-h-[500px] w-auto"
