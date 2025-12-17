@@ -26,7 +26,7 @@ const localesString = routing.locales.map((locale) => `${locale}`).join("|");
 const nextConfig = {
 	output: "standalone",
 	reactStrictMode: true,
-	typedRoutes: true,
+	// typedRoutes: true, // Disabled - causes build errors with missing AppRouteHandlerRoutes
 	reactCompiler: true,
 	experimental: {
 		staleTimes: {

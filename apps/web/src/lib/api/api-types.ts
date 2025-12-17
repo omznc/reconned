@@ -2204,7 +2204,27 @@ export interface paths {
 		 * Get upcoming events
 		 * @description Get upcoming events with privacy filtering
 		 */
-		get: operations["eventsupcomingGet1"];
+		get: operations["eventsupcomingGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/events/calendar": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get events for calendar view
+		 * @description Get events within a date range for calendar display
+		 */
+		get: operations["eventscalendarGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -2236,26 +2256,6 @@ export interface paths {
 		 * @description Delete an event
 		 */
 		delete: operations["eventsidDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/calendar": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get events for calendar view
-		 * @description Get events within a date range for calendar display
-		 */
-		get: operations["eventscalendarGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
@@ -13953,7 +13953,7 @@ export interface operations {
 			};
 		};
 	};
-	eventsupcomingGet1: {
+	eventsupcomingGet: {
 		parameters: {
 			query?: {
 				limit?: number;
@@ -14002,6 +14002,75 @@ export interface operations {
 								verified: boolean;
 							} | null;
 						}[];
+					};
+				};
+			};
+		};
+	};
+	eventscalendarGet: {
+		parameters: {
+			query: {
+				startDate: string;
+				endDate: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						events: {
+							id: string;
+							name: string;
+							description: string;
+							clubId: string;
+							image: string | null;
+							slug: string | null;
+							dateStart: string;
+							dateEnd: string;
+							dateRegistrationsClose: string;
+							dateRegistrationsOpen: string;
+							isPrivate: boolean;
+							allowFreelancers: boolean;
+							location: string;
+							googleMapsLink: string | null;
+							costPerPerson: number;
+							hasBreakfast: boolean;
+							hasLunch: boolean;
+							hasDinner: boolean;
+							hasSnacks: boolean;
+							hasDrinks: boolean;
+							hasPrizes: boolean;
+							gearRequirements: unknown[] | null;
+							mapData: unknown;
+							createdAt: string;
+							updatedAt: string;
+							club: {
+								name: string;
+								verified: boolean;
+								logo: string | null;
+								slug: string | null;
+								id: string;
+							} | null;
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
 					};
 				};
 			};
@@ -14266,75 +14335,6 @@ export interface operations {
 			};
 			/** @description Not Found */
 			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventscalendarGet: {
-		parameters: {
-			query: {
-				startDate: string;
-				endDate: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						events: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-							club: {
-								name: string;
-								verified: boolean;
-								logo: string | null;
-								slug: string | null;
-								id: string;
-							} | null;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
 				headers: {
 					[name: string]: unknown;
 				};

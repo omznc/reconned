@@ -585,7 +585,6 @@ export class Router {
 			const windowStart = now - rateLimitConfig.windowMs;
 
 			await redis.zremrangebyscore(key, 0, windowStart);
-
 			const requestCount = await redis.zcard(key);
 
 			if (requestCount >= rateLimitConfig.maxRequests) {
@@ -598,16 +597,12 @@ export class Router {
 				});
 			}
 
-			// Add current request timestamp
 			await redis.zadd(key, now, now.toString());
-
-			// Set expiry on the key (cleanup old keys)
 			await redis.expire(key, Math.ceil(rateLimitConfig.windowMs / 1000) * 2);
 
 			return null; // No rate limit hit
 		} catch (error) {
-			console.error("Rate limiting error:", error);
-			// Continue with request if Redis fails
+			console.error(`Rate limiting error for IP ${clientIP}:`, error instanceof Error ? error.message : error);
 			return null;
 		}
 	}

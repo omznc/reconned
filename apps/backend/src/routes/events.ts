@@ -223,6 +223,108 @@ eventsRouter.get(
 );
 
 eventsRouter.get(
+	"/events/calendar",
+	async ({ query, context, response }) => {
+		const startDate = query?.startDate;
+		const endDate = query?.endDate;
+
+		if (!startDate || !endDate) {
+			throw apiError.validation("Start date and end date are required");
+		}
+
+		const whereConditions = [gte(event.dateStart, startDate), lte(event.dateStart, endDate)];
+
+		const isAdmin = context.isAdmin;
+		const requestingUserId = context.user?.id;
+
+		const publicClubCondition = sql`
+			EXISTS (
+				SELECT 1
+				FROM "Club" c
+				WHERE c."id" = ${event.clubId}
+				AND c."isPrivate" = false
+			)
+		`;
+
+		if (!requestingUserId || !context.user) {
+			whereConditions.push(eq(event.isPrivate, false));
+			whereConditions.push(publicClubCondition);
+		} else if (!isAdmin) {
+			const userClubMemberships = await db
+				.select({ clubId: clubMembership.clubId })
+				.from(clubMembership)
+				.where(eq(clubMembership.userId, requestingUserId));
+
+			const userClubIds = userClubMemberships.map((m) => m.clubId);
+
+			if (userClubIds.length > 0) {
+				whereConditions.push(
+					or(
+						and(eq(event.isPrivate, false), publicClubCondition),
+						sql`${event.clubId} = ANY(${userClubIds})`,
+					) as SQL,
+				);
+			} else {
+				whereConditions.push(eq(event.isPrivate, false));
+				whereConditions.push(publicClubCondition);
+			}
+		}
+
+		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
+
+		const events = await db.select().from(event).where(whereClause).orderBy(event.dateStart);
+
+		const eventsWithDetails = await Promise.all(
+			events.map(async (e) => {
+				const clubData = await db
+					.select({ name: club.name, verified: club.verified, logo: club.logo, id: club.id, slug: club.slug })
+					.from(club)
+					.where(eq(club.id, e.clubId))
+					.limit(1);
+
+				return {
+					...e,
+					club: clubData[0] || null,
+				};
+			}),
+		);
+
+		return response.json({
+			events: eventsWithDetails,
+		});
+	},
+	{
+		schema: {
+			tags: ["Events"],
+			summary: "Get events for calendar view",
+			description: "Get events within a date range for calendar display",
+			query: z.object({
+				startDate: z.string(),
+				endDate: z.string(),
+			}),
+			response: {
+				200: z.object({
+					events: z.array(
+						baseEventSchema.extend({
+							club: z
+								.object({
+									name: z.string(),
+									verified: z.boolean(),
+									logo: z.string().nullable(),
+									slug: z.string().nullable(),
+									id: z.string(),
+								})
+								.nullable(),
+						}),
+					),
+				}),
+				400: z.object({ error: z.string() }),
+			},
+		},
+	},
+);
+
+eventsRouter.get(
 	"/events/:id",
 	async ({ params, context, response }) => {
 		const eventId = params.id;
@@ -329,186 +431,6 @@ eventsRouter.get(
 				}),
 				400: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
-			},
-		},
-	},
-);
-
-eventsRouter.get(
-	"/events/upcoming",
-	async ({ query, context, response }) => {
-		const limit = query.limit ?? 25;
-
-		const whereConditions = [gte(event.dateStart, new Date().toISOString())];
-
-		if (!context.user) {
-			whereConditions.push(eq(event.isPrivate, false));
-		} else {
-			const userClubMemberships = await db
-				.select({ clubId: clubMembership.clubId })
-				.from(clubMembership)
-				.where(eq(clubMembership.userId, context.user.id));
-
-			const userClubIds = userClubMemberships.map((m) => m.clubId);
-
-			if (userClubIds.length > 0) {
-				const privacyCondition = or(eq(event.isPrivate, false), sql`${event.clubId} = ANY(${userClubIds})`);
-				if (privacyCondition) {
-					whereConditions.push(privacyCondition);
-				}
-			} else {
-				whereConditions.push(eq(event.isPrivate, false));
-			}
-		}
-
-		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const events = whereClause
-			? await db.select().from(event).where(whereClause).orderBy(event.dateStart).limit(limit)
-			: await db.select().from(event).orderBy(event.dateStart).limit(limit);
-
-		const eventsWithDetails = await Promise.all(
-			events.map(async (e) => {
-				const clubData = await db
-					.select({ name: club.name, verified: club.verified })
-					.from(club)
-					.where(eq(club.id, e.clubId))
-					.limit(1);
-
-				return {
-					...e,
-					club: clubData[0] || null,
-				};
-			}),
-		);
-
-		return response.json({
-			events: eventsWithDetails,
-		});
-	},
-	{
-		schema: {
-			tags: ["Events"],
-			summary: "Get upcoming events",
-			description: "Get upcoming events with privacy filtering",
-			query: z.object({
-				limit: z.coerce.number().optional().default(25),
-			}),
-			response: {
-				200: z.object({
-					events: z.array(
-						baseEventSchema.extend({
-							club: z
-								.object({
-									name: z.string(),
-									verified: z.boolean(),
-								})
-								.nullable(),
-						}),
-					),
-				}),
-			},
-		},
-	},
-);
-
-eventsRouter.get(
-	"/events/calendar",
-	async ({ query, context, response }) => {
-		const startDate = query?.startDate;
-		const endDate = query?.endDate;
-
-		if (!startDate || !endDate) {
-			throw apiError.validation("Start date and end date are required");
-		}
-
-		const whereConditions = [gte(event.dateStart, startDate), lte(event.dateStart, endDate)];
-
-		const isAdmin = context.isAdmin;
-		const requestingUserId = context.user?.id;
-
-		const publicClubCondition = sql`
-			EXISTS (
-				SELECT 1
-				FROM "Club" c
-				WHERE c."id" = ${event.clubId}
-				AND c."isPrivate" = false
-			)
-		`;
-
-		if (!requestingUserId || !context.user) {
-			whereConditions.push(eq(event.isPrivate, false));
-			whereConditions.push(publicClubCondition);
-		} else if (!isAdmin) {
-			const userClubMemberships = await db
-				.select({ clubId: clubMembership.clubId })
-				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
-
-			const userClubIds = userClubMemberships.map((m) => m.clubId);
-
-			if (userClubIds.length > 0) {
-				whereConditions.push(
-					or(
-						and(eq(event.isPrivate, false), publicClubCondition),
-						sql`${event.clubId} = ANY(${userClubIds})`,
-					) as SQL,
-				);
-			} else {
-				whereConditions.push(eq(event.isPrivate, false));
-				whereConditions.push(publicClubCondition);
-			}
-		}
-
-		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const events = await db.select().from(event).where(whereClause).orderBy(event.dateStart);
-
-		const eventsWithDetails = await Promise.all(
-			events.map(async (e) => {
-				const clubData = await db
-					.select({ name: club.name, verified: club.verified, logo: club.logo, id: club.id, slug: club.slug })
-					.from(club)
-					.where(eq(club.id, e.clubId))
-					.limit(1);
-
-				return {
-					...e,
-					club: clubData[0] || null,
-				};
-			}),
-		);
-
-		return response.json({
-			events: eventsWithDetails,
-		});
-	},
-	{
-		schema: {
-			tags: ["Events"],
-			summary: "Get events for calendar view",
-			description: "Get events within a date range for calendar display",
-			query: z.object({
-				startDate: z.string(),
-				endDate: z.string(),
-			}),
-			response: {
-				200: z.object({
-					events: z.array(
-						baseEventSchema.extend({
-							club: z
-								.object({
-									name: z.string(),
-									verified: z.boolean(),
-									logo: z.string().nullable(),
-									slug: z.string().nullable(),
-									id: z.string(),
-								})
-								.nullable(),
-						}),
-					),
-				}),
-				400: z.object({ error: z.string() }),
 			},
 		},
 	},
