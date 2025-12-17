@@ -25,8 +25,14 @@ export interface UploadUrlResponse {
 }
 
 export function generateKeyWithSize(baseKey: string, size: number): string {
-	const extension = baseKey.split(".").pop() || "";
-	const nameWithoutExt = baseKey.replace(`.${extension}`, "");
+	const lastDotIndex = baseKey.lastIndexOf(".");
+	if (lastDotIndex === -1) {
+		// No extension, just append size
+		return `${baseKey}_${size}b`;
+	}
+
+	const nameWithoutExt = baseKey.slice(0, lastDotIndex);
+	const extension = baseKey.slice(lastDotIndex + 1);
 	return `${nameWithoutExt}_${size}b.${extension}`;
 }
 

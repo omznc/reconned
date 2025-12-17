@@ -17,7 +17,7 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production \
-    PORT=3001 \
+    PORT=3002 \
     HOSTNAME="0.0.0.0"
 
 # Copy the root node_modules and workspace structure
@@ -29,6 +29,6 @@ COPY apps/backend ./apps/backend
 
 WORKDIR /app/apps/backend
 
-EXPOSE 3001
+EXPOSE 3002
 
 CMD ["bun", "run", "src/index.ts"]

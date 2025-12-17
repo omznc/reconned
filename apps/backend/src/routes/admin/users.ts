@@ -34,7 +34,7 @@ const baseClubMembershipSchema = z.object({
 });
 
 adminUsersRouter.get(
-	"/api/admin/users",
+	"/admin/users",
 	async ({ query, response, context: _context }) => {
 		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query || {};
 		const offset = (page - 1) * perPage;
@@ -143,7 +143,7 @@ adminUsersRouter.get(
 );
 
 adminUsersRouter.get(
-	"/api/admin/users/:id",
+	"/admin/users/:id",
 	async ({ params, response, context: _context }) => {
 		const userId = params.id;
 		if (!userId) {

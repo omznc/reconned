@@ -57,7 +57,7 @@ const uploadFileSchema = z.object({
 });
 
 adminUnclaimedClubsRouter.get(
-	"/api/admin/unclaimed-clubs",
+	"/admin/unclaimed-clubs",
 	async ({ query, response, context: _context }) => {
 		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query || {};
 		const offset = (page - 1) * perPage;
@@ -149,7 +149,7 @@ adminUnclaimedClubsRouter.get(
 );
 
 adminUnclaimedClubsRouter.get(
-	"/api/admin/unclaimed-clubs/:id",
+	"/admin/unclaimed-clubs/:id",
 	async ({ params, response, context: _context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -196,7 +196,7 @@ adminUnclaimedClubsRouter.get(
 );
 
 adminUnclaimedClubsRouter.post(
-	"/api/admin/unclaimed-clubs",
+	"/admin/unclaimed-clubs",
 	async ({ body, response, context }) => {
 		const clubId = randomUUIDv7();
 		const now = new Date().toISOString();
@@ -281,7 +281,7 @@ adminUnclaimedClubsRouter.post(
 );
 
 adminUnclaimedClubsRouter.put(
-	"/api/admin/unclaimed-clubs/:id",
+	"/admin/unclaimed-clubs/:id",
 	async ({ params, body, response, context }) => {
 		const clubId = params.id;
 
@@ -380,7 +380,7 @@ adminUnclaimedClubsRouter.put(
 );
 
 adminUnclaimedClubsRouter.put(
-	"/api/admin/unclaimed-clubs/:id/logo",
+	"/admin/unclaimed-clubs/:id/logo",
 	async ({ params, body, response, context: _context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -424,7 +424,7 @@ adminUnclaimedClubsRouter.put(
 );
 
 adminUnclaimedClubsRouter.post(
-	"/api/admin/unclaimed-clubs/:id/logo/upload-url",
+	"/admin/unclaimed-clubs/:id/logo/upload-url",
 	async ({ params, body, response }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -458,7 +458,7 @@ adminUnclaimedClubsRouter.post(
 );
 
 adminUnclaimedClubsRouter.put(
-	"/api/admin/unclaimed-clubs/:id/header-image",
+	"/admin/unclaimed-clubs/:id/header-image",
 	async ({ params, body, response, context: _context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -502,7 +502,7 @@ adminUnclaimedClubsRouter.put(
 );
 
 adminUnclaimedClubsRouter.post(
-	"/api/admin/unclaimed-clubs/:id/header-image/upload-url",
+	"/admin/unclaimed-clubs/:id/header-image/upload-url",
 	async ({ params, body, response }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -536,7 +536,7 @@ adminUnclaimedClubsRouter.post(
 );
 
 adminUnclaimedClubsRouter.post(
-	"/api/admin/unclaimed-clubs/:id/assign-owner",
+	"/admin/unclaimed-clubs/:id/assign-owner",
 	async ({ params, body, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -605,7 +605,7 @@ adminUnclaimedClubsRouter.post(
 );
 
 adminUnclaimedClubsRouter.post(
-	"/api/admin/unclaimed-clubs/:id/claim-request",
+	"/admin/unclaimed-clubs/:id/claim-request",
 	async ({ params, body, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {

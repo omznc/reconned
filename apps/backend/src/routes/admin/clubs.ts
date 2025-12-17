@@ -44,7 +44,7 @@ const baseClubSchema = z.object({
 });
 
 adminClubsRouter.get(
-	"/api/admin/clubs",
+	"/admin/clubs",
 	async ({ query, response, context: _context }) => {
 		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query || {};
 		const offset = (page - 1) * perPage;
@@ -124,7 +124,7 @@ adminClubsRouter.get(
 );
 
 adminClubsRouter.get(
-	"/api/admin/clubs/:id",
+	"/admin/clubs/:id",
 	async ({ params, response, context: _context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -167,7 +167,7 @@ adminClubsRouter.get(
 );
 
 adminClubsRouter.put(
-	"/api/admin/clubs/:id/ban",
+	"/admin/clubs/:id/ban",
 	async ({ params, response, context: _context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -208,7 +208,7 @@ adminClubsRouter.put(
 );
 
 adminClubsRouter.put(
-	"/api/admin/clubs/:id/unban",
+	"/admin/clubs/:id/unban",
 	async ({ params, response, context: _context }) => {
 		const clubId = params.id;
 		if (!clubId) {
@@ -251,7 +251,7 @@ adminClubsRouter.put(
 );
 
 adminClubsRouter.delete(
-	"/api/admin/clubs/:id",
+	"/admin/clubs/:id",
 	async ({ params, response, context: _context }) => {
 		const clubId = params.id;
 		if (!clubId) {

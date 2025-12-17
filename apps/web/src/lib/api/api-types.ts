@@ -2609,7 +2609,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/users": {
+	"/admin/users": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2629,7 +2629,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/users/{id}": {
+	"/admin/users/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2649,7 +2649,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/clubs": {
+	"/admin/clubs": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2669,7 +2669,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/clubs/{id}": {
+	"/admin/clubs/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2693,7 +2693,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/clubs/{id}/ban": {
+	"/admin/clubs/{id}/ban": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2713,7 +2713,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/clubs/{id}/unban": {
+	"/admin/clubs/{id}/unban": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2733,7 +2733,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs": {
+	"/admin/unclaimed-clubs": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2757,7 +2757,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs/{id}": {
+	"/admin/unclaimed-clubs/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2781,7 +2781,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs/{id}/logo": {
+	"/admin/unclaimed-clubs/{id}/logo": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2801,7 +2801,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs/{id}/logo/upload-url": {
+	"/admin/unclaimed-clubs/{id}/logo/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2821,7 +2821,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs/{id}/header-image": {
+	"/admin/unclaimed-clubs/{id}/header-image": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2841,7 +2841,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs/{id}/header-image/upload-url": {
+	"/admin/unclaimed-clubs/{id}/header-image/upload-url": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2861,7 +2861,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs/{id}/assign-owner": {
+	"/admin/unclaimed-clubs/{id}/assign-owner": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -2881,7 +2881,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/api/admin/unclaimed-clubs/{id}/claim-request": {
+	"/admin/unclaimed-clubs/{id}/claim-request": {
 		parameters: {
 			query?: never;
 			header?: never;

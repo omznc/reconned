@@ -25,7 +25,7 @@ const mainRouter = new Router();
 mainRouter.middleware(loggingMiddleware);
 mainRouter.middleware(
 	pathMiddleware(
-		"/api/admin",
+		"/admin",
 		authMiddleware({
 			requireAuth: true,
 			roles: ["admin"],
