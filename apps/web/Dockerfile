@@ -46,6 +46,8 @@ ENV CI=${CI:-false} \
     NEXT_PUBLIC_BETA=${NEXT_PUBLIC_BETA:-false}
 
 WORKDIR /app/apps/web
+
+# Bun build is broken because of whatever "napi_register_module_v1" is.
 RUN node node_modules/next/dist/bin/next build --turbo
 
 FROM base AS runner

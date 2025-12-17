@@ -5,7 +5,6 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, captcha, lastLoginMethod, oneTap, openAPI, twoFactor } from "better-auth/plugins";
 import { emailHarmony } from "better-auth-harmony";
 import { and, eq, gt } from "drizzle-orm";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { clubInvite, clubMembership } from "../drizzle/schema";
 import EmailVerification from "../emails/email-verification";
 import PasswordReset from "../emails/password-reset";
@@ -22,7 +21,7 @@ type SecondaryStorage = {
 
 export const auth = betterAuth({
 	telemetry: { enabled: false },
-	database: drizzleAdapter(db as NodePgDatabase<typeof import("../drizzle/schema")>, {
+	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
 	secondaryStorage: {
