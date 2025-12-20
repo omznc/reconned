@@ -1,0 +1,72 @@
+{
+	"emails": {
+		"createAccount": {
+			"preview": "Позвани сте на airsoft сусрет!",
+			"heading": "Позвани сте на airsoft сусрет!",
+			"description": "Позвани сте да се придружите сусрету {eventName} који ће се одржати {eventDate}.",
+			"accountLink": "Ваш налог ће аутоматски бити повезан са клубом {clubName} и моћи ћете одмах приступити детаљима меча.",
+			"button": "Креирај налог",
+			"emailNote": "Овај линк је повезан са email адресом: {email}",
+			"footer": "Ако нисте очекивали ову позивницу, молимо вас да игноришете овај email."
+		},
+		"clubInvitation": {
+			"preview": "Позвани сте да се придружите клубу {clubName}.",
+			"heading": "Позивница",
+			"greeting": "Здраво {name}",
+			"greetingGeneric": "Здраво",
+			"description": "Позвани сте да се придружите клубу {clubName}.",
+			"button": "Прихвати позив",
+			"codeNote": "Или користите овај код позивнице:",
+			"footer": "Ако нисте очекивали ову позивницу, молимо вас да игноришете овај email."
+		},
+		"rateEvent": {
+			"preview": "Оцените ваше искуство на {eventName}!",
+			"heading": "Како је био ваш сусрет?",
+			"greeting": "Здраво {playerName}",
+			"greetingGeneric": "Поздрав",
+			"description": "Хвала вам што сте присуствовали сусрету {eventName} који се одржао {eventDate}.",
+			"button": "Оцени сусрет",
+			"footer": "{clubName} - Хвала вам на учешћу!"
+		},
+		"membershipExpiration": {
+			"previewExpired": "Ваше чланство у {clubName} је истекло",
+			"previewExpiring": "Ваше чланство у {clubName} истиче за {daysUntilExpiry} дана",
+			"headingExpired": "Чланство је истекло",
+			"headingExpiring": "Чланство истиче ускоро",
+			"greeting": "Здраво {userName}",
+			"descriptionExpired": "Ваше чланство у клубу {clubName} је истекло {expiryDate}. Ако желите наставити бити члан клуба, молимо вас да обновите ваше чланство.",
+			"descriptionExpiring": "Ваше чланство у клубу {clubName} ће истећи {expiryDate} (за {daysUntilExpiry} дана). Да бисте осигурали континуирано чланство, молимо вас да размотрите обнову пре датума isteka.",
+			"button": "Обнови чланство",
+			"footer": "Ако више не желите бити члан {clubName}, можете игнорисати овај email."
+		},
+		"membershipExpirationOwner": {
+			"previewExpired": "Чланство {memberName} у {clubName} је истекло",
+			"previewExpiring": "Чланство {memberName} у {clubName} истиче за {daysUntilExpiry} дана",
+			"headingExpired": "Чланово чланство је истекло",
+			"headingExpiring": "Чланово чланство истиче ускоро",
+			"greeting": "Здраво {ownerName}",
+			"descriptionExpired": "Чланство {memberName} у вашем клубу {clubName} је истекло {expiryDate}.",
+			"descriptionExpiring": "Чланство {memberName} у вашем клубу {clubName} ће истећи {expiryDate} (за {daysUntilExpiry} дана).",
+			"actionNote": "Молимо вас да предузмете одговарајуће акције за управљање чланствима у вашем клубу.",
+			"button": "Погледај чланове",
+			"footer": "Ово је аутоматско обавештење о статусу чланства у вашем клубу."
+		},
+		"passwordReset": {
+			"preview": "Ресетујте своју лозинку",
+			"heading": "Ресетујте своју лозинку",
+			"greeting": "Здраво {userName}",
+			"description": "Затражили сте ресет лозинке за свој налог. Кликните на дугме испод да ресетујете своју лозинку.",
+			"button": "Ресетуј лозинку",
+			"footer": "Ако нисте затражили ресет лозинке, можете сигурно игнорисати овај email.",
+			"validity": "Овај линк ће истећи за 1 сат."
+		},
+		"emailVerification": {
+			"preview": "Верификујте своју email адресу",
+			"heading": "Верификујте своју email адресу",
+			"greeting": "Здраво {userName}",
+			"description": "Хвала вам што сте се регистровали! Молимо вас да верификујете своју email адресу кликом на дугме испод.",
+			"button": "Верификуј email",
+			"footer": "Ако нисте креирали овај налог, можете сигурно игнорисати овај email."
+		}
+	}
+}

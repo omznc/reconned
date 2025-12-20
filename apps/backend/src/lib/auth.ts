@@ -13,6 +13,15 @@ import { env } from "./env";
 import { sendEmail } from "./mail";
 import { redis } from "./redis";
 
+interface UserWithLanguage {
+	id: string;
+	email: string;
+	name: string;
+	emailVerified: boolean;
+	image?: string | null;
+	language?: "en" | "bs" | "sr";
+}
+
 type SecondaryStorage = {
 	get: (key: string) => Promise<unknown>;
 	set: (key: string, value: string, ttl?: number) => Promise<void>;
@@ -63,12 +72,21 @@ export const auth = betterAuth({
 		requireEmailVerification: true,
 		sendResetPassword: async ({ user, url }) => {
 			const logoUrl = `${env.BETTER_AUTH_URL}/logo.png`;
+			const userWithLanguage = user as UserWithLanguage;
 			await sendEmail({
 				to: user.email,
 				subject: "Reset your password",
-				html: await render(PasswordReset({ userName: user.name, resetUrl: url, logoUrl }), {
-					pretty: true,
-				}),
+				html: await render(
+					PasswordReset({
+						userName: user.name,
+						resetUrl: url,
+						logoUrl,
+						language: userWithLanguage.language || "bs",
+					}),
+					{
+						pretty: true,
+					},
+				),
 			});
 		},
 	},
@@ -88,11 +106,17 @@ export const auth = betterAuth({
 				verificationUrl.searchParams.append("callbackURL", redirectUrl);
 			}
 
+			const userWithLanguage = user as UserWithLanguage;
 			await sendEmail({
 				to: user.email,
 				subject: "Confirm your email",
 				html: await render(
-					EmailVerification({ userName: user.name, verificationUrl: verificationUrl.toString(), logoUrl }),
+					EmailVerification({
+						userName: user.name,
+						verificationUrl: verificationUrl.toString(),
+						logoUrl,
+						language: userWithLanguage.language || "bs",
+					}),
 					{
 						pretty: true,
 					},

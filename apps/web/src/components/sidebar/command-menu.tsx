@@ -77,7 +77,6 @@ export function CommandMenu({ clubs, user }: CommandMenuProps) {
 		rules: t("Rules"),
 		admin: t("Administration"),
 		audit: t("Audit"),
-		emails: t("Emails"),
 		users: t("Users"),
 		"unclaimed-clubs": t("Unclaimed clubs"),
 		posts: t("New post"),

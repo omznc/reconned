@@ -12,7 +12,6 @@ import {
 	Info,
 	Key,
 	LayoutDashboard,
-	Mail,
 	MailPlus,
 	NotebookPen,
 	Pencil,
@@ -104,11 +103,6 @@ export function useAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 					title: t("Unclaimed clubs"),
 					url: "/dashboard/admin/unclaimed-clubs",
 					icon: Building2,
-				},
-				{
-					title: t("Emails"),
-					url: "/dashboard/admin/emails",
-					icon: Mail,
 				},
 			],
 		});

@@ -1,4 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
+import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 
 const emailStyles = {
 	main: {
@@ -59,34 +60,34 @@ interface EmailVerificationProps {
 	verificationUrl: string;
 	userName?: string;
 	logoUrl: string;
+	language?: "en" | "bs" | "sr";
 }
 
-export const EmailVerification = ({ verificationUrl, userName, logoUrl }: EmailVerificationProps) => {
+export const EmailVerification = ({ verificationUrl, userName, logoUrl, language = "bs" }: EmailVerificationProps) => {
+	const messages = getEmailMessages(language);
 	return (
 		<Html>
 			<Head />
-			<Preview>Verify your email address</Preview>
+			<Preview>{messages.emails.emailVerification.preview}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
 						<Img src={logoUrl} alt="Logo" width="150" style={emailStyles.logo} />
 					</Section>
-					<Heading style={emailStyles.h1}>Verify your email address</Heading>
-					{userName ? (
-						<Text style={emailStyles.text}>Hi {userName},</Text>
-					) : (
-						<Text style={emailStyles.text}>Hello,</Text>
-					)}
-					<Text style={emailStyles.text}>Please click the button below to verify your email address.</Text>
+					<Heading style={emailStyles.h1}>{messages.emails.emailVerification.heading}</Heading>
+					<Text style={emailStyles.text}>
+						{userName
+							? interpolateMessage(messages.emails.emailVerification.greeting, { userName })
+							: messages.emails.emailVerification.greeting.replace("{userName}", "")}
+					</Text>
+					<Text style={emailStyles.text}>{messages.emails.emailVerification.description}</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={verificationUrl}>
-							Verify email
+							{messages.emails.emailVerification.button}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>
-						If you did not request verification, please ignore this email.
-					</Text>
+					<Text style={emailStyles.footer}>{messages.emails.emailVerification.footer}</Text>
 				</Container>
 			</Body>
 		</Html>

@@ -32,6 +32,11 @@ import {
 import { sendEmail } from "../lib/mail";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
+
+function isValidLanguage(lang: unknown): lang is "en" | "bs" | "sr" {
+	return typeof lang === "string" && (lang === "en" || lang === "bs" || lang === "sr");
+}
+
 import { deleteS3Files, extractSizeFromKey, getS3UploadUrl } from "../lib/storage";
 import { Sanitize } from "../lib/user-sanitization";
 
@@ -2364,7 +2369,11 @@ clubsRouter.post(
 			throw apiError.validation("Invitation already sent to this email");
 		}
 
-		const existingUser = await db.select({ id: user.id }).from(user).where(eq(user.email, target.email)).limit(1);
+		const existingUser = await db
+			.select({ id: user.id, language: user.language })
+			.from(user)
+			.where(eq(user.email, target.email))
+			.limit(1);
 
 		if (existingUser[0]) {
 			const existingMembership = await db
@@ -2428,6 +2437,7 @@ clubsRouter.post(
 						clubLogo: clubData[0].logo || `${env.BETTER_AUTH_URL}/logo.png`,
 						clubName: clubData[0].name,
 						clubLocation: clubData[0].location || "",
+						language: isValidLanguage(existingUser[0]?.language) ? existingUser[0].language : "bs",
 					}),
 					{
 						pretty: true,

@@ -631,6 +631,7 @@ export const user = pgTable(
 		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
 		headerImage: text(),
 		style: text().default("relaxed").notNull(),
+		language: text().default("bs").notNull(),
 	},
 	(table) => [
 		index("User_email_idx").using("btree", table.email.asc().nullsLast().op("text_ops")),

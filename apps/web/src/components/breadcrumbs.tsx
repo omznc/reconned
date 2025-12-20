@@ -51,7 +51,6 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		rules: t("Rules"),
 		attendance: t("Attendance"),
 		admin: t("Administration"),
-		emails: t("Emails"),
 		posts: t("New post"),
 		spending: t("Spending"),
 		"add-club": t("Add club"),

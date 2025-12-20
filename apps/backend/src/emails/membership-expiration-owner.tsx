@@ -1,4 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
+import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
 import { emailStyles } from "./styles";
 
@@ -11,6 +12,7 @@ interface MembershipExpirationOwnerProps {
 	daysUntilExpiry: number;
 	membersUrl: string;
 	isExpired: boolean;
+	language?: "en" | "bs" | "sr";
 }
 
 export const MembershipExpirationOwner = ({
@@ -22,14 +24,23 @@ export const MembershipExpirationOwner = ({
 	daysUntilExpiry,
 	membersUrl,
 	isExpired,
+	language = "bs",
 }: MembershipExpirationOwnerProps) => {
+	const messages = getEmailMessages(language);
 	return (
 		<Html>
 			<Head />
 			<Preview>
 				{isExpired
-					? `${memberName}'s membership in ${clubName} has expired`
-					: `${memberName}'s membership in ${clubName} expires in ${daysUntilExpiry} days`}
+					? interpolateMessage(messages.emails.membershipExpirationOwner.previewExpired, {
+							memberName,
+							clubName,
+						})
+					: interpolateMessage(messages.emails.membershipExpirationOwner.previewExpiring, {
+							memberName,
+							clubName,
+							daysUntilExpiry,
+						})}
 			</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
@@ -42,23 +53,35 @@ export const MembershipExpirationOwner = ({
 						/>
 					</Section>
 					<Heading style={emailStyles.h1}>
-						{isExpired ? "Member's Subscription Expired" : "Member's Subscription Expiring Soon"}
+						{isExpired
+							? messages.emails.membershipExpirationOwner.headingExpired
+							: messages.emails.membershipExpirationOwner.headingExpiring}
 					</Heading>
-					<Text style={emailStyles.text}>Hello {ownerName}</Text>
+					<Text style={emailStyles.text}>
+						{interpolateMessage(messages.emails.membershipExpirationOwner.greeting, { ownerName })}
+					</Text>
 					<Text style={emailStyles.text}>
 						{isExpired
-							? `The membership of ${memberName} in your ${clubName} club has expired on ${expiryDate}.`
-							: `The membership of ${memberName} in your ${clubName} club will expire on ${expiryDate} (in ${daysUntilExpiry} days).`}
+							? interpolateMessage(messages.emails.membershipExpirationOwner.descriptionExpired, {
+									memberName,
+									clubName,
+									expiryDate,
+								})
+							: interpolateMessage(messages.emails.membershipExpirationOwner.descriptionExpiring, {
+									memberName,
+									clubName,
+									expiryDate,
+									daysUntilExpiry,
+								})}
 					</Text>
+					<Text style={emailStyles.text}>{messages.emails.membershipExpirationOwner.actionNote}</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={membersUrl}>
-							Manage Members
+							{messages.emails.membershipExpirationOwner.button}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>
-						This is an automated notification to help you manage your club memberships.
-					</Text>
+					<Text style={emailStyles.footer}>{messages.emails.membershipExpirationOwner.footer}</Text>
 				</Container>
 			</Body>
 		</Html>

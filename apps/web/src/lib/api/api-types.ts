@@ -1209,6 +1209,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/users/{id}/language": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Update user language
+		 * @description Update the user's language preference
+		 */
+		put: operations["usersidlanguagePut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/users/invites": {
 		parameters: {
 			query?: never;
@@ -8965,6 +8985,7 @@ export interface operations {
 						isPrivateEmail: boolean;
 						isPrivatePhone: boolean;
 						isPrivateStats: boolean;
+						language: string;
 						email: string | null;
 						phone: string | null;
 						clubMembership: {
@@ -8993,14 +9014,6 @@ export interface operations {
 									events: number;
 									reviews: number;
 								};
-								events: {
-									id: string;
-									name: string;
-									dateStart: string;
-								}[];
-								reviews: {
-									content: string;
-								}[];
 							} | null;
 						}[];
 						eventRegistration: {
@@ -9124,6 +9137,7 @@ export interface operations {
 							isPrivateEmail: boolean;
 							isPrivatePhone: boolean;
 							isPrivateStats: boolean;
+							language: string;
 							email: string | null;
 							phone: string | null;
 							isAdmin: boolean;
@@ -9170,6 +9184,7 @@ export interface operations {
 						isPrivateEmail: boolean;
 						isPrivatePhone: boolean;
 						isPrivateStats: boolean;
+						language: string;
 						email: string | null;
 						phone: string | null;
 						clubMembership: {
@@ -9331,14 +9346,6 @@ export interface operations {
 									events: number;
 									reviews: number;
 								};
-								events: {
-									id: string;
-									name: string;
-									dateStart: string;
-								}[];
-								reviews: {
-									content: string;
-								}[];
 							} | null;
 						}[];
 						eventRegistrationDetails: {
@@ -9481,6 +9488,48 @@ export interface operations {
 			content: {
 				"application/json": {
 					style: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	usersidlanguagePut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @enum {string} */
+					language: "bs" | "en" | "sr";
 				};
 			};
 		};
@@ -15305,6 +15354,7 @@ export interface operations {
 										updatedAt?: string;
 										headerImage?: string | null;
 										style?: string;
+										language?: string;
 									};
 							  }
 							| {

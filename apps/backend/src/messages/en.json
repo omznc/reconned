@@ -1,0 +1,72 @@
+{
+	"emails": {
+		"createAccount": {
+			"preview": "You are invited to an airsoft event!",
+			"heading": "You are invited to an airsoft event!",
+			"description": "You are invited to join the {eventName} event that will take place on {eventDate}.",
+			"accountLink": "Your account will automatically be linked to club {clubName} and you will be able to access match details immediately.",
+			"button": "Create Account",
+			"emailNote": "This link is associated with the email address: {email}",
+			"footer": "If you were not expecting this invitation, please ignore this email."
+		},
+		"clubInvitation": {
+			"preview": "You are invited to join the {clubName} club.",
+			"heading": "Invitation card",
+			"greeting": "Hi {name}",
+			"greetingGeneric": "Hello",
+			"description": "You are invited to join the {clubName} club.",
+			"button": "Accept invite",
+			"codeNote": "Or use this invitation code:",
+			"footer": "If you did not expect this invitation, please ignore this email."
+		},
+		"rateEvent": {
+			"preview": "Rate your experience at {eventName}!",
+			"heading": "How was your event?",
+			"greeting": "Hello {playerName}",
+			"greetingGeneric": "Greetings",
+			"description": "Thank you for attending the {eventName} event held on {eventDate}.",
+			"button": "Rate the event",
+			"footer": "{clubName} - Thank you for your participation!"
+		},
+		"membershipExpiration": {
+			"previewExpired": "Your membership in {clubName} has expired",
+			"previewExpiring": "Your membership in {clubName} expires in {daysUntilExpiry} days",
+			"headingExpired": "Membership Expired",
+			"headingExpiring": "Membership Expiring Soon",
+			"greeting": "Hello {userName}",
+			"descriptionExpired": "Your membership in the {clubName} club has expired on {expiryDate}. If you wish to continue being a club member, please renew your membership.",
+			"descriptionExpiring": "Your membership in the {clubName} club will expire on {expiryDate} (in {daysUntilExpiry} days). To ensure continuous membership, please consider renewing before the expiry date.",
+			"button": "Renew Membership",
+			"footer": "If you no longer wish to be a member of {clubName}, you can ignore this email."
+		},
+		"membershipExpirationOwner": {
+			"previewExpired": "{memberName}'s membership in {clubName} has expired",
+			"previewExpiring": "{memberName}'s membership in {clubName} expires in {daysUntilExpiry} days",
+			"headingExpired": "Member's Subscription Expired",
+			"headingExpiring": "Member's Subscription Expiring Soon",
+			"greeting": "Hello {ownerName}",
+			"descriptionExpired": "The membership of {memberName} in your {clubName} club has expired on {expiryDate}.",
+			"descriptionExpiring": "The membership of {memberName} in your {clubName} club will expire on {expiryDate} (in {daysUntilExpiry} days).",
+			"actionNote": "Please take appropriate action to manage your club's memberships.",
+			"button": "View Members",
+			"footer": "This is an automated notification about membership status in your club."
+		},
+		"passwordReset": {
+			"preview": "Reset your password",
+			"heading": "Reset your password",
+			"greeting": "Hello {userName}",
+			"description": "You requested a password reset for your account. Click the button below to reset your password.",
+			"button": "Reset Password",
+			"footer": "If you didn't request this password reset, you can safely ignore this email.",
+			"validity": "This link will expire in 1 hour."
+		},
+		"emailVerification": {
+			"preview": "Verify your email address",
+			"heading": "Verify your email address",
+			"greeting": "Hello {userName}",
+			"description": "Thank you for registering! Please verify your email address by clicking the button below.",
+			"button": "Verify Email",
+			"footer": "If you didn't create this account, you can safely ignore this email."
+		}
+	}
+}

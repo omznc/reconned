@@ -43,6 +43,7 @@ const userSchema = baseUserSchema
 		isPrivateEmail: true,
 		isPrivatePhone: true,
 		isPrivateStats: true,
+		language: true,
 	})
 	.extend({
 		email: z.string().nullable(),
@@ -342,6 +343,7 @@ usersRouter.get(
 				isPrivateEmail: user.isPrivateEmail,
 				isPrivatePhone: user.isPrivatePhone,
 				isPrivateStats: user.isPrivateStats,
+				language: user.language,
 				role: user.role,
 				email: isAdmin
 					? user.email
@@ -1088,6 +1090,48 @@ usersRouter.put(
 			}),
 			body: z.object({
 				style: z.string(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				401: z.object({ error: z.string() }),
+			},
+		},
+	},
+);
+
+usersRouter.put(
+	"/users/:id/language",
+	async ({ params, response, context, body }) => {
+		const userId = params.id;
+		if (!userId) {
+			throw apiError.validation("User ID is required");
+		}
+
+		if (!context.user || context.user.id !== userId) {
+			throw apiError.unauthorized("Unauthorized");
+		}
+
+		await db
+			.update(user)
+			.set({
+				language: body.language,
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(user.id, userId));
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Users"],
+			summary: "Update user language",
+			description: "Update the user's language preference",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: z.object({
+				language: z.enum(["bs", "en", "sr"]),
 			}),
 			response: {
 				200: z.object({ success: z.boolean() }),

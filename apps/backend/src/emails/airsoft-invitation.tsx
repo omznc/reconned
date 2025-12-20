@@ -1,4 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
+import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { emailStyles } from "./styles";
 
 interface ClubInvitationEmailProps {
@@ -8,6 +9,7 @@ interface ClubInvitationEmailProps {
 	clubLogo: string;
 	clubName: string;
 	clubLocation: string;
+	language?: "en" | "bs" | "sr";
 }
 
 export const ClubInvitationEmail = ({
@@ -17,11 +19,13 @@ export const ClubInvitationEmail = ({
 	clubLogo,
 	clubName,
 	clubLocation,
+	language = "bs",
 }: ClubInvitationEmailProps) => {
+	const messages = getEmailMessages(language);
 	return (
 		<Html>
 			<Head />
-			<Preview>You are invited to join the {clubName} club.</Preview>
+			<Preview>{interpolateMessage(messages.emails.clubInvitation.preview, { clubName })}</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
@@ -30,24 +34,24 @@ export const ClubInvitationEmail = ({
 							{clubName} - {clubLocation}
 						</Heading>
 					</Section>
-					<Heading style={emailStyles.h1}>Invitation card</Heading>
-					{name ? (
-						<Text style={emailStyles.text}>Hi {name},</Text>
-					) : (
-						<Text style={emailStyles.text}>Hello,</Text>
-					)}
-					<Text style={emailStyles.text}>You are invited to join the {clubName} club.</Text>
+					<Heading style={emailStyles.h1}>{messages.emails.clubInvitation.heading}</Heading>
+					<Text style={emailStyles.text}>
+						{name
+							? interpolateMessage(messages.emails.clubInvitation.greeting, { name })
+							: messages.emails.clubInvitation.greetingGeneric}
+					</Text>
+					<Text style={emailStyles.text}>
+						{interpolateMessage(messages.emails.clubInvitation.description, { clubName })}
+					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={url}>
-							Accept invite
+							{messages.emails.clubInvitation.button}
 						</Button>
 					</Section>
-					<Text style={emailStyles.text}>Or use this invitation code:</Text>
+					<Text style={emailStyles.text}>{messages.emails.clubInvitation.codeNote}</Text>
 					<code style={emailStyles.code}>{code}</code>
 					<Hr style={emailStyles.hr} />
-					<Text style={emailStyles.footer}>
-						If you did not expect this invitation, please ignore this email.
-					</Text>
+					<Text style={emailStyles.footer}>{messages.emails.clubInvitation.footer}</Text>
 				</Container>
 			</Body>
 		</Html>

@@ -1,6 +1,7 @@
 "use client";
 import { Globe } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
+import { useEffect } from "react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -12,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { LANGUAGE_TRANSLATIONS, VALID_LOCALES } from "@/i18n/valid-locales";
+import apiClient from "@/lib/api/api.client";
+import { useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 export interface LanguageSwitcherProps extends ButtonProps {}
@@ -20,6 +23,32 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 	const router = useRouter();
 	const path = usePathname();
 	const locale = useLocale();
+	const { user } = useIsAuthenticated();
+
+	useEffect(() => {
+		if (!VALID_LOCALES.includes(locale)) {
+			return;
+		}
+
+		if (!user?.id) {
+			return;
+		}
+
+		if (user.language === locale) {
+			return;
+		}
+
+		apiClient.PUT("/api/users/{id}/language", {
+			params: {
+				path: {
+					id: user.id,
+				},
+			},
+			body: {
+				language: locale,
+			},
+		});
+	}, [locale, user]);
 
 	return (
 		<DropdownMenu>

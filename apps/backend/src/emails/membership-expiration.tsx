@@ -1,4 +1,5 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
+import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
 import { emailStyles } from "./styles";
 
@@ -10,6 +11,7 @@ interface MembershipExpirationProps {
 	daysUntilExpiry: number;
 	renewUrl: string;
 	isExpired: boolean;
+	language?: "en" | "bs" | "sr";
 }
 
 export const MembershipExpiration = ({
@@ -20,14 +22,19 @@ export const MembershipExpiration = ({
 	daysUntilExpiry,
 	renewUrl,
 	isExpired,
+	language = "bs",
 }: MembershipExpirationProps) => {
+	const messages = getEmailMessages(language);
 	return (
 		<Html>
 			<Head />
 			<Preview>
 				{isExpired
-					? `Your membership in ${clubName} has expired`
-					: `Your membership in ${clubName} expires in ${daysUntilExpiry} days`}
+					? interpolateMessage(messages.emails.membershipExpiration.previewExpired, { clubName })
+					: interpolateMessage(messages.emails.membershipExpiration.previewExpiring, {
+							clubName,
+							daysUntilExpiry,
+						})}
 			</Preview>
 			<Body style={emailStyles.main}>
 				<Container style={emailStyles.container}>
@@ -40,22 +47,33 @@ export const MembershipExpiration = ({
 						/>
 					</Section>
 					<Heading style={emailStyles.h1}>
-						{isExpired ? "Membership Expired" : "Membership Expiring Soon"}
+						{isExpired
+							? messages.emails.membershipExpiration.headingExpired
+							: messages.emails.membershipExpiration.headingExpiring}
 					</Heading>
-					<Text style={emailStyles.text}>Hello {userName},</Text>
+					<Text style={emailStyles.text}>
+						{interpolateMessage(messages.emails.membershipExpiration.greeting, { userName })}
+					</Text>
 					<Text style={emailStyles.text}>
 						{isExpired
-							? `Your membership in the ${clubName} club has expired on ${expiryDate}. If you wish to continue being a club member, please renew your membership.`
-							: `Your membership in the ${clubName} club will expire on ${expiryDate} (in ${daysUntilExpiry} days). To ensure continuous membership, please consider renewing before the expiry date.`}
+							? interpolateMessage(messages.emails.membershipExpiration.descriptionExpired, {
+									clubName,
+									expiryDate,
+								})
+							: interpolateMessage(messages.emails.membershipExpiration.descriptionExpiring, {
+									clubName,
+									expiryDate,
+									daysUntilExpiry,
+								})}
 					</Text>
 					<Section style={emailStyles.buttonContainer}>
 						<Button style={emailStyles.button} href={renewUrl}>
-							Renew Membership
+							{messages.emails.membershipExpiration.button}
 						</Button>
 					</Section>
 					<Hr style={emailStyles.hr} />
 					<Text style={emailStyles.footer}>
-						If you no longer wish to be a member of {clubName}, you can ignore this email.
+						{interpolateMessage(messages.emails.membershipExpiration.footer, { clubName })}
 					</Text>
 				</Container>
 			</Body>
