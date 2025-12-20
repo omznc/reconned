@@ -25,13 +25,23 @@ export const auth = betterAuth({
 		provider: "pg",
 	}),
 	secondaryStorage: {
-		get: async (key: string) => await redis.get(key),
+		get: async (key: string) => {
+			try {
+				return await redis.get(key);
+			} catch {
+				return null;
+			}
+		},
 		set: async (key: string, value: string, ttl?: number) => {
-			if (ttl) await redis.set(key, value, "EX", ttl);
-			else await redis.set(key, value);
+			try {
+				if (ttl) await redis.set(key, value, "EX", ttl);
+				else await redis.set(key, value);
+			} catch {}
 		},
 		delete: async (key: string) => {
-			await redis.del(key);
+			try {
+				await redis.del(key);
+			} catch {}
 		},
 	} satisfies SecondaryStorage,
 	experimental: { joins: true },
