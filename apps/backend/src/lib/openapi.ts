@@ -355,66 +355,25 @@ function getStatusDescription(status: number): string {
 	return descriptions[status] || "Response";
 }
 
-function getSwaggerUIHtml(): string {
-	return `<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Reconned API Documentation</title>
-	<link rel="stylesheet" type="text/css" href="/api/docs/swagger-ui.css" />
-	<link rel="stylesheet" type="text/css" href="/api/docs/index.css" />
-	<style>
-		html {
-			box-sizing: border-box;
-			overflow: -moz-scrollbars-vertical;
-			overflow-y: scroll;
-		}
-		*, *:before, *:after {
-			box-sizing: inherit;
-		}
-		body {
-			margin:0;
-			background: #fafafa;
-		}
-	</style>
-</head>
-<body>
-	<div id="swagger-ui"></div>
-	<script src="/api/docs/swagger-ui-bundle.js" charset="UTF-8"></script>
-	<script src="/api/docs/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
-	<script>
-		window.onload = function() {
-			window.ui = SwaggerUIBundle({
-				url: "/api/openapi.json",
-				dom_id: "#swagger-ui",
-				presets: [
-					SwaggerUIBundle.presets.apis,
-					SwaggerUIStandalonePreset
-				],
-				layout: "StandaloneLayout",
-				deepLinking: true,
-				showExtensions: true,
-				showCommonExtensions: true,
-				tryItOutEnabled: true
-			});
-		};
-	</script>
-</body>
-</html>`;
-}
-
-async function handleSwaggerUIAsset(pathname: string): Promise<Response | null> {
-	if (!pathname.startsWith("/api/docs/") || pathname === "/api/docs" || pathname === "/api/docs/") {
+async function handleScalarUIAsset(pathname: string): Promise<Response | null> {
+	if (pathname !== "/api/docs/scalar.js") {
 		return null;
 	}
 
-	const assetPath = pathname.replace("/api/docs/", "");
 	try {
-		const swaggerUiPath = join(process.cwd(), "node_modules", "swagger-ui-dist", assetPath);
-		const file = Bun.file(swaggerUiPath);
+		const scalarPath = join(
+			process.cwd(),
+			"node_modules",
+			"@scalar/api-reference",
+			"dist",
+			"browser",
+			"standalone.js",
+		);
+		const file = Bun.file(scalarPath);
 		if (await file.exists()) {
 			return new Response(file, {
 				headers: {
+					"Content-Type": "application/javascript",
 					"Cache-Control": "public, max-age=31536000",
 				},
 			});
@@ -423,6 +382,24 @@ async function handleSwaggerUIAsset(pathname: string): Promise<Response | null> 
 		// Fall through to null
 	}
 	return null;
+}
+
+function getScalarHtml(): string {
+	return `<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Reconned API Documentation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+	<script
+		id="api-reference"
+		data-url="/api/openapi.json"
+	></script>
+	<script src="/api/docs/scalar.js"></script>
+</body>
+</html>`;
 }
 
 async function handleOpenAPISpec(request: Request, routers: Router[], corsOrigins: string[]): Promise<Response> {
@@ -441,17 +418,17 @@ export async function handleOpenAPIRoutes(
 	const url = new URL(request.url);
 	const pathname = url.pathname;
 
-	// Handle Swagger UI HTML page
+	// Handle Scalar API Reference HTML page
 	if (pathname === "/api/docs" || pathname === "/api/docs/") {
-		return new Response(getSwaggerUIHtml(), {
+		return new Response(getScalarHtml(), {
 			headers: {
 				"Content-Type": "text/html",
 			},
 		});
 	}
 
-	// Handle Swagger UI static assets
-	const assetResponse = await handleSwaggerUIAsset(pathname);
+	// Handle Scalar UI static assets
+	const assetResponse = await handleScalarUIAsset(pathname);
 	if (assetResponse) {
 		return assetResponse;
 	}
