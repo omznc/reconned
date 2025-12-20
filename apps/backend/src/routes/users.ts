@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, ilike, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, getTableColumns, gte, ilike, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import {
@@ -17,6 +17,7 @@ import { apiError } from "../lib/errors";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { getS3UploadUrl } from "../lib/storage";
+import { Sanitize } from "../lib/user-sanitization";
 
 // Base schemas generated from Drizzle tables
 const baseUserSchema = createSelectSchema(user);
@@ -51,24 +52,24 @@ const userSchema = baseUserSchema
 // Club membership with club details (for dashboard)
 const clubMembershipWithClubSchema = baseClubMembershipSchema.extend({
 	club: baseClubSchema
+		.pick({
+			id: true,
+			name: true,
+			slug: true,
+			description: true,
+			logo: true,
+			location: true,
+			website: true,
+			isPrivate: true,
+			verified: true,
+			createdAt: true,
+		})
 		.extend({
 			_count: z.object({
 				members: z.number(),
 				events: z.number(),
 				reviews: z.number(),
 			}),
-			events: z.array(
-				baseEventSchema.pick({
-					id: true,
-					name: true,
-					dateStart: true,
-				}),
-			),
-			reviews: z.array(
-				createSelectSchema(review).pick({
-					content: true,
-				}),
-			),
 		})
 		.nullable(),
 });
@@ -82,6 +83,9 @@ const eventRegistrationWithEventSchema = baseEventRegistrationSchema.extend({
 			slug: true,
 			dateStart: true,
 		})
+		.extend({
+			dateStart: z.string().nullable(), // Allow null for LEFT JOIN results
+		})
 		.nullable(),
 });
 
@@ -93,50 +97,30 @@ const userWithRelationsSchema = userSchema.extend({
 
 // getRequestingUserInfo removed - use context.user?.id and context.isAdmin directly
 
-function selectSafeUserFields(requestingUserId?: string, isAdmin?: boolean, targetUserId?: string) {
-	const isSelf = requestingUserId && targetUserId && requestingUserId === targetUserId;
-	const canSeeAll = isAdmin || isSelf;
+function getSafeUserSelect(requestingUserId?: string, isAdmin?: boolean, targetUserId?: string) {
+	// Get all user columns except sensitive ones that should never be exposed
+	const {
+		emailVerified: _emailVerified,
+		normalizedEmail: _normalizedEmail,
+		role: _role,
+		banned: _banned,
+		banReason: _banReason,
+		banExpires: _banExpires,
+		twoFactorEnabled: _twoFactorEnabled,
+		...safeColumns
+	} = getTableColumns(user);
 
-	if (canSeeAll) {
-		return {
-			id: user.id,
-			slug: user.slug,
-			name: user.name,
-			bio: user.bio,
-			image: user.image,
-			headerImage: user.headerImage,
-			location: user.location,
-			website: user.website,
-			callsign: user.callsign,
-			isPrivate: user.isPrivate,
-			isPrivateEmail: user.isPrivateEmail,
-			isPrivatePhone: user.isPrivatePhone,
-			isPrivateStats: user.isPrivateStats,
-			email: user.email,
-			phone: user.phone,
-		};
-	}
+	const sanitize = new Sanitize({
+		requestingUserId,
+		targetUserId,
+		isAdmin,
+	});
 
+	// Apply sanitization to privacy-controlled fields
 	return {
-		id: user.id,
-		slug: user.slug,
-		name: user.name,
-		bio: user.bio,
-		image: user.image,
-		headerImage: user.headerImage,
-		location: user.location,
-		website: user.website,
-		callsign: user.callsign,
-		isPrivate: user.isPrivate,
-		isPrivateEmail: user.isPrivateEmail,
-		isPrivatePhone: user.isPrivatePhone,
-		isPrivateStats: user.isPrivateStats,
-		email: sql<string | null>`CASE WHEN ${user.isPrivateEmail} = false THEN ${user.email} ELSE NULL END`.as(
-			"email",
-		),
-		phone: sql<string | null>`CASE WHEN ${user.isPrivatePhone} = false THEN ${user.phone} ELSE NULL END`.as(
-			"phone",
-		),
+		...safeColumns,
+		email: sanitize.field<string | null>(user.email, user.isPrivateEmail),
+		phone: sanitize.field<string | null>(user.phone, user.isPrivatePhone),
 	};
 }
 
@@ -155,9 +139,7 @@ usersRouter.get(
 
 		const targetUser = await db
 			.select({
-				...selectSafeUserFields(requestingUserId, isAdmin, userId),
-				isPrivate: user.isPrivate,
-				id: user.id,
+				...getSafeUserSelect(requestingUserId, isAdmin, userId),
 			})
 			.from(user)
 			.where(or(eq(user.id, userId), eq(user.slug, userId)))
@@ -174,8 +156,10 @@ usersRouter.get(
 			throw apiError.notFound("User not found");
 		}
 
-		const memberships = await db
+		// Single optimized query with JOINs and aggregate counts
+		const membershipsWithClubs = await db
 			.select({
+				// Membership fields
 				id: clubMembership.id,
 				userId: clubMembership.userId,
 				clubId: clubMembership.clubId,
@@ -184,69 +168,70 @@ usersRouter.get(
 				endDate: clubMembership.endDate,
 				createdAt: clubMembership.createdAt,
 				updatedAt: clubMembership.updatedAt,
+				// Club fields
+				clubName: club.name,
+				clubSlug: club.slug,
+				clubDescription: club.description,
+				clubLogo: club.logo,
+				clubLocation: club.location,
+				clubWebsite: club.website,
+				clubIsPrivate: club.isPrivate,
+				clubVerified: club.verified,
+				clubCreatedAt: club.createdAt,
+				// Aggregate counts using subqueries
+				memberCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM ${clubMembership} cm
+					WHERE cm.${clubMembership.clubId} = ${clubMembership.clubId}
+				)`,
+				eventCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM ${event} e
+					WHERE e.${event.clubId} = ${clubMembership.clubId}
+				)`,
+				reviewCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM ${review} r
+					WHERE r.${review.clubId} = ${clubMembership.clubId}
+				)`,
 			})
 			.from(clubMembership)
+			.innerJoin(club, eq(clubMembership.clubId, club.id))
 			.where(eq(clubMembership.userId, u.id));
 
-		const membershipsWithClubs = await Promise.all(
-			memberships.map(async (membership) => {
-				const clubData = await db.select().from(club).where(eq(club.id, membership.clubId)).limit(1);
-				const clubItem = clubData[0];
-				if (!clubItem) {
-					return { ...membership, club: null };
-				}
+		// Transform flat results into nested structure
+		const formattedMemberships = membershipsWithClubs.map((m) => ({
+			id: m.id,
+			userId: m.userId,
+			clubId: m.clubId,
+			role: m.role,
+			startDate: m.startDate,
+			endDate: m.endDate,
+			createdAt: m.createdAt,
+			updatedAt: m.updatedAt,
+			club: {
+				id: m.clubId,
+				name: m.clubName,
+				slug: m.clubSlug,
+				description: m.clubDescription,
+				logo: m.clubLogo,
+				location: m.clubLocation,
+				website: m.clubWebsite,
+				isPrivate: m.clubIsPrivate,
+				verified: m.clubVerified,
+				createdAt: m.clubCreatedAt,
+				_count: {
+					members: Number(m.memberCount),
+					events: Number(m.eventCount),
+					reviews: Number(m.reviewCount),
+				},
+			},
+		}));
 
-				const memberCount = await db
-					.select({ count: count() })
-					.from(clubMembership)
-					.where(eq(clubMembership.clubId, membership.clubId));
-				const eventCount = await db
-					.select({ count: count() })
-					.from(event)
-					.where(eq(event.clubId, membership.clubId));
-				const reviewCount = await db
-					.select({ count: count() })
-					.from(review)
-					.where(eq(review.clubId, membership.clubId));
-
-				const nextEvents = await db
-					.select({
-						id: event.id,
-						name: event.name,
-						dateStart: event.dateStart,
-					})
-					.from(event)
-					.where(and(eq(event.clubId, membership.clubId), gte(event.dateStart, new Date().toISOString())))
-					.orderBy(event.dateStart)
-					.limit(1);
-
-				const latestReviews = await db
-					.select({
-						content: review.content,
-					})
-					.from(review)
-					.where(eq(review.clubId, membership.clubId))
-					.orderBy(desc(review.createdAt))
-					.limit(1);
-
-				return {
-					...membership,
-					club: {
-						...clubItem,
-						_count: {
-							members: memberCount[0]?.count || 0,
-							events: eventCount[0]?.count || 0,
-							reviews: reviewCount[0]?.count || 0,
-						},
-						events: nextEvents,
-						reviews: latestReviews,
-					},
-				};
-			}),
-		);
-
-		const registrations = await db
+		// Single optimized query for registrations with event data
+		const registrationsWithEvents = await db
 			.select({
+				// Registration fields
 				id: eventRegistration.id,
 				eventId: eventRegistration.eventId,
 				createdById: eventRegistration.createdById,
@@ -255,33 +240,39 @@ usersRouter.get(
 				attended: eventRegistration.attended,
 				createdAt: eventRegistration.createdAt,
 				updatedAt: eventRegistration.updatedAt,
+				// Event fields
+				eventName: event.name,
+				eventSlug: event.slug,
+				eventDateStart: event.dateStart,
 			})
 			.from(eventRegistration)
+			.leftJoin(event, eq(eventRegistration.eventId, event.id))
 			.where(eq(eventRegistration.createdById, u.id));
 
-		const registrationsWithEvents = await Promise.all(
-			registrations.map(async (registration) => {
-				const eventData = await db
-					.select({
-						id: event.id,
-						name: event.name,
-						slug: event.slug,
-						dateStart: event.dateStart,
-					})
-					.from(event)
-					.where(eq(event.id, registration.eventId))
-					.limit(1);
-				return {
-					...registration,
-					event: eventData[0] || null,
-				};
-			}),
-		);
+		// Transform flat results into nested structure
+		const formattedRegistrations = registrationsWithEvents.map((r) => ({
+			id: r.id,
+			eventId: r.eventId,
+			createdById: r.createdById,
+			type: r.type,
+			paymentMethod: r.paymentMethod,
+			attended: r.attended,
+			createdAt: r.createdAt,
+			updatedAt: r.updatedAt,
+			event: r.eventName
+				? {
+						id: r.eventId,
+						name: r.eventName,
+						slug: r.eventSlug,
+						dateStart: r.eventDateStart,
+					}
+				: null,
+		}));
 
 		return response.json({
 			...u,
-			clubMembership: membershipsWithClubs,
-			eventRegistration: registrationsWithEvents,
+			clubMembership: formattedMemberships,
+			eventRegistration: formattedRegistrations,
 		});
 	},
 	{
@@ -431,7 +422,7 @@ usersRouter.get(
 		const isAdmin = context.isAdmin;
 
 		const targetUser = await db
-			.select(selectSafeUserFields(requestingUserId, isAdmin, userId))
+			.select(getSafeUserSelect(requestingUserId, isAdmin, userId))
 			.from(user)
 			.where(and(or(eq(user.id, userId), eq(user.slug, userId)), eq(user.isPrivate, false)))
 			.limit(1);

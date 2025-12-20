@@ -18,6 +18,7 @@ import { apiError } from "../lib/errors";
 import { Router, responseSchema } from "../lib/router";
 import { baseClubRuleSchema, baseEventSchema, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../lib/storage";
+import { Sanitize } from "../lib/user-sanitization";
 
 const eventsRouter = new Router();
 
@@ -1384,12 +1385,19 @@ eventsRouter.get(
 		// Enhance registrations with invited users and creator info
 		const registrationsWithDetails = await Promise.all(
 			registrations.map(async (registration) => {
+				const sanitize = new Sanitize({
+					requestingUserId: context.user?.id,
+					targetUserId: registration.createdById,
+					isAdmin: context.isAdmin,
+				});
+
 				// Get creator info
 				const creatorData = await db
 					.select({
 						id: user.id,
 						name: user.name,
-						email: user.email,
+						email: sanitize.field<string | null>(user.email, user.isPrivateEmail),
+						phone: sanitize.field<string | null>(user.phone, user.isPrivatePhone),
 						callsign: user.callsign,
 						image: user.image,
 					})
@@ -1405,11 +1413,18 @@ eventsRouter.get(
 
 				const invitedUsers = await Promise.all(
 					invitedUsersData.map(async (regToUser) => {
+						const sanitize = new Sanitize({
+							requestingUserId: context.user?.id,
+							targetUserId: regToUser.b,
+							isAdmin: context.isAdmin,
+						});
+
 						const userData = await db
 							.select({
 								id: user.id,
 								name: user.name,
-								email: user.email,
+								email: sanitize.field(user.email, user.isPrivateEmail),
+								phone: sanitize.field(user.phone, user.isPrivatePhone),
 								callsign: user.callsign,
 								image: user.image,
 							})
@@ -1432,7 +1447,8 @@ eventsRouter.get(
 						? {
 								id: String(creatorData[0].id),
 								name: String(creatorData[0].name),
-								email: String(creatorData[0].email),
+								email: creatorData[0].email,
+								phone: creatorData[0].phone,
 								callsign: creatorData[0].callsign ? String(creatorData[0].callsign) : null,
 								image: creatorData[0].image ? String(creatorData[0].image) : null,
 							}
@@ -1442,7 +1458,8 @@ eventsRouter.get(
 						.map((u) => ({
 							id: String(u.id),
 							name: String(u.name),
-							email: String(u.email),
+							email: u.email,
+							phone: u.phone,
 							callsign: u.callsign ? String(u.callsign) : null,
 							image: u.image ? String(u.image) : null,
 						})),
@@ -1472,7 +1489,8 @@ eventsRouter.get(
 								.object({
 									id: z.string(),
 									name: z.string(),
-									email: z.string(),
+									email: z.string().nullable(),
+									phone: z.string().nullable(),
 									callsign: z.string().nullable(),
 									image: z.string().nullable(),
 								})
@@ -1481,7 +1499,8 @@ eventsRouter.get(
 								z.object({
 									id: z.string(),
 									name: z.string(),
-									email: z.string(),
+									email: z.string().nullable(),
+									phone: z.string().nullable(),
 									callsign: z.string().nullable(),
 									image: z.string().nullable(),
 								}),
@@ -1641,11 +1660,18 @@ eventsRouter.get(
 			const invitedUsers = (
 				await Promise.all(
 					invitedUsersData.map(async (regToUser) => {
+						const sanitize = new Sanitize({
+							requestingUserId: context.user?.id,
+							targetUserId: regToUser.b,
+							isAdmin: context.isAdmin,
+						});
+
 						const userData = await db
 							.select({
 								id: user.id,
 								name: user.name,
-								email: user.email,
+								email: sanitize.field(user.email, user.isPrivateEmail),
+								phone: sanitize.field(user.phone, user.isPrivatePhone),
 								callsign: user.callsign,
 								image: user.image,
 							})
@@ -1661,7 +1687,8 @@ eventsRouter.get(
 				): u is {
 					id: string;
 					name: string;
-					email: string;
+					email: string | null;
+					phone: string | null;
 					callsign: string | null;
 					image: string | null;
 				} => u !== undefined,
@@ -1723,7 +1750,8 @@ eventsRouter.get(
 								z.object({
 									id: z.string(),
 									name: z.string(),
-									email: z.string(),
+									email: z.string().nullable(),
+									phone: z.string().nullable(),
 									callsign: z.string().nullable(),
 									image: z.string().nullable(),
 								}),

@@ -114,17 +114,8 @@ export const createClubDataLoader = () => {
 	);
 };
 
-export const createUserDataLoader = () => {
-	return createIdDataLoader(
-		async (ids: string[]) => {
-			const { user } = await import("../drizzle/schema");
-			const { inArray } = await import("drizzle-orm");
-
-			return db.select().from(user).where(inArray(user.id, ids));
-		},
-		(user) => user.id,
-	);
-};
+// Removed createUserDataLoader - use getSafeUserSelect() for safe user field selection
+// If you need a user dataloader in the future, implement it with proper field sanitization
 
 /**
  * Batch loading utility for relationships

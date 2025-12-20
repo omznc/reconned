@@ -1,6 +1,6 @@
 import { render } from "@react-email/components";
 import { randomUUIDv7 } from "bun";
-import { and, count, desc, eq, gt, ilike, ne, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, gt, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import {
@@ -33,6 +33,7 @@ import { sendEmail } from "../lib/mail";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { deleteS3Files, extractSizeFromKey, getS3UploadUrl } from "../lib/storage";
+import { Sanitize } from "../lib/user-sanitization";
 
 const clubsRouter = new Router();
 
@@ -203,7 +204,6 @@ clubsRouter.delete(
 			actionData: {
 				memberId,
 				memberName: membershipWithUser.user.name,
-				memberEmail: membershipWithUser.user.email,
 				memberRole: membershipWithUser.role,
 				userId: membershipWithUser.user.id,
 				removedBy: "manager",
@@ -269,7 +269,11 @@ clubsRouter.post(
 			throw apiError.validation("User is already a member of this club");
 		}
 
-		const userData = await db.select().from(user).where(eq(user.id, body.userId)).limit(1);
+		const userData = await db
+			.select({ id: user.id, name: user.name, email: user.email })
+			.from(user)
+			.where(eq(user.id, body.userId))
+			.limit(1);
 
 		if (!userData[0]) {
 			throw apiError.notFound("User not found");
@@ -420,7 +424,6 @@ clubsRouter.put(
 			actionData: {
 				memberId,
 				memberName: membershipWithUser.user.name,
-				memberEmail: membershipWithUser.user.email,
 				memberRole: membershipWithUser.role,
 				userId: membershipWithUser.user.id,
 				duration: durationMonths,
@@ -1200,20 +1203,26 @@ clubsRouter.get(
 			.orderBy(desc(event.dateStart))
 			.limit(10);
 
-		const recentEvents = await Promise.all(
-			recentEventsData.map(async (e) => {
-				const registrationCount = await db
-					.select({ count: count() })
-					.from(eventRegistration)
-					.where(eq(eventRegistration.eventId, e.id));
-				return {
-					id: e.id,
-					name: e.name,
-					dateStart: e.dateStart,
-					registrations: Number(registrationCount[0]?.count || 0),
-				};
-			}),
-		);
+		// Get registration counts for all recent events in a single query
+		const eventIds = recentEventsData.map((e) => e.id);
+		const registrationCounts = await db
+			.select({
+				eventId: eventRegistration.eventId,
+				count: count(),
+			})
+			.from(eventRegistration)
+			.where(inArray(eventRegistration.eventId, eventIds))
+			.groupBy(eventRegistration.eventId);
+
+		// Create a map for quick lookup
+		const registrationCountMap = new Map(registrationCounts.map((rc) => [rc.eventId, Number(rc.count)]));
+
+		const recentEvents = recentEventsData.map((e) => ({
+			id: e.id,
+			name: e.name,
+			dateStart: e.dateStart,
+			registrations: registrationCountMap.get(e.id) || 0,
+		}));
 
 		return response.json({
 			members: membersOverTime.map((row) => ({
@@ -2355,7 +2364,7 @@ clubsRouter.post(
 			throw apiError.validation("Invitation already sent to this email");
 		}
 
-		const existingUser = await db.select().from(user).where(eq(user.email, target.email)).limit(1);
+		const existingUser = await db.select({ id: user.id }).from(user).where(eq(user.email, target.email)).limit(1);
 
 		if (existingUser[0]) {
 			const existingMembership = await db
@@ -4968,6 +4977,12 @@ clubsRouter.get(
 
 		const allConditions = searchConditions ? and(...whereConditions, searchConditions) : and(...whereConditions);
 
+		const sanitize = new Sanitize({
+			requestingUserId: context.user?.id,
+			targetUserId: user.id,
+			isAdmin: context.isAdmin,
+		});
+
 		const membersQuery = db
 			.select({
 				id: clubMembership.id,
@@ -4979,7 +4994,8 @@ clubsRouter.get(
 				createdAt: clubMembership.createdAt,
 				updatedAt: clubMembership.updatedAt,
 				userName: user.name,
-				userEmail: user.email,
+				userEmail: sanitize.field<string | null>(user.email, user.isPrivateEmail),
+				userPhone: sanitize.field<string | null>(user.phone, user.isPrivatePhone),
 				userImage: user.image,
 				userCallsign: user.callsign,
 				userLocation: user.location,
@@ -5042,6 +5058,7 @@ clubsRouter.get(
 				id: member.userUserId,
 				name: member.userName,
 				email: member.userEmail,
+				phone: member.userPhone,
 				image: member.userImage,
 				callsign: member.userCallsign,
 				location: member.userLocation,
@@ -5086,7 +5103,8 @@ clubsRouter.get(
 							user: z.object({
 								id: z.string(),
 								name: z.string(),
-								email: z.string(),
+								email: z.string().nullable(),
+								phone: z.string().nullable(),
 								image: z.string().nullable(),
 								callsign: z.string().nullable(),
 								location: z.string().nullable(),

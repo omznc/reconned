@@ -8980,36 +8980,14 @@ export interface operations {
 							club: {
 								id: string;
 								name: string;
-								location: string | null;
-								latitude: number | null;
-								longitude: number | null;
-								description: string | null;
-								dateFounded: string | null;
 								slug: string | null;
-								isAllied: boolean;
-								isPrivate: boolean;
-								isPrivateStats: boolean;
+								description: string | null;
 								logo: string | null;
-								contactPhone: string | null;
-								contactEmail: string | null;
-								verified: boolean;
+								location: string | null;
 								website: string | null;
-								instagramUsername: string | null;
-								instagramProfilePictureUrl: string | null;
-								instagramAccessToken: string | null;
-								instagramTokenExpiry: string | null;
-								instagramRefreshToken: string | null;
-								instagramConnected: boolean;
-								instagramBusinessId: string | null;
-								facebookPageId: string | null;
-								instagramTokenType: string | null;
-								countryId: number | null;
-								banned: boolean | null;
-								banReason: string | null;
-								banExpires: string | null;
+								isPrivate: boolean;
+								verified: boolean;
 								createdAt: string;
-								updatedAt: string;
-								headerImage: string | null;
 								_count: {
 									members: number;
 									events: number;
@@ -9038,7 +9016,7 @@ export interface operations {
 								id: string;
 								name: string;
 								slug: string | null;
-								dateStart: string;
+								dateStart: string | null;
 							} | null;
 						}[];
 					};
@@ -9340,36 +9318,14 @@ export interface operations {
 							club: {
 								id: string;
 								name: string;
-								location: string | null;
-								latitude: number | null;
-								longitude: number | null;
-								description: string | null;
-								dateFounded: string | null;
 								slug: string | null;
-								isAllied: boolean;
-								isPrivate: boolean;
-								isPrivateStats: boolean;
+								description: string | null;
 								logo: string | null;
-								contactPhone: string | null;
-								contactEmail: string | null;
-								verified: boolean;
+								location: string | null;
 								website: string | null;
-								instagramUsername: string | null;
-								instagramProfilePictureUrl: string | null;
-								instagramAccessToken: string | null;
-								instagramTokenExpiry: string | null;
-								instagramRefreshToken: string | null;
-								instagramConnected: boolean;
-								instagramBusinessId: string | null;
-								facebookPageId: string | null;
-								instagramTokenType: string | null;
-								countryId: number | null;
-								banned: boolean | null;
-								banReason: string | null;
-								banExpires: string | null;
+								isPrivate: boolean;
+								verified: boolean;
 								createdAt: string;
-								updatedAt: string;
-								headerImage: string | null;
 								_count: {
 									members: number;
 									events: number;
@@ -9398,7 +9354,7 @@ export interface operations {
 								id: string;
 								name: string;
 								slug: string | null;
-								dateStart: string;
+								dateStart: string | null;
 							} | null;
 						}[];
 					};
@@ -10080,7 +10036,8 @@ export interface operations {
 							user: {
 								id: string;
 								name: string;
-								email: string;
+								email: string | null;
+								phone: string | null;
 								image: string | null;
 								callsign: string | null;
 								location: string | null;
@@ -14523,14 +14480,16 @@ export interface operations {
 							createdBy: {
 								id: string;
 								name: string;
-								email: string;
+								email: string | null;
+								phone: string | null;
 								callsign: string | null;
 								image: string | null;
 							} | null;
 							invitedUsers: {
 								id: string;
 								name: string;
-								email: string;
+								email: string | null;
+								phone: string | null;
 								callsign: string | null;
 								image: string | null;
 							}[];
@@ -14964,7 +14923,8 @@ export interface operations {
 							invitedUsers: {
 								id: string;
 								name: string;
-								email: string;
+								email: string | null;
+								phone: string | null;
 								callsign: string | null;
 								image: string | null;
 							}[];

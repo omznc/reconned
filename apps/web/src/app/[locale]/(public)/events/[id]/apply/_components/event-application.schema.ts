@@ -8,7 +8,7 @@ export const eventApplicationSchema = z.object({
 	invitedUsers: z.array(
 		z.object({
 			id: z.string().optional(),
-			email: z.string().email(),
+			email: z.string().email().optional(),
 			name: z.string().min(1),
 			callsign: z.string().nullable().optional(),
 			image: z.string().nullable().optional(),

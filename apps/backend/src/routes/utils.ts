@@ -248,32 +248,65 @@ utilsRouter.get(
 
 			const eventWhere = eventWhereConditions.length > 0 ? and(...eventWhereConditions) : undefined;
 
-			const eventsData = await db.select().from(event).where(eventWhere).orderBy(event.dateStart).limit(1000);
+			const eventsWithClubs = await db
+				.select({
+					// Event fields
+					id: event.id,
+					name: event.name,
+					description: event.description,
+					location: event.location,
+					dateStart: event.dateStart,
+					dateEnd: event.dateEnd,
+					dateRegistrationsOpen: event.dateRegistrationsOpen,
+					dateRegistrationsClose: event.dateRegistrationsClose,
+					isPrivate: event.isPrivate,
+					gearRequirements: event.gearRequirements,
+					mapData: event.mapData,
+					costPerPerson: event.costPerPerson,
+					clubId: event.clubId,
+					createdAt: event.createdAt,
+					updatedAt: event.updatedAt,
+					// Club fields
+					clubId_alias: club.id,
+					clubName: club.name,
+					clubSlug: club.slug,
+					clubLogo: club.logo,
+					clubVerified: club.verified,
+				})
+				.from(event)
+				.leftJoin(club, eq(event.clubId, club.id))
+				.where(eventWhere)
+				.orderBy(event.dateStart)
+				.limit(1000);
 
-			const eventsWithClubs = await Promise.all(
-				eventsData.map(async (e) => {
-					const clubData = await db
-						.select({
-							id: club.id,
-							name: club.name,
-							slug: club.slug,
-							logo: club.logo,
-							verified: club.verified,
-						})
-						.from(club)
-						.where(eq(club.id, e.clubId))
-						.limit(1);
+			const formattedEvents = eventsWithClubs.map((e) => ({
+				id: e.id,
+				name: e.name,
+				description: e.description,
+				location: e.location,
+				dateStart: e.dateStart,
+				dateEnd: e.dateEnd,
+				dateRegistrationsOpen: e.dateRegistrationsOpen,
+				dateRegistrationsClose: e.dateRegistrationsClose,
+				isPrivate: e.isPrivate,
+				gearRequirements: e.gearRequirements,
+				mapData: e.mapData,
+				costPerPerson: e.costPerPerson,
+				clubId: e.clubId,
+				createdAt: e.createdAt,
+				updatedAt: e.updatedAt,
+				club: e.clubId_alias
+					? {
+							id: e.clubId_alias,
+							name: e.clubName,
+							slug: e.clubSlug,
+							logo: e.clubLogo,
+							verified: e.clubVerified,
+						}
+					: null,
+			}));
 
-					return {
-						...e,
-						gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
-						mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
-						club: clubData[0] || null,
-					};
-				}),
-			);
-
-			for (const event of eventsWithClubs) {
+			for (const event of formattedEvents) {
 				let relevanceScore = 0;
 				if (search) {
 					const nameMatch = event.name?.toLowerCase().includes(search.toLowerCase());
@@ -296,7 +329,7 @@ utilsRouter.get(
 					id: event.id,
 					name: event.name || "",
 					relevanceScore,
-					data: event as z.infer<typeof baseEventSchema>,
+					data: event,
 				});
 			}
 		}
@@ -430,8 +463,8 @@ utilsRouter.post(
 			}
 			case "user": {
 				const [userBySlug, userId] = await Promise.all([
-					db.select().from(user).where(eq(user.slug, body.slug)).limit(1),
-					db.select().from(user).where(eq(user.id, body.slug)).limit(1),
+					db.select({ id: user.id }).from(user).where(eq(user.slug, body.slug)).limit(1),
+					db.select({ id: user.id }).from(user).where(eq(user.id, body.slug)).limit(1),
 				]);
 
 				return response.json({

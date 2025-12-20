@@ -1,77 +1,56 @@
-function sanitizeUser<
-	T extends { isPrivateEmail?: boolean; isPrivatePhone?: boolean; email?: string | null; phone?: string | null },
->(userData: T): Omit<T, "email" | "phone"> & { email?: string | null; phone?: string | null } {
-	const { email: _email, phone: _phone, ...rest } = userData;
-	return {
-		...rest,
-		...(userData.isPrivateEmail ? {} : { email: _email }),
-		...(userData.isPrivatePhone ? {} : { phone: _phone }),
-	} as Omit<T, "email" | "phone"> & { email?: string | null; phone?: string | null };
-}
+import type { AnyColumn } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
-function isUserObject(value: unknown): value is {
-	id?: string;
-	email?: string | null;
-	phone?: string | null;
-	isPrivateEmail?: boolean;
-	isPrivatePhone?: boolean;
-} {
-	return (
-		typeof value === "object" &&
-		value !== null &&
-		("id" in value || "email" in value || "phone" in value) &&
-		("isPrivateEmail" in value || "isPrivatePhone" in value)
-	);
-}
+/**
+ * User data sanitizer that handles privacy settings for database queries.
+ * Create once with the request context, then reuse for multiple fields.
+ */
+export class Sanitize {
+	private requestingUserId?: string | AnyColumn;
+	private targetUserId?: string | AnyColumn;
+	private isAdmin?: boolean;
 
-function sanitizeUserInObject(obj: unknown, requestingUserId?: string, isAdmin?: boolean): unknown {
-	if (isUserObject(obj)) {
-		if (requestingUserId && (obj.id === requestingUserId || isAdmin)) {
-			return obj;
-		}
-		return sanitizeUser(obj);
+	constructor(params: {
+		requestingUserId?: string | AnyColumn;
+		targetUserId?: string | AnyColumn;
+		isAdmin?: boolean;
+	}) {
+		this.requestingUserId = params.requestingUserId;
+		this.targetUserId = params.targetUserId;
+		this.isAdmin = params.isAdmin;
 	}
 
-	if (Array.isArray(obj)) {
-		return obj.map((item) => sanitizeUserInObject(item, requestingUserId, isAdmin));
-	}
-
-	if (typeof obj === "object" && obj !== null) {
-		const objRecord = obj as Record<string, unknown>;
-
-		if ("id" in objRecord && "isPrivateEmail" in objRecord) {
-			const userObj = objRecord as {
-				id?: string;
-				isPrivateEmail?: boolean;
-				isPrivatePhone?: boolean;
-				email?: string | null;
-				phone?: string | null;
-			};
-			if (requestingUserId && (userObj.id === requestingUserId || isAdmin)) {
-				return obj;
-			}
-			return {
-				...objRecord,
-				...sanitizeUser(userObj),
-			};
+	/**
+	 * Sanitizes any field based on its corresponding privacy field
+	 * @param field - The database field to conditionally return
+	 * @param privacyField - The boolean field that controls privacy
+	 * @returns SQL expression that returns field value or NULL based on privacy rules
+	 */
+	field<T extends string | null = string | null>(field: AnyColumn, privacyField: AnyColumn) {
+		// Always return a SQL expression for consistency
+		if (this.isAdmin) {
+			// Admin sees everything - just return the field value
+			return sql<T>`${field}`.as(field.name || "field");
 		}
 
-		const result: Record<string, unknown> = {};
-		for (const [key, value] of Object.entries(objRecord)) {
-			if (key === "users" && Array.isArray(value)) {
-				result[key] = value.map((item) => sanitizeUserInObject(item, requestingUserId, isAdmin));
-			} else if (isUserObject(value)) {
-				result[key] = sanitizeUserInObject(value, requestingUserId, isAdmin);
-			} else if (typeof value === "object" && value !== null) {
-				result[key] = sanitizeUserInObject(value, requestingUserId, isAdmin);
-			} else {
-				result[key] = value;
-			}
+		// If requesting user is the same as target user, return the field
+		if (this.requestingUserId && this.targetUserId && this.requestingUserId === this.targetUserId) {
+			return sql<T>`${field}`.as(field.name || "field");
 		}
-		return result;
-	}
 
-	return obj;
+		// For list queries where we compare columns, use SQL CASE
+		if (
+			this.requestingUserId &&
+			typeof this.requestingUserId !== "string" &&
+			this.targetUserId &&
+			typeof this.targetUserId !== "string"
+		) {
+			return sql<T>`CASE WHEN ${this.requestingUserId} = ${this.targetUserId} OR ${privacyField} = false THEN ${field} ELSE NULL END`.as(
+				field.name || "field",
+			);
+		}
+
+		// Fallback: check privacy flag
+		return sql<T>`CASE WHEN ${privacyField} = false THEN ${field} ELSE NULL END`.as(field.name || "field");
+	}
 }
-
-export { sanitizeUserInObject };

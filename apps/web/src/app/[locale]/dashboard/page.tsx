@@ -127,30 +127,6 @@ export default async function DashboardPage() {
 											</div>
 										</div>
 									)}
-
-									{/* Additional Info */}
-									<div className="space-y-3">
-										{membership.club?.events[0] && (
-											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">{t("Next event")}</p>
-												<p className="text-sm text-muted-foreground line-clamp-1">
-													{membership.club.events[0].name} •{" "}
-													{new Date(membership.club.events[0].dateStart).toLocaleDateString(
-														"bs",
-													)}
-												</p>
-											</div>
-										)}
-
-										{membership.club?.reviews[0] && (
-											<div className="rounded-lg border bg-background/50 p-3">
-												<p className="text-sm font-medium mb-1">{t("Latest review")}</p>
-												<p className="text-sm text-muted-foreground line-clamp-2">
-													{membership.club.reviews[0].content}
-												</p>
-											</div>
-										)}
-									</div>
 								</div>
 							</Link>
 						))}

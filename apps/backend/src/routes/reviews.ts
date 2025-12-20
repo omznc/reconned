@@ -57,7 +57,7 @@ reviewsRouter.get(
 				throw apiError.validation("Invalid review type");
 		}
 
-		// Fetch reviews with author information
+		// Fetch reviews with author information (respecting privacy settings)
 		const reviews = await db
 			.select({
 				id: review.id,
@@ -74,6 +74,7 @@ reviewsRouter.get(
 					id: user.id,
 					name: user.name,
 					image: user.image,
+					isPrivate: user.isPrivate,
 				},
 			})
 			.from(review)
@@ -81,8 +82,22 @@ reviewsRouter.get(
 			.where(whereCondition)
 			.orderBy(desc(review.createdAt));
 
+		// Apply privacy sanitization to author info
+		const sanitizedReviews = reviews.map((review) => ({
+			...review,
+			author: review.author
+				? {
+						id: review.author.id,
+						// For reviews, show name regardless of privacy (they wrote public content)
+						// But hide image if profile is private
+						name: review.author.name,
+						image: review.author.isPrivate ? null : review.author.image,
+					}
+				: null,
+		}));
+
 		return response.json({
-			reviews,
+			reviews: sanitizedReviews,
 		});
 	},
 	{

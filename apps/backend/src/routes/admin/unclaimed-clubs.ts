@@ -634,7 +634,11 @@ adminUnclaimedClubsRouter.post(
 			throw apiError.internal("No admins found");
 		}
 
-		const requesterData = await db.select().from(user).where(eq(user.id, context.user.id)).limit(1);
+		const requesterData = await db
+			.select({ name: user.name, email: user.email, callsign: user.callsign })
+			.from(user)
+			.where(eq(user.id, context.user.id))
+			.limit(1);
 
 		if (!requesterData[0]) {
 			throw apiError.notFound("Requester not found");

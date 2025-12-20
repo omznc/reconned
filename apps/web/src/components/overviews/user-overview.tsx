@@ -29,11 +29,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const futureEvents = user.eventRegistration.filter(
 		(reg: UserOverviewUser["eventRegistration"][number]) =>
-			reg.event && new Date(reg.event.dateStart) > new Date() && !reg.attended,
+			reg.event?.dateStart && new Date(reg.event.dateStart) > new Date() && !reg.attended,
 	);
 	const pastEvents = user.eventRegistration.filter(
 		(reg: UserOverviewUser["eventRegistration"][number]) =>
-			reg.attended || (reg.event && new Date(reg.event.dateStart) <= new Date()),
+			reg.attended || (reg.event?.dateStart && new Date(reg.event?.dateStart) <= new Date()),
 	);
 
 	// Get current user to check if they're viewing their own profile
@@ -217,7 +217,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 												{reg.event.name}
 											</Link>
 											<span className="text-muted-foreground ml-2">
-												({format(new Date(reg.event.dateStart), "dd.MM.yyyy")})
+												(
+												{reg.event.dateStart
+													? format(new Date(reg.event.dateStart), "dd.MM.yyyy")
+													: "TBD"}
+												)
 											</span>
 										</li>
 									);
@@ -249,7 +253,11 @@ export async function UserOverview({ user }: UserOverviewProps) {
 												{reg.event.name}
 											</Link>
 											<span className="text-muted-foreground ml-2">
-												({format(new Date(reg.event.dateStart), "dd.MM.yyyy")})
+												(
+												{reg.event.dateStart
+													? format(new Date(reg.event.dateStart), "dd.MM.yyyy")
+													: "TBD"}
+												)
 											</span>
 										</li>
 									);

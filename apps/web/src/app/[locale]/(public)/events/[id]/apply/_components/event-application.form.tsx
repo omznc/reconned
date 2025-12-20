@@ -69,7 +69,15 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							// @ts-expect-error Callsign exists on user, but heyyy.
 							callsign: user.callsign || null,
 						},
-						...existingApplication.invitedUsers.filter((u) => u.id !== user.id),
+						...existingApplication.invitedUsers
+							.filter((u): u is typeof u & { email: string } => u.id !== user.id && u.email !== null)
+							.map((u) => ({
+								id: u.id,
+								name: u.name,
+								email: u.email,
+								callsign: u.callsign,
+								image: u.image,
+							})),
 					]
 				: [
 						{
@@ -648,6 +656,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			</div>
 
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+				<input type="hidden" {...form.register("eventId")} />
 				{step === 1 && renderTypeSelection()}
 				{step === 2 && (
 					<div className="space-y-4 fade-in-up">

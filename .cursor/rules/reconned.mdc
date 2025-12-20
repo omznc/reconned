@@ -75,9 +75,10 @@ on the backend unless incredibly important to be run on the nextjs server.
     - `actionData: log.actionData as Record<string, unknown>`
   - If you're using fetch and the backend route isn't typed, regenerate the api types on the frontend instead of casting as any.
   - Never use any, never use never, always be as correct with types as you can. Always try to infer instead of re-typing.
+  - Never add stupid comments, or comments to things that are self-explainable or stupidly simple to understand.
 
 ## Formatting and linting
-- You can use `bun format` and `bun lint`
+- You can use `bun check`
 
 ## To translate, use useExtracted() on client or await getExtracted() on server.
 
