@@ -2,6 +2,7 @@
 
 import { Type } from "lucide-react";
 import { useExtracted } from "next-intl";
+import posthog from "posthog-js";
 import { useEffect } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,13 @@ export function FontSwitcher() {
 			body: {
 				font: font,
 			},
+		});
+
+		posthog.capture("preference_changed", {
+			user_id: user.id,
+			preference_type: "font",
+			old_value: user.font,
+			new_value: font,
 		});
 	}, [font, user]);
 

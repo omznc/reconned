@@ -10,6 +10,7 @@
 			"footer": "If you were not expecting this invitation, please ignore this email."
 		},
 		"clubInvitation": {
+			"subject": "Invitation to join {clubName}",
 			"preview": "You are invited to join the {clubName} club.",
 			"heading": "Invitation card",
 			"greeting": "Hi {name}",
@@ -52,6 +53,7 @@
 			"footer": "This is an automated notification about membership status in your club."
 		},
 		"passwordReset": {
+			"subject": "Reset your password",
 			"preview": "Reset your password",
 			"heading": "Reset your password",
 			"greeting": "Hello {userName}",
@@ -61,12 +63,16 @@
 			"validity": "This link will expire in 1 hour."
 		},
 		"emailVerification": {
+			"subject": "Verify your email address",
 			"preview": "Verify your email address",
 			"heading": "Verify your email address",
 			"greeting": "Hello {userName}",
 			"description": "Thank you for registering! Please verify your email address by clicking the button below.",
 			"button": "Verify Email",
 			"footer": "If you didn't create this account, you can safely ignore this email."
+		},
+		"clubClaimRequest": {
+			"subject": "Club Claim Request: {clubName}"
 		}
 	}
 }

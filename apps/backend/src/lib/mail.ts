@@ -1,4 +1,5 @@
 import { env } from "./env";
+import { posthog } from "./posthog";
 
 type SendEmailParams = {
 	to: string | string[];
@@ -9,6 +10,17 @@ type SendEmailParams = {
 
 export async function sendEmail({ to, subject, html }: SendEmailParams) {
 	const recipients = Array.isArray(to) ? to : [to];
+
+	// Track email sending
+	posthog.capture({
+		distinctId: "system",
+		event: "email_sent",
+		properties: {
+			recipient_count: recipients.length,
+			subject: subject,
+			has_html: Boolean(html),
+		},
+	});
 
 	const response = await fetch("https://onesignal.com/api/v1/notifications", {
 		method: "POST",

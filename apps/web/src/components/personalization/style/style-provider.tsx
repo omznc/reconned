@@ -1,5 +1,6 @@
 "use client";
 
+import posthog from "posthog-js";
 import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 import apiClient from "@/lib/api/api.client";
 import { useIsAuthenticated } from "@/lib/auth-client";
@@ -63,6 +64,13 @@ export function StyleProvider({ children, initial }: { children: ReactNode; init
 			body: {
 				style: newStyle,
 			},
+		});
+
+		posthog.capture("preference_changed", {
+			user_id: user.id,
+			preference_type: "style",
+			old_value: user.style,
+			new_value: newStyle,
 		});
 	};
 

@@ -14,6 +14,7 @@ import {
 } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
+import { posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { getS3UploadUrl } from "../lib/storage";
@@ -650,6 +651,29 @@ usersRouter.put(
 
 		await db.update(user).set(updateData).where(eq(user.id, userId));
 
+		// Track user profile update
+		const updatedFields = Object.keys(updateData).filter((key) => key !== "updatedAt");
+		if (updatedFields.length > 0) {
+			posthog.capture({
+				distinctId: userId,
+				event: "user_profile_updated",
+				properties: {
+					updated_fields: updatedFields,
+					fields_count: updatedFields.length,
+					has_bio: body.bio !== undefined,
+					has_website: body.website !== undefined,
+					has_location: body.location !== undefined,
+					has_image: body.image !== undefined,
+					has_header_image: body.headerImage !== undefined,
+					privacy_updated:
+						body.isPrivate !== undefined ||
+						body.isPrivateEmail !== undefined ||
+						body.isPrivatePhone !== undefined ||
+						body.isPrivateStats !== undefined,
+				},
+			});
+		}
+
 		return response.json({ success: true });
 	},
 	{
@@ -1224,7 +1248,7 @@ usersRouter.post(
 		}
 
 		try {
-			const result = await getS3UploadUrl(`user/${userId}/image`, body.type, body.size);
+			const result = await getS3UploadUrl(`user/${userId}/image`, body.type, body.size, userId);
 			return response.json(result);
 		} catch (error) {
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
@@ -1269,7 +1293,7 @@ usersRouter.post(
 		}
 
 		try {
-			const result = await getS3UploadUrl(`user/${userId}/header`, body.type, body.size);
+			const result = await getS3UploadUrl(`user/${userId}/header`, body.type, body.size, userId);
 			return response.json(result);
 		} catch (error) {
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");

@@ -6,8 +6,10 @@ import { club, clubMembership, user } from "../../drizzle/schema";
 import ClubClaimRequestEmail from "../../emails/club-claim-request";
 import { logClubAudit } from "../../lib/audit-logger";
 import { db } from "../../lib/db";
+import { getEmailMessages, interpolateMessage } from "../../lib/email-messages";
 import { apiError } from "../../lib/errors";
 import { sendEmail } from "../../lib/mail";
+import { posthog } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 import { getS3UploadUrl } from "../../lib/storage";
@@ -244,6 +246,21 @@ adminUnclaimedClubsRouter.post(
 			userId: context.user.id,
 		});
 
+		// Track club creation by admin
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "club_created_by_admin",
+			properties: {
+				club_id: newClub[0].id,
+				club_name: body.name,
+				location: body.location,
+				country_id: body.countryId,
+				is_private: body.isPrivate || false,
+				slug: body.slug,
+				admin_action: true,
+			},
+		});
+
 		return response.json({ id: newClub[0].id, club: newClub[0] });
 	},
 	{
@@ -425,13 +442,13 @@ adminUnclaimedClubsRouter.put(
 
 adminUnclaimedClubsRouter.post(
 	"/admin/unclaimed-clubs/:id/logo/upload-url",
-	async ({ params, body, response }) => {
+	async ({ params, body, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
 			throw apiError.validation("Club ID is required");
 		}
 
-		const uploadUrl = await getS3UploadUrl(`club/${clubId}/logo`, body.file.type, body.file.size);
+		const uploadUrl = await getS3UploadUrl(`club/${clubId}/logo`, body.file.type, body.file.size, context.user.id);
 
 		return response.json(uploadUrl);
 	},
@@ -503,13 +520,18 @@ adminUnclaimedClubsRouter.put(
 
 adminUnclaimedClubsRouter.post(
 	"/admin/unclaimed-clubs/:id/header-image/upload-url",
-	async ({ params, body, response }) => {
+	async ({ params, body, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
 			throw apiError.validation("Club ID is required");
 		}
 
-		const uploadUrl = await getS3UploadUrl(`club/${clubId}/header`, body.file.type, body.file.size);
+		const uploadUrl = await getS3UploadUrl(
+			`club/${clubId}/header`,
+			body.file.type,
+			body.file.size,
+			context.user.id,
+		);
 
 		return response.json(uploadUrl);
 	},
@@ -647,9 +669,10 @@ adminUnclaimedClubsRouter.post(
 		const adminEmails = admins.map((a) => a.email);
 
 		try {
+			const messages = getEmailMessages("en"); // Admin notifications in English
 			await sendEmail({
 				to: adminEmails,
-				subject: `Club Claim Request: ${clubData[0].name}`,
+				subject: interpolateMessage(messages.emails.clubClaimRequest.subject, { clubName: clubData[0].name }),
 				html: await render(
 					ClubClaimRequestEmail({
 						clubName: clubData[0].name,

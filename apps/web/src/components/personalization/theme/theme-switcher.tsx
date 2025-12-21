@@ -2,6 +2,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useTheme } from "next-themes";
+import posthog from "posthog-js";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import apiClient from "@/lib/api/api.client";
@@ -34,6 +35,13 @@ export function ThemeSwitcher() {
 			body: {
 				theme: theme,
 			},
+		});
+
+		posthog.capture("preference_changed", {
+			user_id: user.id,
+			preference_type: "theme",
+			old_value: user.theme,
+			new_value: theme,
 		});
 	}, [theme, user]);
 

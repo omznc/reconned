@@ -15341,6 +15341,8 @@ export interface operations {
 											| null;
 										font?: string;
 										theme?: string;
+										style?: string;
+										language?: string;
 										isPrivate?: boolean;
 										isPrivateEmail?: boolean;
 										isPrivatePhone?: boolean;
@@ -15353,8 +15355,6 @@ export interface operations {
 										createdAt?: string;
 										updatedAt?: string;
 										headerImage?: string | null;
-										style?: string;
-										language?: string;
 									};
 							  }
 							| {

@@ -10,6 +10,7 @@
 			"footer": "Ako niste očekivali ovu pozivnicu, molimo vas da ignorišete ovaj email."
 		},
 		"clubInvitation": {
+			"subject": "Pozivnica za pridruživanje klubu {clubName}",
 			"preview": "Pozvani ste da se pridružite klubu {clubName}.",
 			"heading": "Pozivnica",
 			"greeting": "Zdravo {name}",
@@ -52,6 +53,7 @@
 			"footer": "Ovo je automatsko obavještenje o statusu članstva u vašem klubu."
 		},
 		"passwordReset": {
+			"subject": "Resetujte svoju lozinku",
 			"preview": "Resetujte svoju lozinku",
 			"heading": "Resetujte svoju lozinku",
 			"greeting": "Zdravo {userName}",
@@ -61,12 +63,16 @@
 			"validity": "Ovaj link će isteći za 1 sat."
 		},
 		"emailVerification": {
+			"subject": "Verifikujte svoju email adresu",
 			"preview": "Verifikujte svoju email adresu",
 			"heading": "Verifikujte svoju email adresu",
 			"greeting": "Zdravo {userName}",
 			"description": "Hvala vam što ste se registrovali! Molimo vas da verifikujete svoju email adresu klikom na dugme ispod.",
 			"button": "Verifikuj email",
 			"footer": "Ako niste kreirali ovaj račun, možete sigurno ignorisati ovaj email."
+		},
+		"clubClaimRequest": {
+			"subject": "Zahtjev za preuzimanje kluba: {clubName}"
 		}
 	}
 }

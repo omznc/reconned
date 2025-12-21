@@ -22,6 +22,7 @@ import "@/components/editor/editor.css";
 
 import debounce from "lodash/debounce";
 import { Loader2 } from "lucide-react";
+import posthog from "posthog-js";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
@@ -150,6 +151,18 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			{
 				loading: t("Submitting application..."),
 				success: () => {
+					// Track event application
+					posthog.capture("event_application_submitted", {
+						user_id: user.id,
+						event_id: event.id,
+						club_id: event.clubId,
+						application_type: data.type,
+						payment_method: data.paymentMethod,
+						team_members_count: data.invitedUsers.length + data.invitedUsersNotOnApp.length,
+						invited_users_count: data.invitedUsers.length,
+						external_invites_count: data.invitedUsersNotOnApp.length,
+					});
+
 					router.push(`/events/${event.id}`);
 					return t("Successfully applied to event!");
 				},

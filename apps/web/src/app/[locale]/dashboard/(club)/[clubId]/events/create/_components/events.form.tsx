@@ -8,6 +8,7 @@ import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw,
 import { useParams } from "next/navigation";
 import { useLogger } from "next-axiom";
 import { useExtracted } from "next-intl";
+import posthog from "posthog-js";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -39,6 +40,7 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { Link, useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
+import { useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 interface CreateEventFormProps {
@@ -56,6 +58,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const confirm = useConfirm();
 	const t = useExtracted();
 	const logger = useLogger();
+	const { user } = useIsAuthenticated();
 	const eventIdRef = useRef<string | null>(props.event?.id || null);
 	const normalizedMapData = useMemo(() => normalizeMapData(props.event?.mapData), [props.event?.mapData]);
 	const [isMapEditorOpen, setIsMapEditorOpen] = useState(false);
@@ -362,6 +365,18 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 			if (!props.event) {
 				sessionStorage.removeItem("createEventForm");
+			}
+
+			// Track event creation/update
+			if (user?.id) {
+				posthog.capture(isEditing ? "event_updated" : "event_created", {
+					user_id: user.id,
+					event_id: eventId,
+					club_id: clubId,
+					event_name: values.name,
+					has_map: Boolean(values.mapData),
+					rule_count: values.ruleIds?.length || 0,
+				});
 			}
 
 			router.push(`/dashboard/${clubId}/events/${eventId}`);

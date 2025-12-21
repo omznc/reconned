@@ -15,6 +15,7 @@ import {
 import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
+import { posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
 import { baseClubRuleSchema, baseEventSchema, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../lib/storage";
@@ -530,6 +531,26 @@ eventsRouter.post(
 			throw apiError.internal("Failed to create event");
 		}
 
+		// Track event creation
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "event_created",
+			properties: {
+				event_id: eventId,
+				club_id: body.clubId,
+				event_name: body.name,
+				location: body.location,
+				cost_per_person: body.costPerPerson,
+				is_private: body.isPrivate || false,
+				has_map: Boolean(body.mapData),
+				rule_count: body.ruleIds?.length || 0,
+				allow_freelancers: body.allowFreelancers || false,
+				has_food: body.hasBreakfast || body.hasLunch || body.hasDinner || body.hasSnacks || false,
+				has_drinks: body.hasDrinks || false,
+				has_prizes: body.hasPrizes || false,
+			},
+		});
+
 		return response.json({
 			success: true,
 			event: newEvent[0],
@@ -671,6 +692,21 @@ eventsRouter.put(
 			throw apiError.internal("Failed to update event");
 		}
 
+		// Track event update
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "event_updated",
+			properties: {
+				event_id: eventId,
+				club_id: existingEvent.clubId,
+				event_name: body.name || existingEvent.name,
+				location: body.location || existingEvent.location,
+				cost_per_person: body.costPerPerson ?? existingEvent.costPerPerson,
+				is_private: body.isPrivate ?? existingEvent.isPrivate,
+				has_map: Boolean(body.mapData ?? existingEvent.mapData),
+			},
+		});
+
 		return response.json({
 			success: true,
 			event: updatedEvent[0],
@@ -752,7 +788,7 @@ eventsRouter.delete(
 		if (existingEvent.image) {
 			const imageKey = existingEvent.image.split("/").pop() || "";
 			if (imageKey) {
-				await deleteS3Files([imageKey]);
+				await deleteS3Files([imageKey], context.user.id);
 			}
 		}
 
@@ -766,6 +802,20 @@ eventsRouter.delete(
 				name: existingEvent.name,
 			},
 			userId: context.user.id,
+		});
+
+		// Track event deletion
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "event_deleted",
+			properties: {
+				event_id: eventId,
+				club_id: existingEvent.clubId,
+				event_name: existingEvent.name,
+				location: existingEvent.location,
+				cost_per_person: existingEvent.costPerPerson,
+				is_private: existingEvent.isPrivate,
+			},
 		});
 
 		return response.json({ success: true });
@@ -950,7 +1000,7 @@ eventsRouter.post(
 		}
 
 		const key = `event/${eventId}/image`;
-		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size);
+		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size, context.user.id);
 
 		return response.json(uploadUrl);
 	},
@@ -1011,7 +1061,7 @@ eventsRouter.delete(
 		if (existingEvent.image) {
 			const imageKey = existingEvent.image.split("/").pop() || "";
 			if (imageKey) {
-				await deleteS3Files([imageKey]);
+				await deleteS3Files([imageKey], context.user.id);
 			}
 		}
 
@@ -1189,6 +1239,24 @@ eventsRouter.post(
 		if (!registration[0]) {
 			throw apiError.notFound("Registration not found");
 		}
+
+		// Track event registration
+		const isUpdate = Boolean(existingRegistrationData[0]);
+		posthog.capture({
+			distinctId: context.user.id,
+			event: isUpdate ? "event_registration_updated" : "event_registration_created",
+			properties: {
+				event_id: eventId,
+				club_id: eventRecord.clubId,
+				registration_id: registrationId,
+				registration_type: body.type,
+				payment_method: body.paymentMethod,
+				team_members_count: (body.invitedUserIds?.length || 0) + (body.invitedUsersNotOnApp?.length || 0),
+				invited_users_count: body.invitedUserIds?.length || 0,
+				external_invites_count: body.invitedUsersNotOnApp?.length || 0,
+				is_update: isUpdate,
+			},
+		});
 
 		return response.json({
 			success: true,

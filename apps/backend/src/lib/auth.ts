@@ -9,8 +9,10 @@ import { clubInvite, clubMembership } from "../drizzle/schema";
 import EmailVerification from "../emails/email-verification";
 import PasswordReset from "../emails/password-reset";
 import { db } from "./db";
+import { getEmailMessages } from "./email-messages";
 import { env } from "./env";
 import { sendEmail } from "./mail";
+import { posthog } from "./posthog";
 import { redis } from "./redis";
 
 interface UserWithLanguage {
@@ -73,20 +75,32 @@ export const auth = betterAuth({
 		sendResetPassword: async ({ user, url }) => {
 			const logoUrl = `${env.BETTER_AUTH_URL}/logo.png`;
 			const userWithLanguage = user as UserWithLanguage;
+			const language = userWithLanguage.language || "bs";
+			const messages = getEmailMessages(language);
+
 			await sendEmail({
 				to: user.email,
-				subject: "Reset your password",
+				subject: messages.emails.passwordReset.subject,
 				html: await render(
 					PasswordReset({
 						userName: user.name,
 						resetUrl: url,
 						logoUrl,
-						language: userWithLanguage.language || "bs",
+						language,
 					}),
 					{
 						pretty: true,
 					},
 				),
+			});
+
+			posthog.capture({
+				distinctId: user.id,
+				event: "password_reset_email_sent",
+				properties: {
+					email: user.email,
+					language,
+				},
 			});
 		},
 	},
@@ -107,20 +121,32 @@ export const auth = betterAuth({
 			}
 
 			const userWithLanguage = user as UserWithLanguage;
+			const language = userWithLanguage.language || "bs";
+			const messages = getEmailMessages(language);
+
 			await sendEmail({
 				to: user.email,
-				subject: "Confirm your email",
+				subject: messages.emails.emailVerification.subject,
 				html: await render(
 					EmailVerification({
 						userName: user.name,
 						verificationUrl: verificationUrl.toString(),
 						logoUrl,
-						language: userWithLanguage.language || "bs",
+						language,
 					}),
 					{
 						pretty: true,
 					},
 				),
+			});
+
+			posthog.capture({
+				distinctId: user.id,
+				event: "email_verification_sent",
+				properties: {
+					email: user.email,
+					language,
+				},
 			});
 		},
 		sendOnSignUp: true,

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { club, clubMembership } from "../../drizzle/schema";
 import { db } from "../../lib/db";
 import { apiError } from "../../lib/errors";
+import { posthog } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 
@@ -168,7 +169,7 @@ adminClubsRouter.get(
 
 adminClubsRouter.put(
 	"/admin/clubs/:id/ban",
-	async ({ params, response, context: _context }) => {
+	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
 			throw apiError.validation("Club ID is required");
@@ -187,6 +188,17 @@ adminClubsRouter.put(
 				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(club.id, clubId));
+
+		// Track club ban by admin
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "club_banned_by_admin",
+			properties: {
+				club_id: clubId,
+				club_name: clubData[0].name,
+				admin_action: true,
+			},
+		});
 
 		return response.json({ success: true });
 	},
@@ -209,7 +221,7 @@ adminClubsRouter.put(
 
 adminClubsRouter.put(
 	"/admin/clubs/:id/unban",
-	async ({ params, response, context: _context }) => {
+	async ({ params, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
 			throw apiError.validation("Club ID is required");
@@ -230,6 +242,17 @@ adminClubsRouter.put(
 				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(club.id, clubId));
+
+		// Track club unban by admin
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "club_unbanned_by_admin",
+			properties: {
+				club_id: clubId,
+				club_name: clubData[0].name,
+				admin_action: true,
+			},
+		});
 
 		return response.json({ success: true });
 	},

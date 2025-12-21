@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
-const lastUpdated = new Date("2025-04-13");
+const lastUpdated = new Date("2025-12-21");
 
 export const revalidate = 86_400; // 1 day
 
@@ -99,6 +99,11 @@ export default async function PrivacyPolicyPage() {
 						</li>
 						<li>
 							{t(
+								"Analytics data: user interactions, feature usage patterns, event creation/registration activities, and platform engagement metrics.",
+							)}
+						</li>
+						<li>
+							{t(
 								"Device information: device type, operating system, browser version, and language settings.",
 							)}
 						</li>
@@ -114,10 +119,19 @@ export default async function PrivacyPolicyPage() {
 								"To provide, maintain, and improve our platform, including connecting airsoft clubs, players, and events.",
 							)}
 						</li>
-						<li>{t("To analyze how you use our platform and enhance user experience.")}</li>
+						<li>
+							{t(
+								"To analyze how you use our platform, track feature adoption, and enhance user experience through data-driven improvements.",
+							)}
+						</li>
 						<li>
 							{t(
 								"To communicate with you, respond to your inquiries, and send notifications about our service.",
+							)}
+						</li>
+						<li>
+							{t(
+								"To monitor platform performance, identify usage patterns, and optimize resource allocation.",
 							)}
 						</li>
 						<li>
@@ -165,6 +179,43 @@ export default async function PrivacyPolicyPage() {
 							"We use cookies and similar tracking technologies to collect and store certain information when you use our platform. This helps us improve your experience, analyze platform usage, and tailor content to your interests.",
 						)}
 					</p>
+					<p className="mt-4">
+						{t(
+							"We use PostHog, an open-source product analytics platform, to track user interactions and improve our service. The specific events we track include:",
+						)}
+					</p>
+					<ul className="list-disc pl-6 mt-4 space-y-2">
+						<li>
+							{t(
+								"Authentication events: login attempts, successful logins, registration attempts, and account creation.",
+							)}
+						</li>
+						<li>
+							{t(
+								"User preferences: theme changes (light/dark), language selection, font preferences, and style settings.",
+							)}
+						</li>
+						<li>
+							{t(
+								"Platform interactions: event creation and updates, club membership extensions, file uploads and deletions.",
+							)}
+						</li>
+						<li>
+							{t(
+								"Business activities: event registrations, club invitations, membership changes, and administrative actions.",
+							)}
+						</li>
+						<li>
+							{t(
+								"Technical data: page views, user agent information, IP addresses, and device characteristics.",
+							)}
+						</li>
+					</ul>
+					<p className="mt-4">
+						{t(
+							"All tracking data is anonymized where possible and used solely for improving our platform and understanding user behavior patterns.",
+						)}
+					</p>
 				</section>
 
 				<section className="mb-8">
@@ -197,7 +248,12 @@ export default async function PrivacyPolicyPage() {
 						<li>{t("Authentication services (e.g., Google login) for easy sign-in.")}</li>
 						<li>{t("Storage services for storing data and media files.")}</li>
 						<li>{t("Mapping services for displaying club and event locations.")}</li>
-						<li>{t("Analytics services for tracking platform usage.")}</li>
+						<li>
+							{t(
+								"PostHog (open-source analytics platform) for tracking user interactions and improving platform functionality.",
+							)}
+						</li>
+						<li>{t("OneSignal for sending email notifications and communications to users.")}</li>
 						<li>
 							{t(
 								"Integration with Instagram for clubs that want to display their Instagram posts on their club profile.",
@@ -260,7 +316,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			"Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players.",
 		),
 		keywords: t(
-			"privacy policy, data protection, personal information, airsoft privacy, user data, GDPR compliance, privacy rights",
+			"privacy policy, data protection, personal information, airsoft privacy, user data, GDPR compliance, privacy rights, analytics, PostHog, tracking, user behavior",
 		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),

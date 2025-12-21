@@ -2,6 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
+import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -73,6 +74,12 @@ export default function RegisterPage() {
 
 		setIsLoading(true);
 
+		// Track registration attempt
+		posthog.capture("user_registration_attempt", {
+			email: data.email,
+			method: "email",
+		});
+
 		await authClient.signUp.email({
 			email: data.email,
 			password: data.password,
@@ -90,6 +97,10 @@ export default function RegisterPage() {
 					}
 				},
 				onSuccess: () => {
+					posthog.capture("user_registration_success", {
+						email: data.email,
+						method: "email",
+					});
 					toast.success(t("You have successfully registered. Check your email to verify it."));
 					router.push("/login");
 					router.refresh();

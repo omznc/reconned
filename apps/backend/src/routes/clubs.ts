@@ -19,6 +19,7 @@ import {
 import ClubInvitationEmail from "../emails/airsoft-invitation";
 import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
+import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
 import { apiError } from "../lib/errors";
 import {
@@ -30,6 +31,7 @@ import {
 	getUserPages,
 } from "../lib/instagram";
 import { sendEmail } from "../lib/mail";
+import { posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
@@ -435,6 +437,20 @@ clubsRouter.put(
 				newEndDate: newEndDate.toISOString(),
 			},
 			userId: context.user.id,
+		});
+
+		// Track membership extension
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "club_membership_extended",
+			properties: {
+				club_id: clubId,
+				member_id: membershipWithUser.user.id,
+				member_name: membershipWithUser.user.name,
+				extended_months: durationMonths,
+				previous_end_date: membershipWithUser.endDate,
+				new_end_date: newEndDate.toISOString(),
+			},
 		});
 
 		return response.json({
@@ -1500,7 +1516,7 @@ clubsRouter.put(
 				const urlObj = new URL(url);
 				return urlObj.pathname.substring(1);
 			});
-			await deleteS3Files(imageKeys);
+			await deleteS3Files(imageKeys, context.user.id);
 		}
 
 		await logClubAudit({
@@ -1580,7 +1596,7 @@ clubsRouter.delete(
 				const urlObj = new URL(url);
 				return urlObj.pathname.substring(1);
 			});
-			await deleteS3Files(imageKeys);
+			await deleteS3Files(imageKeys, context.user.id);
 		}
 
 		await db.delete(post).where(eq(post.id, postId));
@@ -1642,7 +1658,7 @@ clubsRouter.post(
 		const key = `post-images/${clubId}/${secureFilename}`;
 
 		try {
-			const result = await getS3UploadUrl(key, body.file.type, body.file.size);
+			const result = await getS3UploadUrl(key, body.file.type, body.file.size, context.user.id);
 			return response.json(result);
 		} catch (error) {
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
@@ -2107,7 +2123,7 @@ clubsRouter.delete(
 				const urlObj = new URL(url);
 				return urlObj.pathname.substring(1);
 			});
-			await deleteS3Files(receiptKeys);
+			await deleteS3Files(receiptKeys, context.user.id);
 		}
 
 		await db.delete(clubPurchase).where(eq(clubPurchase.id, purchaseId));
@@ -2169,7 +2185,7 @@ clubsRouter.post(
 		const key = `receipt/${clubId}/${secureFilename}`;
 
 		try {
-			const result = await getS3UploadUrl(key, body.file.type, body.file.size);
+			const result = await getS3UploadUrl(key, body.file.type, body.file.size, context.user.id);
 			return response.json(result);
 		} catch (error) {
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
@@ -2426,9 +2442,12 @@ clubsRouter.post(
 		const inviteUrl = `${env.BETTER_AUTH_URL}/api/club/member-invite/${newInvite[0].inviteCode}?redirectTo=${encodeURIComponent("/")}`;
 
 		try {
+			const language = isValidLanguage(existingUser[0]?.language) ? existingUser[0].language : "bs";
+			const messages = getEmailMessages(language);
+
 			await sendEmail({
 				to: target.email,
-				subject: `Invitation to join ${clubData[0].name}`,
+				subject: interpolateMessage(messages.emails.clubInvitation.subject, { clubName: clubData[0].name }),
 				html: await render(
 					ClubInvitationEmail({
 						code: newInvite[0].inviteCode,
@@ -2437,12 +2456,26 @@ clubsRouter.post(
 						clubLogo: clubData[0].logo || `${env.BETTER_AUTH_URL}/logo.png`,
 						clubName: clubData[0].name,
 						clubLocation: clubData[0].location || "",
-						language: isValidLanguage(existingUser[0]?.language) ? existingUser[0].language : "bs",
+						language,
 					}),
 					{
 						pretty: true,
 					},
 				),
+			});
+
+			// Track club invitation email
+			posthog.capture({
+				distinctId: context.user.id,
+				event: "club_invitation_email_sent",
+				properties: {
+					recipient_email: target.email,
+					club_id: clubId,
+					club_name: clubData[0].name,
+					invitation_code: newInvite[0].inviteCode,
+					language,
+					is_existing_user: Boolean(existingUser[0]),
+				},
 			});
 		} catch (error) {
 			console.error("Failed to send invitation email:", error);
@@ -3027,7 +3060,7 @@ clubsRouter.delete(
 		}
 
 		if (filesToDelete.length > 0) {
-			await deleteS3Files(filesToDelete);
+			await deleteS3Files(filesToDelete, context.user.id);
 		}
 
 		await db.delete(club).where(eq(club.id, clubId));
@@ -3197,7 +3230,7 @@ clubsRouter.delete(
 			})
 			.where(eq(club.id, clubId));
 
-		await deleteS3Files([`club/${clubId}/logo`]);
+		await deleteS3Files([`club/${clubId}/logo`], context.user.id);
 
 		await logClubAudit({
 			clubId,
@@ -3258,7 +3291,7 @@ clubsRouter.delete(
 			})
 			.where(eq(club.id, clubId));
 
-		await deleteS3Files([`club/${clubId}/header`]);
+		await deleteS3Files([`club/${clubId}/header`], context.user.id);
 
 		await logClubAudit({
 			clubId,

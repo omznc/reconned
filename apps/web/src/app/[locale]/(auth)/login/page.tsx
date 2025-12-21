@@ -6,6 +6,7 @@ import type { SuccessContext } from "better-auth/react";
 import { Key } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
+import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -85,6 +86,12 @@ export default function LoginPage() {
 	async function onSubmit(data: LoginFormValues) {
 		const headers = new Headers();
 		headers.append("x-captcha-response", data.turnstileToken);
+
+		// Track login attempt
+		posthog.capture("user_login_attempt", {
+			email: data.email,
+			method: "email",
+		});
 
 		await authClient.signIn.email({
 			email: data.email,

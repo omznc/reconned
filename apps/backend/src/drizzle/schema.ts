@@ -618,6 +618,8 @@ export const user = pgTable(
 		gear: jsonb().array(),
 		font: text().default("mono").notNull(),
 		theme: text().default("dark").notNull(),
+		style: text().default("relaxed").notNull(),
+		language: text().default("bs").notNull(),
 		isPrivate: boolean().default(false).notNull(),
 		isPrivateEmail: boolean().default(true).notNull(),
 		isPrivatePhone: boolean().default(true).notNull(),
@@ -630,8 +632,6 @@ export const user = pgTable(
 		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
 		headerImage: text(),
-		style: text().default("relaxed").notNull(),
-		language: text().default("bs").notNull(),
 	},
 	(table) => [
 		index("User_email_idx").using("btree", table.email.asc().nullsLast().op("text_ops")),

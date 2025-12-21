@@ -1,5 +1,6 @@
 import { S3Client } from "bun";
 import { env } from "./env";
+import { posthog } from "./posthog";
 
 const s3 = new S3Client({
 	endpoint: env.S3_ENDPOINT,
@@ -45,7 +46,12 @@ export function extractSizeFromKey(key: string): number {
 	return 0;
 }
 
-export async function getS3UploadUrl(key: string, type: string, size: number): Promise<UploadUrlResponse> {
+export async function getS3UploadUrl(
+	key: string,
+	type: string,
+	size: number,
+	userId?: string,
+): Promise<UploadUrlResponse> {
 	// Basic validation
 	if (!type || !size || !key) {
 		throw new Error("File type, size, and key are required");
@@ -68,6 +74,20 @@ export async function getS3UploadUrl(key: string, type: string, size: number): P
 		expiresIn: 60 * 5, // 5 minutes
 	});
 
+	// Track file upload URL generation
+	if (userId) {
+		posthog.capture({
+			distinctId: userId,
+			event: "file_upload_url_generated",
+			properties: {
+				file_type: type,
+				file_size: size,
+				file_size_mb: Math.round((size / 1024 / 1024) * 100) / 100,
+				key: key,
+			},
+		});
+	}
+
 	return {
 		url,
 		cdnUrl: `${env.CDN_URL}/${keyWithSize}`,
@@ -75,13 +95,25 @@ export async function getS3UploadUrl(key: string, type: string, size: number): P
 	};
 }
 
-export async function deleteS3Files(keys: string[]): Promise<void> {
+export async function deleteS3Files(keys: string[], userId?: string): Promise<void> {
 	if (keys.length === 0) {
 		return;
 	}
 
 	try {
 		await Promise.all(keys.map((key) => s3.delete(key)));
+
+		// Track file deletions
+		if (userId) {
+			posthog.capture({
+				distinctId: userId,
+				event: "files_deleted",
+				properties: {
+					files_count: keys.length,
+					file_keys: keys,
+				},
+			});
+		}
 	} catch (error) {
 		throw new Error(`Failed to delete S3 files: ${error instanceof Error ? error.message : "Unknown error"}`);
 	}

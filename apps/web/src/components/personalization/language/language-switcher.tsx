@@ -1,6 +1,7 @@
 "use client";
 import { Globe } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
+import posthog from "posthog-js";
 import { useEffect } from "react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import {
@@ -47,6 +48,13 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 			body: {
 				language: locale,
 			},
+		});
+
+		posthog.capture("preference_changed", {
+			user_id: user.id,
+			preference_type: "language",
+			old_value: user.language,
+			new_value: locale,
 		});
 	}, [locale, user]);
 
