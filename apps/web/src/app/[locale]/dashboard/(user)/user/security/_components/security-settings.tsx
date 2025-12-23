@@ -486,28 +486,41 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 															<div className="space-y-4">
 																<div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md p-3">
 																	<p className="text-sm text-green-800 dark:text-green-200 font-medium">
-																		✅ {t("Two-factor authentication has been enabled")}
+																		✅{" "}
+																		{t(
+																			"Two-factor authentication has been enabled",
+																		)}
 																	</p>
 																	<p className="text-sm text-green-700 dark:text-green-300 mt-1">
-																		{t("You will now be logged out. Save these backup codes and log back in with your 2FA.")}
+																		{t(
+																			"You will now be logged out. Save these backup codes and log back in with your 2FA.",
+																		)}
 																	</p>
 																</div>
 
 																<div>
-																	<p className="font-medium mb-2">{t("Your backup codes:")}</p>
+																	<p className="font-medium mb-2">
+																		{t("Your backup codes:")}
+																	</p>
 																	<div className="bg-background border p-4 flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-																		{backupCodes.data.backupCodes.map((code: string, index: number) => (
-																			<code
-																				onClick={() => {
-																					navigator.clipboard.writeText(code);
-																					toast.success(t("Copied to clipboard."));
-																				}}
-																				key={index}
-																				className="cursor-pointer text-center bg-sidebar hover:bg-sidebar/80 transition-colors p-2 font-mono text-sm rounded"
-																			>
-																				{code}
-																			</code>
-																		))}
+																		{backupCodes.data.backupCodes.map(
+																			(code: string, index: number) => (
+																				<code
+																					onClick={() => {
+																						navigator.clipboard.writeText(
+																							code,
+																						);
+																						toast.success(
+																							t("Copied to clipboard."),
+																						);
+																					}}
+																					key={index}
+																					className="cursor-pointer text-center bg-sidebar hover:bg-sidebar/80 transition-colors p-2 font-mono text-sm rounded"
+																				>
+																					{code}
+																				</code>
+																			),
+																		)}
 																	</div>
 																</div>
 
@@ -516,11 +529,13 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 																		variant="outline"
 																		className="flex-1"
 																		onClick={() => {
-																			const text = backupCodes.data.backupCodes.join("\n");
+																			const text =
+																				backupCodes.data.backupCodes.join("\n");
 																			const blob = new Blob([text], {
 																				type: "text/plain",
 																			});
-																			const url = window.URL.createObjectURL(blob);
+																			const url =
+																				window.URL.createObjectURL(blob);
 																			const a = document.createElement("a");
 																			a.href = url;
 																			a.download = t("backup-codes-2fa.txt");
@@ -740,7 +755,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 
 								if (error) {
 									const e = error?.error as unknown as { code: string };
-									if (e.code === 'UNAUTHORIZED') {
+									if (e.code === "UNAUTHORIZED") {
 										toast.error(t("Invalid password. Please try again."));
 									} else {
 										toast.error(t("Failed to delete account"));

@@ -1,5 +1,5 @@
-import { Button } from "@components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
+import { Button } from "@components/ui/button";
 import { MailIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
 import type { Dispatch, SetStateAction } from "react";
@@ -62,7 +62,9 @@ export function SetupPasswordForm({
 			<div>
 				<h3 className="text-lg font-semibold">{t("Set a password")}</h3>
 				<p className="text-sm text-muted-foreground">
-					{t("Since you signed in with a social provider, you need to set a password to enable additional security features.")}
+					{t(
+						"Since you signed in with a social provider, you need to set a password to enable additional security features.",
+					)}
 				</p>
 			</div>
 			<Button onClick={onSendResetEmail} className="w-full" disabled={isLoading}>

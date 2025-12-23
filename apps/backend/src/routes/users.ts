@@ -1,7 +1,7 @@
+import bcrypt from "bcrypt";
 import { and, count, desc, eq, getTableColumns, gte, ilike, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
-import bcrypt from "bcrypt";
 import {
 	account,
 	club,
@@ -979,7 +979,7 @@ usersRouter.get(
 		const userAccounts = await db.select().from(account).where(eq(account.userId, userId));
 
 		return response.json({
-			hasPassword: userAccounts.some(account => account.password !== null),
+			hasPassword: userAccounts.some((account) => account.password !== null),
 		});
 	},
 	{

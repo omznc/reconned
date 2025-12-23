@@ -17,7 +17,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useClubs } from "@/components/clubs-provider";
+import { type DashboardClubs, useClubs } from "@/components/clubs-provider";
 import { useCurrentClub } from "@/components/current-club-provider";
 import {
 	flattenNavigationItems,

@@ -1,10 +1,10 @@
 "use client";
 
-import { createContext, type ReactNode, useContext, useState, useCallback } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
-type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
+export type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 type ClubsContextType = {
 	clubs: DashboardClubs;
