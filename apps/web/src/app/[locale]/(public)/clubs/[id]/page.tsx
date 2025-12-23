@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { SportsOrganization, WithContext } from "schema-dts";
+import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
 import apiServer from "@/lib/api/api";
@@ -12,6 +12,7 @@ import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } f
 export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
 	const user = await isAuthenticated();
+	const t = await getExtracted();
 
 	const { data: clubData, error: clubError } = await apiServer.GET("/api/clubs/{id}", {
 		params: {
@@ -22,7 +23,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	});
 
 	if (clubError || !clubData) {
-		notFound();
+		return <ErrorPage title={t("Club not found.")} />;
 	}
 
 	const [membershipData, hasOwnerData] = await Promise.all([
@@ -54,7 +55,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		membershipData?.data?.isMember && membershipData?.data?.membership ? membershipData.data.membership : null;
 
 	if (!club) {
-		notFound();
+		return <ErrorPage title={t("Club not found.")} />;
 	}
 
 	const sportsOrganizationSchema: WithContext<SportsOrganization> = {
@@ -136,7 +137,9 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 	});
 
 	if (error || !club) {
-		notFound();
+		return {
+			title: "Club not found.",
+		};
 	}
 
 	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/club`);

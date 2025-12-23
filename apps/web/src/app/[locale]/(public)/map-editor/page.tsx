@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
+import { ErrorPage } from "@/components/error-page";
 import { MapEditor } from "@/components/map-editor/map-editor";
 import { env } from "@/lib/env";
 
@@ -13,8 +13,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MapEditorPage() {
+	const t = await getExtracted();
 	if (!env.NEXT_PUBLIC_BETA) {
-		notFound();
+		return <ErrorPage title={t("Page not found")} />;
 	}
 
 	return (

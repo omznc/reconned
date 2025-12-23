@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
+import { ErrorPage } from "@/components/error-page";
 import apiServer from "@/lib/api/api";
 import { CreateUnclaimedClubForm } from "./_components/create-unclaimed-club-form";
 
@@ -8,7 +8,7 @@ export default async function CreateUnclaimedClubPage() {
 	const { data, error } = await apiServer.GET("/api/countries");
 
 	if (error) {
-		notFound();
+		return <ErrorPage title={t("An error occurred")} />;
 	}
 
 	return (

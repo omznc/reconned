@@ -1,7 +1,7 @@
 import { CirclePlus, MailPlus, Search } from "lucide-react";
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
+import { ErrorPage } from "@/components/error-page";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api.ts";
@@ -14,7 +14,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/add-clu
 	const type = searchParams.type as "invite" | "new" | string;
 
 	if (error) {
-		notFound();
+		return <ErrorPage title={t("An error occurred")} />;
 	}
 
 	if (type === "invite") {

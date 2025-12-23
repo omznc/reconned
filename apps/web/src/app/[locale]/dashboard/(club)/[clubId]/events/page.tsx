@@ -1,8 +1,8 @@
 import { PlusCircle } from "lucide-react";
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { EventsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/events/_components/events-table";
+import { ErrorPage } from "@/components/error-page";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -14,10 +14,11 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[c
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
+	const t = await getExtracted();
 
 	const user = await isAuthenticated();
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	const [{ data }, { data: membershipData }] = await Promise.all([

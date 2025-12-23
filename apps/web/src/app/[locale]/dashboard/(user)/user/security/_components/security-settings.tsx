@@ -14,10 +14,11 @@ import { PasswordChangeForm } from "@/app/[locale]/dashboard/(user)/user/securit
 import { SetupPasswordForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-setup.form";
 import { BadgeSoon } from "@/components/badge-soon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { usePrompt } from "@/components/ui/alert-dialog-provider";
+import { useConfirm, usePrompt } from "@/components/ui/alert-dialog-provider";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
+import apiClient from "@/lib/api/api.client";
 import type { Session } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
@@ -29,13 +30,15 @@ interface SecuritySettingsProps {
 	sessions: (Omit<Session, "impersonatedBy"> & {
 		isCurrentSession: boolean;
 	})[];
+	userId: string;
 }
 
-export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions }: SecuritySettingsProps) {
+export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions, userId }: SecuritySettingsProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [regeneratedBackupCodes, setRegeneratedBackupCodes] = useState<string[] | null>(null);
 	const router = useRouter();
 	const prompt = usePrompt();
+	const confirm = useConfirm();
 	const t = useExtracted();
 	const locale = useLocale();
 	const hasBackupCodes = regeneratedBackupCodes && regeneratedBackupCodes.length > 0;
@@ -381,8 +384,20 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 										cancelButton: t("Cancel"),
 										cancelButtonVariant: "ghost",
 										title: t("Enable 2-factor authentication?"),
-										body: t("Enter your password to enable 2-factor authentication."),
-										actionButton: t("Confirm"),
+										body: (
+											<div className="space-y-2">
+												<p>{t("Enter your password to enable 2-factor authentication.")}</p>
+												<div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
+													<p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
+														⚠️ {t("You will be logged out after enabling 2FA")}
+													</p>
+													<p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+														{t("Make sure you save your backup codes before proceeding.")}
+													</p>
+												</div>
+											</div>
+										),
+										actionButton: t("Continue"),
 										inputType: "input",
 										inputProps: {
 											type: "password",
@@ -403,7 +418,6 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 											},
 											onSuccess: () => {
 												setIsLoading(false);
-												router.refresh();
 											},
 											onError: () => {
 												setIsLoading(false);
@@ -419,7 +433,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 									const confirmed = await prompt({
 										cancelButton: t("Cancel"),
 										cancelButtonVariant: "ghost",
-										title: t("Enable 2-factor authentication?"),
+										title: t("Scan QR Code"),
 										body: (
 											<div className="space-y-2">
 												<p>
@@ -439,7 +453,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 												</span>
 											</div>
 										),
-										actionButton: t("Enable"),
+										actionButton: t("Verify & Continue"),
 										inputType: "input",
 										inputProps: {
 											type: "text",
@@ -450,6 +464,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 										return;
 									}
 
+									setIsLoading(true);
 									await authClient.twoFactor.verifyTotp(
 										{
 											code: confirmed,
@@ -464,11 +479,71 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 												});
 
 												if (backupCodes.data) {
-													setRegeneratedBackupCodes(backupCodes.data.backupCodes);
+													// Show backup codes immediately in a modal
+													await prompt({
+														title: t("2FA Enabled - Save Your Backup Codes"),
+														body: (
+															<div className="space-y-4">
+																<div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md p-3">
+																	<p className="text-sm text-green-800 dark:text-green-200 font-medium">
+																		✅ {t("Two-factor authentication has been enabled")}
+																	</p>
+																	<p className="text-sm text-green-700 dark:text-green-300 mt-1">
+																		{t("You will now be logged out. Save these backup codes and log back in with your 2FA.")}
+																	</p>
+																</div>
+
+																<div>
+																	<p className="font-medium mb-2">{t("Your backup codes:")}</p>
+																	<div className="bg-background border p-4 flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+																		{backupCodes.data.backupCodes.map((code: string, index: number) => (
+																			<code
+																				onClick={() => {
+																					navigator.clipboard.writeText(code);
+																					toast.success(t("Copied to clipboard."));
+																				}}
+																				key={index}
+																				className="cursor-pointer text-center bg-sidebar hover:bg-sidebar/80 transition-colors p-2 font-mono text-sm rounded"
+																			>
+																				{code}
+																			</code>
+																		))}
+																	</div>
+																</div>
+
+																<div className="flex gap-2">
+																	<Button
+																		variant="outline"
+																		className="flex-1"
+																		onClick={() => {
+																			const text = backupCodes.data.backupCodes.join("\n");
+																			const blob = new Blob([text], {
+																				type: "text/plain",
+																			});
+																			const url = window.URL.createObjectURL(blob);
+																			const a = document.createElement("a");
+																			a.href = url;
+																			a.download = t("backup-codes-2fa.txt");
+																			a.click();
+																			window.URL.revokeObjectURL(url);
+																			toast.success(t("Backup codes downloaded"));
+																		}}
+																	>
+																		<Download className="w-4 h-4 mr-2" />
+																		{t("Download")}
+																	</Button>
+																</div>
+															</div>
+														),
+														actionButton: t("Log Back In"),
+														actionButtonVariant: "default",
+													});
+
+													// After showing backup codes, refresh the page (which will log user out)
+													router.refresh();
 												}
 
 												setIsLoading(false);
-												router.refresh();
 											},
 											onError: () => {
 												setIsLoading(false);
@@ -588,6 +663,107 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 					})}
 				</div>
 			</ScrollArea>
+			<div className="flex flex-col gap-1">
+				<h3 className="text-lg font-semibold">{t("Delete account")}</h3>
+				<p className="text-sm text-muted-foreground">
+					{t("Permanently delete your account and all associated data. This action cannot be undone.")}
+				</p>
+			</div>
+			<Alert variant="destructive">
+				<AlertDescription className="space-y-4">
+					<p>
+						{t(
+							"Deleting your account will permanently remove all your data. If you are a club owner, ownership will be transferred to a random manager, or the club will become unclaimed if no managers exist.",
+						)}
+					</p>
+					<Button
+						type="button"
+						variant="destructive"
+						disabled={isLoading}
+						onClick={async () => {
+							const confirmed = await confirm({
+								title: t("Delete account"),
+								body: t("Are you sure you want to delete your account? This action cannot be undone."),
+								actionButton: t("Delete account"),
+								actionButtonVariant: "destructive",
+								cancelButton: t("Cancel"),
+							});
+
+							if (!confirmed) {
+								return;
+							}
+
+							let password: string | undefined;
+
+							if (hasPassword) {
+								const passwordResult = await prompt({
+									title: t("Delete account"),
+									body: t("Password is required"),
+									actionButton: t("Delete account"),
+									actionButtonVariant: "destructive",
+									cancelButton: t("No, go back"),
+									inputType: "input",
+									inputProps: {
+										type: "password",
+										placeholder: t("Enter your password"),
+										autoComplete: "current-password",
+									},
+								});
+
+								if (passwordResult === null) {
+									return;
+								}
+
+								if (!passwordResult || typeof passwordResult !== "string") {
+									toast.error(t("Password is required"));
+									return;
+								}
+
+								password = passwordResult;
+							}
+
+							// Skip 2FA verification for account deletion - password only
+
+							setIsLoading(true);
+
+							try {
+								const { data, error } = await apiClient.POST("/api/users/{id}/delete", {
+									params: {
+										path: {
+											id: userId,
+										},
+									},
+									body: {
+										password,
+									},
+								});
+
+								if (error) {
+									const e = error?.error as unknown as { code: string };
+									if (e.code === 'UNAUTHORIZED') {
+										toast.error(t("Invalid password. Please try again."));
+									} else {
+										toast.error(t("Failed to delete account"));
+									}
+									setIsLoading(false);
+									return;
+								}
+
+								if (data?.success) {
+									toast.success(t("Account deleted successfully"));
+									await authClient.signOut();
+									router.push("/login");
+								}
+							} catch {
+								toast.error(t("An error occurred while deleting your account"));
+								setIsLoading(false);
+							}
+						}}
+					>
+						{t("Delete my account")}
+					</Button>
+				</AlertDescription>
+			</Alert>
 		</>
 	);
 }

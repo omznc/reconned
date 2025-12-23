@@ -29,7 +29,7 @@ export function GoogleLoginButton({
 		>
 			<GoogleLogo /> Google
 			{wasLastMethod && (
-				<span className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold">
+				<span className="absolute w-full -z-1 -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 pt-3 py-0.5 rounded-b-md text-xs font-semibold">
 					{t("Last used")}
 				</span>
 			)}

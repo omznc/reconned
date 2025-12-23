@@ -17,6 +17,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useClubs } from "@/components/clubs-provider";
 import { useCurrentClub } from "@/components/current-club-provider";
 import {
 	flattenNavigationItems,
@@ -37,20 +38,17 @@ import {
 } from "@/components/ui/command";
 import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
 import { useRouter } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api/api-type-helpers";
-
-type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
 interface CommandMenuProps {
-	clubs: DashboardClubs;
 	user: User & { role?: string | null | undefined };
 }
 
-export function CommandMenu({ clubs, user }: CommandMenuProps) {
+export function CommandMenu({ user }: CommandMenuProps) {
 	const { open, setOpen } = useCommandMenu();
 	const [search, setSearch] = useState("");
 	const router = useRouter();
 	const { clubId } = useCurrentClub();
+	const { clubs } = useClubs();
 	const t = useExtracted();
 	const inputRef = useRef<HTMLInputElement>(null);
 

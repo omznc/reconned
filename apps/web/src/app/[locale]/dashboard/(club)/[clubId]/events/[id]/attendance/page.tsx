@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { AttendanceTracker } from "@/app/[locale]/dashboard/(club)/[clubId]/events/[id]/attendance/_components/attendance-tracker";
 import { ErrorPage } from "@/components/error-page";
@@ -17,7 +16,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const user = await isAuthenticated();
 
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	const { data: membershipData } = await apiServer.GET("/api/clubs/{id}/membership", {
@@ -28,7 +27,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
 
 	if (!isManager) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Fetch event from backend
@@ -37,14 +36,14 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	});
 
 	if (eventError || !eventData) {
-		return notFound();
+		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
 	const { event } = eventData;
 
 	// Verify event belongs to this club
 	if (event.clubId !== params.clubId) {
-		return notFound();
+		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
 	// Fetch event registrations with details
@@ -56,7 +55,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	);
 
 	if (registrationsError || !registrationsData) {
-		return notFound();
+		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
 	if (new Date() < new Date(event.dateRegistrationsClose)) {

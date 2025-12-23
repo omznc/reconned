@@ -1,7 +1,6 @@
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
@@ -16,6 +15,7 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import "./markdown.css";
 import DOMPurify from "isomorphic-dompurify";
 import type { CollectionPage, WithContext } from "schema-dts";
+import { ErrorPage } from "@/components/error-page";
 import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
 
 // Helper function to format GitHub release body markdown
@@ -75,7 +75,7 @@ export default async function ChangelogPage() {
 	}
 
 	if (releases.length === 0) {
-		return notFound();
+		return <ErrorPage title={t("No releases found")} />;
 	}
 
 	// Get the latest release and previous releases
@@ -83,7 +83,7 @@ export default async function ChangelogPage() {
 	const previousReleases = releases.slice(1);
 
 	if (!latestRelease) {
-		return notFound();
+		return <ErrorPage title={t("No releases found")} />;
 	}
 
 	const content = await formatReleaseBody(latestRelease.body);

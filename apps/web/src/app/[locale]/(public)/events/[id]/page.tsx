@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { SportsEvent, WithContext } from "schema-dts";
+import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
 import apiServer from "@/lib/api/api";
@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const params = await props.params;
+	const t = await getExtracted();
 
 	const { data: eventData, error: eventError } = await apiServer.GET("/api/events/{id}", {
 		params: {
@@ -22,7 +23,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	});
 
 	if (eventError || !eventData) {
-		notFound();
+		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
 	const { data: rulesData } = await apiServer.GET("/api/events/{id}/rules", {
@@ -42,7 +43,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	});
 
 	if (!eventData.club) {
-		notFound();
+		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
 	const base = eventData.event;
@@ -139,7 +140,9 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	});
 
 	if (error || !data) {
-		return notFound();
+		return {
+			title: t("Event Not Found - RECONNED"),
+		};
 	}
 	const event = data.event;
 

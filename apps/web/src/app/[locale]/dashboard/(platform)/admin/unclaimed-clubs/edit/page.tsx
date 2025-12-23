@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { EditClubForm } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/edit-club-form";
+import { ErrorPage } from "@/components/error-page";
 import apiServer from "@/lib/api/api";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
@@ -14,13 +14,15 @@ export default async function EditUnclaimedClubPage(
 	const searchParams = await props.searchParams;
 	const { clubId } = searchParams;
 
+	const t = await getExtracted();
+
 	if (!clubId) {
-		return notFound();
+		return <ErrorPage title={t("Club not found.")} />;
 	}
 
 	const user = await isAuthenticated();
 	if (!user || user.role !== "admin") {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	const [clubResp, countriesResp] = await Promise.all([
@@ -36,10 +38,8 @@ export default async function EditUnclaimedClubPage(
 	const countries = countriesResp.data as CountriesResponse | undefined;
 
 	if (!club || !countries || club._count.members > 0) {
-		return notFound();
+		return <ErrorPage title={t("Club not found.")} />;
 	}
-
-	const t = await getExtracted();
 
 	return (
 		<div className="space-y-4">

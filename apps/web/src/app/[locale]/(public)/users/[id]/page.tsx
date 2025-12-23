@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
+import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import apiServer from "@/lib/api/api";
@@ -10,6 +10,7 @@ import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } f
 
 export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
+	const t = await getExtracted();
 
 	const { data: user, error } = await apiServer.GET("/api/users/{id}/profile", {
 		params: {
@@ -20,7 +21,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	});
 
 	if (error || !user) {
-		notFound();
+		return <ErrorPage title={t("User not found.")} />;
 	}
 
 	const personSchema: WithContext<Person> = {
@@ -90,7 +91,9 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 	});
 
 	if (error || !user) {
-		return notFound();
+		return {
+			title: "User not found.",
+		};
 	}
 
 	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/user`);

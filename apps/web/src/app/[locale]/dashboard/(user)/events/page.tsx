@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { EventsTable } from "@/app/[locale]/dashboard/(user)/events/_components/events-table";
+import { ErrorPage } from "@/components/error-page";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
@@ -11,9 +11,10 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/ev
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
+	const t = await getExtracted();
 
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	const { data } = await apiServer.GET("/api/events", {

@@ -23,7 +23,7 @@ export const ClubClaimRequestEmail = ({
 	message,
 	clubId,
 }: ClubClaimRequestEmailProps) => {
-	const adminUrl = `${env.BETTER_AUTH_URL}/dashboard/admin/unclaimed-clubs?clubId=${clubId}`;
+	const adminUrl = `${env.FRONTEND_URL}/dashboard/admin/unclaimed-clubs?clubId=${clubId}`;
 
 	return (
 		<Html>

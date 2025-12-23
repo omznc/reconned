@@ -1,13 +1,15 @@
-import { notFound } from "next/navigation";
+import { getExtracted } from "next-intl/server";
 import { ClubInfoForm } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.form";
+import { ErrorPage } from "@/components/error-page";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/information">) {
 	const params = await props.params;
+	const t = await getExtracted();
 	const user = await isAuthenticated();
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	const [clubResp, countries] = await Promise.all([
@@ -23,7 +25,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const countriesData = countries.data;
 
 	if (!club || !countriesData) {
-		return notFound();
+		return <ErrorPage title={t("Club not found.")} />;
 	}
 
 	// Fetch Instagram auth URL from backend

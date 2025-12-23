@@ -612,18 +612,26 @@ export class Router {
 		const pathname = url.pathname;
 		const method = request.method.toUpperCase();
 
+		let bestMatch: { route: Route; params: Record<string, string>; paramCount: number } | null = null;
+
 		for (const route of this.routes) {
 			if (route.method !== method) {
 				continue;
 			}
 
 			const params = this.matchPath(route.path, pathname);
-			if (params !== null) {
-				return { route, params };
+			if (params === null) {
+				continue;
+			}
+
+			const paramCount = Object.keys(params).length;
+
+			if (!bestMatch || paramCount < bestMatch.paramCount) {
+				bestMatch = { route, params, paramCount };
 			}
 		}
 
-		return null;
+		return bestMatch ? { route: bestMatch.route, params: bestMatch.params } : null;
 	}
 
 	private matchPath(pattern: string, pathname: string): Record<string, string> | null {

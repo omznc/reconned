@@ -83,6 +83,14 @@ const nextConfig = {
 	async rewrites() {
 		return [
 			{
+				source: "/api/:path*",
+				destination: "http://localhost:3002/api/:path*",
+			},
+			{
+				source: `/:locale(${localesString})/api/:path*`,
+				destination: "http://localhost:3002/api/:path*",
+			},
+			{
 				source: `/:locale(${localesString})/warmind/static/:path*`,
 				destination: "https://eu-assets.i.posthog.com/static/:path*",
 			},

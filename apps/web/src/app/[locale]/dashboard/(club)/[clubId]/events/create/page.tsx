@@ -1,6 +1,7 @@
 import { parse as parseDateFns } from "date-fns";
-import { notFound } from "next/navigation";
+import { getExtracted } from "next-intl/server";
 import CreateEventForm from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/events.form";
+import { ErrorPage } from "@/components/error-page";
 import apiServer from "@/lib/api/api";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
@@ -10,10 +11,11 @@ type EventResponse = ApiResponse<"/api/events/{id}", "get">;
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/create">) {
 	const searchParams = await props.searchParams;
 	const params = await props.params;
+	const t = await getExtracted();
 	const user = await isAuthenticated();
 
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	const { data: membershipData } = await apiServer.GET("/api/clubs/{id}/membership", {
@@ -26,7 +28,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
 
 	if (!isManager) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	let existingEvent: EventResponse | null = null;

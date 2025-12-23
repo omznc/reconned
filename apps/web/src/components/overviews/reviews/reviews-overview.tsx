@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { Star } from "lucide-react";
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
+import { ErrorPage } from "@/components/error-page";
 import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import apiServer from "@/lib/api/api";
@@ -31,7 +31,7 @@ export async function ReviewsOverview({ type, typeId }: ReviewsOverviewProps) {
 	});
 
 	if (error || !data) {
-		return notFound();
+		return <ErrorPage title={t("Not found")} />;
 	}
 
 	const reviews = data.reviews;

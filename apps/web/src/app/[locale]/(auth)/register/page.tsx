@@ -30,15 +30,11 @@ export default function RegisterPage() {
 	});
 	const t = useExtracted();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
-	const [lastMethod, setLastMethod] = useState<string | null>(null);
 
-	useEffect(() => {
-		setLastMethod(authClient.getLastUsedLoginMethod());
-	}, []);
 	// Register form schema with Zod
 	const registerSchema = z.object({
 		name: z.string().min(1, t("Your name is required")),
-		email: z.string().email(t("Invalid email")),
+		email: z.email(t("Invalid email")),
 		password: z.string().min(8, t("That password is too short")),
 		turnstileToken: z.string().min(1, t("Captcha error")),
 	});
@@ -242,16 +238,8 @@ export default function RegisterPage() {
 							disabled={!form.formState.isValid}
 						>
 							{t("Register")}
-							{lastMethod === "email" && (
-								<span
-									suppressHydrationWarning
-									className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold"
-								>
-									{t("Last used")}
-								</span>
-							)}
 						</LoaderSubmitButton>
-						<GoogleLoginButton wasLastMethod={lastMethod === "google"} />
+						<GoogleLoginButton />
 					</form>
 				</Form>
 				<div className="mt-8 text-center text-sm">

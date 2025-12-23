@@ -1,14 +1,10 @@
 import { Button } from "@components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
-import { Input } from "@components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LockIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
+import { MailIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
 import type { Dispatch, SetStateAction } from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { toast } from "sonner";
-import * as z from "zod";
-import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function SetupPasswordForm({
@@ -18,68 +14,61 @@ export function SetupPasswordForm({
 	isLoading: boolean;
 	setIsLoading: Dispatch<SetStateAction<boolean>>;
 }) {
-	const router = useRouter();
 	const t = useExtracted();
+	const [emailSent, setEmailSent] = useState(false);
+	const session = authClient.useSession();
+	const user = session.data?.user;
 
-	const setupPasswordSchema = z.object({
-		password: z.string().min(8, {
-			message: t("New password must be at least 8 characters long"),
-		}),
-	});
+	const onSendResetEmail = async () => {
+		if (!user?.email) {
+			toast.error(t("Unable to get user email"));
+			return;
+		}
 
-	const setupPasswordForm = useForm<z.infer<typeof setupPasswordSchema>>({
-		resolver: zodResolver(setupPasswordSchema),
-		defaultValues: {
-			password: "",
-		},
-	});
-
-	const onSetupPasswordSubmit = async (values: z.infer<typeof setupPasswordSchema>) => {
 		setIsLoading(true);
 		try {
-			const response = await authClient.changePassword({
-				newPassword: values.password,
-				currentPassword: "",
+			const response = await authClient.requestPasswordReset({
+				email: user.email,
+				redirectTo: "/reset-password",
 			});
 
 			if (!response?.error) {
-				toast.success(t("Password successfully set"));
-				router.refresh();
+				setEmailSent(true);
+				toast.success(t("Password reset email sent"));
 			} else {
-				toast.error(t("An error occurred while setting your password. "));
+				toast.error(t("An error occurred while sending the reset email"));
 			}
-			setIsLoading(false);
 		} catch (_e) {
-			toast(t("An error occurred while setting your password. "));
+			toast.error(t("An error occurred while sending the reset email"));
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
+	if (emailSent) {
+		return (
+			<Alert>
+				<MailIcon className="h-4 w-4" />
+				<AlertTitle>{t("Check your email")}</AlertTitle>
+				<AlertDescription>
+					{t("We've sent you a password reset link. Click the link in the email to set your password.")}
+				</AlertDescription>
+			</Alert>
+		);
+	}
+
 	return (
-		<Form {...setupPasswordForm}>
-			<form onSubmit={setupPasswordForm.handleSubmit(onSetupPasswordSubmit)} className="space-y-4 w-full">
-				<div>
-					<h3 className="text-lg font-semibold">{t("Set a password")}</h3>
-				</div>
-				<FormField
-					control={setupPasswordForm.control}
-					name="password"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>{t("New password")}</FormLabel>
-							<FormControl>
-								<Input type="password" disabled={isLoading} {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<Button type="submit" className="w-full" disabled={isLoading}>
-					<LockIcon className="w-4 h-4 mr-2" />
-					{isLoading ? t("Just a moment...") : t("Set a password")}
-				</Button>
-			</form>
-		</Form>
+		<div className="space-y-4 w-full">
+			<div>
+				<h3 className="text-lg font-semibold">{t("Set a password")}</h3>
+				<p className="text-sm text-muted-foreground">
+					{t("Since you signed in with a social provider, you need to set a password to enable additional security features.")}
+				</p>
+			</div>
+			<Button onClick={onSendResetEmail} className="w-full" disabled={isLoading}>
+				<MailIcon className="w-4 h-4 mr-2" />
+				{isLoading ? t("Sending...") : t("Send password reset email")}
+			</Button>
+		</div>
 	);
 }

@@ -1,6 +1,5 @@
 import { isAfter, isBefore } from "date-fns";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.form";
@@ -34,7 +33,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 	});
 
 	if (applyError || !applyData) {
-		return notFound();
+		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
 	const { event, existingRegistration } = applyData;

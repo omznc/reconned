@@ -1,6 +1,7 @@
-import { and, count, desc, eq, getTableColumns, gte, ilike, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, getTableColumns, gte, ilike, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
+import bcrypt from "bcrypt";
 import {
 	account,
 	club,
@@ -12,6 +13,7 @@ import {
 	review,
 	user,
 } from "../drizzle/schema";
+import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
 import { posthog } from "../lib/posthog";
@@ -183,18 +185,18 @@ usersRouter.get(
 				// Aggregate counts using subqueries
 				memberCount: sql<number>`(
 					SELECT COUNT(*)
-					FROM ${clubMembership} cm
-					WHERE cm.${clubMembership.clubId} = ${clubMembership.clubId}
+					FROM "ClubMembership" cm
+					WHERE cm."clubId" = "ClubMembership"."clubId"
 				)`,
 				eventCount: sql<number>`(
 					SELECT COUNT(*)
-					FROM ${event} e
-					WHERE e.${event.clubId} = ${clubMembership.clubId}
+					FROM "Event" e
+					WHERE e."clubId" = "ClubMembership"."clubId"
 				)`,
 				reviewCount: sql<number>`(
 					SELECT COUNT(*)
-					FROM ${review} r
-					WHERE r.${review.clubId} = ${clubMembership.clubId}
+					FROM "Review" r
+					WHERE r."clubId" = "ClubMembership"."clubId"
 				)`,
 			})
 			.from(clubMembership)
@@ -974,10 +976,10 @@ usersRouter.get(
 			throw apiError.validation("User ID is required");
 		}
 
-		const userAccount = await db.select().from(account).where(eq(account.userId, userId)).limit(1);
+		const userAccounts = await db.select().from(account).where(eq(account.userId, userId));
 
 		return response.json({
-			hasPassword: userAccount.length > 0 && userAccount[0]?.password !== null,
+			hasPassword: userAccounts.some(account => account.password !== null),
 		});
 	},
 	{
@@ -1168,6 +1170,9 @@ usersRouter.put(
 usersRouter.get(
 	"/users/invites",
 	async ({ context, response }) => {
+		if (!context.user) {
+			throw apiError.unauthorized("Authentication required");
+		}
 		const invitesData = await db
 			.select()
 			.from(clubInvite)
@@ -1213,6 +1218,9 @@ usersRouter.get(
 usersRouter.get(
 	"/users/invites/count",
 	async ({ context, response }) => {
+		if (!context.user) {
+			throw apiError.unauthorized("Authentication required");
+		}
 		const result = await db
 			.select({ count: count() })
 			.from(clubInvite)
@@ -1419,6 +1427,153 @@ usersRouter.get(
 					clubs: z.array(baseClubSchema),
 				}),
 				401: z.object({ error: z.string() }),
+			},
+		},
+	},
+);
+
+usersRouter.post(
+	"/users/:id/delete",
+	async ({ params, response, context, body }) => {
+		const userId = params.id;
+
+		if (!userId) {
+			throw apiError.validation("User ID is required");
+		}
+
+		if (!context.user || context.user.id !== userId) {
+			throw apiError.unauthorized("Unauthorized");
+		}
+
+		const userData = await db
+			.select({
+				id: user.id,
+				email: user.email,
+				twoFactorEnabled: user.twoFactorEnabled,
+			})
+			.from(user)
+			.where(eq(user.id, userId))
+			.limit(1);
+
+		if (!userData[0]) {
+			throw apiError.notFound("User not found");
+		}
+
+		const accountData = await db
+			.select({
+				password: account.password,
+			})
+			.from(account)
+			.where(eq(account.userId, userId))
+			.limit(1);
+
+		const hasPassword = accountData[0]?.password !== null && accountData[0]?.password !== undefined;
+
+		if (hasPassword) {
+			if (!body.password) {
+				throw apiError.validation("Password is required");
+			}
+
+			if (!accountData[0]?.password) {
+				throw apiError.internal("Password data not found");
+			}
+
+			const isPasswordValid = await bcrypt.compare(body.password, accountData[0].password);
+			if (!isPasswordValid) {
+				throw apiError.unauthorized("Invalid password");
+			}
+		}
+
+		const ownedClubs = await db
+			.select({
+				clubId: clubMembership.clubId,
+			})
+			.from(clubMembership)
+			.where(and(eq(clubMembership.userId, userId), eq(clubMembership.role, "CLUB_OWNER")));
+
+		for (const ownedClub of ownedClubs) {
+			const managers = await db
+				.select({
+					id: clubMembership.id,
+					userId: clubMembership.userId,
+				})
+				.from(clubMembership)
+				.where(
+					and(
+						eq(clubMembership.clubId, ownedClub.clubId),
+						eq(clubMembership.role, "MANAGER"),
+						ne(clubMembership.userId, userId),
+					),
+				);
+
+			if (managers.length > 0) {
+				const randomManager = managers[Math.floor(Math.random() * managers.length)];
+				if (randomManager) {
+					await db
+						.update(clubMembership)
+						.set({
+							role: "CLUB_OWNER",
+							updatedAt: new Date().toISOString(),
+						})
+						.where(eq(clubMembership.id, randomManager.id));
+
+					await logClubAudit({
+						clubId: ownedClub.clubId,
+						actionType: "CLUB_OWNER_TRANSFERRED",
+						actionData: {
+							fromUserId: userId,
+							toUserId: randomManager.userId,
+							reason: "User account deletion",
+						},
+						userId: userId,
+					});
+				}
+			} else {
+				await db
+					.delete(clubMembership)
+					.where(and(eq(clubMembership.clubId, ownedClub.clubId), eq(clubMembership.userId, userId)));
+
+				await logClubAudit({
+					clubId: ownedClub.clubId,
+					actionType: "CLUB_OWNER_REMOVED",
+					actionData: {
+						userId: userId,
+						reason: "User account deletion - no managers available",
+					},
+					userId: userId,
+				});
+			}
+		}
+
+		await db.delete(user).where(eq(user.id, userId));
+
+		posthog.capture({
+			distinctId: userId,
+			event: "user_account_deleted",
+			properties: {
+				email: userData[0].email,
+			},
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Users"],
+			summary: "Delete user account",
+			description:
+				"Delete the current user's account. Requires password confirmation and 2FA if enabled. Transfers club ownership to random manager if available.",
+			params: z.object({
+				id: z.string(),
+			}),
+			body: z.object({
+				password: z.string().optional(),
+				twoFactorCode: z.string().optional(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
 		},
 	},

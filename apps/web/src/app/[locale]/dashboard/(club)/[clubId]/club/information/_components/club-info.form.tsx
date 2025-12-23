@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { BannerCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/banner-crop-dialog";
 import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
+import { useClubs } from "@/components/clubs-provider";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -225,6 +226,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { refreshClubs } = useClubs();
 
 	// Add hash navigation support
 	useHash();
@@ -539,6 +541,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			toast.success(t("Club information has been saved"));
 
 			if (isCreating && clubId) {
+				await refreshClubs();
 				router.push(`/dashboard/${clubId}/club`);
 			}
 		} catch {

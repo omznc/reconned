@@ -1,6 +1,6 @@
 import { Users } from "lucide-react";
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
+import { ErrorPage } from "@/components/error-page";
 import { EventOverview } from "@/components/overviews/event-overview";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -13,7 +13,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const t = await getExtracted();
 
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Fetch event from backend
@@ -22,7 +22,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	});
 
 	if (eventError || !eventData) {
-		return notFound();
+		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
 	const { event, registrationCount } = eventData;
@@ -33,7 +33,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	});
 
 	if (clubError || !clubData?.membership) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Fetch event rules

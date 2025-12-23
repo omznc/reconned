@@ -3,7 +3,7 @@
 import { Button } from "@components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { SuccessContext } from "better-auth/react";
-import { Key } from "lucide-react";
+import { Key, MailIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import posthog from "posthog-js";
@@ -247,11 +247,12 @@ export default function LoginPage() {
 								"mb-4": lastMethod === "email",
 							})}
 						>
+							<MailIcon className="w-4 h-4 inline-block" />
 							{t("Login")}
 							{lastMethod === "email" && (
 								<span
 									suppressHydrationWarning
-									className="absolute w-full -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 py-0.5 rounded-md text-xs font-semibold"
+									className="absolute w-full -z-1 -bottom-[1.35rem] bg-red-500/10 text-red-500/80 px-2 pt-3 py-0.5 rounded-b-md text-xs font-semibold"
 								>
 									{t("Last used")}
 								</span>

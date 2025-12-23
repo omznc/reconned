@@ -1,16 +1,18 @@
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
-import { notFound } from "next/navigation";
+import { getExtracted } from "next-intl/server";
 import { StatsCharts } from "@/app/[locale]/dashboard/(club)/[clubId]/club/stats/_components/stats-charts";
+import { ErrorPage } from "@/components/error-page";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/stats">) {
 	const params = await props.params;
+	const t = await getExtracted();
 	const user = await isAuthenticated();
 
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Check if user manages this club
@@ -22,7 +24,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
 
 	if (!isManager) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Fetch club stats from backend
@@ -31,7 +33,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	});
 
 	if (error || !stats) {
-		return notFound();
+		return <ErrorPage title={t("An error occurred")} />;
 	}
 
 	// Format data for charts

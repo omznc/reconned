@@ -1,8 +1,8 @@
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { AddManagerForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.form";
 import { ManagersTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/managers-table";
+import { ErrorPage } from "@/components/error-page";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
@@ -12,11 +12,11 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page ?? 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
-
+	const t = await getExtracted();
 	const user = await isAuthenticated();
 
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Check if user is a manager or owner of this club
@@ -25,7 +25,7 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 	});
 
 	if (clubError || !clubData) {
-		return notFound();
+		return <ErrorPage title={t("Club not found.")} />;
 	}
 
 	// Verify user is a manager or owner
@@ -38,7 +38,7 @@ export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/
 		!membershipData?.membership ||
 		(membershipData.membership.role !== "MANAGER" && membershipData.membership.role !== "CLUB_OWNER")
 	) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Fetch managers from backend - use the members endpoint with role filter

@@ -1,5 +1,7 @@
-import { notFound } from "next/navigation";
+import { getExtracted } from "next-intl/server";
+import { ErrorPage } from "@/components/error-page";
 
-export default function CatchAllPage() {
-	notFound();
+export default async function CatchAllPage() {
+	const t = await getExtracted();
+	return <ErrorPage title={t("Page not found")} />;
 }

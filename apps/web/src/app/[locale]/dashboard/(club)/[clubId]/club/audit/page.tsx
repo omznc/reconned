@@ -41,7 +41,7 @@ async function AuditLogsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubI
 
 export default async function AuditLogsPage(props: PageProps<"/[locale]/dashboard/[clubId]/club/audit">) {
 	const t = await getExtracted();
-	const [_, searchParams] = await Promise.all([props.params, props.searchParams]);
+	const searchParams = await props.searchParams;
 
 	return (
 		<div className="space-y-6">

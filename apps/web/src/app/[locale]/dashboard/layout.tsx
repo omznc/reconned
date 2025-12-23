@@ -1,6 +1,7 @@
 import { getLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ClubsProvider } from "@/components/clubs-provider";
 import { CurrentClubProvider } from "@/components/current-club-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { CommandMenu, CommandMenuProvider } from "@/components/sidebar/command-menu";
@@ -58,23 +59,24 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 
 	return (
 		<SidebarProvider>
-			<CurrentClubProvider>
-				<CommandMenuProvider>
-					<AppSidebar
-						clubs={clubsData.clubs}
-						user={user}
-						invitesCount={invitesCountForUser}
-						inviteRequestsCount={inviteRequestsCountByClub}
-					/>
-					<CommandMenu clubs={clubsData.clubs} user={user} />
-					<SidebarInset className="relative flex flex-col p-4">
-						<Breadcrumbs clubs={simplifiedClubs} />
-						<div className="space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-							{props.children}
-						</div>
-					</SidebarInset>
-				</CommandMenuProvider>
-			</CurrentClubProvider>
+			<ClubsProvider initialClubs={clubsData.clubs}>
+				<CurrentClubProvider>
+					<CommandMenuProvider>
+						<AppSidebar
+							user={user}
+							invitesCount={invitesCountForUser}
+							inviteRequestsCount={inviteRequestsCountByClub}
+						/>
+						<CommandMenu user={user} />
+						<SidebarInset className="relative flex flex-col p-4">
+							<Breadcrumbs clubs={simplifiedClubs} />
+							<div className="space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+								{props.children}
+							</div>
+						</SidebarInset>
+					</CommandMenuProvider>
+				</CurrentClubProvider>
+			</ClubsProvider>
 		</SidebarProvider>
 	);
 }

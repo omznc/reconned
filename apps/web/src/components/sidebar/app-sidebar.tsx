@@ -5,6 +5,7 @@ import { MailPlus, Search } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
+import { useClubs } from "@/components/clubs-provider";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { ClubSwitcher } from "@/components/sidebar/club-switcher";
 import { useCommandMenu } from "@/components/sidebar/command-menu";
@@ -23,13 +24,9 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
-import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
 
-type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
-
 interface AppSidebarProps {
-	clubs: DashboardClubs;
 	user: User & { role?: string | null | undefined };
 	invitesCount: number;
 	inviteRequestsCount: {
@@ -65,6 +62,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
+	const { clubs } = useClubs();
 	const path = usePathname();
 	const t = useExtracted();
 	const [isMac, setIsMac] = useState(false);
@@ -93,12 +91,12 @@ export function AppSidebar(props: AppSidebarProps) {
 	return (
 		<Sidebar collapsible="icon" variant="inset">
 			<SidebarHeader>
-				<ClubSwitcher clubs={props.clubs} />
+				<ClubSwitcher clubs={clubs} />
 				<SearchButton isMac={isMac} />
 			</SidebarHeader>
 			<SidebarContent>
 				<NavApp isAdmin={props.user.role === "admin"} pendingInvites={props.invitesCount} />
-				{clubId && <NavClub clubId={clubId} clubs={props.clubs} />}
+				{clubId && <NavClub clubId={clubId} clubs={clubs} />}
 			</SidebarContent>
 			<SidebarFooter>
 				{props.invitesCount > 0 &&

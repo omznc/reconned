@@ -9,6 +9,10 @@ export const env = createEnv({
 			.startsWith("postgres", "DATABASE_URL must be a PostgreSQL connection string")
 			.describe("PostgreSQL database connection string"),
 
+		FRONTEND_URL: z
+			.url("FRONTEND_URL must be a valid URL (e.g., http://localhost:3000)")
+			.describe("Frontend base URL"),
+
 		BETTER_AUTH_SECRET: z
 			.string()
 			.min(32, "BETTER_AUTH_SECRET must be at least 32 characters for security")
@@ -21,7 +25,7 @@ export const env = createEnv({
 		CORS_ORIGINS: z
 			.string()
 			.min(1, "CORS_ORIGINS is required")
-			.default("http://localhost:3000,https://reconned.com,https://beta.reconned.com")
+			.default("http://localhost:3000,http://localhost:3002,https://reconned.com,https://beta.reconned.com")
 			.refine(
 				(val) =>
 					val.split(",").every((origin) => {

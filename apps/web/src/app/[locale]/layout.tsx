@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { Geist, Geist_Mono } from "next/font/google";
-import { notFound } from "next/navigation";
 import { AxiomWebVitals } from "next-axiom";
 import { hasLocale } from "next-intl";
 import { getExtracted } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
+import { ErrorPage } from "@/components/error-page";
 import { FontBody } from "@/components/font-body";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import JsonLdScript from "@/components/json-ld-script";
@@ -40,7 +40,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	const { locale } = await params;
 
 	if (!hasLocale(routing.locales, locale)) {
-		notFound();
+		return <ErrorPage title={t("Page not found")} />;
 	}
 
 	const font = (session?.font as "sans" | "mono" | null | undefined) ?? "mono";

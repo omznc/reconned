@@ -30,6 +30,8 @@ type SecondaryStorage = {
 	delete: (key: string) => Promise<void>;
 };
 
+const appUrl = new URL(env.FRONTEND_URL);
+
 export const auth = betterAuth({
 	telemetry: { enabled: false },
 	database: drizzleAdapter(db, {
@@ -165,13 +167,13 @@ export const auth = betterAuth({
 	},
 	plugins: [
 		passkey({
-			rpID: "reconned.com",
+			rpID: appUrl.hostname,
 			rpName: "Reconned",
 		}),
 		twoFactor({
 			issuer: "Reconned",
 			backupCodeOptions: {
-				storeBackupCodes: "encrypted",
+				storeBackupCodes: "plain",
 				amount: 8,
 				length: 10,
 			},

@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
+import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { InvitationsForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.form";
 import { InvitationsTable } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations-table";
+import { ErrorPage } from "@/components/error-page";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
@@ -10,9 +11,10 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 	const params = await props.params;
 	const searchParams = await props.searchParams;
 	const user = await isAuthenticated();
+	const t = await getExtracted();
 
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	// Check if user is a manager or owner of this club
@@ -25,7 +27,7 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 		!membershipData?.membership ||
 		(membershipData.membership.role !== "MANAGER" && membershipData.membership.role !== "CLUB_OWNER")
 	) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
 	const page = Math.max(1, Number(searchParams.page ?? 1));

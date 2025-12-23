@@ -1,6 +1,6 @@
 import { Eye, Pencil } from "lucide-react";
-import { notFound } from "next/navigation";
 import { getExtracted } from "next-intl/server";
+import { ErrorPage } from "@/components/error-page";
 import { UserOverview } from "@/components/overviews/user-overview";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,11 @@ import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 
 export default async function Page() {
+	const t = await getExtracted();
 	const user = await isAuthenticated();
 	if (!user) {
-		return notFound();
+		return <ErrorPage title={t("You have no access to this page")} />;
 	}
-
-	const t = await getExtracted();
 
 	const { data: userFromDb, error } = await apiServer.GET("/api/users/{id}", {
 		params: {
@@ -25,7 +24,7 @@ export default async function Page() {
 	});
 
 	if (error || !userFromDb) {
-		return notFound();
+		return <ErrorPage title={t("An error occurred")} link="/dashboard" />;
 	}
 	return (
 		<>

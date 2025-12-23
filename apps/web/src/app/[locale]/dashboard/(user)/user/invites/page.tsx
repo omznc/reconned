@@ -1,5 +1,6 @@
 import { getExtracted, getLocale } from "next-intl/server";
 import { InviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/invite-actions";
+import { ErrorPage } from "@/components/error-page";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { redirect } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
@@ -19,7 +20,7 @@ export default async function InvitesPage() {
 	const { data, error } = await apiServer.GET("/api/users/invites");
 
 	if (error || !data) {
-		return <div>{t("Error loading invitations")}</div>;
+		return <ErrorPage title={t("Error loading invitations")} />;
 	}
 
 	const invites = data.invites;
