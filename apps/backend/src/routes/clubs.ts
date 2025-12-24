@@ -2453,7 +2453,7 @@ clubsRouter.post(
 						code: newInvite[0].inviteCode,
 						url: inviteUrl,
 						name: target.name,
-						clubLogo: clubData[0].logo || `${env.BETTER_AUTH_URL}/logo.png`,
+						clubLogo: clubData[0].logo || `${env.FRONTEND_URL}/logo.png`,
 						clubName: clubData[0].name,
 						clubLocation: clubData[0].location || "",
 						language,

@@ -36,7 +36,7 @@ export const ClubClaimRequestEmail = ({
 							<Img src={clubLogo} alt={clubName} width="100" style={emailStyles.logo} />
 						) : (
 							<Img
-								src={`${env.BETTER_AUTH_URL}/logo.png`}
+								src={`${env.FRONTEND_URL}/logo.png`}
 								alt="RECONNED"
 								width="150"
 								style={emailStyles.logo}

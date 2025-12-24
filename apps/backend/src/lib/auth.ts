@@ -75,7 +75,7 @@ export const auth = betterAuth({
 		enabled: true,
 		requireEmailVerification: true,
 		sendResetPassword: async ({ user, url }) => {
-			const logoUrl = `${env.BETTER_AUTH_URL}/logo.png`;
+			const logoUrl = `${env.FRONTEND_URL}/logo.png`;
 			const userWithLanguage = user as UserWithLanguage;
 			const language = userWithLanguage.language || "bs";
 			const messages = getEmailMessages(language);
@@ -108,9 +108,9 @@ export const auth = betterAuth({
 	},
 	emailVerification: {
 		sendVerificationEmail: async ({ user, url }) => {
-			const redirectUrl = `${env.BETTER_AUTH_URL}/login`;
+			const redirectUrl = `${env.FRONTEND_URL}/login`;
 			const verificationUrl = new URL(url);
-			const logoUrl = `${env.BETTER_AUTH_URL}/logo.png`;
+			const logoUrl = `${env.FRONTEND_URL}/logo.png`;
 
 			if (!verificationUrl.pathname.startsWith("/api/auth/")) {
 				verificationUrl.pathname = `/api/auth${verificationUrl.pathname}`;

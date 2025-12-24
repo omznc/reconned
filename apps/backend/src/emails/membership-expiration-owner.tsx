@@ -46,7 +46,7 @@ export const MembershipExpirationOwner = ({
 				<Container style={emailStyles.container}>
 					<Section style={emailStyles.logoSection}>
 						<Img
-							src={clubLogo || `${env.BETTER_AUTH_URL}/logo.png`}
+							src={clubLogo || `${env.FRONTEND_URL}/logo.png`}
 							alt="Club Logo"
 							width="100"
 							style={emailStyles.logo}

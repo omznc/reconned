@@ -970,10 +970,14 @@ usersRouter.get(
 
 usersRouter.get(
 	"/users/:id/account",
-	async ({ params, response }) => {
+	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
 			throw apiError.validation("User ID is required");
+		}
+
+		if (!context.user || (context.user.id !== userId && !context.isAdmin)) {
+			throw apiError.unauthorized("Unauthorized");
 		}
 
 		const userAccounts = await db.select().from(account).where(eq(account.userId, userId));
@@ -983,6 +987,7 @@ usersRouter.get(
 		});
 	},
 	{
+		auth: true,
 		schema: {
 			tags: ["Users"],
 			summary: "Get user account info",
@@ -994,6 +999,7 @@ usersRouter.get(
 				200: z.object({
 					hasPassword: z.boolean(),
 				}),
+				401: z.object({ error: z.string() }),
 			},
 		},
 	},
