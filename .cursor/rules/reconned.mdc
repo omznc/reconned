@@ -41,13 +41,7 @@ on the backend unless incredibly important to be run on the nextjs server.
   - API available at `/api/docs` (Swagger UI) and `/api/openapi.json`
 
 ## Database
-- **Frontend (`apps/web`)**: Uses Prisma ORM.
-  - Will be removed in favour of the backend being the only source of CRUD.
-  - Schema files are split across multiple files in `apps/web/prisma/`:
-    - `schema.prisma` (main file with generators/datasource)
-    - `audit.prisma`, `auth.prisma`, `clubs.prisma`, `countries.prisma`, `events.prisma`, `social.prisma`, `users.prisma`
-  - Run `bun run db:generate` (or `prisma generate`) after schema changes
-  - Database commands: `db:push`, `db:migrate`, `db:studio`
+- **Frontend (`apps/web`)**: Uses backend API for data access
 - **Backend (`apps/backend`)**: Uses Drizzle ORM
   - Schema is defined in `apps/backend/src/drizzle/schema.ts`
   - Use `createSelectSchema` from `drizzle-zod` for Zod schema generation
