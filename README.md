@@ -9,7 +9,6 @@ RECONNED is a monorepo built with Bun workspaces, consisting of:
 
 - **Frontend (`apps/web`)**: Next.js 16+ application with App Router
   - Runs on port **3000** by default
-  - Uses Prisma ORM for database access
   - Server-side rendering with React Server Components
 
 - **Backend (`apps/backend`)**: Bun HTTP server
@@ -25,7 +24,6 @@ Both applications share the same PostgreSQL database but use different ORMs opti
 ### Frontend
 - **Framework:** Next.js 16+ (App Router)
 - **Styling:** Tailwind CSS + shadcn/ui
-- **Database:** Prisma ORM + PostgreSQL
 - **Authentication:** better-auth
 - **Form Handling:** react-hook-form + zod
 - **State Management:** 
@@ -60,8 +58,8 @@ cp .env.example .env
 
 4. Set up the database
 ```sh
-cd apps/web
-bun prisma db pull # or push if it's a new database
+cd apps/backend
+bun run db:push
 ```
 
 5. Run the development servers
