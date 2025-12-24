@@ -1,0 +1,61 @@
+{
+	"compilerOptions": {
+		// Environment setup & latest features
+		"lib": ["dom", "dom.iterable", "esnext"],
+
+		"target": "ESNext",
+		"moduleDetection": "force",
+		// Modules
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"verbatimModuleSyntax": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		// Strict Type Checking
+		"strict": true,
+		"skipLibCheck": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		// Type Declaration Settings
+		"declaration": false,
+		"inlineSources": true,
+		"sourceMap": true,
+		// For next-intl
+		"allowArbitraryExtensions": true,
+		// Next.js Specific
+		"jsx": "react-jsx",
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./src/*"],
+			"@components/*": ["./src/components/*"],
+			"@auth/client": ["./src/lib/auth-client"],
+			"@auth/server": ["./src/lib/auth"],
+			"@public/*": ["./public/*"],
+			"@generated/*": ["./generated/client/*"],
+			"backend/*": ["../backend/src/*"],
+			"@api": ["./src/lib/api"]
+		},
+		"incremental": true,
+		// Interop Constraints
+		"esModuleInterop": true,
+		"allowJs": true,
+		"noEmit": true,
+		// ETC
+		"allowImportingTsExtensions": true
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		".next/dev/types/**/*.ts",
+		"../backend/src/**/*.ts"
+	],
+	"exclude": ["node_modules"]
+}
