@@ -1,0 +1,39 @@
+import { ImageResponse } from "@vercel/og";
+import { withAxiom } from "next-axiom";
+import { env } from "@/lib/env";
+
+export const GET = withAxiom(async (request: Request) => {
+	const { searchParams } = new URL(request.url);
+	const name = searchParams.get("name");
+	const description = searchParams.get("description");
+	const logo = searchParams.get("logo");
+
+	if (logo && !logo.startsWith(env.NEXT_PUBLIC_CDN_URL)) {
+		return new Response("Invalid image URL", { status: 400 });
+	}
+
+	const logoUrl = `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-dark.svg`;
+
+	return new ImageResponse(
+		<div
+			tw="flex h-full w-full flex-col justify-between bg-black text-white p-16 border border-[10px] border-red-500"
+			style={{ fontFamily: "Geist" }}
+		>
+			<div tw="flex flex-row items-start">
+				{/** biome-ignore lint/performance/noImgElement: OG generation */}
+				{logo && <img src={logo} tw="w-48 rounded-xl" alt={name ?? ""} />}
+				<div tw="flex flex-col flex-1 ml-8">
+					<div tw="flex text-6xl font-bold tracking-tight">{name ?? "Airsoft klub"}</div>
+					<div tw="flex text-2xl mt-2 text-zinc-200">{description?.slice(0, 400) ?? ""}</div>
+				</div>
+			</div>
+			{/** biome-ignore lint/performance/noImgElement: OG generation */}
+			<img tw="w-[400px]" src={logoUrl} alt="Reconned" />
+		</div>,
+		{
+			width: 1200,
+			height: 630,
+		},
+	);
+	// biome-ignore lint/suspicious/noExplicitAny: TODO: Fix once next-axiom sorts their stuff out
+}) as any;

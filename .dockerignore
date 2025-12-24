@@ -1,22 +1,27 @@
+# Dependencies
 node_modules
-/.pnp
+**/node_modules
+.pnp
 .pnp.js
 .yarn/install-state.gz
 
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log
+.pnpm-debug.log*
+*.log
+logs
 
+# Build outputs
 .next
 /out
 /build
 dist
+**/dist
+generated
 
-.git
-.gitignore
-.gitattributes
-
+# Environment files
 .env
 .env*.local
 .env.development
@@ -24,52 +29,23 @@ dist
 .env.production
 .env.sentry-build-plugin
 
+# OS files
 .DS_Store
 *.pem
 Thumbs.db
 
+# IDE
 .vscode
-/.vscode
 .idea
 *.swp
 *.swo
 *~
 
+# Testing
 coverage
-/.coverage
+.coverage
 .nyc_output
 *.lcov
-
-*.log
-logs
-
-README.md
-LICENSE.md
-CODE_OF_CONDUCT.md
-CONTRIBUTING.md
-SECURITY.md
-
-Dockerfile
-docker-compose.yml
-.dockerignore
-
-.github
-.gitlab-ci.yml
-.circleci
-
-*.md
-
-generated
-messages/*.d.json.ts
-*.tsbuildinfo
-next-env.d.ts
-
-.vercel
-.unlighthouse
-certificates
-
-.patches
-
 test
 tests
 __tests__
@@ -78,6 +54,38 @@ __tests__
 *.spec.ts
 *.spec.tsx
 
+# Cache
 .cache
 .turbo
+.vercel
+.unlighthouse
 
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# CI/CD
+.gitlab-ci.yml
+.circleci
+
+# Documentation
+*.md
+README.md
+LICENSE.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Misc
+certificates
+.patches
+messages/*.d.json.ts
+*.tsbuildinfo
+next-env.d.ts
