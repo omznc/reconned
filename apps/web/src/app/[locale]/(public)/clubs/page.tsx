@@ -47,11 +47,11 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 		.map((club) => ({
 			id: club.id,
 			name: club.name,
-			slug: club.slug ?? "",
-			description: club.description ?? "",
-			logo: club.logo ?? "",
+			slug: club.slug || "",
+			description: club.description || "",
+			logo: club.logo || "",
 			verified: club.verified,
-			location: club.location ?? "",
+			location: club.location || "",
 			member_count: 0,
 		}));
 
@@ -70,11 +70,11 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 			position: index + 1 + (page - 1) * ITEMS_PER_PAGE,
 			item: {
 				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug ?? club.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug || club.id}`,
 				name: club.name,
 				description: club.description,
 				sport: "Airsoft",
-				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug ?? club.id}`,
+				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug || club.id}`,
 				logo: club.logo || undefined,
 				address: club.location
 					? {
@@ -108,7 +108,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 							</span>
 						}
 						description={club.description}
-						href={`/clubs/${club.slug ?? club.id}`}
+						href={`/clubs/${club.slug || club.id}`}
 						badges={[`${club.member_count} ${club.member_count === 1 ? t("member") : t("members")}`]}
 						meta={club.location || undefined}
 					/>

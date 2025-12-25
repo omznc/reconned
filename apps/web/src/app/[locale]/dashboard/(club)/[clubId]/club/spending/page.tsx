@@ -14,7 +14,7 @@ export async function SpendingPageFetcher(props: PageProps<"/[locale]/dashboard/
 	const { clubId } = await props.params;
 	const { page, perPage } = await props.searchParams;
 
-	const currentPage = Math.max(1, Number(page ?? 1));
+	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const { data } = await apiServer.GET("/api/clubs/{id}/purchases", {
@@ -30,8 +30,8 @@ export async function SpendingPageFetcher(props: PageProps<"/[locale]/dashboard/
 	});
 
 	const resp = data as PurchasesResponse | undefined;
-	const purchases = resp?.purchases ?? [];
-	const totalPurchases = resp?.pagination.total ?? 0;
+	const purchases = resp?.purchases || [];
+	const totalPurchases = resp?.pagination.total || 0;
 
 	return <PurchasesTable purchases={purchases} totalPurchases={totalPurchases} pageSize={pageSize} />;
 }

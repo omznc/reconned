@@ -38,7 +38,7 @@ export function UserTable(props: UserTableProps) {
 						variant: "custom",
 						component: (_, user) => (
 							<Avatar className="h-8 w-8">
-								<AvatarImage src={user.image ?? undefined} alt="Avatar" />
+								<AvatarImage src={user.image || undefined} alt="Avatar" />
 								<AvatarFallback>
 									{user.name
 										.split(" ")
@@ -91,7 +91,7 @@ export function UserTable(props: UserTableProps) {
 						variant: "custom",
 						components: (user) => [
 							<DropdownMenuItem key="profile" asChild>
-								<Link href={`/users/${user.slug ?? user.id}`} target="_blank">
+								<Link href={`/users/${user.slug || user.id}`} target="_blank">
 									<UserCircle className="size-4 mr-2" />
 									Profil
 								</Link>

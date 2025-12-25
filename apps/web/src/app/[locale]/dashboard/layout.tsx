@@ -33,7 +33,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 			club.events?.map((event) => ({
 				id: event.id,
 				name: event.name,
-			})) ?? [],
+			})) || [],
 	}));
 
 	const simplifiedClubs = clubs.map((club) => ({
@@ -43,7 +43,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 	}));
 
 	const { data: invitesCountData, error: invitesCountError } = await apiServer.GET("/api/users/invites/count");
-	const invitesCountForUser = invitesCountError || !invitesCountData ? 0 : (invitesCountData.count ?? 0);
+	const invitesCountForUser = invitesCountError || !invitesCountData ? 0 : invitesCountData.count || 0;
 
 	const { data: inviteRequestsData, error: inviteRequestsError } = await apiServer.GET(
 		"/api/dashboard/invite-requests-count",

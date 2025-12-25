@@ -186,7 +186,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 							month: "long",
 							day: "2-digit",
 						})}{" "}
-						• {log.user?.name ?? "-"}
+						• {log.user?.name || "-"}
 					</CredenzaDescription>
 				</CredenzaHeader>
 
@@ -199,7 +199,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 					<div>
 						<h3 className="text-sm font-medium">{t("User")}</h3>
 						<p className="mt-1 text-sm">
-							{log.user?.name ?? "-"} ({log.user?.email ?? "-"})
+							{log.user?.name || "-"} ({log.user?.email || "-"})
 						</p>
 					</div>
 

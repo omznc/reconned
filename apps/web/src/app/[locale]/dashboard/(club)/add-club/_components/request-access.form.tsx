@@ -46,7 +46,7 @@ async function requestAccess(input: RequestAccessSchema) {
 	});
 
 	if (error || !data?.success) {
-		throw new Error(error?.error ?? "Failed to send access request");
+		throw new Error(error?.error || "Failed to send access request");
 	}
 
 	return data;

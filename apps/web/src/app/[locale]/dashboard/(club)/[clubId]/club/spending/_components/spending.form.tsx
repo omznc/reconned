@@ -62,7 +62,7 @@ export function AddPurchaseModal() {
 			});
 
 			if (error || !data?.url) {
-				throw new Error(error?.error ?? t("Failed to get upload URL"));
+				throw new Error(error?.error || t("Failed to get upload URL"));
 			}
 
 			const response = await fetch(data.url, {
@@ -110,7 +110,7 @@ export function AddPurchaseModal() {
 			});
 
 			if (error) {
-				throw new Error(error.error ?? t("Error while saving expense data"));
+				throw new Error(error.error || t("Error while saving expense data"));
 			}
 
 			toast.success(t("Expense successfully added"));

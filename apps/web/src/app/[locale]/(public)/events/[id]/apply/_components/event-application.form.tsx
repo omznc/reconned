@@ -94,7 +94,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			invitedUsersNotOnApp: existingApplication?.invitedUsersNotOnApp || [],
 			rulesAccepted: false,
 			paymentMethod:
-				(existingApplication?.paymentMethod as EventApplicationSchemaType["paymentMethod"]) ?? "cash",
+				(existingApplication?.paymentMethod as EventApplicationSchemaType["paymentMethod"]) || "cash",
 		},
 	});
 
@@ -145,7 +145,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 				});
 
 				if (error) {
-					throw new Error(error.error ?? t("An error occurred while applying"));
+					throw new Error(error.error || t("An error occurred while applying"));
 				}
 			})(),
 			{
@@ -166,7 +166,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 					router.push(`/events/${event.id}`);
 					return t("Successfully applied to event!");
 				},
-				error: (e) => e?.message ?? t("An error occurred while applying"),
+				error: (e) => e?.message || t("An error occurred while applying"),
 			},
 		);
 	};
@@ -290,7 +290,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 					});
 
 					if (error) {
-						throw new Error(error.error ?? t("An error occurred while deleting application"));
+						throw new Error(error.error || t("An error occurred while deleting application"));
 					}
 				})(),
 				{

@@ -101,7 +101,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 
 		try {
 			const resp = breadcrumbsTranslations[section as keyof typeof breadcrumbsTranslations];
-			return resp ?? section;
+			return resp || section;
 		} catch {
 			return section;
 		}

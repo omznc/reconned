@@ -46,7 +46,7 @@ export function ClubActions({ club }: { club: AdminClub }) {
 					},
 				});
 				if (error) {
-					throw new Error(error.error ?? "Greška prilikom izmjene statusa kluba.");
+					throw new Error(error.error || "Greška prilikom izmjene statusa kluba.");
 				}
 			} else {
 				const { error } = await apiClient.DELETE("/api/admin/clubs/{id}", {
@@ -57,7 +57,7 @@ export function ClubActions({ club }: { club: AdminClub }) {
 					},
 				});
 				if (error) {
-					throw new Error(error.error ?? "Greška prilikom brisanja kluba.");
+					throw new Error(error.error || "Greška prilikom brisanja kluba.");
 				}
 			}
 		} catch {

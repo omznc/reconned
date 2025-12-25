@@ -14,5 +14,5 @@ export async function validateSlug(args: ValidateSlugArgs): Promise<boolean> {
 		return false;
 	}
 
-	return data?.available ?? false;
+	return data?.available || false;
 }

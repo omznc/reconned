@@ -197,8 +197,8 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			return;
 		}
 
-		form.setValue("latitude", club.latitude ?? undefined, { shouldDirty: true });
-		form.setValue("longitude", club.longitude ?? undefined, { shouldDirty: true });
+		form.setValue("latitude", club.latitude || undefined, { shouldDirty: true });
+		form.setValue("longitude", club.longitude || undefined, { shouldDirty: true });
 		if (club.latitude && club.longitude) {
 			setMapCenter([club.latitude, club.longitude]);
 			setMapZoom(14);
@@ -299,7 +299,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 					name: values.name,
 					location: values.location,
 					description: values.description,
-					dateFounded: values.dateFounded?.toISOString() ?? null,
+					dateFounded: values.dateFounded?.toISOString() || undefined,
 					isAllied: values.isAllied,
 					isPrivate: values.isPrivate,
 					isPrivateStats: values.isPrivateStats,
@@ -316,7 +316,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			});
 
 			if (error) {
-				throw new Error(error.error ?? t("An error occurred"));
+				throw new Error(error.error || t("An error occurred"));
 			}
 
 			logoUpload.markAsSaved();
@@ -387,7 +387,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 										<CommandEmpty>{t("No results")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
 											{countries.map((country) => {
-												const countryName = country.translations?.[locale] ?? country.name;
+												const countryName = country.translations?.[locale] || country.name;
 												return (
 													<CommandItem
 														key={country.id}
@@ -457,22 +457,22 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 							<MapSelector
 								clubs={[
 									{
-										id: club?.id ?? "new",
+										id: club?.id || "new",
 										name: form.watch("name") || "",
 										latitude: form.watch("latitude") || null,
 										longitude: form.watch("longitude") || null,
 										location: form.watch("location") || null,
-										logo: club?.logo ?? null,
-										slug: club?.slug ?? null,
-										verified: club?.verified ?? false,
-										description: club?.description ?? null,
-										isPrivate: club?.isPrivate ?? false,
-										isAllied: club?.isAllied ?? false,
-										dateFounded: club?.dateFounded ?? null,
-										website: club?.website ?? null,
-										instagramUsername: club?.instagramUsername ?? null,
-										contactEmail: club?.contactEmail ?? null,
-										contactPhone: club?.contactPhone ?? null,
+										logo: club?.logo || null,
+										slug: club?.slug || null,
+										verified: club?.verified || false,
+										description: club?.description || null,
+										isPrivate: club?.isPrivate || false,
+										isAllied: club?.isAllied || false,
+										dateFounded: club?.dateFounded || null,
+										website: club?.website || null,
+										instagramUsername: club?.instagramUsername || null,
+										contactEmail: club?.contactEmail || null,
+										contactPhone: club?.contactPhone || null,
 									},
 								]}
 								interactive={true}

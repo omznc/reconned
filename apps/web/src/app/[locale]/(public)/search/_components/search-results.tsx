@@ -62,8 +62,8 @@ export function SearchResults() {
 			if (!lastPage?.pagination) {
 				return undefined;
 			}
-			const totalPages = lastPage.pagination.totalPages ?? 0;
-			const currentPage = lastPage.pagination.page ?? 1;
+			const totalPages = lastPage.pagination.totalPages || 0;
+			const currentPage = lastPage.pagination.page || 1;
 			return currentPage < totalPages ? currentPage + 1 : undefined;
 		},
 		enabled: !!query && query.length >= 2 && filterString.length > 0,
@@ -140,7 +140,7 @@ export function SearchResults() {
 												</span>
 											}
 											description={undefined}
-											href={`/clubs/${club.slug ?? club.id}`}
+											href={`/clubs/${club.slug || club.id}`}
 											meta={`${club._count.members} ${
 												club._count.members === 1 ? t("member") : t("members")
 											}`}
@@ -163,7 +163,7 @@ export function SearchResults() {
 												</span>
 											}
 											description={user.bio}
-											href={`/users/${user.slug ?? user.id}`}
+											href={`/users/${user.slug || user.id}`}
 											badges={
 												user.clubMembership && user.clubMembership.length > 0
 													? user.clubMembership.map((membership) => membership.club.name)
@@ -184,7 +184,7 @@ export function SearchResults() {
 											key={`event-${item.id}`}
 											title={event.name}
 											description={event.description || undefined}
-											href={`/events/${event.slug ?? event.id}`}
+											href={`/events/${event.slug || event.id}`}
 											badges={[
 												event.club?.name || "",
 												event.isPrivate ? t("Private") : t("Public"),

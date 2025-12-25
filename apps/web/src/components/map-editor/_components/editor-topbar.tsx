@@ -301,7 +301,7 @@ export function EditorTopbar({
 										max={1}
 										step={0.05}
 										onValueChange={(value) =>
-											mapEditorStore.setGridOpacity(value[0] ?? mapEditorStore.gridOpacity)
+											mapEditorStore.setGridOpacity(value[0] || mapEditorStore.gridOpacity)
 										}
 									/>
 								</div>
@@ -325,7 +325,7 @@ export function EditorTopbar({
 										max={1}
 										step={0.05}
 										onValueChange={(value) =>
-											mapEditorStore.setLabelOpacity(value[0] ?? mapEditorStore.labelOpacity)
+											mapEditorStore.setLabelOpacity(value[0] || mapEditorStore.labelOpacity)
 										}
 									/>
 								</div>

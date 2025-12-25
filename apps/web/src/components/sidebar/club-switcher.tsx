@@ -123,7 +123,7 @@ export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 													CLUB_OWNER: t("Owner"),
 													MANAGER: t("Manager"),
 													USER: t("Member"),
-												}[selectedRole ?? "USER"]
+												}[selectedRole || "USER"]
 											}
 										</span>
 									</div>

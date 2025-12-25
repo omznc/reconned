@@ -13,13 +13,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
 	const allHeaders = await headers();
 	const country = allHeaders.get("CF-IPCountry")?.toUpperCase();
 	const defaultLanguage = Object.entries(DEFAULT_LANGUAGES).find(([_, countries]) =>
-		countries.includes(country ?? ""),
+		countries.includes(country || ""),
 	)?.[0];
 
 	const resolvedLocale = await requestLocale;
 	const locale = hasLocale(routing.locales, resolvedLocale)
 		? resolvedLocale
-		: (defaultLanguage ?? routing.defaultLocale);
+		: defaultLanguage || routing.defaultLocale;
 
 	return {
 		locale,

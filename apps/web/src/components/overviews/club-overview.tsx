@@ -74,7 +74,7 @@ export async function ClubOverview({
 		},
 	});
 
-	const posts = postsResponse.data?.posts ?? [];
+	const posts = postsResponse.data?.posts || [];
 
 	if (postsResponse.error) {
 		logger.error("Error fetching club posts", { error: postsResponse.error });
@@ -158,7 +158,7 @@ export async function ClubOverview({
 					)}
 					{club.website && <ClubWebsiteButton website={club.website} isVerified={club.verified} />}
 					{isMember && !isClubOwner && (
-						<LeaveClubButton clubId={club.id} isClubOwner={isClubOwner ?? false} variant="destructive" />
+						<LeaveClubButton clubId={club.id} isClubOwner={isClubOwner || false} variant="destructive" />
 					)}
 				</div>
 

@@ -31,8 +31,8 @@ export function UserSheet({ user }: Props) {
 		<Credenza open={Boolean(open)} onOpenChange={() => setOpen("")}>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{user?.name ?? "Ne postoji"}</CredenzaTitle>
-					<CredenzaDescription>{user?.email ?? "Korisnik ne postoji"}</CredenzaDescription>
+					<CredenzaTitle>{user?.name || "Ne postoji"}</CredenzaTitle>
+					<CredenzaDescription>{user?.email || "Korisnik ne postoji"}</CredenzaDescription>
 				</CredenzaHeader>
 				{!user && (
 					<div className="mt-4 space-y-4">
@@ -68,7 +68,7 @@ export function UserSheet({ user }: Props) {
 								<div className="flex gap-1">
 									{user.clubMembership.map((m) => (
 										<Badge variant="outline" key={m.id}>
-											{m.club?.name ?? m.clubId}
+											{m.club?.name || m.clubId}
 										</Badge>
 									))}
 								</div>

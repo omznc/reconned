@@ -328,13 +328,13 @@ const drawGrid = (
 };
 
 export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
-	const snapshot = useMemo(() => data ?? createEmptySnapshot(), [data]);
+	const snapshot = useMemo(() => data || createEmptySnapshot(), [data]);
 	const mapRef = useRef<MapLibreMap | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const gridCanvasRef = useRef<HTMLCanvasElement | null>(null);
 	const markersRef = useRef<Map<string, { marker: maplibregl.Marker; root: Root; size: number }>>(new Map());
 	const [mapReady, setMapReady] = useState(false);
-	const playArea = useMemo(() => snapshot.playArea ?? playAreaFromBbox(snapshot.collection.bbox), [snapshot]);
+	const playArea = useMemo(() => snapshot.playArea || playAreaFromBbox(snapshot.collection.bbox), [snapshot]);
 
 	const mapLayersReady = () => {
 		const map = mapRef.current;
@@ -493,7 +493,7 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		if (!source) {
 			return;
 		}
-		source.setData(snapshot.collection ?? emptyCollection);
+		source.setData(snapshot.collection || emptyCollection);
 	}, [mapReady, snapshot.collection]);
 
 	useEffect(() => {
@@ -532,9 +532,9 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		if (!canvas) {
 			return;
 		}
-		drawGrid(map, canvas, playArea, snapshot.grid ?? DEFAULT_GRID);
+		drawGrid(map, canvas, playArea, snapshot.grid || DEFAULT_GRID);
 		const onMove = () => {
-			drawGrid(map, canvas, playArea, snapshot.grid ?? DEFAULT_GRID);
+			drawGrid(map, canvas, playArea, snapshot.grid || DEFAULT_GRID);
 		};
 		map.on("move", onMove);
 		map.on("zoom", onMove);
@@ -567,7 +567,7 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 			if (!coords || coords.length !== 2) {
 				continue;
 			}
-			const props = (feature.properties as Record<string, unknown> | undefined) ?? {};
+			const props = (feature.properties as Record<string, unknown> | undefined) || {};
 			const iconNameValue = props.iconName;
 			const iconName = typeof iconNameValue === "string" && iconNameValue.length > 0 ? iconNameValue : "map-pin";
 			const iconBackgroundValue = props.iconBackground;

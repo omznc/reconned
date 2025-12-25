@@ -170,7 +170,7 @@ function ChartTooltipContent({
     const value = (() => {
       const v =
         !labelKey && typeof label === "string"
-          ? config[label as keyof typeof config]?.label ?? label
+          ? config[label as keyof typeof config]?.label || label
           : itemConfig?.label
 
       return typeof v === "string" || typeof v === "number" ? v : undefined

@@ -84,7 +84,7 @@ export function UnclaimedClubsTable({ clubs, totalClubs, pageSize }: UnclaimedCl
 						variant: "custom",
 						components: (club) => [
 							<DropdownMenuItem key="profile" asChild>
-								<Link href={`/clubs/${club.slug ?? club.id}`} target="_blank">
+								<Link href={`/clubs/${club.slug || club.id}`} target="_blank">
 									<ExternalLink className="size-4 mr-2" />
 									Profil
 								</Link>

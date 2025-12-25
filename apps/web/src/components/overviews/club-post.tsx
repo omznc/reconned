@@ -25,7 +25,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 	const { ref, isOverflowing } = useOverflow();
-	const images = (post.images ?? []).filter((src): src is string => Boolean(src));
+	const images = (post.images || []).filter((src): src is string => Boolean(src));
 
 	return (
 		<div className="border bg-sidebar rounded-md p-4 space-y-3">

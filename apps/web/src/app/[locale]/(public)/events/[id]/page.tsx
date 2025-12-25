@@ -51,7 +51,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const event = {
 		...base,
 		_count: {
-			eventRegistration: registrationsCountData?.count ?? 0,
+			eventRegistration: registrationsCountData?.count || 0,
 		},
 		club: {
 			id: eventData.club.id,
@@ -60,20 +60,20 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			logo: eventData.club.logo,
 			verified: eventData.club.verified,
 		},
-		rules: rulesData?.rules ?? [],
+		rules: rulesData?.rules || [],
 	};
 
 	const locale = await getLocale();
 	const sportsEventSchema: WithContext<SportsEvent> = {
 		"@context": "https://schema.org",
 		"@type": "SportsEvent",
-		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`,
 		name: event.name,
 		description: event.description,
 		sport: "Airsoft",
 		startDate: event.dateStart,
 		endDate: event.dateEnd,
-		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`,
 		image: event.image || undefined,
 		location: {
 			"@type": "Place",
@@ -83,15 +83,15 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		},
 		organizer: {
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
+			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`,
 			name: event.club.name,
 			sport: "Airsoft",
-			url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
+			url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`,
 			logo: event.club.logo || undefined,
 		},
 		performer: {
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug ?? event.club.id}`,
+			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`,
 			name: event.club.name,
 			sport: "Airsoft",
 		},
@@ -99,7 +99,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			event.costPerPerson > 0
 				? {
 						"@type": "Offer",
-						url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
+						url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}/apply`,
 						price: event.costPerPerson,
 						priceCurrency: "BAM",
 						availability: "https://schema.org/InStock",
@@ -163,7 +163,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	return {
 		title: `${event.name} - RECONNED`,
 		description:
-			event.description.slice(0, 160) ??
+			event.description.slice(0, 160) ||
 			t(
 				"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
 			),

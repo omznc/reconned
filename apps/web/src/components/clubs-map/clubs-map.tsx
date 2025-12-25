@@ -501,7 +501,7 @@ function MapController({ targetClub, focusPoint }: { targetClub: MapClub | null;
 		}
 
 		if (typeof focusLat === "number" && typeof focusLng === "number") {
-			map.flyTo([focusLat, focusLng], focusZoom ?? 12, {
+			map.flyTo([focusLat, focusLng], focusZoom || 12, {
 				duration: 1.5,
 			});
 		}
@@ -538,7 +538,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 	const defaultCenter: [number, number] = focusPoint
 		? [focusPoint.lat, focusPoint.lng]
 		: [prefilledClub?.latitude || 43.8563, prefilledClub?.longitude || 18.4131];
-	const defaultZoom = focusPoint?.zoom ?? (prefilledClub ? 14 : 8);
+	const defaultZoom = focusPoint?.zoom || (prefilledClub ? 14 : 8);
 
 	const filteredClubs = clubs.filter(
 		(club) =>
@@ -617,7 +617,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 								</Label>
 								<Slider
 									value={[logoSize]}
-									onValueChange={([value]) => setLogoSize(value ?? 32)}
+									onValueChange={([value]) => setLogoSize(value || 32)}
 									min={16}
 									max={64}
 									step={16}

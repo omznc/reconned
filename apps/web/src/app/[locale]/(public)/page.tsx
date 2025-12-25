@@ -76,7 +76,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 			? []
 			: calendarEventsResult.data.events.map((event) => ({
 					...event,
-					club: event.club ?? null,
+					club: event.club || null,
 				}));
 
 	const upcomingEvents =
@@ -84,7 +84,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 			? []
 			: upcomingEventsResult.data.events.map((event) => ({
 					...event,
-					club: event.club ?? null,
+					club: event.club || null,
 				}));
 
 	const t = await getExtracted();
@@ -314,7 +314,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 										{event.isPrivate && (
 											<span className="text-xs text-muted-foreground">
 												{t("This is a private event, but you are in the {clubName} club.", {
-													clubName: event.club?.name ?? "",
+													clubName: event.club?.name || "",
 												})}
 											</span>
 										)}
@@ -350,9 +350,9 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							? managedClubs.map((club) => ({
 									id: club.id,
 									name: club.name,
-									verified: (club as { verified?: boolean }).verified ?? false,
-									logo: (club as { logo?: string | null }).logo ?? null,
-									slug: (club as { slug?: string | null }).slug ?? null,
+									verified: (club as { verified?: boolean }).verified || false,
+									logo: (club as { logo?: string | null }).logo || null,
+									slug: (club as { slug?: string | null }).slug || null,
 								}))
 							: undefined
 					}

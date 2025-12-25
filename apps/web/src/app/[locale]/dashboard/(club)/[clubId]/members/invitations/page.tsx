@@ -30,7 +30,7 @@ export async function InvitationsPageFetcher(props: PageProps<"/[locale]/dashboa
 		return <ErrorPage title={t("You have no access to this page")} />;
 	}
 
-	const page = Math.max(1, Number(searchParams.page ?? 1));
+	const page = Math.max(1, Number(searchParams.page || 1));
 	const pageSize =
 		searchParams.perPage === "25" || searchParams.perPage === "50" || searchParams.perPage === "100"
 			? Number(searchParams.perPage)

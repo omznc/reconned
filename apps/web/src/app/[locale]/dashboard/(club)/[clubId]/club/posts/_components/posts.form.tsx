@@ -30,7 +30,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const [_, setPostId] = useQueryState("postId");
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
-	const [editorContent, setEditorContent] = useState<string>(editingPost?.post.content ?? "");
+	const [editorContent, setEditorContent] = useState<string>(editingPost?.post.content || "");
 	const confirm = useConfirm();
 	const t = useExtracted();
 
@@ -63,7 +63,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new Error(error?.error ?? t("Failed to get upload URL"));
+				throw new Error(error?.error || t("Failed to get upload URL"));
 			}
 
 			const response = await fetch(data.url, {
@@ -93,10 +93,10 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 		resolver: zodResolver(postSchema),
 		defaultValues: {
 			id: editingPost?.post.id,
-			title: editingPost?.post.title ?? "",
+			title: editingPost?.post.title || "",
 			content: editorContent,
-			images: editingPost?.post.images ?? [],
-			isPublic: editingPost?.post.isPublic ?? false,
+			images: editingPost?.post.images || [],
+			isPublic: editingPost?.post.isPublic || false,
 			clubId,
 		},
 	});
@@ -119,13 +119,13 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						params: {
 							path: {
 								id: clubId,
-								postId: values.id ?? editingPost?.post.id ?? "",
+								postId: values.id || editingPost?.post.id || "",
 							},
 						},
 						body: {
 							title: values.title,
 							content: values.content,
-							images: values.images ?? [],
+							images: values.images || [],
 							isPublic: values.isPublic,
 						},
 					})
@@ -138,13 +138,13 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 						body: {
 							title: values.title,
 							content: values.content,
-							images: values.images ?? [],
+							images: values.images || [],
 							isPublic: values.isPublic,
 						},
 					});
 
 			if (error) {
-				throw new Error(error.error ?? t("An error occurred"));
+				throw new Error(error.error || t("An error occurred"));
 			}
 
 			imageUpload.markAsSaved();
@@ -192,7 +192,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			});
 
 			if (error) {
-				throw new Error(error.error ?? t("An error occurred while deleting the post"));
+				throw new Error(error.error || t("An error occurred while deleting the post"));
 			}
 
 			setPostId(null);

@@ -48,7 +48,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const club = clubData;
 
 	const isMemberOfClub = !!membershipData?.data?.isMember;
-	const hasOwner = hasOwnerData?.data?.hasOwner ?? false;
+	const hasOwner = hasOwnerData?.data?.hasOwner || false;
 	const role = membershipData?.data?.membership?.role;
 	const isManager = role === "MANAGER" || role === "CLUB_OWNER";
 	const userMembership =
@@ -61,7 +61,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const sportsOrganizationSchema: WithContext<SportsOrganization> = {
 		"@context": "https://schema.org",
 		"@type": "SportsOrganization",
-		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`,
 		name: club.name,
 		numberOfEmployees: {
 			"@type": "QuantitativeValue",
@@ -69,9 +69,9 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		},
 		description: club.description || undefined,
 		sport: "Airsoft",
-		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug ?? club.id}`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`,
 		logo: club.logo || undefined,
-		foundingDate: club.dateFounded ?? undefined,
+		foundingDate: club.dateFounded || undefined,
 		address: club.location
 			? {
 					"@type": "PostalAddress",
@@ -158,7 +158,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 	return {
 		title: `${club.name} - RECONNED`,
 		description:
-			club.description?.slice(0, 160) ??
+			club.description?.slice(0, 160) ||
 			t(
 				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
 			),

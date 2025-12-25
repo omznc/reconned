@@ -19,7 +19,7 @@ export default async function Page({ params, searchParams }: PageProps<"/[locale
 				},
 			},
 		});
-		editingPost = data ?? null;
+		editingPost = data || null;
 	}
 
 	return <PostsForm key={postId as string} clubId={clubId} editingPost={editingPost} />;

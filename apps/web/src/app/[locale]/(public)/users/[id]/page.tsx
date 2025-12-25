@@ -27,9 +27,9 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const personSchema: WithContext<Person> = {
 		"@context": "https://schema.org",
 		"@type": "Person",
-		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug ?? user.id}`,
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`,
 		name: user.name,
-		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug ?? user.id}`,
+		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`,
 		image: user.image || undefined,
 		description: user.bio || undefined,
 		address: user.location
@@ -44,7 +44,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 			.filter((membership) => membership.club)
 			.map((membership) => ({
 				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${membership.club.slug ?? membership.club.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${membership.club.slug || membership.club.id}`,
 				name: membership.club.name,
 				sport: "Airsoft",
 			})),
@@ -55,7 +55,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		},
 	};
 
-	const userUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug ?? user.id}`;
+	const userUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`;
 	const profilePageSchema: WithContext<ProfilePage> = {
 		"@context": "https://schema.org",
 		"@type": "ProfilePage",
@@ -115,7 +115,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 	return {
 		title: `${user.name} - RECONNED`,
 		description:
-			user.bio?.slice(0, 160) ??
+			user.bio?.slice(0, 160) ||
 			t(
 				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
 			),

@@ -67,7 +67,7 @@ export function AppSidebar(props: AppSidebarProps) {
 	const t = useExtracted();
 	const [isMac, setIsMac] = useState(false);
 
-	const isBeta = env.NEXT_PUBLIC_BETA ?? false;
+	const isBeta = env.NEXT_PUBLIC_BETA || false;
 
 	useEffect(() => {
 		// Detect if user is on macOS
@@ -116,7 +116,7 @@ export function AppSidebar(props: AppSidebarProps) {
 							<MailPlus size={12} />
 						</Link>
 					))}
-				{(invites?.count ?? 0) > 0 &&
+				{(invites?.count || 0) > 0 &&
 					(sidebar.open ? (
 						<Link
 							href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`}
@@ -124,7 +124,7 @@ export function AppSidebar(props: AppSidebarProps) {
 						>
 							<p className="text-xs text-muted-foreground">
 								{t("Your club has {count} pending join request/s", {
-									count: String(invites?.count ?? "0"),
+									count: String(invites?.count || "0"),
 								})}
 							</p>
 						</Link>

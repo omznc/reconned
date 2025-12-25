@@ -72,7 +72,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 			});
 
 			if (error) {
-				throw new Error(error.error ?? t("An error occurred while saving presence"));
+				throw new Error(error.error || t("An error occurred while saving presence"));
 			}
 		} catch (error) {
 			setOptimisticRegistrations((prev) => ({
@@ -92,7 +92,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				<CardContent className="p-4 flex justify-between items-center">
 					<div className="flex gap-3 items-center">
 						<Avatar>
-							<AvatarImage src={registration.createdBy?.image ?? ""} />
+							<AvatarImage src={registration.createdBy?.image || ""} />
 							{!registration.createdBy?.image && (
 								<AvatarFallback>
 									{registration.createdBy?.name?.slice(0, 2).toUpperCase()}
@@ -119,7 +119,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 											{registration.invitedUsers.map((user) => (
 												<div key={user.id} className="flex items-center gap-2">
 													<Avatar className="h-6 w-6">
-														<AvatarImage src={user.image ?? ""} />
+														<AvatarImage src={user.image || ""} />
 														<AvatarFallback className="text-xs">
 															{user.name?.slice(0, 2).toUpperCase()}
 														</AvatarFallback>

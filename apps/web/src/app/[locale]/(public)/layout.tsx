@@ -14,7 +14,7 @@ export default async function RootLayout({
 	const user = await isAuthenticated();
 	const t = await getExtracted();
 
-	const isBeta = env.NEXT_PUBLIC_BETA ?? false;
+	const isBeta = env.NEXT_PUBLIC_BETA || false;
 
 	return (
 		<>

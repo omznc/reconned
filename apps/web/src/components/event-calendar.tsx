@@ -167,7 +167,7 @@ export function EventCalendar(props: EventCalendarProps) {
 
 	const getEventDisplayProperties = (event: (typeof eventsWithParsedDates)[number], day: Date, week: Date[]) => {
 		const eventStart = event.dateStart;
-		const eventEnd = event.dateEnd ?? event.dateStart;
+		const eventEnd = event.dateEnd || event.dateStart;
 
 		// Get the first and last day of this event in the current week
 
@@ -209,7 +209,7 @@ export function EventCalendar(props: EventCalendarProps) {
 
 		for (const event of sortedEvents) {
 			const eventStart = event.dateStart;
-			const eventEnd = event.dateEnd ?? event.dateStart;
+			const eventEnd = event.dateEnd || event.dateStart;
 
 			// Find the first layer where this event can fit
 			let layerIndex = 0;
@@ -219,14 +219,14 @@ export function EventCalendar(props: EventCalendarProps) {
 				}
 
 				let canFit = true;
-				for (const existingEvent of layers[layerIndex] ?? []) {
+				for (const existingEvent of layers[layerIndex] || []) {
 					const existing = events.find((e) => e.id === existingEvent);
 					if (!existing) {
 						continue;
 					}
 
 					const existingStart = existing.dateStart;
-					const existingEnd = existing.dateEnd ?? existing.dateStart;
+					const existingEnd = existing.dateEnd || existing.dateStart;
 
 					if (
 						isWithinInterval(eventStart, {
@@ -461,10 +461,10 @@ export function EventCalendar(props: EventCalendarProps) {
 																	variant="ghost"
 																	style={{
 																		position: "absolute",
-																		zIndex: eventPositions.get(event.id) ?? 1,
+																		zIndex: eventPositions.get(event.id) || 1,
 																		left: 0,
 																		width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
-																		top: `${(eventPositions.get(event.id) ?? 0) * 32}px`,
+																		top: `${(eventPositions.get(event.id) || 0) * 32}px`,
 																		height: "28px",
 																	}}
 																	className={cn(
@@ -504,7 +504,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																	<div>
 																		<h4 className="font-semibold">{event.name}</h4>
 																		<p className="text-sm flex items-center gap-2 text-muted-foreground">
-																			{event.club?.name ?? ""}{" "}
+																			{event.club?.name || ""}{" "}
 																			{event.club?.verified && (
 																				<VerifiedClubIcon />
 																			)}
@@ -657,7 +657,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																width={40}
 																height={40}
 																src={club.logo}
-																alt={club.name ?? ""}
+																alt={club.name || ""}
 																className="rounded-lg object-cover"
 															/>
 														) : (

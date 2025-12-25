@@ -2347,8 +2347,8 @@ clubsRouter.post(
 		}
 
 		const target = {
-			email: body?.userEmail ?? context.user.email,
-			name: body?.userName ?? context.user.name,
+			email: body?.userEmail || context.user.email,
+			name: body?.userName || context.user.name,
 		};
 
 		const managerMembershipData = await db
@@ -4680,7 +4680,7 @@ clubsRouter.post(
 				instagramConnected: true,
 				instagramTokenExpiry: isPermanentToken
 					? null
-					: new Date((tokenInfo.data.expires_at ?? 0) * 1000).toISOString(),
+					: new Date((tokenInfo.data.expires_at || 0) * 1000).toISOString(),
 				instagramBusinessId: igBusinessResponse.instagram_business_account.id,
 				facebookPageId: pageId,
 				instagramTokenType: isPermanentToken ? "PERMANENT" : "TEMPORARY",
