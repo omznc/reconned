@@ -841,14 +841,22 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<div className="h-[400px] w-full rounded-lg overflow-hidden border">
 								<MapSelector
 									clubs={[
-										{
-											id: props.club?.id ?? "new",
-											name: nameValue || "",
-											latitude: latitudeValue || null,
-											longitude: longitudeValue || null,
-											location: locationValue,
-											logo: props.club?.logo,
-										},
+										props.club
+											? {
+													...props.club,
+													name: nameValue || props.club.name,
+													latitude: latitudeValue ?? props.club.latitude,
+													longitude: longitudeValue ?? props.club.longitude,
+													location: locationValue ?? props.club.location,
+												}
+											: {
+													id: "new",
+													name: nameValue || "",
+													latitude: latitudeValue || null,
+													longitude: longitudeValue || null,
+													location: locationValue || null,
+													logo: null,
+												},
 									]}
 									interactive={true}
 									onLocationSelect={handleLocationSelect}

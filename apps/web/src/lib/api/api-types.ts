@@ -2209,6 +2209,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/clubs/{id}/claim-request": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Submit claim request for unclaimed club
+		 * @description Submit a claim request for an unclaimed club. Sends email to admins for review.
+		 */
+		post: operations["clubsidclaimRequestPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/events": {
 		parameters: {
 			query?: never;
@@ -2915,26 +2935,6 @@ export interface paths {
 		 * @description Admin endpoint to assign owner to unclaimed club
 		 */
 		post: operations["adminunclaimedClubsidassignOwnerPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs/{id}/claim-request": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Send claim request email
-		 * @description Admin endpoint to send claim request email to admins
-		 */
-		post: operations["adminunclaimedClubsidclaimRequestPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -9411,6 +9411,17 @@ export interface operations {
 					};
 				};
 			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
 		};
 	};
 	usersidthemePut: {
@@ -13884,6 +13895,92 @@ export interface operations {
 			};
 		};
 	};
+	clubsidclaimRequestPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					message?: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						message: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Internal Server Error */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	eventsGet: {
 		parameters: {
 			query?: {
@@ -16994,92 +17091,6 @@ export interface operations {
 			};
 			/** @description Not Found */
 			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidclaimRequestPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					message?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						message: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
 				headers: {
 					[name: string]: unknown;
 				};
