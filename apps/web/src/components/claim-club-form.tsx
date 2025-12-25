@@ -40,7 +40,7 @@ export function ClaimClubForm({ clubId, user }: ClaimClubFormProps) {
 	async function onSubmit(values: z.infer<typeof claimClubSchema>) {
 		setIsLoading(true);
 		try {
-			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/claim-request", {
+			const { data, error } = await apiClient.POST("/api/clubs/{id}/claim-request", {
 				params: {
 					path: {
 						id: clubId,

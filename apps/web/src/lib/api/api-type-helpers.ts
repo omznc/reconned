@@ -18,6 +18,7 @@ export type UserProfile = ApiResponse<"/api/users/{id}/profile", "get">;
 
 // Club types
 export type Club = ApiResponse<"/api/clubs/{id}", "get">;
+export type ClubListItem = ApiResponse<"/api/clubs", "get">["clubs"][number];
 export type ClubMember = ApiResponse<"/api/clubs/{id}/members", "get">["members"][number];
 export type ClubMembershipResponse = ApiResponse<"/api/clubs/{id}/membership", "get">;
 export type ClubMembership = NonNullable<ClubMembershipResponse["membership"]>;
