@@ -21,7 +21,7 @@ export default async function Page() {
 		},
 	});
 
-	const hasPassword = accountData && !error ? (accountData.hasPassword ?? false) : false;
+	const hasPassword = accountData && !error ? accountData.hasPassword || false : false;
 
 	const sessions = await authClient.listSessions({
 		fetchOptions: {
@@ -41,8 +41,8 @@ export default async function Page() {
 			sessions={sessions.data?.map((session) => ({
 				...session,
 				isCurrentSession: session.id === user.session.id,
-				ipAddress: session.ipAddress ?? undefined,
-				userAgent: session.userAgent ?? undefined,
+				ipAddress: session.ipAddress || undefined,
+				userAgent: session.userAgent || undefined,
 				createdAt: session.createdAt.toISOString(),
 				updatedAt: session.updatedAt.toISOString(),
 				expiresAt: session.expiresAt.toISOString(),

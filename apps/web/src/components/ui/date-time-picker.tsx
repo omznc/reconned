@@ -673,7 +673,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
         },
         ref,
     ) => {
-        const [month, setMonth] = useState<Date>(value ?? new Date());
+        const [month, setMonth] = useState<Date>(value || new Date());
         const buttonRef = useRef<HTMLButtonElement>(null);
         /**
          * carry over the current time when a user clicks a new day

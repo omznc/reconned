@@ -52,8 +52,8 @@ export function EditorControlsPanel({
 	];
 
 	const sortedFeatures = [...features].sort((a, b) => {
-		const aLabel = a.label ?? a.kind;
-		const bLabel = b.label ?? b.kind;
+		const aLabel = a.label || a.kind;
+		const bLabel = b.label || b.kind;
 		if (aLabel < bLabel) {
 			return -1;
 		}
@@ -117,7 +117,7 @@ export function EditorControlsPanel({
 							<div className="p-2 grid grid-cols-1 gap-2">
 								{sortedFeatures.map((feature) => {
 									const isActive = feature.id === selectedId;
-									const icon = feature.kind === "point" ? (feature.iconName ?? "map-pin") : undefined;
+									const icon = feature.kind === "point" ? feature.iconName || "map-pin" : undefined;
 									const size = sidebarIconSize;
 									return (
 										<button

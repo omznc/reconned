@@ -133,7 +133,7 @@ eventsRouter.get(
 eventsRouter.get(
 	"/events/upcoming",
 	async ({ query, context, response }) => {
-		const limit = query.limit ?? 25;
+		const limit = query.limit || 25;
 
 		const whereConditions = [gte(event.dateStart, new Date().toISOString())];
 
@@ -701,9 +701,9 @@ eventsRouter.put(
 				club_id: existingEvent.clubId,
 				event_name: body.name || existingEvent.name,
 				location: body.location || existingEvent.location,
-				cost_per_person: body.costPerPerson ?? existingEvent.costPerPerson,
-				is_private: body.isPrivate ?? existingEvent.isPrivate,
-				has_map: Boolean(body.mapData ?? existingEvent.mapData),
+				cost_per_person: body.costPerPerson || existingEvent.costPerPerson,
+				is_private: body.isPrivate || existingEvent.isPrivate,
+				has_map: Boolean(body.mapData || existingEvent.mapData),
 			},
 		});
 

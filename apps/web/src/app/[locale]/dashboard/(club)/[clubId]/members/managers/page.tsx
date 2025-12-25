@@ -10,7 +10,7 @@ import { isAuthenticated } from "@/lib/auth";
 export async function ManagersPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/members/managers">) {
 	const params = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
-	const currentPage = Math.max(1, Number(page ?? 1));
+	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 	const t = await getExtracted();
 	const user = await isAuthenticated();

@@ -120,10 +120,10 @@ export const featureToGeoJSON = (feature: MapFeature): Feature => {
 			strokeWidth: feature.style.strokeWidth,
 			fillColor: feature.style.fillColor,
 			fillOpacity: feature.style.fillOpacity,
-			label: feature.label ?? "",
-			iconName: feature.iconName ?? "",
-			iconBackground: feature.iconBackground ?? true,
-			iconSize: feature.iconSize ?? 22,
+			label: feature.label || "",
+			iconName: feature.iconName || "",
+			iconBackground: feature.iconBackground || true,
+			iconSize: feature.iconSize || 22,
 		},
 	};
 };
@@ -144,7 +144,7 @@ export const draftToCollection = (draft: DraftState, hover: LngLatTuple | null):
 		return { type: "FeatureCollection", features: [] };
 	}
 	if (draft.type === "rectangle") {
-		const end = hover ?? draft.end;
+		const end = hover || draft.end;
 		return {
 			type: "FeatureCollection",
 			features: [
@@ -157,7 +157,7 @@ export const draftToCollection = (draft: DraftState, hover: LngLatTuple | null):
 		};
 	}
 	if (draft.type === "circle") {
-		const edge = hover ?? draft.edge ?? draft.center;
+		const edge = hover || draft.edge || draft.center;
 		const radius = distanceMeters(draft.center, edge);
 		return {
 			type: "FeatureCollection",
@@ -309,7 +309,7 @@ export const collectionToFeatures = (collection: FeatureCollection, defaults: Fe
 		if (!geometry) {
 			continue;
 		}
-		const properties = (item.properties ?? {}) as Record<string, unknown>;
+		const properties = (item.properties || {}) as Record<string, unknown>;
 		const style = normalizeStyle(properties, defaults.style);
 		const idValue = properties.id;
 		const labelValue = properties.label;

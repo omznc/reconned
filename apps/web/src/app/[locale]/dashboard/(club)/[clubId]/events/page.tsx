@@ -12,7 +12,7 @@ import { isAuthenticated } from "@/lib/auth";
 export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubId]/events">) {
 	const { clubId } = await props.params;
 	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
-	const currentPage = Math.max(1, Number(page ?? 1));
+	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 	const t = await getExtracted();
 
@@ -43,8 +43,8 @@ export async function EventsPageFetcher(props: PageProps<"/[locale]/dashboard/[c
 		}),
 	]);
 
-	const events = data?.events ?? [];
-	const totalEvents = data?.pagination.total ?? 0;
+	const events = data?.events || [];
+	const totalEvents = data?.pagination.total || 0;
 
 	const role = membershipData?.membership?.role;
 	const userIsManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";

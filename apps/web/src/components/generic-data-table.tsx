@@ -109,7 +109,7 @@ export function GenericDataTable<T>({
 	const router = useRouter();
 	const [hiddenColumns, setHiddenColumns] = useQueryState("hiddenColumns", {
 		shallow: true,
-		parse: (value) => new Set(value?.split(",") ?? []),
+		parse: (value) => new Set(value?.split(",") || []),
 		serialize: (value) => Array.from(value).join(","),
 	});
 
@@ -301,10 +301,10 @@ export function GenericDataTable<T>({
 
 		if (config?.variant === "badge") {
 			const badgeClass =
-				config.badgeVariants?.[value as string] ?? config.badgeVariants?.default ?? "bg-primary/10";
+				config.badgeVariants?.[value as string] || config.badgeVariants?.default || "bg-primary/10";
 			return (
 				<span className={cn("px-2 py-1 text-xs rounded-md", badgeClass)}>
-					{config.valueMap?.[value as string] ?? config.valueMap?.default ?? value}
+					{config.valueMap?.[value as string] || config.valueMap?.default || value}
 				</span>
 			);
 		}

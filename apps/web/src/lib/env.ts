@@ -53,7 +53,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_BETA: z
 			.string()
 			.optional()
-			.transform((val) => (val ?? "false") === "true")
+			.transform((val) => (val || "false") === "true")
 			.describe("Enable beta features (true/false)"),
 	},
 	experimental__runtimeEnv: {

@@ -65,7 +65,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			});
 
 			if (error || !data?.url) {
-				throw new Error(error?.error ?? t("Failed to get upload URL"));
+				throw new Error(error?.error || t("Failed to get upload URL"));
 			}
 
 			const response = await fetch(data.url, {
@@ -127,7 +127,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			});
 
 			if (error) {
-				throw new Error(error.error ?? t("Error while saving expense data"));
+				throw new Error(error.error || t("Error while saving expense data"));
 			}
 
 			receiptUpload.markAsSaved();

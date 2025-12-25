@@ -58,7 +58,7 @@ export function Header({ user }: { user: User | null }) {
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild={true}>
 								<Avatar className="size-10 cursor-pointer border select-none">
-									<AvatarImage src={user?.image ?? ""} alt={user?.name} />
+									<AvatarImage src={user?.image || ""} alt={user?.name} />
 									<AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
 								</Avatar>
 							</DropdownMenuTrigger>

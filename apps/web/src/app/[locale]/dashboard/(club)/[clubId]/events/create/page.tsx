@@ -39,7 +39,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 				path: { id: searchParams.id as string },
 			},
 		});
-		existingEvent = data ?? null;
+		existingEvent = data || null;
 	}
 
 	const { data: rulesData } = await apiServer.GET("/api/clubs/{id}/rules", {
@@ -47,11 +47,11 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 			path: { id: params.clubId },
 		},
 	});
-	const rules = rulesData?.rules ?? [];
+	const rules = rulesData?.rules || [];
 
 	// Parse initial date from search params if provided
 	const parsedDate = searchParams?.date ? parseDateFns(searchParams.date as string, "yyyy-MM-dd", new Date()) : null;
 	const prefillDate = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate : null;
 
-	return <CreateEventForm event={existingEvent?.event ?? null} rules={rules} prefillDate={prefillDate} />;
+	return <CreateEventForm event={existingEvent?.event || null} rules={rules} prefillDate={prefillDate} />;
 }

@@ -110,7 +110,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 					const section = urlParts[2];
 					if (section) {
 						const sectionLabel = sectionTitleMap[section as keyof typeof sectionTitleMap];
-						return `${overviewTitle} - ${sectionLabel ?? section}`;
+						return `${overviewTitle} - ${sectionLabel || section}`;
 					}
 				}
 				// For general overview pages
@@ -118,7 +118,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 					const section = urlParts[1];
 					if (section) {
 						const sectionLabel = sectionTitleMap[section as keyof typeof sectionTitleMap];
-						return `${overviewTitle} - ${sectionLabel ?? section}`;
+						return `${overviewTitle} - ${sectionLabel || section}`;
 					}
 				}
 			}

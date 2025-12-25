@@ -14,7 +14,7 @@ type AdminUnclaimed = AdminUnclaimedList["clubs"][number];
 
 export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs">) {
 	const { search, sortBy, sortOrder, page, clubId, perPage } = await props.searchParams;
-	const currentPage = Math.max(1, Number(page ?? 1));
+	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const { data: listData } = await apiServer.GET("/api/admin/unclaimed-clubs", {
@@ -29,8 +29,8 @@ export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dash
 		},
 	});
 
-	const clubs = (listData?.clubs ?? []) as AdminUnclaimed[];
-	const totalClubs = listData?.pagination.total ?? 0;
+	const clubs = (listData?.clubs || []) as AdminUnclaimed[];
+	const totalClubs = listData?.pagination.total || 0;
 
 	const selectedClub = clubId
 		? (
@@ -44,7 +44,7 @@ export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dash
 
 	return (
 		<>
-			<UnclaimedClubsSheet selectedClub={selectedClub ?? undefined} />
+			<UnclaimedClubsSheet selectedClub={selectedClub || undefined} />
 			<UnclaimedClubsTable clubs={clubs} totalClubs={totalClubs} pageSize={pageSize} />
 		</>
 	);

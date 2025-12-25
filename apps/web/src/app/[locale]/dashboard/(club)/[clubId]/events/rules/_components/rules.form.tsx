@@ -37,7 +37,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const confirm = useConfirm();
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
-	const [editorContent, setEditorContent] = useState<string>(editingRule?.content ?? "");
+	const [editorContent, setEditorContent] = useState<string>(editingRule?.content || "");
 	const t = useExtracted();
 	const router = useRouter();
 
@@ -45,8 +45,8 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 		resolver: zodResolver(ruleSchema),
 		defaultValues: {
 			id: editingRule?.id,
-			name: editingRule?.name ?? "",
-			description: editingRule?.description ?? "",
+			name: editingRule?.name || "",
+			description: editingRule?.description || "",
 			clubId,
 			content: editorContent,
 		},
@@ -258,7 +258,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 						</CardHeader>
 						<CardContent>
 							<div className="text-sm">
-								{(rule.description?.length ?? 0) > 0
+								{(rule.description?.length || 0) > 0
 									? rule.description
 									: t("This rulebook has no description")}
 							</div>
@@ -274,7 +274,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 							<SheetHeader>
 								<SheetTitle>{selectedRule.name}</SheetTitle>
 								<p className="text-muted-foreground">
-									{(selectedRule.description?.length ?? 0) > 0
+									{(selectedRule.description?.length || 0) > 0
 										? selectedRule.description
 										: t("This rulebook has no description")}
 								</p>

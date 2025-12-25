@@ -59,7 +59,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 			});
 
 			if (error) {
-				throw new Error(error.error ?? t("Failed to demote manager."));
+				throw new Error(error.error || t("Failed to demote manager."));
 			}
 
 			toast.success(t("Manager has been demoted to a regular user."));
@@ -84,7 +84,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 						component: (_, row) => (
 							<div className="flex items-center gap-2">
 								<Avatar className="h-8 w-8">
-									<AvatarImage src={row?.user.image ?? undefined} alt="Avatar" />
+									<AvatarImage src={row?.user.image || undefined} alt="Avatar" />
 									<AvatarFallback>
 										{row.user.name
 											.split(" ")

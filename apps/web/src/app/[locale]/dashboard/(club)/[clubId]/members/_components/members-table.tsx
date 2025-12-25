@@ -135,7 +135,7 @@ export function MembersTable(props: MembersTableProps) {
 							variant: "custom",
 							component: (_, row) => (
 								<Avatar className="h-8 w-8">
-									<AvatarImage src={row?.userAvatar ?? undefined} alt="Avatar" />
+									<AvatarImage src={row?.userAvatar || undefined} alt="Avatar" />
 									<AvatarFallback>
 										{row.userName
 											.split(" ")
@@ -242,7 +242,7 @@ export function MembersTable(props: MembersTableProps) {
 								// View profile action - for everyone
 								items.push(
 									<DropdownMenuItem key="profile" asChild>
-										<Link href={`/users/${row.userSlug ?? row.userId}`} target="_blank">
+										<Link href={`/users/${row.userSlug || row.userId}`} target="_blank">
 											<UserCircle className="size-4 mr-2" />
 											{t("Profile")}
 										</Link>

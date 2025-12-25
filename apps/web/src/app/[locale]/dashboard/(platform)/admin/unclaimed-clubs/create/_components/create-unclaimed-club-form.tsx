@@ -334,7 +334,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("Club name")}* ({nameValue?.length ?? 0}/50)
+								{t("Club name")}* ({nameValue?.length || 0}/50)
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="Veis" type="text" {...field} />
@@ -380,7 +380,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 										<CommandEmpty>{t("No results")}</CommandEmpty>
 										<CommandGroup className="h-[300px] overflow-y-scroll">
 											{countries.map((country) => {
-												const countryName = country.translations?.[locale] ?? country.name;
+												const countryName = country.translations?.[locale] || country.name;
 												return (
 													<CommandItem
 														key={country.id}
@@ -542,7 +542,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								{t("Description")} ({descriptionValue?.length ?? 0}/5000)
+								{t("Description")} ({descriptionValue?.length || 0}/5000)
 							</FormLabel>
 							<FormControl>
 								<Textarea

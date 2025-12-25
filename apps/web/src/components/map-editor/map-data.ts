@@ -211,10 +211,10 @@ export const normalizeMapData = (input: unknown): MapEditorSnapshot => {
 	if (candidate.version === 2 && candidate.collection) {
 		const basemap = candidate.basemap === "satellite" ? "satellite" : "osm";
 		const grid = {
-			visible: candidate.grid?.visible ?? DEFAULT_GRID.visible,
-			labelsVisible: candidate.grid?.labelsVisible ?? DEFAULT_GRID.labelsVisible,
-			opacity: candidate.grid?.opacity ?? DEFAULT_GRID.opacity,
-			labelOpacity: candidate.grid?.labelOpacity ?? DEFAULT_GRID.labelOpacity,
+			visible: candidate.grid?.visible || DEFAULT_GRID.visible,
+			labelsVisible: candidate.grid?.labelsVisible || DEFAULT_GRID.labelsVisible,
+			opacity: candidate.grid?.opacity || DEFAULT_GRID.opacity,
+			labelOpacity: candidate.grid?.labelOpacity || DEFAULT_GRID.labelOpacity,
 		};
 		const collection = sanitizeFeatureCollection(candidate.collection);
 		const playArea = isPlayArea(candidate.playArea)

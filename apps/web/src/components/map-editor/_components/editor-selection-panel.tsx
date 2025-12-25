@@ -40,7 +40,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 		if (selectedFeature) {
 			setStrokeColorInput(selectedFeature.style.strokeColor);
 			setFillColorInput(selectedFeature.style.fillColor);
-			setIconSizeInput(selectedFeature.iconSize ?? 22);
+			setIconSizeInput(selectedFeature.iconSize || 22);
 			return;
 		}
 		setStrokeColorInput(appliedStyle.strokeColor);
@@ -105,7 +105,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 	};
 
 	const handleStrokeWidthChange = (value: number[]) => {
-		const width = value[0] ?? appliedStyle.strokeWidth;
+		const width = value[0] || appliedStyle.strokeWidth;
 		const nextStyle: FeatureStyle = { ...appliedStyle, strokeWidth: width };
 		mapEditorStore.setStyle(nextStyle);
 		if (selectedFeature) {
@@ -117,7 +117,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 	};
 
 	const handleFillOpacityChange = (value: number[]) => {
-		const opacity = (value[0] ?? appliedStyle.fillOpacity * 100) / 100;
+		const opacity = (value[0] || appliedStyle.fillOpacity * 100) / 100;
 		const nextStyle: FeatureStyle = { ...appliedStyle, fillOpacity: opacity };
 		mapEditorStore.setStyle(nextStyle);
 		if (selectedFeature) {
@@ -139,7 +139,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 	};
 
 	const handleIconSizeChange = (value: number[]) => {
-		const size = value[0] ?? 22;
+		const size = value[0] || 22;
 		setIconSizeInput(size);
 		if (!selectedFeature) {
 			return;
@@ -170,7 +170,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 			<CardContent className="flex-1 space-y-3 overflow-auto">
 				<Input
 					placeholder={t("Label")}
-					value={selectedFeature?.label ?? ""}
+					value={selectedFeature?.label || ""}
 					onChange={(event) => handleLabelChange(event.target.value)}
 					disabled={!hasSelection}
 				/>
@@ -240,7 +240,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 							<div className="flex items-center justify-between pt-1">
 								<Label>{t("Icon")}</Label>
 								<PointMarker
-									name={selectedFeature.iconName ?? "map-pin"}
+									name={selectedFeature.iconName || "map-pin"}
 									color={selectedFeature.style.strokeColor}
 									fill={
 										selectedFeature.iconBackground ? selectedFeature.style.fillColor : "transparent"
@@ -253,7 +253,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 								<Label htmlFor="icon-bg">{t("Icon background")}</Label>
 								<Switch
 									id="icon-bg"
-									checked={selectedFeature.iconBackground ?? true}
+									checked={selectedFeature.iconBackground || true}
 									onCheckedChange={handleIconBackgroundChange}
 								/>
 							</div>
@@ -261,13 +261,13 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 								<div className="flex items-center justify-between">
 									<Label>{t("Icon size")}</Label>
 									<span className="text-xs text-muted-foreground">
-										{selectedFeature.iconSize ?? iconSizeInput}px
+										{selectedFeature.iconSize || iconSizeInput}px
 									</span>
 								</div>
 								<Slider
 									min={12}
 									max={48}
-									value={[selectedFeature.iconSize ?? iconSizeInput]}
+									value={[selectedFeature.iconSize || iconSizeInput]}
 									onValueChange={handleIconSizeChange}
 								/>
 							</div>
@@ -284,7 +284,7 @@ export function EditorSelectionPanel({ sidebarIconSize, dimmed }: EditorSelectio
 								<div className="grid grid-cols-6 gap-1 p-2">
 									{filteredIcons.map((name) => {
 										const IconComp = getIconComponent(name);
-										const active = (selectedFeature.iconName ?? "map-pin") === name;
+										const active = (selectedFeature.iconName || "map-pin") === name;
 										const prefersDark =
 											typeof window !== "undefined" &&
 											window.matchMedia &&

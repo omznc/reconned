@@ -17,7 +17,7 @@ async function AuditLogsPageFetcher(props: PageProps<"/[locale]/dashboard/[clubI
 	const { search, page, perPage, actionType } = await props.searchParams;
 
 	// Parse pagination parameters
-	const currentPage = Math.max(1, Number(page ?? 1));
+	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const { data, error } = await apiServer.GET("/api/clubs/{id}/audit-logs", {

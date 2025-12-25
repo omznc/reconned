@@ -43,9 +43,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 		return <ErrorPage title={t("Page not found")} />;
 	}
 
-	const font = (session?.font as "sans" | "mono" | null | undefined) ?? "mono";
-	const style = (session?.style as "sharp" | "relaxed" | null | undefined) ?? "relaxed";
-	const theme = (session?.theme as "dark" | "light" | null | undefined) ?? "dark";
+	const font = (session?.font as "sans" | "mono" | null | undefined) || "mono";
+	const style = (session?.style as "sharp" | "relaxed" | null | undefined) || "relaxed";
+	const theme = (session?.theme as "dark" | "light" | null | undefined) || "dark";
 
 	const websiteSchema = {
 		"@context": "https://schema.org",

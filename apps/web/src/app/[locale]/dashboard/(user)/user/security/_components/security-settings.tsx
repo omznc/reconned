@@ -64,7 +64,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 				{passkeys.map((passkey) => (
 					<Alert key={passkey.id} className="flex flex-col md:flex-row gap-1 justify-between -z-0">
 						<div className="flex flex-col">
-							<AlertTitle>{passkey.name ?? t("Passkey")}</AlertTitle>
+							<AlertTitle>{passkey.name || t("Passkey")}</AlertTitle>
 							<AlertDescription>
 								{t("Created on {date}", {
 									date: passkey.createdAt?.toLocaleDateString(locale, {
@@ -280,7 +280,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 												variant="outline"
 												disabled={isLoading}
 												onClick={() => {
-													const text = regeneratedBackupCodes?.join("\n") ?? "";
+													const text = regeneratedBackupCodes?.join("\n") || "";
 													const blob = new Blob([text], {
 														type: "text/plain",
 													});
@@ -614,7 +614,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 			<ScrollArea className="max-h-[400px] border rounded-md overflow-y-auto">
 				<div className="p-4 space-y-2">
 					{sessions.map((session) => {
-						const Icon = getDeviceIcon(session.userAgent ?? undefined);
+						const Icon = getDeviceIcon(session.userAgent || undefined);
 						return (
 							<Alert
 								key={session.id}

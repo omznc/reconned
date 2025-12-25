@@ -155,10 +155,10 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		lat: "",
 		lng: "",
 	});
-	const initialSnapshotRef = useRef<MapEditorSnapshot>(initialData ?? createEmptySnapshot());
+	const initialSnapshotRef = useRef<MapEditorSnapshot>(initialData || createEmptySnapshot());
 	const initialPlayArea =
-		initialSnapshotRef.current.playArea ?? playAreaFromBbox(initialSnapshotRef.current.collection.bbox);
-	const [playArea, setPlayArea] = useState<MapPlayArea | null>(initialPlayArea ?? null);
+		initialSnapshotRef.current.playArea || playAreaFromBbox(initialSnapshotRef.current.collection.bbox);
+	const [playArea, setPlayArea] = useState<MapPlayArea | null>(initialPlayArea || null);
 	const [isSettingPlayArea, setIsSettingPlayArea] = useState(!initialPlayArea);
 	const [playAreaConfirmed, setPlayAreaConfirmed] = useState(Boolean(initialPlayArea));
 	const hasPlayArea = Boolean(playArea);
@@ -176,7 +176,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 	const [isFreehandDrawing, setIsFreehandDrawing] = useState(false);
 	const importRef = useRef<HTMLInputElement | null>(null);
 	const markersRef = useRef<Map<string, { marker: maplibregl.Marker; root: Root; size: number }>>(new Map());
-	const previousPlayAreaRef = useRef<MapPlayArea | null>(initialPlayArea ?? null);
+	const previousPlayAreaRef = useRef<MapPlayArea | null>(initialPlayArea || null);
 	const draggingRef = useRef<{
 		id: string;
 		last: LngLatTuple;
@@ -247,7 +247,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 
 	const applySnapshot = useCallback(
 		(snapshot: MapEditorSnapshot) => {
-			let defaultIconName = mapEditorStore.pointIconName ?? "map-pin";
+			let defaultIconName = mapEditorStore.pointIconName || "map-pin";
 			for (let index = 0; index < snapshot.collection.features.length; index += 1) {
 				const feature = snapshot.collection.features[index];
 				if (!feature) {
@@ -273,7 +273,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 			mapEditorStore.setGridOpacity(snapshot.grid.opacity);
 			mapEditorStore.setLabelOpacity(snapshot.grid.labelOpacity);
 			mapEditorStore.setPointIconName(defaultIconName);
-			const nextPlayArea = snapshot.playArea ?? playAreaFromBbox(snapshot.collection.bbox);
+			const nextPlayArea = snapshot.playArea || playAreaFromBbox(snapshot.collection.bbox);
 			if (nextPlayArea) {
 				setPlayArea(nextPlayArea);
 				setPlayAreaConfirmed(true);
@@ -361,8 +361,8 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 
 	const handleClick = (event: MapMouseEvent) => {
 		const coordinate: LngLatTuple = [event.lngLat.lng, event.lngLat.lat];
-		const snapped = snapPoint ?? hoverPoint;
-		const finalCoordinate = snapped ?? coordinate;
+		const snapped = snapPoint || hoverPoint;
+		const finalCoordinate = snapped || coordinate;
 		if (isSettingPlayArea) {
 			return;
 		}
@@ -542,7 +542,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		if (draft && (draft.type === "line" || draft.type === "polygon")) {
 			const snapped = findSnapPoint(event.lngLat);
 			setSnapPoint(snapped);
-			setHoverPoint(snapped ?? coordinate);
+			setHoverPoint(snapped || coordinate);
 			return;
 		}
 		if (mapEditorStore.mode === "freehand" && isFreehandDrawing && draft && draft.type === "freehand") {
@@ -1246,9 +1246,9 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 			}
 			nextIds.add(feature.id);
 			const existing = markers.get(feature.id);
-			const iconName = feature.iconName ?? "map-pin";
-			const iconBg = feature.iconBackground ?? true;
-			const size = feature.iconSize ?? 22;
+			const iconName = feature.iconName || "map-pin";
+			const iconBg = feature.iconBackground || true;
+			const size = feature.iconSize || 22;
 			const scale = zoomScale;
 			if (existing) {
 				existing.marker.setLngLat(feature.geometry.coordinates);
@@ -1877,7 +1877,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 			}
 		} else if (geometry.type === "Circle") {
 			const centerPoint = map.project({ lng: geometry.center[0], lat: geometry.center[1] });
-			const edge = geometry.edge ?? geometry.center;
+			const edge = geometry.edge || geometry.center;
 			const edgePoint = map.project({ lng: edge[0], lat: edge[1] });
 			const dx = edgePoint.x - centerPoint.x;
 			const dy = edgePoint.y - centerPoint.y;
@@ -2103,7 +2103,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		}
 		const imported = collectionToFeatures(collection, {
 			style: appliedStyle,
-			iconName: mapEditorStore.pointIconName ?? "map-pin",
+			iconName: mapEditorStore.pointIconName || "map-pin",
 			iconBackground: true,
 			iconSize: 22,
 		});

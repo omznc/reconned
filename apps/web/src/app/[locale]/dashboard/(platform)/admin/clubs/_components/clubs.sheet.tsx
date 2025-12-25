@@ -27,8 +27,8 @@ export function ClubsSheet({ selectedClub }: ClubsSheetProps) {
 		<Credenza open={Boolean(selectedClub)} onOpenChange={() => router.push("?")}>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{selectedClub?.name ?? "Ne postoji"}</CredenzaTitle>
-					<CredenzaDescription>{selectedClub?.location ?? "Lokacija nije dostupna"}</CredenzaDescription>
+					<CredenzaTitle>{selectedClub?.name || "Ne postoji"}</CredenzaTitle>
+					<CredenzaDescription>{selectedClub?.location || "Lokacija nije dostupna"}</CredenzaDescription>
 				</CredenzaHeader>
 				{!selectedClub && (
 					<div className="mt-4 space-y-4">

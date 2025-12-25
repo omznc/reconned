@@ -12,7 +12,7 @@ export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[
 	]);
 
 	const { clubId } = params;
-	const currentPage = Math.max(1, Number(page ?? 1));
+	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const user = await isAuthenticated();

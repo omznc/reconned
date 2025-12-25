@@ -11,7 +11,7 @@ const toPascalCase = (name: string) => {
 			if (!part.length) {
 				return "";
 			}
-			const first = part[0]?.toUpperCase() ?? "";
+			const first = part[0]?.toUpperCase() || "";
 			return `${first}${part.slice(1)}`;
 		})
 		.join("");
@@ -20,7 +20,7 @@ const toPascalCase = (name: string) => {
 export const getIconComponent = (name: string): LucideIcon => {
 	const componentName = toPascalCase(name);
 	const record = LucideIcons as unknown as Record<string, LucideIcon | undefined>;
-	return record[componentName] ?? LucideIcons.MapPin;
+	return record[componentName] || LucideIcons.MapPin;
 };
 
 type PointMarkerProps = {
@@ -34,8 +34,8 @@ type PointMarkerProps = {
 
 export function PointMarker({ name, color, fill, background = true, scale = 1, size = 22 }: PointMarkerProps) {
 	const Icon = getIconComponent(name);
-	const iconColor = color ?? "#111111";
-	const bgColor = background ? (fill ?? "#ffffff") : "transparent";
+	const iconColor = color || "#111111";
+	const bgColor = background ? fill || "#ffffff" : "transparent";
 	const base = size / 22;
 	return (
 		<div

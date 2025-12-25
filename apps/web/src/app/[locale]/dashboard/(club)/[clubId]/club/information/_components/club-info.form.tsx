@@ -75,7 +75,7 @@ async function saveClubInformation(values: z.infer<typeof clubInfoSchema>, clubI
 		});
 
 		if (error || !data?.success) {
-			throw new Error(error?.error ?? "Failed to update club");
+			throw new Error(error?.error || "Failed to update club");
 		}
 
 		return { id: clubId };
@@ -86,7 +86,7 @@ async function saveClubInformation(values: z.infer<typeof clubInfoSchema>, clubI
 	});
 
 	if (error || !data?.id) {
-		throw new Error(error?.error ?? "Failed to create club");
+		throw new Error(error?.error || "Failed to create club");
 	}
 
 	return { id: data.id };
@@ -100,7 +100,7 @@ async function deleteClub(_: unknown, clubId: string) {
 	});
 
 	if (error) {
-		throw new Error(error.error ?? "Failed to delete club");
+		throw new Error(error.error || "Failed to delete club");
 	}
 }
 
@@ -299,8 +299,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 	const handleLocationReset = () => {
 		if (props.club) {
-			form.setValue("latitude", props.club.latitude ?? undefined, { shouldDirty: true });
-			form.setValue("longitude", props.club.longitude ?? undefined, { shouldDirty: true });
+			form.setValue("latitude", props.club.latitude || undefined, { shouldDirty: true });
+			form.setValue("longitude", props.club.longitude || undefined, { shouldDirty: true });
 			if (props.club.latitude && props.club.longitude) {
 				setMapCenter([props.club.latitude, props.club.longitude]);
 				setMapZoom(14);
@@ -360,7 +360,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			});
 
 			if (error) {
-				throw new Error(error.error ?? "An error occurred while disconnecting Instagram account");
+				throw new Error(error.error || "An error occurred while disconnecting Instagram account");
 			}
 
 			toast.success(t("Instagram account successfully disconnected"));
@@ -666,7 +666,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									{t("Club name")}* ({nameValue?.length ?? 0}/{clubInfoSchema.shape.name.maxLength})
+									{t("Club name")}* ({nameValue?.length || 0}/{clubInfoSchema.shape.name.maxLength})
 								</FormLabel>
 								<FormControl>
 									<Input placeholder="Veis" type="text" {...field} />
@@ -722,7 +722,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 															string,
 															string
 														>;
-														return typedTranslations[locale] ?? selectedCountry.name;
+														return typedTranslations[locale] || selectedCountry.name;
 													}
 
 													return selectedCountry.name;
@@ -749,7 +749,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 															string,
 															string
 														>;
-														countryName = typedTranslations[locale] ?? country.name;
+														countryName = typedTranslations[locale] || country.name;
 													}
 
 													return (
@@ -845,9 +845,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											? {
 													...props.club,
 													name: nameValue || props.club.name,
-													latitude: latitudeValue ?? props.club.latitude,
-													longitude: longitudeValue ?? props.club.longitude,
-													location: locationValue ?? props.club.location,
+													latitude: latitudeValue || props.club.latitude,
+													longitude: longitudeValue || props.club.longitude,
+													location: locationValue || props.club.location,
 												}
 											: {
 													id: "new",
@@ -888,7 +888,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									{t("Description")}* ({descriptionValue?.length ?? 0}/
+									{t("Description")}* ({descriptionValue?.length || 0}/
 									{clubInfoSchema.shape.description.maxLength})
 								</FormLabel>
 								<FormControl>
@@ -1077,7 +1077,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 										)}
 									</Button>
 								) : (
-									<Link href={props.instagramConnectionUrl ?? ""}>
+									<Link href={props.instagramConnectionUrl || ""}>
 										<Button type="button" variant="outline" size="sm" disabled={!props.club?.id}>
 											{t("Connect Instagram")}
 										</Button>

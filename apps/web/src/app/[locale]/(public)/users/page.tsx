@@ -49,9 +49,9 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 			position: index + 1 + skip,
 			item: {
 				"@type": "Person",
-				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug ?? user.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug || user.id}`,
 				name: user.name,
-				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug ?? user.id}`,
+				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug || user.id}`,
 				image: user.image || undefined,
 				address: user.location
 					? {
@@ -82,7 +82,7 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 							</span>
 						}
 						description={null}
-						href={`/users/${user.slug ?? user.id}`}
+						href={`/users/${user.slug || user.id}`}
 						meta={user.location || undefined}
 					/>
 				))}

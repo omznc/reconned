@@ -182,7 +182,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 												</div>
 											)}
 											<Link
-												href={`/clubs/${membership.club.slug ?? membership.club.id}`}
+												href={`/clubs/${membership.club.slug || membership.club.id}`}
 												className="hover:underline"
 											>
 												{membership.club.name}
@@ -211,7 +211,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 									return (
 										<li key={reg.event.id}>
 											<Link
-												href={`/events/${reg.event.slug ?? reg.event.id}`}
+												href={`/events/${reg.event.slug || reg.event.id}`}
 												className="hover:underline"
 											>
 												{reg.event.name}
@@ -247,7 +247,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 									return (
 										<li key={reg.event.id}>
 											<Link
-												href={`/events/${reg.event.slug ?? reg.event.id}`}
+												href={`/events/${reg.event.slug || reg.event.id}`}
 												className="hover:underline"
 											>
 												{reg.event.name}

@@ -40,14 +40,14 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 
 	const role = membershipData?.membership?.role;
 	const isManager = role === "MANAGER" || role === "CLUB_OWNER" || user.role === "admin";
-	const isMember = membershipData?.isMember ?? false;
+	const isMember = membershipData?.isMember || false;
 
 	return (
 		<ClubOverview
 			club={club}
 			isManager={isManager}
 			isMember={isMember}
-			currentUserMembership={membershipData?.membership ?? null}
+			currentUserMembership={membershipData?.membership || null}
 		/>
 	);
 }

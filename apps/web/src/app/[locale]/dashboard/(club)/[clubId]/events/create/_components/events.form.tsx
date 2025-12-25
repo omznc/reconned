@@ -183,9 +183,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const router = useRouter();
 	const clubId = useParams<{ clubId: string }>().clubId;
 
-	const defaultStartDate = props.event?.dateStart ?? props.prefillDate ?? addDays(new Date(), 15);
-	const defaultEndDate = props.event?.dateEnd ?? addDays(defaultStartDate, 1);
-	const defaultRegistrationCloseDate = props.event?.dateRegistrationsClose ?? subHours(defaultStartDate, 2);
+	const defaultStartDate = props.event?.dateStart || props.prefillDate || addDays(new Date(), 15);
+	const defaultEndDate = props.event?.dateEnd || addDays(defaultStartDate, 1);
+	const defaultRegistrationCloseDate = props.event?.dateRegistrationsClose || subHours(defaultStartDate, 2);
 
 	const defaultFormValues: CreateEventFormValues = {
 		eventId: props.event?.id || "",
@@ -289,7 +289,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	async function onSubmit(values: z.infer<typeof createEventFormSchema>) {
 		setIsLoading(true);
 		try {
-			const mapData = values.mapData ?? createEmptySnapshot();
+			const mapData = values.mapData || createEmptySnapshot();
 			const normalized = normalizeMapData(mapData);
 
 			const body = {
@@ -313,7 +313,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				hasPrizes: values.hasPrizes,
 				slug: values.slug || undefined,
 				clubId,
-				ruleIds: values.ruleIds ?? [],
+				ruleIds: values.ruleIds || [],
 				mapData: normalized,
 			};
 
@@ -321,7 +321,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 			const { data: createdOrUpdated, error: createError } = isEditing
 				? await apiClient.PUT("/api/events/{id}", {
-						params: { path: { id: props.event?.id ?? "" } },
+						params: { path: { id: props.event?.id || "" } },
 						body,
 					})
 				: await apiClient.POST("/api/events", {
@@ -329,7 +329,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					});
 
 			if (createError || !createdOrUpdated?.event.id) {
-				throw new Error(createError?.error ?? t("An error occurred while saving data"));
+				throw new Error(createError?.error || t("An error occurred while saving data"));
 			}
 
 			const eventId = createdOrUpdated.event.id;
@@ -356,7 +356,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					});
 
 					if (updateError) {
-						throw new Error(updateError.error ?? t("An error occurred while saving data"));
+						throw new Error(updateError.error || t("An error occurred while saving data"));
 					}
 				}
 			}
@@ -421,13 +421,13 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 										try {
 											const { error } = await apiClient.DELETE("/api/events/{id}", {
 												params: {
-													path: { id: props.event?.id ?? "" },
+													path: { id: props.event?.id || "" },
 												},
 											});
 
 											if (error) {
 												throw new Error(
-													error.error ?? t("An error occurred while deleting event"),
+													error.error || t("An error occurred while deleting event"),
 												);
 											}
 
@@ -1097,7 +1097,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																<SheetHeader>
 																	<SheetTitle>{selectedRule.name}</SheetTitle>
 																	<p className="text-muted-foreground">
-																		{(selectedRule.description?.length ?? 0) > 0
+																		{(selectedRule.description?.length || 0) > 0
 																			? selectedRule.description
 																			: t("No description")}
 																	</p>

@@ -59,7 +59,7 @@ dashboardRouter.get(
 					id: c.id,
 					name: c.name,
 					logo: c.logo,
-					membershipRole: membership?.role ?? "USER",
+					membershipRole: membership?.role || "USER",
 					events: upcomingEvents,
 					_count: {
 						members: Number(membersCount[0]?.count || 0),

@@ -10,7 +10,7 @@ type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
 
 export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
 	const { search, sortBy, sortOrder, page, clubId, perPage } = await props.searchParams;
-	const currentPage = Math.max(1, Number(page ?? 1));
+	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
 	const { data: listData } = await apiServer.GET("/api/admin/clubs", {
@@ -25,8 +25,8 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 		},
 	});
 
-	const clubs = (listData?.clubs ?? []) as AdminClub[];
-	const totalClubs = listData?.pagination.total ?? 0;
+	const clubs = (listData?.clubs || []) as AdminClub[];
+	const totalClubs = listData?.pagination.total || 0;
 
 	const selectedClub = clubId
 		? (
@@ -40,7 +40,7 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 
 	return (
 		<>
-			<ClubsSheet selectedClub={selectedClub ?? undefined} />
+			<ClubsSheet selectedClub={selectedClub || undefined} />
 			<ClubsTable clubs={clubs} totalClubs={totalClubs} pageSize={pageSize} />
 		</>
 	);

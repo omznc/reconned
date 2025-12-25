@@ -170,7 +170,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 
 													if (error) {
 														throw new Error(
-															error.error ?? t("Error while deleting expense item"),
+															error.error || t("Error while deleting expense item"),
 														);
 													}
 

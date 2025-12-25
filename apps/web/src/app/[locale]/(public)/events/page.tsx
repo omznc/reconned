@@ -60,13 +60,13 @@ export default async function Page() {
 			position: index + 1,
 			item: {
 				"@type": "SportsEvent",
-				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
+				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`,
 				name: event.name,
 				description: event.description,
 				sport: "Airsoft",
 				startDate: event.dateStart.toISOString(),
-				endDate: event.dateEnd?.toISOString() ?? undefined,
-				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}`,
+				endDate: event.dateEnd?.toISOString() || undefined,
+				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`,
 				image: event.image || undefined,
 				location: {
 					"@type": "Place",
@@ -89,7 +89,7 @@ export default async function Page() {
 					event.costPerPerson > 0
 						? {
 								"@type": "Offer",
-								url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug ?? event.id}/apply`,
+								url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}/apply`,
 								price: event.costPerPerson,
 								priceCurrency: "BAM",
 							}
@@ -106,7 +106,7 @@ export default async function Page() {
 			<h1 className="text-xl font-bold">{t("Upcoming events")}</h1>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{upcomingEvents.length === 0 && (
-					<div className="text-muted-foreground">{t("There are no upcomig events")}</div>
+					<div className="text-muted-foreground">{t("There are no upcoming events")}</div>
 				)}
 				{upcomingEvents.map((event) => (
 					<Card key={event.id} className="flex flex-col">

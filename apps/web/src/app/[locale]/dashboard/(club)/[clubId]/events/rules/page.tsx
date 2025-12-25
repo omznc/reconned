@@ -13,9 +13,9 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		},
 	});
 
-	const rules = data?.rules ?? [];
+	const rules = data?.rules || [];
 	const editingRule = searchParams?.ruleId
-		? (rules.find((rule) => rule.id === (searchParams.ruleId as string)) ?? null)
+		? rules.find((rule) => rule.id === (searchParams.ruleId as string)) || null
 		: null;
 
 	return (

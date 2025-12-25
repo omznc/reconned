@@ -19,9 +19,9 @@ export default async function MapPage() {
 		.filter((club) => !club.isPrivate && club.latitude && club.longitude)
 		.map((club) => ({
 			...club,
-			location: club.location ?? null,
-			slug: club.slug ?? null,
-			logo: club.logo ?? null,
+			location: club.location || null,
+			slug: club.slug || null,
+			logo: club.logo || null,
 		}));
 
 	const t = await getExtracted();
@@ -44,10 +44,10 @@ export default async function MapPage() {
 				position: index + 1,
 				item: {
 					"@type": "SportsOrganization",
-					"@id": `${env.NEXT_PUBLIC_WEB_URL}/clubs/${club.slug ?? club.id}`,
+					"@id": `${env.NEXT_PUBLIC_WEB_URL}/clubs/${club.slug || club.id}`,
 					name: club.name,
 					sport: "Airsoft",
-					url: `${env.NEXT_PUBLIC_WEB_URL}/clubs/${club.slug ?? club.id}`,
+					url: `${env.NEXT_PUBLIC_WEB_URL}/clubs/${club.slug || club.id}`,
 					logo: club.logo || undefined,
 					address: club.location
 						? {

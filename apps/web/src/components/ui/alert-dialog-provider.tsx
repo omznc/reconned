@@ -134,7 +134,7 @@ export function AlertDialogProvider({
 
     function confirm(value?: string) {
         dispatch({ type: "close" });
-        resolveRef.current?.(value ?? true);
+        resolveRef.current?.(value || true);
     }
 
     const dialog = useCallback(async <T extends AlertAction>(params: T) => {
