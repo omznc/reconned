@@ -1,14 +1,10 @@
-import { render } from "@react-email/components";
 import { randomUUIDv7 } from "bun";
 import { and, count, desc, eq, ilike, inArray, not, or } from "drizzle-orm";
 import { z } from "zod";
-import { club, clubMembership, user } from "../../drizzle/schema";
-import ClubClaimRequestEmail from "../../emails/club-claim-request";
+import { club, clubMembership } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
 import { db } from "../../lib/db";
-import { getEmailMessages, interpolateMessage } from "../../lib/email-messages";
 import { apiError } from "../../lib/errors";
-import { sendEmail } from "../../lib/mail";
 import { posthog } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
@@ -621,102 +617,6 @@ adminUnclaimedClubsRouter.post(
 			response: {
 				200: z.object({ success: z.boolean() }),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
-			},
-		},
-	},
-);
-
-adminUnclaimedClubsRouter.post(
-	"/admin/unclaimed-clubs/:id/claim-request",
-	async ({ params, body, response, context }) => {
-		const clubId = params.id;
-		if (!clubId) {
-			throw apiError.validation("Club ID is required");
-		}
-
-		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
-
-		if (!clubData[0]) {
-			throw apiError.notFound("Club not found");
-		}
-
-		const existingOwner = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.role, "CLUB_OWNER")))
-			.limit(1);
-
-		if (existingOwner[0]) {
-			throw apiError.validation("Club already has an owner");
-		}
-
-		const admins = await db.select({ email: user.email }).from(user).where(eq(user.role, "admin"));
-
-		if (admins.length === 0) {
-			throw apiError.internal("No admins found");
-		}
-
-		const requesterData = await db
-			.select({ name: user.name, email: user.email, callsign: user.callsign })
-			.from(user)
-			.where(eq(user.id, context.user.id))
-			.limit(1);
-
-		if (!requesterData[0]) {
-			throw apiError.notFound("Requester not found");
-		}
-
-		const adminEmails = admins.map((a) => a.email);
-
-		try {
-			const messages = getEmailMessages("en"); // Admin notifications in English
-			await sendEmail({
-				to: adminEmails,
-				subject: interpolateMessage(messages.emails.clubClaimRequest.subject, { clubName: clubData[0].name }),
-				html: await render(
-					ClubClaimRequestEmail({
-						clubName: clubData[0].name,
-						clubLogo: clubData[0].logo,
-						clubLocation: clubData[0].location,
-						requesterName: requesterData[0].name,
-						requesterEmail: requesterData[0].email,
-						requesterCallsign: requesterData[0].callsign,
-						message: body?.message || null,
-						clubId,
-					}),
-					{
-						pretty: true,
-					},
-				),
-			});
-		} catch (error) {
-			console.error("Failed to send claim request email:", error);
-			throw apiError.internal("Failed to send email");
-		}
-
-		return response.json({
-			success: true,
-			message: "Claim request email sent to admins",
-		});
-	},
-	{
-		auth: true,
-		schema: {
-			tags: ["Admin"],
-			summary: "Send claim request email",
-			description: "Admin endpoint to send claim request email to admins",
-			params: z.object({
-				id: z.string(),
-			}),
-			body: z.object({
-				message: z.string().optional(),
-			}),
-			response: {
-				200: z.object({
-					success: z.boolean(),
-					message: z.string(),
-				}),
-				...responseSchema([400, 401, 403, 404, 500], z.object({ error: z.string() })),
 			},
 		},
 	},
