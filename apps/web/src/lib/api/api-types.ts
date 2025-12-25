@@ -9411,6 +9411,17 @@ export interface operations {
 					};
 				};
 			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
 		};
 	};
 	usersidthemePut: {

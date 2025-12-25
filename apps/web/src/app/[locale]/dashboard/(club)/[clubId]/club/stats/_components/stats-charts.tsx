@@ -2,7 +2,7 @@
 
 import { Maximize2 } from "lucide-react";
 import { useExtracted } from "next-intl";
-import { type ReactNode, useCallback, useState } from "react";
+import { type ReactElement, useCallback, useState } from "react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -13,7 +13,7 @@ type ChartData = {
 	// biome-ignore lint/suspicious/noExplicitAny: Dynamic chart that I don't want to type
 	data: any[];
 	// biome-ignore lint/suspicious/noExplicitAny: same
-	renderChart: (data: any[]) => ReactNode;
+	renderChart: (data: any[]) => ReactElement;
 };
 
 type StatsChartsProps = {
@@ -147,15 +147,17 @@ export function StatsCharts({ memberData, roleData, eventData, registrationData 
 		<>
 			<div className="grid gap-4 grid-cols-2">
 				{charts.map((chart, index) => (
-					<ChartContainer key={index} config={chartConfig} className="p-4 min-h-[300px] w-full relative">
+					<div key={index} className="p-4 min-h-[300px] w-full relative">
 						<div className="flex justify-between items-center mb-4">
 							<h3 className="text-lg font-semibold">{chart.title}</h3>
 							<Button variant="ghost" size="icon" onClick={() => setFullscreenChart(chart)}>
 								<Maximize2 className="h-4 w-4" />
 							</Button>
 						</div>
-						{chart.renderChart(chart.data)}
-					</ChartContainer>
+						<ChartContainer config={chartConfig} className="w-full h-full">
+							{chart.renderChart(chart.data)}
+						</ChartContainer>
+					</div>
 				))}
 			</div>
 
@@ -164,9 +166,11 @@ export function StatsCharts({ memberData, roleData, eventData, registrationData 
 					{fullscreenChart && (
 						<>
 							<DialogTitle>{fullscreenChart.title}</DialogTitle>
-							<ChartContainer config={chartConfig} className="p-4 w-full h-full">
-								{fullscreenChart.renderChart(fullscreenChart.data)}
-							</ChartContainer>
+							<div className="p-4 w-full h-full">
+								<ChartContainer config={chartConfig} className="w-full h-full">
+									{fullscreenChart.renderChart(fullscreenChart.data)}
+								</ChartContainer>
+							</div>
 						</>
 					)}
 				</DialogContent>

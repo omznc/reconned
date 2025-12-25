@@ -505,7 +505,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 										name: nameValue || "",
 										latitude: latitudeValue || null,
 										longitude: longitudeValue || null,
-										location: locationValue,
+										location: locationValue || null,
 										logo: null,
 									},
 								]}

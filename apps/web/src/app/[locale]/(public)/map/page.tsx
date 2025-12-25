@@ -15,17 +15,13 @@ export default async function MapPage() {
 		return <div>Error loading clubs</div>;
 	}
 
-	if (!data) {
-		return <div>Error loading clubs</div>;
-	}
-
 	const transformedClubs = data.clubs
 		.filter((club) => !club.isPrivate && club.latitude && club.longitude)
 		.map((club) => ({
 			...club,
-			location: club.location ?? undefined,
-			slug: club.slug ?? undefined,
-			logo: club.logo ?? undefined,
+			location: club.location ?? null,
+			slug: club.slug ?? null,
+			logo: club.logo ?? null,
 		}));
 
 	const t = await getExtracted();
@@ -73,7 +69,7 @@ export default async function MapPage() {
 	};
 
 	return (
-		<div className="h-[calc(100dvh-72px)] w-full rounded-lg overflow-hidden border">
+		<div className="h-dvh z-50 fixed top-0 left-0 w-full rounded-lg overflow-hidden border">
 			<JsonLdScript data={mapSchema} />
 			<ClubsMapWrapper clubs={transformedClubs} />
 		</div>

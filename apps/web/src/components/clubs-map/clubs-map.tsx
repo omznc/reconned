@@ -1,17 +1,56 @@
 "use client";
 
-import { MapContainer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Marker } from "@adamscybot/react-leaflet-component-marker";
+import { SiInstagram } from "@icons-pack/react-simple-icons";
 import L from "leaflet";
-import { MapPin, Search } from "lucide-react";
+import {
+	ArrowUpRightIcon,
+	Calendar,
+	Eye,
+	EyeOff,
+	Globe,
+	Handshake,
+	MailOpenIcon,
+	MapPin,
+	Phone,
+	Search,
+	X,
+} from "lucide-react";
 import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
+import { VerifiedClubIcon } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { Link } from "@/i18n/navigation";
+
+// Minimal club type for map marker
+interface MapClub {
+	id: string;
+	name: string;
+	latitude: number | null;
+	longitude: number | null;
+	location: string | null;
+	logo: string | null;
+	slug?: string | null;
+	verified?: boolean;
+	description?: string | null;
+	isPrivate?: boolean;
+	isAllied?: boolean;
+	dateFounded?: string | null;
+	website?: string | null;
+	instagramUsername?: string | null;
+	contactEmail?: string | null;
+	contactPhone?: string | null;
+}
+
 import { IMAGE_SIZES } from "@/lib/image-sizes";
+import { Label } from "../ui/label";
 
 // Custom TileLayer with LCP optimization
 class OptimizedTileLayer extends L.TileLayer {
@@ -46,7 +85,7 @@ const MARKER_SIZE = 32; // Base marker size in pixels
 const MIN_SPACING = 40; // Minimum spacing between markers in pixels
 
 interface ClusterGroup {
-	clubs: Club[];
+	clubs: MapClub[];
 	center: [number, number];
 }
 
@@ -152,7 +191,7 @@ function mergeOverlappingClusters(clusters: ClusterGroup[], map: L.Map, markerSi
 }
 
 // Group clubs that would overlap into clusters (aggressive clustering)
-function createClusters(clubs: Club[], map: L.Map, markerSize: number): ClusterGroup[] {
+function createClusters(clubs: MapClub[], map: L.Map, markerSize: number): ClusterGroup[] {
 	const clusters: ClusterGroup[] = [];
 	const processed = new Set<string>();
 	const zoom = map.getZoom();
@@ -162,7 +201,7 @@ function createClusters(clubs: Club[], map: L.Map, markerSize: number): ClusterG
 		if (!club.latitude || !club.longitude || processed.has(club.id)) continue;
 
 		const currentPos: [number, number] = [club.latitude, club.longitude];
-		const cluster: Club[] = [club];
+		const cluster: MapClub[] = [club];
 		processed.add(club.id);
 
 		// Find all clubs that would overlap with this one
@@ -249,7 +288,7 @@ function arrangeClusterInGrid(cluster: ClusterGroup, map: L.Map, markerSize: num
 }
 
 // Get clustered positions for all clubs
-function getClusteredPositions(clubs: Club[], map: L.Map, markerSize: number): Map<string, [number, number]> {
+function getClusteredPositions(clubs: MapClub[], map: L.Map, markerSize: number): Map<string, [number, number]> {
 	const positions = new Map<string, [number, number]>();
 	const clusters = createClusters(clubs, map, markerSize);
 
@@ -408,15 +447,7 @@ function createClubIcon(
 	);
 }
 
-interface Club {
-	id: string;
-	name: string;
-	logo?: string | null;
-	latitude: number | null;
-	longitude: number | null;
-	slug?: string | null;
-	location?: string;
-}
+// Club type imported from API
 
 interface MapFocusPoint {
 	lat: number;
@@ -425,7 +456,7 @@ interface MapFocusPoint {
 }
 
 interface ClubsMapProps {
-	clubs: Club[];
+	clubs: MapClub[];
 	onLocationSelect?: (lat: number, lng: number) => void;
 	interactive?: boolean;
 	focusPoint?: MapFocusPoint | null;
@@ -455,7 +486,7 @@ function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number
 	return null;
 }
 
-function MapController({ targetClub, focusPoint }: { targetClub: Club | null; focusPoint?: MapFocusPoint | null }) {
+function MapController({ targetClub, focusPoint }: { targetClub: MapClub | null; focusPoint?: MapFocusPoint | null }) {
 	const map = useMap();
 	const focusLat = focusPoint?.lat;
 	const focusLng = focusPoint?.lng;
@@ -495,10 +526,11 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 	const [clubId] = useQueryState("clubId");
 	const [hoveredClubId, setHoveredClubId] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [targetClub, setTargetClub] = useState<Club | null>(null);
+	const [targetClub, setTargetClub] = useState<MapClub | null>(null);
 	const [clusteredPositions, setClusteredPositions] = useState<Map<string, [number, number]>>(new Map());
 	const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 	const [clusteringEnabled, setClusteringEnabled] = useState(false); // Default to disabled
+	const [selectedClubForOverview, setSelectedClubForOverview] = useState<MapClub | null>(null);
 	const t = useExtracted();
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
@@ -565,10 +597,8 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 		<div className="relative h-full w-full">
 			{!interactive && (
 				<>
-					{/* Desktop: Top right controls */}
-					<div className="hidden md:flex absolute top-4 right-4 z-10 flex-col gap-3">
-						{/* Clustering Toggle */}
-						<div className="bg-white border dark:bg-[#0d0d0d] shadow-md p-3 w-80">
+					<div className="hidden md:flex absolute top-4 left-4 z-10">
+						<div className="bg-white dark:bg-[#0d0d0d] border rounded-md p-3 w-80 flex flex-col gap-4">
 							<label className="flex items-center gap-2 cursor-pointer">
 								<input
 									type="checkbox"
@@ -580,23 +610,22 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 									{t("Clustering")}
 								</span>
 							</label>
-						</div>
 
-						{/* Logo Size Slider */}
-						<div className="bg-white border dark:bg-[#0d0d0d] shadow-md p-3 w-80">
-							<Slider
-								value={[logoSize]}
-								onValueChange={([value]) => setLogoSize(value ?? 32)}
-								min={16}
-								max={64}
-								step={16}
-								className="w-full"
-							/>
-						</div>
+							<div className="flex flex-col gap-2">
+								<Label className="text-sm font-medium text-gray-900 dark:text-gray-300">
+									{t("Logo size")}
+								</Label>
+								<Slider
+									value={[logoSize]}
+									onValueChange={([value]) => setLogoSize(value ?? 32)}
+									min={16}
+									max={64}
+									step={16}
+									className="w-full"
+								/>
+							</div>
 
-						{/* Search and Club List */}
-						<div className="bg-white dark:bg-[#0d0d0d] border shadow-md p-3 w-80">
-							<div className="flex flex-col gap-3">
+							<div className="flex flex-col gap-3 border-t pt-3">
 								<div className="relative">
 									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
 									<Input
@@ -606,6 +635,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 										onKeyDown={(e) => {
 											if (e.key === "Enter" && filteredClubs.length > 0) {
 												setTargetClub(filteredClubs[0] || null);
+												setSelectedClubForOverview(filteredClubs[0] || null);
 												setSearchQuery("");
 											}
 										}}
@@ -613,48 +643,185 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 									/>
 								</div>
 
-								<div className="max-h-64 overflow-y-auto border-t pt-2">
-									{filteredClubs.map((club) => (
-										<button
-											key={club.id}
-											type="button"
-											className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded flex items-center gap-2 touch-manipulation"
-											onClick={() => {
-												setTargetClub(club);
-												setSearchQuery("");
-											}}
-										>
-											{club.logo ? (
-												<Image
-													src={club.logo}
-													alt=""
-													width={24}
-													height={24}
-													className="w-6 h-6 object-contain rounded flex-shrink-0"
-												/>
-											) : (
-												<MapPin className="w-6 h-6 text-red-500 flex-shrink-0" />
-											)}
-											<div className="flex-1 min-w-0">
-												<div className="font-medium truncate">{club.name}</div>
-												{club.location && (
-													<div className="text-sm text-gray-500 dark:text-gray-400 truncate">
-														{club.location}
+								{searchQuery && (
+									<div className="max-h-64 overflow-y-auto border-t pt-2">
+										{filteredClubs.length > 0 ? (
+											filteredClubs.map((club) => (
+												<button
+													key={club.id}
+													type="button"
+													className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded flex items-center gap-2 touch-manipulation"
+													onClick={() => {
+														setTargetClub(club);
+														setSelectedClubForOverview(club);
+														setSearchQuery("");
+													}}
+												>
+													{club.logo ? (
+														<Image
+															src={club.logo}
+															alt=""
+															width={24}
+															height={24}
+															className="w-6 h-6 object-contain rounded flex-shrink-0"
+														/>
+													) : (
+														<MapPin className="w-6 h-6 text-red-500 flex-shrink-0" />
+													)}
+													<div className="flex-1 min-w-0">
+														<div className="font-medium truncate">{club.name}</div>
+														{club.location && (
+															<div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+																{club.location}
+															</div>
+														)}
 													</div>
-												)}
+												</button>
+											))
+										) : (
+											<div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
+												{t("No clubs found")}
 											</div>
-										</button>
-									))}
-								</div>
+										)}
+									</div>
+								)}
 							</div>
 						</div>
 					</div>
 
-					{/* Mobile: Bottom search with results above */}
+					{selectedClubForOverview && (
+						<div className="hidden md:flex absolute top-4 right-4 z-10">
+							<div className="relative bg-white dark:bg-[#0d0d0d] border rounded-md p-4 w-80 flex flex-col gap-3">
+								<Button
+									variant="ghost"
+									size="sm"
+									className="absolute top-2 right-2 h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+									onClick={() => setSelectedClubForOverview(null)}
+								>
+									<X className="h-4 w-4" />
+								</Button>
+
+								<div className="flex items-start gap-3">
+									{selectedClubForOverview.logo ? (
+										<Image
+											src={selectedClubForOverview.logo}
+											alt=""
+											width={48}
+											height={48}
+											className="w-12 h-12 object-contain rounded flex-shrink-0"
+										/>
+									) : (
+										<MapPin className="w-12 h-12 text-red-500 flex-shrink-0" />
+									)}
+									<div className="flex-1 min-w-0">
+										<div className="flex items-center gap-2">
+											<h3 className="font-semibold text-lg truncate">
+												{selectedClubForOverview.name}
+											</h3>
+											{selectedClubForOverview.verified && <VerifiedClubIcon />}
+										</div>
+										{selectedClubForOverview.location && (
+											<p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+												{selectedClubForOverview.location}
+											</p>
+										)}
+									</div>
+								</div>
+
+								{selectedClubForOverview.description && (
+									<p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+										{selectedClubForOverview.description}
+									</p>
+								)}
+
+								<div className="flex flex-wrap gap-2">
+									<Badge variant="secondary" className="flex items-center gap-1">
+										{selectedClubForOverview.isPrivate ? (
+											<>
+												<EyeOff className="w-3 h-3" />
+												{t("Private")}
+											</>
+										) : (
+											<>
+												<Eye className="w-3 h-3" />
+												{t("Public")}
+											</>
+										)}
+									</Badge>
+									{selectedClubForOverview.isAllied && (
+										<Badge variant="secondary" className="flex items-center gap-1">
+											<Handshake className="w-3 h-3" />
+											{t("ASK FBIH")}
+										</Badge>
+									)}
+									{selectedClubForOverview.dateFounded && (
+										<Badge variant="secondary">
+											<Calendar />
+											{t("Founded")} {new Date(selectedClubForOverview.dateFounded).getFullYear()}
+										</Badge>
+									)}
+								</div>
+
+								<div className="grid grid-cols-2 gap-2">
+									{selectedClubForOverview.website && (
+										<Button variant="outline" size="sm" asChild>
+											<Link
+												href={selectedClubForOverview.website}
+												target="_blank"
+												rel="noopener noreferrer"
+											>
+												<Globe />
+												{t("Website")}
+											</Link>
+										</Button>
+									)}
+									{selectedClubForOverview.instagramUsername &&
+										!selectedClubForOverview.website?.includes("instagram.com") && (
+											<Button variant="outline" size="sm" asChild>
+												<Link
+													href={`https://instagram.com/${selectedClubForOverview.instagramUsername}`}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													<SiInstagram />
+													{t("Instagram")}
+												</Link>
+											</Button>
+										)}
+									{selectedClubForOverview.contactEmail && (
+										<Button variant="outline" size="sm" asChild>
+											<Link href={`mailto:${selectedClubForOverview.contactEmail}`}>
+												<MailOpenIcon />
+												{t("Email")}
+											</Link>
+										</Button>
+									)}
+									{selectedClubForOverview.contactPhone && (
+										<Button variant="outline" size="sm" asChild>
+											<Link href={`tel:${selectedClubForOverview.contactPhone}`}>
+												<Phone />
+												{t("Call")}
+											</Link>
+										</Button>
+									)}
+								</div>
+
+								<Button className="w-full" size="sm" asChild>
+									<Link
+										href={`/clubs/${selectedClubForOverview.slug || selectedClubForOverview.id}`}
+										target="_blank"
+									>
+										{t("View Club")}
+										<ArrowUpRightIcon />
+									</Link>
+								</Button>
+							</div>
+						</div>
+					)}
+
 					<div className="md:hidden absolute bottom-4 left-4 right-4 z-10 space-y-2">
-						{/* Search Results */}
 						{searchQuery && filteredClubs.length > 0 && (
-							<div className="bg-white dark:bg-[#0d0d0d] border shadow-md max-h-48 overflow-y-auto">
+							<div className="bg-white dark:bg-[#0d0d0d] border rounded-md max-h-48 overflow-y-auto">
 								{filteredClubs.slice(0, 5).map((club) => (
 									<button
 										key={club.id}
@@ -662,6 +829,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 										className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded flex items-center gap-2 touch-manipulation"
 										onClick={() => {
 											setTargetClub(club);
+											setSelectedClubForOverview(club);
 											setSearchQuery("");
 										}}
 									>
@@ -689,8 +857,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 							</div>
 						)}
 
-						{/* Search Input */}
-						<div className="bg-white dark:bg-[#0d0d0d] border shadow-md p-3">
+						<div className="bg-white dark:bg-[#0d0d0d] border rounded-md p-3">
 							<div className="relative">
 								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
 								<Input
@@ -700,6 +867,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 									onKeyDown={(e) => {
 										if (e.key === "Enter" && filteredClubs.length > 0) {
 											setTargetClub(filteredClubs[0] || null);
+											setSelectedClubForOverview(filteredClubs[0] || null);
 											setSearchQuery("");
 										}
 									}}
@@ -714,8 +882,12 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 			<MapContainer
 				center={defaultCenter}
 				zoom={defaultZoom}
-				scrollWheelZoom={false}
 				className="h-full w-full z-0"
+				zoomControl={false}
+				zoomSnap={0.1}
+				zoomDelta={0.25}
+				wheelPxPerZoomLevel={120}
+				wheelDebounceTime={40}
 			>
 				<OptimizedTileLayerComponent
 					url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -745,11 +917,13 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 								eventHandlers={{
 									mouseover: () => setHoveredClubId(club.id),
 									mouseout: () => setHoveredClubId(null),
-									click: () => window.open(`/clubs/${club.slug || club.id}`, "_blank"),
+									click: () => setSelectedClubForOverview(club),
 								}}
 							/>
 						) : null;
 					})}
+
+				<ZoomControl position="bottomright" />
 			</MapContainer>
 		</div>
 	);
