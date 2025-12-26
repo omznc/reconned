@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod";
-import { ruleSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/events/rules/_components/rules.schema";
+import * as z from "zod";
 import { Editor } from "@/components/editor/editor";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
@@ -40,6 +39,14 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 	const [editorContent, setEditorContent] = useState<string>(editingRule?.content || "");
 	const t = useExtracted();
 	const router = useRouter();
+
+	const ruleSchema = z.object({
+		id: z.string().optional(),
+		name: z.string().min(1, t("Name is required")).max(100, t("Name can have at most 100 characters")),
+		description: z.string().optional(),
+		content: z.string(),
+		clubId: z.string().min(1, t("Club ID is required")),
+	});
 
 	const form = useForm<z.infer<typeof ruleSchema>>({
 		resolver: zodResolver(ruleSchema),

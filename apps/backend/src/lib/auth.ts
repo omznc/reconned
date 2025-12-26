@@ -13,7 +13,6 @@ import { getEmailMessages } from "./email-messages";
 import { env } from "./env";
 import { sendEmail } from "./mail";
 import { posthog } from "./posthog";
-import { redis } from "./redis";
 
 interface UserWithLanguage {
 	id: string;
@@ -24,11 +23,11 @@ interface UserWithLanguage {
 	language?: "en" | "bs" | "sr";
 }
 
-type SecondaryStorage = {
-	get: (key: string) => Promise<unknown>;
-	set: (key: string, value: string, ttl?: number) => Promise<void>;
-	delete: (key: string) => Promise<void>;
-};
+// type SecondaryStorage = {
+// 	get: (key: string) => Promise<unknown>;
+// 	set: (key: string, value: string, ttl?: number) => Promise<void>;
+// 	delete: (key: string) => Promise<void>;
+// };
 
 const appUrl = new URL(env.FRONTEND_URL);
 
@@ -37,30 +36,30 @@ export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
-	secondaryStorage: {
-		get: async (key: string) => {
-			try {
-				return await redis.get(key);
-			} catch {
-				return null;
-			}
-		},
-		set: async (key: string, value: string, ttl?: number) => {
-			try {
-				if (ttl) await redis.set(key, value, "EX", ttl);
-				else await redis.set(key, value);
-			} catch {}
-		},
-		delete: async (key: string) => {
-			try {
-				await redis.del(key);
-			} catch {}
-		},
-	} satisfies SecondaryStorage,
+	// secondaryStorage: {
+	// 	get: async (key: string) => {
+	// 		try {
+	// 			return await redis.get(key);
+	// 		} catch {
+	// 			return null;
+	// 		}
+	// 	},
+	// 	set: async (key: string, value: string, ttl?: number) => {
+	// 		try {
+	// 			if (ttl) await redis.set(key, value, "EX", ttl);
+	// 			else await redis.set(key, value);
+	// 		} catch {}
+	// 	},
+	// 	delete: async (key: string) => {
+	// 		try {
+	// 			await redis.del(key);
+	// 		} catch {}
+	// 	},
+	// } satisfies SecondaryStorage,
 	experimental: { joins: true },
 	trustedOrigins: (() => {
 		const origins = env.CORS_ORIGINS.split(",").map((origin) => origin.trim());
-		const trustedOrigins = [...origins];
+		const trustedOrigins = [...origins, env.FRONTEND_URL];
 		for (const origin of origins) {
 			try {
 				const url = new URL(origin);

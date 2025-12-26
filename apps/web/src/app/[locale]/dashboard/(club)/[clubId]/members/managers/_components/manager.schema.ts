@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const promoteToManagerSchema = z.object({
 	memberId: z.string().min(1, "Member ID is required"),

@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { z } from "zod";
+import * as z from "zod";
 import { auth } from "./auth";
 import { addCORSHeaders } from "./cors";
 import type { Router } from "./router";

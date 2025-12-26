@@ -6,7 +6,7 @@ import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import * as z from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -33,10 +33,10 @@ export default function RegisterPage() {
 
 	// Register form schema with Zod
 	const registerSchema = z.object({
-		name: z.string().min(1, t("Your name is required")),
-		email: z.email(t("Invalid email")),
-		password: z.string().min(8, t("That password is too short")),
-		turnstileToken: z.string().min(1, t("Captcha error")),
+		name: z.string().min(1, t("Name is required")).max(50, t("Name must be shorter than 50 characters")),
+		email: z.string().email(t("Invalid email")).max(255, t("Email must be shorter than 255 characters")),
+		password: z.string().min(8, t("Password must be at least 8 characters")),
+		turnstileToken: z.string().min(1, t("Captcha verification required")),
 	});
 
 	type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -152,6 +152,7 @@ export default function RegisterPage() {
 											type="text"
 											placeholder={t("Name")}
 											autoComplete="name"
+											maxLength={50}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -173,6 +174,7 @@ export default function RegisterPage() {
 											placeholder="Email"
 											disabled={!!email}
 											autoComplete="email"
+											maxLength={255}
 										/>
 									</FormControl>
 									{!!email && (

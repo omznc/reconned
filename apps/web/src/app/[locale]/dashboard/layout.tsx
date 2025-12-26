@@ -16,14 +16,15 @@ interface DashboardLayoutProps {
 
 export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);
+
 	if (!user) {
-		return redirect({ href: "/login", locale });
+		return redirect({ href: "/login?redirectTo=/dashboard", locale });
 	}
 
 	const { data: clubsData, error: clubsError } = await apiServer.GET("/api/dashboard/clubs");
 
 	if (clubsError || !clubsData) {
-		return redirect({ href: "/login", locale });
+		return redirect({ href: "/login?redirectTo=/dashboard", locale });
 	}
 
 	const clubs = clubsData.clubs.map((club) => ({

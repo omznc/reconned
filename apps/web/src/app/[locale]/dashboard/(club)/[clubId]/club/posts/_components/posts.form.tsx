@@ -5,7 +5,7 @@ import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod";
+import * as z from "zod";
 import { Editor } from "@/components/editor/editor";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,6 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client.ts";
 import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
-import { postSchema } from "./posts.schema.ts";
 
 type ClubPost = ApiResponse<"/api/clubs/{id}/posts/{postId}", "get">;
 
@@ -33,6 +32,15 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 	const [editorContent, setEditorContent] = useState<string>(editingPost?.post.content || "");
 	const confirm = useConfirm();
 	const t = useExtracted();
+
+	const postSchema = z.object({
+		id: z.string().optional(),
+		title: z.string().min(1, t("Title is required")).max(200, t("Title is too long")),
+		content: z.string(),
+		images: z.array(z.string().url(t("Invalid URL"))).optional(),
+		isPublic: z.boolean(),
+		clubId: z.string(),
+	});
 
 	// Initialize file upload system for post images
 	const initialFiles: FileUploadItem[] = editingPost?.post.images

@@ -1,7 +1,7 @@
 import { randomUUIDv7 } from "bun";
 import { and, count, desc, eq, gte, ilike, lte, or, type SQL, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
+import * as z from "zod";
 import {
 	club,
 	clubMembership,
@@ -32,6 +32,7 @@ eventsRouter.get(
 		const sortBy = query?.sortBy || "dateStart";
 		const sortOrder = query?.sortOrder || "asc";
 		const isPrivateFilter = query?.isPrivate;
+		const filter = query?.filter;
 
 		const whereConditions = [];
 
@@ -41,6 +42,31 @@ eventsRouter.get(
 
 		const isAdmin = context.isAdmin;
 		const requestingUserId = context.user?.id;
+
+		// Handle "mine" filter - only show events from clubs the user is a member of
+		if (filter === "mine" && requestingUserId) {
+			const userClubMemberships = await db
+				.select({ clubId: clubMembership.clubId })
+				.from(clubMembership)
+				.where(eq(clubMembership.userId, requestingUserId));
+
+			const userClubIds = userClubMemberships.map((m) => m.clubId);
+
+			if (userClubIds.length === 0) {
+				// User is not a member of any clubs, return empty result
+				return response.json({
+					events: [],
+					pagination: {
+						page,
+						perPage,
+						total: 0,
+						totalPages: 0,
+					},
+				});
+			}
+
+			whereConditions.push(sql`${event.clubId} = ANY(${userClubIds})`);
+		}
 
 		if (isPrivateFilter !== null && isPrivateFilter !== undefined) {
 			whereConditions.push(eq(event.isPrivate, isPrivateFilter === "true"));
@@ -115,10 +141,11 @@ eventsRouter.get(
 			summary: "List events",
 			description: "List events with pagination, search, sorting, and privacy filtering",
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 				sortBy: z.enum(["name", "dateStart"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
 				isPrivate: z.string().optional(),
+				filter: z.enum(["mine"]).optional(),
 			}),
 			response: {
 				200: z.object({
@@ -564,16 +591,16 @@ eventsRouter.post(
 			description: "Create a new event",
 			body: z.object({
 				clubId: z.string(),
-				name: z.string().min(1),
+				name: z.string().min(1).max(100),
 				description: z.string().min(1),
 				costPerPerson: z.number().gte(0).lte(300),
-				location: z.string().min(1),
+				location: z.string().min(1).max(100),
 				googleMapsLink: z.string().optional(),
 				dateStart: z.string(),
 				dateEnd: z.string(),
 				dateRegistrationsOpen: z.string(),
 				dateRegistrationsClose: z.string(),
-				slug: z.string().optional(),
+				slug: z.string().max(50).optional(),
 				image: z.string().optional(),
 				isPrivate: z.boolean().optional(),
 				allowFreelancers: z.boolean().optional(),
@@ -723,16 +750,16 @@ eventsRouter.put(
 			}),
 			body: z.object({
 				clubId: z.string(),
-				name: z.string().min(1),
+				name: z.string().min(1).max(100),
 				description: z.string().min(1),
 				costPerPerson: z.number().gte(0).lte(300),
-				location: z.string().min(1),
+				location: z.string().min(1).max(100),
 				googleMapsLink: z.string().optional(),
 				dateStart: z.string(),
 				dateEnd: z.string(),
 				dateRegistrationsOpen: z.string(),
 				dateRegistrationsClose: z.string(),
-				slug: z.string().optional(),
+				slug: z.string().max(50).optional(),
 				image: z.string().optional(),
 				isPrivate: z.boolean().optional(),
 				allowFreelancers: z.boolean().optional(),

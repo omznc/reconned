@@ -6,8 +6,7 @@ import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod";
-import { userInfoShema } from "@/app/[locale]/dashboard/(user)/user/settings/_components/user-info.schema";
+import * as z from "zod";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
 import { validateSlug } from "@/components/slug/validate-slug";
@@ -35,6 +34,25 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [cropFile, setCropFile] = useState<File | null>(null);
 	const t = useExtracted();
 	const router = useRouter();
+
+	const userInfoSchema = z.object({
+		name: z
+			.string()
+			.min(1, { message: t("Name is required") })
+			.max(50, { message: t("Name must be shorter than 50 characters") }),
+		isPrivate: z.boolean(),
+		isPrivateEmail: z.boolean(),
+		isPrivatePhone: z.boolean(),
+		isPrivateStats: z.boolean(),
+		image: z.string().optional(),
+		headerImage: z.string().optional(),
+		bio: z.string().max(200, { message: t("Bio must be shorter than 200 characters") }),
+		location: z.string().optional(),
+		website: z.string().optional(),
+		phone: z.string().optional(),
+		callsign: z.string().optional(),
+		slug: z.string().optional(),
+	});
 
 	// Initialize file upload system for avatar
 	const initialFiles: FileUploadItem[] = props.user?.image
@@ -136,8 +154,8 @@ export function UserInfoForm(props: UserInfoFormProps) {
 		initialFiles: initialHeaderFiles,
 	});
 
-	const form = useForm<z.infer<typeof userInfoShema>>({
-		resolver: zodResolver(userInfoShema),
+	const form = useForm<z.infer<typeof userInfoSchema>>({
+		resolver: zodResolver(userInfoSchema),
 		defaultValues: {
 			name: props.user?.name || "",
 			bio: props.user?.bio || "",
@@ -173,7 +191,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 		setCropFile(null);
 	};
 
-	async function onSubmit(values: z.infer<typeof userInfoShema>) {
+	async function onSubmit(values: z.infer<typeof userInfoSchema>) {
 		if (!props.user?.id) {
 			toast.error(t("User not found"));
 			return;
@@ -340,7 +358,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormItem>
 								<FormLabel>{t("Your name")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("Your name")} {...field} />
+									<Input placeholder={t("Your name")} maxLength={50} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -392,7 +410,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormItem>
 								<FormLabel>{t("Callsign")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("My callsign")} {...field} />
+									<Input placeholder={t("My callsign")} maxLength={50} {...field} />
 								</FormControl>
 								<FormDescription>{t("Callsign you use on the field")}</FormDescription>
 								<FormMessage />
@@ -407,7 +425,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormItem>
 								<FormLabel>{t("Location")}</FormLabel>
 								<FormControl>
-									<Input placeholder={t("Sarajevo, BiH")} {...field} />
+									<Input placeholder={t("Sarajevo, BiH")} maxLength={100} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

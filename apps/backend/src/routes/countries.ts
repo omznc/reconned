@@ -1,5 +1,5 @@
 import { asc, eq } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 import { country } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { Router } from "../lib/router";

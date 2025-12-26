@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { and, count, desc, eq, getTableColumns, gte, ilike, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
+import * as z from "zod";
 import {
 	account,
 	club,
@@ -398,7 +398,7 @@ usersRouter.get(
 			summary: "List users",
 			description: "Returns a paginated list of users with optional search and sorting",
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 				sort: z.enum(["admin"]).optional(),
 			}),
 			response: {
@@ -607,49 +607,20 @@ usersRouter.put(
 			throw apiError.unauthorized("Unauthorized");
 		}
 
-		const updateData: Record<string, unknown> = {
-			updatedAt: new Date().toISOString(),
-		};
+		// Filter out undefined values and handle empty strings
+		const updateData = Object.fromEntries(
+			Object.entries(body)
+				.filter(([_, value]) => value !== undefined)
+				.map(([key, value]) => [
+					key,
+					(key === "website" || key === "slug" || key === "image" || key === "headerImage") && value === ""
+						? null
+						: value,
+				]),
+		);
 
-		if (body.name !== undefined) {
-			updateData.name = body.name;
-		}
-		if (body.bio !== undefined) {
-			updateData.bio = body.bio;
-		}
-		if (body.website !== undefined) {
-			updateData.website = body.website;
-		}
-		if (body.location !== undefined) {
-			updateData.location = body.location;
-		}
-		if (body.phone !== undefined) {
-			updateData.phone = body.phone;
-		}
-		if (body.slug !== undefined) {
-			updateData.slug = body.slug || null;
-		}
-		if (body.callsign !== undefined) {
-			updateData.callsign = body.callsign;
-		}
-		if (body.isPrivate !== undefined) {
-			updateData.isPrivate = body.isPrivate;
-		}
-		if (body.isPrivateEmail !== undefined) {
-			updateData.isPrivateEmail = body.isPrivateEmail;
-		}
-		if (body.isPrivatePhone !== undefined) {
-			updateData.isPrivatePhone = body.isPrivatePhone;
-		}
-		if (body.isPrivateStats !== undefined) {
-			updateData.isPrivateStats = body.isPrivateStats;
-		}
-		if (body.image !== undefined) {
-			updateData.image = body.image || null;
-		}
-		if (body.headerImage !== undefined) {
-			updateData.headerImage = body.headerImage || null;
-		}
+		// Always update timestamp
+		updateData.updatedAt = new Date().toISOString();
 
 		await db.update(user).set(updateData).where(eq(user.id, userId));
 
@@ -690,11 +661,11 @@ usersRouter.put(
 			body: z.object({
 				name: z.string().min(1).max(50).optional(),
 				bio: z.string().max(200).optional(),
-				website: z.string().url().optional(),
-				location: z.string().optional(),
-				phone: z.string().optional(),
-				slug: z.string().optional(),
-				callsign: z.string().optional(),
+				website: z.string().url().or(z.literal("")).optional(),
+				location: z.string().max(100).optional(),
+				phone: z.string().max(20).optional(),
+				slug: z.string().max(50).optional(),
+				callsign: z.string().max(50).optional(),
 				isPrivate: z.boolean().optional(),
 				isPrivateEmail: z.boolean().optional(),
 				isPrivatePhone: z.boolean().optional(),

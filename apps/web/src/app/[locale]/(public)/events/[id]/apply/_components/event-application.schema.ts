@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const eventApplicationSchema = z.object({
 	eventId: z.string().min(1, { message: "ID susreta je obavezan" }),

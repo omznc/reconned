@@ -7,8 +7,7 @@ import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { PurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import { purchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import * as z from "zod";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +31,16 @@ export function AddPurchaseModal() {
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const t = useExtracted();
+
+	const purchaseFormSchema = z.object({
+		clubId: z.string(),
+		title: z.string().min(1, t("Title is required")),
+		description: z.string().optional(),
+		amount: z.number().min(0.01, t("Amount must be greater than 0")),
+		receiptUrls: z.array(z.string()).max(3, t("Maximum 3 receipts per item")).optional(),
+	});
+
+	type PurchaseFormValues = z.infer<typeof purchaseFormSchema>;
 
 	const form = useForm<PurchaseFormValues>({
 		resolver: zodResolver(purchaseFormSchema),

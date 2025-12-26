@@ -7,8 +7,7 @@ import { AlertCircle, ChevronsUpDown, CirclePlus, Mail, Plus, UserIcon, Users, X
 import { useExtracted } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import type { EventApplicationSchemaType } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
-import { eventApplicationSchema } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.schema";
+import * as z from "zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,6 +51,37 @@ export function EventApplicationForm({ existingApplication, event, user, current
 	const [step, setStep] = useState(1);
 	const router = useRouter();
 	const t = useExtracted();
+
+	const eventApplicationSchema = z.object({
+		eventId: z.string().min(1, { message: t("Event ID is required") }),
+		type: z.enum(["solo", "team"], {
+			message: t("Application type is required"),
+		}),
+		invitedUsers: z.array(
+			z.object({
+				id: z.string().optional(),
+				email: z.string().email().optional(),
+				name: z.string().min(1, t("Name is required")),
+				callsign: z.string().nullable().optional(),
+				image: z.string().nullable().optional(),
+			}),
+		),
+		invitedUsersNotOnApp: z.array(
+			z.object({
+				id: z.string().optional(),
+				email: z.string().email(t("Invalid email")),
+				name: z.string().min(1, t("Name is required")),
+			}),
+		),
+		paymentMethod: z.enum(["cash", "bank"], {
+			message: t("Payment method is required"),
+		}),
+		rulesAccepted: z.boolean().refine((val) => val === true, {
+			message: t("You must accept the event rules"),
+		}),
+	});
+
+	type EventApplicationSchemaType = z.infer<typeof eventApplicationSchema>;
 
 	// Initialize form with existing application data if it exists
 	const form = useForm<EventApplicationSchemaType>({

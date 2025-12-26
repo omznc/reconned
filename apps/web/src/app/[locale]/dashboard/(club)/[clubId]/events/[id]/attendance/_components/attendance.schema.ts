@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const toggleAttendanceSchema = z.object({
 	registrationId: z.string(),

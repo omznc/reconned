@@ -52,6 +52,7 @@ export function Search() {
 						"dark:bg-white bg-black placeholder:text-white dark:placeholder:text-black text-white dark:text-black pl-10 pr-10",
 					)}
 					placeholder={t("Something...")}
+					maxLength={100}
 				/>
 				<Popover open={open} onOpenChange={setOpen}>
 					<PopoverTrigger asChild>

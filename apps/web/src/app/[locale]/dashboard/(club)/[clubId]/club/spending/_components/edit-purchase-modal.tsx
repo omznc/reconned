@@ -6,8 +6,7 @@ import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { EditPurchaseFormValues } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
-import { editPurchaseFormSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/spending.schema";
+import * as z from "zod";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import {
 	Credenza,
@@ -35,6 +34,20 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
 	const t = useExtracted();
+
+	const purchaseFormSchema = z.object({
+		clubId: z.string(),
+		title: z.string().min(1, t("Title is required")),
+		description: z.string().optional(),
+		amount: z.number().min(0.01, t("Amount must be greater than 0")),
+		receiptUrls: z.array(z.string()).max(3, t("Maximum 3 receipts per item")).optional(),
+	});
+
+	const editPurchaseFormSchema = purchaseFormSchema.extend({
+		id: z.string(),
+	});
+
+	type EditPurchaseFormValues = z.infer<typeof editPurchaseFormSchema>;
 
 	// Initialize file upload system for receipts
 	const initialFiles: FileUploadItem[] = purchase.receiptUrls

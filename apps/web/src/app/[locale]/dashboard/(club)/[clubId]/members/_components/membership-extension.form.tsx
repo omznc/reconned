@@ -10,10 +10,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {
-	type MembershipExtensionFormValues,
-	membershipExtensionSchema,
-} from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.schema";
+import * as z from "zod";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,6 +52,16 @@ export function MembershipExtensionForm({
 	const t = useExtracted();
 	const locale = useLocale();
 	const router = useRouter();
+
+	const membershipExtensionSchema = z.object({
+		clubId: z.string().min(1),
+		memberId: z.string().min(1),
+		duration: z.enum(["1", "3", "6", "12"], {
+			error: t("Please select a duration"),
+		}),
+	});
+
+	type MembershipExtensionFormValues = z.infer<typeof membershipExtensionSchema>;
 	const [isLocalOpen, setIsLocalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 

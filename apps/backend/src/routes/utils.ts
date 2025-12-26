@@ -1,6 +1,6 @@
 import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
+import * as z from "zod";
 import { club, clubMembership, event, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";

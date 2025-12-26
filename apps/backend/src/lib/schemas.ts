@@ -1,5 +1,5 @@
 import { createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
+import * as z from "zod";
 import { clubRule, event } from "../drizzle/schema";
 
 // Json type for JSONB fields - use unknown for simplicity since jsonb can be anything
