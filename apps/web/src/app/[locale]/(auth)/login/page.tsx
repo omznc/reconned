@@ -10,7 +10,7 @@ import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import * as z from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { BadgeSoon } from "@/components/badge-soon";
@@ -146,6 +146,7 @@ export default function LoginPage() {
 											type="email"
 											placeholder="mail@example.com"
 											autoComplete="email webauthn"
+											maxLength={255}
 											suppressHydrationWarning
 										/>
 									</FormControl>

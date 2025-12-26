@@ -15,7 +15,7 @@ export default async function DashboardPage() {
 	const t = await getExtracted();
 
 	if (!user) {
-		return redirect({ href: "/login", locale });
+		return redirect({ href: "/login?redirectTo=/dashboard", locale });
 	}
 
 	const { data: statsData, error: statsError } = await apiServer.GET("/api/users/{id}/stats", {

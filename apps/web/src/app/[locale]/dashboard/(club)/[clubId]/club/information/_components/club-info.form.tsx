@@ -18,9 +18,8 @@ import { useExtracted, useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod";
+import * as z from "zod";
 import { BannerCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/banner-crop-dialog";
-import { clubInfoSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/club-info.schema";
 import { useClubs } from "@/components/clubs-provider";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
@@ -58,40 +57,6 @@ interface ClubInfoFormProps {
 	instagramConnectionUrl?: string;
 }
 
-async function saveClubInformation(values: z.infer<typeof clubInfoSchema>, clubId?: string) {
-	const { clubId: _clubId, dateFounded, ...rest } = values;
-
-	const body = {
-		...rest,
-		...(dateFounded ? { dateFounded: dateFounded.toISOString() } : {}),
-	};
-
-	if (clubId) {
-		const { data, error } = await apiClient.PUT("/api/clubs/{id}", {
-			params: {
-				path: { id: clubId },
-			},
-			body,
-		});
-
-		if (error || !data?.success) {
-			throw new Error(error?.error || "Failed to update club");
-		}
-
-		return { id: clubId };
-	}
-
-	const { data, error } = await apiClient.POST("/api/clubs", {
-		body,
-	});
-
-	if (error || !data?.id) {
-		throw new Error(error?.error || "Failed to create club");
-	}
-
-	return { id: data.id };
-}
-
 async function deleteClub(_: unknown, clubId: string) {
 	const { error } = await apiClient.DELETE("/api/clubs/{id}", {
 		params: {
@@ -118,9 +83,91 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const confirm = useConfirm();
 	const t = useExtracted();
 	const locale = useLocale();
+
+	const clubInfoSchema = z.object({
+		name: z
+			.string()
+			.min(1, {
+				message: t("Club name is required"),
+			})
+			.max(50, {
+				message: t("Club name must be shorter than 50 characters"),
+			}),
+		countryId: z.number({
+			error: t("Country is required"),
+		}),
+		location: z
+			.string()
+			.min(1, {
+				message: t("Club location is required"),
+			})
+			.max(50, {
+				message: t("Club location must be shorter than 50 characters"),
+			}),
+		latitude: z.number().optional(),
+		longitude: z.number().optional(),
+		description: z.string().max(5000, {
+			message: t("Club description must be shorter than 5000 characters"),
+		}),
+		slug: z.string().optional(),
+		dateFounded: z.date().refine(
+			(date) => {
+				const today = new Date();
+				today.setHours(23, 59, 59, 999); // End of today
+				return date <= today;
+			},
+			{
+				message: t("Date founded cannot be in the future"),
+			},
+		),
+		isAllied: z.boolean().optional(),
+		isPrivate: z.boolean().optional(),
+		isPrivateStats: z.boolean().optional(),
+		logo: z.string().optional(),
+		headerImage: z.string().optional(),
+		contactPhone: z.string().optional(),
+		contactEmail: z.string().optional(),
+		clubId: z.string().optional(),
+		website: z.string().optional(),
+		instagramUsername: z.string().optional(),
+	});
 	const clubIdRef = useRef<string | null>(props.club?.id || null);
 	const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const geocodeAbortRef = useRef<AbortController | null>(null);
+
+	async function saveClubInformation(values: z.infer<typeof clubInfoSchema>, clubId?: string) {
+		const { clubId: _clubId, dateFounded, ...rest } = values;
+
+		const body = {
+			...rest,
+			...(dateFounded ? { dateFounded: dateFounded.toISOString() } : {}),
+		};
+
+		if (clubId) {
+			const { data, error } = await apiClient.PUT("/api/clubs/{id}", {
+				params: {
+					path: { id: clubId },
+				},
+				body,
+			});
+
+			if (error || !data?.success) {
+				throw new Error(error?.error || "Failed to update club");
+			}
+
+			return { id: clubId };
+		}
+
+		const { data, error } = await apiClient.POST("/api/clubs", {
+			body,
+		});
+
+		if (error || !data?.id) {
+			throw new Error(error?.error || "Failed to create club");
+		}
+
+		return { id: data.id };
+	}
 
 	// Initialize file upload system for logo
 	const initialFiles: FileUploadItem[] = props.club?.logo
@@ -666,10 +713,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									{t("Club name")}* ({nameValue?.length || 0}/{clubInfoSchema.shape.name.maxLength})
+									{t("Club name")}* ({nameValue?.length || 0}/50)
 								</FormLabel>
 								<FormControl>
-									<Input placeholder="Veis" type="text" {...field} />
+									<Input placeholder="Veis" type="text" maxLength={50} {...field} />
 								</FormControl>
 								<FormDescription>
 									{t(
@@ -792,7 +839,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<FormItem>
 								<FormLabel>{t("City")}*</FormLabel>
 								<FormControl>
-									<Input placeholder="Livno" type="text" {...field} />
+									<Input placeholder="Livno" type="text" maxLength={50} {...field} />
 								</FormControl>
 								<FormDescription>{t("The city where the club is located")}</FormDescription>
 								<FormMessage />
@@ -888,8 +935,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									{t("Description")}* ({descriptionValue?.length || 0}/
-									{clubInfoSchema.shape.description.maxLength})
+									{t("Description")}* ({descriptionValue?.length || 0}/ 5000)
 								</FormLabel>
 								<FormControl>
 									<Textarea
@@ -1025,7 +1071,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<FormItem>
 								<FormLabel>E-mail</FormLabel>
 								<FormControl>
-									<Input placeholder="airsoft@club.com" type="email" {...field} />
+									<Input placeholder="airsoft@club.com" type="email" maxLength={255} {...field} />
 								</FormControl>
 								<FormDescription>
 									{t("Email address of the club, publicly displayed on the profile.")}

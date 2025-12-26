@@ -323,6 +323,7 @@ export function GenericDataTable<T>({
 						value={inputValue}
 						onChange={handleSearchChange}
 						className="pl-9 pr-9 h-10"
+						maxLength={100}
 					/>
 					{inputValue && (
 						<Button

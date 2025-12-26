@@ -1,5 +1,5 @@
 import { and, count, desc, eq, ilike, or } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 import { clubMembership, user } from "../../drizzle/schema";
 import { createClubDataLoader } from "../../lib/dataloader";
 import { db } from "../../lib/db";

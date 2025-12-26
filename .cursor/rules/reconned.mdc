@@ -51,6 +51,9 @@ on the backend unless incredibly important to be run on the nextjs server.
 ## Authentication
 - Uses [better-auth](package.json) for authentication management
 
+## Zod
+always do import * as z from "zod";, never import { z } from "zod"
+
 ## Other
 - Always use `date-fns` for date operations
 - Always use `react-hook-form` and `zod` for forms

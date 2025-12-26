@@ -1,7 +1,6 @@
 import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
 import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
 import { getExtracted, getLocale } from "next-intl/server";
-import { BadgeNew } from "@/components/badge-new";
 import { BadgeSoon } from "@/components/badge-soon";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
 import { Link } from "@/i18n/navigation";
@@ -46,7 +45,7 @@ export async function Footer() {
 							<li>
 								<Link href="/about" className="flex items-center hover:text-red-500 transition-all">
 									<ShieldQuestion className="w-5 h-5 mr-2" />
-									{t("About us")} 👀
+									{t("About us")}
 								</Link>
 							</li>
 							<li>
@@ -122,7 +121,6 @@ export async function Footer() {
 								>
 									<SiGithub className="size-4" />
 									<span>Github</span>
-									<BadgeNew className="-mb-0.5" />
 								</Link>
 							</li>
 							<li>
@@ -153,7 +151,6 @@ export async function Footer() {
 							</li>
 							<li>
 								<Link href="/changelog">{t("Changelog")}</Link>
-								<BadgeNew className="ml-2" />
 							</li>
 						</ul>
 					</div>

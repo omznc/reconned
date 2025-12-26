@@ -9082,8 +9082,7 @@ export interface operations {
 				"application/json": {
 					name?: string;
 					bio?: string;
-					/** Format: uri */
-					website?: string;
+					website?: string | "";
 					location?: string;
 					phone?: string;
 					slug?: string;
@@ -10560,6 +10559,7 @@ export interface operations {
 					longitude?: number;
 					description?: string;
 					slug?: string;
+					/** Format: date-time */
 					dateFounded?: string;
 					isAllied?: boolean;
 					isPrivate?: boolean;
@@ -10568,7 +10568,7 @@ export interface operations {
 					headerImage?: string;
 					contactPhone?: string;
 					contactEmail?: string;
-					website?: string;
+					website?: string | "";
 					instagramUsername?: string;
 				};
 			};
@@ -12621,6 +12621,7 @@ export interface operations {
 					longitude?: number;
 					description?: string;
 					slug?: string;
+					/** Format: date-time */
 					dateFounded?: string;
 					isAllied?: boolean;
 					isPrivate?: boolean;
@@ -12629,7 +12630,7 @@ export interface operations {
 					headerImage?: string | null;
 					contactPhone?: string;
 					contactEmail?: string;
-					website?: string;
+					website?: string | "";
 					instagramUsername?: string;
 				};
 			};
@@ -13990,6 +13991,7 @@ export interface operations {
 				sortBy?: "name" | "dateStart";
 				sortOrder?: "asc" | "desc";
 				isPrivate?: string;
+				filter?: "mine";
 			};
 			header?: never;
 			path?: never;
@@ -16419,8 +16421,7 @@ export interface operations {
 					contactPhone?: string;
 					/** Format: email */
 					contactEmail?: string;
-					/** Format: uri */
-					website?: string;
+					website?: string | "";
 					instagramUsername?: string;
 				};
 			};
@@ -16647,8 +16648,7 @@ export interface operations {
 					contactPhone?: string;
 					/** Format: email */
 					contactEmail?: string;
-					/** Format: uri */
-					website?: string;
+					website?: string | "";
 					instagramUsername?: string;
 				};
 			};

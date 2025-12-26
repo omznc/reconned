@@ -1,6 +1,6 @@
 import { randomUUIDv7 } from "bun";
 import { and, count, desc, eq, ilike, inArray, not, or } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 import { club, clubMembership } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
 import { db } from "../../lib/db";
@@ -279,7 +279,7 @@ adminUnclaimedClubsRouter.post(
 				isPrivateStats: z.boolean().optional(),
 				contactPhone: z.string().optional(),
 				contactEmail: z.string().email().optional(),
-				website: z.string().url().optional(),
+				website: z.string().url().or(z.literal("")).optional(),
 				instagramUsername: z.string().optional(),
 			}),
 			response: {
@@ -381,7 +381,7 @@ adminUnclaimedClubsRouter.put(
 				headerImage: z.string().optional(),
 				contactPhone: z.string().optional(),
 				contactEmail: z.string().email().optional(),
-				website: z.string().url().optional(),
+				website: z.string().url().or(z.literal("")).optional(),
 				instagramUsername: z.string().optional(),
 			}),
 			response: {

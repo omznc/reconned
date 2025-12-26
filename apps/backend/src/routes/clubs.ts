@@ -2,7 +2,7 @@ import { render } from "@react-email/components";
 import { randomUUIDv7 } from "bun";
 import { and, count, desc, eq, gt, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
+import * as z from "zod";
 import {
 	club,
 	clubAuditLog,
@@ -63,7 +63,7 @@ const createRuleBodySchema = z.object({
 const createPostBodySchema = z.object({
 	title: z.string().min(1).max(200),
 	content: z.string(),
-	images: z.array(z.string().url()).optional(),
+	images: z.array(z.url()).optional(),
 	isPublic: z.boolean(),
 });
 
@@ -71,14 +71,14 @@ const createPurchaseBodySchema = z.object({
 	title: z.string().min(1),
 	description: z.string().optional(),
 	amount: z.number().min(0.01),
-	receiptUrls: z.array(z.string().url()).max(3).optional(),
+	receiptUrls: z.array(z.url()).max(3).optional(),
 });
 
 const updatePurchaseBodySchema = z.object({
 	title: z.string().min(1).optional(),
 	description: z.string().optional(),
 	amount: z.number().min(0.01).optional(),
-	receiptUrls: z.array(z.string().url()).max(3).optional(),
+	receiptUrls: z.array(z.url()).max(3).optional(),
 });
 
 const createClubBodySchema = z.object({
@@ -88,17 +88,17 @@ const createClubBodySchema = z.object({
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
 	description: z.string().max(5000).optional(),
-	slug: z.string().optional(),
-	dateFounded: z.string().optional(),
+	slug: z.string().max(50).optional(),
+	dateFounded: z.string().datetime().optional(),
 	isAllied: z.boolean().optional(),
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().optional(),
 	headerImage: z.string().optional(),
-	contactPhone: z.string().optional(),
-	contactEmail: z.string().optional(),
-	website: z.string().optional(),
-	instagramUsername: z.string().optional(),
+	contactPhone: z.string().max(20).optional(),
+	contactEmail: z.string().max(255).optional(),
+	website: z.string().url().or(z.literal("")).optional(),
+	instagramUsername: z.string().max(30).optional(),
 });
 
 const updateClubBodySchema = z.object({
@@ -108,17 +108,17 @@ const updateClubBodySchema = z.object({
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
 	description: z.string().max(5000).optional(),
-	slug: z.string().optional(),
-	dateFounded: z.string().optional(),
+	slug: z.string().max(50).optional(),
+	dateFounded: z.string().datetime().optional(),
 	isAllied: z.boolean().optional(),
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().nullable().optional(),
 	headerImage: z.string().nullable().optional(),
-	contactPhone: z.string().optional(),
-	contactEmail: z.string().optional(),
-	website: z.string().optional(),
-	instagramUsername: z.string().optional(),
+	contactPhone: z.string().max(20).optional(),
+	contactEmail: z.string().max(255).optional(),
+	website: z.string().url().or(z.literal("")).optional(),
+	instagramUsername: z.string().max(30).optional(),
 });
 
 const clubLogoUploadBodySchema = z.object({
@@ -625,7 +625,7 @@ clubsRouter.get(
 			summary: "List clubs",
 			description: "List clubs with pagination, search, and sorting",
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 				sortBy: z.enum(["name", "location", "createdAt"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
 			}),
@@ -2317,7 +2317,7 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 				status: z.string().optional(),
 			}),
 			response: {
@@ -2854,6 +2854,16 @@ clubsRouter.post(
 			}
 		}
 
+		if (body.dateFounded) {
+			const foundedDate = new Date(body.dateFounded);
+			const today = new Date();
+			today.setHours(23, 59, 59, 999); // End of today
+
+			if (foundedDate > today) {
+				throw apiError.validation("Date founded cannot be in the future");
+			}
+		}
+
 		const clubId = randomUUIDv7();
 		const now = new Date().toISOString();
 
@@ -2958,27 +2968,31 @@ clubsRouter.put(
 			}
 		}
 
-		const updateData: Record<string, unknown> = {
-			updatedAt: new Date().toISOString(),
-		};
+		if (body.dateFounded) {
+			const foundedDate = new Date(body.dateFounded);
+			const today = new Date();
+			today.setHours(23, 59, 59, 999); // End of today
 
-		if (body.name !== undefined) updateData.name = body.name;
-		if (body.countryId !== undefined) updateData.countryId = body.countryId;
-		if (body.location !== undefined) updateData.location = body.location;
-		if (body.latitude !== undefined) updateData.latitude = body.latitude;
-		if (body.longitude !== undefined) updateData.longitude = body.longitude;
-		if (body.description !== undefined) updateData.description = body.description;
-		if (body.slug !== undefined) updateData.slug = body.slug;
-		if (body.dateFounded !== undefined) updateData.dateFounded = body.dateFounded;
-		if (body.isAllied !== undefined) updateData.isAllied = body.isAllied;
-		if (body.isPrivate !== undefined) updateData.isPrivate = body.isPrivate;
-		if (body.isPrivateStats !== undefined) updateData.isPrivateStats = body.isPrivateStats;
-		if (body.logo !== undefined) updateData.logo = body.logo;
-		if (body.headerImage !== undefined) updateData.headerImage = body.headerImage;
-		if (body.contactPhone !== undefined) updateData.contactPhone = body.contactPhone;
-		if (body.contactEmail !== undefined) updateData.contactEmail = body.contactEmail;
-		if (body.website !== undefined) updateData.website = body.website;
-		if (body.instagramUsername !== undefined) updateData.instagramUsername = body.instagramUsername;
+			if (foundedDate > today) {
+				throw apiError.validation("Date founded cannot be in the future");
+			}
+		}
+
+		// Filter out undefined values and handle empty strings
+		const updateData = Object.fromEntries(
+			Object.entries(body)
+				.filter(([_, value]) => value !== undefined)
+				.map(([key, value]) => [
+					key,
+					// Convert empty strings to null for certain fields
+					(key === "slug" || key === "logo" || key === "headerImage" || key === "website") && value === ""
+						? null
+						: value,
+				]),
+		);
+
+		// Always update timestamp
+		updateData.updatedAt = new Date().toISOString();
 
 		const updatedClub = await db.update(club).set(updateData).where(eq(club.id, clubId)).returning();
 
@@ -3528,7 +3542,7 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 			}),
 			response: {
 				200: z.object({
@@ -3818,7 +3832,7 @@ clubsRouter.get(
 				clubId: z.string(),
 			}),
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 				sortBy: z.enum(["name", "dateStart"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
 			}),
@@ -3885,7 +3899,7 @@ clubsRouter.get(
 				clubId: z.string(),
 			}),
 			query: z.object({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 			}),
 			response: {
 				200: z.object({
@@ -4150,7 +4164,7 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 				actionType: z.string().optional(),
 			}),
 			response: {
@@ -5131,7 +5145,7 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
+				search: z.string().max(100).optional(),
 				role: z.enum(["all", "USER", "MANAGER", "CLUB_OWNER"]).optional(),
 				sortBy: z.enum(["userName", "userCallsign", "role", "createdAt"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),

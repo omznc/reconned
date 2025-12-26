@@ -13,8 +13,7 @@ import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod";
-import { sendInvitationSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/invitations/_components/invitations.schema";
+import * as z from "zod";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
@@ -48,6 +47,12 @@ export function InvitationsForm() {
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const t = useExtracted();
+
+	const sendInvitationSchema = z.object({
+		clubId: z.string(),
+		userEmail: z.string(),
+		userName: z.string().optional(),
+	});
 
 	const form = useForm<z.infer<typeof sendInvitationSchema>>({
 		resolver: zodResolver(sendInvitationSchema),

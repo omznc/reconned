@@ -121,7 +121,7 @@ export function FileUpload({
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {value.map((item) => (
                         <div key={item.id} className="relative group">
-                            <div className="relative aspect-square rounded-lg border bg-muted overflow-hidden">
+                            <div className="relative aspect-square rounded-lg border bg-muted">
                                 {showPreview && isImageFile(item.type) ? (
                                     <img
                                         src={item.file ? URL.createObjectURL(item.file) : item.url}
@@ -148,7 +148,7 @@ export function FileUpload({
                                     disabled={disabled}
                                     size="sm"
                                     variant="destructive"
-                                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-1 right-1 h-6 w-6 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                 >
                                     <X className="w-3 h-3" />
                                 </Button>
@@ -181,7 +181,7 @@ export function FileUpload({
                                 {dragActive ? t("Drop files here") : t("Click to upload or drag and drop")}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                {multiple && t("Up to {count} files", { count: String(maxFiles) })}
+                                {multiple && t("Up to {count} files. ", { count: String(maxFiles) })}
                                 {t("Maximum size of {size} MB", { size: String(Math.round(maxFileSize / (1024 * 1024))) })}
                             </p>
                         </div>

@@ -8,8 +8,7 @@ import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type * as z from "zod";
-import { promoteToManagerSchema } from "@/app/[locale]/dashboard/(club)/[clubId]/members/managers/_components/manager.schema";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -42,6 +41,11 @@ export function AddManagerForm() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const t = useExtracted();
+
+	const promoteToManagerSchema = z.object({
+		memberId: z.string().min(1, t("Member ID is required")),
+		clubId: z.string().min(1, t("Club ID is required")),
+	});
 
 	const form = useForm<z.infer<typeof promoteToManagerSchema>>({
 		resolver: zodResolver(promoteToManagerSchema),

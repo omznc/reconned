@@ -7,10 +7,7 @@ import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {
-	type RequestAccessSchema,
-	requestAccessSchema,
-} from "@/app/[locale]/dashboard/(club)/add-club/_components/request-access.schema";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -31,27 +28,6 @@ async function searchClubs(query: string) {
 	return response.json() as Promise<Club[]>;
 }
 
-async function requestAccess(input: RequestAccessSchema) {
-	const parsed = requestAccessSchema.safeParse(input);
-
-	if (!parsed.success) {
-		throw new Error("Invalid request data");
-	}
-
-	const { data, error } = await apiClient.POST("/api/clubs/{id}/invites", {
-		params: {
-			path: { id: parsed.data.clubIdTarget },
-		},
-		body: {},
-	});
-
-	if (error || !data?.success) {
-		throw new Error(error?.error || "Failed to send access request");
-	}
-
-	return data;
-}
-
 export function RequestAccessForm() {
 	const t = useExtracted();
 	const [clubs, setClubs] = useState<Club[]>([]);
@@ -59,7 +35,38 @@ export function RequestAccessForm() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 
-	const form = useForm<RequestAccessSchema>({
+	const requestAccessSchema = z.object({
+		clubIdTarget: z.string().min(1, t("Club is required")),
+		message: z.string().optional(),
+	});
+
+	async function requestAccess(input: z.infer<typeof requestAccessSchema>) {
+		const parsed = z
+			.object({
+				clubIdTarget: z.string().min(1),
+				message: z.string().optional(),
+			})
+			.safeParse(input);
+
+		if (!parsed.success) {
+			throw new Error("Invalid request data");
+		}
+
+		const { data, error } = await apiClient.POST("/api/clubs/{id}/invites", {
+			params: {
+				path: { id: parsed.data.clubIdTarget },
+			},
+			body: {},
+		});
+
+		if (error || !data?.success) {
+			throw new Error(error?.error || "Failed to send access request");
+		}
+
+		return data;
+	}
+
+	const form = useForm<z.infer<typeof requestAccessSchema>>({
 		resolver: zodResolver(requestAccessSchema),
 	});
 
@@ -87,7 +94,7 @@ export function RequestAccessForm() {
 		debouncedSearch(value);
 	};
 
-	async function onSubmit(data: RequestAccessSchema) {
+	async function onSubmit(data: z.infer<typeof requestAccessSchema>) {
 		try {
 			await requestAccess(data);
 			toast.success(t("Request sent successfully"));

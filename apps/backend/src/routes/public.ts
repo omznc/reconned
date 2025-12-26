@@ -1,5 +1,5 @@
 import { and, eq, or, sql } from "drizzle-orm";
-import { z } from "zod";
+import * as z from "zod";
 import { club, event, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { Router } from "../lib/router";

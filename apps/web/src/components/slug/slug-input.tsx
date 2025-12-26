@@ -60,6 +60,7 @@ export function SlugInput(props: SlugInputProps) {
 					className="z-10"
 					placeholder={t("my-link")}
 					type="text"
+					maxLength={50}
 				/>
 			</FormControl>
 			<FormDescription>
