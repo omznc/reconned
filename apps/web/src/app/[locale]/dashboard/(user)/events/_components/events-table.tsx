@@ -14,18 +14,6 @@ import { Link } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
-function getEventStatus(dateStart: Date, dateEnd: Date) {
-	const now = new Date();
-
-	if (now < dateStart) {
-		return { label: "Nadolazi", className: "bg-blue-100 text-blue-800" };
-	}
-	if (now > dateEnd) {
-		return { label: "Prošao", className: "bg-gray-100 text-gray-800" };
-	}
-	return { label: "Trenutno", className: "bg-green-100 text-green-800" };
-}
-
 type EventsListResponse = ApiResponse<"/api/events", "get">;
 type EventsListItem = EventsListResponse["events"][number];
 
@@ -71,7 +59,24 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 					cellConfig: {
 						variant: "custom",
 						component: (_, row) => {
-							const { label, className } = getEventStatus(new Date(row.dateStart), new Date(row.dateEnd));
+							const now = new Date();
+							const dateStart = new Date(row.dateStart);
+							const dateEnd = new Date(row.dateEnd);
+
+							let label: string;
+							let className: string;
+
+							if (now < dateStart) {
+								label = t("Upcoming");
+								className = "bg-blue-100 text-blue-800";
+							} else if (now > dateEnd) {
+								label = t("Finished");
+								className = "bg-gray-100 text-gray-800";
+							} else {
+								label = t("Current");
+								className = "bg-green-100 text-green-800";
+							}
+
 							return <Badge className={cn("pointer-events-none", className)}>{label}</Badge>;
 						},
 					},
@@ -91,7 +96,7 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
 										<Button variant="ghost" className="h-8 w-8 p-0">
-											<span className="sr-only">Otvori meni</span>
+											<span className="sr-only">{t("Open menu")}</span>
 											<MoreHorizontal className="h-4 w-4" />
 										</Button>
 									</DropdownMenuTrigger>
@@ -99,7 +104,7 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 										<DropdownMenuItem asChild>
 											<Link href={`/events/${item.id}`} target="_blank">
 												<ExternalLink className="size-4 mr-2" />
-												Posjeti
+												{t("Visit")}
 											</Link>
 										</DropdownMenuItem>
 									</DropdownMenuContent>

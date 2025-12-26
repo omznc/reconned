@@ -69,7 +69,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 							inviteRequestsCount={inviteRequestsCountByClub}
 						/>
 						<CommandMenu user={user} />
-						<SidebarInset className="relative flex flex-col p-4">
+						<SidebarInset className="relative flex flex-col items-center p-4">
 							<Breadcrumbs clubs={simplifiedClubs} />
 							<div className="space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
 								{props.children}

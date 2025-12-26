@@ -2,6 +2,7 @@
 
 import { Settings, UserCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -17,6 +18,7 @@ interface UserTableProps {
 }
 
 export function UserTable(props: UserTableProps) {
+	const t = useExtracted();
 	const searchParams = useSearchParams();
 
 	const getActionUrl = (userId: string) => {
@@ -29,7 +31,7 @@ export function UserTable(props: UserTableProps) {
 		<GenericDataTable
 			data={props.users}
 			totalPages={Math.ceil(props.totalUsers / props.pageSize)}
-			searchPlaceholder="Pretraži korisnike..."
+			searchPlaceholder={t("Search users...")}
 			columns={[
 				{
 					key: "avatar",

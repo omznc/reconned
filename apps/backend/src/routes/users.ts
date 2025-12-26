@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { and, count, desc, eq, getTableColumns, gte, ilike, ne, or, sql } from "drizzle-orm";
+import { and, count, eq, getTableColumns, ilike, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
@@ -10,7 +10,6 @@ import {
 	clubMembership,
 	event,
 	eventRegistration,
-	review,
 	user,
 } from "../drizzle/schema";
 import { logClubAudit } from "../lib/audit-logger";
@@ -786,23 +785,44 @@ usersRouter.get(
 			throw apiError.notFound("User not found");
 		}
 
-		const eventRegCount = await db
-			.select({ count: count() })
-			.from(eventRegistration)
-			.where(eq(eventRegistration.createdById, userId));
-
-		const membershipCount = await db
-			.select({ count: count() })
-			.from(clubMembership)
-			.where(eq(clubMembership.userId, userId));
-
-		const reviewsWrittenCount = await db.select({ count: count() }).from(review).where(eq(review.authorId, userId));
-
-		const reviewsReceivedCount = await db.select({ count: count() }).from(review).where(eq(review.userId, userId));
-
-		// Get club memberships with club details
-		const memberships = await db
+		// Single optimized query to get all user stats and club memberships with aggregated data
+		const userStats = await db
 			.select({
+				// User stats counts
+				eventRegCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM "EventRegistration" er
+					WHERE er."createdById" = ${userId}
+				)`,
+				membershipCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM "ClubMembership" cm
+					WHERE cm."userId" = ${userId}
+				)`,
+				reviewsWrittenCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM "Review" r
+					WHERE r."authorId" = ${userId}
+				)`,
+				reviewsReceivedCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM "Review" r
+					WHERE r."userId" = ${userId}
+				)`,
+			})
+			.from(user)
+			.where(eq(user.id, userId))
+			.limit(1);
+
+		const stats = userStats[0];
+		if (!stats) {
+			throw apiError.notFound("User not found");
+		}
+
+		// Single optimized query for club memberships with all club data and aggregates
+		const membershipsWithClubs = await db
+			.select({
+				// Membership fields
 				id: clubMembership.id,
 				userId: clubMembership.userId,
 				clubId: clubMembership.clubId,
@@ -811,70 +831,111 @@ usersRouter.get(
 				endDate: clubMembership.endDate,
 				createdAt: clubMembership.createdAt,
 				updatedAt: clubMembership.updatedAt,
+				// Club fields
+				clubName: club.name,
+				clubSlug: club.slug,
+				clubDescription: club.description,
+				clubLogo: club.logo,
+				clubLocation: club.location,
+				clubWebsite: club.website,
+				clubIsPrivate: club.isPrivate,
+				clubVerified: club.verified,
+				clubCreatedAt: club.createdAt,
+				// Aggregated counts using subqueries
+				memberCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM "ClubMembership" cm
+					WHERE cm."clubId" = "ClubMembership"."clubId"
+				)`,
+				eventCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM "Event" e
+					WHERE e."clubId" = "ClubMembership"."clubId"
+				)`,
+				reviewCount: sql<number>`(
+					SELECT COUNT(*)
+					FROM "Review" r
+					WHERE r."clubId" = "ClubMembership"."clubId" AND r."type" = 'CLUB'
+				)`,
+				// Upcoming event data
+				upcomingEventId: sql<string | null>`(
+					SELECT e."id"
+					FROM "Event" e
+					WHERE e."clubId" = "ClubMembership"."clubId" AND e."dateStart" >= NOW()
+					ORDER BY e."dateStart" ASC
+					LIMIT 1
+				)`,
+				upcomingEventName: sql<string | null>`(
+					SELECT e."name"
+					FROM "Event" e
+					WHERE e."clubId" = "ClubMembership"."clubId" AND e."dateStart" >= NOW()
+					ORDER BY e."dateStart" ASC
+					LIMIT 1
+				)`,
+				upcomingEventDateStart: sql<string | null>`(
+					SELECT e."dateStart"
+					FROM "Event" e
+					WHERE e."clubId" = "ClubMembership"."clubId" AND e."dateStart" >= NOW()
+					ORDER BY e."dateStart" ASC
+					LIMIT 1
+				)`,
+				// Latest review content
+				latestReviewContent: sql<string | null>`(
+					SELECT r."content"
+					FROM "Review" r
+					WHERE r."clubId" = "ClubMembership"."clubId" AND r."type" = 'CLUB'
+					ORDER BY r."createdAt" DESC
+					LIMIT 1
+				)`,
 			})
 			.from(clubMembership)
+			.innerJoin(club, eq(clubMembership.clubId, club.id))
 			.where(eq(clubMembership.userId, userId));
 
-		const membershipsWithClubs = await Promise.all(
-			memberships.map(async (membership) => {
-				const clubData = await db.select().from(club).where(eq(club.id, membership.clubId)).limit(1);
-				const clubItem = clubData[0];
-				if (!clubItem) {
-					return { ...membership, club: null };
-				}
+		// Transform flat results into nested structure
+		const formattedMemberships = membershipsWithClubs.map((m) => ({
+			id: m.id,
+			userId: m.userId,
+			clubId: m.clubId,
+			role: m.role,
+			startDate: m.startDate,
+			endDate: m.endDate,
+			createdAt: m.createdAt,
+			updatedAt: m.updatedAt,
+			club: {
+				id: m.clubId,
+				name: m.clubName,
+				slug: m.clubSlug,
+				description: m.clubDescription,
+				logo: m.clubLogo,
+				location: m.clubLocation,
+				website: m.clubWebsite,
+				isPrivate: m.clubIsPrivate,
+				verified: m.clubVerified,
+				createdAt: m.clubCreatedAt,
+				_count: {
+					members: Number(m.memberCount),
+					events: Number(m.eventCount),
+					reviews: Number(m.reviewCount),
+				},
+				events:
+					m.upcomingEventId && m.upcomingEventName && m.upcomingEventDateStart
+						? [
+								{
+									id: m.upcomingEventId,
+									name: m.upcomingEventName,
+									dateStart: m.upcomingEventDateStart,
+								},
+							]
+						: [],
+				reviews: m.latestReviewContent ? [{ content: m.latestReviewContent }] : [],
+			},
+		}));
 
-				const memberCount = await db
-					.select({ count: count() })
-					.from(clubMembership)
-					.where(eq(clubMembership.clubId, membership.clubId));
-				const eventCount = await db
-					.select({ count: count() })
-					.from(event)
-					.where(eq(event.clubId, membership.clubId));
-				const reviewCount = await db
-					.select({ count: count() })
-					.from(review)
-					.where(eq(review.clubId, membership.clubId));
-
-				const nextEvents = await db
-					.select({
-						id: event.id,
-						name: event.name,
-						dateStart: event.dateStart,
-					})
-					.from(event)
-					.where(and(eq(event.clubId, membership.clubId), gte(event.dateStart, new Date().toISOString())))
-					.orderBy(event.dateStart)
-					.limit(1);
-
-				const latestReviews = await db
-					.select({
-						content: review.content,
-					})
-					.from(review)
-					.where(eq(review.clubId, membership.clubId))
-					.orderBy(desc(review.createdAt))
-					.limit(1);
-
-				return {
-					...membership,
-					club: {
-						...clubItem,
-						_count: {
-							members: memberCount[0]?.count || 0,
-							events: eventCount[0]?.count || 0,
-							reviews: reviewCount[0]?.count || 0,
-						},
-						events: nextEvents,
-						reviews: latestReviews,
-					},
-				};
-			}),
-		);
-
-		// Get event registrations with event details
-		const registrations = await db
+		// Single optimized query for event registrations with event data
+		const registrationsWithEvents = await db
 			.select({
+				// Registration fields
 				id: eventRegistration.id,
 				eventId: eventRegistration.eventId,
 				createdById: eventRegistration.createdById,
@@ -883,38 +944,44 @@ usersRouter.get(
 				attended: eventRegistration.attended,
 				createdAt: eventRegistration.createdAt,
 				updatedAt: eventRegistration.updatedAt,
+				// Event fields
+				eventName: event.name,
+				eventSlug: event.slug,
+				eventDateStart: event.dateStart,
 			})
 			.from(eventRegistration)
+			.leftJoin(event, eq(eventRegistration.eventId, event.id))
 			.where(eq(eventRegistration.createdById, userId))
 			.orderBy(eventRegistration.createdAt)
 			.limit(5);
 
-		const registrationsWithEvents = await Promise.all(
-			registrations.map(async (registration) => {
-				const eventData = await db
-					.select({
-						id: event.id,
-						name: event.name,
-						slug: event.slug,
-						dateStart: event.dateStart,
-					})
-					.from(event)
-					.where(eq(event.id, registration.eventId))
-					.limit(1);
-				return {
-					...registration,
-					event: eventData[0] || null,
-				};
-			}),
-		);
+		// Transform flat results into nested structure
+		const formattedRegistrations = registrationsWithEvents.map((r) => ({
+			id: r.id,
+			eventId: r.eventId,
+			createdById: r.createdById,
+			type: r.type,
+			paymentMethod: r.paymentMethod,
+			attended: r.attended,
+			createdAt: r.createdAt,
+			updatedAt: r.updatedAt,
+			event: r.eventName
+				? {
+						id: r.eventId,
+						name: r.eventName,
+						slug: r.eventSlug,
+						dateStart: r.eventDateStart,
+					}
+				: null,
+		}));
 
 		return response.json({
-			eventRegistration: eventRegCount[0]?.count || 0,
-			clubMembership: membershipCount[0]?.count || 0,
-			reviewsWritten: reviewsWrittenCount[0]?.count || 0,
-			reviewsReceived: reviewsReceivedCount[0]?.count || 0,
-			clubMembershipDetails: membershipsWithClubs,
-			eventRegistrationDetails: registrationsWithEvents,
+			eventRegistration: Number(stats.eventRegCount),
+			clubMembership: Number(stats.membershipCount),
+			reviewsWritten: Number(stats.reviewsWrittenCount),
+			reviewsReceived: Number(stats.reviewsReceivedCount),
+			clubMembershipDetails: formattedMemberships,
+			eventRegistrationDetails: formattedRegistrations,
 		});
 	},
 	{

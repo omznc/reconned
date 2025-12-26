@@ -15,6 +15,11 @@ export const env = createEnv({
 			.optional()
 			.describe("Cloudflare Turnstile secret key for CAPTCHA verification"),
 
+		INTERNAL_API_SECRET: z
+			.string()
+			.min(32, "INTERNAL_API_SECRET must be at least 32 characters for security")
+			.describe("Secret key for bypassing rate limits on internal API calls"),
+
 		CI: z.string().optional().describe("CI environment indicator"),
 	},
 	client: {

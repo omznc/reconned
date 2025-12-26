@@ -66,6 +66,11 @@ export const env = createEnv({
 			.min(1, "TURNSTILE_SECRET_KEY is required")
 			.describe("Cloudflare Turnstile secret key for CAPTCHA verification"),
 
+		INTERNAL_API_SECRET: z
+			.string()
+			.min(32, "INTERNAL_API_SECRET must be at least 32 characters for security")
+			.describe("Secret key for bypassing rate limits on internal API calls"),
+
 		S3_ENDPOINT: z
 			.url("S3_ENDPOINT must be a valid URL (e.g., https://s3.amazonaws.com)")
 			.describe("S3-compatible storage endpoint URL"),

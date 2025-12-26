@@ -110,19 +110,25 @@ export default async function DashboardPage() {
 											<div className="text-center">
 												<p className="text-2xl font-bold">{membership.club._count.members}</p>
 												<p className="text-xs text-muted-foreground">
-													{membership.club._count.members === 1 ? "član" : "članova"}
+													{t("{count, plural, =1 {member} other {members}}", {
+														count: membership.club._count.members,
+													})}
 												</p>
 											</div>
 											<div className="text-center">
 												<p className="text-2xl font-bold">{membership.club._count.events}</p>
 												<p className="text-xs text-muted-foreground">
-													{membership.club._count.events === 1 ? "susret" : "susreta"}
+													{t("{count, plural, =1 {event} other {events}}", {
+														count: membership.club._count.events,
+													})}
 												</p>
 											</div>
 											<div className="text-center">
 												<p className="text-2xl font-bold">{membership.club._count.reviews}</p>
 												<p className="text-xs text-muted-foreground">
-													{membership.club._count.reviews === 1 ? "recenzija" : "recenzija"}
+													{t("{count, plural, =1 {review} other {reviews}}", {
+														count: membership.club._count.reviews,
+													})}
 												</p>
 											</div>
 										</div>

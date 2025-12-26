@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { env } from "./env";
 import { redis } from "./redis";
 
 export type RateLimitConfig = {
@@ -558,6 +559,11 @@ export class Router {
 
 	private async checkRateLimit(route: Route, request: Request): Promise<Response | null> {
 		const url = new URL(request.url);
+
+		const internalApiSecret = request.headers.get("x-internal-api-secret");
+		if (internalApiSecret === env.INTERNAL_API_SECRET) {
+			return null; // Bypass rate limiting for internal requests
+		}
 
 		let rateLimitConfig: RateLimitConfig | false = GLOBAL_RATE_LIMIT;
 

@@ -26,21 +26,21 @@ type Member = {
 	};
 };
 
-async function searchMembers(clubId: string, query: string) {
-	const response = await fetch(`/api/club/${clubId}/members?query=${encodeURIComponent(query)}&role=USER`);
-	if (!response.ok) {
-		throw new Error("Neuspjela pretraga članova");
-	}
-	return (await response.json()) as Member[];
-}
-
 export function AddManagerForm() {
+	const t = useExtracted();
 	const params = useParams<{ clubId: string }>();
 	const [members, setMembers] = useState<Member[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
-	const t = useExtracted();
+
+	async function searchMembers(clubId: string, query: string) {
+		const response = await fetch(`/api/club/${clubId}/members?query=${encodeURIComponent(query)}&role=USER`);
+		if (!response.ok) {
+			throw new Error(t("Failed to search members"));
+		}
+		return (await response.json()) as Member[];
+	}
 
 	const promoteToManagerSchema = z.object({
 		memberId: z.string().min(1, t("Member ID is required")),
