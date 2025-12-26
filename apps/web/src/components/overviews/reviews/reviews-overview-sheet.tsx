@@ -2,6 +2,7 @@
 
 import { format } from "date-fns";
 import { Star } from "lucide-react";
+import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -16,13 +17,14 @@ interface ReviewsOverviewSheetProps {
 }
 
 export function ReviewsOverviewSheet({ reviews, title }: ReviewsOverviewSheetProps) {
+	const t = useExtracted();
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
 		<Sheet open={isOpen} onOpenChange={setIsOpen}>
 			<SheetTrigger asChild>
 				<Button variant="outline" className="w-fit">
-					Prikaži sve ocjene
+					{t("Show all reviews")}
 				</Button>
 			</SheetTrigger>
 

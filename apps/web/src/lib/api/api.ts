@@ -22,8 +22,15 @@ const apiServer = createClient<ApiPaths>({
 	credentials: "include",
 	fetch: async (request) => {
 		const headersList = await headers();
+		const requestHeaders = new Headers(headersList);
+
+		// Add internal API secret header for rate limit bypass
+		if (env.INTERNAL_API_SECRET) {
+			requestHeaders.set("x-internal-api-secret", env.INTERNAL_API_SECRET);
+		}
+
 		return fetch(request, {
-			headers: headersList,
+			headers: requestHeaders,
 		});
 	},
 });

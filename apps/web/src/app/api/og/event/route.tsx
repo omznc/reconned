@@ -22,7 +22,7 @@ export const GET = withAxiom(async (request: Request) => {
 		>
 			<div tw="flex flex-row items-start justify-between">
 				<div tw="flex flex-col flex-1 ml-8">
-					<div tw="text-6xl font-bold tracking-tight max-w-[600px]">{title || "Airsoft susret"}</div>
+					<div tw="text-6xl font-bold tracking-tight max-w-[600px]">{title || "Airsoft Event"}</div>
 					<div tw="text-2xl mt-8 text-zinc-200">{description?.slice(0, 100) || ""}</div>
 					{date && <div tw="mt-6 text-xl text-zinc-400">{date}</div>}
 				</div>

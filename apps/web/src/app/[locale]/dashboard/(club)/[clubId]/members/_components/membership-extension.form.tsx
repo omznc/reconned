@@ -117,7 +117,48 @@ export function MembershipExtensionForm({
 		}
 	}
 
-	const membershipStatus = getMembershipStatus(membership, t);
+	const getMembershipStatus = (membership: ClubMembership) => {
+		const today = new Date();
+
+		if (!(membership.startDate || membership.endDate)) {
+			return {
+				label: t("Unlimited"),
+				variant: "default",
+			} as const;
+		}
+
+		if (membership.endDate && new Date(membership.endDate) < today) {
+			return {
+				label: t("Expired"),
+				variant: "outline",
+			} as const;
+		}
+
+		if (membership.endDate) {
+			// Check if membership expires within 30 days
+			const thirtyDaysFromNow = new Date();
+			thirtyDaysFromNow.setDate(today.getDate() + 30);
+
+			if (new Date(membership.endDate) < thirtyDaysFromNow) {
+				return {
+					label: t("Expires soon"),
+					variant: "secondary",
+				} as const;
+			}
+
+			return {
+				label: t("Active"),
+				variant: "default",
+			} as const;
+		}
+
+		return {
+			label: t("Active"),
+			variant: "default",
+		} as const;
+	};
+
+	const membershipStatus = getMembershipStatus(membership);
 
 	// Create a trigger element based on the variant
 	const renderTrigger = () => {
@@ -250,48 +291,4 @@ export function MembershipExtensionForm({
 			</CredenzaContent>
 		</Credenza>
 	);
-}
-
-function getMembershipStatus(
-	membership: ClubMembership,
-	t: (key: string) => string, // I wish I typed this, but hey
-) {
-	const today = new Date();
-
-	if (!(membership.startDate || membership.endDate)) {
-		return {
-			label: t("Unlimited"),
-			variant: "default",
-		} as const;
-	}
-
-	if (membership.endDate && new Date(membership.endDate) < today) {
-		return {
-			label: t("Expired"),
-			variant: "outline",
-		} as const;
-	}
-
-	if (membership.endDate) {
-		// Check if membership expires within 30 days
-		const thirtyDaysFromNow = new Date();
-		thirtyDaysFromNow.setDate(today.getDate() + 30);
-
-		if (new Date(membership.endDate) < thirtyDaysFromNow) {
-			return {
-				label: t("Expires soon"),
-				variant: "secondary",
-			} as const;
-		}
-
-		return {
-			label: t("Active"),
-			variant: "default",
-		} as const;
-	}
-
-	return {
-		label: t("Active"),
-		variant: "default",
-	} as const;
 }

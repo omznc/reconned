@@ -330,7 +330,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 											</div>
 											{event.dateRegistrationsClose && (
 												<div className="text-sm mr-1 text-muted-foreground">
-													Prijave još{" "}
+													{t("Registrations open for")}{" "}
 													{formatDistanceToNow(event.dateRegistrationsClose, {
 														locale: bs,
 													})}

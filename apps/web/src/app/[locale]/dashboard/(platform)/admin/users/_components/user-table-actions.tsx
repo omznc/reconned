@@ -2,6 +2,7 @@
 
 import { BanIcon, CheckCircle, TrashIcon, UserIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useExtracted } from "next-intl";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { authClient } from "@/lib/auth-client";
 type User = ApiResponse<"/api/admin/users/{id}", "get">;
 
 export function UserActions({ user }: { user: User }) {
+	const t = useExtracted();
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const confirm = useConfirm();
@@ -47,17 +49,17 @@ export function UserActions({ user }: { user: User }) {
 			return;
 		}
 		const actionText = {
-			ban: user.banned ? "ukloniti ban" : "banovati",
-			delete: "izbrisati",
-			impersonate: "impersonirati",
+			ban: user.banned ? t("remove ban") : t("ban"),
+			delete: t("delete"),
+			impersonate: t("impersonate"),
 		};
 
 		const confirmed = await confirm({
-			title: "Jeste li sigurni?",
-			body: `Da li ste sigurni da želite ${actionText[action]} korisnika ${user.name}?`,
+			title: t("Are you sure?"),
+			body: t("Are you sure you want to {action} user {name}?", { action: actionText[action], name: user.name }),
 			actionButtonVariant: "default",
-			actionButton: "Da, potvrdi",
-			cancelButton: "Ne, vrati se",
+			actionButton: t("Yes, confirm"),
+			cancelButton: t("No, go back"),
 			cancelButtonVariant: "outline",
 		});
 
@@ -84,7 +86,7 @@ export function UserActions({ user }: { user: User }) {
 				}
 			}
 		} catch {
-			toast.error("Došlo je do greške prilikom izvršavanja akcije.");
+			toast.error(t("An error occurred while performing the action."));
 		} finally {
 			const params = new URLSearchParams(searchParams);
 			params.delete("userId");
@@ -101,7 +103,7 @@ export function UserActions({ user }: { user: User }) {
 				}}
 			>
 				<UserIcon />
-				Impersoniraj
+				{t("Impersonate")}
 			</Button>
 			<Button
 				variant={user.banned ? "default" : "destructive"}
@@ -110,7 +112,7 @@ export function UserActions({ user }: { user: User }) {
 				}}
 			>
 				{user.banned ? <CheckCircle /> : <BanIcon />}
-				{user.banned ? "Ukloni ban" : "Banuj korisnika"}
+				{user.banned ? t("Remove ban") : t("Ban user")}
 			</Button>
 			<Button
 				variant="destructive"
@@ -119,7 +121,7 @@ export function UserActions({ user }: { user: User }) {
 				}}
 			>
 				<TrashIcon />
-				Izbriši račun
+				{t("Delete account")}
 			</Button>
 		</div>
 	);

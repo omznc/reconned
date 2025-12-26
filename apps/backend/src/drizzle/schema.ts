@@ -283,6 +283,8 @@ export const clubMembership = pgTable(
 			table.userId.asc().nullsLast().op("text_ops"),
 			table.clubId.asc().nullsLast().op("text_ops"),
 		),
+		index("ClubMembership_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
+		index("ClubMembership_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 		foreignKey({
 			columns: [table.userId],
 			foreignColumns: [user.id],
@@ -422,6 +424,13 @@ export const event = pgTable(
 			table.slug.asc().nullsLast().op("text_ops"),
 		),
 		uniqueIndex("Event_slug_key").using("btree", table.slug.asc().nullsLast().op("text_ops")),
+		index("Event_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
+		index("Event_dateStart_idx").using("btree", table.dateStart.asc().nullsLast().op("timestamp_ops")),
+		index("Event_clubId_dateStart_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.dateStart.asc().nullsLast().op("timestamp_ops"),
+		),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -445,6 +454,8 @@ export const eventRegistration = pgTable(
 		updatedAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	},
 	(table) => [
+		index("EventRegistration_createdById_idx").using("btree", table.createdById.asc().nullsLast().op("text_ops")),
+		index("EventRegistration_eventId_idx").using("btree", table.eventId.asc().nullsLast().op("text_ops")),
 		foreignKey({
 			columns: [table.eventId],
 			foreignColumns: [event.id],
@@ -524,6 +535,10 @@ export const review = pgTable(
 			table.authorId.asc().nullsLast().op("text_ops"),
 			table.userId.asc().nullsLast().op("text_ops"),
 		),
+		index("Review_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
+		index("Review_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		index("Review_authorId_idx").using("btree", table.authorId.asc().nullsLast().op("text_ops")),
+		index("Review_createdAt_idx").using("btree", table.createdAt.asc().nullsLast().op("timestamp_ops")),
 		foreignKey({
 			columns: [table.authorId],
 			foreignColumns: [user.id],

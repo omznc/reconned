@@ -11,7 +11,7 @@ import GoogleMap1Image from "@/../public/help/google-map-1.png";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 
-export default function Page() {
+export default function HelpPage() {
 	const t = useExtracted();
 	return (
 		<>
@@ -78,6 +78,7 @@ export default function Page() {
 }
 
 function HelpItem({ title, children, id }: { title: string; children: ReactNode; id: string }) {
+	const t = useExtracted();
 	return (
 		<AccordionItem value={id} className="border rounded-lg px-4">
 			<AccordionTrigger className="group">
@@ -94,10 +95,10 @@ function HelpItem({ title, children, id }: { title: string; children: ReactNode;
 							window.navigator.clipboard
 								.writeText(`${currentNoHash}#${id}`)
 								.then(() => {
-									toast.success("Link kopiran.");
+									toast.success(t("Link copied."));
 								})
 								.catch(() => {
-									toast.error("Neuspješno kopiranje linka.");
+									toast.error(t("Failed to copy link."));
 								});
 						}}
 					>

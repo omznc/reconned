@@ -406,8 +406,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 						{!event.allowFreelancers && currentUserClubs.length === 0 && (
 							<div className="absolute backdrop-blur-[2px] p-4 inset-0 bg-black/30 dark:bg-black/80 rounded-lg flex items-center justify-center">
 								<p className="text-sm text-center">
-									Ne možete se prijaviti samostalno jer niste član nijednog kluba, a ovaj susret ne
-									dozvoljava freelancer prijave.
+									{t(
+										"You cannot apply solo because you are not a member of any club and this event does not allow freelancer applications.",
+									)}
 								</p>
 							</div>
 						)}
@@ -427,8 +428,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							{form.watch("type") === "solo" && <p className="text-sm text-primary">Trenutno odabrano</p>}
 							{form.watch("type") === "team" && (
 								<p className="text-sm text-destructive">
-									Prebacivanje na samostalnu prijavu će poništiti sve trenutne pozivnice članovima
-									tima.
+									{t(
+										"Switching to solo application will cancel all current team member invitations.",
+									)}
 								</p>
 							)}
 						</>
@@ -678,7 +680,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			{invitedUserFields.length === 1 && invitedUserNotOnAppFields.length === 0 && (
 				<p className="text-sm text-destructive flex items-center gap-2">
 					<AlertCircle className="h-4 w-4" />
-					Tim mora imati barem jednog člana, osim Vas
+					{t("Team must have at least one member besides you")}
 				</p>
 			)}
 		</div>
@@ -707,7 +709,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							renderTeamSection()
 						) : (
 							<div className="space-y-4">
-								<h3 className="font-medium">Vaši podaci</h3>
+								<h3 className="font-medium">{t("Your information")}</h3>
 								<div className="p-4 border rounded-lg space-y-2">
 									<div className="flex items-center gap-2">
 										<UserIcon className="h-4 w-4 text-muted-foreground" />

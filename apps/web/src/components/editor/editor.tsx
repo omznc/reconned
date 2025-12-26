@@ -15,6 +15,7 @@ import {
 	Minus,
 	Quote,
 } from "lucide-react";
+import { useExtracted } from "next-intl";
 import { cn } from "@/lib/utils";
 import "./editor.css";
 import { usePrompt } from "@/components/ui/alert-dialog-provider";
@@ -52,6 +53,7 @@ const ToolbarButton = ({
 };
 
 export const Editor = ({ editable = true, initialValue = "", onChange }: EditorProps) => {
+	const t = useExtracted();
 	const editor = useEditor({
 		extensions: [
 			StarterKit.configure({
@@ -79,11 +81,11 @@ export const Editor = ({ editable = true, initialValue = "", onChange }: EditorP
 
 		const previousUrl = editor.getAttributes("link").href;
 		const url = await prompt({
-			title: "Unesi link",
-			body: "Ako ne unesete http:// ili https://, automatski će se dodati https://",
+			title: t("Enter link"),
+			body: t("If you don't enter http:// or https://, https:// will be automatically added"),
 			defaultValue: previousUrl,
-			actionButton: "Sačuvaj",
-			cancelButton: "Otkaži",
+			actionButton: t("Save"),
+			cancelButton: t("Cancel"),
 			inputType: "input",
 			inputProps: {
 				type: "url",

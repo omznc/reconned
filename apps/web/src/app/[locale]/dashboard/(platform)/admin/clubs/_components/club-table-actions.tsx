@@ -2,6 +2,7 @@
 
 import { BanIcon, CheckCircle, TrashIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useExtracted } from "next-intl";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
@@ -12,22 +13,23 @@ import type { ApiResponse } from "@/lib/api/api-type-helpers";
 type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
 
 export function ClubActions({ club }: { club: AdminClub }) {
+	const t = useExtracted();
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const confirm = useConfirm();
 
 	const onAction = async (action: "ban" | "delete") => {
 		const actionText = {
-			ban: club.banned ? "ukloniti ban" : "banovati",
-			delete: "izbrisati",
+			ban: club.banned ? t("remove ban") : t("ban"),
+			delete: t("delete"),
 		};
 
 		const confirmed = await confirm({
-			title: "Jeste li sigurni?",
-			body: `Da li ste sigurni da želite ${actionText[action]} klub ${club.name}?`,
+			title: t("Are you sure?"),
+			body: t("Are you sure you want to {action} club {name}?", { action: actionText[action], name: club.name }),
 			actionButtonVariant: "default",
-			actionButton: "Da, potvrdi",
-			cancelButton: "Ne, vrati se",
+			actionButton: t("Yes, confirm"),
+			cancelButton: t("No, go back"),
 			cancelButtonVariant: "outline",
 		});
 
@@ -46,7 +48,7 @@ export function ClubActions({ club }: { club: AdminClub }) {
 					},
 				});
 				if (error) {
-					throw new Error(error.error || "Greška prilikom izmjene statusa kluba.");
+					throw new Error(error.error || t("Error changing club status."));
 				}
 			} else {
 				const { error } = await apiClient.DELETE("/api/admin/clubs/{id}", {
@@ -57,11 +59,11 @@ export function ClubActions({ club }: { club: AdminClub }) {
 					},
 				});
 				if (error) {
-					throw new Error(error.error || "Greška prilikom brisanja kluba.");
+					throw new Error(error.error || t("Error deleting club."));
 				}
 			}
 		} catch {
-			toast.error("Došlo je do greške prilikom izvršavanja akcije.");
+			toast.error(t("An error occurred while performing the action."));
 		} finally {
 			const params = new URLSearchParams(searchParams);
 			params.delete("clubId");
@@ -78,7 +80,7 @@ export function ClubActions({ club }: { club: AdminClub }) {
 				}}
 			>
 				{club.banned ? <CheckCircle /> : <BanIcon />}
-				{club.banned ? "Ukloni ban" : "Banuj klub"}
+				{club.banned ? t("Remove ban") : t("Ban club")}
 			</Button>
 			<Button
 				variant="destructive"
@@ -87,7 +89,7 @@ export function ClubActions({ club }: { club: AdminClub }) {
 				}}
 			>
 				<TrashIcon />
-				Izbriši klub
+				{t("Delete club")}
 			</Button>
 		</div>
 	);

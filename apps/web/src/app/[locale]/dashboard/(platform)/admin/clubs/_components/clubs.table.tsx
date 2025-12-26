@@ -3,6 +3,7 @@
 import { ExternalLink, Settings } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
@@ -18,6 +19,7 @@ interface ClubsTableProps {
 }
 
 export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
+	const t = useExtracted();
 	const searchParams = useSearchParams();
 
 	const getActionUrl = (clubId: string) => {
@@ -30,7 +32,7 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 		<GenericDataTable
 			data={clubs}
 			totalPages={Math.ceil(totalClubs / pageSize)}
-			searchPlaceholder="Pretraži klubove..."
+			searchPlaceholder={t("Search clubs...")}
 			columns={[
 				{
 					key: "logo",
