@@ -33,20 +33,37 @@ export default async function Page() {
 		return <div>Error loading sessions</div>;
 	}
 
+	const sessionsList =
+		sessions.data && sessions.data.length > 0
+			? sessions.data.map((session) => ({
+					...session,
+					isCurrentSession: session.id === user.session.id,
+					ipAddress: session.ipAddress || undefined,
+					userAgent: session.userAgent || undefined,
+					createdAt: session.createdAt.toISOString(),
+					updatedAt: session.updatedAt.toISOString(),
+					expiresAt: session.expiresAt.toISOString(),
+				}))
+			: [
+					{
+						id: user.session.id,
+						token: user.session.token,
+						userId: user.id,
+						isCurrentSession: true,
+						ipAddress: user.session.ipAddress || undefined,
+						userAgent: user.session.userAgent || undefined,
+						createdAt: user.session.createdAt.toISOString(),
+						updatedAt: user.session.updatedAt.toISOString(),
+						expiresAt: user.session.expiresAt.toISOString(),
+					},
+				];
+
 	return (
 		<SecuritySettings
 			passkeys={[]}
 			hasPassword={hasPassword}
 			hasTwoFactor={user.twoFactorEnabled}
-			sessions={sessions.data?.map((session) => ({
-				...session,
-				isCurrentSession: session.id === user.session.id,
-				ipAddress: session.ipAddress || undefined,
-				userAgent: session.userAgent || undefined,
-				createdAt: session.createdAt.toISOString(),
-				updatedAt: session.updatedAt.toISOString(),
-				expiresAt: session.expiresAt.toISOString(),
-			}))}
+			sessions={sessionsList}
 			userId={user.id}
 		/>
 	);

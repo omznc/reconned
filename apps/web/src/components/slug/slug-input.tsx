@@ -23,6 +23,19 @@ export function SlugInput(props: SlugInputProps) {
 	const [debouncedSlug] = useDebounce(slug, 300);
 	const [valid, setValid] = useState(false);
 
+	const getPathPrefix = () => {
+		switch (props.type) {
+			case "club":
+				return "clubs";
+			case "event":
+				return "events";
+			case "user":
+				return "users";
+			default:
+				return props.type;
+		}
+	};
+
 	useEffect(() => {
 		if (!debouncedSlug || debouncedSlug === props.currentSlug) {
 			return;
@@ -43,7 +56,7 @@ export function SlugInput(props: SlugInputProps) {
 		<FormItem>
 			<FormLabel>
 				{t("Special link")}
-				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_WEB_URL}/${props.type[0]}/${debouncedSlug || t("my-link")}`}</span>
+				<span className="text-gray-500">{` ${env.NEXT_PUBLIC_WEB_URL}/${getPathPrefix()}/${debouncedSlug || t("my-link")}`}</span>
 			</FormLabel>
 			<FormControl>
 				<Input

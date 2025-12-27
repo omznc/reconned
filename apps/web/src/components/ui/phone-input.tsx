@@ -67,7 +67,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
             className={cn("rounded-e-lg h-10 rounded-s-none", className)}
             {...props}
             ref={ref}
-            maxLength={20}
+            maxLength={17}
         />
     ),
 );

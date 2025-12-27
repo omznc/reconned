@@ -156,6 +156,7 @@ export function PostsForm({ clubId, editingPost }: PostsFormProps) {
 			}
 
 			imageUpload.markAsSaved();
+			imageUpload.resetToInitial();
 
 			form.reset();
 			setPostId(null);

@@ -16,13 +16,12 @@ export function InviteActions({ invite }: InviteActionsProps) {
 	const router = useRouter();
 
 	const handleAction = async (action: "approve" | "dismiss") => {
-		// using POST for actions
 		const res = await fetch(
 			`/api/club/member-invite/${invite.inviteCode}?action=${action}&redirectTo=${encodeURIComponent(
 				"/dashboard/user/invites",
 			)}`,
 			{
-				method: "GET",
+				method: "POST",
 			},
 		);
 		if (res.ok) {
