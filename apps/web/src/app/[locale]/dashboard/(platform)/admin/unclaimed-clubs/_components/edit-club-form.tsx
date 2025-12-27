@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { bs, enUS, hr } from "date-fns/locale";
 import { ArrowUpRight, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useExtracted, useLocale } from "next-intl";
@@ -49,6 +50,20 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 	const router = useRouter();
+
+	// Map locale string to date-fns locale object
+	const getDateFnsLocale = () => {
+		switch (locale) {
+			case "bs":
+				return bs;
+			case "hr":
+				return hr;
+			case "en":
+				return enUS;
+			default:
+				return enUS;
+		}
+	};
 
 	const clubInfoSchema = z.object({
 		name: z
@@ -610,7 +625,12 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 									</FormControl>
 								</PopoverTrigger>
 								<PopoverContent className="w-auto p-0" align="start">
-									<DateTimePicker value={field.value} onChange={field.onChange} granularity="day" />
+									<DateTimePicker
+										value={field.value}
+										onChange={field.onChange}
+										granularity="day"
+										locale={getDateFnsLocale()}
+									/>
 								</PopoverContent>
 							</Popover>
 							<FormDescription>{t("When was the club founded?")}</FormDescription>

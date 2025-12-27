@@ -2,6 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { format } from "date-fns";
+import { bs, enUS, hr } from "date-fns/locale";
 import {
 	AlertCircle,
 	ArrowUpRight,
@@ -84,6 +85,20 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 
+	// Map locale string to date-fns locale object
+	const getDateFnsLocale = () => {
+		switch (locale) {
+			case "bs":
+				return bs;
+			case "hr":
+				return hr;
+			case "en":
+				return enUS;
+			default:
+				return enUS;
+		}
+	};
+
 	const clubInfoSchema = z.object({
 		name: z
 			.string()
@@ -110,16 +125,19 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			message: t("Club description must be shorter than 5000 characters"),
 		}),
 		slug: z.string().optional(),
-		dateFounded: z.date().refine(
-			(date) => {
-				const today = new Date();
-				today.setHours(23, 59, 59, 999); // End of today
-				return date <= today;
-			},
-			{
-				message: t("Date founded cannot be in the future"),
-			},
-		),
+		dateFounded: z
+			.date()
+			.refine(
+				(date) => {
+					const today = new Date();
+					today.setHours(23, 59, 59, 999); // End of today
+					return date <= today;
+				},
+				{
+					message: t("Date founded cannot be in the future"),
+				},
+			)
+			.optional(),
 		isAllied: z.boolean().optional(),
 		isPrivate: z.boolean().optional(),
 		isPrivateStats: z.boolean().optional(),
@@ -590,9 +608,14 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			if (isCreating && clubId) {
 				await refreshClubs();
 				router.push(`/dashboard/${clubId}/club`);
+			} else {
+				// Refresh breadcrumbs and data when updating existing club
+				router.refresh();
 			}
-		} catch {
-			toast.error(t("An error occurred"));
+		} catch (error) {
+			console.error("Error saving club information:", error);
+			const errorMessage = error instanceof Error ? error.message : t("An error occurred");
+			toast.error(errorMessage);
 		}
 		setIsLoading(false);
 	}
@@ -980,6 +1003,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											value={field.value}
 											onChange={field.onChange}
 											granularity="day"
+											locale={getDateFnsLocale()}
 										/>
 									</PopoverContent>
 								</Popover>

@@ -181,7 +181,7 @@ export function FileUpload({
                                 {dragActive ? t("Drop files here") : t("Click to upload or drag and drop")}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                {multiple && t("Up to {count} files. ", { count: String(maxFiles) })}
+                                {multiple && `${t("Up to {count} files", { count: String(maxFiles) })}. `}
                                 {t("Maximum size of {size} MB", { size: String(Math.round(maxFileSize / (1024 * 1024))) })}
                             </p>
                         </div>

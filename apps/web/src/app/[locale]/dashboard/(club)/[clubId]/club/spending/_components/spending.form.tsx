@@ -36,7 +36,10 @@ export function AddPurchaseModal() {
 		clubId: z.string(),
 		title: z.string().min(1, t("Title is required")),
 		description: z.string().optional(),
-		amount: z.number().min(0.01, t("Amount must be greater than 0")),
+		amount: z
+			.number()
+			.min(0.01, t("Amount must be greater than 0"))
+			.max(100000, t("Amount must be less than 100,000 KM")),
 		receiptUrls: z.array(z.string()).max(3, t("Maximum 3 receipts per item")).optional(),
 	});
 

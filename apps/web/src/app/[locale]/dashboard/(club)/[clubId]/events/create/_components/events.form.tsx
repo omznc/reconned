@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, differenceInDays, format, subHours } from "date-fns";
-import { bs } from "date-fns/locale";
+import { bs, enUS, hr } from "date-fns/locale";
 import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useLogger } from "next-axiom";
-import { useExtracted } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import posthog from "posthog-js";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type Resolver, useForm } from "react-hook-form";
@@ -56,6 +56,21 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const t = useExtracted();
 	const logger = useLogger();
 	const { user } = useIsAuthenticated();
+	const locale = useLocale();
+
+	// Map locale string to date-fns locale object
+	const getDateFnsLocale = () => {
+		switch (locale) {
+			case "bs":
+				return bs;
+			case "hr":
+				return hr;
+			case "en":
+				return enUS;
+			default:
+				return enUS;
+		}
+	};
 
 	const matcher = /<iframe.*?src="([^"]+)"/;
 
@@ -498,6 +513,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			}
 
 			router.push(`/dashboard/${clubId}/events/${eventId}`);
+			router.refresh();
 			toast.success(t("Successfully created event"));
 		} catch (error) {
 			const message = error instanceof Error ? error.message : t("An error occurred while saving data");
@@ -551,6 +567,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 											toast.success(t("Event deleted"));
 											router.push(`/dashboard/${clubId}/events/`);
+											router.refresh();
 										} catch (error) {
 											const message =
 												error instanceof Error
@@ -777,7 +794,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													</FormControl>
 												</PopoverTrigger>
 												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker value={field.value} onChange={field.onChange} />
+													<DateTimePicker
+														value={field.value}
+														onChange={field.onChange}
+														locale={getDateFnsLocale()}
+													/>
 												</PopoverContent>
 											</Popover>
 											<FormDescription>{t("When does the event start?")}</FormDescription>
@@ -817,7 +838,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													</FormControl>
 												</PopoverTrigger>
 												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker value={field.value} onChange={field.onChange} />
+													<DateTimePicker
+														value={field.value}
+														onChange={field.onChange}
+														locale={getDateFnsLocale()}
+													/>
 												</PopoverContent>
 											</Popover>
 											<FormDescription>{t("When does the event end?")}</FormDescription>
@@ -863,7 +888,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													</FormControl>
 												</PopoverTrigger>
 												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker value={field.value} onChange={field.onChange} />
+													<DateTimePicker
+														value={field.value}
+														onChange={field.onChange}
+														locale={getDateFnsLocale()}
+													/>
 												</PopoverContent>
 											</Popover>
 											<FormDescription>{t("When do meetup registrations open?")}</FormDescription>
@@ -903,7 +932,11 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													</FormControl>
 												</PopoverTrigger>
 												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker value={field.value} onChange={field.onChange} />
+													<DateTimePicker
+														value={field.value}
+														onChange={field.onChange}
+														locale={getDateFnsLocale()}
+													/>
 												</PopoverContent>
 											</Popover>
 											<FormDescription>

@@ -39,6 +39,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 		CLUB_UPDATE: t("Club update"),
 		CLUB_DELETE: t("Club deletion"),
 		MEMBER_INVITE: t("Member invite"),
+		MEMBER_ADD: t("Member added"),
 		MEMBER_REMOVE: t("Member removal"),
 		MEMBER_PROMOTE: t("Member promotion"),
 		MEMBER_DEMOTE: t("Member demotion"),
@@ -46,6 +47,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 		MEMBER_LEAVE: t("Member leave"),
 		CLUB_BAN: t("Club ban"), // Admin-only
 		CLUB_UNBAN: t("Club unban"),
+		CLUB_OWNER_ASSIGNED: t("Club owner assigned"),
 		SPENDING_CREATE: t("Spending creation"),
 		SPENDING_UPDATE: t("Spending update"),
 		SPENDING_DELETE: t("Spending deletion"),

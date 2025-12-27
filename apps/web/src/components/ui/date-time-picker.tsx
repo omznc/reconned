@@ -711,7 +711,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
                     onSelect={(d) => handleSelect(d)}
                     onMonthChange={handleSelect}
                     yearRange={yearRange}
-                    locale={bs}
+                    locale={locale}
                     {...props}
                 />
                 {

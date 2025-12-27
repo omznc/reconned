@@ -1,10 +1,13 @@
 import { addMonths, endOfMonth, parse as parseDateFns, startOfMonth, subMonths } from "date-fns";
+import { getExtracted } from "next-intl/server";
+import { ErrorPage } from "@/components/error-page";
 import { EventCalendar } from "@/components/event-calendar";
 import apiServer from "@/lib/api/api";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/calendar">) {
 	const params = await props.params;
 	const { month } = await props.searchParams;
+	const t = await getExtracted();
 
 	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
@@ -20,7 +23,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	});
 
 	if (error || !data) {
-		return <div>Failed to load events</div>;
+		return <ErrorPage title={t("Failed to load events")} />;
 	}
 
 	// Filter events for the specific club

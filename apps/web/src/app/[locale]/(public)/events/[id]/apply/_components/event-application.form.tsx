@@ -500,7 +500,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 				<div key={field.id} className="flex bg-sidebar items-center justify-between p-2 border rounded-md">
 					<div className="flex items-center gap-2">
 						<Avatar className="h-8 w-8">
-							<AvatarImage src={field.image || ""} />
+							{field.image && <AvatarImage src={field.image} />}
 							<AvatarFallback>{field.name.charAt(0).toUpperCase()}</AvatarFallback>
 						</Avatar>
 						<div className="flex flex-col">
@@ -638,7 +638,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 												)}
 											>
 												<Avatar className="h-8 w-8">
-													<AvatarImage src={user.image || ""} />
+													{user.image && <AvatarImage src={user.image} />}
 													<AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
 												</Avatar>
 												<div className="flex flex-col">
