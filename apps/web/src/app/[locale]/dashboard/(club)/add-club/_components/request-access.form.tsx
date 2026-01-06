@@ -2,12 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "lodash/debounce";
-import { Check, ChevronsUpDown, Loader } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -146,7 +147,7 @@ export function RequestAccessForm() {
 										<CommandList>
 											{isLoading ? (
 												<CommandEmpty className="flex items-center justify-center p-4">
-													<Loader className="animate-spin h-4 w-4" />
+													<Loader size={16} />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
 												<CommandEmpty>{t("Enter at least two characters")}</CommandEmpty>

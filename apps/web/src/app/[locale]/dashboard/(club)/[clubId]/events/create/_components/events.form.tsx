@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, differenceInDays, format, subHours } from "date-fns";
 import { bs, enUS, hr } from "date-fns/locale";
 import DOMPurify from "isomorphic-dompurify";
-import { ArrowUpRight, Calendar as CalendarIcon, Eye, Loader, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
+import { ArrowUpRight, Calendar as CalendarIcon, Eye, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useLogger } from "next-axiom";
 import { useExtracted, useLocale } from "next-intl";
@@ -14,6 +14,7 @@ import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { AnimatedNumber } from "@/components/animated-number";
+import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { createEmptySnapshot, normalizeMapData } from "@/components/map-editor/map-data";
 import { MapEditor } from "@/components/map-editor/map-editor";
@@ -581,7 +582,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								}}
 							>
 								<Trash className="size-4" />
-								{isLoading ? <Loader className="animate-spin size-4" /> : t("Delete event")}
+								{isLoading ? <Loader size={16} /> : t("Delete event")}
 							</Button>
 							<Button variant="outline" asChild={true}>
 								<Link

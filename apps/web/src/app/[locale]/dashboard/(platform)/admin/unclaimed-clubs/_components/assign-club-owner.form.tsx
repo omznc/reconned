@@ -1,9 +1,10 @@
 "use client";
 
-import { Check, ChevronsUpDown, LoaderIcon } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -142,7 +143,11 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 				</Popover>
 			</div>
 			<Button onClick={handleAssign} disabled={isLoading || !selectedUserId}>
-				{isLoading && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
+				{isLoading && (
+					<span className="mr-2">
+						<Loader size={16} />
+					</span>
+				)}
 				{t("Assign owner")}
 			</Button>
 		</div>

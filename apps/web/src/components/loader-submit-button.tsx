@@ -1,5 +1,5 @@
-import { LoaderIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ export function LoaderSubmitButton(props: LoaderSubmitButtonProps) {
 			type="submit"
 			className={cn("flex w-full items-center justify-center gap-2", props.className)}
 		>
-			{props.isLoading ? <LoaderIcon className="h-4 w-4 animate-spin" /> : props.children}
+			{props.isLoading ? <Loader size={16} /> : props.children}
 		</Button>
 	);
 }

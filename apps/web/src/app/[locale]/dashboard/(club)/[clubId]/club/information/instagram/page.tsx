@@ -1,11 +1,12 @@
 "use client";
 
 import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
-import { AlertCircle, ArrowLeft, Info, Loader, ShieldAlert, Verified } from "lucide-react";
+import { AlertCircle, ArrowLeft, Info, ShieldAlert, Verified } from "lucide-react";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
+import { Loader } from "@/components/loader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -131,7 +132,9 @@ export default function InstagramPageSelection() {
 	if (isLoading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[400px]">
-				<Loader className="h-8 w-8 animate-spin text-primary mb-4" />
+				<div className="text-primary mb-4">
+					<Loader size={32} />
+				</div>
 				<p className="text-lg text-muted-foreground">{t("Loading pages...")}</p>
 			</div>
 		);
@@ -282,7 +285,7 @@ export default function InstagramPageSelection() {
 				>
 					{isConnecting ? (
 						<>
-							<Loader className="h-4 w-4 animate-spin" />
+							<Loader size={16} />
 							<span>{t("Connecting...")}</span>
 						</>
 					) : (

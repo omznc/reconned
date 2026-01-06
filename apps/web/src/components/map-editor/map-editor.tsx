@@ -1,9 +1,10 @@
 "use client";
 
-import { FileDown, Loader } from "lucide-react";
+import { FileDown } from "lucide-react";
 import maplibregl, { type GeoJSONSource, type LngLat, type Map as MapLibreMap, type MapMouseEvent } from "maplibre-gl";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Loader } from "@/components/loader";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { BBox, FeatureCollection } from "geojson";
@@ -2439,7 +2440,9 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 								{handlesOverlay}
 								{!mapReady ? (
 									<div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-										<Loader className="h-8 w-8 animate-spin text-muted-foreground" />
+										<span className="text-muted-foreground">
+											<Loader size={32} />
+										</span>
 									</div>
 								) : null}
 								{gridRef.cell ? (
@@ -2483,7 +2486,9 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 								{handlesOverlay}
 								{!mapReady ? (
 									<div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-										<Loader className="h-8 w-8 animate-spin text-muted-foreground" />
+										<span className="text-muted-foreground">
+											<Loader size={32} />
+										</span>
 									</div>
 								) : null}
 								{mapReady && overlaySize > 0 ? (

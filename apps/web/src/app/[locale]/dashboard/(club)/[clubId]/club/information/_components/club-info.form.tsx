@@ -10,7 +10,6 @@ import {
 	Check,
 	CheckCircle,
 	ChevronsUpDown,
-	Loader,
 	Trash,
 } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -22,6 +21,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { BannerCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/banner-crop-dialog";
 import { useClubs } from "@/components/clubs-provider";
+import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -659,7 +659,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									>
 										<Trash className="size-4" />
 
-										{isLoading ? <Loader className="animate-spin size-4" /> : t("Delete the club")}
+										{isLoading ? <Loader size={16} /> : t("Delete the club")}
 									</Button>
 								)}
 							</div>
@@ -1139,7 +1139,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									>
 										{isDisconnectingInstagram ? (
 											<>
-												<Loader className="mr-2 h-4 w-4 animate-spin" />
+												<Loader size={16} />
 												{t("Disconnecting...")}
 											</>
 										) : (

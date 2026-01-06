@@ -20,9 +20,9 @@ import type { Club, ClubRule, Event } from "@/lib/api/api-type-helpers";
 import "@/components/editor/editor.css";
 
 import debounce from "lodash/debounce";
-import { Loader2 } from "lucide-react";
 import posthog from "posthog-js";
 import { toast } from "sonner";
+import { Loader } from "@/components/loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -589,7 +589,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 							<CommandList>
 								{isSearching && (
 									<CommandEmpty className="flex items-center h-32 justify-center">
-										<Loader2 className="h-4 w-4 animate-spin" />
+										<Loader size={16} />
 									</CommandEmpty>
 								)}
 								{!isSearching && searchValue.length < 2 && (

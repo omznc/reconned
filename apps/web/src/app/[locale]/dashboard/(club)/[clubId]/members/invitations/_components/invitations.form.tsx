@@ -7,13 +7,14 @@ import { Input } from "@components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
-import { Check, ChevronsUpDown, Loader } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { Loader } from "@/components/loader";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
@@ -136,7 +137,7 @@ export function InvitationsForm() {
 										<CommandList>
 											{isLoading ? (
 												<CommandEmpty className="flex items-center justify-center size-full p-4">
-													<Loader className="animate-spin h-4 w-4" />
+													<Loader size={24} />
 												</CommandEmpty>
 											) : searchQuery.length < 2 ? (
 												<CommandEmpty>{t("Enter at least 2 characters")}</CommandEmpty>
