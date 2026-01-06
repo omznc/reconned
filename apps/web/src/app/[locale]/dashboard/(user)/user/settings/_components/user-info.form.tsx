@@ -1,12 +1,13 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader, Phone, Shield, User as UserIcon } from "lucide-react";
+import { Phone, Shield, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
 import { validateSlug } from "@/components/slug/validate-slug";
@@ -546,7 +547,9 @@ export function UserInfoForm(props: UserInfoFormProps) {
 					<LoaderSubmitButton isLoading={isLoading} disabled={!isSlugValid && !!form.watch("slug")}>
 						{isLoading ? (
 							<>
-								<Loader className="mr-2 h-4 w-4 animate-spin" />
+								<span className="mr-2">
+									<Loader size={16} />
+								</span>
 								{t("Saving...")}
 							</>
 						) : (

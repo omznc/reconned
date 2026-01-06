@@ -64,7 +64,6 @@ export default async function DashboardPage() {
 					<div className="text-2xl font-bold">{stats.reviewsReceived}</div>
 				</div>
 			</div>
-
 			{userWithDetails?.clubMembership && userWithDetails.clubMembership.length > 0 && (
 				<div className="space-y-4">
 					<h2 className="text-xl font-semibold">{t("My clubs")}</h2>

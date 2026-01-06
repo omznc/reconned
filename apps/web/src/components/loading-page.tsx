@@ -1,9 +1,9 @@
-import { Loader } from "lucide-react";
+import { Loader } from "@/components/loader";
 
 export function LoadingPage() {
 	return (
 		<div className="size-full min-h-[500px] flex items-center justify-center">
-			<Loader className="size-8 animate-spin" />
+			<Loader />
 		</div>
 	);
 }
