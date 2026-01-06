@@ -4,7 +4,6 @@ import { authClient } from "@auth/client";
 import type { Passkey } from "@better-auth/passkey";
 import { Button } from "@components/ui/button";
 import { formatDistanceToNow } from "date-fns";
-import { bs } from "date-fns/locale";
 import { Dice5, Download, KeyRound, Laptop, ShieldQuestion, Smartphone, Tablet, Trash2 } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
@@ -20,6 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { Session } from "@/lib/api/api-type-helpers";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 
 interface SecuritySettingsProps {
@@ -41,6 +41,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 	const confirm = useConfirm();
 	const t = useExtracted();
 	const locale = useLocale();
+	const dateLocale = getDateFnsLocale(locale);
 	const hasBackupCodes = regeneratedBackupCodes && regeneratedBackupCodes.length > 0;
 
 	const getDeviceIcon = (userAgent?: string) => {
@@ -637,7 +638,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 												{t("Last used on {date}", {
 													date: formatDistanceToNow(session.updatedAt, {
 														addSuffix: true,
-														locale: bs,
+														locale: dateLocale,
 													}),
 												})}
 											</span>

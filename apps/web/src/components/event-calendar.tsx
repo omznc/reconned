@@ -17,11 +17,10 @@ import {
 	startOfWeek,
 	subMonths,
 } from "date-fns";
-import { bs, enUS } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, Square } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useExtracted } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Fragment, type KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -41,6 +40,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { authClient, useIsAuthenticated } from "@/lib/auth-client";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 
 type Event = ApiResponse<"/api/events/calendar", "get">["events"][number];
@@ -58,6 +58,8 @@ export function EventCalendar(props: EventCalendarProps) {
 	const t = useExtracted();
 	const params = useParams<{ clubId: string }>();
 	const router = useRouter();
+	const locale = useLocale();
+	const dateLocale = getDateFnsLocale(locale);
 
 	// Parse string dates from API to Date objects
 	const eventsWithParsedDates = useMemo(() => {
@@ -329,7 +331,7 @@ export function EventCalendar(props: EventCalendarProps) {
 		<div className="flex flex-col h-full w-full text-foreground">
 			<header className="flex py-4 items-center justify-between">
 				<h2 className="text-2xl font-bold">
-					{monthNames[format(currentDate, "MMM", { locale: enUS }).toLowerCase() as Months]}{" "}
+					{monthNames[format(currentDate, "MMM", { locale: dateLocale }).toLowerCase() as Months]}{" "}
 					{format(currentDate, "yyyy")}
 				</h2>
 				<div className="flex items-center gap-2">
@@ -398,7 +400,7 @@ export function EventCalendar(props: EventCalendarProps) {
 												onKeyDown: (event: KeyboardEvent<HTMLDivElement>) =>
 													handleDayKeyDown(event, day),
 												"aria-label": t("Create event on {date}", {
-													date: format(day, "d. MMMM yyyy", { locale: bs }),
+													date: format(day, "d. MMMM yyyy", { locale: dateLocale }),
 												}),
 											}
 										: {};
@@ -428,7 +430,7 @@ export function EventCalendar(props: EventCalendarProps) {
 													isSameDay(day, new Date()) ? "text-accent-foreground" : "",
 												)}
 											>
-												{format(day, "d", { locale: bs })}
+												{format(day, "d", { locale: dateLocale })}
 											</div>
 											<div className="flex-1 relative">
 												{Array.from(new Set(getEventsForDay(day))).map((event) => {
@@ -477,11 +479,11 @@ export function EventCalendar(props: EventCalendarProps) {
 																	)}
 																>
 																	{format(event.dateStart, "HH:mm", {
-																		locale: bs,
+																		locale: dateLocale,
 																	})}
 																	{event.dateEnd &&
 																		` - ${format(event.dateEnd, "HH:mm", {
-																			locale: bs,
+																			locale: dateLocale,
 																		})}`}{" "}
 																	{event.name}
 																</Button>
@@ -521,7 +523,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																					event.dateStart,
 																					"d. MMMM yyyy. HH:mm",
 																					{
-																						locale: bs,
+																						locale: dateLocale,
 																					},
 																				)}
 																			</span>
@@ -536,7 +538,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																							event.dateEnd,
 																							"d. MMMM yyyy. HH:mm",
 																							{
-																								locale: bs,
+																								locale: dateLocale,
 																							},
 																						)}
 																					</span>

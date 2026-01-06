@@ -50,6 +50,19 @@ const userSchema = baseUserSchema
 	.extend({
 		email: z.string().nullable(),
 		phone: z.string().nullable(),
+		clubMembership: z
+			.array(
+				z.object({
+					id: z.string(),
+					clubId: z.string(),
+					role: z.string(),
+					club: z.object({
+						id: z.string(),
+						name: z.string(),
+					}),
+				}),
+			)
+			.optional(),
 	});
 
 // Club membership with club details (for dashboard)
@@ -330,8 +343,9 @@ usersRouter.get(
 
 		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		const users = await db
+		const usersWithMemberships = await db
 			.select({
+				// User fields
 				id: user.id,
 				slug: user.slug,
 				name: user.name,
@@ -369,8 +383,21 @@ usersRouter.get(
 						: sql<
 								string | null
 							>`CASE WHEN ${user.isPrivatePhone} = false THEN ${user.phone} ELSE NULL END`.as("phone"),
+				// Club membership fields (will be null if no membership)
+				membershipId: clubMembership.id,
+				membershipClubId: clubMembership.clubId,
+				membershipClubName: club.name,
+				membershipRole: clubMembership.role,
 			})
 			.from(user)
+			.leftJoin(
+				clubMembership,
+				and(
+					eq(clubMembership.userId, user.id),
+					eq(clubMembership.role, "USER"), // Only show regular memberships, not management roles
+				),
+			)
+			.leftJoin(club, eq(clubMembership.clubId, club.id))
 			.where(where)
 			.orderBy(orderBy)
 			.limit(perPage)
@@ -378,11 +405,82 @@ usersRouter.get(
 
 		const total = await db.select({ count: count() }).from(user).where(where);
 
+		// Group memberships by user
+		const userMap = new Map<
+			string,
+			{
+				id: string;
+				slug: string | null;
+				name: string;
+				bio: string | null;
+				image: string | null;
+				headerImage: string | null;
+				location: string | null;
+				website: string | null;
+				callsign: string | null;
+				isPrivate: boolean;
+				isPrivateEmail: boolean;
+				isPrivatePhone: boolean;
+				isPrivateStats: boolean;
+				language: string;
+				role: string | null;
+				email: string | null;
+				phone: string | null;
+				clubMembership: Array<{
+					id: string;
+					clubId: string;
+					role: string;
+					club: { id: string; name: string };
+				}>;
+				isAdmin: boolean;
+			}
+		>();
+
+		for (const row of usersWithMemberships) {
+			const userId = row.id;
+			if (!userMap.has(userId)) {
+				userMap.set(userId, {
+					id: row.id,
+					slug: row.slug,
+					name: row.name,
+					bio: row.bio,
+					image: row.image,
+					headerImage: row.headerImage,
+					location: row.location,
+					website: row.website,
+					callsign: row.callsign,
+					isPrivate: row.isPrivate,
+					isPrivateEmail: row.isPrivateEmail,
+					isPrivatePhone: row.isPrivatePhone,
+					isPrivateStats: row.isPrivateStats,
+					language: row.language || "en",
+					role: row.role,
+					email: row.email,
+					phone: row.phone,
+					clubMembership: [],
+					isAdmin: row.role?.toUpperCase() === "ADMIN",
+				});
+			}
+
+			const user = userMap.get(userId);
+			if (!user) continue;
+
+			// Add membership if it exists
+			if (row.membershipId && row.membershipClubId && row.membershipClubName) {
+				user.clubMembership.push({
+					id: row.membershipId,
+					clubId: row.membershipClubId,
+					role: row.membershipRole || "USER",
+					club: {
+						id: row.membershipClubId,
+						name: row.membershipClubName,
+					},
+				});
+			}
+		}
+
 		return response.json({
-			users: users.map((user) => ({
-				...user,
-				isAdmin: user.role?.toUpperCase() === "ADMIN",
-			})),
+			users: Array.from(userMap.values()),
 			pagination: {
 				page,
 				perPage,
@@ -1224,14 +1322,22 @@ usersRouter.get(
 
 		const invitesWithClubs = await Promise.all(
 			invitesData.map(async (invite) => {
-				const clubData = await db.select().from(club).where(eq(club.id, invite.clubId)).limit(1);
+				const [clubData, memberCountData] = await Promise.all([
+					db.select().from(club).where(eq(club.id, invite.clubId)).limit(1),
+					db.select({ count: count() }).from(clubMembership).where(eq(clubMembership.clubId, invite.clubId)),
+				]);
 				if (!clubData[0]) {
 					return null;
 				}
 				return {
 					...invite,
-					club: clubData[0],
-				} as typeof invite & { club: (typeof clubData)[0] };
+					club: {
+						...clubData[0],
+						_count: {
+							members: memberCountData[0]?.count || 0,
+						},
+					},
+				} as typeof invite & { club: (typeof clubData)[0] & { _count: { members: number } } };
 			}),
 		);
 
@@ -1249,7 +1355,11 @@ usersRouter.get(
 				200: z.object({
 					invites: z.array(
 						baseClubInviteSchema.extend({
-							club: baseClubSchema,
+							club: baseClubSchema.extend({
+								_count: z.object({
+									members: z.number(),
+								}),
+							}),
 						}),
 					),
 				}),

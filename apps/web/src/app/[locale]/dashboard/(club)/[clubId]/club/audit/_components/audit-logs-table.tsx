@@ -39,6 +39,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 		CLUB_UPDATE: t("Club update"),
 		CLUB_DELETE: t("Club deletion"),
 		MEMBER_INVITE: t("Member invite"),
+		MEMBER_JOINED_VIA_INVITE: t("Member joined via invite"),
 		MEMBER_ADD: t("Member added"),
 		MEMBER_REMOVE: t("Member removal"),
 		MEMBER_PROMOTE: t("Member promotion"),

@@ -1,7 +1,6 @@
 "use client";
 
 import { format } from "date-fns";
-import { bs, enUS } from "date-fns/locale";
 import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "@/i18n/navigation";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 
 // Dot notation path type
@@ -61,6 +61,7 @@ interface GenericTableProps<T> {
 		dateFormat?: string;
 		locale?: "bs" | "en";
 	};
+	mobileActionsExpanded?: boolean; // Show all action buttons on mobile instead of dropdown
 }
 
 // Helper function to get nested value
@@ -89,6 +90,7 @@ export function GenericDataTable<T>({
 	searchPlaceholder = "Search...",
 	totalPages,
 	tableConfig,
+	mobileActionsExpanded = false,
 }: GenericTableProps<T>) {
 	const t = useExtracted();
 	const locale = useLocale();
@@ -260,7 +262,12 @@ export function GenericDataTable<T>({
 		if (isActionsColumn && config?.variant === "custom" && config.components) {
 			const actionItems = typeof config.components === "function" ? config.components(item) : config.components;
 
-			// Always use dropdown menu structure, but with different styling for mobile
+			// On mobile with expanded actions, show all buttons
+			if (isMobile && mobileActionsExpanded) {
+				return <div className="flex flex-wrap gap-2 justify-center">{actionItems}</div>;
+			}
+
+			// Otherwise use dropdown menu structure
 			return (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -293,7 +300,7 @@ export function GenericDataTable<T>({
 		}
 
 		if (value instanceof Date || (typeof value === "string" && Date.parse(value))) {
-			const dateLocale = currentLocale === "bs" ? bs : enUS;
+			const dateLocale = getDateFnsLocale(currentLocale || "en");
 			return format(new Date(value), tableConfigParam?.dateFormat || "PPP", {
 				locale: dateLocale,
 			});
@@ -521,7 +528,12 @@ export function GenericDataTable<T>({
 								)
 								.map((column) => (
 									<div key={String(column.key)} className="mt-3 pt-3 border-t border-border">
-										<div className="flex justify-center items-center">
+										<div
+											className={cn(
+												"flex items-center",
+												mobileActionsExpanded ? "justify-center" : "justify-center",
+											)}
+										>
 											{/* biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types */}
 											{renderCell(item as Record<string, any>, column, tableConfig, locale, true)}
 										</div>

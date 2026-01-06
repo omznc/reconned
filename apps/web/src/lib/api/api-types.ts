@@ -1821,6 +1821,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/club/member-invite/{inviteCode}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Accept or decline club invitation
+		 * @description Accept or decline a club invitation using the invite code
+		 */
+		post: operations["clubmemberInviteinviteCodePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/clubs/{id}": {
 		parameters: {
 			query?: never;
@@ -9159,6 +9179,15 @@ export interface operations {
 							language: string;
 							email: string | null;
 							phone: string | null;
+							clubMembership?: {
+								id: string;
+								clubId: string;
+								role: string;
+								club: {
+									id: string;
+									name: string;
+								};
+							}[];
 							isAdmin: boolean;
 						}[];
 						pagination: {
@@ -9648,6 +9677,9 @@ export interface operations {
 								createdAt: string;
 								updatedAt: string;
 								headerImage: string | null;
+								_count: {
+									members: number;
+								};
 							};
 						}[];
 					};
@@ -12510,6 +12542,77 @@ export interface operations {
 			};
 			/** @description Forbidden */
 			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubmemberInviteinviteCodePost: {
+		parameters: {
+			query: {
+				action: "approve" | "dismiss";
+				redirectTo?: string;
+			};
+			header?: never;
+			path: {
+				inviteCode: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
 				headers: {
 					[name: string]: unknown;
 				};
