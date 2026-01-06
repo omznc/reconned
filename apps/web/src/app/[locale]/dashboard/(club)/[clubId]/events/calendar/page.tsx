@@ -18,6 +18,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 			query: {
 				startDate: startDate.toISOString(),
 				endDate: endDate.toISOString(),
+				clubId: params.clubId,
 			},
 		},
 	});
@@ -26,8 +27,5 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		return <ErrorPage title={t("Failed to load events")} />;
 	}
 
-	// Filter events for the specific club
-	const clubEvents = data.events.filter((event) => event.clubId === params.clubId);
-
-	return <EventCalendar events={clubEvents} />;
+	return <EventCalendar events={data.events} />;
 }

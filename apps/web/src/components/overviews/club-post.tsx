@@ -1,7 +1,6 @@
 "use client";
 
 import { formatRelative } from "date-fns";
-import { bs } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Pencil, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -10,8 +9,9 @@ import { Link } from "@/i18n/navigation";
 import type { Post } from "@/lib/api/api-type-helpers";
 import "@/components/editor/editor.css";
 import DOMPurify from "isomorphic-dompurify";
-import { useExtracted } from "next-intl";
+import { useExtracted, useLocale } from "next-intl";
 import { useOverflow } from "@/hooks/use-overflow";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 
 interface ClubPostProps {
@@ -22,6 +22,8 @@ interface ClubPostProps {
 
 export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 	const t = useExtracted();
+	const locale = useLocale();
+	const dateLocale = getDateFnsLocale(locale);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 	const { ref, isOverflowing } = useOverflow();
@@ -35,7 +37,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					<p className="text-sm text-muted-foreground">
 						{t("Posted on {date}", {
 							date: formatRelative(new Date(post.createdAt), new Date(), {
-								locale: bs,
+								locale: dateLocale,
 							}),
 						})}
 					</p>

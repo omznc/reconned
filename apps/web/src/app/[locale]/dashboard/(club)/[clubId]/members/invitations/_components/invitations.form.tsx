@@ -6,11 +6,11 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
-import debounce from "lodash/debounce";
+import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronsUpDown, Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -18,33 +18,10 @@ import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
-type SearchUser = {
-	id: string;
-	email: string;
-	name: string;
-	image: string | null;
-	callsign: string | null;
-	clubMembership: {
-		club: {
-			name: string;
-		};
-	}[];
-};
-
-async function searchUsers(query: string) {
-	const response = await fetch(`/api/users?query=${encodeURIComponent(query)}`);
-	if (!response.ok) {
-		throw new Error("Failed to fetch users");
-	}
-	return (await response.json()) as SearchUser[];
-}
-
 export function InvitationsForm() {
 	const params = useParams<{ clubId: string }>();
-	const [users, setUsers] = useState<SearchUser[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const t = useExtracted();
 
@@ -63,28 +40,26 @@ export function InvitationsForm() {
 		},
 	});
 
-	const debouncedSearch = useCallback(
-		debounce(async (value: string) => {
-			if (value.length >= 2) {
-				setIsLoading(true);
-				try {
-					const results = await searchUsers(value);
-					setUsers(results);
-				} catch (_error) {
-					toast.error(t("Failed to search users. Please try again."));
-				} finally {
-					setIsLoading(false);
-				}
-			} else {
-				setUsers([]);
-			}
-		}, 400),
-		[],
-	);
+	const { data: users = [], isLoading } = useQuery({
+		queryKey: ["users", searchQuery],
+		queryFn: async () => {
+			if (searchQuery.length < 2) return [];
+			const { data, error } = await apiClient.GET("/api/users", {
+				params: {
+					query: {
+						search: searchQuery,
+						perPage: 10,
+					},
+				},
+			});
+			if (error) throw new Error("Failed to search users");
+			return data.users;
+		},
+		enabled: searchQuery.length >= 2,
+	});
 
 	const handleSearch = (value: string) => {
 		setSearchQuery(value);
-		debouncedSearch(value);
 	};
 
 	async function onSubmit(values: z.infer<typeof sendInvitationSchema>) {
@@ -177,7 +152,7 @@ export function InvitationsForm() {
 																form.setValue("userName", user.name, {
 																	shouldDirty: true,
 																});
-																form.setValue("userEmail", user.email, {
+																form.setValue("userEmail", user.email || "", {
 																	shouldDirty: true,
 																});
 																setOpen(false);
@@ -189,6 +164,15 @@ export function InvitationsForm() {
 																	<span className="text-sm text-muted-foreground">
 																		{user.email}
 																	</span>
+																	{user.clubMembership &&
+																		user.clubMembership.length > 0 && (
+																			<span className="text-xs text-muted-foreground">
+																				{t("Member of")}:{" "}
+																				{user.clubMembership
+																					.map((m) => m.club.name)
+																					.join(", ")}
+																			</span>
+																		)}
 																</div>
 																<Check
 																	className={cn(

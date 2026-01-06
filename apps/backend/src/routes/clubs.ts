@@ -2703,6 +2703,124 @@ clubsRouter.get(
 	},
 );
 
+clubsRouter.post(
+	"/club/member-invite/:inviteCode",
+	async ({ params, query, response, context }) => {
+		const inviteCode = params.inviteCode;
+		const action = query.action as "approve" | "dismiss";
+
+		if (!inviteCode) {
+			throw apiError.validation("Invite code is required");
+		}
+
+		if (!action || !["approve", "dismiss"].includes(action)) {
+			throw apiError.validation("Action must be 'approve' or 'dismiss'");
+		}
+
+		if (!context.user) {
+			throw apiError.unauthorized("Authentication required");
+		}
+
+		// Find the invite
+		const inviteData = await db
+			.select()
+			.from(clubInvite)
+			.where(
+				and(
+					eq(clubInvite.inviteCode, inviteCode),
+					eq(clubInvite.status, "PENDING"),
+					gt(clubInvite.expiresAt, new Date().toISOString()),
+				),
+			)
+			.limit(1);
+
+		if (!inviteData[0]) {
+			throw apiError.notFound("Invite not found or expired");
+		}
+
+		const invite = inviteData[0];
+
+		// Verify the invite is for the current user
+		if (invite.email !== context.user.email) {
+			throw apiError.forbidden("This invite is not for you");
+		}
+
+		// Check if user already has a membership in this club
+		const existingMembership = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, invite.clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		if (existingMembership[0]) {
+			throw apiError.validation("You are already a member of this club");
+		}
+
+		if (action === "approve") {
+			// Create membership
+			await db.insert(clubMembership).values({
+				id: randomUUIDv7(),
+				userId: context.user.id,
+				clubId: invite.clubId,
+				role: "USER",
+				startDate: new Date().toISOString(),
+			});
+
+			// Update invite status
+			await db
+				.update(clubInvite)
+				.set({
+					status: "ACCEPTED",
+					updatedAt: new Date().toISOString(),
+				})
+				.where(eq(clubInvite.id, invite.id));
+
+			// Log the action
+			await logClubAudit({
+				clubId: invite.clubId,
+				userId: context.user.id,
+				actionType: "MEMBER_JOINED_VIA_INVITE",
+				actionData: { inviteId: invite.id },
+			});
+		} else {
+			// Update invite status to rejected
+			await db
+				.update(clubInvite)
+				.set({
+					status: "REJECTED",
+					updatedAt: new Date().toISOString(),
+				})
+				.where(eq(clubInvite.id, invite.id));
+		}
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Accept or decline club invitation",
+			description: "Accept or decline a club invitation using the invite code",
+			params: z.object({
+				inviteCode: z.string(),
+			}),
+			query: z.object({
+				action: z.enum(["approve", "dismiss"]),
+				redirectTo: z.string().optional(),
+			}),
+			response: {
+				200: z.object({
+					success: z.boolean(),
+				}),
+				400: z.object({ error: z.string() }),
+				401: z.object({ error: z.string() }),
+				403: z.object({ error: z.string() }),
+				404: z.object({ error: z.string() }),
+			},
+		},
+	},
+);
+
 async function validateSlug(slug: string, excludeClubId?: string): Promise<boolean> {
 	const [clubBySlug, clubById] = await Promise.all([
 		db.select().from(club).where(eq(club.slug, slug)).limit(1),
