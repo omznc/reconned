@@ -5,7 +5,7 @@ import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import type { ChangeEvent, ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Children, useCallback, useEffect, useMemo, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import {
@@ -264,7 +264,25 @@ export function GenericDataTable<T>({
 
 			// On mobile with expanded actions, show all buttons
 			if (isMobile && mobileActionsExpanded) {
-				return <div className="flex flex-wrap gap-2 justify-center">{actionItems}</div>;
+				// Extract children from DropdownMenuItem components for mobile expanded view
+				// biome-ignore lint/suspicious/noExplicitAny: Needed for dynamic component type checking
+				const expandedItems = Children.toArray(actionItems).map((child: any) => {
+					if (
+						typeof child === "object" &&
+						child !== null &&
+						"type" in child &&
+						typeof child.type === "object" &&
+						child.type !== null &&
+						"displayName" in child.type &&
+						// biome-ignore lint/suspicious/noExplicitAny: Needed for dynamic component type checking
+						(child.type as any).displayName === "DropdownMenuItem"
+					) {
+						// Return the children of DropdownMenuItem (usually the Link or Button with asChild)
+						return child.props?.children;
+					}
+					return child;
+				});
+				return <div className="flex flex-wrap gap-2 justify-center">{expandedItems}</div>;
 			}
 
 			// Otherwise use dropdown menu structure
@@ -512,7 +530,7 @@ export function GenericDataTable<T>({
 										<span className="text-sm font-medium text-muted-foreground truncate">
 											{column.header}
 										</span>
-										<span className="col-span-2 font-medium">
+										<span className="col-span-2 font-medium wrap-break-word overflow-hidden">
 											{/* biome-ignore lint/suspicious/noExplicitAny: Needed for flexible value types */}
 											{renderCell(item as Record<string, any>, column, tableConfig, locale, true)}
 										</span>
