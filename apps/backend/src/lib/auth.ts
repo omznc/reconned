@@ -30,6 +30,9 @@ export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
+	session: {
+		freshAge: 0,
+	},
 	experimental: { joins: true },
 	trustedOrigins: (() => {
 		const origins = env.CORS_ORIGINS.split(",").map((origin) => origin.trim());

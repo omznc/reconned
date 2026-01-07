@@ -30,7 +30,17 @@ export default async function Page() {
 	});
 
 	if (sessions.error) {
-		return <div>Error loading sessions</div>;
+		return <ErrorPage title={t("Error loading sessions")} />;
+	}
+
+	const passkeys = await authClient.passkey.listUserPasskeys({
+		fetchOptions: {
+			headers: await headers(),
+		},
+	});
+
+	if (passkeys.error) {
+		return <ErrorPage title={t("Error loading passkeys")} />;
 	}
 
 	const sessionsList =
@@ -40,9 +50,6 @@ export default async function Page() {
 					isCurrentSession: session.id === user.session.id,
 					ipAddress: session.ipAddress || undefined,
 					userAgent: session.userAgent || undefined,
-					createdAt: session.createdAt.toISOString(),
-					updatedAt: session.updatedAt.toISOString(),
-					expiresAt: session.expiresAt.toISOString(),
 				}))
 			: [
 					{
@@ -52,18 +59,19 @@ export default async function Page() {
 						isCurrentSession: true,
 						ipAddress: user.session.ipAddress || undefined,
 						userAgent: user.session.userAgent || undefined,
-						createdAt: user.session.createdAt.toISOString(),
-						updatedAt: user.session.updatedAt.toISOString(),
-						expiresAt: user.session.expiresAt.toISOString(),
+						createdAt: user.session.createdAt,
+						updatedAt: user.session.updatedAt,
+						expiresAt: user.session.expiresAt,
 					},
 				];
 
 	return (
 		<SecuritySettings
-			passkeys={[]}
+			passkeys={passkeys.data || []}
 			hasPassword={hasPassword}
 			hasTwoFactor={user.twoFactorEnabled}
 			sessions={sessionsList}
+			currentSession={user.session}
 			userId={user.id}
 		/>
 	);

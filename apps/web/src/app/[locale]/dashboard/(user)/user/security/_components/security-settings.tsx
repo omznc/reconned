@@ -3,6 +3,7 @@
 import { authClient } from "@auth/client";
 import type { Passkey } from "@better-auth/passkey";
 import { Button } from "@components/ui/button";
+import type { Session } from "better-auth/client";
 import { formatDistanceToNow } from "date-fns";
 import { Dice5, Download, KeyRound, Laptop, ShieldQuestion, Smartphone, Tablet, Trash2 } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
@@ -11,14 +12,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { PasswordChangeForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-change.form";
 import { SetupPasswordForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-setup.form";
-import { BadgeSoon } from "@/components/badge-soon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useConfirm, usePrompt } from "@/components/ui/alert-dialog-provider";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
-import type { Session } from "@/lib/api/api-type-helpers";
 import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 
@@ -27,13 +26,19 @@ interface SecuritySettingsProps {
 	hasPassword: boolean;
 	hasTwoFactor?: boolean | null;
 	backupCodes?: string | null;
-	sessions: (Omit<Session, "impersonatedBy"> & {
-		isCurrentSession: boolean;
-	})[];
+	sessions: Session[];
+	currentSession: Session;
 	userId: string;
 }
 
-export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions, userId }: SecuritySettingsProps) {
+export function SecuritySettings({
+	passkeys,
+	hasPassword,
+	hasTwoFactor,
+	sessions,
+	userId,
+	currentSession,
+}: SecuritySettingsProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [regeneratedBackupCodes, setRegeneratedBackupCodes] = useState<string[] | null>(null);
 	const router = useRouter();
@@ -63,12 +68,12 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 			</div>
 			<div className="space-y-2">
 				{passkeys.map((passkey) => (
-					<Alert key={passkey.id} className="flex flex-col md:flex-row gap-1 justify-between -z-0">
+					<Alert key={passkey.id} className="flex flex-col md:flex-row gap-1 justify-between z-0">
 						<div className="flex flex-col">
 							<AlertTitle>{passkey.name || t("Passkey")}</AlertTitle>
 							<AlertDescription>
 								{t("Created on {date}", {
-									date: passkey.createdAt?.toLocaleDateString(locale, {
+									date: new Date(passkey.createdAt).toLocaleDateString(locale, {
 										year: "numeric",
 										month: "long",
 										day: "numeric",
@@ -103,7 +108,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 						</Button>
 					</Alert>
 				))}
-				<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
+				<Alert className="flex flex-col md:flex-row gap-1 justify-between z-0">
 					<div className="flex flex-col">
 						<AlertTitle>{t("Add a new Passkey")}</AlertTitle>
 						<AlertDescription>
@@ -113,7 +118,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 					<Button
 						type="button"
 						className="w-full md:w-auto"
-						disabled={isLoading || true}
+						disabled={isLoading}
 						onClick={async () => {
 							await authClient.passkey.addPasskey(
 								{},
@@ -134,7 +139,6 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 					>
 						<KeyRound className="w-4 h-4 mr-2" />
 						{t("Add")}
-						<BadgeSoon />
 					</Button>
 				</Alert>
 			</div>
@@ -153,7 +157,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 				<div className="space-y-2">
 					{hasTwoFactor ? (
 						<>
-							<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
+							<Alert className="flex flex-col md:flex-row gap-1 justify-between z-0">
 								<div className="flex flex-col">
 									<AlertTitle>{t("Disable 2-factor authentication")}</AlertTitle>
 									<AlertDescription>
@@ -369,7 +373,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 							)}
 						</>
 					) : (
-						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
+						<Alert className="flex flex-col md:flex-row gap-1 justify-between z-0">
 							<div className="flex flex-col">
 								<AlertTitle>{t("Enable 2-factor authentication")}</AlertTitle>
 								<AlertDescription>
@@ -440,7 +444,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 												<p>
 													{t("Scan the QR code with your app for 2-factor authentication.")}
 												</p>
-												<div className="w-fit flex flex-col items-center w-full">
+												<div className="flex flex-col items-center w-full">
 													<QRCodeSVG value={resp.data.totpURI} className="w-full" />
 													<p className="mt-2 w-full text-left">
 														{t("If you can't scan the QR code, enter this code:")}
@@ -619,8 +623,8 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 						return (
 							<Alert
 								key={session.id}
-								className={cn("flex flex-col md:flex-row gap-1 justify-between -z-0", {
-									"bg-sidebar": session.isCurrentSession,
+								className={cn("flex flex-col md:flex-row gap-1 justify-between z-0", {
+									"bg-sidebar": session.id === currentSession.id,
 								})}
 							>
 								<div className="flex gap-4 items-center">
@@ -628,7 +632,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 									<div className="flex flex-col gap-1">
 										<AlertTitle className="flex items-center gap-4 w-full ">
 											{session.userAgent?.split("/")[0] || t("Unknown Device")}
-											{session.isCurrentSession && <Badge>{t("Current session")}</Badge>}
+											{session.id === currentSession.id && <Badge>{t("Current session")}</Badge>}
 										</AlertTitle>
 										<AlertDescription>
 											{session.ipAddress && (
@@ -645,7 +649,7 @@ export function SecuritySettings({ passkeys, hasPassword, hasTwoFactor, sessions
 										</AlertDescription>
 									</div>
 								</div>
-								{!session.isCurrentSession && (
+								{session.id !== currentSession.id && (
 									<Button
 										type="button"
 										variant="destructive"
