@@ -3,118 +3,236 @@ description:
 globs:
 alwaysApply: true
 ---
-## Package Management and Development
-- Use `bun` as the package manager
+## Tech Stack
+### Monorepo Structure (Bun Workspaces)
+- `apps/web`: Next.js 16+ App Router frontend (Tailwind CSS, shadcn/ui)
+- `apps/backend`: Bun runtime backend (custom Router, Drizzle ORM)
+- Shared: PostgreSQL database, Biome for formatting/linting
 
-## Code Style
-- Never use `forEach`, always use `for...of` loops instead
-- Always use block statements with curly braces {}, even for single-line conditions
-- Use Biome for formatting and linting (configured in biome.json)
-- No ESLint or Prettier - exclusively use Biome
-- Use shadcn/ui components with Tailwind CSS for UI components
-- Use TypeScript for type safety
-- Always use absolute imports
+### Core Dependencies
+- Runtime and Package Manager: Bun
+- Internationalization: next-intl (with automatic extraction)
+- Validation: Zod
+- Authentication: better-auth
+- Database ORM: Drizzle
+- URL State: nuqs
+- API Type Generation: openapi-typescript
 
-## State Management & Data Fetching
-- Use `next-safe-action` for type-safe server actions
-- Use React Server Components where we have to use server components, but try to keep everything
-on the backend unless incredibly important to be run on the nextjs server.
-- Use client components only when necessary (e.g., for interactivity)
-- Use [nuqs](src/lib/nuqs) for URL state management in tables and filters
+---
 
-## Project Structure
-- **Monorepo**: Bun workspaces with two main apps:
-  - `apps/web`: Next.js 16+ frontend (App Router)
-  - `apps/backend`: Custom API server (Bun runtime)
-- **Frontend structure**:
-  - Pages and routes follow Next.js App Router structure
-  - Group related components in `_components` folders next to their pages
-  - Use aliases for imports (configured in components.json):
-    - `@/components`
-    - `@/lib`
-    - `@/hooks`
-    - `@/ui`
-- **Backend structure**:
-  - Routes are organized in `src/routes/` (clubs.ts, events.ts, users.ts, countries.ts)
-  - Custom Router class in `src/lib/router.ts`
-  - OpenAPI documentation auto-generated from route schemas
-  - API available at `/api/docs` (Swagger UI) and `/api/openapi.json`
+## Coding Rules
 
-## Database
-- **Frontend (`apps/web`)**: Uses backend API for data access
-- **Backend (`apps/backend`)**: Uses Drizzle ORM
-  - Schema is defined in `apps/backend/src/drizzle/schema.ts`
-  - Use `createSelectSchema` from `drizzle-zod` for Zod schema generation
-  - Database commands: `db:generate`, `db:push`, `db:migrate`, `db:studio`, `db:seed`
-  - Both apps share the same PostgreSQL database but use different ORMs
+### Hard Constraints
+- NEVER use `forEach`. Always use `for...of` loops.
+- ALWAYS use block statements with curly braces `{}`, even for single-line conditions.
+- ALWAYS use absolute imports (e.g., `@/components/...`).
+- Zod import style: `import * as z from "zod";` (NEVER `import { z } from "zod";`).
+- NEVER use `any` or `never`. Prefer type inference over manual re-typing.
+- NO redundant comments. Code should be self-explanatory.
 
-## Authentication
-- Uses [better-auth](package.json) for authentication management
+### File Naming Conventions
+- Forms: `[feature].form.tsx`
+- Schemas: `[feature].schema.ts` (Keep schemas in separate files for sharing between actions and components).
+- Related components: Group in `_components` folders next to their pages.
 
-## Zod
-always do import * as z from "zod";, never import { z } from "zod"
+### Path Aliases (defined in tsconfig.json)
+- `@/components/*`
+- `@/lib/*`
+- `@/hooks/*`
+- `@/ui/*`
 
-## Other
-- Always use `date-fns` for date operations
-- Always use `react-hook-form` and `zod` for forms
-- Schemas should be in a separate file so they can be imported in actions as well
-- File naming convention (e.g., for password reset):
-  - `password-reset.form.tsx`
-  - `password-reset.schema.ts`
-- **Backend API**:
-  - Use Zod schemas for validation (with `drizzle-zod` for Drizzle schemas)
-  - Route schemas automatically generate OpenAPI documentation
-  - Use `response.error({ error: string }, statusCode)` for error responses
-  - Use `response.json(data)` for success responses
-  - When returning JSON fields from Drizzle (e.g., `jsonb()` columns), cast them to match schema types:
-    - `gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"]`
-    - `mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"]`
-    - `actionData: log.actionData as Record<string, unknown>`
-  - If you're using fetch and the backend route isn't typed, regenerate the api types on the frontend instead of casting as any.
-  - Never use any, never use never, always be as correct with types as you can. Always try to infer instead of re-typing.
-  - Never add stupid comments, or comments to things that are self-explainable or stupidly simple to understand.
+---
 
-## Formatting and linting
-- You can use `bun check`
+## Frontend (apps/web)
 
-## To translate, use useExtracted() on client or await getExtracted() on server.
+### Components
+- Favor React Server Components where possible.
+- Keep logic on the backend unless strictly required on the Next.js server.
+- Use Client Components (`"use client"`) only for interactivity.
 
-Here is the documentation:
-useExtracted
-As an alternative to managing namespaces and keys manually, next-intl provides an additional API that works similar to useExtracted but automatically extracts messages from your source files.
+### Data Fetching
+- Use `next-safe-action` for type-safe server actions.
+- Use `apiServer` from `@/lib/api/api.ts` for server-side fetches (includes cookie forwarding and rate-limit bypass).
+- Use `apiClient` from `@/lib/api/api.client.ts` for client-side fetches.
+- If a backend route is missing types, run `bun run api:generate-types` to regenerate from OpenAPI.
 
-import {useExtracted} from 'next-intl';
+### API Type Helpers
+- Import shared types from `@/lib/api/api-type-helpers.ts`:
+  - `User`, `Session`, `Club`, `Event`, `ClubMember`, `EventRegistration`, `Role`, etc.
+- Use `ApiResponse<Path, Method>` helper to extract response types from any endpoint.
 
-function InlineMessages() {
+### SEO and Metadata
+- Use `constructCanonicalUrl(baseUrl, pathname, locale)` for canonical URLs.
+- Use `generatePageLanguages(baseUrl, pathname, locale)` for hreflang alternates.
+- For entities with slugs (clubs, events, users), use `generateHreflangAlternatesForSluggableEntity`.
+- All utilities are in `@/lib/utils.ts`.
+
+### Feature Flags
+- Defined in `src/lib/server-utils.ts`.
+- Current flags: `CLUBS_SPENDING`, `REVIEWS`, `EVENT_REGISTRATION`.
+
+### Internationalization (i18n)
+- Use `useExtracted()` (client) or `await getExtracted()` (server) for translations.
+- Calls must be statically analyzable (literal strings only).
+- Example:
+  ```typescript
   const t = useExtracted();
-  return <h1>{t('Look ma, no keys!')}</h1>;
-}
+  return <h1>{t('My Heading')}</h1>;
+  ```
 
-Extraction integrates automatically with next dev and next build via a Turbo- or Webpack loader, you don’t need to manually trigger it.
+---
 
-When the above file is compiled, this will:
+## Backend (apps/backend)
 
-Extract the inline message with an automatically assigned key to your source locale:
-messages/en.json
-{
-  "VgH3tb": "Look ma, no keys!"
-}
+### Custom Router
+- Defined in `src/lib/router.ts`.
+- Route methods: `router.get()`, `router.post()`, `router.put()`, `router.delete()`.
+- Route options: `{ auth: boolean, rateLimit: RateLimitConfig | false, schema: RouteSchema }`.
 
-Keeps target locales in sync by either adding empty entries or removing outdated ones:
-messages/bs.json
-{
-  "VgH3tb": ""
-}
+### Route Schema Definition
+- Always define `body`, `query`, and `response` schemas in the route definition.
+- Schemas automatically generate OpenAPI documentation.
+- Example:
+  ```typescript
+  const createClubSchema = {
+    body: z.object({ name: z.string() }),
+    response: responseSchema([200, 201], z.object({ club: clubSelectSchema })),
+    summary: "Create a new club",
+    tags: ["Clubs"],
+  };
+  
+  clubsRouter.post("/clubs", async ({ body, response, context }) => {
+    // handler logic
+    return response.json({ club }, 201);
+  }, { auth: true, schema: createClubSchema });
+  ```
 
-Compiles the file to replace useExtracted with useExtracted
-import {useExtracted} from 'next-intl';
+### Response Helpers
+- Success: `response.json(data, statusCode?)` (default 200)
+- Error: `response.error(errorData, statusCode?)` (default 400)
+- Redirect: `response.redirect(url, 301 | 302)`
 
-function InlineMessages() {
-  const t = useExtracted();
-  return <h1>{t('VgH3tb')}</h1>;
-}
+### Error Handling
+- Use `apiError` factory from `src/lib/errors.ts` for standardized errors.
+- Available factories:
+  - `apiError.unauthorized(message?, details?)`
+  - `apiError.forbidden(message?, details?)`
+  - `apiError.notFound(resource, details?)`
+  - `apiError.validation(message?, details?)`
+  - `apiError.conflict(message?, details?)`
+  - `apiError.rateLimited(message?, details?)`
+  - `apiError.internal(message?, details?, cause?)`
+  - `apiError.database(message?, details?, cause?)`
+- Throwing an `AppError` will automatically format the response.
 
-useExtracted/getExtracted need to be statically analysable, so you can’t call them conditionally or inside loops. If you have a choice, assign both, eg:
-const a = useExtracted();
-const b = useExtracted();
-const message = condition ? a('...') : b('...');
+### Drizzle ORM
+- Schema is in `src/drizzle/schema.ts`.
+- Use `createSelectSchema` from `drizzle-zod` for Zod schema generation.
+- JSONB fields must be cast: `mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"]`.
+
+### Rate Limiting
+- Global rate limit: 100 requests/minute per IP.
+- Route-specific limits can be set via `rateLimit` option.
+- Disable for a route with `rateLimit: false`.
+- Internal requests bypass rate limiting via `x-internal-api-secret` header.
+
+---
+
+## Authentication (better-auth)
+
+### Configuration
+- Located in `apps/backend/src/lib/auth.ts`.
+- Plugins: `passkey`, `twoFactor`, `oneTap`, `admin`, `emailHarmony`, `captcha`, `lastLoginMethod`, `openAPI`.
+
+### Custom User Fields
+- `callsign` (string): User's callsign
+- `language` (string): Preferred language (bs, en, sr)
+- `font` (string): Preferred font (sans, mono)
+- `theme` (string): Preferred theme (dark, light)
+- `style` (string): UI density style (relaxed, compact)
+
+### Database Hooks
+- `user.update.after`: Automatically accepts pending club invites when email is verified.
+
+### Client Usage
+- Use `authClient` from `@/lib/auth-client.ts`.
+- Use `useIsAuthenticated()` hook to get current user and loading state.
+
+---
+
+## File Storage (S3)
+
+### Backend Utilities (src/lib/storage.ts)
+- `getS3UploadUrl(key, type, size, userId?)`: Generate pre-signed PUT URL.
+- `deleteS3Files(keys, userId?)`: Delete files from S3.
+- `generateKeyWithSize(baseKey, size)`: Include file size in key for quota tracking.
+- Allowed types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`.
+- Max file size: 5MB.
+
+### Frontend Hook
+- Use `useFileUpload` from `@/hooks/use-file-upload.ts` for managing uploads.
+- Handles multiple files, progress tracking, and error handling.
+
+### Image Versioning
+- Use `addImageVersion(url)` from `@/lib/utils.ts` to cache-bust images.
+
+---
+
+## Database Schema (Key Tables)
+
+### Core Entities
+- `User`: id, email, name, slug, callsign, language, font, theme, style, role, gear (jsonb[])
+- `Club`: id, name, slug, location, latitude, longitude, countryId, isPrivate, isAllied
+- `Event`: id, name, slug, clubId, dateStart, dateEnd, location, mapData (jsonb), gearRequirements (jsonb[])
+
+### Relationships
+- `ClubMembership`: userId, clubId, role (USER | MANAGER | CLUB_OWNER)
+- `ClubInvite`: email, clubId, status (PENDING | ACCEPTED | REJECTED | EXPIRED | REVOKED | REQUESTED)
+- `EventRegistration`: eventId, createdById, type, paymentMethod, attended
+
+### Audit Logging
+- `ClubAuditLog`: clubId, userId, actionType, actionData (jsonb), ipAddress, userAgent
+
+---
+
+## Development Workflows
+
+### Database Commands (run in apps/backend)
+- `bun db:generate`: Generate migrations from schema changes
+- `bun db:push`: Push schema directly to database (dev only)
+- `bun db:migrate`: Run migrations
+- `bun db:studio`: Open Drizzle Studio GUI
+- `bun db:seed`: Seed the database
+
+### API Type Generation (run in apps/web)
+- `bun run api:generate-types`: Fetches OpenAPI spec and generates TypeScript types.
+- Pre-run automatically before `bun run dev` via `predev` script.
+
+### Linting and Formatting
+- `bun check`: Run Biome linting and formatting checks.
+- Use Biome exclusively (no ESLint or Prettier).
+
+---
+
+## Project-Specific Patterns
+
+### Sluggable Entities
+- Clubs, Events, and Users can have custom slugs.
+- Routes accept both ID and slug: `/clubs/{id}`, `/events/{id}`, `/users/{id}`.
+- Backend resolves by checking if parameter is UUID or slug.
+
+### JSONB Fields
+- `Event.mapData`: GeoJSON data for map display.
+- `Event.gearRequirements`: Array of gear requirement objects.
+- `User.gear`: Array of user gear objects.
+- `ClubAuditLog.actionData`: Arbitrary action metadata.
+- Always cast when querying: `e.mapData as z.infer<typeof schema>["mapData"]`.
+
+### Privacy Settings
+- Users: `isPrivate`, `isPrivateEmail`, `isPrivatePhone`, `isPrivateStats`
+- Clubs: `isPrivate`, `isPrivateStats`
+
+### Instagram Integration
+- Clubs can connect Instagram accounts.
+- Token management: `instagramAccessToken`, `instagramTokenExpiry`, `instagramRefreshToken`.
+- Page selection via `InstagramPageSelection` table.

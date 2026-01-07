@@ -12,6 +12,9 @@ import { env } from "@/lib/env";
 
 export const authClient = createAuthClient({
 	baseURL: env.NEXT_PUBLIC_BACKEND_URL,
+	fetchOptions: {
+		credentials: "include",
+	},
 	plugins: [
 		passkeyClient(),
 		oneTapClient({

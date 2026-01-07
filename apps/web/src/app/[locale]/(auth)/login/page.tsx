@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
-import { BadgeSoon } from "@/components/badge-soon";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -264,7 +263,7 @@ export default function LoginPage() {
 							<Button
 								variant="outline"
 								className="w-full"
-								disabled={isLoading || true}
+								disabled={isLoading}
 								type="button"
 								onClick={async () => {
 									await authClient.signIn.passkey(
@@ -285,7 +284,6 @@ export default function LoginPage() {
 								}}
 							>
 								<Key className="w-4 h-4 inline-block" /> Passkey
-								<BadgeSoon />
 							</Button>
 							<GoogleLoginButton redirectTo={redirectTo} wasLastMethod={lastMethod === "google"} />
 						</div>
