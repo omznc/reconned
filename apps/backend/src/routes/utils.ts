@@ -435,6 +435,7 @@ utilsRouter.get(
 const validateSlugBodySchema = z.object({
 	type: z.enum(["club", "event", "user"]),
 	slug: z.string().min(1),
+	excludeId: z.string().optional(),
 });
 
 utilsRouter.post(
@@ -447,6 +448,12 @@ utilsRouter.post(
 					db.select().from(club).where(eq(club.id, body.slug)).limit(1),
 				]);
 
+				if (body.excludeId) {
+					return response.json({
+						available: !(clubBySlug[0] && clubBySlug[0].id !== body.excludeId) && !clubById[0],
+					});
+				}
+
 				return response.json({
 					available: clubBySlug.length === 0 && clubById.length === 0,
 				});
@@ -457,6 +464,12 @@ utilsRouter.post(
 					db.select().from(event).where(eq(event.id, body.slug)).limit(1),
 				]);
 
+				if (body.excludeId) {
+					return response.json({
+						available: !(eventBySlug[0] && eventBySlug[0].id !== body.excludeId) && !eventById[0],
+					});
+				}
+
 				return response.json({
 					available: eventBySlug.length === 0 && eventById.length === 0,
 				});
@@ -466,6 +479,12 @@ utilsRouter.post(
 					db.select({ id: user.id }).from(user).where(eq(user.slug, body.slug)).limit(1),
 					db.select({ id: user.id }).from(user).where(eq(user.id, body.slug)).limit(1),
 				]);
+
+				if (body.excludeId) {
+					return response.json({
+						available: !(userBySlug[0] && userBySlug[0].id !== body.excludeId) && !userId[0],
+					});
+				}
 
 				return response.json({
 					available: userBySlug.length === 0 && userId.length === 0,

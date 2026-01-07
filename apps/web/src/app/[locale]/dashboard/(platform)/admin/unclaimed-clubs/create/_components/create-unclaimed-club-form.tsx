@@ -26,6 +26,7 @@ import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
+import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
 	ssr: false,
@@ -41,6 +42,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 	const t = useExtracted();
 	const locale = useLocale();
 	const router = useRouter();
+	const httpsUrlSchema = useHttpsUrlSchema();
 
 	// Map locale string to date-fns locale object
 	const getDateFnsLocale = () => {
@@ -94,7 +96,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 		headerImage: z.string().optional(),
 		contactPhone: z.string().optional(),
 		contactEmail: z.string().optional(),
-		website: z.string().optional(),
+		website: httpsUrlSchema.optional(),
 		instagramUsername: z.string().optional(),
 	});
 	const clubIdRef = useRef<string | null>(null);
@@ -697,7 +699,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 						<FormItem>
 							<FormLabel>{t("Website")}</FormLabel>
 							<FormControl>
-								<Input placeholder="https://..." {...field} />
+								<Input placeholder="https://..." maxLength={150} {...field} />
 							</FormControl>
 							<FormDescription>{t("Website")}</FormDescription>
 							<FormMessage />

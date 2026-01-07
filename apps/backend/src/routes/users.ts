@@ -17,7 +17,7 @@ import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
 import { posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
-import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
+import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { getS3UploadUrl } from "../lib/storage";
 import { Sanitize } from "../lib/user-sanitization";
 
@@ -692,6 +692,19 @@ usersRouter.get(
 	},
 );
 
+async function validateUserSlug(slug: string, excludeUserId?: string): Promise<boolean> {
+	const [userBySlug, userById] = await Promise.all([
+		db.select().from(user).where(eq(user.slug, slug)).limit(1),
+		db.select().from(user).where(eq(user.id, slug)).limit(1),
+	]);
+
+	if (excludeUserId) {
+		return !(userBySlug[0] && userBySlug[0].id !== excludeUserId) && !userById[0];
+	}
+
+	return !userBySlug[0] && !userById[0];
+}
+
 usersRouter.put(
 	"/users/:id",
 	async ({ params, response, context, body }) => {
@@ -702,6 +715,21 @@ usersRouter.put(
 
 		if (!context.user || context.user.id !== userId) {
 			throw apiError.unauthorized("Unauthorized");
+		}
+
+		// Fetch existing user data for validation checks
+		const existingUserData = await db.select({ slug: user.slug }).from(user).where(eq(user.id, userId)).limit(1);
+
+		if (!existingUserData[0]) {
+			throw apiError.validation("User not found");
+		}
+
+		// Validate slug only if it's being changed
+		if (body.slug && body.slug !== existingUserData[0].slug) {
+			const valid = await validateUserSlug(body.slug, userId);
+			if (!valid) {
+				throw apiError.validation("Slug is already taken");
+			}
 		}
 
 		// Filter out undefined values and handle empty strings
@@ -758,7 +786,7 @@ usersRouter.put(
 			body: z.object({
 				name: z.string().min(1).max(50).optional(),
 				bio: z.string().max(200).optional(),
-				website: z.string().url().or(z.literal("")).optional(),
+				website: httpsUrl.optional(),
 				location: z.string().max(100).optional(),
 				phone: z.string().max(20).optional(),
 				slug: z.string().max(50).optional(),

@@ -28,6 +28,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
+import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
 	ssr: false,
@@ -65,6 +66,8 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 		}
 	};
 
+	const httpsUrlSchema = useHttpsUrlSchema();
+
 	const clubInfoSchema = z.object({
 		name: z
 			.string()
@@ -91,16 +94,19 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			message: t("Club description must be shorter than 5000 characters"),
 		}),
 		slug: z.string().optional(),
-		dateFounded: z.date().refine(
-			(date) => {
-				const today = new Date();
-				today.setHours(23, 59, 59, 999); // End of today
-				return date <= today;
-			},
-			{
-				message: t("Date founded cannot be in the future"),
-			},
-		),
+		dateFounded: z
+			.date()
+			.refine(
+				(date) => {
+					const today = new Date();
+					today.setHours(23, 59, 59, 999);
+					return date <= today;
+				},
+				{
+					message: t("Date founded cannot be in the future"),
+				},
+			)
+			.optional(),
 		isAllied: z.boolean().optional(),
 		isPrivate: z.boolean().optional(),
 		isPrivateStats: z.boolean().optional(),
@@ -109,7 +115,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 		contactPhone: z.string().optional(),
 		contactEmail: z.string().optional(),
 		clubId: z.string().optional(),
-		website: z.string().optional(),
+		website: httpsUrlSchema.optional(),
 		instagramUsername: z.string().optional(),
 	});
 
@@ -566,6 +572,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 					render={({ field }) => (
 						<SlugInput
 							currentSlug={club?.slug}
+							currentId={club?.id}
 							defaultSlug={field.value}
 							type="club"
 							onValid={(slug) => {
@@ -790,7 +797,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 						<FormItem>
 							<FormLabel>{t("Website")}</FormLabel>
 							<FormControl>
-								<Input placeholder="https://..." {...field} />
+								<Input placeholder="https://..." maxLength={150} {...field} />
 							</FormControl>
 							<FormDescription>{t("Website")}</FormDescription>
 							<FormMessage />

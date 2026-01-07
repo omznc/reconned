@@ -22,6 +22,7 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import apiClient from "@/lib/api/api.client.ts";
 import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { addImageVersion } from "@/lib/utils";
+import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 import { ImageCropDialog } from "./image-crop-dialog.tsx";
 
 type User = ApiResponse<"/api/users/{id}", "get">;
@@ -35,6 +36,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 	const [cropFile, setCropFile] = useState<File | null>(null);
 	const t = useExtracted();
 	const router = useRouter();
+	const httpsUrlSchema = useHttpsUrlSchema();
 
 	const userInfoSchema = z.object({
 		name: z
@@ -49,7 +51,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 		headerImage: z.string().optional(),
 		bio: z.string().max(200, { message: t("Bio must be shorter than 200 characters") }),
 		location: z.string().optional(),
-		website: z.string().optional(),
+		website: httpsUrlSchema.optional(),
 		phone: z.string().optional(),
 		callsign: z.string().optional(),
 		slug: z.string().optional(),
@@ -204,6 +206,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 				const valid = await validateSlug({
 					type: "user",
 					slug: values.slug,
+					excludeId: props.user.id,
 				});
 				if (!valid) {
 					toast.error(t("Link taken"));
@@ -372,6 +375,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 						render={({ field }) => (
 							<SlugInput
 								currentSlug={props.user?.slug}
+								currentId={props.user?.id}
 								defaultSlug={field.value}
 								type="user"
 								onValid={(slug) => {
@@ -440,7 +444,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							<FormItem>
 								<FormLabel>{t("Website")}</FormLabel>
 								<FormControl>
-									<Input placeholder="https://..." {...field} />
+									<Input placeholder="https://..." maxLength={150} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>

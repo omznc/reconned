@@ -9102,7 +9102,7 @@ export interface operations {
 				"application/json": {
 					name?: string;
 					bio?: string;
-					website?: string | "";
+					website?: unknown;
 					location?: string;
 					phone?: string;
 					slug?: string;
@@ -10228,6 +10228,7 @@ export interface operations {
 								callsign: string | null;
 								location: string | null;
 								bio: string | null;
+								/** Format: uri */
 								website: string | null;
 								createdAt: string;
 								slug: string | null;
@@ -10600,7 +10601,7 @@ export interface operations {
 					headerImage?: string;
 					contactPhone?: string;
 					contactEmail?: string;
-					website?: string | "";
+					website?: unknown;
 					instagramUsername?: string;
 				};
 			};
@@ -12733,7 +12734,7 @@ export interface operations {
 					headerImage?: string | null;
 					contactPhone?: string;
 					contactEmail?: string;
-					website?: string | "";
+					website?: unknown;
 					instagramUsername?: string;
 				};
 			};
@@ -16065,6 +16066,7 @@ export interface operations {
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
+							/** Format: uri */
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
@@ -16149,6 +16151,7 @@ export interface operations {
 						contactPhone: string | null;
 						contactEmail: string | null;
 						verified: boolean;
+						/** Format: uri */
 						website: string | null;
 						instagramUsername: string | null;
 						instagramProfilePictureUrl: string | null;
@@ -16446,6 +16449,7 @@ export interface operations {
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
+							/** Format: uri */
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
@@ -16524,7 +16528,7 @@ export interface operations {
 					contactPhone?: string;
 					/** Format: email */
 					contactEmail?: string;
-					website?: string | "";
+					website?: unknown;
 					instagramUsername?: string;
 				};
 			};
@@ -16554,6 +16558,7 @@ export interface operations {
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
+							/** Format: uri */
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
@@ -16654,6 +16659,7 @@ export interface operations {
 						contactPhone: string | null;
 						contactEmail: string | null;
 						verified: boolean;
+						/** Format: uri */
 						website: string | null;
 						instagramUsername: string | null;
 						instagramProfilePictureUrl: string | null;
@@ -16751,7 +16757,7 @@ export interface operations {
 					contactPhone?: string;
 					/** Format: email */
 					contactEmail?: string;
-					website?: string | "";
+					website?: unknown;
 					instagramUsername?: string;
 				};
 			};

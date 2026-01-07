@@ -34,7 +34,7 @@ import {
 import { sendEmail } from "../lib/mail";
 import { posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
-import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
+import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
 function isValidLanguage(lang: unknown): lang is "en" | "bs" | "sr" {
 	return typeof lang === "string" && (lang === "en" || lang === "bs" || lang === "sr");
@@ -97,7 +97,7 @@ const createClubBodySchema = z.object({
 	headerImage: z.string().optional(),
 	contactPhone: z.string().max(20).optional(),
 	contactEmail: z.string().max(255).optional(),
-	website: z.string().url().or(z.literal("")).optional(),
+	website: httpsUrl.optional(),
 	instagramUsername: z.string().max(30).optional(),
 });
 
@@ -117,7 +117,7 @@ const updateClubBodySchema = z.object({
 	headerImage: z.string().nullable().optional(),
 	contactPhone: z.string().max(20).optional(),
 	contactEmail: z.string().max(255).optional(),
-	website: z.string().url().or(z.literal("")).optional(),
+	website: httpsUrl.optional(),
 	instagramUsername: z.string().max(30).optional(),
 });
 
@@ -3079,7 +3079,14 @@ clubsRouter.put(
 			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
-		if (body.slug) {
+		// Fetch existing club data for validation checks
+		const existingClubData = await db.select({ slug: club.slug }).from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!existingClubData[0]) {
+			throw apiError.notFound("Club not found");
+		}
+
+		if (body.slug && body.slug !== existingClubData[0].slug) {
 			const valid = await validateSlug(body.slug, clubId);
 			if (!valid) {
 				throw apiError.validation("Slug is already taken");
@@ -5285,7 +5292,7 @@ clubsRouter.get(
 								callsign: z.string().nullable(),
 								location: z.string().nullable(),
 								bio: z.string().nullable(),
-								website: z.string().nullable(),
+								website: z.url().nullable(),
 								createdAt: z.string(),
 								slug: z.string().nullable(),
 							}),

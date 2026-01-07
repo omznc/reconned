@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 interface SlugInputProps {
 	type: "club" | "event" | "user";
 	currentSlug?: string | null;
+	currentId?: string;
 	defaultSlug?: string;
 	onValid: (_: string) => void;
 	onValidityChange: (_: boolean) => void;
@@ -43,6 +44,7 @@ export function SlugInput(props: SlugInputProps) {
 		validateSlug({
 			type: props.type,
 			slug: debouncedSlug,
+			excludeId: props.currentId,
 		}).then((isAvailable) => {
 			setValid(isAvailable);
 			props.onValidityChange(isAvailable);
@@ -50,7 +52,7 @@ export function SlugInput(props: SlugInputProps) {
 				props.onValid(debouncedSlug);
 			}
 		});
-	}, [debouncedSlug]);
+	}, [debouncedSlug, props.currentId]);
 
 	return (
 		<FormItem>
