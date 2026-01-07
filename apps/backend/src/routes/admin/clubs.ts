@@ -25,7 +25,7 @@ const baseClubSchema = z.object({
 	contactPhone: z.string().nullable(),
 	contactEmail: z.string().nullable(),
 	verified: z.boolean(),
-	website: z.string().nullable(),
+	website: z.url().nullable(),
 	instagramUsername: z.string().nullable(),
 	instagramProfilePictureUrl: z.string().nullable(),
 	instagramAccessToken: z.string().nullable(),

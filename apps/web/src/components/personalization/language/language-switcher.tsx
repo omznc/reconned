@@ -2,7 +2,7 @@
 import { Globe } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
 import posthog from "posthog-js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import {
@@ -27,17 +27,6 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 	const locale = useLocale();
 	const { user } = useIsAuthenticated();
 	const [isChanging, setIsChanging] = useState(false);
-	const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const lastUpdatedLocaleRef = useRef<string | null>(null);
-
-	useEffect(() => {
-		// Clear any pending timeout on unmount
-		return () => {
-			if (updateTimeoutRef.current) {
-				clearTimeout(updateTimeoutRef.current);
-			}
-		};
-	}, []);
 
 	useEffect(() => {
 		// Validate locale
@@ -55,18 +44,13 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 			return;
 		}
 
-		// Skip if we already updated to this locale recently
-		if (lastUpdatedLocaleRef.current === locale) {
-			return;
+		// Immediately persist to localStorage as fallback
+		if (typeof window !== "undefined") {
+			localStorage.setItem("user-language-preference", locale);
 		}
 
-		// Clear any pending timeout
-		if (updateTimeoutRef.current) {
-			clearTimeout(updateTimeoutRef.current);
-		}
-
-		// Debounce the API call
-		updateTimeoutRef.current = setTimeout(async () => {
+		// Update language preference immediately
+		const updateLanguage = async () => {
 			try {
 				const { error } = await apiClient.PUT("/api/users/{id}/language", {
 					params: {
@@ -83,8 +67,6 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 					throw new Error(error.error || "Failed to update language preference");
 				}
 
-				lastUpdatedLocaleRef.current = locale;
-
 				posthog.capture("preference_changed", {
 					user_id: user.id,
 					preference_type: "language",
@@ -95,7 +77,9 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 				console.error("Failed to update language preference:", error);
 				// Don't show toast for language changes as it might be confusing
 			}
-		}, 500);
+		};
+
+		updateLanguage();
 	}, [locale, user]);
 
 	const handleLanguageChange = async (localeOption: string) => {

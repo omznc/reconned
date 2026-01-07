@@ -670,6 +670,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 								render={({ field }) => (
 									<SlugInput
 										currentSlug={props.event?.slug}
+										currentId={props.event?.id}
 										defaultSlug={field.value}
 										type="event"
 										onValid={(slug) => {

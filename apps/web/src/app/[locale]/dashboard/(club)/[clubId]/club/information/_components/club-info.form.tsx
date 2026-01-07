@@ -43,6 +43,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse, Club } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
+import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 
 type Country = ApiResponse<"/api/countries", "get">[number];
 
@@ -84,6 +85,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const confirm = useConfirm();
 	const t = useExtracted();
 	const locale = useLocale();
+	const httpsUrlSchema = useHttpsUrlSchema();
 
 	// Map locale string to date-fns locale object
 	const getDateFnsLocale = () => {
@@ -146,7 +148,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		contactPhone: z.string().optional(),
 		contactEmail: z.string().optional(),
 		clubId: z.string().optional(),
-		website: z.string().optional(),
+		website: httpsUrlSchema.optional(),
 		instagramUsername: z.string().optional(),
 	});
 	const clubIdRef = useRef<string | null>(props.club?.id || null);
@@ -876,6 +878,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						render={({ field }) => (
 							<SlugInput
 								currentSlug={props.club?.slug}
+								currentId={props.club?.id}
 								defaultSlug={field.value}
 								type="club"
 								onValid={(slug) => {
@@ -1112,7 +1115,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<FormItem>
 								<FormLabel>{t("Website")}</FormLabel>
 								<FormControl>
-									<Input placeholder="https://..." {...field} />
+									<Input placeholder="https://..." maxLength={150} {...field} />
 								</FormControl>
 								<FormDescription>{t("Website")}</FormDescription>
 								<FormMessage />

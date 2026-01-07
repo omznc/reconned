@@ -7,7 +7,7 @@ import { db } from "../../lib/db";
 import { apiError } from "../../lib/errors";
 import { posthog } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
-import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
+import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 import { getS3UploadUrl } from "../../lib/storage";
 
 const adminUnclaimedClubsRouter = new Router();
@@ -28,7 +28,7 @@ const baseClubSchema = z.object({
 	contactPhone: z.string().nullable(),
 	contactEmail: z.string().nullable(),
 	verified: z.boolean(),
-	website: z.string().nullable(),
+	website: z.url().nullable(),
 	instagramUsername: z.string().nullable(),
 	instagramProfilePictureUrl: z.string().nullable(),
 	instagramAccessToken: z.string().nullable(),
@@ -279,7 +279,7 @@ adminUnclaimedClubsRouter.post(
 				isPrivateStats: z.boolean().optional(),
 				contactPhone: z.string().optional(),
 				contactEmail: z.string().email().optional(),
-				website: z.string().url().or(z.literal("")).optional(),
+				website: httpsUrl.optional(),
 				instagramUsername: z.string().optional(),
 			}),
 			response: {
@@ -381,7 +381,7 @@ adminUnclaimedClubsRouter.put(
 				headerImage: z.string().optional(),
 				contactPhone: z.string().optional(),
 				contactEmail: z.string().email().optional(),
-				website: z.string().url().or(z.literal("")).optional(),
+				website: httpsUrl.optional(),
 				instagramUsername: z.string().optional(),
 			}),
 			response: {

@@ -3,6 +3,7 @@ import apiClient from "@/lib/api/api.client";
 type ValidateSlugArgs = {
 	type: "club" | "event" | "user";
 	slug: string;
+	excludeId?: string;
 };
 
 export async function validateSlug(args: ValidateSlugArgs): Promise<boolean> {

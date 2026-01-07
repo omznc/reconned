@@ -472,7 +472,7 @@ async function validateEventSlug(slug: string, excludeEventId?: string): Promise
 	]);
 
 	if (excludeEventId) {
-		return !eventBySlug[0] && !eventById[0] && slug !== excludeEventId;
+		return !(eventBySlug[0] && eventBySlug[0].id !== excludeEventId) && !eventById[0];
 	}
 
 	return !eventBySlug[0] && !eventById[0];
