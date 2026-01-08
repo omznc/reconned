@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
-=======
 import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
->>>>>>> dev
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { club, clubMembership, event, review, user } from "../drizzle/schema";
@@ -239,14 +235,7 @@ utilsRouter.get(
 
 				if (userClubIds.length > 0) {
 					eventWhereConditions.push(
-<<<<<<< HEAD
-						or(
-							and(eq(event.isPrivate, false), publicClubCondition),
-							sql`${event.clubId} = ANY(${userClubIds})`,
-						),
-=======
 						or(and(eq(event.isPrivate, false), publicClubCondition), inArray(event.clubId, userClubIds)),
->>>>>>> dev
 					);
 				} else {
 					eventWhereConditions.push(eq(event.isPrivate, false));
