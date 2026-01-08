@@ -7,7 +7,10 @@ Use the latest version of bun, set the environment variables (example can be fou
 ```bash
 bun dev
 ```
-This will start the development server on port 3000.
+
+This will start both development servers:
+- Frontend on port **3000** (`http://localhost:3000`)
+- Backend on port **3002** (`http://localhost:3002`)
 
 ## Structure
 ### Components
