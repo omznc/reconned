@@ -578,11 +578,7 @@ clubsRouter.get(
 				const memberClubIds = userMemberships.map((m) => m.clubId);
 
 				if (memberClubIds.length > 0) {
-<<<<<<< HEAD
-					whereConditions.push(or(eq(club.isPrivate, false), sql`${club.id} = ANY(${memberClubIds})`));
-=======
 					whereConditions.push(or(eq(club.isPrivate, false), inArray(club.id, memberClubIds)));
->>>>>>> dev
 				} else {
 					whereConditions.push(eq(club.isPrivate, false));
 				}
@@ -2739,9 +2735,6 @@ clubsRouter.post(
 			.limit(1);
 
 		if (!inviteData[0]) {
-<<<<<<< HEAD
-			throw apiError.notFound("Invite not found or expired");
-=======
 			// Check if invite exists with different status or expired
 			const anyInvite = await db.select().from(clubInvite).where(eq(clubInvite.inviteCode, inviteCode)).limit(1);
 
@@ -2758,7 +2751,6 @@ clubsRouter.post(
 			}
 
 			throw apiError.notFound("Invite");
->>>>>>> dev
 		}
 
 		const invite = inviteData[0];
