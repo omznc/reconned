@@ -16,7 +16,9 @@
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
 		"db:seed": "bun run src/drizzle/seed.ts",
-		"typecheck": "bunx tsc --noEmit"
+		"typecheck": "bunx tsc --noEmit",
+		"task": "bun run src/tasks/run-task.ts",
+		"task:list": "bun run src/tasks/run-task.ts --list"
 	},
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "^8.2.0",

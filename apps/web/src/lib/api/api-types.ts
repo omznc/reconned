@@ -15730,6 +15730,7 @@ export interface operations {
 					/** @enum {string} */
 					type: "club" | "event" | "user";
 					slug: string;
+					excludeId?: string;
 				};
 			};
 		};
