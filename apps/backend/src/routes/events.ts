@@ -1,5 +1,5 @@
 import { randomUUIDv7 } from "bun";
-import { and, count, desc, eq, gte, ilike, lte, or, type SQL, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, inArray, lte, or, type SQL, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
@@ -65,7 +65,7 @@ eventsRouter.get(
 				});
 			}
 
-			whereConditions.push(sql`${event.clubId} = ANY(${userClubIds})`);
+			whereConditions.push(inArray(event.clubId, userClubIds));
 		}
 
 		if (isPrivateFilter !== null && isPrivateFilter !== undefined) {
@@ -94,10 +94,7 @@ eventsRouter.get(
 
 			if (userClubIds.length > 0) {
 				whereConditions.push(
-					or(
-						and(eq(event.isPrivate, false), publicClubCondition),
-						sql`${event.clubId} = ANY(${userClubIds})`,
-					),
+					or(and(eq(event.isPrivate, false), publicClubCondition), inArray(event.clubId, userClubIds)),
 				);
 			} else {
 				whereConditions.push(eq(event.isPrivate, false));
@@ -189,10 +186,7 @@ eventsRouter.get(
 
 			if (userClubIds.length > 0) {
 				whereConditions.push(
-					or(
-						and(eq(event.isPrivate, false), publicClubCondition),
-						sql`${event.clubId} = ANY(${userClubIds})`,
-					) as SQL,
+					or(and(eq(event.isPrivate, false), publicClubCondition), inArray(event.clubId, userClubIds)) as SQL,
 				);
 			} else {
 				whereConditions.push(eq(event.isPrivate, false));
@@ -288,10 +282,7 @@ eventsRouter.get(
 
 			if (userClubIds.length > 0) {
 				whereConditions.push(
-					or(
-						and(eq(event.isPrivate, false), publicClubCondition),
-						sql`${event.clubId} = ANY(${userClubIds})`,
-					) as SQL,
+					or(and(eq(event.isPrivate, false), publicClubCondition), inArray(event.clubId, userClubIds)) as SQL,
 				);
 			} else {
 				whereConditions.push(eq(event.isPrivate, false));
@@ -536,7 +527,7 @@ eventsRouter.post(
 			await db
 				.update(clubRule)
 				.set({ eventId })
-				.where(and(eq(clubRule.clubId, body.clubId), sql`${clubRule.id} = ANY(${body.ruleIds})`));
+				.where(and(eq(clubRule.clubId, body.clubId), inArray(clubRule.id, body.ruleIds)));
 		}
 
 		await logClubAudit({
@@ -700,7 +691,7 @@ eventsRouter.put(
 				await db
 					.update(clubRule)
 					.set({ eventId })
-					.where(and(eq(clubRule.clubId, existingEvent.clubId), sql`${clubRule.id} = ANY(${body.ruleIds})`));
+					.where(and(eq(clubRule.clubId, existingEvent.clubId), inArray(clubRule.id, body.ruleIds)));
 			}
 		}
 
