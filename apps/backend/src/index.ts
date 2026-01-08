@@ -17,6 +17,7 @@ import { publicRouter } from "./routes/public";
 import { reviewsRouter } from "./routes/reviews";
 import { usersRouter } from "./routes/users";
 import { utilsRouter } from "./routes/utils";
+import { scheduler } from "./tasks/scheduler";
 
 const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.trim());
 
@@ -132,3 +133,17 @@ Bun.serve({
 });
 
 console.log(`Server is running on ${env.BETTER_AUTH_URL}`);
+
+scheduler.start();
+
+process.on("SIGTERM", () => {
+	console.log("SIGTERM received, shutting down gracefully...");
+	scheduler.stop();
+	process.exit(0);
+});
+
+process.on("SIGINT", () => {
+	console.log("SIGINT received, shutting down gracefully...");
+	scheduler.stop();
+	process.exit(0);
+});
