@@ -1,0 +1,274 @@
+import { format } from "date-fns";
+import { Globe, MapPin } from "lucide-react";
+import Image from "next/image";
+import { getExtracted } from "next-intl/server";
+import { ExpandableDescription } from "@/components/overviews/expandable-description";
+import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { getPageViews } from "@/lib/analytics";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { isAuthenticated } from "@/lib/auth";
+import { cn } from "@/lib/utils";
+
+type UserResponse = ApiResponse<"/api/users/{id}", "get">;
+type UserProfileResponse = ApiResponse<"/api/users/{id}/profile", "get">;
+type UserOverviewUser = UserResponse | UserProfileResponse;
+
+interface UserOverviewProps {
+	user: UserOverviewUser;
+}
+
+export async function UserOverview({ user }: UserOverviewProps) {
+	const t = await getExtracted();
+	const [analyticsId, analyticsSlug] = await Promise.all([
+		getPageViews(`/users/${user.id}`),
+		getPageViews(`/users/${user.slug}`),
+	]);
+	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+	const futureEvents = user.eventRegistration.filter(
+		(reg: UserOverviewUser["eventRegistration"][number]) =>
+			reg.event?.dateStart && new Date(reg.event.dateStart) > new Date() && !reg.attended,
+	);
+	const pastEvents = user.eventRegistration.filter(
+		(reg: UserOverviewUser["eventRegistration"][number]) =>
+			reg.attended || (reg.event?.dateStart && new Date(reg.event?.dateStart) <= new Date()),
+	);
+
+	// Get current user to check if they're viewing their own profile
+	const currentUser = await isAuthenticated();
+	const isCurrentUser = currentUser?.id === user.id;
+
+	// Determine whether to show stats based on privacy setting and user permissions
+	const shouldShowStats = !user.isPrivateStats || isCurrentUser;
+
+	return (
+		<div className="space-y-6">
+			{user.headerImage ? (
+				<div className="relative">
+					<div className="w-full h-full max-h-[300px] overflow-hidden relative">
+						<Image
+							suppressHydrationWarning={true}
+							src={user.headerImage}
+							alt={`${user.name} header`}
+							width={1200}
+							height={300}
+							className="object-cover rounded-md"
+							draggable={false}
+						/>
+					</div>
+
+					<div className="absolute bottom-0 left-4 transform translate-y-1/2">
+						{user.image && (
+							<Image
+								suppressHydrationWarning={true}
+								src={user.image}
+								alt={user.name}
+								width={150}
+								height={150}
+								className="h-24 w-24 md:h-32 md:w-32 bg-background object-cover shadow-lg rounded-md"
+								draggable={false}
+							/>
+						)}
+					</div>
+				</div>
+			) : (
+				user.image && (
+					<div className="flex justify-start mb-4">
+						<Image
+							suppressHydrationWarning={true}
+							src={user.image}
+							alt={user.name}
+							width={150}
+							height={150}
+							className="h-32 w-32 object-cover rounded-md"
+							draggable={false}
+						/>
+					</div>
+				)
+			)}
+
+			<div
+				className={cn(
+					"flex flex-col gap-1",
+					user.image && user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : undefined,
+				)}
+			>
+				<div className="flex items-center gap-2">
+					<h1 className="text-3xl font-semibold">
+						{user.name} {user.callsign && `(${user.callsign})`}
+					</h1>
+				</div>
+				<ExpandableDescription description={user.bio || ""} />
+			</div>
+			{/* New Additional User Information Card */}
+			{/* <Card>
+                <CardHeader>
+                    <CardTitle>{t("Additional information")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-2">
+                        <li>{t("Email")}: {user.email}</li>
+                        {user.location && (
+                            <li>{t("Location")}: {user.location}</li>
+                        )}
+                        {user.phone && !user.isPrivatePhone && (
+                            <li>{t("Phone")}: {user.phone}</li>
+                        )}
+                    </ul>
+                </CardContent>
+            </Card> */}
+			<div className="flex flex-wrap gap-2">
+				{shouldShowStats && visitors > 0 && (
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						{t("{count} view/s", { count: String(visitors) })}
+					</Badge>
+				)}
+				{user.clubMembership.length === 0 && (
+					<Badge className="md:grow-0 grow flex items-center gap-1">{t("Freelancer")}</Badge>
+				)}
+				{user.website && (
+					<Link href={user.website} target="_blank" rel="noopener noreferrer" className="md:grow-0 grow">
+						<Badge className="flex items-center gap-1 hover:cursor-pointer">
+							<Globe size={16} />
+							{user.website}
+						</Badge>
+					</Link>
+				)}
+				{user.location && (
+					<Badge className="md:grow-0 grow flex items-center gap-1">
+						<MapPin size={16} />
+						{user.location}
+					</Badge>
+				)}
+				{user.phone && !user.isPrivatePhone && (
+					<Badge className="md:grow-0 grow flex items-center gap-1">{user.phone}</Badge>
+				)}
+				{user.email && !user.isPrivateEmail && (
+					<Badge className="md:grow-0 grow flex items-center gap-1">{user.email}</Badge>
+				)}
+			</div>
+			<div className="grid gap-4 md:grid-cols-2">
+				<Card>
+					<CardHeader>
+						<CardTitle>{t("Clubs")}</CardTitle>
+					</CardHeader>
+					<CardContent>
+						{user.clubMembership.length === 0 ? (
+							<p className="text-muted-foreground">{t("Not a member of any club")}</p>
+						) : (
+							<ul className="space-y-4">
+								{user.clubMembership.map((membership: UserOverviewUser["clubMembership"][number]) => {
+									if (!membership.club) {
+										return null;
+									}
+									const clubLogo = "logo" in membership.club ? membership.club.logo : null;
+									return (
+										<li key={membership.club.id} className="flex items-center gap-3">
+											{clubLogo ? (
+												<Image
+													src={clubLogo}
+													alt={membership.club.name}
+													width={32}
+													height={32}
+													className="h-auto w-8"
+												/>
+											) : (
+												<div className="h-8 w-8 bg-muted flex items-center justify-center">
+													<span className="text-xs text-muted-foreground">
+														{membership.club.name.charAt(0)}
+													</span>
+												</div>
+											)}
+											<Link
+												href={`/clubs/${membership.club.slug || membership.club.id}`}
+												className="hover:underline"
+											>
+												{membership.club.name}
+											</Link>
+										</li>
+									);
+								})}
+							</ul>
+						)}
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>{t("Upcoming events")}</CardTitle>
+					</CardHeader>
+					<CardContent>
+						{futureEvents.length === 0 ? (
+							<p className="text-muted-foreground">{t("There are no upcoming matches")}</p>
+						) : (
+							<ul className="space-y-2">
+								{futureEvents.map((reg: UserOverviewUser["eventRegistration"][number]) => {
+									if (!reg.event) {
+										return null;
+									}
+									return (
+										<li key={reg.event.id}>
+											<Link
+												href={`/events/${reg.event.slug || reg.event.id}`}
+												className="hover:underline"
+											>
+												{reg.event.name}
+											</Link>
+											<span className="text-muted-foreground ml-2">
+												(
+												{reg.event.dateStart
+													? format(new Date(reg.event.dateStart), "dd.MM.yyyy")
+													: "TBD"}
+												)
+											</span>
+										</li>
+									);
+								})}
+							</ul>
+						)}
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>{t("Previous events")}</CardTitle>
+					</CardHeader>
+					<CardContent>
+						{pastEvents.length === 0 ? (
+							<p className="text-muted-foreground">{t("No previous events")}</p>
+						) : (
+							<ul className="space-y-2">
+								{pastEvents.map((reg: UserOverviewUser["eventRegistration"][number]) => {
+									if (!reg.event) {
+										return null;
+									}
+									return (
+										<li key={reg.event.id}>
+											<Link
+												href={`/events/${reg.event.slug || reg.event.id}`}
+												className="hover:underline"
+											>
+												{reg.event.name}
+											</Link>
+											<span className="text-muted-foreground ml-2">
+												(
+												{reg.event.dateStart
+													? format(new Date(reg.event.dateStart), "dd.MM.yyyy")
+													: "TBD"}
+												)
+											</span>
+										</li>
+									);
+								})}
+							</ul>
+						)}
+					</CardContent>
+				</Card>
+			</div>
+
+			<ReviewsOverview type="user" typeId={user.id} />
+		</div>
+	);
+}
