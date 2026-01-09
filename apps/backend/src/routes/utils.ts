@@ -384,7 +384,7 @@ utilsRouter.get(
 			summary: "Search clubs, users, and events",
 			description: "Unified search across clubs, users, and events with pagination and type filtering",
 			query: paginationQuerySchema.extend({
-				search: z.string(),
+				search: z.string().optional(),
 				filter: z.string().optional(),
 			}),
 			response: {

@@ -60,6 +60,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		instagram: t("Instagram"),
 		"unclaimed-clubs": t("Unclaimed clubs"),
 		edit: t("Edit"),
+		tasks: t("Tasks"),
 	};
 
 	const getDisplayText = (section: string) => {

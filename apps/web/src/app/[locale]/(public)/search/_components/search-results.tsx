@@ -41,14 +41,11 @@ export function SearchResults() {
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useInfiniteQuery({
 		queryKey: ["search", query, filterString],
 		queryFn: async ({ pageParam = 1 }) => {
-			if (!query || query.length < 2) {
-				return { items: [], pagination: { page: 1, perPage: ITEMS_PER_PAGE, total: 0, totalPages: 0 } };
-			}
 			const result = await apiClient.GET("/api/search", {
 				params: {
 					query: {
-						search: query,
-						filter: filterString || undefined,
+						...(query ? { search: query } : {}),
+						...(filterString ? { filter: filterString } : {}),
 						page: String(pageParam),
 						perPage: String(ITEMS_PER_PAGE),
 					},
@@ -66,7 +63,7 @@ export function SearchResults() {
 			const currentPage = lastPage.pagination.page || 1;
 			return currentPage < totalPages ? currentPage + 1 : undefined;
 		},
-		enabled: !!query && query.length >= 2 && filterString.length > 0,
+		enabled: filterString.length > 0,
 		initialPageParam: 1,
 	});
 
@@ -102,12 +99,6 @@ export function SearchResults() {
 			observer.disconnect();
 		};
 	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-	if (!query || query.length < 2) {
-		return (
-			<div className="text-center text-muted-foreground py-12">{t("Enter at least 2 characters to search")}</div>
-		);
-	}
 
 	return (
 		<TooltipProvider>

@@ -30,9 +30,7 @@ export function Search() {
 	}, [query]);
 
 	const handleSearch = useDebouncedCallback(async (value: string) => {
-		if (value.length >= 2 || value.length === 0) {
-			await setQuery(value || null);
-		}
+		await setQuery(value || null);
 	}, 300);
 
 	const activeFiltersCount = [filterClubs, filterUsers, filterEvents].filter(Boolean).length;
@@ -128,9 +126,6 @@ export function Search() {
 					</PopoverContent>
 				</Popover>
 			</div>
-			{input.length > 0 && input.length < 2 && (
-				<p className="text-sm text-muted-foreground">{t("Enter at least 2 characters to search")}</p>
-			)}
 		</div>
 	);
 }

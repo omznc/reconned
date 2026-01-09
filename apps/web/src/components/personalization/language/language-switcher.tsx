@@ -34,6 +34,28 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 			return;
 		}
 
+		// Persist to cookie for middleware to read
+		if (typeof window !== "undefined" && "cookieStore" in window) {
+			const expiryDate = new Date();
+			expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1 year
+			window.cookieStore
+				.set({
+					name: "NEXT_LOCALE",
+					value: locale,
+					path: "/",
+					expires: expiryDate.getTime(),
+					sameSite: "lax",
+				})
+				.catch((error) => {
+					console.error("Failed to set locale cookie:", error);
+				});
+		} else if (typeof document !== "undefined") {
+			// Fallback for browsers that don't support Cookie Store API
+
+			// biome-ignore lint/suspicious/noDocumentCookie: It's a fallback
+			document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+		}
+
 		// Only update if user is authenticated
 		if (!user?.id) {
 			return;
@@ -89,6 +111,23 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 
 		setIsChanging(true);
 		try {
+			// Set cookie before navigation
+			if (typeof window !== "undefined" && "cookieStore" in window) {
+				const expiryDate = new Date();
+				expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1 year
+				await window.cookieStore.set({
+					name: "NEXT_LOCALE",
+					value: localeOption,
+					path: "/",
+					expires: expiryDate.getTime(),
+					sameSite: "lax",
+				});
+			} else if (typeof document !== "undefined") {
+				// Fallback for browsers that don't support Cookie Store API
+				// biome-ignore lint/suspicious/noDocumentCookie: It's a fallback
+				document.cookie = `NEXT_LOCALE=${localeOption}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+			}
+
 			router.push(path, { locale: localeOption });
 			// Give the router time to update before refreshing
 			setTimeout(() => {
