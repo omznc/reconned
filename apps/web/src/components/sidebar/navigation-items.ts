@@ -104,6 +104,11 @@ export function useAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 					url: "/dashboard/admin/unclaimed-clubs",
 					icon: Building2,
 				},
+				{
+					title: t("Tasks"),
+					url: "/dashboard/admin/tasks",
+					icon: Cog,
+				},
 			],
 		});
 	}

@@ -2961,6 +2961,46 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/admin/tasks": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List background tasks
+		 * @description Admin endpoint to list all background tasks
+		 */
+		get: operations["admintasksGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/admin/tasks/{taskName}/run": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Run background task
+		 * @description Admin endpoint to manually trigger a background task
+		 */
+		post: operations["admintaskstaskNamerunPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/public/clubs/map": {
 		parameters: {
 			query?: never;
@@ -15571,10 +15611,10 @@ export interface operations {
 	};
 	searchGet: {
 		parameters: {
-			query: {
+			query?: {
 				page?: unknown;
 				perPage?: unknown;
-				search: string;
+				search?: string;
 				filter?: string;
 			};
 			header?: never;
@@ -17207,6 +17247,61 @@ export interface operations {
 				content: {
 					"application/json": {
 						error: string;
+					};
+				};
+			};
+		};
+	};
+	admintasksGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						tasks: {
+							name: string;
+							description: string;
+							interval: string;
+						}[];
+					};
+				};
+			};
+		};
+	};
+	admintaskstaskNamerunPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				taskName: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						message: string;
+						duration?: string;
+						data?: {
+							deletedCount?: number;
+						};
 					};
 				};
 			};

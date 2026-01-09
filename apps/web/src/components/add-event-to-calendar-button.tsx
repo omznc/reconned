@@ -65,7 +65,7 @@ export default function AddEventToCalendarButton({ event }: { event: Event & { r
 			startDate={startDate}
 			timeZone="Europe/Sarajevo"
 			location={event.location}
-			options={t("components.addToCalendar.calendarOptions")}
+			options={t("Options")}
 			label={t("Add to calendar")}
 			hideBackground={true}
 			hideBranding={true}

@@ -42,20 +42,18 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 		return <div>{t("Error loading clubs")}</div>;
 	}
 
-	const clubs: ClubSearch[] = data.clubs
-		.filter((club) => !club.isPrivate)
-		.map((club) => ({
-			id: club.id,
-			name: club.name,
-			slug: club.slug || "",
-			description: club.description || "",
-			logo: club.logo || "",
-			verified: club.verified,
-			location: club.location || "",
-			member_count: 0,
-		}));
+	const clubs: ClubSearch[] = data.clubs.map((club) => ({
+		id: club.id,
+		name: club.name,
+		slug: club.slug || "",
+		description: club.description || "",
+		logo: club.logo || "",
+		verified: club.verified,
+		location: club.location || "",
+		member_count: 0,
+	}));
 
-	const total = clubs.length;
+	const total = data.pagination.total;
 
 	const itemListSchema: WithContext<ItemList> = {
 		"@context": "https://schema.org",
