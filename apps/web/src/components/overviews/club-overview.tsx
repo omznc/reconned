@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Logger } from "next-axiom";
 import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
-import { VerifiedClubIcon } from "@/components/icons";
+import { ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
 import { ClubPost } from "@/components/overviews/club-post";
@@ -25,6 +25,8 @@ interface ClubOverviewProps {
 	currentUserMembership?: ClubMembership | null;
 	hasOwner?: boolean;
 	user?: { id: string; name: string; email: string; callsign?: string | null } | null;
+	members?: ApiResponse<"/api/clubs/{id}/members", "get">["members"];
+	privateCount?: number;
 }
 
 const logger = new Logger({ source: "ClubOverview" });
@@ -38,6 +40,8 @@ export async function ClubOverview({
 	currentUserMembership,
 	hasOwner = true,
 	user,
+	members = [],
+	privateCount = 0,
 }: ClubOverviewProps) {
 	const instagramData = club.instagramConnected
 		? await apiServer
@@ -209,27 +213,75 @@ export async function ClubOverview({
 
 					<div
 						className={cn("grid grid-cols-1 gap-4", {
-							"md:grid-cols-3": false && club.instagramUsername,
+							"md:grid-cols-3": members.length > 0 && club.instagramUsername,
 						})}
 					>
-						{false && (
-							<div className="space-y-4 h-full bg-sidebar border p-4 order-1 md:order-2 md:col-span-1 rounded-md">
-								<div className="flex flex-col gap-2">
+						{members.length > 0 && (
+							<div className="h-full bg-sidebar border order-1 md:order-2 md:col-span-1 rounded-md">
+								<div className="flex flex-col gap-2 p-4">
 									<div className="flex gap-2 items-center">
 										<h2 className="text-xl font-semibold">{t("Members")}</h2>
 									</div>
 									<p>{t("All members of this club")}</p>
 								</div>
-								<hr />
-								<div className="grid gap-2 max-h-[400px] overflow-auto" />
+								<hr className="w-full" />
+								<div className="grid gap-1 max-h-[400px] overflow-auto p-4">
+									{members
+										.sort((a, b) => {
+											// Sort order: CLUB_OWNER > MANAGER > USER
+											const roleOrder = { CLUB_OWNER: 0, MANAGER: 1, USER: 2 };
+											return roleOrder[a.role] - roleOrder[b.role];
+										})
+										.map((member) => (
+											<Link
+												key={member.id}
+												href={`/users/${member.user.slug || member.user.id}`}
+												className="flex items-center gap-3 p-2 rounded-md hover:bg-muted transition-colors"
+											>
+												{member.user.image ? (
+													<Image
+														src={member.user.image}
+														alt={member.user.name}
+														width={40}
+														height={40}
+														className="w-10 h-10 object-cover rounded-md"
+														draggable={false}
+													/>
+												) : (
+													<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground font-semibold">
+														{member.user.name.charAt(0).toUpperCase()}
+													</div>
+												)}
+												<div className="flex flex-col flex-1 min-w-0">
+													<div className="flex items-center gap-2">
+														<span className="font-medium truncate">{member.user.name}</span>
+														{member.role === "CLUB_OWNER" && <ClubOwnerIcon />}
+														{member.role === "MANAGER" && <ClubManagerIcon />}
+													</div>
+													{member.user.callsign && (
+														<span className="text-sm text-muted-foreground truncate">
+															{member.user.callsign}
+														</span>
+													)}
+												</div>
+											</Link>
+										))}
+									{privateCount > 0 && (
+										<div className="text-sm text-muted-foreground p-2">
+											{t("+{count} private members", {
+												count: privateCount.toString(),
+											})}
+										</div>
+									)}
+								</div>
 							</div>
 						)}
 
 						{club.instagramUsername && (
 							<div
 								className={cn("h-full", {
-									"md:col-span-2": false,
-									"md:col-span-3": true,
+									"md:col-span-2": members.length > 0,
+									"md:col-span-3": members.length === 0,
 								})}
 							>
 								<div className="border bg-sidebar h-full rounded-md">

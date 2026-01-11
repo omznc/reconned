@@ -155,10 +155,10 @@ export async function UserOverview({ user }: UserOverviewProps) {
 													alt={membership.club.name}
 													width={32}
 													height={32}
-													className="h-auto w-8"
+													className="h-auto w-10"
 												/>
 											) : (
-												<div className="h-8 w-8 bg-muted flex items-center justify-center">
+												<div className="size-10 rounded-md bg-muted flex items-center justify-center">
 													<span className="text-xs text-muted-foreground">
 														{membership.club.name.charAt(0)}
 													</span>

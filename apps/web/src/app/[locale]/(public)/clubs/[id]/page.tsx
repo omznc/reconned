@@ -26,7 +26,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		return <ErrorPage title={t("Club not found.")} />;
 	}
 
-	const [membershipData, hasOwnerData] = await Promise.all([
+	const [membershipData, hasOwnerData, membersData] = await Promise.all([
 		user
 			? apiServer.GET("/api/clubs/{id}/membership", {
 					params: {
@@ -37,6 +37,13 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 				})
 			: Promise.resolve({ data: null, error: null }),
 		apiServer.GET("/api/clubs/{id}/has-owner", {
+			params: {
+				path: {
+					id: clubData.id,
+				},
+			},
+		}),
+		apiServer.GET("/api/clubs/{id}/members", {
 			params: {
 				path: {
 					id: clubData.id,
@@ -119,6 +126,8 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 				currentUserMembership={userMembership}
 				hasOwner={hasOwner}
 				user={user}
+				members={membersData?.data?.members || []}
+				privateCount={membersData?.data?.privateCount || 0}
 			/>
 		</div>
 	);

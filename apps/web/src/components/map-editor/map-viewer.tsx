@@ -7,9 +7,10 @@ import { createRoot, type Root } from "react-dom/client";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { FeatureCollection } from "geojson";
 import { PointMarker } from "@/components/map-editor/_components/point-marker";
-import { DEFAULT_GRID, MAP_DEFAULT_STYLE } from "@/components/map-editor/constants";
+import { ViewerControlsPanel } from "@/components/map-editor/_components/viewer-controls-panel";
+import { MAP_DEFAULT_STYLE } from "@/components/map-editor/constants";
 import { createEmptySnapshot, playAreaFromBbox } from "@/components/map-editor/map-data";
-import type { MapEditorSnapshot, MapPlayArea } from "@/components/map-editor/types";
+import type { BasemapId, MapEditorSnapshot, MapPlayArea } from "@/components/map-editor/types";
 import { cn } from "@/lib/utils";
 
 type MapViewerProps = {
@@ -336,6 +337,13 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 	const [mapReady, setMapReady] = useState(false);
 	const playArea = useMemo(() => snapshot.playArea || playAreaFromBbox(snapshot.collection.bbox), [snapshot]);
 
+	// View control states
+	const [gridVisible, setGridVisible] = useState(snapshot.grid?.visible ?? true);
+	const [gridLabelsVisible, setGridLabelsVisible] = useState(snapshot.grid?.labelsVisible ?? true);
+	const [gridOpacity, setGridOpacity] = useState(snapshot.grid?.opacity ?? 0.5);
+	const [labelOpacity, setLabelOpacity] = useState(0.45);
+	const [basemap, setBasemap] = useState<BasemapId>(snapshot.basemap || "osm");
+
 	const mapLayersReady = () => {
 		const map = mapRef.current;
 		if (!map) {
@@ -425,8 +433,8 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		});
 		map.doubleClickZoom.disable();
 		setMapReady(true);
-		map.setLayoutProperty("basemap-osm", "visibility", snapshot.basemap === "osm" ? "visible" : "none");
-		map.setLayoutProperty("basemap-satellite", "visibility", snapshot.basemap === "satellite" ? "visible" : "none");
+		map.setLayoutProperty("basemap-osm", "visibility", basemap === "osm" ? "visible" : "none");
+		map.setLayoutProperty("basemap-satellite", "visibility", basemap === "satellite" ? "visible" : "none");
 	};
 
 	useEffect(() => {
@@ -477,9 +485,9 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		if (!map) {
 			return;
 		}
-		map.setLayoutProperty("basemap-osm", "visibility", snapshot.basemap === "osm" ? "visible" : "none");
-		map.setLayoutProperty("basemap-satellite", "visibility", snapshot.basemap === "satellite" ? "visible" : "none");
-	}, [mapReady, snapshot.basemap]);
+		map.setLayoutProperty("basemap-osm", "visibility", basemap === "osm" ? "visible" : "none");
+		map.setLayoutProperty("basemap-satellite", "visibility", basemap === "satellite" ? "visible" : "none");
+	}, [mapReady, basemap]);
 
 	useEffect(() => {
 		if (!mapReady) {
@@ -489,7 +497,7 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		if (!map) {
 			return;
 		}
-		const source = map.getSource("viewer-features") as GeoJSONSource | undefined;
+		const source = map.getSource("viewer-features") as GeoJSONSource;
 		if (!source) {
 			return;
 		}
@@ -528,13 +536,24 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		if (!map) {
 			return;
 		}
+
+		// Update label opacity
+		map.setPaintProperty("viewer-labels", "text-halo-color", `rgba(0,0,0,${labelOpacity * 0.8})`);
+		map.setPaintProperty("viewer-labels", "text-color", `rgba(255,255,255,${labelOpacity})`);
+
 		const canvas = gridCanvasRef.current;
 		if (!canvas) {
 			return;
 		}
-		drawGrid(map, canvas, playArea, snapshot.grid || DEFAULT_GRID);
+		const gridSettings = {
+			visible: gridVisible,
+			labelsVisible: gridLabelsVisible,
+			opacity: gridOpacity,
+			labelOpacity: labelOpacity,
+		};
+		drawGrid(map, canvas, playArea, gridSettings);
 		const onMove = () => {
-			drawGrid(map, canvas, playArea, snapshot.grid || DEFAULT_GRID);
+			drawGrid(map, canvas, playArea, gridSettings);
 		};
 		map.on("move", onMove);
 		map.on("zoom", onMove);
@@ -542,7 +561,7 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 			map.off("move", onMove);
 			map.off("zoom", onMove);
 		};
-	}, [mapReady, playArea, snapshot.grid]);
+	}, [mapReady, playArea, gridVisible, gridLabelsVisible, gridOpacity, labelOpacity]);
 
 	useEffect(() => {
 		if (!mapReady) {
@@ -674,6 +693,18 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		<div className={cn("relative w-full overflow-hidden rounded-lg border", className)} style={containerStyle}>
 			<div ref={containerRef} className="h-full w-full" />
 			<canvas ref={gridCanvasRef} className="pointer-events-none absolute inset-0" />
+			<ViewerControlsPanel
+				gridVisible={gridVisible}
+				onGridVisibleChange={setGridVisible}
+				gridLabelsVisible={gridLabelsVisible}
+				onGridLabelsVisibleChange={setGridLabelsVisible}
+				gridOpacity={gridOpacity}
+				onGridOpacityChange={setGridOpacity}
+				labelOpacity={labelOpacity}
+				onLabelOpacityChange={setLabelOpacity}
+				basemap={basemap}
+				onBasemapChange={setBasemap}
+			/>
 		</div>
 	);
 }

@@ -50,7 +50,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 		logo: club.logo || "",
 		verified: club.verified,
 		location: club.location || "",
-		member_count: 0,
+		member_count: club._count.members || 0,
 	}));
 
 	const total = data.pagination.total;
