@@ -16,7 +16,6 @@ import apiServer from "@/lib/api/api";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
-import { cn } from "@/lib/utils";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -52,6 +51,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	const membershipResult = await membershipPromise;
 
 	const role = membershipResult.data?.membership?.role;
+
 	const canEdit = !!clubId && !!user && (role === "MANAGER" || role === "CLUB_OWNER");
 	const mapSnapshot = normalizeMapData(event.mapData);
 	const hasMap = snapshotHasData(mapSnapshot);
@@ -64,95 +64,174 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 	};
 
 	return (
-		<div className="relative flex flex-col items-center justify-center gap-4">
-			{event.image && (
-				<>
-					<Eye className="size-8 z-20 text-black bg-white border p-0.5 absolute top-4 right-4 peer" />
-
+		<div className="relative flex flex-col gap-4">
+			{/* Hero Banner Section */}
+			{event.image ? (
+				<div className="relative w-full aspect-[21/9] md:aspect-video rounded-lg overflow-hidden">
 					<Image
 						suppressHydrationWarning={true}
 						src={event.image}
 						alt={event.name}
-						width={680}
-						height={380}
-						className="absolute aspect-video rounded-md top-0 object-cover transition-all w-full h-auto"
+						fill
+						className="object-cover"
 						draggable={false}
 						priority={true}
+						sizes="(max-width: 1200px) 100vw, 1200px"
 					/>
-				</>
-			)}
-			<div
-				className={cn("rounded-md", {
-					"peer-hover:opacity-25 peer-hover:mt-[50%] z-10 mt-[150px] border transition-all h-4/5 min-h-fit p-4 bg-background w-full md:w-3/4 flex flex-col gap-1":
-						event.image,
-					"border p-4 bg-background w-full flex flex-col gap-1": !event.image,
-				})}
-			>
-				<div className="relative flex select-none flex-col gap-3">
-					{clubId ? (
-						canEdit && (
-							<Button asChild={true}>
-								<Link
-									className="absolute top-0 md:right-0 transition-all flex items-center gap-1 h-fit w-full md:w-fit"
-									href={`/dashboard/${clubId}/events/create?id=${event.id}`}
-								>
-									<Pencil className="size-4" />
-									{t("Edit event")}
-								</Link>
-							</Button>
-						)
-					) : (
-						<div className="absolute top-0 md:right-0 transition-all flex items-center gap-2 h-fit w-full md:w-fit">
-							{FEATURE_FLAGS.EVENT_REGISTRATION && (
-								<>
-									{user && canApplyToEvent(event) ? (
-										<Link href={`/events/${event.id}/apply`}>
-											<Button variant="outline" size="sm" className="w-full md:w-auto">
-												{t("Login")} <BadgeSoon className="ml-2" />
-											</Button>
+					{/* Gradient overlay for text readability */}
+					<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+
+					{/* Content overlaid on banner */}
+					<div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+						<div className="flex flex-col gap-4">
+							<div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+								<h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
+									{event.name}
+								</h1>
+								{clubId ? (
+									canEdit && (
+										<Button asChild={true} className="w-full md:w-auto md:shrink-0 shadow-lg">
+											<Link
+												className="flex items-center gap-1"
+												href={`/dashboard/${clubId}/events/create?id=${event.id}`}
+											>
+												<Pencil className="size-4" />
+												{t("Edit event")}
+											</Link>
+										</Button>
+									)
+								) : (
+									<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
+										{FEATURE_FLAGS.EVENT_REGISTRATION && (
+											<>
+												{user && canApplyToEvent(event) ? (
+													<Link
+														href={`/events/${event.id}/apply`}
+														className="w-full md:w-auto"
+													>
+														<Button
+															variant="default"
+															size="sm"
+															className="w-full shadow-lg"
+														>
+															{t("Login")} <BadgeSoon className="ml-2" />
+														</Button>
+													</Link>
+												) : user ? (
+													<p className="text-sm text-white/80">{t("Applications closed")}</p>
+												) : null}
+												<AddEventToCalendarButton event={event} />
+											</>
+										)}
+									</div>
+								)}
+							</div>
+							<div className="flex flex-wrap gap-2">
+								{event._count?.eventRegistration > 0 && (
+									<Badge className="flex h-fit items-center gap-1 bg-white/90 text-black hover:bg-white">
+										<UserIcon className="size-4" />
+										{t("{count} registered", {
+											count: String(event._count?.eventRegistration),
+										})}
+									</Badge>
+								)}
+								<Badge className="flex h-fit items-center gap-1 bg-white/90 text-black hover:bg-white">
+									{event.isPrivate ? (
+										<>
+											<EyeOff className="size-4" />
+											{t("Private event")}
+										</>
+									) : (
+										<>
+											<Eye className="size-4" />
+											{t("Public event")}
+										</>
+									)}
+								</Badge>
+								{event.location && (
+									<Badge className="flex h-fit items-center gap-1 bg-white/90 text-black hover:bg-white">
+										<MapPin className="size-4" />
+										{event.location}
+									</Badge>
+								)}
+							</div>
+						</div>
+					</div>
+				</div>
+			) : (
+				<div className="rounded-md border p-6 md:p-8 bg-background">
+					<div className="flex flex-col gap-4">
+						<div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+							<h1 className="text-4xl font-semibold">{event.name}</h1>
+							{clubId ? (
+								canEdit && (
+									<Button asChild={true} className="w-full md:w-auto md:shrink-0">
+										<Link
+											className="flex items-center gap-1"
+											href={`/dashboard/${clubId}/events/create?id=${event.id}`}
+										>
+											<Pencil className="size-4" />
+											{t("Edit event")}
 										</Link>
-									) : user ? (
-										<p className="text-sm text-muted-foreground">{t("Applications closed")}</p>
-									) : null}
-									<AddEventToCalendarButton event={event} />
-								</>
+									</Button>
+								)
+							) : (
+								<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
+									{FEATURE_FLAGS.EVENT_REGISTRATION && (
+										<>
+											{user && canApplyToEvent(event) ? (
+												<Link href={`/events/${event.id}/apply`} className="w-full md:w-auto">
+													<Button variant="outline" size="sm" className="w-full">
+														{t("Login")} <BadgeSoon className="ml-2" />
+													</Button>
+												</Link>
+											) : user ? (
+												<p className="text-sm text-muted-foreground">
+													{t("Applications closed")}
+												</p>
+											) : null}
+											<AddEventToCalendarButton event={event} />
+										</>
+									)}
+								</div>
 							)}
 						</div>
-					)}
-					<div className="flex items-center gap-2">
-						<h1 className="text-4xl font-semibold w-[calc(100%-150px)] mt-12 md:mt-0 transition-all">
-							{event.name}
-						</h1>
-					</div>
-					<div className="flex flex-wrap -mt-2 gap-2">
-						{event._count?.eventRegistration > 0 && (
-							<Badge className="flex h-fit items-center gap-1">
-								<UserIcon className="size-4" />
-								{t("{count} registered", {
-									count: String(event._count?.eventRegistration),
-								})}
-							</Badge>
-						)}
-						<Badge className="flex h-fit items-center gap-1">
-							{event.isPrivate ? (
-								<>
-									<EyeOff className="size-4" />
-									{t("Private event")}
-								</>
-							) : (
-								<>
-									<Eye className="size-4" />
-									{t("Public event")}
-								</>
+						<div className="flex flex-wrap gap-2">
+							{event._count?.eventRegistration > 0 && (
+								<Badge className="flex h-fit items-center gap-1">
+									<UserIcon className="size-4" />
+									{t("{count} registered", {
+										count: String(event._count?.eventRegistration),
+									})}
+								</Badge>
 							)}
-						</Badge>
-						{event.location && (
 							<Badge className="flex h-fit items-center gap-1">
-								<MapPin className="size-4" />
-								{event.location}
+								{event.isPrivate ? (
+									<>
+										<EyeOff className="size-4" />
+										{t("Private event")}
+									</>
+								) : (
+									<>
+										<Eye className="size-4" />
+										{t("Public event")}
+									</>
+								)}
 							</Badge>
-						)}
+							{event.location && (
+								<Badge className="flex h-fit items-center gap-1">
+									<MapPin className="size-4" />
+									{event.location}
+								</Badge>
+							)}
+						</div>
 					</div>
+				</div>
+			)}
+
+			{/* Description and other content */}
+			<div className="rounded-md border p-4 bg-background w-full flex flex-col gap-1">
+				<div className="flex select-none flex-col gap-3">
 					<p className="text-accent-foreground/80">{event.description}</p>
 					{event.club && (
 						<div className="my-6">

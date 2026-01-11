@@ -131,19 +131,24 @@ export function SingleImageUpload({
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center text-center text-muted-foreground rounded-md">
-                        <Upload className="mb-2 h-6 w-6" />
-                        <p className="text-sm font-medium text-foreground">
-                            {t("Upload image")}
-                        </p>
-                        <p className="text-xs">
-                            {t("Click or drag to upload")}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">
-                            {t("Up to {size}MB per image", {
-                                size: Math.round(maxFileSize / (1024 * 1024)).toFixed(1),
-                            })}
-                        </p>
+                    <div className={cn(
+                        "flex items-center justify-center text-center text-muted-foreground rounded-md",
+                        variant === "banner" ? "flex-row gap-4 px-6" : "flex-col"
+                    )}>
+                        <Upload className={cn(variant === "banner" ? "h-8 w-8" : "mb-2 h-6 w-6")} />
+                        <div className="flex flex-col gap-0.5">
+                            <p className="text-sm font-medium text-foreground">
+                                {t("Upload image")}
+                            </p>
+                            <p className="text-xs">
+                                {t("Click or drag to upload")}
+                            </p>
+                            <p className="text-[11px] text-muted-foreground">
+                                {t("Up to {size}MB per image", {
+                                    size: Math.round(maxFileSize / (1024 * 1024)).toFixed(1),
+                                })}
+                            </p>
+                        </div>
                     </div>
                 )}
             </div>

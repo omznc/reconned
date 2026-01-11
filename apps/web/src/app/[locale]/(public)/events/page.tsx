@@ -112,16 +112,18 @@ export default async function Page() {
 					<div className="text-muted-foreground">{t("There are no upcoming events")}</div>
 				)}
 				{upcomingEvents.map((event) => (
-					<Card key={event.id} className="flex flex-col">
+					<Card key={event.id} className="flex flex-col overflow-hidden">
 						<CardHeader className="p-0">
 							{event.image && (
-								<Image
-									src={event.image}
-									alt={event.name}
-									width={400}
-									height={200}
-									className="w-full mb-4 h-48 object-cover"
-								/>
+								<div className="relative w-full aspect-video">
+									<Image
+										src={event.image}
+										alt={event.name}
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+									/>
+								</div>
 							)}
 							<CardTitle className="mt-4 px-6">{event.name}</CardTitle>
 							<CardDescription className="px-6 pb-6">{event.description}</CardDescription>

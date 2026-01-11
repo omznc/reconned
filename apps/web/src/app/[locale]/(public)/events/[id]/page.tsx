@@ -122,7 +122,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8  px-4">
 			<JsonLdScript data={sportsEventSchema} />
-			<EventOverview event={event} />
+			<EventOverview event={event} clubId={eventData.club.id} />
 		</div>
 	);
 }
@@ -146,16 +146,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	}
 	const event = data.event;
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api-client/og/event`);
-	ogUrl.searchParams.set("title", event.name);
-	if (event.description) {
-		ogUrl.searchParams.set("description", event.description);
-	}
-	ogUrl.searchParams.set("date", new Date(event.dateStart).toLocaleDateString("bs"));
-	if (event?.image) {
-		ogUrl.searchParams.set("image", event.image);
-	}
-
 	const pathPrefix = "/events";
 	const slugOrId = event.slug || event.id;
 	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
@@ -177,16 +167,18 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 				event.slug || undefined,
 			),
 		},
-		openGraph: {
-			images: [
-				{
-					url: ogUrl.toString(),
-					width: 1200,
-					height: 630,
-					alt: event.name,
-				},
-			],
-		},
+		openGraph: event.image
+			? {
+					images: [
+						{
+							url: event.image,
+							width: 1200,
+							height: 630,
+							alt: event.name,
+						},
+					],
+				}
+			: undefined,
 		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 	};
 }
