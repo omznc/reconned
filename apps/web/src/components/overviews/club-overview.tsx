@@ -14,7 +14,6 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { getPageViews } from "@/lib/analytics";
 import apiServer from "@/lib/api/api";
 import type { ApiResponse, ClubMembership } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
@@ -40,34 +39,30 @@ export async function ClubOverview({
 	hasOwner = true,
 	user,
 }: ClubOverviewProps) {
-	const [analyticsId, analyticsSlug, instagramData] = await Promise.all([
-		getPageViews(`/clubs/${club.id}`),
-		getPageViews(`/clubs/${club.slug}`),
-		club.instagramConnected
-			? apiServer
-					.GET("/api/clubs/{id}/instagram/media", {
-						params: {
-							path: { id: club.id },
-							query: { limit: 20 },
-						},
-					})
-					.then((response) => {
-						if (response.data) {
-							return response.data;
-						}
+	const instagramData = club.instagramConnected
+		? await apiServer
+				.GET("/api/clubs/{id}/instagram/media", {
+					params: {
+						path: { id: club.id },
+						query: { limit: 20 },
+					},
+				})
+				.then((response) => {
+					if (response.data) {
+						return response.data;
+					}
 
-						return {
-							media: [],
-							username: club.instagramUsername || null,
-						} as InstagramMediaResponse;
-					})
-			: Promise.resolve<InstagramMediaResponse>({
-					media: [],
-					username: club.instagramUsername || null,
-				}),
-	]);
+					return {
+						media: [],
+						username: club.instagramUsername || null,
+					} as InstagramMediaResponse;
+				})
+		: ({
+				media: [],
+				username: club.instagramUsername || null,
+			} as InstagramMediaResponse);
+
 	const t = await getExtracted();
-	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const postsResponse = await apiServer.GET("/api/clubs/{id}/posts", {
 		params: {
 			path: { id: club.id },
@@ -81,9 +76,6 @@ export async function ClubOverview({
 	}
 
 	const isClubOwner = currentUserMembership?.role === "CLUB_OWNER";
-
-	// Determine whether to show stats based on privacy setting and user permissions
-	const shouldShowStats = !club.isPrivateStats || isManager || isMember;
 
 	return (
 		<div>
@@ -201,11 +193,6 @@ export async function ClubOverview({
 						<Badge className="md:grow-0 grow flex items-center gap-1">
 							<Phone className="w-4 h-4" />
 							{club.contactPhone}
-						</Badge>
-					)}
-					{shouldShowStats && visitors > 0 && (
-						<Badge className="md:grow-0 grow flex items-center gap-1">
-							{t("{count} view/s", { count: String(visitors) })}
 						</Badge>
 					)}
 				</div>

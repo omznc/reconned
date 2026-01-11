@@ -7,9 +7,8 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import { getPageViews } from "@/lib/analytics";
+
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
-import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 type UserResponse = ApiResponse<"/api/users/{id}", "get">;
@@ -22,11 +21,7 @@ interface UserOverviewProps {
 
 export async function UserOverview({ user }: UserOverviewProps) {
 	const t = await getExtracted();
-	const [analyticsId, analyticsSlug] = await Promise.all([
-		getPageViews(`/users/${user.id}`),
-		getPageViews(`/users/${user.slug}`),
-	]);
-	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
+
 	const futureEvents = user.eventRegistration.filter(
 		(reg: UserOverviewUser["eventRegistration"][number]) =>
 			reg.event?.dateStart && new Date(reg.event.dateStart) > new Date() && !reg.attended,
@@ -35,13 +30,6 @@ export async function UserOverview({ user }: UserOverviewProps) {
 		(reg: UserOverviewUser["eventRegistration"][number]) =>
 			reg.attended || (reg.event?.dateStart && new Date(reg.event?.dateStart) <= new Date()),
 	);
-
-	// Get current user to check if they're viewing their own profile
-	const currentUser = await isAuthenticated();
-	const isCurrentUser = currentUser?.id === user.id;
-
-	// Determine whether to show stats based on privacy setting and user permissions
-	const shouldShowStats = !user.isPrivateStats || isCurrentUser;
 
 	return (
 		<div className="space-y-6">
@@ -120,11 +108,6 @@ export async function UserOverview({ user }: UserOverviewProps) {
                 </CardContent>
             </Card> */}
 			<div className="flex flex-wrap gap-2">
-				{shouldShowStats && visitors > 0 && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">
-						{t("{count} view/s", { count: String(visitors) })}
-					</Badge>
-				)}
 				{user.clubMembership.length === 0 && (
 					<Badge className="md:grow-0 grow flex items-center gap-1">{t("Freelancer")}</Badge>
 				)}
