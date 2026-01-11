@@ -14,6 +14,8 @@ import { getDateFnsLocale } from "@/lib/date-locale";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
 	const locale = await getLocale();
 	const dateFnsLocale = getDateFnsLocale(locale);

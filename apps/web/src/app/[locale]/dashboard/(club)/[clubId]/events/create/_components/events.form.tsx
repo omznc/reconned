@@ -81,7 +81,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				.number()
 				.gte(0, t("Event cannot have negative cost"))
 				.lte(300, t("Event cannot have cost greater than 300")),
-			location: z.string({
+			location: z.string().min(1, {
 				message: t("Event must have a location"),
 			}),
 			googleMapsLink: z

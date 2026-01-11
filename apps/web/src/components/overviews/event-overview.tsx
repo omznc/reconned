@@ -4,6 +4,7 @@ import Image from "next/image";
 import { getExtracted } from "next-intl/server";
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
 import { BadgeSoon } from "@/components/badge-soon";
+import { ClubCard } from "@/components/club-card";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { normalizeMapData, snapshotHasData } from "@/components/map-editor/map-data";
 import { MapViewer } from "@/components/map-editor/map-viewer";
@@ -11,7 +12,6 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { getPageViews } from "@/lib/analytics";
 import apiServer from "@/lib/api/api";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
@@ -24,6 +24,13 @@ interface EventOverviewProps {
 			eventRegistration: number;
 		};
 		rules: ClubRule[];
+		club?: {
+			id: string;
+			name: string;
+			slug: string | null;
+			logo: string | null;
+			verified: boolean;
+		};
 	};
 	clubId?: string;
 }
@@ -42,15 +49,10 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 				})
 			: Promise.resolve({ data: null, error: null });
 
-	const [analyticsId, analyticsSlug, membershipResult] = await Promise.all([
-		getPageViews(`/events/${event.id}`),
-		getPageViews(`/events/${event.slug}`),
-		membershipPromise,
-	]);
+	const membershipResult = await membershipPromise;
 
 	const role = membershipResult.data?.membership?.role;
 	const canEdit = !!clubId && !!user && (role === "MANAGER" || role === "CLUB_OWNER");
-	const visitors = analyticsId.results.visitors.value + analyticsSlug.results.visitors.value;
 	const mapSnapshot = normalizeMapData(event.mapData);
 	const hasMap = snapshotHasData(mapSnapshot);
 
@@ -123,12 +125,14 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 						</h1>
 					</div>
 					<div className="flex flex-wrap -mt-2 gap-2">
-						<Badge className="flex h-fit items-center gap-1">
-							<UserIcon className="size-4" />
-							{t("{count} registered", {
-								count: String(event._count?.eventRegistration),
-							})}
-						</Badge>
+						{event._count?.eventRegistration > 0 && (
+							<Badge className="flex h-fit items-center gap-1">
+								<UserIcon className="size-4" />
+								{t("{count} registered", {
+									count: String(event._count?.eventRegistration),
+								})}
+							</Badge>
+						)}
 						<Badge className="flex h-fit items-center gap-1">
 							{event.isPrivate ? (
 								<>
@@ -148,9 +152,14 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 								{event.location}
 							</Badge>
 						)}
-						<Badge className="h-fit">{t("{count} views", { count: String(visitors) })}</Badge>
 					</div>
 					<p className="text-accent-foreground/80">{event.description}</p>
+					{event.club && (
+						<div className="my-6">
+							<h2 className="text-xl font-semibold mb-3">{t("Hosted by")}</h2>
+							<ClubCard club={event.club} />
+						</div>
+					)}
 					{event.googleMapsLink && (
 						<div className="size-full flex flex-col gap-2">
 							<h2 className="text-xl font-semibold">{t("Location")}</h2>
