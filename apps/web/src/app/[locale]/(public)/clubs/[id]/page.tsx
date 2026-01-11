@@ -142,15 +142,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 		};
 	}
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api-client/og/club`);
-	ogUrl.searchParams.set("name", club.name);
-	if (club.description) {
-		ogUrl.searchParams.set("description", club.description);
-	}
-	if (club.logo) {
-		ogUrl.searchParams.set("logo", club.logo);
-	}
-
 	const pathPrefix = "/clubs";
 	const slugOrId = club.slug || club.id;
 	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
@@ -171,16 +162,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 				locale,
 				club.slug || undefined,
 			),
-		},
-		openGraph: {
-			images: [
-				{
-					url: ogUrl.toString(),
-					width: 1200,
-					height: 630,
-					alt: club.name,
-				},
-			],
 		},
 		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 	};

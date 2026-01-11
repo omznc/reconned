@@ -13,6 +13,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { EventImageCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/event-image-crop-dialog";
 import { AnimatedNumber } from "@/components/animated-number";
 import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -28,12 +29,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DateTimePicker, initHourFormat } from "@/components/ui/date-time-picker";
-import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
+import type { FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { SingleImageUpload } from "@/components/ui/single-image-upload";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
@@ -54,6 +56,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedRule, setSelectedRule] = useState<ClubRule | null>(null);
 	const [isSlugValid, setIsSlugValid] = useState(true);
+	const [cropEventImageFile, setCropEventImageFile] = useState<File | null>(null);
 	const confirm = useConfirm();
 	const t = useExtracted();
 	const logger = useLogger();
@@ -515,841 +518,897 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const RequiredFieldMarker = () => <span className="text-destructive ml-0.5">*</span>;
 
 	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-				{props.event?.id && (
-					<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
-						<div className="flex flex-col">
-							<AlertTitle>{t("Change of event")}</AlertTitle>
-							<AlertDescription>
-								{t("This event has already been created, you are currently editing it.")}
-							</AlertDescription>
-						</div>
-						<div className="flex gap-1">
-							<Button
-								variant={"destructive"}
-								type="button"
-								disabled={isLoading}
-								className="w-fit"
-								onClick={async () => {
-									const resp = await confirm({
-										title: t("Are you sure?"),
-										body: t("If you delete an event, you won't be able to get it back."),
-										actionButtonVariant: "destructive",
-										actionButton: t("Confirm"),
-										cancelButton: t("Cancel"),
-									});
-									if (resp) {
-										setIsLoading(true);
-										try {
-											const { error } = await apiClient.DELETE("/api/events/{id}", {
-												params: {
-													path: { id: props.event?.id || "" },
-												},
-											});
+		<>
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+					{props.event?.id && (
+						<Alert className="flex flex-col md:flex-row gap-1 justify-between -z-0">
+							<div className="flex flex-col">
+								<AlertTitle>{t("Change of event")}</AlertTitle>
+								<AlertDescription>
+									{t("This event has already been created, you are currently editing it.")}
+								</AlertDescription>
+							</div>
+							<div className="flex gap-1">
+								<Button
+									variant={"destructive"}
+									type="button"
+									disabled={isLoading}
+									className="w-fit"
+									onClick={async () => {
+										const resp = await confirm({
+											title: t("Are you sure?"),
+											body: t("If you delete an event, you won't be able to get it back."),
+											actionButtonVariant: "destructive",
+											actionButton: t("Confirm"),
+											cancelButton: t("Cancel"),
+										});
+										if (resp) {
+											setIsLoading(true);
+											try {
+												const { error } = await apiClient.DELETE("/api/events/{id}", {
+													params: {
+														path: { id: props.event?.id || "" },
+													},
+												});
 
-											if (error) {
-												throw new Error(
-													error.error || t("An error occurred while deleting event"),
-												);
+												if (error) {
+													throw new Error(
+														error.error || t("An error occurred while deleting event"),
+													);
+												}
+
+												toast.success(t("Event deleted"));
+												router.push(`/dashboard/${clubId}/events/`);
+												router.refresh();
+											} catch (error) {
+												const message =
+													error instanceof Error
+														? error.message
+														: t("An error occurred while deleting event");
+												toast.error(message);
+											} finally {
+												setIsLoading(false);
 											}
-
-											toast.success(t("Event deleted"));
-											router.push(`/dashboard/${clubId}/events/`);
-											router.refresh();
-										} catch (error) {
-											const message =
-												error instanceof Error
-													? error.message
-													: t("An error occurred while deleting event");
-											toast.error(message);
-										} finally {
-											setIsLoading(false);
 										}
-									}
-								}}
-							>
-								<Trash className="size-4" />
-								{isLoading ? <Loader size={16} /> : t("Delete event")}
-							</Button>
-							<Button variant="outline" asChild={true}>
-								<Link
-									className="flex items-center gap-1"
-									href={`/dashboard/${clubId}/events/${props.event.id}`}
+									}}
 								>
-									<Eye className="size-4" />
-									{t("View")}
-								</Link>
-							</Button>
-						</div>
-					</Alert>
-				)}
-
-				{/* Basic Information Section */}
-				<Card className="bg-sidebar">
-					<CardHeader>
-						<CardTitle className="flex items-center gap-4">
-							<span>{t("General")}</span>
-							<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
-						</CardTitle>
-						<CardDescription>{t("The basic information we need to create your event")}</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						{/* Required fields */}
-						<div className="space-y-4">
-							<FormField
-								control={form.control}
-								name="name"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>
-											{t("Name of the event")}
-											<RequiredFieldMarker />
-										</FormLabel>
-										<FormControl>
-											<Input
-												placeholder={t("Food Wars 24")}
-												type="text"
-												maxLength={100}
-												{...field}
-											/>
-										</FormControl>
-										<FormDescription>
-											{t("The name of the event will be displayed everywhere on the site")}
-										</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="description"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>
-											{t("Description")}
-											<RequiredFieldMarker />
-										</FormLabel>
-										<FormControl>
-											<Textarea
-												placeholder={t("Bring cutlery...")}
-												className="min-h-32"
-												{...field}
-											/>
-										</FormControl>
-										<FormDescription>{t("Description of the event. ")}</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</div>
-
-						{/* Optional fields */}
-						<div className="pt-4 border-t space-y-4">
-							<div className="flex items-center justify-between gap-2">
-								<h3 className="text-base font-medium">{t("Additional information")}</h3>
-								<span className="text-xs text-muted-foreground">{t("Optional")}</span>
+									<Trash className="size-4" />
+									{isLoading ? <Loader size={16} /> : t("Delete event")}
+								</Button>
+								<Button variant="outline" asChild={true}>
+									<Link
+										className="flex items-center gap-1"
+										href={`/dashboard/${clubId}/events/${props.event.id}`}
+									>
+										<Eye className="size-4" />
+										{t("View")}
+									</Link>
+								</Button>
 							</div>
+						</Alert>
+					)}
 
-							<FormField
-								control={form.control}
-								name="slug"
-								render={({ field }) => (
-									<SlugInput
-										currentSlug={props.event?.slug}
-										currentId={props.event?.id}
-										defaultSlug={field.value}
-										type="event"
-										onValid={(slug) => {
-											form.setValue("slug", slug);
-											setIsSlugValid(true);
-										}}
-										onValidityChange={setIsSlugValid}
-									/>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="image"
-								render={() => (
-									<FormItem>
-										<FormLabel>{t("Image")}</FormLabel>
-										<FormControl>
-											<FileUpload
-												value={eventImageUpload.files}
-												onChange={eventImageUpload.setFiles}
-												maxFiles={1}
-												maxFileSize={4 * 1024 * 1024}
-												accept={{
-													"image/jpeg": [".jpg", ".jpeg"],
-													"image/png": [".png"],
-													"image/webp": [".webp"],
-												}}
-												multiple={false}
-												showPreview={true}
-											/>
-										</FormControl>
-										<FormDescription>{t("Add a photo of the event. ")}</FormDescription>
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="costPerPerson"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>{t("Registration fee/price")}</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="20"
-												type="number"
-												{...field}
-												onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-											/>
-										</FormControl>
-										<FormDescription>
-											{t("How much does it cost to participate in the event? ")}
-										</FormDescription>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</div>
-					</CardContent>
-				</Card>
-
-				{/* Timing Section */}
-				<Card className="bg-sidebar">
-					<CardHeader>
-						<CardTitle className="flex items-center gap-4">
-							<CalendarIcon className="size-5" /> {t("Time")}
-							<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
-						</CardTitle>
-						<CardDescription>
-							{!(
-								form.formState.errors.dateRegistrationsOpen ||
-								form.formState.errors.dateRegistrationsClose ||
-								form.formState.errors.dateStart ||
-								form.formState.errors.dateEnd
-							) &&
-								form.watch("dateRegistrationsOpen") &&
-								form.watch("dateRegistrationsClose") &&
-								form.watch("dateStart") &&
-								form.watch("dateEnd") && (
-									<EventTimelineDescription
-										dateRegistrationsOpen={form.watch("dateRegistrationsOpen")}
-										dateRegistrationsClose={form.watch("dateRegistrationsClose")}
-										dateStart={form.watch("dateStart")}
-										dateEnd={form.watch("dateEnd")}
-									/>
-								)}
-						</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						{/* Required event dates section */}
-						<div className="space-y-4">
-							<h3 className="text-base font-medium">{t("Event dates")}</h3>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+					{/* Basic Information Section */}
+					<Card className="bg-sidebar">
+						<CardHeader>
+							<CardTitle className="flex items-center gap-4">
+								<span>{t("General")}</span>
+								<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
+							</CardTitle>
+							<CardDescription>{t("The basic information we need to create your event")}</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							{/* Required fields */}
+							<div className="space-y-4">
 								<FormField
 									control={form.control}
-									name="dateStart"
+									name="name"
 									render={({ field }) => (
-										<FormItem className="flex flex-col">
+										<FormItem>
 											<FormLabel>
-												{t("Start")}
+												{t("Name of the event")}
 												<RequiredFieldMarker />
 											</FormLabel>
-											<Popover>
-												<PopoverTrigger asChild={true}>
-													<FormControl>
-														<Button
-															variant={"outline"}
-															className={cn(
-																"w-full pl-3 text-left font-normal",
-																!field.value && "text-muted-foreground",
-															)}
-														>
-															{field.value ? (
-																format(field.value, initHourFormat.hour24, {
-																	locale: dateFnsLocale,
-																})
-															) : (
-																<span>{t("Select a date")}</span>
-															)}
-															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-														</Button>
-													</FormControl>
-												</PopoverTrigger>
-												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker
-														value={field.value}
-														onChange={field.onChange}
-														locale={dateFnsLocale}
-													/>
-												</PopoverContent>
-											</Popover>
-											<FormDescription>{t("When does the event start?")}</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="dateEnd"
-									render={({ field }) => (
-										<FormItem className="flex flex-col">
-											<FormLabel>
-												{t("End")}
-												<RequiredFieldMarker />
-											</FormLabel>
-											<Popover>
-												<PopoverTrigger asChild={true}>
-													<FormControl>
-														<Button
-															variant={"outline"}
-															className={cn(
-																"w-full pl-3 text-left font-normal",
-																!field.value && "text-muted-foreground",
-															)}
-														>
-															{field.value ? (
-																format(field.value, initHourFormat.hour24, {
-																	locale: dateFnsLocale,
-																})
-															) : (
-																<span>{t("Select a date")}</span>
-															)}
-															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-														</Button>
-													</FormControl>
-												</PopoverTrigger>
-												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker
-														value={field.value}
-														onChange={field.onChange}
-														locale={dateFnsLocale}
-													/>
-												</PopoverContent>
-											</Popover>
-											<FormDescription>{t("When does the event end?")}</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
-						</div>
-
-						{/* Registration period section */}
-						<div className="space-y-4 pt-4 border-t">
-							<div className="flex items-center justify-between gap-2">
-								<h3 className="text-base font-medium">{t("Registration period")}</h3>
-								<span className="text-xs text-muted-foreground">{t("Partially required")}</span>
-							</div>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<FormField
-									control={form.control}
-									name="dateRegistrationsOpen"
-									render={({ field }) => (
-										<FormItem className="flex flex-col">
-											<FormLabel>{t("Start of applications")}</FormLabel>
-											<Popover>
-												<PopoverTrigger asChild={true}>
-													<FormControl>
-														<Button
-															variant={"outline"}
-															className={cn(
-																"w-full pl-3 text-left font-normal",
-																!field.value && "text-muted-foreground",
-															)}
-														>
-															{field.value ? (
-																format(field.value, initHourFormat.hour24, {
-																	locale: dateFnsLocale,
-																})
-															) : (
-																<span>{t("Select a date")}</span>
-															)}
-															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-														</Button>
-													</FormControl>
-												</PopoverTrigger>
-												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker
-														value={field.value}
-														onChange={field.onChange}
-														locale={dateFnsLocale}
-													/>
-												</PopoverContent>
-											</Popover>
-											<FormDescription>{t("When do meetup registrations open?")}</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="dateRegistrationsClose"
-									render={({ field }) => (
-										<FormItem className="flex flex-col">
-											<FormLabel>
-												{t("End of applications")}
-												<RequiredFieldMarker />
-											</FormLabel>
-											<Popover>
-												<PopoverTrigger asChild={true}>
-													<FormControl>
-														<Button
-															variant={"outline"}
-															className={cn(
-																"w-full pl-3 text-left font-normal",
-																!field.value && "text-muted-foreground",
-															)}
-														>
-															{field.value ? (
-																format(field.value, initHourFormat.hour24, {
-																	locale: dateFnsLocale,
-																})
-															) : (
-																<span>{t("Select a date")}</span>
-															)}
-															<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-														</Button>
-													</FormControl>
-												</PopoverTrigger>
-												<PopoverContent className="w-auto p-0" align="start">
-													<DateTimePicker
-														value={field.value}
-														onChange={field.onChange}
-														locale={dateFnsLocale}
-													/>
-												</PopoverContent>
-											</Popover>
+											<FormControl>
+												<Input
+													placeholder={t("Food Wars 24")}
+													type="text"
+													maxLength={100}
+													{...field}
+												/>
+											</FormControl>
 											<FormDescription>
-												{t("When do the registrations for the event close?")}
+												{t("The name of the event will be displayed everywhere on the site")}
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								<FormField
+									control={form.control}
+									name="description"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>
+												{t("Description")}
+												<RequiredFieldMarker />
+											</FormLabel>
+											<FormControl>
+												<Textarea
+													placeholder={t("Bring cutlery...")}
+													className="min-h-32"
+													{...field}
+												/>
+											</FormControl>
+											<FormDescription>{t("Description of the event. ")}</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</div>
+
+							{/* Optional fields */}
+							<div className="pt-4 border-t space-y-4">
+								<div className="flex items-center justify-between gap-2">
+									<h3 className="text-base font-medium">{t("Additional information")}</h3>
+									<span className="text-xs text-muted-foreground">{t("Optional")}</span>
+								</div>
+
+								<FormField
+									control={form.control}
+									name="slug"
+									render={({ field }) => (
+										<SlugInput
+											currentSlug={props.event?.slug}
+											currentId={props.event?.id}
+											defaultSlug={field.value}
+											type="event"
+											onValid={(slug) => {
+												form.setValue("slug", slug);
+												setIsSlugValid(true);
+											}}
+											onValidityChange={setIsSlugValid}
+										/>
+									)}
+								/>
+
+								<FormField
+									control={form.control}
+									name="image"
+									render={() => (
+										<FormItem>
+											<FormLabel>{t("Image")}</FormLabel>
+											<FormControl>
+												<SingleImageUpload
+													variant="banner"
+													value={eventImageUpload.files}
+													onChange={(files) => {
+														if (files.length > 0 && files[0]?.file) {
+															setCropEventImageFile(files[0].file);
+														} else {
+															eventImageUpload.setFiles(files);
+														}
+													}}
+													maxFileSize={8 * 1024 * 1024}
+													accept={{
+														"image/jpeg": [".jpg", ".jpeg"],
+														"image/png": [".png"],
+														"image/webp": [".webp"],
+													}}
+												/>
+											</FormControl>
+											<FormDescription>
+												{t("Add an event image (recommended 1200x675, 16:9 ratio). ")}
+											</FormDescription>
+										</FormItem>
+									)}
+								/>
+
+								<FormField
+									control={form.control}
+									name="costPerPerson"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>{t("Registration fee/price")}</FormLabel>
+											<FormControl>
+												<Input
+													placeholder="20"
+													type="number"
+													{...field}
+													onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+												/>
+											</FormControl>
+											<FormDescription>
+												{t("How much does it cost to participate in the event? ")}
 											</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
 								/>
 							</div>
-						</div>
-					</CardContent>
-				</Card>
+						</CardContent>
+					</Card>
 
-				{/* Location Section */}
-				<Card className="bg-sidebar">
-					<CardHeader>
-						<CardTitle className="flex items-center gap-4">
-							<MapPin className="size-5" /> {t("Location")}
-							<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
-						</CardTitle>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						{/* Required location field */}
-						<FormField
-							control={form.control}
-							name="location"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										{t("Location")}
-										<RequiredFieldMarker />
-									</FormLabel>
-									<FormControl>
-										<Input placeholder="Livno" type="text" maxLength={100} {...field} />
-									</FormControl>
-									<FormDescription>{t("Where is the event taking place?")}</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+					{/* Timing Section */}
+					<Card className="bg-sidebar">
+						<CardHeader>
+							<CardTitle className="flex items-center gap-4">
+								<CalendarIcon className="size-5" /> {t("Time")}
+								<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
+							</CardTitle>
+							<CardDescription>
+								{!(
+									form.formState.errors.dateRegistrationsOpen ||
+									form.formState.errors.dateRegistrationsClose ||
+									form.formState.errors.dateStart ||
+									form.formState.errors.dateEnd
+								) &&
+									form.watch("dateRegistrationsOpen") &&
+									form.watch("dateRegistrationsClose") &&
+									form.watch("dateStart") &&
+									form.watch("dateEnd") && (
+										<EventTimelineDescription
+											dateRegistrationsOpen={form.watch("dateRegistrationsOpen")}
+											dateRegistrationsClose={form.watch("dateRegistrationsClose")}
+											dateStart={form.watch("dateStart")}
+											dateEnd={form.watch("dateEnd")}
+										/>
+									)}
+							</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							{/* Required event dates section */}
+							<div className="space-y-4">
+								<h3 className="text-base font-medium">{t("Event dates")}</h3>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<FormField
+										control={form.control}
+										name="dateStart"
+										render={({ field }) => (
+											<FormItem className="flex flex-col">
+												<FormLabel>
+													{t("Start")}
+													<RequiredFieldMarker />
+												</FormLabel>
+												<Popover>
+													<PopoverTrigger asChild={true}>
+														<FormControl>
+															<Button
+																variant={"outline"}
+																className={cn(
+																	"w-full pl-3 text-left font-normal",
+																	!field.value && "text-muted-foreground",
+																)}
+															>
+																{field.value ? (
+																	format(field.value, initHourFormat.hour24, {
+																		locale: dateFnsLocale,
+																	})
+																) : (
+																	<span>{t("Select a date")}</span>
+																)}
+																<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+															</Button>
+														</FormControl>
+													</PopoverTrigger>
+													<PopoverContent className="w-auto p-0" align="start">
+														<DateTimePicker
+															value={field.value}
+															onChange={field.onChange}
+															locale={dateFnsLocale}
+														/>
+													</PopoverContent>
+												</Popover>
+												<FormDescription>{t("When does the event start?")}</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 
-						{/* Non-required Google Maps field */}
-						<div className="pt-4 border-t">
-							<div className="flex items-center justify-between mb-4">
-								<h3 className="text-base font-medium">{t("Additional location info")}</h3>
-								<span className="text-xs text-muted-foreground">{t("Optional")}</span>
+									<FormField
+										control={form.control}
+										name="dateEnd"
+										render={({ field }) => (
+											<FormItem className="flex flex-col">
+												<FormLabel>
+													{t("End")}
+													<RequiredFieldMarker />
+												</FormLabel>
+												<Popover>
+													<PopoverTrigger asChild={true}>
+														<FormControl>
+															<Button
+																variant={"outline"}
+																className={cn(
+																	"w-full pl-3 text-left font-normal",
+																	!field.value && "text-muted-foreground",
+																)}
+															>
+																{field.value ? (
+																	format(field.value, initHourFormat.hour24, {
+																		locale: dateFnsLocale,
+																	})
+																) : (
+																	<span>{t("Select a date")}</span>
+																)}
+																<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+															</Button>
+														</FormControl>
+													</PopoverTrigger>
+													<PopoverContent className="w-auto p-0" align="start">
+														<DateTimePicker
+															value={field.value}
+															onChange={field.onChange}
+															locale={dateFnsLocale}
+														/>
+													</PopoverContent>
+												</Popover>
+												<FormDescription>{t("When does the event end?")}</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</div>
 							</div>
+
+							{/* Registration period section */}
+							<div className="space-y-4 pt-4 border-t">
+								<div className="flex items-center justify-between gap-2">
+									<h3 className="text-base font-medium">{t("Registration period")}</h3>
+									<span className="text-xs text-muted-foreground">{t("Partially required")}</span>
+								</div>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<FormField
+										control={form.control}
+										name="dateRegistrationsOpen"
+										render={({ field }) => (
+											<FormItem className="flex flex-col">
+												<FormLabel>{t("Start of applications")}</FormLabel>
+												<Popover>
+													<PopoverTrigger asChild={true}>
+														<FormControl>
+															<Button
+																variant={"outline"}
+																className={cn(
+																	"w-full pl-3 text-left font-normal",
+																	!field.value && "text-muted-foreground",
+																)}
+															>
+																{field.value ? (
+																	format(field.value, initHourFormat.hour24, {
+																		locale: dateFnsLocale,
+																	})
+																) : (
+																	<span>{t("Select a date")}</span>
+																)}
+																<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+															</Button>
+														</FormControl>
+													</PopoverTrigger>
+													<PopoverContent className="w-auto p-0" align="start">
+														<DateTimePicker
+															value={field.value}
+															onChange={field.onChange}
+															locale={dateFnsLocale}
+														/>
+													</PopoverContent>
+												</Popover>
+												<FormDescription>
+													{t("When do meetup registrations open?")}
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="dateRegistrationsClose"
+										render={({ field }) => (
+											<FormItem className="flex flex-col">
+												<FormLabel>
+													{t("End of applications")}
+													<RequiredFieldMarker />
+												</FormLabel>
+												<Popover>
+													<PopoverTrigger asChild={true}>
+														<FormControl>
+															<Button
+																variant={"outline"}
+																className={cn(
+																	"w-full pl-3 text-left font-normal",
+																	!field.value && "text-muted-foreground",
+																)}
+															>
+																{field.value ? (
+																	format(field.value, initHourFormat.hour24, {
+																		locale: dateFnsLocale,
+																	})
+																) : (
+																	<span>{t("Select a date")}</span>
+																)}
+																<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+															</Button>
+														</FormControl>
+													</PopoverTrigger>
+													<PopoverContent className="w-auto p-0" align="start">
+														<DateTimePicker
+															value={field.value}
+															onChange={field.onChange}
+															locale={dateFnsLocale}
+														/>
+													</PopoverContent>
+												</Popover>
+												<FormDescription>
+													{t("When do the registrations for the event close?")}
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Location Section */}
+					<Card className="bg-sidebar">
+						<CardHeader>
+							<CardTitle className="flex items-center gap-4">
+								<MapPin className="size-5" /> {t("Location")}
+								<span className="text-sm font-normal text-muted-foreground">{t("Required")}</span>
+							</CardTitle>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							{/* Required location field */}
 							<FormField
 								control={form.control}
-								name="googleMapsLink"
+								name="location"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Google Maps</FormLabel>
+										<FormLabel>
+											{t("Location")}
+											<RequiredFieldMarker />
+										</FormLabel>
 										<FormControl>
-											<Textarea
-												placeholder={`<iframe src="https://www.google.com/maps/embed?pb=...`}
-												{...field}
-											/>
+											<Input placeholder="Livno" type="text" maxLength={100} {...field} />
 										</FormControl>
-										<FormDescription>
-											{t("You can add a Google Maps embed link. ")}{" "}
-											<Link
-												target="_blank"
-												className="font-semibold flex gap-0.5 items-center"
-												href={"/dashboard/help#google-maps"}
-											>
-												{t("Where to find it?")} <ArrowUpRight className="size-3" />
-											</Link>
-										</FormDescription>
+										<FormDescription>{t("Where is the event taking place?")}</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-						</div>
-					</CardContent>
-				</Card>
 
-				{/* Advanced Settings */}
-				<Accordion type="single" collapsible className="w-full">
-					<AccordionItem value="settings" className="border rounded-lg px-6">
-						<AccordionTrigger className="py-4">
-							<div className="flex items-center gap-2">
-								<Settings className="size-5" />
-								<span className="font-medium">{t("Advanced settings")}</span>
-							</div>
-						</AccordionTrigger>
-						<AccordionContent className="pb-4 space-y-6">
-							{/* Visibility Settings */}
-							<div>
-								<h3 className="text-base font-medium mb-4 flex items-center gap-2">
-									{t("Visibility")}
-								</h3>
-								<div className="space-y-4">
-									<FormField
-										control={form.control}
-										name="isPrivate"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<div className="space-y-0.5">
-													<FormLabel>{t("Private")}</FormLabel>
-													<FormDescription>
-														{t("Private events are visible only to club members.")}
-													</FormDescription>
-												</div>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="allowFreelancers"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<div className="space-y-0.5">
-													<FormLabel>{t("Freelancers allowed")}</FormLabel>
-													<FormDescription>
-														{t(
-															"Do you allow players who are not members of a club to register for a match?",
-														)}
-													</FormDescription>
-												</div>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
+							{/* Non-required Google Maps field */}
+							<div className="pt-4 border-t">
+								<div className="flex items-center justify-between mb-4">
+									<h3 className="text-base font-medium">{t("Additional location info")}</h3>
+									<span className="text-xs text-muted-foreground">{t("Optional")}</span>
 								</div>
-							</div>
-
-							{/* Amenities Settings */}
-							<div>
-								<h3 className="text-base font-medium mb-4 flex items-center gap-2">
-									{t("Organization")}
-								</h3>
-								<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-									<FormField
-										control={form.control}
-										name="hasBreakfast"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("Breakfast")}</FormLabel>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="hasLunch"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("Lunch")}</FormLabel>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="hasDinner"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("Dinner")}</FormLabel>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="hasSnacks"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("Snacks")}</FormLabel>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="hasDrinks"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("Drinks")}</FormLabel>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="hasPrizes"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-												<FormLabel>{t("Awards")}</FormLabel>
-												<FormControl>
-													<Switch checked={field.value} onCheckedChange={field.onChange} />
-												</FormControl>
-											</FormItem>
-										)}
-									/>
-								</div>
-							</div>
-
-							{/* Rules Section */}
-							<div>
-								<h3 className="text-base font-medium mb-4">{t("Rules")}</h3>
 								<FormField
 									control={form.control}
-									name="ruleIds"
-									render={({ field }) => {
-										return (
-											<FormItem>
-												<FormDescription>
-													{t("Select the rules that will apply to this event.")}
-												</FormDescription>
-												<FormControl>
-													<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-														{/* TODO: Hot reload rules when they're added. */}
-														{props.rules?.length === 0 && (
-															<p className="text-muted-foreground">
-																{t("This club has no rules.")}{" "}
-																<Link
-																	className="text-foreground"
-																	href={`/dashboard/${clubId}/events/rules`}
-																>
-																	{t("Add rules")}.
-																</Link>
-															</p>
-														)}
-														{props.rules?.map((rule) => (
-															<div
-																key={rule.id}
-																className="flex items-center justify-between space-x-2 p-4 border rounded-lg"
-															>
-																<div className="flex items-center gap-4">
-																	<Checkbox
-																		checked={(field.value || []).includes(rule.id)}
-																		onCheckedChange={(checked) => {
-																			const currentValue = field.value || [];
-																			const newValue = checked
-																				? [...currentValue, rule.id]
-																				: currentValue.filter(
-																						(id: string) => id !== rule.id,
-																					);
-																			field.onChange(newValue);
-																		}}
-																	/>
-																	<div className="grid gap-1.5">
-																		<Label htmlFor={rule.id}>{rule.name}</Label>
-																		{rule.description && (
-																			<p className="text-sm line-clamp-1">
-																				{rule.description}
-																			</p>
-																		)}
-																		<p className="text-sm text-muted-foreground">
-																			{differenceInDays(
-																				new Date(rule.createdAt),
-																				new Date(),
-																			) === 0
-																				? t("Changed today")
-																				: t("Changed {time} day/s ago", {
-																						time: String(
-																							Math.abs(
-																								differenceInDays(
-																									new Date(
-																										rule.createdAt,
-																									),
-																									new Date(),
-																								),
-																							),
-																						),
-																					})}
-																		</p>
-																	</div>
-																</div>
-																<Button
-																	type="button"
-																	variant="ghost"
-																	size="icon"
-																	onClick={() => setSelectedRule(rule)}
-																>
-																	<Eye className="h-4 w-4" />
-																</Button>
-															</div>
-														))}
-													</div>
-												</FormControl>
-												<FormMessage />
-
-												<Sheet open={!!selectedRule} onOpenChange={() => setSelectedRule(null)}>
-													<SheetContent
-														side="right"
-														className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col"
-													>
-														{selectedRule && (
-															<>
-																<SheetHeader>
-																	<SheetTitle>{selectedRule.name}</SheetTitle>
-																	<p className="text-muted-foreground">
-																		{(selectedRule.description?.length || 0) > 0
-																			? selectedRule.description
-																			: t("No description")}
-																	</p>
-																</SheetHeader>
-																<div className="mt-6 flex-1 overflow-y-auto px-4">
-																	<div
-																		className={cn(
-																			"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
-																		)}
-																		// biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized
-																		dangerouslySetInnerHTML={{
-																			__html: DOMPurify.sanitize(
-																				selectedRule.content,
-																			),
-																		}}
-																	/>
-																</div>
-															</>
-														)}
-													</SheetContent>
-												</Sheet>
-											</FormItem>
-										);
-									}}
+									name="googleMapsLink"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Google Maps</FormLabel>
+											<FormControl>
+												<Textarea
+													placeholder={`<iframe src="https://www.google.com/maps/embed?pb=...`}
+													{...field}
+												/>
+											</FormControl>
+											<FormDescription>
+												{t("You can add a Google Maps embed link. ")}{" "}
+												<Link
+													target="_blank"
+													className="font-semibold flex gap-0.5 items-center"
+													href={"/dashboard/help#google-maps"}
+												>
+													{t("Where to find it?")} <ArrowUpRight className="size-3" />
+												</Link>
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)}
 								/>
 							</div>
-						</AccordionContent>
-					</AccordionItem>
+						</CardContent>
+					</Card>
 
-					{/* Map Section */}
-					<AccordionItem value="map" className="border rounded-lg px-6 mt-4">
-						<AccordionTrigger className="py-4">
-							<div className="flex items-center gap-2">
-								<MapPin className="size-5" />
-								<span className="font-medium">{t("Map editor")} (BETA)</span>
-							</div>
-						</AccordionTrigger>
-						<AccordionContent className="pb-4">
-							<div className="space-y-4">
-								<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-									<p className="text-sm text-muted-foreground">
-										{t(
-											"This is where you can edit your game map. Add points of interest, obstacles, and other important details.",
-										)}
-									</p>
-									<div className="flex gap-2">
-										<Button
-											type="button"
-											variant="outline"
-											size="sm"
-											onClick={() => {
-												form.setValue("mapData", createEmptySnapshot(), {
-													shouldDirty: true,
-													shouldTouch: true,
-												});
-											}}
-										>
-											<RotateCcw className="size-4" />
-											{t("Reset")}
-										</Button>
-										<Button type="button" size="sm" onClick={() => setIsMapEditorOpen(true)}>
-											{t("Edit")}
-										</Button>
+					{/* Advanced Settings */}
+					<Accordion type="single" collapsible className="w-full">
+						<AccordionItem value="settings" className="border rounded-lg px-6">
+							<AccordionTrigger className="py-4">
+								<div className="flex items-center gap-2">
+									<Settings className="size-5" />
+									<span className="font-medium">{t("Advanced settings")}</span>
+								</div>
+							</AccordionTrigger>
+							<AccordionContent className="pb-4 space-y-6">
+								{/* Visibility Settings */}
+								<div>
+									<h3 className="text-base font-medium mb-4 flex items-center gap-2">
+										{t("Visibility")}
+									</h3>
+									<div className="space-y-4">
+										<FormField
+											control={form.control}
+											name="isPrivate"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<div className="space-y-0.5">
+														<FormLabel>{t("Private")}</FormLabel>
+														<FormDescription>
+															{t("Private events are visible only to club members.")}
+														</FormDescription>
+													</div>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="allowFreelancers"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<div className="space-y-0.5">
+														<FormLabel>{t("Freelancers allowed")}</FormLabel>
+														<FormDescription>
+															{t(
+																"Do you allow players who are not members of a club to register for a match?",
+															)}
+														</FormDescription>
+													</div>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
 									</div>
 								</div>
-								<div className="w-full h-[400px]">
-									<MapViewer data={mapData} />
+
+								{/* Amenities Settings */}
+								<div>
+									<h3 className="text-base font-medium mb-4 flex items-center gap-2">
+										{t("Organization")}
+									</h3>
+									<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+										<FormField
+											control={form.control}
+											name="hasBreakfast"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<FormLabel>{t("Breakfast")}</FormLabel>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="hasLunch"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<FormLabel>{t("Lunch")}</FormLabel>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="hasDinner"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<FormLabel>{t("Dinner")}</FormLabel>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="hasSnacks"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<FormLabel>{t("Snacks")}</FormLabel>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="hasDrinks"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<FormLabel>{t("Drinks")}</FormLabel>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="hasPrizes"
+											render={({ field }) => (
+												<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+													<FormLabel>{t("Awards")}</FormLabel>
+													<FormControl>
+														<Switch
+															checked={field.value}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											)}
+										/>
+									</div>
 								</div>
-							</div>
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion>
 
-				{isMapEditorOpen ? (
-					<MapEditor
-						visible
-						initialData={mapData}
-						onSnapshotChange={handleMapSnapshotChange}
-						onClose={() => setIsMapEditorOpen(false)}
-					/>
-				) : null}
+								{/* Rules Section */}
+								<div>
+									<h3 className="text-base font-medium mb-4">{t("Rules")}</h3>
+									<FormField
+										control={form.control}
+										name="ruleIds"
+										render={({ field }) => {
+											return (
+												<FormItem>
+													<FormDescription>
+														{t("Select the rules that will apply to this event.")}
+													</FormDescription>
+													<FormControl>
+														<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+															{/* TODO: Hot reload rules when they're added. */}
+															{props.rules?.length === 0 && (
+																<p className="text-muted-foreground">
+																	{t("This club has no rules.")}{" "}
+																	<Link
+																		className="text-foreground"
+																		href={`/dashboard/${clubId}/events/rules`}
+																	>
+																		{t("Add rules")}.
+																	</Link>
+																</p>
+															)}
+															{props.rules?.map((rule) => (
+																<div
+																	key={rule.id}
+																	className="flex items-center justify-between space-x-2 p-4 border rounded-lg"
+																>
+																	<div className="flex items-center gap-4">
+																		<Checkbox
+																			checked={(field.value || []).includes(
+																				rule.id,
+																			)}
+																			onCheckedChange={(checked) => {
+																				const currentValue = field.value || [];
+																				const newValue = checked
+																					? [...currentValue, rule.id]
+																					: currentValue.filter(
+																							(id: string) =>
+																								id !== rule.id,
+																						);
+																				field.onChange(newValue);
+																			}}
+																		/>
+																		<div className="grid gap-1.5">
+																			<Label htmlFor={rule.id}>{rule.name}</Label>
+																			{rule.description && (
+																				<p className="text-sm line-clamp-1">
+																					{rule.description}
+																				</p>
+																			)}
+																			<p className="text-sm text-muted-foreground">
+																				{differenceInDays(
+																					new Date(rule.createdAt),
+																					new Date(),
+																				) === 0
+																					? t("Changed today")
+																					: t("Changed {time} day/s ago", {
+																							time: String(
+																								Math.abs(
+																									differenceInDays(
+																										new Date(
+																											rule.createdAt,
+																										),
+																										new Date(),
+																									),
+																								),
+																							),
+																						})}
+																			</p>
+																		</div>
+																	</div>
+																	<Button
+																		type="button"
+																		variant="ghost"
+																		size="icon"
+																		onClick={() => setSelectedRule(rule)}
+																	>
+																		<Eye className="h-4 w-4" />
+																	</Button>
+																</div>
+															))}
+														</div>
+													</FormControl>
+													<FormMessage />
 
-				<div className="flex justify-end pt-4 gap-4">
-					<Button
-						type="button"
-						variant="outline"
-						onClick={() => {
-							if (!props.event?.id) {
-								sessionStorage.removeItem("createEventForm");
-							}
-							form.reset(defaultFormValues);
-							eventImageUpload.resetToInitial();
-						}}
-					>
-						<RotateCcw className="size-4" />
-						{t("Reset")}
-					</Button>
-					<LoaderSubmitButton
-						isLoading={isLoading}
-						disabled={!isSlugValid && !!form.watch("slug")}
-						className="min-w-[200px]"
-					>
-						{props.event ? t("Save") : t("Create")}
-					</LoaderSubmitButton>
-				</div>
-			</form>
-		</Form>
+													<Sheet
+														open={!!selectedRule}
+														onOpenChange={() => setSelectedRule(null)}
+													>
+														<SheetContent
+															side="right"
+															className="w-screen sm:w-[45vw] overflow-y-auto flex flex-col"
+														>
+															{selectedRule && (
+																<>
+																	<SheetHeader>
+																		<SheetTitle>{selectedRule.name}</SheetTitle>
+																		<p className="text-muted-foreground">
+																			{(selectedRule.description?.length || 0) > 0
+																				? selectedRule.description
+																				: t("No description")}
+																		</p>
+																	</SheetHeader>
+																	<div className="mt-6 flex-1 overflow-y-auto px-4">
+																		<div
+																			className={cn(
+																				"prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0",
+																			)}
+																			// biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized
+																			dangerouslySetInnerHTML={{
+																				__html: DOMPurify.sanitize(
+																					selectedRule.content,
+																				),
+																			}}
+																		/>
+																	</div>
+																</>
+															)}
+														</SheetContent>
+													</Sheet>
+												</FormItem>
+											);
+										}}
+									/>
+								</div>
+							</AccordionContent>
+						</AccordionItem>
+
+						{/* Map Section */}
+						<AccordionItem value="map" className="border rounded-lg px-6 mt-4">
+							<AccordionTrigger className="py-4">
+								<div className="flex items-center gap-2">
+									<MapPin className="size-5" />
+									<span className="font-medium">{t("Map editor")} (BETA)</span>
+								</div>
+							</AccordionTrigger>
+							<AccordionContent className="pb-4">
+								<div className="space-y-4">
+									<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+										<p className="text-sm text-muted-foreground">
+											{t(
+												"This is where you can edit your game map. Add points of interest, obstacles, and other important details.",
+											)}
+										</p>
+										<div className="flex gap-2">
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												onClick={() => {
+													form.setValue("mapData", createEmptySnapshot(), {
+														shouldDirty: true,
+														shouldTouch: true,
+													});
+												}}
+											>
+												<RotateCcw className="size-4" />
+												{t("Reset")}
+											</Button>
+											<Button type="button" size="sm" onClick={() => setIsMapEditorOpen(true)}>
+												{t("Edit")}
+											</Button>
+										</div>
+									</div>
+									<div className="w-full h-[400px]">
+										<MapViewer data={mapData} />
+									</div>
+								</div>
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
+
+					{isMapEditorOpen ? (
+						<MapEditor
+							visible
+							initialData={mapData}
+							onSnapshotChange={handleMapSnapshotChange}
+							onClose={() => setIsMapEditorOpen(false)}
+						/>
+					) : null}
+
+					<div className="flex justify-end pt-4 gap-4">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => {
+								if (!props.event?.id) {
+									sessionStorage.removeItem("createEventForm");
+								}
+								form.reset(defaultFormValues);
+								eventImageUpload.resetToInitial();
+							}}
+						>
+							<RotateCcw className="size-4" />
+							{t("Reset")}
+						</Button>
+						<LoaderSubmitButton
+							isLoading={isLoading}
+							disabled={!isSlugValid && !!form.watch("slug")}
+							className="min-w-[200px]"
+						>
+							{props.event ? t("Save") : t("Create")}
+						</LoaderSubmitButton>
+					</div>
+				</form>
+			</Form>
+
+			<EventImageCropDialog
+				file={cropEventImageFile}
+				onClose={() => setCropEventImageFile(null)}
+				onCrop={(croppedFile) => {
+					const uploadItem: FileUploadItem = {
+						id: `cropped-${Date.now()}-${Math.random()}`,
+						file: croppedFile,
+						name: croppedFile.name,
+						type: croppedFile.type,
+						size: croppedFile.size,
+						isExisting: false,
+					};
+					eventImageUpload.setFiles([uploadItem]);
+				}}
+			/>
+		</>
 	);
 }

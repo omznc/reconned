@@ -96,18 +96,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 		};
 	}
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api-client/og/user`);
-	ogUrl.searchParams.set("name", user.name);
-	if (user.bio) {
-		ogUrl.searchParams.set("bio", user.bio);
-	}
-	if (user.callsign) {
-		ogUrl.searchParams.set("callsign", user.callsign);
-	}
-	if (user.image) {
-		ogUrl.searchParams.set("avatar", user.image);
-	}
-
 	const pathPrefix = "/users";
 	const slugOrId = user.slug || user.id;
 	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
@@ -128,16 +116,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 				locale,
 				user.slug || undefined,
 			),
-		},
-		openGraph: {
-			images: [
-				{
-					url: ogUrl.toString(),
-					width: 1200,
-					height: 630,
-					alt: user.name,
-				},
-			],
 		},
 		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 	};
