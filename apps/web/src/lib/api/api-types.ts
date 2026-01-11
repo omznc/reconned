@@ -10294,6 +10294,7 @@ export interface operations {
 								slug: string | null;
 							};
 						}[];
+						privateCount: number;
 					};
 				};
 			};
@@ -10623,6 +10624,9 @@ export interface operations {
 							createdAt: string;
 							updatedAt: string;
 							headerImage: string | null;
+							_count: {
+								members: number;
+							};
 						}[];
 						pagination: {
 							page: number;

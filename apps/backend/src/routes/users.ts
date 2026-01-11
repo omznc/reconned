@@ -557,6 +557,7 @@ usersRouter.get(
 						id: club.id,
 						name: club.name,
 						slug: club.slug,
+						logo: club.logo,
 						isPrivate: club.isPrivate,
 					})
 					.from(club)
@@ -665,6 +666,7 @@ usersRouter.get(
 								id: true,
 								name: true,
 								slug: true,
+								logo: true,
 							}),
 						}),
 					),

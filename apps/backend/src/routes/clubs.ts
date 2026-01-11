@@ -609,8 +609,25 @@ clubsRouter.get(
 		const totalData = await db.select({ count: count() }).from(club).where(whereClause);
 		const total = totalData[0]?.count || 0;
 
+		// Add member counts to clubs
+		const clubsWithCounts = await Promise.all(
+			clubs.map(async (c) => {
+				const memberCount = await db
+					.select({ count: count() })
+					.from(clubMembership)
+					.where(eq(clubMembership.clubId, c.id));
+
+				return {
+					...c,
+					_count: {
+						members: memberCount[0]?.count || 0,
+					},
+				};
+			}),
+		);
+
 		return response.json({
-			clubs,
+			clubs: clubsWithCounts,
 			pagination: {
 				page,
 				perPage,
@@ -631,7 +648,13 @@ clubsRouter.get(
 			}),
 			response: {
 				200: z.object({
-					clubs: z.array(baseClubSchema),
+					clubs: z.array(
+						baseClubSchema.extend({
+							_count: z.object({
+								members: z.number(),
+							}),
+						}),
+					),
 					pagination: paginationResponseSchema,
 				}),
 			},
@@ -5000,6 +5023,7 @@ clubsRouter.get(
 		const clubRecord = clubData[0];
 
 		if (!clubRecord.instagramAccessToken || !clubRecord.instagramBusinessId) {
+			console.log("INSTAGRAM token ERROR: Missing access token or business ID");
 			return response.json({ media: [], username: null });
 		}
 
@@ -5045,7 +5069,7 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			query: z.object({
-				limit: z.number().optional(),
+				limit: z.coerce.number().optional(),
 			}),
 			response: {
 				200: z.object({
@@ -5248,15 +5272,31 @@ clubsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		// Check if user has access to view members
-		const membershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
+		// Check if club exists and get its privacy setting
+		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
-		if (!membershipData[0]) {
-			throw apiError.forbidden("You must be a member to view club members");
+		if (!clubData[0]) {
+			throw apiError.notFound("Club not found");
+		}
+
+		// Check if user has access to view members
+		// For public clubs, anyone can view members
+		// For private clubs, only members can view
+		let membershipData: Array<typeof clubMembership.$inferSelect> = [];
+		if (clubData[0].isPrivate) {
+			if (!context.user) {
+				throw apiError.forbidden("You must be a member to view private club members");
+			}
+
+			membershipData = await db
+				.select()
+				.from(clubMembership)
+				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+				.limit(1);
+
+			if (!membershipData[0]) {
+				throw apiError.forbidden("You must be a member to view private club members");
+			}
 		}
 
 		const { page, perPage, search, role, sortBy, sortOrder } = query;
@@ -5274,13 +5314,25 @@ clubsRouter.get(
 			? or(ilike(user.name, `%${search}%`), ilike(user.email, `%${search}%`), ilike(user.callsign, `%${search}%`))
 			: undefined;
 
-		const allConditions = searchConditions ? and(...whereConditions, searchConditions) : and(...whereConditions);
+		// Get count of private members
+		const privateCountResult = await db
+			.select({ count: count() })
+			.from(clubMembership)
+			.innerJoin(user, eq(clubMembership.userId, user.id))
+			.where(and(...whereConditions, eq(user.isPrivate, true)));
+		const privateCount = Number(privateCountResult[0]?.count || 0);
 
 		const sanitize = new Sanitize({
 			requestingUserId: context.user?.id,
 			targetUserId: user.id,
 			isAdmin: context.isAdmin,
 		});
+
+		// Filter out private users
+		const nonPrivateConditions = and(...whereConditions, eq(user.isPrivate, false));
+		const allConditionsWithSearch = searchConditions
+			? and(nonPrivateConditions, searchConditions)
+			: nonPrivateConditions;
 
 		const membersQuery = db
 			.select({
@@ -5306,7 +5358,7 @@ clubsRouter.get(
 			})
 			.from(clubMembership)
 			.innerJoin(user, eq(clubMembership.userId, user.id))
-			.where(allConditions);
+			.where(allConditionsWithSearch);
 
 		// Apply sorting - determine sort field
 		let sortField:
@@ -5336,7 +5388,7 @@ clubsRouter.get(
 			.select({ count: count() })
 			.from(clubMembership)
 			.innerJoin(user, eq(clubMembership.userId, user.id))
-			.where(allConditions);
+			.where(allConditionsWithSearch);
 		const total = Number(totalResult[0]?.count || 0);
 
 		// Format members to match frontend expectations
@@ -5374,10 +5426,11 @@ clubsRouter.get(
 			page,
 			perPage,
 			totalPages: Math.ceil(total / perPage),
+			privateCount,
 		});
 	},
 	{
-		auth: true,
+		auth: false,
 		schema: {
 			tags: ["Clubs"],
 			summary: "Get club members",
@@ -5414,6 +5467,7 @@ clubsRouter.get(
 							}),
 						}),
 					),
+					privateCount: z.number(),
 				}),
 				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
 			},
