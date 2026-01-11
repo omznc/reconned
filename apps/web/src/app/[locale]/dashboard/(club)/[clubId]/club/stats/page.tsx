@@ -1,15 +1,18 @@
 import { format } from "date-fns";
-import { bs } from "date-fns/locale";
-import { getExtracted } from "next-intl/server";
+
+import { getExtracted, getLocale } from "next-intl/server";
 import { StatsCharts } from "@/app/[locale]/dashboard/(club)/[clubId]/club/stats/_components/stats-charts";
 import { ErrorPage } from "@/components/error-page";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
+import { getDateFnsLocale } from "@/lib/date-locale";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/club/stats">) {
 	const params = await props.params;
 	const t = await getExtracted();
 	const user = await isAuthenticated();
+	const locale = await getLocale();
+	const dateFnsLocale = getDateFnsLocale(locale);
 
 	if (!user) {
 		return <ErrorPage title={t("You have no access to this page")} />;
@@ -48,7 +51,7 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 	}));
 
 	const eventData = stats.events.map((item) => ({
-		month: format(new Date(item.month), "MMMM", { locale: bs }),
+		month: format(new Date(item.month), "MMMM", { locale: dateFnsLocale }),
 		count: item.count,
 	}));
 

@@ -2189,6 +2189,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/clubs/{id}/instagram/page-selection": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get Instagram page selection data
+		 * @description Retrieve stored Facebook pages for Instagram connection
+		 */
+		get: operations["clubsidinstagrampageSelectionGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/clubs/{id}/instagram/select-page": {
 		parameters: {
 			query?: never;
@@ -13927,6 +13947,74 @@ export interface operations {
 			};
 			/** @description Internal Server Error */
 			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidinstagrampageSelectionGet: {
+		parameters: {
+			query: {
+				sessionId: string;
+			};
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						pages: {
+							id: string;
+							name: string;
+							access_token: string;
+							instagram_business_account: {
+								id: string;
+								username?: string;
+								profile_picture_url?: string;
+							} | null;
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
 				headers: {
 					[name: string]: unknown;
 				};

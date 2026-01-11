@@ -649,8 +649,13 @@ eventsRouter.put(
 			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
-		if (body.slug && body.slug !== existingEvent.slug) {
-			const valid = await validateEventSlug(body.slug, eventId);
+		// Only validate slug if it's provided and different from existing
+		// Normalize empty strings to null for comparison
+		const normalizedBodySlug = body.slug?.trim() || null;
+		const normalizedExistingSlug = existingEvent.slug || null;
+
+		if (normalizedBodySlug && normalizedBodySlug !== normalizedExistingSlug) {
+			const valid = await validateEventSlug(normalizedBodySlug, eventId);
 			if (!valid) {
 				throw apiError.validation("This slug is already taken");
 			}

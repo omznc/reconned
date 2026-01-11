@@ -15,32 +15,33 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import apiClient from "@/lib/api/api.client";
+import type { ClubMember } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
-
-type Member = {
-	id: string;
-	user: {
-		id: string;
-		name: string;
-		email: string;
-		callsign: string | null;
-	};
-};
 
 export function AddManagerForm() {
 	const t = useExtracted();
 	const params = useParams<{ clubId: string }>();
-	const [members, setMembers] = useState<Member[]>([]);
+	const [members, setMembers] = useState<ClubMember[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 
 	async function searchMembers(clubId: string, query: string) {
-		const response = await fetch(`/api/club/${clubId}/members?query=${encodeURIComponent(query)}&role=USER`);
-		if (!response.ok) {
+		const { data, error } = await apiClient.GET("/api/clubs/{id}/members", {
+			params: {
+				path: { id: clubId },
+				query: {
+					search: query,
+					role: "USER",
+					page: 1,
+					perPage: 25,
+				},
+			},
+		});
+		if (error || !data) {
 			throw new Error(t("Failed to search members"));
 		}
-		return (await response.json()) as Member[];
+		return data.members;
 	}
 
 	const promoteToManagerSchema = z.object({
@@ -72,7 +73,7 @@ export function AddManagerForm() {
 				setMembers([]);
 			}
 		}, 400),
-		[params.clubId],
+		[params.clubId, t],
 	);
 
 	const handleSearch = (value: string) => {

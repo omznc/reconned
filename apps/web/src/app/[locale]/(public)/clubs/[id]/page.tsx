@@ -142,7 +142,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 		};
 	}
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/club`);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api-client/og/club`);
 	ogUrl.searchParams.set("name", club.name);
 	if (club.description) {
 		ogUrl.searchParams.set("description", club.description);

@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -25,6 +26,7 @@ import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
+	const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
@@ -263,27 +265,39 @@ export default function LoginPage() {
 							<Button
 								variant="outline"
 								className="w-full"
-								disabled={isLoading}
+								disabled={isLoading || isPasskeyLoading}
 								type="button"
 								onClick={async () => {
-									await authClient.signIn.passkey(
-										{},
-										{
-											onRequest: () => {
-												setIsLoading(true);
+									setIsPasskeyLoading(true);
+									authClient.signIn
+										.passkey(
+											{},
+											{
+												onRequest: () => {
+													setIsLoading(true);
+												},
+												onResponse: () => {
+													setIsLoading(false);
+												},
+												onSuccess: handleSuccessfulLogin,
+												onError: () => {
+													setIsError(true);
+												},
 											},
-											onResponse: () => {
-												setIsLoading(false);
-											},
-											onSuccess: handleSuccessfulLogin,
-											onError: () => {
-												setIsError(true);
-											},
-										},
-									);
+										)
+										.then(() => {
+											setIsPasskeyLoading(false);
+										});
 								}}
 							>
-								<Key className="w-4 h-4 inline-block" /> Passkey
+								{isPasskeyLoading ? (
+									<Loader />
+								) : (
+									<>
+										<Key className="w-4 h-4 inline-block" />
+										Passkey
+									</>
+								)}
 							</Button>
 							<GoogleLoginButton redirectTo={redirectTo} wasLastMethod={lastMethod === "google"} />
 						</div>

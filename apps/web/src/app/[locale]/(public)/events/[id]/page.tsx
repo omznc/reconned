@@ -146,7 +146,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	}
 	const event = data.event;
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/event`);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api-client/og/event`);
 	ogUrl.searchParams.set("title", event.name);
 	if (event.description) {
 		ogUrl.searchParams.set("description", event.description);

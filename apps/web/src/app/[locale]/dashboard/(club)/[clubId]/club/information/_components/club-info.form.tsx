@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { format } from "date-fns";
-import { bs, enUS, hr } from "date-fns/locale";
 import {
 	AlertCircle,
 	ArrowUpRight,
@@ -42,6 +41,7 @@ import { useHash } from "@/hooks/use-hash";
 import { Link, useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse, Club } from "@/lib/api/api-type-helpers";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 
@@ -85,21 +85,8 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const confirm = useConfirm();
 	const t = useExtracted();
 	const locale = useLocale();
+	const dateFnsLocale = getDateFnsLocale(locale);
 	const httpsUrlSchema = useHttpsUrlSchema();
-
-	// Map locale string to date-fns locale object
-	const getDateFnsLocale = () => {
-		switch (locale) {
-			case "bs":
-				return bs;
-			case "hr":
-				return hr;
-			case "en":
-				return enUS;
-			default:
-				return enUS;
-		}
-	};
 
 	const clubInfoSchema = z.object({
 		name: z
@@ -1006,7 +993,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											value={field.value}
 											onChange={field.onChange}
 											granularity="day"
-											locale={getDateFnsLocale()}
+											locale={dateFnsLocale}
 										/>
 									</PopoverContent>
 								</Popover>

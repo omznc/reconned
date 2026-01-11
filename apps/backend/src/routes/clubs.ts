@@ -4781,6 +4781,107 @@ clubsRouter.post(
 	},
 );
 
+clubsRouter.get(
+	"/clubs/:id/instagram/page-selection",
+	async ({ params, query, response, context }) => {
+		const clubId = params.id;
+		const sessionId = query.sessionId;
+
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		if (!sessionId) {
+			throw apiError.validation("Session ID is required");
+		}
+
+		// Check if user is manager or owner
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
+		}
+
+		// Get session data
+		const session = await db
+			.select()
+			.from(instagramPageSelection)
+			.where(eq(instagramPageSelection.id, sessionId))
+			.limit(1);
+
+		if (!session[0]) {
+			throw apiError.validation("Invalid or expired session");
+		}
+
+		// Check if session matches club
+		if (session[0].clubId !== clubId) {
+			throw apiError.forbidden("Session does not match club");
+		}
+
+		// Parse stored pages and enrich with Instagram Business Account info
+		const pages = JSON.parse(session[0].pages);
+		const enrichedPages = await Promise.all(
+			pages.map(async (page: { id: string; name: string; access_token: string }) => {
+				try {
+					const igBusinessResponse = await getInstagramBusinessAccount(page.id, page.access_token);
+					return {
+						...page,
+						instagram_business_account: igBusinessResponse?.instagram_business_account || null,
+					};
+				} catch {
+					return {
+						...page,
+						instagram_business_account: null,
+					};
+				}
+			}),
+		);
+
+		return response.json({
+			pages: enrichedPages,
+		});
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get Instagram page selection data",
+			description: "Retrieve stored Facebook pages for Instagram connection",
+			params: z.object({
+				id: z.string(),
+			}),
+			query: z.object({
+				sessionId: z.string(),
+			}),
+			response: {
+				200: z.object({
+					pages: z.array(
+						z.object({
+							id: z.string(),
+							name: z.string(),
+							access_token: z.string(),
+							instagram_business_account: z
+								.object({
+									id: z.string(),
+									username: z.string().optional(),
+									profile_picture_url: z.string().optional(),
+								})
+								.nullable(),
+						}),
+					),
+				}),
+				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
 clubsRouter.post(
 	"/clubs/:id/instagram/select-page",
 	async ({ params, body, response, context }) => {

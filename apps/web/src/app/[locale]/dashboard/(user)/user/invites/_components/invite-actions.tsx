@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useClubs } from "@/components/clubs-provider";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
+import apiClient from "@/lib/api/api.client";
 
 interface Invite {
 	inviteCode: string;
@@ -25,21 +26,20 @@ export function InviteActions({ invite }: InviteActionsProps) {
 	const handleAction = async (action: "approve" | "dismiss") => {
 		setIsLoading(true);
 		try {
-			const res = await fetch(
-				`/api/club/member-invite/${invite.inviteCode}?action=${action}&redirectTo=${encodeURIComponent(
-					"/dashboard/user/invites",
-				)}`,
-				{
-					method: "POST",
+			const { error } = await apiClient.POST("/api/club/member-invite/{inviteCode}", {
+				params: {
+					path: { inviteCode: invite.inviteCode },
+					query: {
+						action,
+						redirectTo: "/dashboard/user/invites",
+					},
 				},
-			);
+			});
 
-			if (!res.ok) {
-				const error = await res.json().catch(() => ({ message: "Unknown error" }));
-				throw new Error(error.message || t("Failed to process invite"));
+			if (error) {
+				throw new Error(error.error || t("Failed to process invite"));
 			}
 
-			// toast.success(t(action === "approve" ? "Invite accepted" : "Invite dismissed"));
 			toast.success(action === "approve" ? t("Invite accepted") : t("Invite dismissed"));
 
 			// Refresh the clubs list if the user accepted the invite (they joined a club)
