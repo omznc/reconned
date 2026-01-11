@@ -14,24 +14,28 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import apiClient from "@/lib/api/api.client";
+import type { ClubListItem } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
-type Club = {
-	id: string;
-	name: string;
-};
-
 async function searchClubs(query: string) {
-	const response = await fetch(`/api/clubs?query=${encodeURIComponent(query)}`);
-	if (!response.ok) {
+	const { data, error } = await apiClient.GET("/api/clubs", {
+		params: {
+			query: {
+				search: query,
+				page: 1,
+				perPage: 25,
+			},
+		},
+	});
+	if (error || !data) {
 		throw new Error("Failed to fetch clubs");
 	}
-	return response.json() as Promise<Club[]>;
+	return data.clubs;
 }
 
 export function RequestAccessForm() {
 	const t = useExtracted();
-	const [clubs, setClubs] = useState<Club[]>([]);
+	const [clubs, setClubs] = useState<ClubListItem[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -87,7 +91,7 @@ export function RequestAccessForm() {
 				setClubs([]);
 			}
 		}, 400),
-		[],
+		[t],
 	);
 
 	const handleSearch = (value: string) => {

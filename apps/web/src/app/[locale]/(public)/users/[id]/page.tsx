@@ -96,7 +96,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 		};
 	}
 
-	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api/og/user`);
+	const ogUrl = new URL(`${env.NEXT_PUBLIC_WEB_URL}/api-client/og/user`);
 	ogUrl.searchParams.set("name", user.name);
 	if (user.bio) {
 		ogUrl.searchParams.set("bio", user.bio);

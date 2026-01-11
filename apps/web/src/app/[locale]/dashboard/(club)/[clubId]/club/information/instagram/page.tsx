@@ -2,7 +2,6 @@
 
 import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
 import { AlertCircle, ArrowLeft, Info, ShieldAlert, Verified } from "lucide-react";
-import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
@@ -12,24 +11,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRouter } from "@/i18n/navigation";
-import { IMAGE_SIZES } from "@/lib/image-sizes";
+import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
-interface FacebookPage {
+type FacebookPage = {
 	id: string;
 	name: string;
 	access_token: string;
-	tasks?: string[];
-	category?: string;
-	category_list?: Array<{ id: string; name: string }>;
-	picture?: { data: { url: string } };
-	instagram_business_account?: {
+	instagram_business_account: {
 		id: string;
 		username?: string;
 		profile_picture_url?: string;
-	};
-	has_instagram_business_account?: boolean;
-}
+	} | null;
+};
 
 export default function InstagramPageSelection() {
 	const [pages, setPages] = useState<FacebookPage[]>([]);
@@ -55,38 +49,30 @@ export default function InstagramPageSelection() {
 
 		const fetchPages = async () => {
 			try {
-				const response = await fetch(
-					`/api/club/instagram/page-selection?sessionId=${sessionId}&clubId=${params.clubId}`,
-				);
+				const { data, error } = await apiClient.GET("/api/clubs/{id}/instagram/page-selection", {
+					params: {
+						path: { id: params.clubId },
+						query: { sessionId },
+					},
+				});
 
-				if (!response.ok) {
-					const errorData = await response.json();
-					setError(errorData.error || t("Failed to load Facebook pages"));
+				if (error || !data) {
+					setError(error?.error || t("Failed to load Facebook pages"));
 					setIsLoading(false);
 					return;
 				}
 
-				const data = await response.json();
-
 				// Check eligibility of pages by detecting which ones have Instagram business accounts
-				const pagesWithEligibilityInfo = data.pages.map((page: FacebookPage) => {
-					const hasInstagramAccount = !!page.instagram_business_account;
-					return {
-						...page,
-						has_instagram_business_account: hasInstagramAccount,
-					};
-				});
+				const eligiblePageIds = data.pages
+					.filter((page) => page.instagram_business_account !== null)
+					.map((page) => page.id);
 
-				const eligiblePageIds = pagesWithEligibilityInfo
-					.filter((page: FacebookPage) => page.has_instagram_business_account)
-					.map((page: FacebookPage) => page.id);
-
-				setPages(pagesWithEligibilityInfo);
+				setPages(data.pages);
 				setEligiblePages(eligiblePageIds);
 
 				// If there are eligible pages, auto-select the first one
 				if (eligiblePageIds.length > 0 && !selectedPageId) {
-					setSelectedPageId(eligiblePageIds[0]);
+					setSelectedPageId(eligiblePageIds[0] ?? null);
 				}
 
 				setIsLoading(false);
@@ -205,7 +191,7 @@ export default function InstagramPageSelection() {
 			<CardContent>
 				<div className="space-y-4">
 					{pages.map((page) => {
-						const isEligible = page.has_instagram_business_account;
+						const isEligible = page.instagram_business_account !== null;
 
 						return (
 							// biome-ignore lint/a11y/useSemanticElements: Style stuff
@@ -221,27 +207,12 @@ export default function InstagramPageSelection() {
 								onClick={() => isEligible && handleSelectPage(page.id)}
 							>
 								<div className="flex items-center gap-3 flex-1">
-									{page.picture?.data?.url ? (
-										<div className="h-12 w-12 flex-shrink-0 relative overflow-hidden rounded-md">
-											<Image
-												src={page.picture.data.url}
-												alt={page.name}
-												width={IMAGE_SIZES.THUMBNAIL}
-												height={IMAGE_SIZES.THUMBNAIL}
-												fill
-												className="object-cover"
-											/>
-										</div>
-									) : (
-										<div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
-											<SiFacebook className="h-6 w-6 text-muted-foreground" />
-										</div>
-									)}
+									<div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
+										<SiFacebook className="h-6 w-6 text-muted-foreground" />
+									</div>
 									<div className="flex-1">
 										<div className="font-medium">{page.name}</div>
-										<div className="text-sm text-muted-foreground">
-											{page.category || page.category_list?.[0]?.name || "Facebook Page"}
-										</div>
+										<div className="text-sm text-muted-foreground">Facebook Page</div>
 									</div>
 
 									{isEligible ? (

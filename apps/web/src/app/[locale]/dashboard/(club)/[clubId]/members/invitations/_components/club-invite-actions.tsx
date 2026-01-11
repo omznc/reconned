@@ -12,6 +12,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type ClubInvite = ApiResponse<"/api/clubs/{id}/invites", "get">["invites"][number];
@@ -29,17 +30,20 @@ export function ClubInviteActions({ invite }: ClubInviteActionsProps) {
 	const handleAction = async (action: "approve" | "dismiss") => {
 		setIsLoading(true);
 		try {
-			const url = `/api/club/member-invite/${invite.inviteCode}?action=${action}&redirectTo=${encodeURIComponent(pathname)}`;
-			const res = await fetch(url, {
-				method: "POST",
+			const { error } = await apiClient.POST("/api/club/member-invite/{inviteCode}", {
+				params: {
+					path: { inviteCode: invite.inviteCode },
+					query: {
+						action,
+						redirectTo: pathname,
+					},
+				},
 			});
 
-			if (!res.ok) {
-				const error = await res.json().catch(() => ({ message: "Unknown error" }));
-				throw new Error(error.message || t("Failed to process invite"));
+			if (error) {
+				throw new Error(error.error || t("Failed to process invite"));
 			}
 
-			// toast.success(t(action === "approve" ? "Invite accepted" : "Invite dismissed"));
 			toast.success(action === "approve" ? t("Invite accepted") : t("Invite dismissed"));
 			router.refresh();
 		} catch (error) {

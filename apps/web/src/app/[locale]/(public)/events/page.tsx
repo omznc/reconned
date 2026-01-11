@@ -1,5 +1,4 @@
 import { format, formatDistanceToNow } from "date-fns";
-import { bs } from "date-fns/locale";
 import { CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -11,11 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function Page() {
 	const locale = await getLocale();
+	const dateFnsLocale = getDateFnsLocale(locale);
 	const t = await getExtracted();
 
 	const { data, error } = await apiServer.GET("/api/events/upcoming", {
@@ -157,25 +158,23 @@ export default async function Page() {
 								{event.hasPrizes && <Badge className="grow justify-center ">{t("Prizes")}</Badge>}
 							</div>
 						</CardContent>
-						<CardFooter className="flex justify-between items-center">
-							<div className="flex flex-col">
+						<CardFooter className="flex gap-2 -mt-4 flex-col items-start justify-between">
+							<div className="text-sm text-muted-foreground">
+								{t("Starts")}{" "}
+								{formatDistanceToNow(event.dateStart, {
+									addSuffix: true,
+									locale: dateFnsLocale,
+								})}
+							</div>
+							{event.dateRegistrationsClose && (
 								<div className="text-sm text-muted-foreground">
-									{t("Starts")}{" "}
-									{formatDistanceToNow(event.dateStart, {
-										addSuffix: true,
-										locale: bs,
+									{t("Registrations open for ")}{" "}
+									{formatDistanceToNow(event.dateRegistrationsClose, {
+										locale: dateFnsLocale,
 									})}
 								</div>
-								{event.dateRegistrationsClose && (
-									<div className="text-sm text-muted-foreground">
-										{t("Registrations open for ")}{" "}
-										{formatDistanceToNow(event.dateRegistrationsClose, {
-											locale: bs,
-										})}
-									</div>
-								)}
-							</div>
-							<Button asChild={true}>
+							)}
+							<Button asChild={true} className="w-full">
 								<Link href={`/events/${event.id}`}>{t("View")}</Link>
 							</Button>
 						</CardFooter>

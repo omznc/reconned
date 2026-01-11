@@ -10,7 +10,10 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
+
+type AdminUser = ApiResponse<"/api/admin/users", "get">["users"][number];
 
 interface AssignClubOwnerFormProps {
 	clubId: string;
@@ -19,7 +22,7 @@ interface AssignClubOwnerFormProps {
 export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 	const [open, setOpen] = useState(false);
 	const [selectedUserId, setSelectedUserId] = useState<string>("");
-	const [users, setUsers] = useState<Array<{ id: string; name: string; email: string; callsign: string | null }>>([]);
+	const [users, setUsers] = useState<AdminUser[]>([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const t = useExtracted();
@@ -27,16 +30,21 @@ export function AssignClubOwnerForm({ clubId }: AssignClubOwnerFormProps) {
 
 	useEffect(() => {
 		if (searchQuery.length > 2) {
-			fetch(`/api/admin/users?query=${encodeURIComponent(searchQuery)}&includeCurrentUser=true`)
-				.then((res) => {
-					if (!res.ok) {
-						throw new Error("Failed to fetch users");
-					}
-					return res.json();
+			apiClient
+				.GET("/api/admin/users", {
+					params: {
+						query: {
+							search: searchQuery,
+							page: 1,
+							perPage: 25,
+						},
+					},
 				})
-				.then((data) => {
-					if (Array.isArray(data)) {
-						setUsers(data);
+				.then(({ data, error }) => {
+					if (!error && data) {
+						setUsers(data.users);
+					} else {
+						setUsers([]);
 					}
 				})
 				.catch(() => {

@@ -38,14 +38,7 @@ interface EventApplicationProps {
 	currentUserClubs: Omit<Club, "_count">[];
 }
 
-type SearchUser = {
-	id: string;
-	name: string;
-	email: string;
-	image: string | null;
-	callsign: string | null;
-	clubMembership: { club: { name: string } }[];
-};
+type SearchUser = ApiResponse<"/api/users", "get">["users"][number];
 
 export function EventApplicationForm({ existingApplication, event, user, currentUserClubs }: EventApplicationProps) {
 	const [step, setStep] = useState(1);
@@ -232,17 +225,19 @@ export function EventApplicationForm({ existingApplication, event, user, current
 	const searchUsers = useCallback(async (query: string) => {
 		setIsSearching(true);
 		try {
-			const queryParams = new URLSearchParams({
-				query: encodeURIComponent(query),
-				onlyUsersClub: "true",
-				ignoreCurrentUser: "true",
+			const { data, error } = await apiClient.GET("/api/users", {
+				params: {
+					query: {
+						search: query,
+						page: 1,
+						perPage: 25,
+					},
+				},
 			});
-			const response = await fetch(`/api/users?${queryParams.toString()}`);
-			if (!response.ok) {
+			if (error || !data) {
 				throw new Error("Search failed");
 			}
-			const data = await response.json();
-			setSearchResults(data);
+			setSearchResults(data.users);
 		} catch (_) {
 			setSearchResults([]);
 		} finally {
@@ -293,7 +288,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 			{
 				id: user.id,
 				name: user.name,
-				email: user.email,
+				email: user.email ?? undefined,
 				image: user.image,
 				callsign: user.callsign,
 			},
@@ -657,10 +652,12 @@ export function EventApplicationForm({ existingApplication, event, user, current
 														)}
 													</span>
 													<span className="text-sm text-muted-foreground">{user.email}</span>
-													{user.clubMembership.length > 0 && (
+													{user.clubMembership && user.clubMembership.length > 0 && (
 														<span className="text-xs text-muted-foreground">
 															Član:{" "}
-															{user.clubMembership.map((m) => m.club.name).join(", ")}
+															{user.clubMembership
+																.map((m) => m.club?.name ?? "")
+																.join(", ")}
 														</span>
 													)}
 												</div>

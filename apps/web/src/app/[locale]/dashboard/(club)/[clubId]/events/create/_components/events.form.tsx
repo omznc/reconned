@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, differenceInDays, format, subHours } from "date-fns";
-import { bs, enUS, hr } from "date-fns/locale";
+
 import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -41,6 +41,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { useIsAuthenticated } from "@/lib/auth-client";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 
 interface CreateEventFormProps {
@@ -58,20 +59,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const logger = useLogger();
 	const { user } = useIsAuthenticated();
 	const locale = useLocale();
-
-	// Map locale string to date-fns locale object
-	const getDateFnsLocale = () => {
-		switch (locale) {
-			case "bs":
-				return bs;
-			case "hr":
-				return hr;
-			case "en":
-				return enUS;
-			default:
-				return enUS;
-		}
-	};
+	const dateFnsLocale = getDateFnsLocale(locale);
 
 	const matcher = /<iframe.*?src="([^"]+)"/;
 
@@ -786,7 +774,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 														>
 															{field.value ? (
 																format(field.value, initHourFormat.hour24, {
-																	locale: bs,
+																	locale: dateFnsLocale,
 																})
 															) : (
 																<span>{t("Select a date")}</span>
@@ -799,7 +787,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<DateTimePicker
 														value={field.value}
 														onChange={field.onChange}
-														locale={getDateFnsLocale()}
+														locale={dateFnsLocale}
 													/>
 												</PopoverContent>
 											</Popover>
@@ -830,7 +818,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 														>
 															{field.value ? (
 																format(field.value, initHourFormat.hour24, {
-																	locale: bs,
+																	locale: dateFnsLocale,
 																})
 															) : (
 																<span>{t("Select a date")}</span>
@@ -843,7 +831,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<DateTimePicker
 														value={field.value}
 														onChange={field.onChange}
-														locale={getDateFnsLocale()}
+														locale={dateFnsLocale}
 													/>
 												</PopoverContent>
 											</Popover>
@@ -880,7 +868,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 														>
 															{field.value ? (
 																format(field.value, initHourFormat.hour24, {
-																	locale: bs,
+																	locale: dateFnsLocale,
 																})
 															) : (
 																<span>{t("Select a date")}</span>
@@ -893,7 +881,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<DateTimePicker
 														value={field.value}
 														onChange={field.onChange}
-														locale={getDateFnsLocale()}
+														locale={dateFnsLocale}
 													/>
 												</PopoverContent>
 											</Popover>
@@ -924,7 +912,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 														>
 															{field.value ? (
 																format(field.value, initHourFormat.hour24, {
-																	locale: bs,
+																	locale: dateFnsLocale,
 																})
 															) : (
 																<span>{t("Select a date")}</span>
@@ -937,7 +925,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 													<DateTimePicker
 														value={field.value}
 														onChange={field.onChange}
-														locale={getDateFnsLocale()}
+														locale={dateFnsLocale}
 													/>
 												</PopoverContent>
 											</Popover>

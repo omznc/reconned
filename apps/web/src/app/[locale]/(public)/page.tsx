@@ -7,7 +7,6 @@ import {
 	startOfMonth,
 	subMonths,
 } from "date-fns";
-import { bs } from "date-fns/locale";
 import {
 	Building2,
 	Calendar,
@@ -34,6 +33,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
+import { getDateFnsLocale } from "@/lib/date-locale";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
@@ -42,6 +42,8 @@ export const revalidate = 3600; // 1 hour
 export default async function Home(props: PageProps<"/[locale]">) {
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
+	const locale = await getLocale();
+	const dateFnsLocale = getDateFnsLocale(locale);
 
 	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
@@ -325,14 +327,14 @@ export default async function Home(props: PageProps<"/[locale]">) {
 												{t("Starts")}{" "}
 												{formatDistanceToNow(event.dateStart, {
 													addSuffix: true,
-													locale: bs,
+													locale: dateFnsLocale,
 												})}
 											</div>
 											{event.dateRegistrationsClose && (
 												<div className="text-sm mr-1 text-muted-foreground">
 													{t("Registrations open for")}{" "}
 													{formatDistanceToNow(event.dateRegistrationsClose, {
-														locale: bs,
+														locale: dateFnsLocale,
 													})}
 												</div>
 											)}
