@@ -1,4 +1,5 @@
 import { Router } from "../../lib/router";
+import { adminAlliancesRouter } from "./alliances";
 import { adminClubsRouter } from "./clubs";
 
 import { adminTasksRouter } from "./tasks";
@@ -12,5 +13,6 @@ adminRouter.use(adminUsersRouter);
 adminRouter.use(adminClubsRouter);
 adminRouter.use(adminUnclaimedClubsRouter);
 adminRouter.use(adminTasksRouter);
+adminRouter.use(adminAlliancesRouter);
 
 export { adminRouter };
