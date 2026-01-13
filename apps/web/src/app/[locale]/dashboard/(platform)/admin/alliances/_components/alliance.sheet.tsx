@@ -1,8 +1,8 @@
 "use client";
 
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
+import { useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
 import {
 	Credenza,
@@ -12,7 +12,6 @@ import {
 	CredenzaTitle,
 } from "@/components/ui/credenza";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
-import { AllianceActions } from "./alliance-actions.tsx";
 
 type AdminAlliance = ApiResponse<"/api/admin/alliances/{id}", "get">["alliance"];
 
@@ -22,29 +21,30 @@ interface AllianceSheetProps {
 
 export function AllianceSheet({ selectedAlliance }: AllianceSheetProps) {
 	const t = useExtracted();
-	const router = useRouter();
+	const [, setAllianceId] = useQueryState("allianceId", {
+		shallow: false,
+		clearOnDefault: true,
+		history: "replace",
+	});
 
 	const handleClose = () => {
-		router.push("/dashboard/admin/alliances");
+		setAllianceId(null);
 	};
 
+	const isOpen = !!selectedAlliance;
+
 	return (
-		<Credenza open={!!selectedAlliance} onOpenChange={(open) => !open && handleClose()}>
+		<Credenza open={isOpen} onOpenChange={handleClose}>
 			<CredenzaContent className="max-w-2xl">
 				{selectedAlliance && (
 					<>
 						<CredenzaHeader>
-							<div className="flex items-start justify-between">
-								<div>
-									<CredenzaTitle>{selectedAlliance.name}</CredenzaTitle>
-									<CredenzaDescription>
-										<Badge variant="outline" className="mt-2">
-											{selectedAlliance.country.iso2} - {selectedAlliance.country.name}
-										</Badge>
-									</CredenzaDescription>
-								</div>
-								<AllianceActions alliance={selectedAlliance} />
-							</div>
+							<CredenzaTitle>{selectedAlliance.name}</CredenzaTitle>
+							<CredenzaDescription>
+								<Badge variant="outline" className="mt-2">
+									{selectedAlliance.country.iso2} - {selectedAlliance.country.name}
+								</Badge>
+							</CredenzaDescription>
 						</CredenzaHeader>
 
 						<div className="space-y-6 py-4">

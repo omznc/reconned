@@ -7,6 +7,7 @@ import {
 	Cog,
 	DiamondMinus,
 	DollarSign,
+	Flag,
 	Handshake,
 	History,
 	House,
@@ -114,6 +115,11 @@ export function useAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 					title: t("Tasks"),
 					url: "/dashboard/admin/tasks",
 					icon: Cog,
+				},
+				{
+					title: t("Feature Flags"),
+					url: "/dashboard/admin/feature-flags",
+					icon: Flag,
 				},
 			],
 		});

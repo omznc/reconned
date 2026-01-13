@@ -51,8 +51,17 @@ export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dash
 }
 
 export default async function UnclaimedClubsPage(props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs">) {
-	const params = await props.params;
+	const searchParams = await props.searchParams;
 	const t = await getExtracted();
+
+	// Create a key that only includes parameters that affect data fetching
+	const dataKey = JSON.stringify({
+		search: searchParams.search,
+		sortBy: searchParams.sortBy,
+		sortOrder: searchParams.sortOrder,
+		page: searchParams.page,
+		perPage: searchParams.perPage,
+	});
 
 	return (
 		<>
@@ -65,7 +74,7 @@ export default async function UnclaimedClubsPage(props: PageProps<"/[locale]/das
 					</Link>
 				</Button>
 			</div>
-			<Suspense key={JSON.stringify(params)} fallback={<GenericDataTableSkeleton />}>
+			<Suspense key={dataKey} fallback={<GenericDataTableSkeleton />}>
 				<UnclaimedClubsPageFetcher {...props} />
 			</Suspense>
 		</>

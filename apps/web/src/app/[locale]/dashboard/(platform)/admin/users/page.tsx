@@ -50,12 +50,22 @@ export async function UsersPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 export default async function UsersPage(props: PageProps<"/[locale]/dashboard/admin/users">) {
 	const t = await getExtracted();
 	const searchParams = await props.searchParams;
+
+	// Create a key that only includes parameters that affect data fetching
+	const dataKey = JSON.stringify({
+		search: searchParams.search,
+		sortBy: searchParams.sortBy,
+		sortOrder: searchParams.sortOrder,
+		page: searchParams.page,
+		perPage: searchParams.perPage,
+	});
+
 	return (
 		<>
 			<div>
 				<h3 className="text-lg font-semibold">{t("All members")}</h3>
 			</div>
-			<Suspense key={JSON.stringify(searchParams)} fallback={<GenericDataTableSkeleton />}>
+			<Suspense key={dataKey} fallback={<GenericDataTableSkeleton />}>
 				<UsersPageFetcher {...props} />
 			</Suspense>
 		</>

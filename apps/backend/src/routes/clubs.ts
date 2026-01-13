@@ -25,6 +25,7 @@ import { db } from "../lib/db";
 import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
 import { apiError } from "../lib/errors";
+import { isFeatureEnabled } from "../lib/feature-flags";
 import {
 	debugToken,
 	exchangeCodeForToken,
@@ -574,6 +575,12 @@ clubsRouter.get(
 
 		const isAdmin = context.isAdmin;
 		const requestingUserId = context.user?.id;
+
+		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
+		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
+		if (onlyVerifiedClubs && !isAdmin) {
+			whereConditions.push(eq(club.verified, true));
+		}
 
 		if (search) {
 			whereConditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)));
@@ -2879,21 +2886,29 @@ clubsRouter.get(
 			throw apiError.notFound("Club not found");
 		}
 
-		// Do not expose private clubs to non-members
-		if (clubData[0].isPrivate) {
-			if (!context.user) {
-				throw apiError.notFound("Club not found");
-			}
-
+		// Check if user has access to this club (public or member)
+		let hasAccess = !clubData[0].isPrivate;
+		let isMember = false;
+		if (clubData[0].isPrivate && context.user) {
 			const membership = await db
 				.select()
 				.from(clubMembership)
 				.where(and(eq(clubMembership.clubId, clubData[0].id), eq(clubMembership.userId, context.user.id)))
 				.limit(1);
+			hasAccess = !!membership[0];
+			isMember = !!membership[0];
+		}
 
-			if (!membership[0]) {
-				throw apiError.notFound("Club not found");
-			}
+		if (!hasAccess) {
+			throw apiError.notFound("Club not found");
+		}
+
+		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
+		// Members can still see their clubs even if unverified
+		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
+		if (onlyVerifiedClubs && !context.isAdmin && !clubData[0].verified && !isMember) {
+			// For unverified clubs, only admins and members can see them when flag is enabled
+			throw apiError.notFound("Club not found");
 		}
 
 		const membersCount = await db

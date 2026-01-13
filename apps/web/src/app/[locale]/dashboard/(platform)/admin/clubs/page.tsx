@@ -48,14 +48,23 @@ export async function ClubsPageFetcher(props: PageProps<"/[locale]/dashboard/adm
 
 export default async function ClubsPage(props: PageProps<"/[locale]/dashboard/admin/clubs">) {
 	const t = await getExtracted();
-	const params = await props.params;
+	const searchParams = await props.searchParams;
+
+	// Create a key that only includes parameters that affect data fetching
+	const dataKey = JSON.stringify({
+		search: searchParams.search,
+		sortBy: searchParams.sortBy,
+		sortOrder: searchParams.sortOrder,
+		page: searchParams.page,
+		perPage: searchParams.perPage,
+	});
 
 	return (
 		<>
 			<div>
 				<h3 className="text-lg font-semibold">{t("All clubs")}</h3>
 			</div>
-			<Suspense key={JSON.stringify(params)} fallback={<GenericDataTableSkeleton />}>
+			<Suspense key={dataKey} fallback={<GenericDataTableSkeleton />}>
 				<ClubsPageFetcher {...props} />
 			</Suspense>
 		</>

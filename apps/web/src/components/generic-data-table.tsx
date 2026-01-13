@@ -423,12 +423,15 @@ export function GenericDataTable<T>({
 				)}
 
 				<div className="ml-auto text-sm text-muted-foreground">
-					{t("Page {page} of {total}", { page: String(page), total: String(totalPages) })}
+					{t("Page {page} of {total}", {
+						page: String(page),
+						total: String(totalPages === 0 ? 1 : totalPages),
+					})}
 				</div>
 			</div>
 
 			{/* Desktop Table */}
-			<div className="rounded-md border hidden md:block">
+			<div className="rounded-md overflow-hidden border hidden md:block">
 				<div className={cn(hasActionsAsLastColumn && "overflow-x-auto")}>
 					<Table>
 						<TableHeader>
