@@ -82,9 +82,9 @@ export function Search() {
 										</Label>
 										<Switch
 											id="filter-clubs"
-											checked={filterClubs || true}
+											checked={filterClubs}
 											onCheckedChange={(checked) => {
-												setFilterClubs(!!checked);
+												setFilterClubs(checked);
 											}}
 										/>
 									</div>
@@ -98,9 +98,9 @@ export function Search() {
 										</Label>
 										<Switch
 											id="filter-users"
-											checked={filterUsers || true}
+											checked={filterUsers}
 											onCheckedChange={(checked) => {
-												setFilterUsers(!!checked);
+												setFilterUsers(checked);
 											}}
 										/>
 									</div>
@@ -114,9 +114,9 @@ export function Search() {
 										</Label>
 										<Switch
 											id="filter-events"
-											checked={filterEvents || true}
+											checked={filterEvents}
 											onCheckedChange={(checked) => {
-												setFilterEvents(!!checked);
+												setFilterEvents(checked);
 											}}
 										/>
 									</div>
