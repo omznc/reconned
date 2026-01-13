@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
 	AlertCircle,
@@ -46,6 +47,12 @@ import { cn } from "@/lib/utils";
 import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 
 type Country = ApiResponse<"/api/countries", "get">[number];
+type Alliance = {
+	id: number;
+	name: string;
+	description: string | null;
+	countryId: number;
+};
 
 // Dynamically import map to avoid SSR issues
 const MapSelector = dynamic(() => import("@/components/clubs-map/clubs-map").then((m) => m.ClubsMap), {
@@ -82,7 +89,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const [mapCenter, setMapCenter] = useState<[number, number] | undefined>(undefined);
 	const [mapZoom, setMapZoom] = useState<number>(8);
 	const [cropBannerFile, setCropBannerFile] = useState<File | null>(null);
+	const [selectedAllianceIds, setSelectedAllianceIds] = useState<number[]>([]);
 	const confirm = useConfirm();
+	const queryClient = useQueryClient();
 	const t = useExtracted();
 	const locale = useLocale();
 	const dateFnsLocale = getDateFnsLocale(locale);
@@ -127,7 +136,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				},
 			)
 			.optional(),
-		isAllied: z.boolean().optional(),
+
 		isPrivate: z.boolean().optional(),
 		isPrivateStats: z.boolean().optional(),
 		logo: z.string().optional(),
@@ -319,7 +328,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			location: props.club?.location || "",
 			description: props.club?.description || "",
 			dateFounded: props.club?.dateFounded ? new Date(props.club.dateFounded) : undefined,
-			isAllied: props.club?.isAllied,
+
 			isPrivate: props.club?.isPrivate,
 			isPrivateStats: props.club?.isPrivateStats,
 			logo: props.club?.logo || undefined,
@@ -342,6 +351,53 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 	const nameValue = form.watch("name");
 	const descriptionValue = form.watch("description");
 	const slugValue = form.watch("slug");
+
+	// Fetch alliances when country changes
+	const { data: availableAlliances = [], isLoading: loadingAlliances } = useQuery({
+		queryKey: ["alliances", selectedCountryId],
+		queryFn: async () => {
+			if (!selectedCountryId) {
+				return [];
+			}
+
+			const { data } = await apiClient.GET("/api/alliances/{countryId}", {
+				params: {
+					path: {
+						countryId: selectedCountryId,
+					},
+				},
+			});
+
+			return (data?.alliances || []) as Alliance[];
+		},
+		enabled: !!selectedCountryId,
+	});
+
+	// Fetch current club alliances on mount
+	const { data: clubAlliancesData } = useQuery({
+		queryKey: ["club", props.club?.id, "alliances"],
+		queryFn: async () => {
+			if (!props.club?.id) {
+				return [];
+			}
+
+			const { data } = await apiClient.GET("/api/clubs/{id}/alliances", {
+				params: {
+					path: { id: props.club.id },
+				},
+			});
+
+			return (data?.alliances || []) as Alliance[];
+		},
+		enabled: !!props.club?.id,
+	});
+
+	// Update selected alliance IDs when club alliances are fetched
+	useEffect(() => {
+		if (clubAlliancesData) {
+			setSelectedAllianceIds(clubAlliancesData.map((a: Alliance) => a.id));
+		}
+	}, [clubAlliancesData]);
 
 	// Add this handler for map location selection
 	const handleLocationSelect = (lat: number, lng: number) => {
@@ -588,6 +644,25 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 					throw new Error("Club ID is missing");
 				}
 				await saveClubInformation(values, clubId);
+			}
+
+			// Update club alliances
+			if (clubId) {
+				try {
+					await apiClient.PUT("/api/clubs/{id}/alliances", {
+						params: {
+							path: { id: clubId },
+						},
+						body: {
+							allianceIds: selectedAllianceIds,
+						},
+					});
+					// Invalidate alliance queries to refetch
+					queryClient.invalidateQueries({ queryKey: ["club", clubId, "alliances"] });
+				} catch (error) {
+					console.error("Failed to update alliances:", error);
+					toast.error(t("Failed to update alliances"));
+				}
 			}
 
 			logoUpload.markAsSaved();
@@ -1003,23 +1078,64 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						)}
 					/>
 
-					<FormField
-						control={form.control}
-						name="isAllied"
-						render={({ field }) => (
-							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-								<div className="space-y-0.5">
-									<FormLabel>{t("In the ASK FBIH alliance")}</FormLabel>
-									<FormDescription>
-										{t("If you are part of the SAKFBIH, select this option. Will be verified.")}
-									</FormDescription>
+					<div className="space-y-4">
+						<div>
+							<h3 className="text-lg font-semibold">{t("Alliances")}</h3>
+							<p className="text-sm text-muted-foreground mt-1">
+								{t("Select which alliances this club belongs to")}
+							</p>
+						</div>
+
+						{loadingAlliances ? (
+							<div className="flex items-center justify-center p-8 rounded-lg border">
+								<div className="text-sm text-muted-foreground">{t("Loading alliances...")}</div>
+							</div>
+						) : availableAlliances.length === 0 ? (
+							<div className="flex items-center justify-center p-8 rounded-lg border bg-muted/50">
+								<div className="text-sm text-muted-foreground text-center">
+									{selectedCountryId
+										? t("No alliances available for this country")
+										: t("Select a country first to see available alliances")}
 								</div>
-								<FormControl>
-									<Switch checked={field.value} onCheckedChange={field.onChange} />
-								</FormControl>
-							</FormItem>
+							</div>
+						) : (
+							<div className="space-y-2">
+								{availableAlliances.map((alliance: Alliance) => (
+									<div
+										key={alliance.id}
+										className="flex items-start justify-between rounded-lg border p-4 hover:bg-muted/50 transition-colors"
+									>
+										<div className="flex items-start space-x-3 flex-1">
+											<Switch
+												id={`alliance-${alliance.id}`}
+												checked={selectedAllianceIds.includes(alliance.id)}
+												onCheckedChange={(checked) => {
+													if (checked) {
+														setSelectedAllianceIds([...selectedAllianceIds, alliance.id]);
+													} else {
+														setSelectedAllianceIds(
+															selectedAllianceIds.filter((id) => id !== alliance.id),
+														);
+													}
+												}}
+											/>
+											<label
+												htmlFor={`alliance-${alliance.id}`}
+												className="flex-1 cursor-pointer"
+											>
+												<div className="font-medium">{alliance.name}</div>
+												{alliance.description && (
+													<div className="text-sm text-muted-foreground mt-1">
+														{alliance.description}
+													</div>
+												)}
+											</label>
+										</div>
+									</div>
+								))}
+							</div>
 						)}
-					/>
+					</div>
 
 					<FormField
 						control={form.control}

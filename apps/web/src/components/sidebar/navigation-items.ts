@@ -7,6 +7,7 @@ import {
 	Cog,
 	DiamondMinus,
 	DollarSign,
+	Handshake,
 	History,
 	House,
 	Info,
@@ -103,6 +104,11 @@ export function useAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 					title: t("Unclaimed clubs"),
 					url: "/dashboard/admin/unclaimed-clubs",
 					icon: Building2,
+				},
+				{
+					title: t("Alliances"),
+					url: "/dashboard/admin/alliances",
+					icon: Handshake,
 				},
 				{
 					title: t("Tasks"),

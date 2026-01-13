@@ -2269,6 +2269,30 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/clubs/{id}/alliances": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get club alliances
+		 * @description Get all alliances a club belongs to
+		 */
+		get: operations["clubsidalliancesGet"];
+		/**
+		 * Update club alliances
+		 * @description Update the alliances a club belongs to (requires manager or owner role)
+		 */
+		put: operations["clubsidalliancesPut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/events": {
 		parameters: {
 			query?: never;
@@ -3021,6 +3045,58 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/admin/alliances": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List all alliances
+		 * @description Admin endpoint to list all alliances with optional country filter
+		 */
+		get: operations["adminalliancesGet"];
+		put?: never;
+		/**
+		 * Create alliance
+		 * @description Admin endpoint to create a new alliance
+		 */
+		post: operations["adminalliancesPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/admin/alliances/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get alliance by ID
+		 * @description Admin endpoint to get a single alliance with its details
+		 */
+		get: operations["adminalliancesidGet"];
+		/**
+		 * Update alliance
+		 * @description Admin endpoint to update an existing alliance
+		 */
+		put: operations["adminalliancesidPut"];
+		post?: never;
+		/**
+		 * Delete alliance
+		 * @description Admin endpoint to delete an alliance and its club associations
+		 */
+		delete: operations["adminalliancesidDelete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/public/clubs/map": {
 		parameters: {
 			query?: never;
@@ -3093,6 +3169,26 @@ export interface paths {
 		 * @description Get all public users for sitemap generation
 		 */
 		get: operations["publicsitemapusersGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/alliances/{countryId}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get alliances by country
+		 * @description Returns a list of alliances for a specific country
+		 */
+		get: operations["alliancescountryIdGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -14214,6 +14310,141 @@ export interface operations {
 			};
 		};
 	};
+	clubsidalliancesGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliances: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidalliancesPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					allianceIds: number[];
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						alliances: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	eventsGet: {
 		parameters: {
 			query?: {
@@ -17395,6 +17626,379 @@ export interface operations {
 			};
 		};
 	};
+	adminalliancesGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliances: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							createdAt: string;
+							updatedAt: string;
+							country: {
+								id: number;
+								name: string;
+								iso2: string;
+								iso3: string;
+							};
+							clubAlliances?: {
+								club: {
+									id: string;
+									name: string;
+									location?: string | null;
+								};
+							}[];
+						}[];
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminalliancesPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					name: string;
+					description?: string;
+					countryId: number;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliance: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							createdAt: string;
+							updatedAt: string;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminalliancesidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: number;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliance: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							createdAt: string;
+							updatedAt: string;
+							country: {
+								id: number;
+								name: string;
+								iso2: string;
+								iso3: string;
+							};
+							clubAlliances?: {
+								club: {
+									id: string;
+									name: string;
+									location?: string | null;
+								};
+							}[];
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminalliancesidPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: number;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					name?: string;
+					description?: string;
+					countryId?: number;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliance: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							createdAt: string;
+							updatedAt: string;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminalliancesidDelete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: number;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	publicclubsmapGet: {
 		parameters: {
 			query?: never;
@@ -17498,6 +18102,46 @@ export interface operations {
 							slug: string | null;
 							updatedAt: string;
 						}[];
+					};
+				};
+			};
+		};
+	};
+	alliancescountryIdGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				countryId: number;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliances: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+						}[];
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
 					};
 				};
 			};
