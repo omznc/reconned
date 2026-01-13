@@ -1,9 +1,10 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or } from "drizzle-orm";
 import * as z from "zod";
 import { alliance, clubAlliance, country } from "../../drizzle/schema";
 import { db } from "../../lib/db";
 import { apiError } from "../../lib/errors";
 import { Router, responseSchema } from "../../lib/router";
+import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 
 const adminAlliancesRouter = new Router();
 
@@ -39,18 +40,27 @@ const allianceWithRelationsSchema = allianceSchema.extend({
 // Get all alliances
 adminAlliancesRouter.get(
 	"/admin/alliances",
-	async ({ request, response, context: _context }) => {
-		const url = new URL(request.url);
-		const countryIdParam = url.searchParams.get("countryId");
-		const countryId = countryIdParam ? Number(countryIdParam) : undefined;
+	async ({ query, response, context: _context }) => {
+		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query || {};
+		const offset = (page - 1) * perPage;
 
 		const whereConditions = [];
-		if (countryId) {
-			whereConditions.push(eq(alliance.countryId, Number(countryId)));
+
+		if (search) {
+			whereConditions.push(or(ilike(alliance.name, `%${search}%`), ilike(alliance.description, `%${search}%`)));
+		}
+
+		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
+
+		let orderBy: typeof alliance.name | typeof alliance.createdAt | ReturnType<typeof desc>;
+		if (sortBy === "name") {
+			orderBy = sortOrder === "desc" ? desc(alliance.name) : alliance.name;
+		} else {
+			orderBy = sortOrder === "desc" ? desc(alliance.createdAt) : alliance.createdAt;
 		}
 
 		const alliances = await db.query.alliance.findMany({
-			where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
+			where,
 			with: {
 				country: {
 					columns: {
@@ -71,20 +81,38 @@ adminAlliancesRouter.get(
 					},
 				},
 			},
-			orderBy: [desc(alliance.createdAt)],
+			orderBy: [orderBy],
+			limit: perPage,
+			offset,
 		});
 
-		return response.json({ alliances });
+		const total = await db.select({ count: count() }).from(alliance).where(where);
+
+		return response.json({
+			alliances,
+			pagination: {
+				page,
+				perPage,
+				total: total[0]?.count || 0,
+				totalPages: Math.ceil((total[0]?.count || 0) / perPage),
+			},
+		});
 	},
 	{
 		auth: true,
 		schema: {
 			tags: ["Admin"],
 			summary: "List all alliances",
-			description: "Admin endpoint to list all alliances with optional country filter",
+			description: "Admin endpoint to list all alliances with pagination, search, and sorting",
+			query: paginationQuerySchema.extend({
+				search: z.string().optional(),
+				sortBy: z.enum(["name", "createdAt"]).optional(),
+				sortOrder: z.enum(["asc", "desc"]).optional(),
+			}),
 			response: {
 				200: z.object({
 					alliances: z.array(allianceWithRelationsSchema),
+					pagination: paginationResponseSchema,
 				}),
 				...responseSchema([401, 403], z.object({ error: z.string() })),
 			},

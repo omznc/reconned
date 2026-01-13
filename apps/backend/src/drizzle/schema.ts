@@ -764,3 +764,15 @@ export const eventRegistrationToUser = pgTable(
 		primaryKey({ columns: [table.a, table.b], name: "_EventRegistrationToUser_AB_pkey" }),
 	],
 );
+
+export const featureFlag = pgTable("FeatureFlag", {
+	id: text("id")
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	name: text("name").notNull(),
+	description: text("description"),
+	enabled: boolean("enabled").default(false).notNull(),
+	createdAt: timestamp("createdAt", { precision: 3, mode: "string" }).defaultNow().notNull(),
+	updatedAt: timestamp("updatedAt", { precision: 3, mode: "string" }).defaultNow().notNull(),
+});

@@ -3054,7 +3054,7 @@ export interface paths {
 		};
 		/**
 		 * List all alliances
-		 * @description Admin endpoint to list all alliances with optional country filter
+		 * @description Admin endpoint to list all alliances with pagination, search, and sorting
 		 */
 		get: operations["adminalliancesGet"];
 		put?: never;
@@ -3092,6 +3092,58 @@ export interface paths {
 		 * @description Admin endpoint to delete an alliance and its club associations
 		 */
 		delete: operations["adminalliancesidDelete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/admin/feature-flags": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List all feature flags
+		 * @description Admin endpoint to list all feature flags with pagination and search
+		 */
+		get: operations["adminfeatureFlagsGet"];
+		put?: never;
+		/**
+		 * Create feature flag
+		 * @description Admin endpoint to create a new feature flag
+		 */
+		post: operations["adminfeatureFlagsPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/admin/feature-flags/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get feature flag details
+		 * @description Admin endpoint to get a single feature flag
+		 */
+		get: operations["adminfeatureFlagsidGet"];
+		/**
+		 * Update feature flag
+		 * @description Admin endpoint to update a feature flag
+		 */
+		put: operations["adminfeatureFlagsidPut"];
+		post?: never;
+		/**
+		 * Delete feature flag
+		 * @description Admin endpoint to delete a feature flag
+		 */
+		delete: operations["adminfeatureFlagsidDelete"];
 		options?: never;
 		head?: never;
 		patch?: never;
@@ -3169,6 +3221,26 @@ export interface paths {
 		 * @description Get all public users for sitemap generation
 		 */
 		get: operations["publicsitemapusersGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/public/feature-flags": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get enabled feature flags
+		 * @description Get all enabled feature flags for frontend consumption
+		 */
+		get: operations["publicfeatureFlagsGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -17628,7 +17700,13 @@ export interface operations {
 	};
 	adminalliancesGet: {
 		parameters: {
-			query?: never;
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				search?: string;
+				sortBy?: "name" | "createdAt";
+				sortOrder?: "asc" | "desc";
+			};
 			header?: never;
 			path?: never;
 			cookie?: never;
@@ -17663,6 +17741,12 @@ export interface operations {
 								};
 							}[];
 						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
 					};
 				};
 			};
@@ -17999,6 +18083,360 @@ export interface operations {
 			};
 		};
 	};
+	adminfeatureFlagsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				search?: string;
+				sortBy?: "name" | "createdAt";
+				sortOrder?: "asc" | "desc";
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						featureFlags: {
+							id: string;
+							name: string;
+							description: string | null;
+							enabled: boolean;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminfeatureFlagsPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					name: unknown;
+					description?: string;
+					/** @default false */
+					enabled?: boolean;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						description: string | null;
+						enabled: boolean;
+						createdAt: string;
+						updatedAt: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminfeatureFlagsidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						description: string | null;
+						enabled: boolean;
+						createdAt: string;
+						updatedAt: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminfeatureFlagsidPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					name?: unknown;
+					description?: string;
+					enabled?: boolean;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						description: string | null;
+						enabled: boolean;
+						createdAt: string;
+						updatedAt: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminfeatureFlagsidDelete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	publicclubsmapGet: {
 		parameters: {
 			query?: never;
@@ -18101,6 +18539,31 @@ export interface operations {
 							id: string;
 							slug: string | null;
 							updatedAt: string;
+						}[];
+					};
+				};
+			};
+		};
+	};
+	publicfeatureFlagsGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						featureFlags: {
+							name: string;
+							enabled: boolean;
 						}[];
 					};
 				};
