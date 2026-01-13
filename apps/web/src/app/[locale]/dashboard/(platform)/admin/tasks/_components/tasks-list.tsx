@@ -1,11 +1,12 @@
 "use client";
 
-import { PlayIcon } from "lucide-react";
+import { Play } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GenericDataTable } from "@/components/generic-data-table";
+import { Badge } from "@/components/ui/badge";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
@@ -65,14 +66,9 @@ export function TasksList() {
 
 	if (isInitialLoading) {
 		return (
-			<div className="grid gap-4">
+			<div className="space-y-2">
 				{[1, 2, 3].map((i) => (
-					<Card key={i}>
-						<CardHeader>
-							<div className="h-6 w-48 animate-pulse bg-muted rounded" />
-							<div className="h-4 w-full animate-pulse bg-muted rounded" />
-						</CardHeader>
-					</Card>
+					<div key={i} className="h-16 w-full animate-pulse bg-muted rounded-md border" />
 				))}
 			</div>
 		);
@@ -80,40 +76,69 @@ export function TasksList() {
 
 	if (tasks.length === 0) {
 		return (
-			<Card>
-				<CardContent className="pt-6">
-					<p className="text-sm text-muted-foreground text-center">{t("No tasks available")}</p>
-				</CardContent>
-			</Card>
+			<div className="rounded-md border p-8">
+				<p className="text-sm text-muted-foreground text-center">{t("No tasks available")}</p>
+			</div>
 		);
 	}
 
 	return (
-		<div className="grid gap-4">
-			{tasks.map((task) => (
-				<Card key={task.name}>
-					<CardHeader>
-						<div className="flex items-start justify-between">
-							<div className="space-y-1">
-								<CardTitle className="text-base">{task.name}</CardTitle>
-								<CardDescription>{task.description}</CardDescription>
-								<p className="text-xs text-muted-foreground">
-									{t("Runs every")} {task.interval}
-								</p>
+		<GenericDataTable
+			data={tasks}
+			totalPages={1}
+			searchPlaceholder={t("Search tasks...")}
+			columns={[
+				{
+					key: "name",
+					header: t("Task Name"),
+					cellConfig: {
+						variant: "custom",
+						component: (_, task) => (
+							<div className="flex items-center gap-2">
+								<span className="font-medium font-mono text-sm">{task.name}</span>
 							</div>
-							<Button
-								size="sm"
-								variant="outline"
-								onClick={() => handleRunTask(task.name)}
+						),
+					},
+				},
+				{
+					key: "description",
+					header: t("Description"),
+					cellConfig: {
+						variant: "custom",
+						component: (_, task) => (
+							<span className="text-sm text-muted-foreground">{task.description}</span>
+						),
+					},
+				},
+				{
+					key: "interval",
+					header: t("Schedule"),
+					cellConfig: {
+						variant: "custom",
+						component: (_, task) => <Badge variant="outline">{task.interval}</Badge>,
+					},
+				},
+				{
+					key: "actions",
+					header: t("Actions"),
+					cellConfig: {
+						variant: "custom",
+						components: (task) => [
+							<DropdownMenuItem
+								key="run"
 								disabled={loading[task.name]}
+								onSelect={(e) => {
+									e.preventDefault();
+									handleRunTask(task.name);
+								}}
 							>
-								<PlayIcon className="h-4 w-4 mr-2" />
+								<Play className="size-4 mr-2" />
 								{loading[task.name] ? t("Running...") : t("Run now")}
-							</Button>
-						</div>
-					</CardHeader>
-				</Card>
-			))}
-		</div>
+							</DropdownMenuItem>,
+						],
+					},
+				},
+			]}
+		/>
 	);
 }

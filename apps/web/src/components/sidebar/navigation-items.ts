@@ -7,6 +7,8 @@ import {
 	Cog,
 	DiamondMinus,
 	DollarSign,
+	Flag,
+	Handshake,
 	History,
 	House,
 	Info,
@@ -105,9 +107,19 @@ export function useAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 					icon: Building2,
 				},
 				{
+					title: t("Alliances"),
+					url: "/dashboard/admin/alliances",
+					icon: Handshake,
+				},
+				{
 					title: t("Tasks"),
 					url: "/dashboard/admin/tasks",
 					icon: Cog,
+				},
+				{
+					title: t("Feature Flags"),
+					url: "/dashboard/admin/feature-flags",
+					icon: Flag,
 				},
 			],
 		});

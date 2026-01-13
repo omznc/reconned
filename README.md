@@ -26,9 +26,11 @@ Both applications share the same PostgreSQL database but use different ORMs opti
 - **Styling:** Tailwind CSS + shadcn/ui
 - **Authentication:** better-auth
 - **Form Handling:** react-hook-form + zod
-- **State Management:** 
+- **State Management:**
   - Server Actions with next-safe-action
+  - Client state with React Query
   - URL State with nuqs
+  - Feature flags with context providers
 - **i18n:** next-intl
 
 ### Backend
@@ -72,14 +74,36 @@ This will start both:
 - Backend at `http://localhost:3002`
 
 ## Features
-- User authentication
-- Club management
-- Event management
-- Player profiles
-- View statistics tracking
-- Responsive design
+- User authentication with better-auth
+- Club management with admin controls
+- Event management and registration
+- Player profiles with gear tracking
+- View statistics and analytics
+- Feature flags for gradual rollouts
+- Admin dashboard with full CRUD operations
+- Responsive design with Tailwind CSS
 - Type-safe server actions
-- i18n support
+- Internationalization (i18n) support
+- Real-time data with React Query
+
+## Feature Flags
+
+RECONNED includes a comprehensive feature flag system for safe feature rollouts:
+
+- **Admin Management**: Full CRUD interface at `/dashboard/admin/feature-flags`
+- **Caching**: Redis-backed caching with database fallback
+- **Type Safety**: Compile-time validation with SCREAMING_SNAKE_CASE naming
+- **SSR Support**: Server-side rendering compatible
+- **Real-time Updates**: Automatic cache invalidation
+
+**Usage:**
+```typescript
+// Client components
+const isEnabled = useFeatureFlag('MY_FEATURE_FLAG');
+
+// Server components
+const isEnabled = await getFeatureFlag('MY_FEATURE_FLAG');
+```
 
 ## Development Guidelines
 

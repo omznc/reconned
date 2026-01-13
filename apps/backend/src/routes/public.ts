@@ -1,16 +1,28 @@
 import { and, eq, or, sql } from "drizzle-orm";
 import * as z from "zod";
-import { club, event, user } from "../drizzle/schema";
+import { club, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { isFeatureEnabled } from "../lib/feature-flags";
 import { Router } from "../lib/router";
 
 const publicRouter = new Router();
 
-// NOTE: Public club endpoints have been removed in favor of using /api/clubs with in-route sanitization.
-
 publicRouter.get(
 	"/public/clubs/map",
 	async ({ response }) => {
+		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
+		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
+
+		const whereConditions = [
+			eq(club.isPrivate, false),
+			sql`${club.latitude} IS NOT NULL`,
+			sql`${club.longitude} IS NOT NULL`,
+		];
+
+		if (onlyVerifiedClubs) {
+			whereConditions.push(eq(club.verified, true));
+		}
+
 		const clubs = await db
 			.select({
 				id: club.id,
@@ -22,9 +34,7 @@ publicRouter.get(
 				location: club.location,
 			})
 			.from(club)
-			.where(
-				and(eq(club.isPrivate, false), sql`${club.latitude} IS NOT NULL`, sql`${club.longitude} IS NOT NULL`),
-			);
+			.where(and(...whereConditions));
 
 		return response.json({ clubs });
 	},
@@ -52,11 +62,18 @@ publicRouter.get(
 	},
 );
 
-// NOTE: Public event endpoint removed; /api/events/:id now enforces privacy and is safe for public use.
-
 publicRouter.get(
 	"/public/sitemap/clubs",
 	async ({ response }) => {
+		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
+		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
+
+		const whereConditions = [eq(club.isPrivate, false), or(eq(club.banned, false), sql`${club.banned} IS NULL`)];
+
+		if (onlyVerifiedClubs) {
+			whereConditions.push(eq(club.verified, true));
+		}
+
 		const clubs = await db
 			.select({
 				id: club.id,
@@ -64,7 +81,7 @@ publicRouter.get(
 				updatedAt: club.updatedAt,
 			})
 			.from(club)
-			.where(and(eq(club.isPrivate, false), or(eq(club.banned, false), sql`${club.banned} IS NULL`)));
+			.where(and(...whereConditions));
 
 		return response.json({ clubs });
 	},
@@ -160,6 +177,38 @@ publicRouter.get(
 							id: z.string(),
 							slug: z.string().nullable(),
 							updatedAt: z.string(),
+						}),
+					),
+				}),
+			},
+		},
+	},
+);
+
+publicRouter.get(
+	"/public/feature-flags",
+	async ({ response }) => {
+		const flags = await db
+			.select({
+				name: featureFlag.name,
+				enabled: featureFlag.enabled,
+			})
+			.from(featureFlag)
+			.where(eq(featureFlag.enabled, true));
+
+		return response.json({ featureFlags: flags });
+	},
+	{
+		schema: {
+			tags: ["Public"],
+			summary: "Get enabled feature flags",
+			description: "Get all enabled feature flags for frontend consumption",
+			response: {
+				200: z.object({
+					featureFlags: z.array(
+						z.object({
+							name: z.string(),
+							enabled: z.boolean(),
 						}),
 					),
 				}),
