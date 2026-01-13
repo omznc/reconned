@@ -615,6 +615,58 @@ export const country = pgTable(
 	],
 );
 
+export const alliance = pgTable(
+	"Alliance",
+	{
+		id: serial().primaryKey().notNull(),
+		name: text().notNull(),
+		description: text(),
+		countryId: integer().notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+	},
+	(table) => [
+		foreignKey({
+			columns: [table.countryId],
+			foreignColumns: [country.id],
+			name: "Alliance_countryId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+	],
+);
+
+export const clubAlliance = pgTable(
+	"ClubAlliance",
+	{
+		id: serial().primaryKey().notNull(),
+		clubId: text().notNull(),
+		allianceId: integer().notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	},
+	(table) => [
+		foreignKey({
+			columns: [table.clubId],
+			foreignColumns: [club.id],
+			name: "ClubAlliance_clubId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.allianceId],
+			foreignColumns: [alliance.id],
+			name: "ClubAlliance_allianceId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		uniqueIndex("ClubAlliance_clubId_allianceId_key").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.allianceId.asc().nullsLast().op("int4_ops"),
+		),
+	],
+);
+
 export const user = pgTable(
 	"User",
 	{
@@ -712,3 +764,15 @@ export const eventRegistrationToUser = pgTable(
 		primaryKey({ columns: [table.a, table.b], name: "_EventRegistrationToUser_AB_pkey" }),
 	],
 );
+
+export const featureFlag = pgTable("FeatureFlag", {
+	id: text("id")
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	name: text("name").notNull(),
+	description: text("description"),
+	enabled: boolean("enabled").default(false).notNull(),
+	createdAt: timestamp("createdAt", { precision: 3, mode: "string" }).defaultNow().notNull(),
+	updatedAt: timestamp("updatedAt", { precision: 3, mode: "string" }).defaultNow().notNull(),
+});

@@ -9,6 +9,7 @@ import { loggingMiddleware } from "./lib/middlewares/logging";
 import { handleOpenAPIRoutes } from "./lib/openapi";
 import { jsonResponse, Router } from "./lib/router";
 import { adminRouter } from "./routes/admin";
+import { alliancesRouter } from "./routes/alliances";
 import { clubsRouter } from "./routes/clubs";
 import { countriesRouter } from "./routes/countries";
 import { dashboardRouter } from "./routes/dashboard";
@@ -64,6 +65,7 @@ async function handleRequest(request: Request): Promise<Response> {
 			utilsRouter,
 			adminRouter,
 			publicRouter,
+			alliancesRouter,
 		],
 		corsOrigins,
 	);
@@ -126,6 +128,7 @@ mainRouter.use(dashboardRouter, "/api");
 mainRouter.use(utilsRouter, "/api");
 mainRouter.use(adminRouter, "/api");
 mainRouter.use(publicRouter, "/api");
+mainRouter.use(alliancesRouter, "/api");
 
 Bun.serve({
 	port: 3002,

@@ -3,7 +3,9 @@ import {
 	account,
 	achievement,
 	achievementToUser,
+	alliance,
 	club,
+	clubAlliance,
 	clubAuditLog,
 	clubInvite,
 	clubMembership,
@@ -35,10 +37,12 @@ export const clubRelations = relations(club, ({ one, many }) => ({
 	events: many(event),
 	reviews: many(review),
 	posts: many(post),
+	clubAlliances: many(clubAlliance),
 }));
 
 export const countryRelations = relations(country, ({ many }) => ({
 	clubs: many(club),
+	alliances: many(alliance),
 }));
 
 export const accountRelations = relations(account, ({ one }) => ({
@@ -225,5 +229,24 @@ export const eventRegistrationToUserRelations = relations(eventRegistrationToUse
 	user: one(user, {
 		fields: [eventRegistrationToUser.b],
 		references: [user.id],
+	}),
+}));
+
+export const allianceRelations = relations(alliance, ({ one, many }) => ({
+	country: one(country, {
+		fields: [alliance.countryId],
+		references: [country.id],
+	}),
+	clubAlliances: many(clubAlliance),
+}));
+
+export const clubAllianceRelations = relations(clubAlliance, ({ one }) => ({
+	club: one(club, {
+		fields: [clubAlliance.clubId],
+		references: [club.id],
+	}),
+	alliance: one(alliance, {
+		fields: [clubAlliance.allianceId],
+		references: [alliance.id],
 	}),
 }));

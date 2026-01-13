@@ -1,5 +1,17 @@
 import { SiInstagram } from "@icons-pack/react-simple-icons";
-import { Cog, Eye, EyeOff, Handshake, MailOpenIcon, MapIcon, MapPin, Pencil, Phone, ShieldBan } from "lucide-react";
+import {
+	Cog,
+	Eye,
+	EyeOff,
+	Handshake,
+	MailOpenIcon,
+	MapIcon,
+	MapPin,
+	Pencil,
+	Phone,
+	Shield,
+	ShieldBan,
+} from "lucide-react";
 import Image from "next/image";
 import { Logger } from "next-axiom";
 import { getExtracted } from "next-intl/server";
@@ -67,13 +79,21 @@ export async function ClubOverview({
 			} as InstagramMediaResponse);
 
 	const t = await getExtracted();
-	const postsResponse = await apiServer.GET("/api/clubs/{id}/posts", {
-		params: {
-			path: { id: club.id },
-		},
-	});
+	const [postsResponse, alliancesResponse] = await Promise.all([
+		apiServer.GET("/api/clubs/{id}/posts", {
+			params: {
+				path: { id: club.id },
+			},
+		}),
+		apiServer.GET("/api/clubs/{id}/alliances", {
+			params: {
+				path: { id: club.id },
+			},
+		}),
+	]);
 
 	const posts = postsResponse.data?.posts || [];
+	const alliances = alliancesResponse.data?.alliances || [];
 
 	if (postsResponse.error) {
 		logger.error("Error fetching club posts", { error: postsResponse.error });
@@ -273,6 +293,36 @@ export async function ClubOverview({
 											})}
 										</div>
 									)}
+								</div>
+							</div>
+						)}
+
+						{alliances.length > 0 && (
+							<div className="space-y-4 h-full bg-sidebar border p-4 order-1 md:order-2 md:col-span-1 rounded-md">
+								<div className="flex flex-col gap-2">
+									<div className="flex gap-2 items-center">
+										<Shield className="h-5 w-5" />
+										<h2 className="text-xl font-semibold">{t("Alliances")}</h2>
+									</div>
+									<p>{t("Club alliances and partnerships")}</p>
+								</div>
+								<hr />
+								<div className="grid gap-2 max-h-[400px] overflow-auto">
+									{alliances.map((alliance) => (
+										<div key={alliance.id} className="flex items-center gap-2 p-2 rounded border">
+											<div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+												<Shield className="h-4 w-4" />
+											</div>
+											<div className="flex-1 min-w-0">
+												<p className="font-medium truncate">{alliance.name}</p>
+												{alliance.description && (
+													<p className="text-xs text-muted-foreground truncate">
+														{alliance.description}
+													</p>
+												)}
+											</div>
+										</div>
+									))}
 								</div>
 							</div>
 						)}

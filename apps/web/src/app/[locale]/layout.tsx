@@ -9,6 +9,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
 import { ErrorPage } from "@/components/error-page";
+import { FeatureFlagsWrapper } from "@/components/feature-flags-wrapper";
 import { FontBody } from "@/components/font-body";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import JsonLdScript from "@/components/json-ld-script";
@@ -118,8 +119,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 							<NuqsAdapter>
 								<Providers>
 									<TooltipProvider>
-										{session?.session?.impersonatedBy && <ImpersonationAlert />}
-										<AlertDialogProvider>{children}</AlertDialogProvider>
+										<FeatureFlagsWrapper>
+											{session?.session?.impersonatedBy && <ImpersonationAlert />}
+											<AlertDialogProvider>{children}</AlertDialogProvider>
+										</FeatureFlagsWrapper>
 									</TooltipProvider>
 								</Providers>
 							</NuqsAdapter>

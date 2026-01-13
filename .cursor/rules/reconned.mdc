@@ -32,8 +32,23 @@ alwaysApply: true
 
 ### File Naming Conventions
 - Forms: `[feature].form.tsx`
-- Schemas: `[feature].schema.ts` (Keep schemas in separate files for sharing between actions and components).
+- Schemas: Define Zod schemas **inside form components** (not in separate files) so they can use `t()` for translated error messages.
+  - Example:
+    ```typescript
+    export function MyForm() {
+      const t = useExtracted();
+      const mySchema = z.object({
+        name: z.string().min(1, t("Name is required")),
+        email: z.string().email(t("Invalid email address")),
+      });
+      // ... rest of form
+    }
+    ```
 - Related components: Group in `_components` folders next to their pages.
+
+### Documentation Rules
+- NEVER create markdown files (e.g., `REVIEW.md`, `SUMMARY.md`, `CHANGES.md`) to explain your work unless explicitly requested by the user.
+- Provide explanations directly in the conversation instead.
 
 ### Path Aliases (defined in tsconfig.json)
 - `@/components/*`
@@ -53,7 +68,8 @@ alwaysApply: true
 ### Data Fetching
 - Use `next-safe-action` for type-safe server actions.
 - Use `apiServer` from `@/lib/api/api.ts` for server-side fetches (includes cookie forwarding and rate-limit bypass).
-- Use `apiClient` from `@/lib/api/api.client.ts` for client-side fetches.
+- Use `apiClient` from `@/lib/api/api.client.ts` for client-side fetches with `@tanstack/react-query`.
+- Use `useQuery`, `useMutation`, `useQueryClient` from `@tanstack/react-query` for all client-side data fetching.
 - If a backend route is missing types, run `bun run api:generate-types` to regenerate from OpenAPI.
 
 ### API Type Helpers
@@ -68,8 +84,63 @@ alwaysApply: true
 - All utilities are in `@/lib/utils.ts`.
 
 ### Feature Flags
-- Defined in `src/lib/server-utils.ts`.
-- Current flags: `CLUBS_SPENDING`, `REVIEWS`, `EVENT_REGISTRATION`.
+- Centralized feature flag system for controlling application behavior
+- Admin panel at `/dashboard/admin/feature-flags` for managing flags
+- Server-side caching with Redis TTL for performance
+
+#### Feature Flag Naming Convention
+- Feature flags must follow `SCREAMING_SNAKE_CASE` format (e.g., `NEW_DASHBOARD_UI`, `EXPERIMENTAL_SEARCH`).
+- Runtime validation ensures names match `/^[A-Z][A-Z0-9_]*$/` pattern.
+- Transform input to uppercase and replace invalid characters with underscores.
+
+#### Feature Flag Usage Patterns
+
+**Client Components:**
+```typescript
+import { useFeatureFlag } from '@/lib/feature-flags';
+
+function MyComponent() {
+  const isEnabled = useFeatureFlag('MY_FEATURE_FLAG');
+  return isEnabled ? <NewFeature /> : <OldFeature />;
+}
+```
+
+**Server Components:**
+```typescript
+import { getFeatureFlag } from '@/lib/feature-flags';
+
+export default async function MyPage() {
+  const isEnabled = await getFeatureFlag('MY_FEATURE_FLAG');
+  // Server-side conditional rendering
+}
+```
+
+**Backend Routes:**
+```typescript
+import { isFeatureEnabled } from '../lib/feature-flags';
+
+export async function myRoute() {
+  const featureEnabled = await isFeatureEnabled('MY_FEATURE_FLAG');
+  if (featureEnabled) {
+    // Enable new behavior
+  }
+}
+```
+
+#### Feature Flag Architecture
+- **Server-side**: `apps/backend/src/lib/feature-flags.ts` - Redis caching with database fallback
+- **Client-side**: `apps/web/src/lib/feature-flags/` - Context provider with server-fetched initial data
+- **Admin Management**: Full CRUD interface for managing flags in production
+
+#### Feature Flag Integration Examples
+- Routes filter data based on feature flags (e.g., showing only verified clubs when flag enabled)
+- UI components conditionally render based on feature availability
+- API endpoints return different data structures based on enabled features
+
+#### Current Feature Flags
+- `CLUBS_SPENDING`: Controls club spending/budget features
+- `REVIEWS`: Enables review system for clubs/events/users
+- `EVENT_REGISTRATION`: Controls event registration functionality
 
 ### Internationalization (i18n)
 - Use `useExtracted()` (client) or `await getExtracted()` (server) for translations.
@@ -79,6 +150,106 @@ alwaysApply: true
   const t = useExtracted();
   return <h1>{t('My Heading')}</h1>;
   ```
+- You write english translations in-code, then you re-run bun dev which generates those keys in other language files, after which you have to populate the values by getting the english value from en.json
+
+### Admin Interface Patterns
+
+#### CRUD Page Structure
+- Pages use URL query state (`nuqs`) for mode management: `?mode=create|edit|delete&[entity]Id=uuid`.
+- Forms are in modal/sheets triggered by URL state changes.
+- Consistent fetcher pattern with `Suspense` boundaries.
+- `router.refresh()` after mutations.
+
+#### Admin Route Pattern
+```typescript
+// Full CRUD with pagination, search, sorting
+adminEntityRouter.get("/admin/entities", async ({ query, response }) => {
+  const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query;
+  // Implementation with proper filtering and ordering
+});
+```
+
+### Data Table Patterns
+
+#### Generic Data Table Usage
+- Highly reusable component with flexible column configurations.
+- Supports sorting, filtering, search, and mobile responsiveness.
+- Column configurations include custom components, badge variants, and value mapping.
+- Uses dot notation for nested property access.
+
+### Query State Management
+
+#### nuqs Usage Pattern
+```typescript
+const [mode, setMode] = useQueryState("mode", {
+  shallow: false,
+  clearOnDefault: true,
+  history: "replace",
+});
+```
+
+### Error Handling & User Feedback
+
+#### Toast Notification Pattern
+- Use `sonner` for all user notifications.
+- Consistent error/success messaging with translations.
+- Error handling in try/catch blocks with fallback messages.
+
+### Form Implementation
+
+#### Admin Form Pattern
+```typescript
+const form = useForm<FormValues>({
+  resolver: zodResolver(schema),
+  defaultValues: { /* from props */ },
+});
+
+const onSubmit = async (data: FormValues) => {
+  try {
+    const { error } = await apiClient.POST("/api/...", { body: data });
+    if (error) {
+      toast.error(t("Failed to create"));
+      return;
+    }
+    toast.success(t("Created successfully"));
+    setMode(null);
+    form.reset();
+    router.refresh();
+  } catch (error) {
+    console.error("Error:", error);
+    toast.error(t("An error occurred"));
+  }
+};
+```
+
+### Provider Composition Order
+
+#### Layout Provider Order
+```typescript
+<Providers>
+  <ThemeProvider>
+    <FontProvider>
+      <StyleProvider>
+        <FeatureFlagsProvider>
+          <TooltipProvider>
+            <AlertDialogProvider>
+              {/* App content */}
+            </AlertDialogProvider>
+          </TooltipProvider>
+        </FeatureFlagsProvider>
+      </StyleProvider>
+    </FontProvider>
+  </ThemeProvider>
+</Providers>
+```
+
+### Type Safety Patterns
+
+#### API Response Types
+```typescript
+type Entity = ApiResponse<"/api/admin/entities/{id}", "get">["entity"];
+type EntityList = ApiResponse<"/api/admin/entities", "get">["entities"];
+```
 
 ---
 
@@ -88,6 +259,16 @@ alwaysApply: true
 - Defined in `src/lib/router.ts`.
 - Route methods: `router.get()`, `router.post()`, `router.put()`, `router.delete()`.
 - Route options: `{ auth: boolean, rateLimit: RateLimitConfig | false, schema: RouteSchema }`.
+
+#### Router Composition Pattern
+```typescript
+const adminRouter = new Router();
+adminRouter.use(adminUsersRouter);
+adminRouter.use(adminClubsRouter);
+adminRouter.use(adminTasksRouter);
+adminRouter.use(adminAlliancesRouter);
+adminRouter.use(adminFeatureFlagsRouter);
+```
 
 ### Route Schema Definition
 - Always define `body`, `query`, and `response` schemas in the route definition.
@@ -100,7 +281,7 @@ alwaysApply: true
     summary: "Create a new club",
     tags: ["Clubs"],
   };
-  
+
   clubsRouter.post("/clubs", async ({ body, response, context }) => {
     // handler logic
     return response.json({ club }, 201);
@@ -129,6 +310,7 @@ alwaysApply: true
 - Schema is in `src/drizzle/schema.ts`.
 - Use `createSelectSchema` from `drizzle-zod` for Zod schema generation.
 - JSONB fields must be cast: `mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"]`.
+- use bun db:push, prompt user to run it if you're pushing a schema
 
 ### Rate Limiting
 - Global rate limit: 100 requests/minute per IP.
@@ -198,9 +380,7 @@ alwaysApply: true
 ## Development Workflows
 
 ### Database Commands (run in apps/backend)
-- `bun db:generate`: Generate migrations from schema changes
 - `bun db:push`: Push schema directly to database (dev only)
-- `bun db:migrate`: Run migrations
 - `bun db:studio`: Open Drizzle Studio GUI
 - `bun db:seed`: Seed the database
 
