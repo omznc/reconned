@@ -167,19 +167,45 @@ export class Router {
 		return this;
 	}
 
-	private createResponseHelper<TSchema extends RouteSchema | undefined>(_schema?: TSchema): ResponseHelper<TSchema> {
+	private createResponseHelper<TSchema extends RouteSchema | undefined>(schema?: TSchema): ResponseHelper<TSchema> {
 		return {
 			json: <TStatus extends 200 | 201 = 200>(
 				data: TStatus extends 201 ? InferSuccessResponseType<TSchema> : InferResponseType<TSchema>,
 				status: TStatus = 200 as TStatus,
 			): Response => {
-				return jsonResponse(data, status);
+				let responseData: unknown = data;
+				if (schema?.response) {
+					const statusSchema = schema.response[status] || schema.response[`${status}`];
+					if (statusSchema) {
+						try {
+							responseData = statusSchema.parse(data);
+						} catch (error) {
+							console.error("Response validation error:", error);
+							console.error("Response data:", JSON.stringify(data, null, 2));
+							throw error;
+						}
+					}
+				}
+				return jsonResponse(responseData, status);
 			},
 			error: <TStatus extends 400 | 401 | 403 | 404 | 500 = 400>(
 				data: InferErrorResponseType<TSchema, TStatus>,
 				status: TStatus = 400 as TStatus,
 			): Response => {
-				return jsonResponse(data, status);
+				let responseData: unknown = data;
+				if (schema?.response) {
+					const statusSchema = schema.response[status] || schema.response[`${status}`];
+					if (statusSchema) {
+						try {
+							responseData = statusSchema.parse(data);
+						} catch (error) {
+							console.error("Error response validation error:", error);
+							console.error("Error response data:", JSON.stringify(data, null, 2));
+							throw error;
+						}
+					}
+				}
+				return jsonResponse(responseData, status);
 			},
 			redirect: (url: string, status: 301 | 302 = 302): Response => {
 				return new Response(null, {
@@ -389,6 +415,8 @@ export class Router {
 				Object.assign(params, validatedParams);
 			} catch (error) {
 				if (error instanceof z.ZodError) {
+					console.error("Request params validation error:", error);
+					console.error("Request params:", JSON.stringify(params, null, 2));
 					return jsonResponse({ error: "Invalid parameters", details: error.issues }, 400);
 				}
 			}
@@ -401,6 +429,7 @@ export class Router {
 				query = route.schema.query.parse(queryObj);
 			} catch (error) {
 				if (error instanceof z.ZodError) {
+					console.error("Request query validation error:", error);
 					return jsonResponse({ error: "Invalid query parameters", details: error.issues }, 400);
 				}
 			}
@@ -450,6 +479,8 @@ export class Router {
 
 				const parseResult = route.schema.body.safeParse(rawBody);
 				if (!parseResult.success) {
+					console.error("Request body validation error:", parseResult.error);
+					console.error("Request body:", JSON.stringify(rawBody, null, 2));
 					return jsonResponse(
 						{
 							error: "Invalid request body",

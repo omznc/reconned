@@ -29,6 +29,13 @@ const baseEventSchema = createSelectSchema(event);
 const baseEventRegistrationSchema = createSelectSchema(eventRegistration);
 const baseClubInviteSchema = createSelectSchema(clubInvite);
 
+const publicClubSchema = baseClubSchema.omit({
+	instagramAccessToken: true,
+	instagramRefreshToken: true,
+	instagramTokenExpiry: true,
+	facebookPageId: true,
+});
+
 // User schema with safe fields (email/phone may be null based on privacy)
 const userSchema = baseUserSchema
 	.pick({
@@ -1385,7 +1392,7 @@ usersRouter.get(
 				200: z.object({
 					invites: z.array(
 						baseClubInviteSchema.extend({
-							club: baseClubSchema.extend({
+							club: publicClubSchema.extend({
 								_count: z.object({
 									members: z.number(),
 								}),

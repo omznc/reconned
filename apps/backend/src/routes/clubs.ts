@@ -57,11 +57,19 @@ const baseClubInviteSchema = createSelectSchema(clubInvite);
 const baseClubSchema = createSelectSchema(club);
 const baseEventSchema = createSelectSchema(event);
 
+const publicClubSchema = baseClubSchema.omit({
+	instagramAccessToken: true,
+	instagramRefreshToken: true,
+	instagramTokenExpiry: true,
+	facebookPageId: true,
+});
+
 const allianceResponseSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	description: z.string().nullable(),
 	countryId: z.number(),
+	link: z.string().nullable(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });
@@ -667,7 +675,7 @@ clubsRouter.get(
 			response: {
 				200: z.object({
 					clubs: z.array(
-						baseClubSchema.extend({
+						publicClubSchema.extend({
 							_count: z.object({
 								members: z.number(),
 							}),
@@ -2975,7 +2983,7 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			response: {
-				200: baseClubSchema.extend({
+				200: publicClubSchema.extend({
 					_count: z.object({
 						members: z.number(),
 						posts: z.number(),
@@ -3129,7 +3137,7 @@ clubsRouter.post(
 			response: {
 				200: z.object({
 					id: z.string(),
-					club: baseClubSchema,
+					club: publicClubSchema,
 				}),
 				400: z.object({ error: z.string() }),
 				401: z.object({ error: z.string() }),
@@ -3229,7 +3237,7 @@ clubsRouter.put(
 			response: {
 				200: z.object({
 					success: z.boolean(),
-					club: baseClubSchema,
+					club: publicClubSchema,
 				}),
 				400: z.object({ error: z.string() }),
 				401: z.object({ error: z.string() }),
@@ -4757,10 +4765,23 @@ clubsRouter.get(
 
 clubsRouter.post(
 	"/clubs/:id/instagram/exchange-code",
-	async ({ params, body, response }) => {
+	async ({ params, body, response, context }) => {
 		const clubId = params.id;
 		if (!clubId) {
 			throw apiError.validation("Club ID is required");
+		}
+
+		// Check if user is manager or owner
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
 		const { code } = body;
@@ -4791,13 +4812,23 @@ clubsRouter.post(
 				});
 			}
 
-			// For single page, return access token so client can proceed to selection directly
+			// For single page, store token server-side and return session ID
+			const sessionId = randomUUIDv7();
+			await db.insert(instagramPageSelection).values({
+				id: sessionId,
+				clubId,
+				accessToken: longLivedTokenResponse.access_token,
+				pages: JSON.stringify([page]),
+				expiresAt: new Date(Date.now() + 1000 * 60 * 15).toISOString(), // 15 minutes
+				createdAt: new Date().toISOString(),
+			});
+
 			return response.json({
 				outcome: "SINGLE_PAGE",
-				sessionId: null,
+				sessionId,
 				pages: [],
 				page: { id: page.id, name: page.name },
-				accessToken: longLivedTokenResponse.access_token,
+				accessToken: null,
 			});
 		}
 
@@ -4955,6 +4986,19 @@ clubsRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
+		// Check if user is manager or owner
+		const managerMembershipData = await db
+			.select()
+			.from(clubMembership)
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+			.limit(1);
+
+		const managerMembership = managerMembershipData[0];
+
+		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
+			throw apiError.forbidden("Unauthorized - must be manager or owner");
+		}
+
 		const { pageId, accessToken, sessionId } = body;
 
 		let validAccessToken = accessToken;
@@ -5078,6 +5122,7 @@ clubsRouter.get(
 			);
 
 			if (!mediaResponse.ok) {
+				console.error("Instagram API error:", await mediaResponse.text());
 				return response.json({ media: [], username: null });
 			}
 
@@ -5098,7 +5143,8 @@ clubsRouter.get(
 				media: mediaData.data || [],
 				username: mediaData.data?.[0]?.username || clubRecord.instagramUsername || null,
 			});
-		} catch (_error) {
+		} catch (error) {
+			console.error("Instagram fetch error:", error);
 			return response.json({ media: [], username: null });
 		}
 	},
@@ -5118,13 +5164,13 @@ clubsRouter.get(
 					media: z.array(
 						z.object({
 							id: z.string(),
-							caption: z.string().nullable(),
+							caption: z.string().nullable().optional(),
 							media_type: z.enum(["IMAGE", "VIDEO", "CAROUSEL_ALBUM"]),
 							media_url: z.string(),
 							permalink: z.string(),
-							thumbnail_url: z.string().optional(),
+							thumbnail_url: z.string().nullable().optional(),
 							timestamp: z.string(),
-							username: z.string(),
+							username: z.string().nullable().optional(),
 						}),
 					),
 					username: z.string().nullable(),
@@ -5503,7 +5549,7 @@ clubsRouter.get(
 								callsign: z.string().nullable(),
 								location: z.string().nullable(),
 								bio: z.string().nullable(),
-								website: z.url().nullable(),
+								website: z.string().nullable(),
 								createdAt: z.string(),
 								slug: z.string().nullable(),
 							}),

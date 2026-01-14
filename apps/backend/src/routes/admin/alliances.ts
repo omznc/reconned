@@ -12,6 +12,7 @@ const allianceSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	description: z.string().nullable(),
+	link: z.string().nullable(),
 	countryId: z.number(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
@@ -31,6 +32,7 @@ const allianceWithRelationsSchema = allianceSchema.extend({
 					id: z.string(),
 					name: z.string(),
 					location: z.string().nullable().optional(),
+					logo: z.string().nullable().optional(),
 				}),
 			}),
 		)
@@ -148,6 +150,7 @@ adminAlliancesRouter.get(
 								id: true,
 								name: true,
 								location: true,
+								logo: true,
 							},
 						},
 					},
@@ -198,6 +201,7 @@ adminAlliancesRouter.post(
 			.values({
 				name: body.name,
 				description: body.description || null,
+				link: body.link || null,
 				countryId: body.countryId,
 				updatedAt: new Date().toISOString(),
 			})
@@ -218,6 +222,7 @@ adminAlliancesRouter.post(
 			body: z.object({
 				name: z.string().min(1).max(100),
 				description: z.string().max(1000).optional(),
+				link: z.string().url().or(z.literal("")).optional(),
 				countryId: z.number(),
 			}),
 			response: {
@@ -263,6 +268,7 @@ adminAlliancesRouter.put(
 		const updateData: {
 			name?: string;
 			description?: string | null;
+			link?: string | null;
 			countryId?: number;
 			updatedAt: string;
 		} = {
@@ -274,6 +280,9 @@ adminAlliancesRouter.put(
 		}
 		if (body.description !== undefined) {
 			updateData.description = body.description || null;
+		}
+		if (body.link !== undefined) {
+			updateData.link = body.link || null;
 		}
 		if (body.countryId) {
 			updateData.countryId = body.countryId;
@@ -303,6 +312,7 @@ adminAlliancesRouter.put(
 			body: z.object({
 				name: z.string().min(1).max(100).optional(),
 				description: z.string().max(1000).optional(),
+				link: z.string().url().or(z.literal("")).optional(),
 				countryId: z.number().optional(),
 			}),
 			response: {
@@ -350,6 +360,119 @@ adminAlliancesRouter.delete(
 			description: "Admin endpoint to delete an alliance and its club associations",
 			params: z.object({
 				id: z.coerce.number(),
+			}),
+			response: {
+				200: z.object({
+					success: z.boolean(),
+				}),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+// Add club to alliance
+adminAlliancesRouter.post(
+	"/admin/alliances/:id/clubs",
+	async ({ params, body, response }) => {
+		const allianceId = Number(params.id);
+
+		if (!allianceId || Number.isNaN(allianceId)) {
+			throw apiError.validation("Alliance ID is required");
+		}
+
+		const existingAlliance = await db.query.alliance.findFirst({
+			where: eq(alliance.id, allianceId),
+		});
+
+		if (!existingAlliance) {
+			throw apiError.notFound("Alliance not found");
+		}
+
+		const existingRelation = await db.query.clubAlliance.findFirst({
+			where: and(eq(clubAlliance.clubId, body.clubId), eq(clubAlliance.allianceId, allianceId)),
+		});
+
+		if (existingRelation) {
+			throw apiError.conflict("Club is already in this alliance");
+		}
+
+		const [newRelation] = await db
+			.insert(clubAlliance)
+			.values({
+				clubId: body.clubId,
+				allianceId,
+			})
+			.returning();
+
+		if (!newRelation) {
+			throw apiError.internal("Failed to add club to alliance");
+		}
+
+		return response.json({ clubAlliance: newRelation });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Admin"],
+			summary: "Add club to alliance",
+			description: "Admin endpoint to add a club to an alliance",
+			params: z.object({
+				id: z.coerce.number(),
+			}),
+			body: z.object({
+				clubId: z.string(),
+			}),
+			response: {
+				200: z.object({
+					clubAlliance: z.object({
+						id: z.number(),
+						clubId: z.string(),
+						allianceId: z.number(),
+					}),
+				}),
+				...responseSchema([400, 401, 403, 404, 409], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+// Remove club from alliance
+adminAlliancesRouter.delete(
+	"/admin/alliances/:id/clubs/:clubId",
+	async ({ params, response }) => {
+		const allianceId = Number(params.id);
+		const clubId = params.clubId;
+
+		if (!allianceId || Number.isNaN(allianceId)) {
+			throw apiError.validation("Alliance ID is required");
+		}
+
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const existingRelation = await db.query.clubAlliance.findFirst({
+			where: and(eq(clubAlliance.clubId, clubId), eq(clubAlliance.allianceId, allianceId)),
+		});
+
+		if (!existingRelation) {
+			throw apiError.notFound("Club is not in this alliance");
+		}
+
+		await db.delete(clubAlliance).where(eq(clubAlliance.id, existingRelation.id));
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Admin"],
+			summary: "Remove club from alliance",
+			description: "Admin endpoint to remove a club from an alliance",
+			params: z.object({
+				id: z.coerce.number(),
+				clubId: z.string(),
 			}),
 			response: {
 				200: z.object({

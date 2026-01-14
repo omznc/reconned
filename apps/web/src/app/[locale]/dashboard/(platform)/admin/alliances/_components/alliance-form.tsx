@@ -11,6 +11,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
 	Credenza,
+	CredenzaBody,
 	CredenzaContent,
 	CredenzaDescription,
 	CredenzaFooter,
@@ -30,6 +31,7 @@ type Country = ApiResponse<"/api/countries", "get">[number];
 const allianceFormSchema = z.object({
 	name: z.string().min(1, "Name is required").max(100),
 	description: z.string().max(1000).optional(),
+	link: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
 	countryId: z.number({ message: "Country is required" }),
 });
 
@@ -40,12 +42,7 @@ interface AllianceFormProps {
 }
 
 export function AllianceForm({ alliance }: AllianceFormProps) {
-	const [mode, setMode] = useQueryState("mode", {
-		shallow: false,
-		clearOnDefault: true,
-		history: "replace",
-	});
-	const [, setAllianceId] = useQueryState("allianceId", {
+	const [allianceId, setAllianceId] = useQueryState("allianceId", {
 		shallow: false,
 		clearOnDefault: true,
 		history: "replace",
@@ -58,11 +55,11 @@ export function AllianceForm({ alliance }: AllianceFormProps) {
 		defaultValues: {
 			name: alliance?.name || "",
 			description: alliance?.description || "",
+			link: alliance?.link || "",
 			countryId: alliance?.countryId || undefined,
 		},
 	});
 
-	// Fetch countries
 	const { data: countriesData = [] } = useQuery({
 		queryKey: ["countries"],
 		queryFn: async () => {
@@ -71,8 +68,8 @@ export function AllianceForm({ alliance }: AllianceFormProps) {
 		},
 	});
 
-	const isEdit = mode === "edit" && alliance;
-	const isOpen = mode === "create" || mode === "edit";
+	const isEdit = allianceId !== "new" && Boolean(alliance);
+	const isOpen = allianceId === "new" || Boolean(alliance);
 
 	const onSubmit = async (data: AllianceFormValues) => {
 		try {
@@ -103,7 +100,6 @@ export function AllianceForm({ alliance }: AllianceFormProps) {
 				toast.success(t("Alliance created successfully"));
 			}
 
-			setMode(null);
 			setAllianceId(null);
 			form.reset();
 			router.refresh();
@@ -114,7 +110,6 @@ export function AllianceForm({ alliance }: AllianceFormProps) {
 	};
 
 	const handleClose = () => {
-		setMode(null);
 		setAllianceId(null);
 		form.reset();
 	};
@@ -129,80 +124,97 @@ export function AllianceForm({ alliance }: AllianceFormProps) {
 					</CredenzaDescription>
 				</CredenzaHeader>
 
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-						<FormField
-							control={form.control}
-							name="name"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t("Name")}</FormLabel>
-									<FormControl>
-										<Input placeholder={t("e.g., National Airsoft Alliance")} {...field} />
-									</FormControl>
-									<FormDescription>{t("The name of the alliance")}</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="description"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t("Description")}</FormLabel>
-									<FormControl>
-										<Textarea
-											placeholder={t("Describe the purpose of this alliance...")}
-											{...field}
-										/>
-									</FormControl>
-									<FormDescription>{t("Optional description of the alliance")}</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="countryId"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t("Country")}</FormLabel>
-									<Select
-										onValueChange={(value) => field.onChange(Number(value))}
-										value={field.value?.toString()}
-									>
+				<CredenzaBody>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+							<FormField
+								control={form.control}
+								name="name"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("Name")}</FormLabel>
 										<FormControl>
-											<SelectTrigger>
-												<SelectValue placeholder={t("Select a country")} />
-											</SelectTrigger>
+											<Input placeholder={t("e.g., National Airsoft Alliance")} {...field} />
 										</FormControl>
-										<SelectContent>
-											{countriesData.map((country) => (
-												<SelectItem key={country.id} value={country.id.toString()}>
-													{country.emoji} {country.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormDescription>{t("The country this alliance belongs to")}</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+										<FormDescription>{t("The name of the alliance")}</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-						<CredenzaFooter>
-							<Button type="button" variant="outline" onClick={handleClose}>
-								{t("Cancel")}
-							</Button>
-							<Button type="submit" disabled={form.formState.isSubmitting}>
-								{form.formState.isSubmitting ? t("Saving...") : isEdit ? t("Update") : t("Create")}
-							</Button>
-						</CredenzaFooter>
-					</form>
-				</Form>
+							<FormField
+								control={form.control}
+								name="description"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("Description")}</FormLabel>
+										<FormControl>
+											<Textarea
+												placeholder={t("Describe the purpose of this alliance...")}
+												{...field}
+											/>
+										</FormControl>
+										<FormDescription>{t("Optional description of the alliance")}</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="link"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("Website")}</FormLabel>
+										<FormControl>
+											<Input placeholder={t("e.g., https://alliance-website.com")} {...field} />
+										</FormControl>
+										<FormDescription>{t("Optional website URL for this alliance")}</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="countryId"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("Country")}</FormLabel>
+										<Select
+											onValueChange={(value) => field.onChange(Number(value))}
+											value={field.value?.toString()}
+										>
+											<FormControl>
+												<SelectTrigger>
+													<SelectValue placeholder={t("Select a country")} />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{countriesData.map((country) => (
+													<SelectItem key={country.id} value={country.id.toString()}>
+														{country.emoji} {country.name}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormDescription>{t("The country this alliance belongs to")}</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</form>
+					</Form>
+				</CredenzaBody>
+
+				<CredenzaFooter>
+					<Button type="button" variant="outline" onClick={handleClose}>
+						{t("Cancel")}
+					</Button>
+					<Button type="submit" disabled={form.formState.isSubmitting} onClick={form.handleSubmit(onSubmit)}>
+						{form.formState.isSubmitting ? t("Saving...") : isEdit ? t("Update") : t("Create")}
+					</Button>
+				</CredenzaFooter>
 			</CredenzaContent>
 		</Credenza>
 	);

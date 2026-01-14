@@ -10,6 +10,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
 	Credenza,
+	CredenzaBody,
 	CredenzaContent,
 	CredenzaDescription,
 	CredenzaFooter,
@@ -30,12 +31,7 @@ interface FeatureFlagFormProps {
 }
 
 export function FeatureFlagForm({ flag }: FeatureFlagFormProps) {
-	const [mode, setMode] = useQueryState("mode", {
-		shallow: false,
-		clearOnDefault: true,
-		history: "replace",
-	});
-	const [, setFlagId] = useQueryState("flagId", {
+	const [flagId, setFlagId] = useQueryState("flagId", {
 		shallow: false,
 		clearOnDefault: true,
 		history: "replace",
@@ -64,8 +60,8 @@ export function FeatureFlagForm({ flag }: FeatureFlagFormProps) {
 		},
 	});
 
-	const isEdit = mode === "edit" && flag;
-	const isOpen = mode === "create" || mode === "edit";
+	const isEdit = flagId !== "new" && Boolean(flag);
+	const isOpen = flagId === "new" || Boolean(flag);
 
 	const onSubmit = async (data: FeatureFlagFormValues) => {
 		try {
@@ -96,7 +92,6 @@ export function FeatureFlagForm({ flag }: FeatureFlagFormProps) {
 				toast.success(t("Feature flag created successfully"));
 			}
 
-			setMode(null);
 			setFlagId(null);
 			form.reset();
 			router.refresh();
@@ -107,7 +102,6 @@ export function FeatureFlagForm({ flag }: FeatureFlagFormProps) {
 	};
 
 	const handleClose = () => {
-		setMode(null);
 		setFlagId(null);
 		form.reset();
 	};
@@ -124,76 +118,81 @@ export function FeatureFlagForm({ flag }: FeatureFlagFormProps) {
 					</CredenzaDescription>
 				</CredenzaHeader>
 
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-						<FormField
-							control={form.control}
-							name="name"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t("Name")}</FormLabel>
-									<FormControl>
-										<Input
-											placeholder={t("e.g., NEW_DASHBOARD_UI")}
-											{...field}
-											onChange={(e) => {
-												const value = e.target.value.toUpperCase().replace(/[^A-Z_]/g, "_");
-												field.onChange(value);
-											}}
-											className="font-mono"
-										/>
-									</FormControl>
-									<FormDescription>
-										{t("Uppercase with underscores only (auto-formatted)")}
-									</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+				<CredenzaBody>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+							<FormField
+								control={form.control}
+								name="name"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("Name")}</FormLabel>
+										<FormControl>
+											<Input
+												placeholder={t("e.g., NEW_DASHBOARD_UI")}
+												{...field}
+												onChange={(e) => {
+													const value = e.target.value.toUpperCase().replace(/[^A-Z_]/g, "_");
+													field.onChange(value);
+												}}
+												className="font-mono"
+											/>
+										</FormControl>
+										<FormDescription>
+											{t("Uppercase with underscores only (auto-formatted)")}
+										</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-						<FormField
-							control={form.control}
-							name="description"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t("Description")}</FormLabel>
-									<FormControl>
-										<Textarea placeholder={t("Describe what this flag controls...")} {...field} />
-									</FormControl>
-									<FormDescription>
-										{t("Optional description of what this flag does")}
-									</FormDescription>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+							<FormField
+								control={form.control}
+								name="description"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("Description")}</FormLabel>
+										<FormControl>
+											<Textarea
+												placeholder={t("Describe what this flag controls...")}
+												{...field}
+											/>
+										</FormControl>
+										<FormDescription>
+											{t("Optional description of what this flag does")}
+										</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-						<FormField
-							control={form.control}
-							name="enabled"
-							render={({ field }) => (
-								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-									<div className="space-y-0.5">
-										<FormLabel className="text-base">{t("Enabled")}</FormLabel>
-										<FormDescription>{t("Turn this feature flag on or off")}</FormDescription>
-									</div>
-									<FormControl>
-										<Switch checked={field.value} onCheckedChange={field.onChange} />
-									</FormControl>
-								</FormItem>
-							)}
-						/>
+							<FormField
+								control={form.control}
+								name="enabled"
+								render={({ field }) => (
+									<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+										<div className="space-y-0.5">
+											<FormLabel className="text-base">{t("Enabled")}</FormLabel>
+											<FormDescription>{t("Turn this feature flag on or off")}</FormDescription>
+										</div>
+										<FormControl>
+											<Switch checked={field.value} onCheckedChange={field.onChange} />
+										</FormControl>
+									</FormItem>
+								)}
+							/>
+						</form>
+					</Form>
+				</CredenzaBody>
 
-						<CredenzaFooter>
-							<Button type="button" variant="outline" onClick={handleClose}>
-								{t("Cancel")}
-							</Button>
-							<Button type="submit" disabled={form.formState.isSubmitting}>
-								{form.formState.isSubmitting ? t("Saving...") : isEdit ? t("Update") : t("Create")}
-							</Button>
-						</CredenzaFooter>
-					</form>
-				</Form>
+				<CredenzaFooter>
+					<Button type="button" variant="outline" onClick={handleClose}>
+						{t("Cancel")}
+					</Button>
+					<Button type="submit" disabled={form.formState.isSubmitting} onClick={form.handleSubmit(onSubmit)}>
+						{form.formState.isSubmitting ? t("Saving...") : isEdit ? t("Update") : t("Create")}
+					</Button>
+				</CredenzaFooter>
 			</CredenzaContent>
 		</Credenza>
 	);

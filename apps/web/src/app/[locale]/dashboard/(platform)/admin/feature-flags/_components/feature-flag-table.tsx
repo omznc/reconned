@@ -1,12 +1,15 @@
 "use client";
 
 import { Edit, Trash } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
+import { useQueryState } from "nuqs";
+import { toast } from "sonner";
 import { GenericDataTable } from "@/components/generic-data-table";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Link } from "@/i18n/navigation";
+import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type FeatureFlag = ApiResponse<"/api/admin/feature-flags", "get">["featureFlags"][number];
@@ -19,20 +22,34 @@ interface FeatureFlagTableProps {
 
 export function FeatureFlagTable(props: FeatureFlagTableProps) {
 	const t = useExtracted();
-	const searchParams = useSearchParams();
+	const [, setFlagId] = useQueryState("flagId", { shallow: false });
+	const confirm = useConfirm();
+	const router = useRouter();
 
-	const getEditUrl = (flagId: string) => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("flagId", flagId);
-		params.set("mode", "edit");
-		return `?${params.toString()}`;
-	};
+	const handleDelete = async (flag: FeatureFlag) => {
+		const confirmed = await confirm({
+			title: t("Delete feature flag"),
+			body: t("Are you sure you want to delete {name}? This action cannot be undone.", { name: flag.name }),
+			cancelButton: t("Cancel"),
+			actionButton: t("Delete"),
+			actionButtonVariant: "destructive",
+		});
 
-	const getDeleteUrl = (flagId: string) => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("flagId", flagId);
-		params.set("mode", "delete");
-		return `?${params.toString()}`;
+		if (!confirmed) {
+			return;
+		}
+
+		const { error } = await apiClient.DELETE("/api/admin/feature-flags/{id}", {
+			params: { path: { id: flag.id } },
+		});
+
+		if (error) {
+			toast.error(t("Failed to delete feature flag"));
+			return;
+		}
+
+		toast.success(t("Feature flag deleted successfully"));
+		router.refresh();
 	};
 
 	return (
@@ -97,17 +114,13 @@ export function FeatureFlagTable(props: FeatureFlagTableProps) {
 					cellConfig: {
 						variant: "custom",
 						components: (flag) => [
-							<DropdownMenuItem key="edit" asChild>
-								<Link href={getEditUrl(flag.id)}>
-									<Edit className="size-4 mr-2" />
-									{t("Edit")}
-								</Link>
+							<DropdownMenuItem key="edit" onClick={() => setFlagId(flag.id)}>
+								<Edit className="size-4 mr-2" />
+								{t("Edit")}
 							</DropdownMenuItem>,
-							<DropdownMenuItem key="delete" asChild>
-								<Link href={getDeleteUrl(flag.id)} className="text-red-600">
-									<Trash className="size-4 mr-2" />
-									{t("Delete")}
-								</Link>
+							<DropdownMenuItem key="delete" onClick={() => handleDelete(flag)} className="text-red-600">
+								<Trash className="size-4 mr-2" />
+								{t("Delete")}
 							</DropdownMenuItem>,
 						],
 					},

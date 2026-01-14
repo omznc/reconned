@@ -1,7 +1,6 @@
 import { Plus } from "lucide-react";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
-import { FeatureFlagDelete } from "@/app/[locale]/dashboard/(platform)/admin/feature-flags/_components/feature-flag-delete";
 import { FeatureFlagForm } from "@/app/[locale]/dashboard/(platform)/admin/feature-flags/_components/feature-flag-form";
 import { FeatureFlagTable } from "@/app/[locale]/dashboard/(platform)/admin/feature-flags/_components/feature-flag-table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
@@ -14,7 +13,7 @@ type FeatureFlag = ApiResponse<"/api/admin/feature-flags", "get">["featureFlags"
 
 export async function FeatureFlagsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/feature-flags">) {
 	const searchParams = await props.searchParams;
-	const { search, sortBy, sortOrder, page, flagId, mode, perPage } = searchParams;
+	const { search, sortBy, sortOrder, page, flagId, perPage } = searchParams;
 	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
@@ -33,21 +32,17 @@ export async function FeatureFlagsPageFetcher(props: PageProps<"/[locale]/dashbo
 	const featureFlags = (listData?.featureFlags || []) as FeatureFlag[];
 	const totalFlags = listData?.pagination.total || 0;
 
-	const selectedFlag =
-		flagId && (mode === "edit" || mode === "delete")
-			? (
-					await apiServer.GET("/api/admin/feature-flags/{id}", {
-						params: {
-							path: { id: flagId as string },
-						},
-					})
-				).data
-			: undefined;
+	const selectedFlag = flagId
+		? (
+				await apiServer.GET("/api/admin/feature-flags/{id}", {
+					params: { path: { id: flagId as string } },
+				})
+			).data
+		: undefined;
 
 	return (
 		<>
-			<FeatureFlagForm flag={selectedFlag || undefined} />
-			<FeatureFlagDelete flag={selectedFlag || undefined} />
+			{(flagId === "new" || selectedFlag) && <FeatureFlagForm flag={selectedFlag || undefined} />}
 			<FeatureFlagTable featureFlags={featureFlags} totalFlags={totalFlags} pageSize={pageSize} />
 		</>
 	);
@@ -57,7 +52,6 @@ export default async function FeatureFlagsPage(props: PageProps<"/[locale]/dashb
 	const t = await getExtracted();
 	const searchParams = await props.searchParams;
 
-	// Create a key that only includes parameters that affect data fetching
 	const dataKey = JSON.stringify({
 		search: searchParams.search,
 		sortBy: searchParams.sortBy,
@@ -76,7 +70,7 @@ export default async function FeatureFlagsPage(props: PageProps<"/[locale]/dashb
 					</p>
 				</div>
 				<Button asChild>
-					<Link href="?mode=create">
+					<Link href="?flagId=new">
 						<Plus className="size-4 mr-2" />
 						{t("Create flag")}
 					</Link>

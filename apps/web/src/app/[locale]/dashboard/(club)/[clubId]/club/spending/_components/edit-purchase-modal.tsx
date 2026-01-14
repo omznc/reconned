@@ -178,7 +178,7 @@ export function EditPurchaseModal({ purchase }: EditPurchaseModalProps) {
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{t("Edut")}</CredenzaTitle>
+					<CredenzaTitle>{t("Edit")}</CredenzaTitle>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>

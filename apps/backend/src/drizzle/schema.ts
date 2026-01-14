@@ -621,6 +621,7 @@ export const alliance = pgTable(
 		id: serial().primaryKey().notNull(),
 		name: text().notNull(),
 		description: text(),
+		link: text(),
 		countryId: integer().notNull(),
 		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
