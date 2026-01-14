@@ -6,7 +6,7 @@ import { useLogger } from "next-axiom";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Credenza, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
+import { Credenza, CredenzaBody, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
 
 interface FilePreviewModalProps {
 	isOpen: boolean;
@@ -56,7 +56,7 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 						</div>
 					</CredenzaTitle>
 				</CredenzaHeader>
-				<div className="mt-4">
+				<CredenzaBody>
 					{isPdf ? (
 						<embed src={fileUrl} className="w-full h-[600px]" title={fileName} />
 					) : (
@@ -64,7 +64,7 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 							<Image src={fileUrl} alt={fileName} fill className="object-contain" />
 						</div>
 					)}
-				</div>
+				</CredenzaBody>
 			</CredenzaContent>
 		</Credenza>
 	);

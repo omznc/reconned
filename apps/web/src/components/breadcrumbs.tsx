@@ -62,6 +62,7 @@ export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
 		edit: t("Edit"),
 		tasks: t("Tasks"),
 		alliances: t("Alliances"),
+		featureFlags: t("Feature flags"),
 	};
 
 	const getDisplayText = (section: string) => {

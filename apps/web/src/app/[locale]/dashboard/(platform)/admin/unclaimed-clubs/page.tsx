@@ -6,14 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api.ts";
 import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
-import { UnclaimedClubsSheet } from "./_components/unclaimed-clubs.sheet.tsx";
 import { UnclaimedClubsTable } from "./_components/unclaimed-clubs.table.tsx";
 
 type AdminUnclaimedList = ApiResponse<"/api/admin/unclaimed-clubs", "get">;
 type AdminUnclaimed = AdminUnclaimedList["clubs"][number];
 
 export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs">) {
-	const { search, sortBy, sortOrder, page, clubId, perPage } = await props.searchParams;
+	const { search, sortBy, sortOrder, page, perPage } = await props.searchParams;
 	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
@@ -32,22 +31,7 @@ export async function UnclaimedClubsPageFetcher(props: PageProps<"/[locale]/dash
 	const clubs = (listData?.clubs || []) as AdminUnclaimed[];
 	const totalClubs = listData?.pagination.total || 0;
 
-	const selectedClub = clubId
-		? (
-				await apiServer.GET("/api/admin/unclaimed-clubs/{id}", {
-					params: {
-						path: { id: clubId as string },
-					},
-				})
-			).data
-		: undefined;
-
-	return (
-		<>
-			<UnclaimedClubsSheet selectedClub={selectedClub || undefined} />
-			<UnclaimedClubsTable clubs={clubs} totalClubs={totalClubs} pageSize={pageSize} />
-		</>
-	);
+	return <UnclaimedClubsTable clubs={clubs} totalClubs={totalClubs} pageSize={pageSize} />;
 }
 
 export default async function UnclaimedClubsPage(props: PageProps<"/[locale]/dashboard/admin/unclaimed-clubs">) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { BanIcon, CheckCircle, TrashIcon } from "lucide-react";
+import { BanIcon, CheckCircle, ShieldCheck, ShieldX, TrashIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { toast } from "sonner";
@@ -18,10 +18,11 @@ export function ClubActions({ club }: { club: AdminClub }) {
 	const router = useRouter();
 	const confirm = useConfirm();
 
-	const onAction = async (action: "ban" | "delete") => {
+	const onAction = async (action: "ban" | "delete" | "verify") => {
 		const actionText = {
 			ban: club.banned ? t("remove ban") : t("ban"),
 			delete: t("delete"),
+			verify: club.verified ? t("unverify") : t("verify"),
 		};
 
 		const confirmed = await confirm({
@@ -50,6 +51,18 @@ export function ClubActions({ club }: { club: AdminClub }) {
 				if (error) {
 					throw new Error(error.error || t("Error changing club status."));
 				}
+			} else if (action === "verify") {
+				const path = club.verified ? "/api/admin/clubs/{id}/unverify" : "/api/admin/clubs/{id}/verify";
+				const { error } = await apiClient.PUT(path, {
+					params: {
+						path: {
+							id: club.id,
+						},
+					},
+				});
+				if (error) {
+					throw new Error(error.error || t("Error changing club verification status."));
+				}
 			} else {
 				const { error } = await apiClient.DELETE("/api/admin/clubs/{id}", {
 					params: {
@@ -73,6 +86,15 @@ export function ClubActions({ club }: { club: AdminClub }) {
 
 	return (
 		<div className="flex flex-col gap-2">
+			<Button
+				variant={club.verified ? "destructive" : "default"}
+				onClick={() => {
+					onAction("verify");
+				}}
+			>
+				{club.verified ? <ShieldX /> : <ShieldCheck />}
+				{club.verified ? t("Unverify club") : t("Verify club")}
+			</Button>
 			<Button
 				variant={club.banned ? "default" : "destructive"}
 				onClick={() => {

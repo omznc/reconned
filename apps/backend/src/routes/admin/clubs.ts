@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership } from "../../drizzle/schema";
 import { db } from "../../lib/db";
@@ -47,7 +47,14 @@ const baseClubSchema = z.object({
 adminClubsRouter.get(
 	"/admin/clubs",
 	async ({ query, response, context: _context }) => {
-		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query || {};
+		const {
+			page = 1,
+			perPage = 25,
+			search = "",
+			sortBy = "createdAt",
+			sortOrder = "desc",
+			countryId,
+		} = query || {};
 		const offset = (page - 1) * perPage;
 
 		const whereConditions = [];
@@ -56,28 +63,11 @@ adminClubsRouter.get(
 			whereConditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)));
 		}
 
-		const ownerMemberships = await db
-			.select({ clubId: clubMembership.clubId })
-			.from(clubMembership)
-			.where(eq(clubMembership.role, "CLUB_OWNER"));
-
-		const ownedClubIds = ownerMemberships.map((m) => m.clubId);
-
-		if (ownedClubIds.length > 0) {
-			whereConditions.push(inArray(club.id, ownedClubIds));
-		} else {
-			return response.json({
-				clubs: [],
-				pagination: {
-					page,
-					perPage,
-					total: 0,
-					totalPages: 0,
-				},
-			});
+		if (countryId) {
+			whereConditions.push(eq(club.countryId, countryId));
 		}
 
-		const where = and(...whereConditions);
+		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
 		let orderBy: typeof club.name | typeof club.location | typeof club.createdAt | ReturnType<typeof desc>;
 		if (sortBy === "name") {
@@ -112,6 +102,7 @@ adminClubsRouter.get(
 				search: z.string().optional(),
 				sortBy: z.enum(["name", "location", "createdAt"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
+				countryId: z.coerce.number().optional(),
 			}),
 			response: {
 				200: z.object({
@@ -268,6 +259,108 @@ adminClubsRouter.put(
 			response: {
 				200: z.object({ success: z.boolean() }),
 				...responseSchema([401, 403, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+adminClubsRouter.put(
+	"/admin/clubs/:id/verify",
+	async ({ params, response, context }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!clubData[0]) {
+			throw apiError.notFound("Club not found");
+		}
+
+		await db
+			.update(club)
+			.set({
+				verified: true,
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(club.id, clubId));
+
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "club_verified_by_admin",
+			properties: {
+				club_id: clubId,
+				club_name: clubData[0].name,
+				admin_action: true,
+			},
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Admin"],
+			summary: "Verify club",
+			description: "Admin endpoint to verify a club",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
+			},
+		},
+	},
+);
+
+adminClubsRouter.put(
+	"/admin/clubs/:id/unverify",
+	async ({ params, response, context }) => {
+		const clubId = params.id;
+		if (!clubId) {
+			throw apiError.validation("Club ID is required");
+		}
+
+		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!clubData[0]) {
+			throw apiError.notFound("Club not found");
+		}
+
+		await db
+			.update(club)
+			.set({
+				verified: false,
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(club.id, clubId));
+
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "club_unverified_by_admin",
+			properties: {
+				club_id: clubId,
+				club_name: clubData[0].name,
+				admin_action: true,
+			},
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Admin"],
+			summary: "Unverify club",
+			description: "Admin endpoint to unverify a club",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
 		},
 	},

@@ -152,13 +152,80 @@ export async function myRoute() {
   ```
 - You write english translations in-code, then you re-run bun dev which generates those keys in other language files, after which you have to populate the values by getting the english value from en.json
 
-### Admin Interface Patterns
+### CRUD Table Patterns
 
-#### CRUD Page Structure
-- Pages use URL query state (`nuqs`) for mode management: `?mode=create|edit|delete&[entity]Id=uuid`.
-- Forms are in modal/sheets triggered by URL state changes.
-- Consistent fetcher pattern with `Suspense` boundaries.
-- `router.refresh()` after mutations.
+#### Local State for Modals/Sheets (General Pattern)
+- Use local state (`useState`) to manage modal/sheet visibility and selected entity:
+  - `selectedEntity` state holds the entity being viewed/edited
+  - `null` or `undefined` → modal closed
+  - Entity object → modal open with that entity
+  - Delete → use `useConfirm()` hook from `@/components/ui/alert-dialog-provider`
+- Modals/sheets rendered conditionally based on state
+- `router.refresh()` after mutations
+- Pass `onClose` callback to reset state when modal closest
+
+#### Table Component Pattern
+```typescript
+export function EntityTable({ entities }: EntityTableProps) {
+  const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  
+  return (
+    <>
+      <GenericDataTable
+        data={entities}
+        columns={[
+          // ... column definitions
+          {
+            key: "actions",
+            cellConfig: {
+              variant: "custom",
+              components: (entity) => [
+                <DropdownMenuItem key="view" onClick={() => setSelectedEntity(entity)}>
+                  <Eye className="size-4 mr-2" />
+                  {t("View")}
+                </DropdownMenuItem>,
+              ],
+            },
+          },
+        ]}
+      />
+      
+      {selectedEntity && (
+        <EntitySheet
+          selectedEntity={selectedEntity}
+          onClose={() => setSelectedEntity(null)}
+        />
+      )}
+    </>
+  );
+}
+```
+
+#### Table Delete Pattern
+```typescript
+const confirm = useConfirm();
+const router = useRouter();
+
+const handleDelete = async (entity: Entity) => {
+  const confirmed = await confirm({
+    title: t("Delete entity"),
+    body: t("Are you sure?"),
+    cancelButton: t("Cancel"),
+    actionButton: t("Delete"),
+    actionButtonVariant: "destructive",
+  });
+  if (!confirmed) return;
+  
+  const { error } = await apiClient.DELETE("/api/entities/{id}", {
+    params: { path: { id: entity.id } },
+  });
+  if (error) { toast.error(t("Failed")); return; }
+  toast.success(t("Deleted"));
+  router.refresh();
+};
+```
+
+### Admin Interface Patterns
 
 #### Admin Route Pattern
 ```typescript
@@ -177,15 +244,29 @@ adminEntityRouter.get("/admin/entities", async ({ query, response }) => {
 - Column configurations include custom components, badge variants, and value mapping.
 - Uses dot notation for nested property access.
 
-### Query State Management
-
-#### nuqs Usage Pattern
+#### Sheet/Modal Component Pattern
 ```typescript
-const [mode, setMode] = useQueryState("mode", {
-  shallow: false,
-  clearOnDefault: true,
-  history: "replace",
-});
+interface EntitySheetProps {
+  selectedEntity?: Entity;
+  onClose?: () => void;
+}
+
+export function EntitySheet({ selectedEntity, onClose }: EntitySheetProps) {
+  const t = useExtracted();
+  
+  return (
+    <Credenza open={Boolean(selectedEntity)} onOpenChange={() => onClose?.()}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>{selectedEntity?.name || t("Does not exist")}</CredenzaTitle>
+        </CredenzaHeader>
+        <CredenzaBody>
+          {/* Entity details */}
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
+  );
+}
 ```
 
 ### Error Handling & User Feedback
@@ -197,28 +278,40 @@ const [mode, setMode] = useQueryState("mode", {
 
 ### Form Implementation
 
-#### Admin Form Pattern
+#### CRUD Form Pattern
 ```typescript
+const [entityId, setEntityId] = useQueryState("entityId", { shallow: false, clearOnDefault: true, history: "replace" });
+
 const form = useForm<FormValues>({
   resolver: zodResolver(schema),
-  defaultValues: { /* from props */ },
+  defaultValues: { /* from props.entity */ },
 });
+
+const isEdit = entityId !== "new" && Boolean(entity);
 
 const onSubmit = async (data: FormValues) => {
   try {
-    const { error } = await apiClient.POST("/api/...", { body: data });
-    if (error) {
-      toast.error(t("Failed to create"));
-      return;
+    if (isEdit && entity) {
+      const { error } = await apiClient.PUT("/api/.../{ id }", { params: { path: { id: entity.id } }, body: data });
+      if (error) { toast.error(t("Failed to update")); return; }
+      toast.success(t("Updated successfully"));
+    } else {
+      const { error } = await apiClient.POST("/api/...", { body: data });
+      if (error) { toast.error(t("Failed to create")); return; }
+      toast.success(t("Created successfully"));
     }
-    toast.success(t("Created successfully"));
-    setMode(null);
+    setEntityId(null);
     form.reset();
     router.refresh();
   } catch (error) {
     console.error("Error:", error);
     toast.error(t("An error occurred"));
   }
+};
+
+const handleClose = () => {
+  setEntityId(null);
+  form.reset();
 };
 ```
 

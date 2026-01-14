@@ -23,6 +23,7 @@ import debounce from "lodash/debounce";
 import posthog from "posthog-js";
 import { toast } from "sonner";
 import { Loader } from "@/components/loader";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -44,6 +45,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 	const [step, setStep] = useState(1);
 	const router = useRouter();
 	const t = useExtracted();
+	const confirm = useConfirm();
 
 	const eventApplicationSchema = z.object({
 		eventId: z.string().min(1, { message: t("Event ID is required") }),
@@ -299,11 +301,17 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 	// Add delete handler
 	const handleDelete = async () => {
-		const confirm = window.confirm(
-			t("Are you sure you want to delete your application? This will also delete all invitations you sent."),
-		);
+		const confirmed = await confirm({
+			title: t("Are you sure?"),
+			body: t(
+				"Are you sure you want to delete your application? This will also delete all invitations you sent.",
+			),
+			cancelButton: t("Cancel"),
+			actionButton: t("Confirm"),
+			actionButtonVariant: "destructive",
+		});
 
-		if (confirm) {
+		if (confirmed) {
 			toast.promise(
 				(async () => {
 					const { error } = await apiClient.DELETE("/api/events/{id}/registrations", {

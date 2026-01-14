@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Credenza,
+	CredenzaBody,
 	CredenzaContent,
 	CredenzaDescription,
 	CredenzaHeader,
@@ -193,7 +194,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 					</CredenzaDescription>
 				</CredenzaHeader>
 
-				<div className="mt-4 space-y-4 p-4 md:p-0">
+				<CredenzaBody className="space-y-4">
 					<div>
 						<h3 className="text-sm font-medium">{t("Action type")}</h3>
 						<p className="mt-1 font-mono text-sm">{actionTypeMap[log.actionType] || log.actionType}</p>
@@ -226,7 +227,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 							{JSON.stringify(log.actionData, null, 2)}
 						</pre>
 					</div>
-				</div>
+				</CredenzaBody>
 			</CredenzaContent>
 		</Credenza>
 	);

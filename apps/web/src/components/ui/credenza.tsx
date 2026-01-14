@@ -190,7 +190,7 @@ const CredenzaBody = ({ className, children, ...props }: CredenzaProps) => {
     return (
         <div
             className={cn("px-4 md:px-0", className, {
-                "h-full overflow-y-scroll pb-10": !isDesktop
+                "h-full overflow-y-auto pb-10": !isDesktop
             })}
             {...props}
         >

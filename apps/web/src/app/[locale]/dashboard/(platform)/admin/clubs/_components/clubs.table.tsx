@@ -2,8 +2,9 @@
 
 import { ExternalLink, Settings } from "lucide-react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import { useExtracted } from "next-intl";
+import { useState } from "react";
+import { ClubsSheet } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/clubs.sheet";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
@@ -20,92 +21,88 @@ interface ClubsTableProps {
 
 export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 	const t = useExtracted();
-	const searchParams = useSearchParams();
-
-	const getActionUrl = (clubId: string) => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("clubId", clubId);
-		return `?${params.toString()}`;
-	};
+	const [selectedClub, setSelectedClub] = useState<AdminClub | null>(null);
 
 	return (
-		<GenericDataTable
-			data={clubs}
-			totalPages={Math.ceil(totalClubs / pageSize)}
-			searchPlaceholder={t("Search clubs...")}
-			columns={[
-				{
-					key: "logo",
-					header: "Logo",
-					cellConfig: {
-						variant: "custom",
-						component: (_, club) =>
-							club.logo ? (
-								<Image
-									src={club.logo}
-									alt="Logo"
-									width={IMAGE_SIZES.THUMBNAIL}
-									height={IMAGE_SIZES.THUMBNAIL}
-									className="object-contain max-h-12"
-								/>
-							) : (
-								<div className="w-8 h-8 bg-gray-200" />
-							),
-					},
-				},
-				{
-					key: "name",
-					header: "Ime",
-					sortable: true,
-				},
-				{
-					key: "location",
-					header: "Lokacija",
-					sortable: true,
-				},
-				{
-					key: "banned",
-					header: "Ban",
-					cellConfig: {
-						variant: "badge",
-						valueMap: {
-							false: "Aktivan",
-							true: "Banovan",
-							default: "Aktivan",
-						},
-						badgeVariants: {
-							true: "bg-red-100 text-red-800",
-							default: "bg-green-100 text-green-800",
+		<>
+			<GenericDataTable
+				data={clubs}
+				totalPages={Math.ceil(totalClubs / pageSize)}
+				searchPlaceholder={t("Search clubs...")}
+				columns={[
+					{
+						key: "logo",
+						header: "Logo",
+						cellConfig: {
+							variant: "custom",
+							component: (_, club) =>
+								club.logo ? (
+									<Image
+										src={club.logo}
+										alt="Logo"
+										width={IMAGE_SIZES.THUMBNAIL}
+										height={IMAGE_SIZES.THUMBNAIL}
+										className="object-contain max-h-12"
+									/>
+								) : (
+									<div className="w-8 h-8 bg-gray-200" />
+								),
 						},
 					},
-				},
-				{
-					key: "createdAt",
-					header: "Datum osnivanja",
-					sortable: true,
-				},
-				{
-					key: "actions",
-					header: "Akcije",
-					cellConfig: {
-						variant: "custom",
-						components: (club) => [
-							<DropdownMenuItem key="profile" asChild>
-								<Link href={`/clubs/${club.slug || club.id}`} target="_blank">
-									<ExternalLink className="size-4 mr-2" />
-									Profil
-								</Link>
-							</DropdownMenuItem>,
-							<DropdownMenuItem key="actions" asChild>
-								<Link href={getActionUrl(club.id)}>
+					{
+						key: "name",
+						header: t("Name"),
+						sortable: true,
+					},
+					{
+						key: "location",
+						header: t("Location"),
+						sortable: true,
+					},
+					{
+						key: "banned",
+						header: t("Ban"),
+						cellConfig: {
+							variant: "badge",
+							valueMap: {
+								false: t("Active"),
+								true: t("Banned"),
+								default: t("Active"),
+							},
+							badgeVariants: {
+								true: "bg-red-100 text-red-800",
+								default: "bg-green-100 text-green-800",
+							},
+						},
+					},
+					{
+						key: "createdAt",
+						header: t("Founded"),
+						sortable: true,
+					},
+					{
+						key: "actions",
+						header: t("Actions"),
+						cellConfig: {
+							variant: "custom",
+							components: (club) => [
+								<DropdownMenuItem key="profile" asChild>
+									<Link href={`/clubs/${club.slug || club.id}`} target="_blank">
+										<ExternalLink className="size-4 mr-2" />
+										{t("Profile")}
+									</Link>
+								</DropdownMenuItem>,
+								<DropdownMenuItem key="actions" onClick={() => setSelectedClub(club)}>
 									<Settings className="size-4 mr-2" />
-									Akcije
-								</Link>
-							</DropdownMenuItem>,
-						],
+									{t("Actions")}
+								</DropdownMenuItem>,
+							],
+						},
 					},
-				},
-			]}
-		/>
+				]}
+			/>
+
+			{selectedClub && <ClubsSheet selectedClub={selectedClub} onClose={() => setSelectedClub(null)} />}
+		</>
 	);
 }

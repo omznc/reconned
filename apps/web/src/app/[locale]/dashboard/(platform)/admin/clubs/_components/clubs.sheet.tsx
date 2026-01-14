@@ -5,55 +5,53 @@ import { useExtracted } from "next-intl";
 import { ClubActions } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/club-table-actions";
 import {
 	Credenza,
+	CredenzaBody,
 	CredenzaContent,
 	CredenzaDescription,
 	CredenzaHeader,
 	CredenzaTitle,
 } from "@/components/ui/credenza";
-import { useRouter } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
 
 interface ClubsSheetProps {
 	selectedClub?: AdminClub;
+	onClose?: () => void;
 }
 
-export function ClubsSheet({ selectedClub }: ClubsSheetProps) {
-	const router = useRouter();
+export function ClubsSheet({ selectedClub, onClose }: ClubsSheetProps) {
 	const t = useExtracted();
 
 	return (
-		<Credenza open={Boolean(selectedClub)} onOpenChange={() => router.push("?")}>
+		<Credenza open={Boolean(selectedClub)} onOpenChange={() => onClose?.()}>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>{selectedClub?.name || "Ne postoji"}</CredenzaTitle>
-					<CredenzaDescription>{selectedClub?.location || "Lokacija nije dostupna"}</CredenzaDescription>
+					<CredenzaTitle>{selectedClub?.name || t("Does not exist")}</CredenzaTitle>
+					<CredenzaDescription>{selectedClub?.location || t("Location not available")}</CredenzaDescription>
 				</CredenzaHeader>
-				{!selectedClub && (
-					<div className="mt-4 space-y-4">
-						<p>{t("Club not found.")}</p>
-					</div>
-				)}
-				{selectedClub && (
-					<div className="mt-4 space-y-4">
-						<div className="space-y-2 text-sm">
-							<div>
-								<span className="text-muted-foreground">Osnovan: </span>
-								{format(new Date(selectedClub.createdAt), "d. MMMM yyyy.")}
+				<CredenzaBody>
+					{!selectedClub && <p>{t("Club not found.")}</p>}
+					{selectedClub && (
+						<div className="space-y-4">
+							<div className="space-y-2 text-sm">
+								<div>
+									<span className="text-muted-foreground">{t("Founded:")}</span>{" "}
+									{format(new Date(selectedClub.createdAt), "d. MMMM yyyy.")}
+								</div>
+								{selectedClub.banned && (
+									<span className="text-red-600">
+										{t("Banned until")}{" "}
+										{selectedClub.banExpires
+											? format(new Date(selectedClub.banExpires), "d. MMMM yyyy.")
+											: t("N/A")}
+									</span>
+								)}
 							</div>
-							{selectedClub.banned && (
-								<span className="text-red-600">
-									Banovan do{" "}
-									{selectedClub.banExpires
-										? format(new Date(selectedClub.banExpires), "d. MMMM yyyy.")
-										: "N/A"}
-								</span>
-							)}
+							<ClubActions club={selectedClub} />
 						</div>
-						<ClubActions club={selectedClub} />
-					</div>
-				)}
+					)}
+				</CredenzaBody>
 			</CredenzaContent>
 		</Credenza>
 	);

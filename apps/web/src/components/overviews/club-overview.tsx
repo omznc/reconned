@@ -26,6 +26,7 @@ import { ExpandableDescription } from "@/components/overviews/expandable-descrip
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import type { ApiResponse, ClubMembership } from "@/lib/api/api-type-helpers";
@@ -306,24 +307,65 @@ export async function ClubOverview({
 									</div>
 									<hr className="w-full" />
 									<div className="grid gap-1 max-h-[400px] overflow-auto p-4">
-										{alliances.map((alliance) => (
-											<div
-												key={alliance.id}
-												className="flex cursor-default items-center gap-3 p-2 rounded-md hover:bg-muted transition-colors"
-											>
-												<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground">
-													<HandshakeIcon className="h-5 w-5" />
-												</div>
-												<div className="flex flex-col flex-1 min-w-0">
-													<span className="font-medium truncate">{alliance.name}</span>
-													{alliance.description && (
-														<span className="text-sm text-muted-foreground truncate">
-															{alliance.description}
-														</span>
+										{alliances.map((alliance) => {
+											const content = (
+												<>
+													<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground shrink-0">
+														<HandshakeIcon className="h-5 w-5" />
+													</div>
+													<HoverCard>
+														<HoverCardTrigger asChild>
+															<div className="flex flex-col flex-1 min-w-0 overflow-hidden pr-2">
+																<span className="font-medium truncate block">
+																	{alliance.name}
+																</span>
+																{alliance.description && (
+																	<span className="text-sm text-muted-foreground truncate block">
+																		{alliance.description}
+																	</span>
+																)}
+															</div>
+														</HoverCardTrigger>
+														<HoverCardContent className="w-100">
+															<div className="space-y-2">
+																<h4 className="font-semibold">{alliance.name}</h4>
+																{alliance.description && (
+																	<p className="text-sm text-muted-foreground">
+																		{alliance.description}
+																	</p>
+																)}
+															</div>
+														</HoverCardContent>
+													</HoverCard>
+													{alliance.link && (
+														<ExternalLink className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 													)}
+												</>
+											);
+
+											if (alliance.link) {
+												return (
+													<Link
+														key={alliance.id}
+														href={alliance.link}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent transition-all min-w-0 overflow-hidden hover:border-red-500 hover:bg-muted cursor-pointer pr-8"
+													>
+														{content}
+													</Link>
+												);
+											}
+
+											return (
+												<div
+													key={alliance.id}
+													className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent transition-all min-w-0 overflow-hidden cursor-default hover:bg-muted"
+												>
+													{content}
 												</div>
-											</div>
-										))}
+											);
+										})}
 									</div>
 								</div>
 							)}

@@ -1,7 +1,6 @@
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import { AllianceSheet } from "@/app/[locale]/dashboard/(platform)/admin/alliances/_components/alliance.sheet";
-import { AllianceDelete } from "@/app/[locale]/dashboard/(platform)/admin/alliances/_components/alliance-delete.tsx";
 import { AllianceForm } from "@/app/[locale]/dashboard/(platform)/admin/alliances/_components/alliance-form.tsx";
 import { AlliancesTable } from "@/app/[locale]/dashboard/(platform)/admin/alliances/_components/alliances.table";
 import { GenericDataTableSkeleton } from "@/components/generic-data-table";
@@ -12,7 +11,7 @@ type AdminAlliance = ApiResponse<"/api/admin/alliances", "get">["alliances"][num
 
 export async function AlliancesPageFetcher(props: PageProps<"/[locale]/dashboard/admin/alliances">) {
 	const searchParams = await props.searchParams;
-	const { search, sortBy, sortOrder, page, allianceId, mode, perPage } = searchParams;
+	const { search, sortBy, sortOrder, page, allianceId, viewId, perPage } = searchParams;
 	const currentPage = Math.max(1, Number(page || 1));
 	const pageSize = perPage === "25" || perPage === "50" || perPage === "100" ? Number(perPage) : 25;
 
@@ -31,25 +30,19 @@ export async function AlliancesPageFetcher(props: PageProps<"/[locale]/dashboard
 	const alliances = (listData?.alliances || []) as AdminAlliance[];
 	const totalAlliances = listData?.pagination?.total || 0;
 
-	// Only fetch individual alliance when we need it for forms/dialogs/sheets
-	let selectedAlliance: ApiResponse<"/api/admin/alliances/{id}", "get">["alliance"] | undefined;
-	if (allianceId && (mode === "edit" || mode === "delete" || !mode)) {
-		const response = await apiServer.GET("/api/admin/alliances/{id}", {
-			params: {
-				path: { id: Number(allianceId) },
-			},
-		});
-		selectedAlliance = response.data?.alliance;
-	}
+	const idToFetch = allianceId && allianceId !== "new" ? allianceId : viewId;
+	const selectedAlliance = idToFetch
+		? (
+				await apiServer.GET("/api/admin/alliances/{id}", {
+					params: { path: { id: Number(idToFetch) } },
+				})
+			).data?.alliance
+		: undefined;
 
 	return (
 		<>
-			{mode === "create" || (mode === "edit" && selectedAlliance) ? (
-				<AllianceForm alliance={selectedAlliance} />
-			) : (
-				<AllianceSheet selectedAlliance={selectedAlliance} />
-			)}
-			<AllianceDelete alliance={selectedAlliance} />
+			{(allianceId === "new" || (allianceId && selectedAlliance)) && <AllianceForm alliance={selectedAlliance} />}
+			<AllianceSheet selectedAlliance={selectedAlliance} />
 			<AlliancesTable alliances={alliances} totalAlliances={totalAlliances} pageSize={pageSize} />
 		</>
 	);

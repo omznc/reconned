@@ -124,10 +124,12 @@ export async function Footer() {
 								</Link>
 							</li>
 							<li>
-								<Link href="#" className="hover:text-red-500 transition-all flex items-center gap-2">
+								<Link
+									href="https://www.facebook.com/profile.php?id=61572533350106"
+									className="hover:text-red-500 transition-all flex items-center gap-2"
+								>
 									<SiFacebook className="size-4" />
 									<span>Facebook</span>
-									<BadgeSoon className="-mb-0.5" />
 								</Link>
 							</li>
 						</ul>

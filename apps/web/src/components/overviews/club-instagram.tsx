@@ -1,6 +1,7 @@
 "use client";
 
 import { SiInstagram } from "@icons-pack/react-simple-icons";
+import Error404 from "@public/errors/404.webp";
 import { ExternalLink, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
@@ -19,7 +20,8 @@ export function ClubInstagram({ data, limit = 7 }: ClubInstagramProps) {
 
 	if (data.media.length === 0) {
 		return (
-			<div className="text-center py-8 text-muted-foreground">
+			<div className="text-center w-full py-8 text-muted-foreground flex flex-col items-center justify-center">
+				<Image src={Error404} alt="404" draggable={false} className="w-full max-w-[400px] dark:invert" />
 				<p>{t("Nothing to show here")}</p>
 			</div>
 		);

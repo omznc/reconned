@@ -275,19 +275,19 @@ export function MembershipExtensionForm({
 										</FormItem>
 									)}
 								/>
-
-								<CredenzaFooter>
-									<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-										{t("Cancel")}
-									</Button>
-									<Button type="submit" disabled={isLoading}>
-										{isLoading ? t("Saving...") : t("Save")}
-									</Button>
-								</CredenzaFooter>
 							</form>
 						</Form>
 					</div>
 				</CredenzaBody>
+
+				<CredenzaFooter>
+					<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+						{t("Cancel")}
+					</Button>
+					<Button type="submit" disabled={isLoading} onClick={form.handleSubmit(onSubmit)}>
+						{isLoading ? t("Saving...") : t("Save")}
+					</Button>
+				</CredenzaFooter>
 			</CredenzaContent>
 		</Credenza>
 	);

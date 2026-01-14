@@ -1,12 +1,17 @@
 "use client";
 
 import { Edit, Handshake, Plus, Trash } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
+import { useQueryState } from "nuqs";
+import { toast } from "sonner";
 import { GenericDataTable } from "@/components/generic-data-table";
+import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
+import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type AdminAlliance = ApiResponse<"/api/admin/alliances", "get">["alliances"][number];
@@ -19,26 +24,42 @@ interface AlliancesTableProps {
 
 export function AlliancesTable(props: AlliancesTableProps) {
 	const t = useExtracted();
-	const searchParams = useSearchParams();
+	const [, setAllianceId] = useQueryState("allianceId", { shallow: false });
+	const [, setViewId] = useQueryState("viewId", { shallow: false });
+	const confirm = useConfirm();
+	const router = useRouter();
 
-	const getViewUrl = (allianceId: number) => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("allianceId", allianceId.toString());
-		return `?${params.toString()}`;
-	};
+	const handleDelete = async (alliance: AdminAlliance) => {
+		const clubCount = alliance.clubAlliances?.length || 0;
+		const confirmed = await confirm({
+			title: t("Delete alliance"),
+			body:
+				clubCount > 0
+					? t(
+							"This alliance has {count} club(s). Are you sure you want to delete it? This action cannot be undone.",
+							{ count: clubCount.toString() },
+						)
+					: t("Are you sure you want to delete this alliance? This action cannot be undone."),
+			cancelButton: t("Cancel"),
+			actionButton: t("Delete"),
+			actionButtonVariant: "destructive",
+		});
 
-	const getEditUrl = (allianceId: number) => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("allianceId", allianceId.toString());
-		params.set("mode", "edit");
-		return `?${params.toString()}`;
-	};
+		if (!confirmed) {
+			return;
+		}
 
-	const getDeleteUrl = (allianceId: number) => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("allianceId", allianceId.toString());
-		params.set("mode", "delete");
-		return `?${params.toString()}`;
+		const { error } = await apiClient.DELETE("/api/admin/alliances/{id}", {
+			params: { path: { id: alliance.id } },
+		});
+
+		if (error) {
+			toast.error(t("Failed to delete alliance"));
+			return;
+		}
+
+		toast.success(t("Alliance deleted successfully"));
+		router.refresh();
 	};
 
 	return (
@@ -47,13 +68,12 @@ export function AlliancesTable(props: AlliancesTableProps) {
 				<div className="text-sm text-muted-foreground">
 					{t("{count} total alliances", { count: props.totalAlliances.toString() })}
 				</div>
-				<Link
-					href="?mode=create"
-					className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-				>
-					<Plus className="mr-2 h-4 w-4" />
-					{t("Create Alliance")}
-				</Link>
+				<Button asChild>
+					<Link href="?allianceId=new">
+						<Plus className="mr-2 h-4 w-4" />
+						{t("Create Alliance")}
+					</Link>
+				</Button>
 			</div>
 			<GenericDataTable
 				data={props.alliances}
@@ -126,23 +146,21 @@ export function AlliancesTable(props: AlliancesTableProps) {
 						cellConfig: {
 							variant: "custom",
 							components: (alliance) => [
-								<DropdownMenuItem key="view" asChild>
-									<Link href={getViewUrl(alliance.id)}>
-										<Handshake className="size-4 mr-2" />
-										{t("View Details")}
-									</Link>
+								<DropdownMenuItem key="view" onClick={() => setViewId(alliance.id.toString())}>
+									<Handshake className="size-4 mr-2" />
+									{t("View Details")}
 								</DropdownMenuItem>,
-								<DropdownMenuItem key="edit" asChild>
-									<Link href={getEditUrl(alliance.id)}>
-										<Edit className="size-4 mr-2" />
-										{t("Edit")}
-									</Link>
+								<DropdownMenuItem key="edit" onClick={() => setAllianceId(alliance.id.toString())}>
+									<Edit className="size-4 mr-2" />
+									{t("Edit")}
 								</DropdownMenuItem>,
-								<DropdownMenuItem key="delete" asChild>
-									<Link href={getDeleteUrl(alliance.id)} className="text-red-600">
-										<Trash className="size-4 mr-2" />
-										{t("Delete")}
-									</Link>
+								<DropdownMenuItem
+									key="delete"
+									onClick={() => handleDelete(alliance)}
+									className="text-red-600"
+								>
+									<Trash className="size-4 mr-2" />
+									{t("Delete")}
 								</DropdownMenuItem>,
 							],
 						},

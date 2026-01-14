@@ -35,12 +35,12 @@ export function ExpandableDescription({ description, translationNamespace = "com
 				>
 					{isExpanded ? (
 						<>
-							{t("showLess")}
+							{t("Show less")}
 							<ChevronUp className="h-4 w-4 ml-1" />
 						</>
 					) : (
 						<>
-							{t("readMore")}
+							{t("Read more")}
 							<ChevronDown className="h-4 w-4 ml-1" />
 						</>
 					)}

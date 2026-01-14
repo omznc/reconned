@@ -2857,6 +2857,46 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/admin/clubs/{id}/verify": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Verify club
+		 * @description Admin endpoint to verify a club
+		 */
+		put: operations["adminclubsidverifyPut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/admin/clubs/{id}/unverify": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Unverify club
+		 * @description Admin endpoint to unverify a club
+		 */
+		put: operations["adminclubsidunverifyPut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/admin/unclaimed-clubs": {
 		parameters: {
 			query?: never;
@@ -3092,6 +3132,46 @@ export interface paths {
 		 * @description Admin endpoint to delete an alliance and its club associations
 		 */
 		delete: operations["adminalliancesidDelete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/admin/alliances/{id}/clubs": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Add club to alliance
+		 * @description Admin endpoint to add a club to an alliance
+		 */
+		post: operations["adminalliancesidclubsPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/admin/alliances/{id}/clubs/{clubId}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/**
+		 * Remove club from alliance
+		 * @description Admin endpoint to remove a club from an alliance
+		 */
+		delete: operations["adminalliancesidclubsclubIdDelete"];
 		options?: never;
 		head?: never;
 		patch?: never;
@@ -9892,12 +9972,8 @@ export interface operations {
 								website: string | null;
 								instagramUsername: string | null;
 								instagramProfilePictureUrl: string | null;
-								instagramAccessToken: string | null;
-								instagramTokenExpiry: string | null;
-								instagramRefreshToken: string | null;
 								instagramConnected: boolean;
 								instagramBusinessId: string | null;
-								facebookPageId: string | null;
 								instagramTokenType: string | null;
 								countryId: number | null;
 								banned: boolean | null;
@@ -10457,7 +10533,6 @@ export interface operations {
 								callsign: string | null;
 								location: string | null;
 								bio: string | null;
-								/** Format: uri */
 								website: string | null;
 								createdAt: string;
 								slug: string | null;
@@ -10779,12 +10854,8 @@ export interface operations {
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
-							instagramAccessToken: string | null;
-							instagramTokenExpiry: string | null;
-							instagramRefreshToken: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							facebookPageId: string | null;
 							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
@@ -10867,12 +10938,8 @@ export interface operations {
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
-							instagramAccessToken: string | null;
-							instagramTokenExpiry: string | null;
-							instagramRefreshToken: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							facebookPageId: string | null;
 							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
@@ -12894,12 +12961,8 @@ export interface operations {
 						website: string | null;
 						instagramUsername: string | null;
 						instagramProfilePictureUrl: string | null;
-						instagramAccessToken: string | null;
-						instagramTokenExpiry: string | null;
-						instagramRefreshToken: string | null;
 						instagramConnected: boolean;
 						instagramBusinessId: string | null;
-						facebookPageId: string | null;
 						instagramTokenType: string | null;
 						countryId: number | null;
 						banned: boolean | null;
@@ -13000,12 +13063,8 @@ export interface operations {
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
-							instagramAccessToken: string | null;
-							instagramTokenExpiry: string | null;
-							instagramRefreshToken: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							facebookPageId: string | null;
 							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
@@ -14291,7 +14350,7 @@ export interface operations {
 							media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
 							media_url: string;
 							permalink: string;
-							thumbnail_url?: string;
+							thumbnail_url?: string | null;
 							timestamp: string;
 							username: string;
 						}[];
@@ -14410,6 +14469,7 @@ export interface operations {
 							name: string;
 							description: string | null;
 							countryId: number;
+							link: string | null;
 							createdAt: string;
 							updatedAt: string;
 						}[];
@@ -14470,6 +14530,7 @@ export interface operations {
 							name: string;
 							description: string | null;
 							countryId: number;
+							link: string | null;
 							createdAt: string;
 							updatedAt: string;
 						}[];
@@ -16473,6 +16534,7 @@ export interface operations {
 				search?: string;
 				sortBy?: "name" | "location" | "createdAt";
 				sortOrder?: "asc" | "desc";
+				countryId?: number;
 			};
 			header?: never;
 			path?: never;
@@ -16810,6 +16872,142 @@ export interface operations {
 				content: {
 					"application/json": {
 						success: boolean;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubsidverifyPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminclubsidunverifyPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
 					};
 				};
 			};
@@ -17729,6 +17927,7 @@ export interface operations {
 							id: number;
 							name: string;
 							description: string | null;
+							link: string | null;
 							countryId: number;
 							createdAt: string;
 							updatedAt: string;
@@ -17743,6 +17942,7 @@ export interface operations {
 									id: string;
 									name: string;
 									location?: string | null;
+									logo?: string | null;
 								};
 							}[];
 						}[];
@@ -17791,6 +17991,7 @@ export interface operations {
 				"application/json": {
 					name: string;
 					description?: string;
+					link?: string | "";
 					countryId: number;
 				};
 			};
@@ -17807,6 +18008,7 @@ export interface operations {
 							id: number;
 							name: string;
 							description: string | null;
+							link: string | null;
 							countryId: number;
 							createdAt: string;
 							updatedAt: string;
@@ -17871,6 +18073,7 @@ export interface operations {
 							id: number;
 							name: string;
 							description: string | null;
+							link: string | null;
 							countryId: number;
 							createdAt: string;
 							updatedAt: string;
@@ -17885,6 +18088,7 @@ export interface operations {
 									id: string;
 									name: string;
 									location?: string | null;
+									logo?: string | null;
 								};
 							}[];
 						};
@@ -17951,6 +18155,7 @@ export interface operations {
 				"application/json": {
 					name?: string;
 					description?: string;
+					link?: string | "";
 					countryId?: number;
 				};
 			};
@@ -17967,6 +18172,7 @@ export interface operations {
 							id: number;
 							name: string;
 							description: string | null;
+							link: string | null;
 							countryId: number;
 							createdAt: string;
 							updatedAt: string;
@@ -18026,6 +18232,164 @@ export interface operations {
 			header?: never;
 			path: {
 				id: number;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminalliancesidclubsPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: number;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					clubId: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						clubAlliance: {
+							id: number;
+							clubId: string;
+							allianceId: number;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Response */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	adminalliancesidclubsclubIdDelete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: number;
+				clubId: string;
 			};
 			cookie?: never;
 		};
