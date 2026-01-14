@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
-import type { ItemList, WithContext } from "schema-dts";
-import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
-import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
-import { AdminIcon } from "@/components/icons";
+import { UsersListing } from "@/app/[locale]/(public)/users/_components/users-listing";
 import JsonLdScript from "@/components/json-ld-script";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
+import { createItemListWithUsers } from "@/lib/json-ld";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
@@ -32,63 +30,58 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 		return <div>{t("Error loading users")}</div>;
 	}
 
-	const users = data.users;
-	const total = data.pagination.total;
-	const skip = (page - 1) * ITEMS_PER_PAGE;
+	const initialData = {
+		users: data.users,
+		pagination: data.pagination,
+	};
 
-	const itemListSchema: WithContext<ItemList> = {
-		"@context": "https://schema.org",
-		"@type": "ItemList",
+	const uniqueClubIds = [
+		...new Set(data.users.flatMap((u) => u.clubMembership?.map((m) => m.club.id) || []).filter(Boolean)),
+	];
+	const clubSlugMap = new Map<string, string | null>();
+
+	await Promise.all(
+		uniqueClubIds.map(async (clubId) => {
+			const clubResponse = await apiServer.GET("/api/clubs/{id}", {
+				params: {
+					path: { id: clubId },
+				},
+			});
+			if (clubResponse.data) {
+				clubSlugMap.set(clubId, clubResponse.data.slug);
+			}
+		}),
+	);
+
+	const itemListSchema = createItemListWithUsers({
+		users: data.users.map((user) => ({
+			id: user.id,
+			slug: user.slug,
+			name: user.name,
+			image: user.image,
+			callsign: user.callsign,
+			location: user.location,
+			clubMembership: user.clubMembership?.map((membership) => ({
+				clubId: membership.club.id,
+				clubSlug: clubSlugMap.get(membership.club.id) || null,
+				clubName: membership.club.name,
+			})),
+		})),
+		page,
+		itemsPerPage: ITEMS_PER_PAGE,
+		total: data.pagination.total,
+		locale,
 		name: t("Airsoft players - RECONNED"),
 		description: t(
 			"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
 		),
-		numberOfItems: total,
-		itemListElement: users.map((user, index) => ({
-			"@type": "ListItem",
-			position: index + 1 + skip,
-			item: {
-				"@type": "Person",
-				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug || user.id}`,
-				name: user.name,
-				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/users/${user.slug || user.id}`,
-				image: user.image || undefined,
-				address: user.location
-					? {
-							"@type": "PostalAddress",
-							addressLocality: user.location,
-						}
-					: undefined,
-				additionalName: user.callsign || undefined,
-				jobTitle: user.isAdmin ? "Administrator" : undefined,
-			},
-		})),
-	};
+	});
 
 	return (
-		<div className="container py-8 space-y-8 px-4">
+		<>
 			<JsonLdScript data={itemListSchema} />
-			<h1 className="text-2xl font-bold">{t("Players")}</h1>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{users.map((user) => (
-					<SearchResultCard
-						key={user.id}
-						type="user"
-						image={user.image}
-						title={
-							<span className="flex gap-2 items-center">
-								{user.name} {user.callsign ? `(${user.callsign})` : ""}
-								{user.isAdmin && <AdminIcon />}
-							</span>
-						}
-						description={null}
-						href={`/users/${user.slug || user.id}`}
-						meta={user.location || undefined}
-					/>
-				))}
-			</div>
-			<Pagination totalItems={total} itemsPerPage={ITEMS_PER_PAGE} />
-		</div>
+			<UsersListing initialData={initialData} />
+		</>
 	);
 }
 

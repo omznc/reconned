@@ -6,6 +6,14 @@ import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
+import {
+	createAggregateRating,
+	createBreadcrumbList,
+	createPostalAddress,
+	createSportsOrganizationReference,
+	removeUndefined,
+} from "@/lib/json-ld";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
@@ -24,38 +32,65 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		return <ErrorPage title={t("User not found.")} />;
 	}
 
-	const personSchema: WithContext<Person> = {
+	const userUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`;
+
+	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
+	if (FEATURE_FLAGS.REVIEWS) {
+		const reviewsResponse = await apiServer.GET("/api/reviews/{type}/{id}", {
+			params: {
+				path: {
+					type: "user",
+					id: user.id,
+				},
+			},
+		});
+		if (reviewsResponse.data && reviewsResponse.data.reviews.length > 0) {
+			const reviews = reviewsResponse.data.reviews;
+			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+			aggregateRating = createAggregateRating({
+				ratingValue: averageRating,
+				ratingCount: reviews.length,
+			});
+		}
+	}
+
+	const personSchema = removeUndefined({
 		"@context": "https://schema.org",
 		"@type": "Person",
-		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`,
+		"@id": userUrl,
 		name: user.name,
-		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`,
-		image: user.image || undefined,
-		description: user.bio || undefined,
-		address: user.location
+		url: userUrl,
+		...(user.image && { image: user.image }),
+		...(user.bio && { description: user.bio }),
+		...(user.location && {
+			address: createPostalAddress({
+				location: user.location,
+			}),
+		}),
+		...(user.callsign && { additionalName: user.callsign }),
+		...(user.website && { sameAs: [user.website] }),
+		...(user.clubMembership && user.clubMembership.length > 0
 			? {
-					"@type": "PostalAddress",
-					addressLocality: user.location,
+					memberOf: user.clubMembership
+						.filter((membership) => membership.club)
+						.map((membership) =>
+							createSportsOrganizationReference({
+								clubId: membership.club.id,
+								clubSlug: membership.club.slug,
+								clubName: membership.club.name,
+								locale: params.locale,
+							}),
+						),
 				}
-			: undefined,
-		additionalName: user.callsign || undefined,
-		sameAs: user.website ? [user.website] : undefined,
-		memberOf: user.clubMembership
-			.filter((membership) => membership.club)
-			.map((membership) => ({
-				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${membership.club.slug || membership.club.id}`,
-				name: membership.club.name,
-				sport: "Airsoft",
-			})),
+			: {}),
 		knowsAbout: ["Airsoft", "Military Simulation", "Team Sports"],
 		hasOccupation: {
 			"@type": "Occupation",
 			name: "Airsoft Player",
 		},
-	};
+		...(aggregateRating && { aggregateRating }),
+	}) as WithContext<Person>;
 
-	const userUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`;
 	const profilePageSchema: WithContext<ProfilePage> = {
 		"@context": "https://schema.org",
 		"@type": "ProfilePage",
@@ -68,10 +103,17 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		},
 	};
 
+	const breadcrumbSchema = createBreadcrumbList([
+		{ name: t("Home"), url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}` },
+		{ name: t("Players"), url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users` },
+		{ name: user.name, url: userUrl },
+	]);
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
 			<JsonLdScript data={personSchema} />
 			<JsonLdScript data={profilePageSchema} />
+			<JsonLdScript data={breadcrumbSchema} />
 			<UserOverview user={user} />
 		</div>
 	);

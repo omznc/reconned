@@ -1,28 +1,15 @@
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
-import type { ItemList, WithContext } from "schema-dts";
-import { Pagination } from "@/app/[locale]/(public)/_components/pagination";
-import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
-import { VerifiedClubIcon } from "@/components/icons";
+import { ClubsListing } from "@/app/[locale]/(public)/clubs/_components/clubs-listing";
 import JsonLdScript from "@/components/json-ld-script";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
+import { createItemListWithClubs } from "@/lib/json-ld";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
 
 export const dynamic = "force-dynamic";
-
-type ClubSearch = {
-	id: string;
-	name: string;
-	slug: string;
-	description: string;
-	logo: string;
-	verified: boolean;
-	location: string;
-	member_count: number;
-};
 
 export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	const [searchParams, locale] = await Promise.all([props.searchParams, getLocale()]);
@@ -42,78 +29,41 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 		return <div>{t("Error loading clubs")}</div>;
 	}
 
-	const clubs: ClubSearch[] = data.clubs.map((club) => ({
-		id: club.id,
-		name: club.name,
-		slug: club.slug || "",
-		description: club.description || "",
-		logo: club.logo || "",
-		verified: club.verified,
-		location: club.location || "",
-		member_count: club._count.members || 0,
-	}));
+	const initialData = {
+		clubs: data.clubs,
+		pagination: data.pagination,
+	};
 
-	const total = data.pagination.total;
-
-	const itemListSchema: WithContext<ItemList> = {
-		"@context": "https://schema.org",
-		"@type": "ItemList",
+	const itemListSchema = createItemListWithClubs({
+		clubs: data.clubs.map((club) => ({
+			id: club.id,
+			slug: club.slug,
+			name: club.name,
+			description: club.description,
+			logo: club.logo,
+			location: club.location,
+			latitude: club.latitude,
+			longitude: club.longitude,
+			contactEmail: club.contactEmail,
+			contactPhone: club.contactPhone,
+			dateFounded: club.dateFounded,
+			verified: club.verified,
+		})),
+		page,
+		itemsPerPage: ITEMS_PER_PAGE,
+		total: data.pagination.total,
+		locale,
 		name: t("Airsoft clubs - RECONNED"),
 		description: t(
 			"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
 		),
-		numberOfItems: total,
-		itemListElement: clubs.map((club, index) => ({
-			"@type": "ListItem",
-			position: index + 1 + (page - 1) * ITEMS_PER_PAGE,
-			item: {
-				"@type": "SportsOrganization",
-				"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug || club.id}`,
-				name: club.name,
-				description: club.description,
-				sport: "Airsoft",
-				url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${club.slug || club.id}`,
-				logo: club.logo || undefined,
-				address: club.location
-					? {
-							"@type": "PostalAddress",
-							addressLocality: club.location,
-						}
-					: undefined,
-				memberOf: club.verified
-					? {
-							"@type": "Organization",
-							name: "Verified Airsoft Clubs",
-						}
-					: undefined,
-			},
-		})),
-	};
+	});
 
 	return (
-		<div className="container py-8 space-y-8 px-4">
+		<>
 			<JsonLdScript data={itemListSchema} />
-			<h1 className="text-2xl font-bold">{t("Clubs")}</h1>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{clubs.map((club) => (
-					<SearchResultCard
-						key={club.id}
-						type="club"
-						image={club.logo}
-						title={
-							<span className="flex gap-2 items-center">
-								{club.name} {club.verified && <VerifiedClubIcon />}
-							</span>
-						}
-						description={club.description}
-						href={`/clubs/${club.slug || club.id}`}
-						badges={[`${club.member_count} ${club.member_count === 1 ? t("member") : t("members")}`]}
-						meta={club.location || undefined}
-					/>
-				))}
-			</div>
-			<Pagination totalItems={total} itemsPerPage={ITEMS_PER_PAGE} />
-		</div>
+			<ClubsListing initialData={initialData} />
+		</>
 	);
 }
 
