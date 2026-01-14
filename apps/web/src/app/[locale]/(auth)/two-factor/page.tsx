@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -94,14 +94,16 @@ export default function LoginPage() {
 				>
 					<div className="grid gap-2">
 						<Label htmlFor="totp">{t("Two-factor authentication")}</Label>
-						<Input
-							id="totp"
-							type="text"
-							name="totp"
-							placeholder="123456"
-							required={true}
-							autoComplete="off"
-						/>
+						<InputOTP id="totp" name="totp" maxLength={6} required autoComplete="off" className="w-full">
+							<InputOTPGroup className="w-full">
+								<InputOTPSlot index={0} className="flex-1 h-14" />
+								<InputOTPSlot index={1} className="flex-1 h-14" />
+								<InputOTPSlot index={2} className="flex-1 h-14" />
+								<InputOTPSlot index={3} className="flex-1 h-14" />
+								<InputOTPSlot index={4} className="flex-1 h-14" />
+								<InputOTPSlot index={5} className="flex-1 h-14" />
+							</InputOTPGroup>
+						</InputOTP>
 					</div>
 					<div className="flex items-center space-x-2">
 						<Checkbox id="rememberDevice" name="rememberDevice" />

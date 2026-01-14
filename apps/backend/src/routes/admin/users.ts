@@ -17,7 +17,7 @@ const baseUserSchema = z.object({
 	image: z.string().nullable(),
 	callsign: z.string().nullable(),
 	role: z.string().nullable(),
-	gear: z.any(),
+	gear: z.array(z.unknown()).nullable(),
 	banned: z.boolean().nullable(),
 	banExpires: z.string().nullable(),
 	createdAt: z.string(),

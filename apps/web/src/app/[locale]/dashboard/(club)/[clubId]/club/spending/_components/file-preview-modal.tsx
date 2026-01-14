@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, ExternalLink } from "lucide-react";
+import { ArrowUpRight, Download } from "lucide-react";
 import Image from "next/image";
 import { useLogger } from "next-axiom";
 import { useExtracted } from "next-intl";
@@ -46,7 +46,7 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 						<span>{fileName}</span>
 						<div className="flex gap-2">
 							<Button variant="outline" size="sm" onClick={() => window.open(fileUrl, "_blank")}>
-								<ExternalLink className="h-4 w-4 mr-2" />
+								<ArrowUpRight className="h-4 w-4 mr-2" />
 								{t("Open")}
 							</Button>
 							<Button variant="outline" size="sm" onClick={handleDownload} disabled={isDownloading}>

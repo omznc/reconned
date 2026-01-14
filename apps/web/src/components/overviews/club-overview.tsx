@@ -1,7 +1,7 @@
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import {
+	ArrowUpRight,
 	Cog,
-	ExternalLink,
 	Eye,
 	EyeOff,
 	Handshake,
@@ -283,7 +283,7 @@ export async function ClubOverview({
 															</span>
 														)}
 													</div>
-													<ExternalLink className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+													<ArrowUpRight className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 												</Link>
 											))}
 										{privateCount > 0 && (
@@ -338,7 +338,7 @@ export async function ClubOverview({
 														</HoverCardContent>
 													</HoverCard>
 													{alliance.link && (
-														<ExternalLink className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+														<ArrowUpRight className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 													)}
 												</>
 											);

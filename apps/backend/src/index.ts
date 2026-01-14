@@ -87,18 +87,19 @@ async function handleRequest(request: Request): Promise<Response> {
 			headers: request.headers,
 		});
 		if (sessionData?.user) {
+			const userRecord = await db
+				.select({ role: userTable.role })
+				.from(userTable)
+				.where(eq(userTable.id, sessionData.user.id))
+				.limit(1);
+
 			user = {
 				id: sessionData.user.id,
 				email: sessionData.user.email,
 				name: sessionData.user.name,
-				role: sessionData.user.role || undefined,
+				role: userRecord[0]?.role || undefined,
 			};
 
-			const userRecord = await db
-				.select({ role: userTable.role })
-				.from(userTable)
-				.where(eq(userTable.id, user.id))
-				.limit(1);
 			isAdmin = userRecord[0]?.role === "admin";
 		}
 		if (sessionData?.session) {

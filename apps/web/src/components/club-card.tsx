@@ -1,4 +1,4 @@
-import { Building2, ExternalLink, MapPin } from "lucide-react";
+import { ArrowUpRight, Building2, MapPin } from "lucide-react";
 import Image from "next/image";
 import { VerifiedClubIcon } from "@/components/icons";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
@@ -55,7 +55,7 @@ export async function ClubCard({ club, showDescription = false }: ClubCardProps)
 						)}
 					</div>
 
-					<ExternalLink className="absolute top-4 right-4 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+					<ArrowUpRight className="absolute top-4 right-4 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 				</div>
 			</Card>
 		</Link>

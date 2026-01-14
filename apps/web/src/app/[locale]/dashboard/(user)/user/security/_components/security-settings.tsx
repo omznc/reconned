@@ -13,8 +13,21 @@ import { toast } from "sonner";
 import { PasswordChangeForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-change.form";
 import { SetupPasswordForm } from "@/app/[locale]/dashboard/(user)/user/security/_components/password-setup.form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useConfirm, usePrompt } from "@/components/ui/alert-dialog-provider";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useAlert, usePrompt } from "@/components/ui/alert-dialog-provider";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
@@ -41,9 +54,12 @@ export function SecuritySettings({
 }: SecuritySettingsProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [regeneratedBackupCodes, setRegeneratedBackupCodes] = useState<string[] | null>(null);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [showQrDialog, setShowQrDialog] = useState(false);
+	const [qrData, setQrData] = useState<{ totpURI: string; password: string } | null>(null);
 	const router = useRouter();
 	const prompt = usePrompt();
-	const confirm = useConfirm();
+	const alert = useAlert();
 	const t = useExtracted();
 	const locale = useLocale();
 	const dateLocale = getDateFnsLocale(locale);
@@ -392,14 +408,6 @@ export function SecuritySettings({
 										body: (
 											<div className="space-y-2">
 												<p>{t("Enter your password to enable 2-factor authentication.")}</p>
-												<div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
-													<p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
-														⚠️ {t("You will be logged out after enabling 2FA")}
-													</p>
-													<p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-														{t("Make sure you save your backup codes before proceeding.")}
-													</p>
-												</div>
 											</div>
 										),
 										actionButton: t("Continue"),
@@ -435,142 +443,8 @@ export function SecuritySettings({
 										return;
 									}
 
-									const confirmed = await prompt({
-										cancelButton: t("Cancel"),
-										cancelButtonVariant: "ghost",
-										title: t("Scan QR Code"),
-										body: (
-											<div className="space-y-2">
-												<p>
-													{t("Scan the QR code with your app for 2-factor authentication.")}
-												</p>
-												<div className="flex flex-col items-center w-full">
-													<QRCodeSVG value={resp.data.totpURI} className="w-full" />
-													<p className="mt-2 w-full text-left">
-														{t("If you can't scan the QR code, enter this code:")}
-													</p>
-													<code className="font-semibold select-all break-all whitespace-pre-wrap">
-														{resp.data.totpURI.split("?secret=")[1]?.split("&")[0]}
-													</code>
-												</div>
-												<span className="block mt-2">
-													{t("Confirm the 6-digit code you received from the app")}
-												</span>
-											</div>
-										),
-										actionButton: t("Verify & Continue"),
-										inputType: "input",
-										inputProps: {
-											type: "text",
-										},
-									});
-
-									if (!confirmed) {
-										return;
-									}
-
-									setIsLoading(true);
-									await authClient.twoFactor.verifyTotp(
-										{
-											code: confirmed,
-										},
-										{
-											onRequest: () => {
-												setIsLoading(true);
-											},
-											onSuccess: async () => {
-												const backupCodes = await authClient.twoFactor.generateBackupCodes({
-													password: password,
-												});
-
-												if (backupCodes.data) {
-													// Show backup codes immediately in a modal
-													await prompt({
-														title: t("2FA Enabled - Save Your Backup Codes"),
-														body: (
-															<div className="space-y-4">
-																<div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md p-3">
-																	<p className="text-sm text-green-800 dark:text-green-200 font-medium">
-																		✅{" "}
-																		{t(
-																			"Two-factor authentication has been enabled",
-																		)}
-																	</p>
-																	<p className="text-sm text-green-700 dark:text-green-300 mt-1">
-																		{t(
-																			"You will now be logged out. Save these backup codes and log back in with your 2FA.",
-																		)}
-																	</p>
-																</div>
-
-																<div>
-																	<p className="font-medium mb-2">
-																		{t("Your backup codes:")}
-																	</p>
-																	<div className="bg-background border p-4 flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-																		{backupCodes.data.backupCodes.map(
-																			(code: string, index: number) => (
-																				<code
-																					onClick={() => {
-																						navigator.clipboard.writeText(
-																							code,
-																						);
-																						toast.success(
-																							t("Copied to clipboard."),
-																						);
-																					}}
-																					key={index}
-																					className="cursor-pointer text-center bg-sidebar hover:bg-sidebar/80 transition-colors p-2 font-mono text-sm rounded"
-																				>
-																					{code}
-																				</code>
-																			),
-																		)}
-																	</div>
-																</div>
-
-																<div className="flex gap-2">
-																	<Button
-																		variant="outline"
-																		className="flex-1"
-																		onClick={() => {
-																			const text =
-																				backupCodes.data.backupCodes.join("\n");
-																			const blob = new Blob([text], {
-																				type: "text/plain",
-																			});
-																			const url =
-																				window.URL.createObjectURL(blob);
-																			const a = document.createElement("a");
-																			a.href = url;
-																			a.download = t("backup-codes-2fa.txt");
-																			a.click();
-																			window.URL.revokeObjectURL(url);
-																			toast.success(t("Backup codes downloaded"));
-																		}}
-																	>
-																		<Download className="w-4 h-4 mr-2" />
-																		{t("Download")}
-																	</Button>
-																</div>
-															</div>
-														),
-														actionButton: t("Log Back In"),
-														actionButtonVariant: "default",
-													});
-
-													// After showing backup codes, refresh the page (which will log user out)
-													router.refresh();
-												}
-
-												setIsLoading(false);
-											},
-											onError: () => {
-												setIsLoading(false);
-												toast.error(t("Please enter a valid 6-digit code"));
-											},
-										},
-									);
+									setQrData({ totpURI: resp.data.totpURI, password: password });
+									setShowQrDialog(true);
 								}}
 							>
 								{t("Confirm")}
@@ -700,51 +574,183 @@ export function SecuritySettings({
 						type="button"
 						variant="destructive"
 						disabled={isLoading}
-						onClick={async () => {
-							const confirmed = await confirm({
-								title: t("Delete account"),
-								body: t("Are you sure you want to delete your account? This action cannot be undone."),
-								actionButton: t("Delete account"),
-								actionButtonVariant: "destructive",
-								cancelButton: t("Cancel"),
-							});
+						onClick={() => setShowDeleteDialog(true)}
+					>
+						{t("Delete my account")}
+					</Button>
+				</AlertDescription>
+			</Alert>
 
-							if (!confirmed) {
-								return;
-							}
+			<AlertDialog open={showQrDialog} onOpenChange={setShowQrDialog}>
+				<AlertDialogContent className="max-w-md">
+					<AlertDialogHeader>
+						<AlertDialogTitle>{t("Scan QR Code")}</AlertDialogTitle>
+						<AlertDialogDescription>
+							{t("Scan the QR code with your app for 2-factor authentication.")}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					{qrData && (
+						<form
+							id="verify-2fa-form"
+							onSubmit={async (e) => {
+								e.preventDefault();
+								setIsLoading(true);
 
-							let password: string | undefined;
+								const formData = new FormData(e.currentTarget);
+								const code = formData.get("code") as string;
 
-							if (hasPassword) {
-								const passwordResult = await prompt({
-									title: t("Delete account"),
-									body: t("Password is required"),
-									actionButton: t("Delete account"),
-									actionButtonVariant: "destructive",
-									cancelButton: t("No, go back"),
-									inputType: "input",
-									inputProps: {
-										type: "password",
-										placeholder: t("Enter your password"),
-										autoComplete: "current-password",
+								await authClient.twoFactor.verifyTotp(
+									{ code },
+									{
+										onRequest: () => {
+											setIsLoading(true);
+										},
+										onSuccess: async () => {
+											const backupCodes = await authClient.twoFactor.generateBackupCodes({
+												password: qrData.password,
+											});
+
+											if (backupCodes.data) {
+												await alert({
+													title: t("2FA Enabled - Save Your Backup Codes"),
+													body: (
+														<div className="space-y-4">
+															<div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md p-3">
+																<p className="text-sm text-green-800 dark:text-green-200 font-medium">
+																	{t("Two-factor authentication has been enabled")}
+																</p>
+																<p className="text-sm text-green-700 dark:text-green-300 mt-1">
+																	{t(
+																		"Save these backup codes and log back in with your 2FA.",
+																	)}
+																</p>
+															</div>
+
+															<div>
+																<p className="font-medium mb-2">
+																	{t("Your backup codes:")}
+																</p>
+																<div className="bg-background border p-4 flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+																	{backupCodes.data.backupCodes.map(
+																		(code: string, index: number) => (
+																			<code
+																				onClick={() => {
+																					navigator.clipboard.writeText(code);
+																					toast.success(
+																						t("Copied to clipboard."),
+																					);
+																				}}
+																				key={index}
+																				className="cursor-pointer text-center bg-sidebar hover:bg-sidebar/80 transition-colors p-2 font-mono text-sm rounded"
+																			>
+																				{code}
+																			</code>
+																		),
+																	)}
+																</div>
+															</div>
+
+															<div className="flex gap-2">
+																<Button
+																	variant="outline"
+																	className="flex-1"
+																	onClick={() => {
+																		const text =
+																			backupCodes.data.backupCodes.join("\n");
+																		const blob = new Blob([text], {
+																			type: "text/plain",
+																		});
+																		const url = window.URL.createObjectURL(blob);
+																		const a = document.createElement("a");
+																		a.href = url;
+																		a.download = t("backup-codes-2fa.txt");
+																		a.click();
+																		window.URL.revokeObjectURL(url);
+																		toast.success(t("Backup codes downloaded"));
+																	}}
+																>
+																	<Download className="w-4 h-4 mr-2" />
+																	{t("Download")}
+																</Button>
+															</div>
+														</div>
+													),
+												});
+
+												setShowQrDialog(false);
+												setQrData(null);
+												router.refresh();
+											}
+
+											setIsLoading(false);
+										},
+										onError: () => {
+											setIsLoading(false);
+											toast.error(t("Please enter a valid 6-digit code"));
+										},
 									},
-								});
+								);
+							}}
+							className="space-y-4"
+						>
+							<div className="flex flex-col items-center w-full space-y-4">
+								<QRCodeSVG value={qrData.totpURI} className="w-full max-w-[200px]" />
+								<div className="w-full space-y-2">
+									<p className="text-sm text-muted-foreground">
+										{t("If you can't scan the QR code, enter this code:")}
+									</p>
+									<code className="font-semibold select-all break-all whitespace-pre-wrap text-sm">
+										{qrData.totpURI.split("?secret=")[1]?.split("&")[0]}
+									</code>
+								</div>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="verify-code">{t("Confirm the 6-digit code from your app")}</Label>
+								<InputOTP
+									id="verify-code"
+									name="code"
+									maxLength={6}
+									required
+									disabled={isLoading}
+									className="w-full"
+								>
+									<InputOTPGroup className="w-full">
+										<InputOTPSlot index={0} className="flex-1 h-14" />
+										<InputOTPSlot index={1} className="flex-1 h-14" />
+										<InputOTPSlot index={2} className="flex-1 h-14" />
+										<InputOTPSlot index={3} className="flex-1 h-14" />
+										<InputOTPSlot index={4} className="flex-1 h-14" />
+										<InputOTPSlot index={5} className="flex-1 h-14" />
+									</InputOTPGroup>
+								</InputOTP>
+							</div>
+						</form>
+					)}
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isLoading}>{t("Cancel")}</AlertDialogCancel>
+						<AlertDialogAction type="submit" form="verify-2fa-form" disabled={isLoading}>
+							{t("Verify & Continue")}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 
-								if (passwordResult === null) {
-									return;
-								}
-
-								if (!passwordResult || typeof passwordResult !== "string") {
-									toast.error(t("Password is required"));
-									return;
-								}
-
-								password = passwordResult;
-							}
-
-							// Skip 2FA verification for account deletion - password only
-
+			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>{t("Delete account")}</AlertDialogTitle>
+						<AlertDialogDescription>
+							{t("Are you sure you want to delete your account? This action cannot be undone.")}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<form
+						id="delete-account-form"
+						onSubmit={async (e) => {
+							e.preventDefault();
 							setIsLoading(true);
+
+							const formData = new FormData(e.currentTarget);
+							const password = formData.get("password") as string | undefined;
 
 							try {
 								const { data, error } = await apiClient.POST("/api/users/{id}/delete", {
@@ -771,6 +777,7 @@ export function SecuritySettings({
 
 								if (data?.success) {
 									toast.success(t("Account deleted successfully"));
+									setShowDeleteDialog(false);
 									await authClient.signOut();
 									router.push("/login");
 								}
@@ -779,11 +786,36 @@ export function SecuritySettings({
 								setIsLoading(false);
 							}
 						}}
+						className="space-y-4"
 					>
-						{t("Delete my account")}
-					</Button>
-				</AlertDescription>
-			</Alert>
+						{hasPassword && (
+							<div className="space-y-2">
+								<Label htmlFor="delete-password">{t("Password")}</Label>
+								<Input
+									id="delete-password"
+									name="password"
+									type="password"
+									placeholder={t("Enter your password")}
+									autoComplete="current-password"
+									required
+									disabled={isLoading}
+								/>
+							</div>
+						)}
+					</form>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isLoading}>{t("Cancel")}</AlertDialogCancel>
+						<AlertDialogAction
+							type="submit"
+							form="delete-account-form"
+							disabled={isLoading}
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+						>
+							{t("Delete account")}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	);
 }
