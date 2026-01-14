@@ -5,7 +5,7 @@ import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import type { ChangeEvent, ReactNode } from "react";
-import { Children, useCallback, useEffect, useMemo, useState } from "react";
+import { Children, useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,18 +94,23 @@ export function GenericDataTable<T>({
 }: GenericTableProps<T>) {
 	const t = useExtracted();
 	const locale = useLocale();
-	const [search, setSearch] = useQueryState("search", { shallow: false });
+	const [isPending, startTransition] = useTransition();
+	const [search, setSearch] = useQueryState("search", { shallow: false, startTransition });
 	const [page, setPage] = useQueryState("page", {
 		defaultValue: "1",
 		shallow: false,
+		startTransition,
+		scroll: true,
 	});
 	const [perPage, setPerPage] = useQueryState("perPage", {
 		defaultValue: "25",
 		shallow: false,
+		startTransition,
 	});
-	const [sortBy, setSortBy] = useQueryState("sortBy", { shallow: false });
+	const [sortBy, setSortBy] = useQueryState("sortBy", { shallow: false, startTransition });
 	const [sortOrder, setSortOrder] = useQueryState("sortOrder", {
 		shallow: false,
+		startTransition,
 	});
 	const [inputValue, setInputValue] = useState(search || "");
 	const router = useRouter();
@@ -585,7 +590,7 @@ export function GenericDataTable<T>({
 					<Button
 						variant="outline"
 						onClick={() => setPage((prev) => String(Number(prev) - 1))}
-						disabled={page === "1"}
+						disabled={page === "1" || isPending}
 						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
 						{t("Previous")}
@@ -593,7 +598,7 @@ export function GenericDataTable<T>({
 					<Button
 						variant="outline"
 						onClick={() => setPage((prev) => String(Number(prev) + 1))}
-						disabled={Number(page) >= totalPages}
+						disabled={Number(page) >= totalPages || isPending}
 						className="flex-1 sm:flex-none h-10 shadow-none"
 					>
 						{t("Next")}

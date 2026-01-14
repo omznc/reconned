@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
+import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 
 interface PaginationOptions {
@@ -12,10 +13,13 @@ interface PaginationOptions {
 }
 
 export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1, paramKey = "page" }: PaginationOptions) {
+	const [isPending, startTransition] = useTransition();
 	const [currentPage, setPage] = useQueryState(
 		paramKey,
 		parseAsInteger.withDefault(1).withOptions({
 			shallow: false,
+			startTransition,
+			scroll: true,
 		}),
 	);
 	const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -59,7 +63,13 @@ export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1, paramK
 
 	return (
 		<div className="flex items-center justify-center gap-2">
-			<Button variant="outline" size="icon" onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 1}>
+			<Button
+				type="button"
+				variant="outline"
+				size="icon"
+				onClick={() => setPage(currentPage - 1)}
+				disabled={currentPage <= 1 || isPending}
+			>
 				<ChevronLeft className="h-4 w-4" />
 			</Button>
 
@@ -70,10 +80,12 @@ export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1, paramK
 					</Button>
 				) : (
 					<Button
+						type="button"
 						key={pageNum}
 						variant={currentPage === pageNum ? "default" : "outline"}
 						size="icon"
 						onClick={() => setPage(pageNum)}
+						disabled={isPending}
 					>
 						{pageNum}
 					</Button>
@@ -81,10 +93,11 @@ export function Pagination({ totalItems, itemsPerPage, siblingsCount = 1, paramK
 			)}
 
 			<Button
+				type="button"
 				variant="outline"
 				size="icon"
 				onClick={() => setPage(currentPage + 1)}
-				disabled={currentPage >= totalPages}
+				disabled={currentPage >= totalPages || isPending}
 			>
 				<ChevronRight className="h-4 w-4" />
 			</Button>

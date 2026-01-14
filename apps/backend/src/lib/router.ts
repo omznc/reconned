@@ -374,6 +374,10 @@ export class Router {
 		context: RouteContext,
 		jsonResponse: (data: unknown, status?: number) => Response,
 	): Promise<Response> {
+		if (route.auth && !context.user) {
+			return jsonResponse({ error: { code: "UNAUTHORIZED", message: "Authentication required" } }, 401);
+		}
+
 		const rateLimitResult = await this.checkRateLimit(route, request);
 		if (rateLimitResult) {
 			return rateLimitResult;
