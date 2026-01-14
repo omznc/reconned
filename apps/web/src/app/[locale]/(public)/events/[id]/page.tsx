@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
-import type { SportsEvent, WithContext } from "schema-dts";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
+import { createAggregateRating, createBreadcrumbList, removeUndefined } from "@/lib/json-ld";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -64,64 +65,95 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	};
 
 	const locale = await getLocale();
-	const sportsEventSchema: WithContext<SportsEvent> = {
+	const eventUrl = `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`;
+	const clubUrl = `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`;
+
+	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
+	if (FEATURE_FLAGS.REVIEWS) {
+		const reviewsResponse = await apiServer.GET("/api/reviews/{type}/{id}", {
+			params: {
+				path: {
+					type: "event",
+					id: event.id,
+				},
+			},
+		});
+		if (reviewsResponse.data && reviewsResponse.data.reviews.length > 0) {
+			const reviews = reviewsResponse.data.reviews;
+			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+			aggregateRating = createAggregateRating({
+				ratingValue: averageRating,
+				ratingCount: reviews.length,
+			});
+		}
+	}
+
+	const sportsEventSchema = removeUndefined({
 		"@context": "https://schema.org",
 		"@type": "SportsEvent",
-		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`,
+		"@id": eventUrl,
 		name: event.name,
 		description: event.description,
 		sport: "Airsoft",
 		startDate: event.dateStart,
-		endDate: event.dateEnd,
-		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`,
-		image: event.image || undefined,
-		location: {
+		...(event.dateEnd && { endDate: event.dateEnd }),
+		url: eventUrl,
+		...(event.image && { image: event.image }),
+		location: removeUndefined({
 			"@type": "Place",
 			name: event.location,
 			address: event.location,
-			hasMap: event.googleMapsLink || undefined,
-		},
+			...(event.googleMapsLink && { hasMap: event.googleMapsLink }),
+		}),
 		organizer: {
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`,
+			"@id": clubUrl,
 			name: event.club.name,
 			sport: "Airsoft",
-			url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`,
-			logo: event.club.logo || undefined,
+			url: clubUrl,
+			...(event.club.logo && { logo: event.club.logo }),
 		},
 		performer: {
 			"@type": "SportsOrganization",
-			"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`,
+			"@id": clubUrl,
 			name: event.club.name,
 			sport: "Airsoft",
 		},
-		offers:
-			event.costPerPerson > 0
-				? {
-						"@type": "Offer",
-						url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}/apply`,
-						price: event.costPerPerson,
-						priceCurrency: "BAM",
-						availability: "https://schema.org/InStock",
-						...(event.dateRegistrationsOpen ? { validFrom: event.dateRegistrationsOpen } : {}),
-						...(event.dateRegistrationsClose ? { validThrough: event.dateRegistrationsClose } : {}),
-					}
-				: undefined,
+		...(event.costPerPerson > 0 && {
+			offers: removeUndefined({
+				"@type": "Offer",
+				url: `${eventUrl}/apply`,
+				price: event.costPerPerson,
+				priceCurrency: "BAM",
+				availability: "https://schema.org/InStock",
+				...(event.dateRegistrationsOpen && { validFrom: event.dateRegistrationsOpen }),
+				...(event.dateRegistrationsClose && { validThrough: event.dateRegistrationsClose }),
+			}),
+		}),
 		eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
 		eventStatus: "https://schema.org/EventScheduled",
-		// TODO: Add maximumAttendeeCapacity
-		// maximumAttendeeCapacity: event.allowFreelancers ? undefined : "Members only",
+		...(registrationsCountData?.count && {
+			maximumAttendeeCapacity: String(registrationsCountData.count),
+		}),
 		typicalAgeRange: "18+",
 		about: {
 			"@type": "Thing",
 			name: "Airsoft",
 			description: "Military simulation sport using replica firearms",
 		},
-	};
+		...(aggregateRating && { aggregateRating }),
+	});
+
+	const breadcrumbSchema = createBreadcrumbList([
+		{ name: t("Home"), url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}` },
+		{ name: t("Events"), url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events` },
+		{ name: event.name, url: eventUrl },
+	]);
 
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8  px-4">
 			<JsonLdScript data={sportsEventSchema} />
+			<JsonLdScript data={breadcrumbSchema} />
 			<EventOverview event={event} clubId={eventData.club.id} />
 		</div>
 	);

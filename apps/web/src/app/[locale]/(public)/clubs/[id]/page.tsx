@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
-import type { SportsOrganization, WithContext } from "schema-dts";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
+import {
+	createAggregateRating,
+	createBreadcrumbList,
+	createGeoCoordinates,
+	createPostalAddress,
+	removeUndefined,
+} from "@/lib/json-ld";
+import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
@@ -65,60 +72,79 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		return <ErrorPage title={t("Club not found.")} />;
 	}
 
-	const sportsOrganizationSchema: WithContext<SportsOrganization> = {
+	const clubUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`;
+
+	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
+	if (FEATURE_FLAGS.REVIEWS) {
+		const reviewsResponse = await apiServer.GET("/api/reviews/{type}/{id}", {
+			params: {
+				path: {
+					type: "club",
+					id: club.id,
+				},
+			},
+		});
+		if (reviewsResponse.data && reviewsResponse.data.reviews.length > 0) {
+			const reviews = reviewsResponse.data.reviews;
+			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+			aggregateRating = createAggregateRating({
+				ratingValue: averageRating,
+				ratingCount: reviews.length,
+			});
+		}
+	}
+
+	const sportsOrganizationSchema = removeUndefined({
 		"@context": "https://schema.org",
 		"@type": "SportsOrganization",
-		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`,
+		"@id": clubUrl,
 		name: club.name,
 		numberOfEmployees: {
 			"@type": "QuantitativeValue",
 			value: club._count.members,
 		},
-		description: club.description || undefined,
+		...(club.description && { description: club.description }),
 		sport: "Airsoft",
-		url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`,
-		logo: club.logo || undefined,
-		foundingDate: club.dateFounded || undefined,
-		address: club.location
+		url: clubUrl,
+		...(club.logo && { logo: club.logo }),
+		...(club.dateFounded && { foundingDate: club.dateFounded }),
+		...(club.location && {
+			address: createPostalAddress({
+				location: club.location,
+				country: "BA",
+			}),
+		}),
+		...(club.latitude &&
+			club.longitude && {
+				geo: createGeoCoordinates({
+					latitude: club.latitude,
+					longitude: club.longitude,
+				}),
+			}),
+		...(club.contactEmail || club.contactPhone
 			? {
-					"@type": "PostalAddress",
-					addressLocality: club.location,
-					addressCountry: "BA",
-				}
-			: undefined,
-		...(club.latitude && club.longitude
-			? {
-					geo: {
-						"@type": "GeoCoordinates",
-						latitude: club.latitude,
-						longitude: club.longitude,
-					},
+					contactPoint: removeUndefined({
+						"@type": "ContactPoint",
+						...(club.contactEmail && { email: club.contactEmail }),
+						...(club.contactPhone && { telephone: club.contactPhone }),
+						contactType: "customer service",
+					}),
 				}
 			: {}),
-		contactPoint:
-			club.contactEmail || club.contactPhone
-				? {
-						"@type": "ContactPoint",
-						email: club.contactEmail || undefined,
-						telephone: club.contactPhone || undefined,
-						contactType: "customer service",
-					}
-				: undefined,
-		sameAs: club.website ? [club.website] : undefined,
-		aggregateRating: club.verified
-			? {
-					"@type": "AggregateRating",
-					ratingValue: "5",
-					ratingCount: "1",
-					bestRating: "5",
-					worstRating: "1",
-				}
-			: undefined,
-	};
+		...(club.website && { sameAs: [club.website] }),
+		...(aggregateRating && { aggregateRating }),
+	});
+
+	const breadcrumbSchema = createBreadcrumbList([
+		{ name: t("Home"), url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}` },
+		{ name: t("Clubs"), url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs` },
+		{ name: club.name, url: clubUrl },
+	]);
 
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] pb-8 px-4">
 			<JsonLdScript data={sportsOrganizationSchema} />
+			<JsonLdScript data={breadcrumbSchema} />
 			<ClubOverview
 				club={club}
 				isManager={isManager}
