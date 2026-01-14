@@ -2,7 +2,7 @@
 
 import { SiInstagram } from "@icons-pack/react-simple-icons";
 import Error404 from "@public/errors/404.webp";
-import { ExternalLink, PlusIcon } from "lucide-react";
+import { ArrowUpRight, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
@@ -99,7 +99,7 @@ export function ClubInstagram({ data, limit = 7 }: ClubInstagramProps) {
 					<p className="text-sm text-center font-medium">{t("View more on Instagram")}</p>
 					<div className="flex items-center text-xs text-muted-foreground mt-1">
 						<span>{data.media.length - displayPhotos.length}+ </span>
-						<ExternalLink className="h-3 w-3 ml-1" />
+						<ArrowUpRight className="h-3 w-3 ml-1" />
 					</div>
 				</a>
 			)}

@@ -106,6 +106,23 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/auth/verify-password": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Verify the current user's password */
+		post: operations["verifyPassword"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/auth/verify-email": {
 		parameters: {
 			query?: never;
@@ -1360,7 +1377,7 @@ export interface paths {
 		put?: never;
 		/**
 		 * Delete user account
-		 * @description Delete the current user's account. Requires password confirmation and 2FA if enabled. Transfers club ownership to random manager if available.
+		 * @description Delete the current user's account. Requires password confirmation if password is set. Transfers club ownership to random manager if available.
 		 */
 		post: operations["usersiddeletePost"];
 		delete?: never;
@@ -3936,7 +3953,11 @@ export interface operations {
 					password: string;
 					/** @description Callback URL to use as a redirect for email verification */
 					callbackURL?: string | null;
-					rememberMe?: string | null;
+					/**
+					 * @description If this is false, the session will not be remembered. Default is `true`.
+					 * @default true
+					 */
+					rememberMe?: boolean | null;
 				};
 			};
 		};
@@ -4039,6 +4060,101 @@ export interface operations {
 					newPassword: string;
 					/** @description The token to reset the password */
 					token?: string | null;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						status?: boolean;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	verifyPassword: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description The password to verify */
+					password: string;
 				};
 			};
 		};
@@ -10263,7 +10379,6 @@ export interface operations {
 			content: {
 				"application/json": {
 					password?: string;
-					twoFactorCode?: string;
 				};
 			};
 		};
@@ -10591,7 +10706,7 @@ export interface operations {
 				"application/json": {
 					userId: string;
 					/** @enum {string} */
-					role?: "USER" | "MANAGER" | "CLUB_OWNER";
+					role?: "USER" | "MANAGER";
 				};
 			};
 		};
@@ -14053,8 +14168,10 @@ export interface operations {
 				};
 				content: {
 					"application/json": {
-						token: string | null;
+						connected: boolean;
 						igBusinessId: string | null;
+						tokenType: string | null;
+						expiresAt: string | null;
 					};
 				};
 			};
@@ -14345,14 +14462,14 @@ export interface operations {
 					"application/json": {
 						media: {
 							id: string;
-							caption: string | null;
+							caption?: string | null;
 							/** @enum {string} */
 							media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
 							media_url: string;
 							permalink: string;
 							thumbnail_url?: string | null;
 							timestamp: string;
-							username: string;
+							username?: string | null;
 						}[];
 						username: string | null;
 					};
@@ -16392,7 +16509,7 @@ export interface operations {
 							image: string | null;
 							callsign: string | null;
 							role: string | null;
-							gear: unknown;
+							gear: unknown[] | null;
 							banned: boolean | null;
 							banExpires: string | null;
 							createdAt: string;
@@ -16464,7 +16581,7 @@ export interface operations {
 						image: string | null;
 						callsign: string | null;
 						role: string | null;
-						gear: unknown;
+						gear: unknown[] | null;
 						banned: boolean | null;
 						banExpires: string | null;
 						createdAt: string;
@@ -16569,13 +16686,8 @@ export interface operations {
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
-							instagramAccessToken: string | null;
-							instagramTokenExpiry: string | null;
-							instagramRefreshToken: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							facebookPageId: string | null;
-							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
 							banReason: string | null;
@@ -16654,13 +16766,8 @@ export interface operations {
 						website: string | null;
 						instagramUsername: string | null;
 						instagramProfilePictureUrl: string | null;
-						instagramAccessToken: string | null;
-						instagramTokenExpiry: string | null;
-						instagramRefreshToken: string | null;
 						instagramConnected: boolean;
 						instagramBusinessId: string | null;
-						facebookPageId: string | null;
-						instagramTokenType: string | null;
 						countryId: number | null;
 						banned: boolean | null;
 						banReason: string | null;
@@ -17088,13 +17195,8 @@ export interface operations {
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
-							instagramAccessToken: string | null;
-							instagramTokenExpiry: string | null;
-							instagramRefreshToken: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							facebookPageId: string | null;
-							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
 							banReason: string | null;
@@ -17197,13 +17299,8 @@ export interface operations {
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
-							instagramAccessToken: string | null;
-							instagramTokenExpiry: string | null;
-							instagramRefreshToken: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							facebookPageId: string | null;
-							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
 							banReason: string | null;
@@ -17298,13 +17395,8 @@ export interface operations {
 						website: string | null;
 						instagramUsername: string | null;
 						instagramProfilePictureUrl: string | null;
-						instagramAccessToken: string | null;
-						instagramTokenExpiry: string | null;
-						instagramRefreshToken: string | null;
 						instagramConnected: boolean;
 						instagramBusinessId: string | null;
-						facebookPageId: string | null;
-						instagramTokenType: string | null;
 						countryId: number | null;
 						banned: boolean | null;
 						banReason: string | null;

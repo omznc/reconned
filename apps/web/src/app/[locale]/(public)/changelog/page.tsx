@@ -1,5 +1,5 @@
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import { AlertTriangle, ExternalLink } from "lucide-react";
+import { AlertTriangle, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
 import { remark } from "remark";
@@ -186,7 +186,7 @@ export default async function ChangelogPage() {
 							>
 								<SiGithub className="h-4 w-4" />
 								{t("View on GitHub")}
-								<ExternalLink className="h-3 w-3" />
+								<ArrowUpRight className="h-3 w-3" />
 							</a>
 						</Button>
 					</CardFooter>
@@ -237,7 +237,7 @@ export default async function ChangelogPage() {
 										>
 											<SiGithub className="h-4 w-4" />
 											{t("View on GitHub")}
-											<ExternalLink className="h-3 w-3" />
+											<ArrowUpRight className="h-3 w-3" />
 										</a>
 									</Button>
 								</CardFooter>

@@ -1,3 +1,4 @@
+import { adminMiddleware } from "../../lib/middlewares/admin";
 import { Router } from "../../lib/router";
 import { adminAlliancesRouter } from "./alliances";
 import { adminClubsRouter } from "./clubs";
@@ -9,6 +10,8 @@ import { adminUnclaimedClubsRouter } from "./unclaimed-clubs";
 import { adminUsersRouter } from "./users";
 
 const adminRouter = new Router();
+
+adminRouter.middleware(adminMiddleware);
 
 adminRouter.use(adminUsersRouter);
 adminRouter.use(adminClubsRouter);

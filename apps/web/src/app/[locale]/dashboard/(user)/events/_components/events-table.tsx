@@ -1,5 +1,5 @@
 "use client";
-import { ExternalLink, MoreHorizontal } from "lucide-react";
+import { ArrowUpRight, MoreHorizontal } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { Badge } from "@/components/ui/badge";
@@ -103,7 +103,7 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem asChild>
 											<Link href={`/events/${item.id}`} target="_blank">
-												<ExternalLink className="size-4 mr-2" />
+												<ArrowUpRight className="size-4 mr-2" />
 												{t("Visit")}
 											</Link>
 										</DropdownMenuItem>

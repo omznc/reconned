@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Calendar, ExternalLink, Globe, MapPin, Users } from "lucide-react";
+import { ArrowUpRight, Calendar, Globe, MapPin, Users } from "lucide-react";
 import { getExtracted, getLocale } from "next-intl/server";
 import { InviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/invite-actions";
 import { ErrorPage } from "@/components/error-page";
@@ -51,7 +51,7 @@ export default async function InvitesPage() {
 													className="text-muted-foreground hover:text-foreground transition-colors"
 													title={t("View public page")}
 												>
-													<ExternalLink className="h-4 w-4" />
+													<ArrowUpRight className="h-4 w-4" />
 												</Link>
 											)}
 										</div>

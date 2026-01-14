@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Pencil, Settings } from "lucide-react";
+import { ArrowUpRight, Pencil, Settings } from "lucide-react";
 import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
@@ -81,7 +81,7 @@ export function UnclaimedClubsTable({ clubs, totalClubs, pageSize }: UnclaimedCl
 							components: (club) => [
 								<DropdownMenuItem key="profile" asChild>
 									<Link href={`/clubs/${club.slug || club.id}`} target="_blank">
-										<ExternalLink className="size-4 mr-2" />
+										<ArrowUpRight className="size-4 mr-2" />
 										{t("Profile")}
 									</Link>
 								</DropdownMenuItem>,

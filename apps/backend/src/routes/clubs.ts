@@ -349,7 +349,7 @@ clubsRouter.post(
 			}),
 			body: z.object({
 				userId: z.string(),
-				role: z.enum(["USER", "MANAGER", "CLUB_OWNER"]).optional(),
+				role: z.enum(["USER", "MANAGER"]).optional(),
 			}),
 			response: {
 				200: z.object({
@@ -4639,7 +4639,12 @@ clubsRouter.get(
 		const clubRecord = clubData[0];
 
 		if (!clubRecord.instagramAccessToken || !clubRecord.instagramBusinessId) {
-			return response.json({ token: null, igBusinessId: null });
+			return response.json({
+				connected: false,
+				igBusinessId: null,
+				tokenType: null,
+				expiresAt: null,
+			});
 		}
 
 		if (!env.FACEBOOK_APP_ID || !env.FACEBOOK_APP_SECRET) {
@@ -4655,7 +4660,12 @@ clubsRouter.get(
 				);
 
 				if (!debugResponse.ok) {
-					return response.json({ token: null, igBusinessId: null });
+					return response.json({
+						connected: false,
+						igBusinessId: null,
+						tokenType: null,
+						expiresAt: null,
+					});
 				}
 
 				const debugData = (await debugResponse.json()) as {
@@ -4663,12 +4673,19 @@ clubsRouter.get(
 				};
 
 				if (!debugData.data?.is_valid) {
-					return response.json({ token: null, igBusinessId: null });
+					return response.json({
+						connected: false,
+						igBusinessId: null,
+						tokenType: null,
+						expiresAt: null,
+					});
 				}
 
 				return response.json({
-					token: clubRecord.instagramAccessToken,
+					connected: true,
 					igBusinessId: clubRecord.instagramBusinessId,
+					tokenType: clubRecord.instagramTokenType ?? null,
+					expiresAt: clubRecord.instagramTokenExpiry ?? null,
 				});
 			}
 
@@ -4699,8 +4716,10 @@ clubsRouter.get(
 							.where(eq(club.id, clubId));
 
 						return response.json({
-							token: nonExpiringToken,
+							connected: true,
 							igBusinessId: clubRecord.instagramBusinessId,
+							tokenType: "PERMANENT",
+							expiresAt: null,
 						});
 					}
 				}
@@ -4711,7 +4730,12 @@ clubsRouter.get(
 			);
 
 			if (!debugResponse.ok) {
-				return response.json({ token: null, igBusinessId: null });
+				return response.json({
+					connected: false,
+					igBusinessId: null,
+					tokenType: null,
+					expiresAt: null,
+				});
 			}
 
 			const debugData = (await debugResponse.json()) as {
@@ -4719,7 +4743,12 @@ clubsRouter.get(
 			};
 
 			if (!debugData.data?.is_valid) {
-				return response.json({ token: null, igBusinessId: null });
+				return response.json({
+					connected: false,
+					igBusinessId: null,
+					tokenType: null,
+					expiresAt: null,
+				});
 			}
 
 			if (debugData.data?.expires_at) {
@@ -4733,13 +4762,17 @@ clubsRouter.get(
 			}
 
 			return response.json({
-				token: clubRecord.instagramAccessToken,
+				connected: true,
 				igBusinessId: clubRecord.instagramBusinessId,
+				tokenType: clubRecord.instagramTokenType ?? null,
+				expiresAt: clubRecord.instagramTokenExpiry ?? null,
 			});
 		} catch {
 			return response.json({
-				token: clubRecord.instagramAccessToken,
+				connected: Boolean(clubRecord.instagramAccessToken && clubRecord.instagramBusinessId),
 				igBusinessId: clubRecord.instagramBusinessId,
+				tokenType: clubRecord.instagramTokenType ?? null,
+				expiresAt: clubRecord.instagramTokenExpiry ?? null,
 			});
 		}
 	},
@@ -4754,8 +4787,10 @@ clubsRouter.get(
 			}),
 			response: {
 				200: z.object({
-					token: z.string().nullable(),
+					connected: z.boolean(),
 					igBusinessId: z.string().nullable(),
+					tokenType: z.string().nullable(),
+					expiresAt: z.string().nullable(),
 				}),
 				...responseSchema([400, 401, 403, 404, 500], z.object({ error: z.string() })),
 			},

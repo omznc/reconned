@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import { and, count, eq, getTableColumns, ilike, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
@@ -13,6 +12,7 @@ import {
 	user,
 } from "../drizzle/schema";
 import { logClubAudit } from "../lib/audit-logger";
+import { auth } from "../lib/auth";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
 import { posthog } from "../lib/posthog";
@@ -1625,7 +1625,7 @@ usersRouter.get(
 
 usersRouter.post(
 	"/users/:id/delete",
-	async ({ params, response, context, body }) => {
+	async ({ params, response, context, body, request }) => {
 		const userId = params.id;
 
 		if (!userId) {
@@ -1665,12 +1665,14 @@ usersRouter.post(
 				throw apiError.validation("Password is required");
 			}
 
-			if (!accountData[0]?.password) {
-				throw apiError.internal("Password data not found");
-			}
+			const result = await auth.api.verifyPassword({
+				body: {
+					password: body.password,
+				},
+				headers: request.headers,
+			});
 
-			const isPasswordValid = await bcrypt.compare(body.password, accountData[0].password);
-			if (!isPasswordValid) {
+			if (!result) {
 				throw apiError.unauthorized("Invalid password");
 			}
 		}
@@ -1687,6 +1689,7 @@ usersRouter.post(
 				.select({
 					id: clubMembership.id,
 					userId: clubMembership.userId,
+					startDate: clubMembership.startDate,
 				})
 				.from(clubMembership)
 				.where(
@@ -1698,22 +1701,24 @@ usersRouter.post(
 				);
 
 			if (managers.length > 0) {
-				const randomManager = managers[Math.floor(Math.random() * managers.length)];
-				if (randomManager) {
+				const oldestManager = managers.sort(
+					(a, b) => new Date(a.startDate || "").getTime() - new Date(b.startDate || "").getTime(),
+				)[0];
+				if (oldestManager) {
 					await db
 						.update(clubMembership)
 						.set({
 							role: "CLUB_OWNER",
 							updatedAt: new Date().toISOString(),
 						})
-						.where(eq(clubMembership.id, randomManager.id));
+						.where(eq(clubMembership.id, oldestManager.id));
 
 					await logClubAudit({
 						clubId: ownedClub.clubId,
 						actionType: "CLUB_OWNER_TRANSFERRED",
 						actionData: {
 							fromUserId: userId,
-							toUserId: randomManager.userId,
+							toUserId: oldestManager.userId,
 							reason: "User account deletion",
 						},
 						userId: userId,
@@ -1754,13 +1759,12 @@ usersRouter.post(
 			tags: ["Users"],
 			summary: "Delete user account",
 			description:
-				"Delete the current user's account. Requires password confirmation and 2FA if enabled. Transfers club ownership to random manager if available.",
+				"Delete the current user's account. Requires password confirmation if password is set. Transfers club ownership to random manager if available.",
 			params: z.object({
 				id: z.string(),
 			}),
 			body: z.object({
 				password: z.string().optional(),
-				twoFactorCode: z.string().optional(),
 			}),
 			response: {
 				200: z.object({ success: z.boolean() }),
