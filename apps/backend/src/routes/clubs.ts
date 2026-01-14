@@ -1019,28 +1019,45 @@ clubsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
+		const clubData = await db.select({ isPrivate: club.isPrivate }).from(club).where(eq(club.id, clubId)).limit(1);
+		const clubInfo = clubData[0];
 
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
+		if (!clubInfo) {
+			throw apiError.notFound("Club");
 		}
 
-		const posts = await db.select().from(post).where(eq(post.clubId, clubId)).orderBy(desc(post.createdAt));
+		let isMember = false;
+		let isManager = false;
+
+		if (context.user?.id) {
+			const membershipData = await db
+				.select()
+				.from(clubMembership)
+				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+				.limit(1);
+
+			const membership = membershipData[0];
+			isMember = !!membership;
+			isManager = membership?.role === "MANAGER" || membership?.role === "CLUB_OWNER";
+		}
+
+		if (clubInfo.isPrivate && !isMember) {
+			return response.json({ posts: [] });
+		}
+
+		const posts = await db
+			.select()
+			.from(post)
+			.where(isManager ? eq(post.clubId, clubId) : and(eq(post.clubId, clubId), eq(post.isPublic, true)))
+			.orderBy(desc(post.createdAt));
 
 		return response.json({ posts });
 	},
 	{
-		auth: true,
 		schema: {
 			tags: ["Clubs"],
 			summary: "Get club posts",
-			description: "Get all posts for a club",
+			description: "Get all posts for a club (private clubs: members only, public clubs: published posts)",
 			params: z.object({
 				id: z.string(),
 			}),
@@ -1049,8 +1066,7 @@ clubsRouter.get(
 					posts: z.array(basePostSchema),
 				}),
 				400: z.object({ error: z.string() }),
-				401: z.object({ error: z.string() }),
-				403: z.object({ error: z.string() }),
+				404: z.object({ error: z.string() }),
 			},
 		},
 	},

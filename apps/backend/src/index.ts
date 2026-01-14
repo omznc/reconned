@@ -25,6 +25,7 @@ const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.t
 const mainRouter = new Router();
 
 mainRouter.middleware(loggingMiddleware);
+
 mainRouter.middleware(
 	pathMiddleware(
 		"/api/admin",
