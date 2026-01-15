@@ -4,6 +4,7 @@ import * as z from "zod";
 import { club, clubMembership, event, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
+import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
 import { Router } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
@@ -700,7 +701,13 @@ utilsRouter.get(
 			databaseLatency = Date.now() - dbStart;
 			databaseStatus = "connected";
 		} catch (error) {
-			console.error("Database health check failed:", error);
+			logger.emit({
+				severityText: "error",
+				body: "Database health check failed",
+				attributes: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 		}
 
 		try {
@@ -710,7 +717,13 @@ utilsRouter.get(
 			redisLatency = Date.now() - redisStart;
 			redisStatus = "connected";
 		} catch (error) {
-			console.error("Redis health check failed:", error);
+			logger.emit({
+				severityText: "error",
+				body: "Redis health check failed",
+				attributes: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 		}
 
 		const overallStatus = databaseStatus === "connected" && redisStatus === "connected" ? "healthy" : "unhealthy";

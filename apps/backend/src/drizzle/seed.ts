@@ -5,6 +5,7 @@ import srLocale from "i18n-iso-countries/langs/sr.json";
 import countries from "world-countries";
 import { country } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { logger } from "../lib/posthog";
 
 const LOCALES = ["en", "bs", "sr"] as const;
 
@@ -65,6 +66,13 @@ main()
 		process.exit(0);
 	})
 	.catch((e) => {
-		console.error(e);
+		logger.emit({
+			severityText: "error",
+			body: "Database seeding failed",
+			attributes: {
+				error: e instanceof Error ? e.message : String(e),
+				stack: e instanceof Error ? e.stack : undefined,
+			},
+		});
 		process.exit(1);
 	});

@@ -2,6 +2,7 @@ import { join } from "node:path";
 import * as z from "zod";
 import { auth } from "./auth";
 import { addCORSHeaders } from "./cors";
+import { logger } from "./posthog";
 import type { Router } from "./router";
 import { jsonResponse } from "./router";
 
@@ -133,7 +134,13 @@ export async function generateOpenAPISpec(baseUrl: string, routers: Router[]): P
 			}
 		}
 	} catch (error) {
-		console.warn("Could not generate Better Auth OpenAPI schema:", error);
+		logger.emit({
+			severityText: "warn",
+			body: "Could not generate Better Auth OpenAPI schema",
+			attributes: {
+				error: error instanceof Error ? error.message : String(error),
+			},
+		});
 	}
 
 	const paths: Record<string, Record<string, unknown>> = { ...authPaths };

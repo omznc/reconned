@@ -220,13 +220,18 @@ export const auth = betterAuth({
 						for (const invite of pendingInvites) {
 							try {
 								await db.transaction(async (tx) => {
-									await tx
+									const updatedInvite = await tx
 										.update(clubInvite)
 										.set({
 											status: "ACCEPTED",
 											userId: user.id,
 										})
-										.where(eq(clubInvite.id, invite.id));
+										.where(and(eq(clubInvite.id, invite.id), eq(clubInvite.status, "PENDING")))
+										.returning();
+
+									if (updatedInvite.length === 0) {
+										return;
+									}
 
 									const existingMembership = await tx
 										.select()

@@ -1,5 +1,6 @@
 import { RedisClient } from "bun";
 import { env } from "./env";
+import { logger } from "./posthog";
 
 let redisInstance: RedisClient | null = null;
 
@@ -40,7 +41,13 @@ export async function checkRedisHealth(): Promise<boolean> {
 		await executeWithRetry(() => getRedis().ping());
 		return true;
 	} catch (error) {
-		console.error("Redis health check failed:", error instanceof Error ? error.message : error);
+		logger.emit({
+			severityText: "error",
+			body: "Redis health check failed",
+			attributes: {
+				error: error instanceof Error ? error.message : String(error),
+			},
+		});
 		return false;
 	}
 }

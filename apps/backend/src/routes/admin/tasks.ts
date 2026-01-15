@@ -3,6 +3,7 @@ import * as z from "zod";
 import { clubInvite } from "../../drizzle/schema";
 import { db } from "../../lib/db";
 import { apiError } from "../../lib/errors";
+import { logger } from "../../lib/posthog";
 import { Router } from "../../lib/router";
 
 export const adminTasksRouter = new Router();
@@ -75,7 +76,14 @@ adminTasksRouter.post(
 			}
 
 			const duration = Date.now() - startTime;
-			console.log(`[Admin] Manually triggered task: ${taskName} (${duration}ms)`);
+			logger.emit({
+				severityText: "info",
+				body: "Admin manually triggered task",
+				attributes: {
+					taskName,
+					duration: duration.toString(),
+				},
+			});
 
 			return response.json({
 				success: result.success,
@@ -84,7 +92,14 @@ adminTasksRouter.post(
 				data: result.data as { deletedCount?: number } | undefined,
 			});
 		} catch (error) {
-			console.error(`[Admin] Task ${taskName} failed:`, error);
+			logger.emit({
+				severityText: "error",
+				body: "Admin task failed",
+				attributes: {
+					taskName,
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 			throw apiError.internal(
 				`Task execution failed: ${error instanceof Error ? error.message : "Unknown error"}`,
 			);

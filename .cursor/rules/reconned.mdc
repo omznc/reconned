@@ -17,6 +17,7 @@ alwaysApply: true
 - Database ORM: Drizzle
 - URL State: nuqs
 - API Type Generation: openapi-typescript
+- Logging & Monitoring: PostHog (with OpenTelemetry)
 
 ---
 
@@ -383,8 +384,9 @@ adminRouter.use(adminFeatureFlagsRouter);
 
 ### Response Helpers
 - Success: `response.json(data, statusCode?)` (default 200)
-- Error: `response.error(errorData, statusCode?)` (default 400)
+- Error: `response.error(errorData, statusCode?)` (supports 400, 401, 403, 404, 429, 500)
 - Redirect: `response.redirect(url, 301 | 302)`
+- Automatic field stripping via Zod schema validation for security
 
 ### Error Handling
 - Use `apiError` factory from `src/lib/errors.ts` for standardized errors.
@@ -410,6 +412,19 @@ adminRouter.use(adminFeatureFlagsRouter);
 - Route-specific limits can be set via `rateLimit` option.
 - Disable for a route with `rateLimit: false`.
 - Internal requests bypass rate limiting via `x-internal-api-secret` header.
+- Returns proper `429 Too Many Requests` HTTP status code (not 400).
+
+### Logging & Monitoring
+- **PostHog Integration**: OpenTelemetry logging with PostHog for structured event tracking.
+- **Field Stripping Tracking**: Zod automatically strips sensitive fields (Instagram tokens, etc.) from API responses and logs what fields were removed for optimization tracking.
+- **Async Logging**: All logging is performed asynchronously to avoid blocking API response times.
+- **Enhanced Route Tracking**: Field stripping logs include specific route paths for better debugging.
+
+#### Logging Architecture
+- **Server Events**: Request validation errors, rate limiting, database health checks
+- **Application Errors**: Instagram API failures, email sending errors, task execution failures
+- **Performance Monitoring**: Field usage patterns, response validation metrics
+- **Route Context**: All logs include relevant route paths and request context
 
 ---
 
@@ -509,3 +524,4 @@ adminRouter.use(adminFeatureFlagsRouter);
 - Clubs can connect Instagram accounts.
 - Token management: `instagramAccessToken`, `instagramTokenExpiry`, `instagramRefreshToken`.
 - Page selection via `InstagramPageSelection` table.
+- **Security**: Sensitive Instagram tokens are automatically stripped from public API responses using Zod schema validation.

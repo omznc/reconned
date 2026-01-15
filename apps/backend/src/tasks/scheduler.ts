@@ -1,6 +1,7 @@
 import { lt } from "drizzle-orm";
 import { clubInvite } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { logger } from "../lib/posthog";
 
 interface Task {
 	name: string;
@@ -27,17 +28,33 @@ class TaskScheduler {
 
 	register(task: Task) {
 		this.tasks.push(task);
-		console.log(`[Scheduler] Registered task: ${task.name} (interval: ${task.interval}ms)`);
+		logger.emit({
+			severityText: "info",
+			body: "Task registered",
+			attributes: {
+				taskName: task.name,
+				interval: task.interval.toString(),
+			},
+		});
 	}
 
 	start() {
 		if (this.isRunning) {
-			console.warn("[Scheduler] Already running");
+			logger.emit({
+				severityText: "warn",
+				body: "Scheduler already running",
+			});
 			return;
 		}
 
 		this.isRunning = true;
-		console.log(`[Scheduler] Starting ${this.tasks.length} task(s)...`);
+		logger.emit({
+			severityText: "info",
+			body: "Scheduler starting",
+			attributes: {
+				taskCount: this.tasks.length.toString(),
+			},
+		});
 
 		for (const task of this.tasks) {
 			if (task.runOnStart !== false) {
@@ -51,7 +68,10 @@ class TaskScheduler {
 			this.intervals.set(task.name, timer);
 		}
 
-		console.log("[Scheduler] All tasks started");
+		logger.emit({
+			severityText: "info",
+			body: "All tasks started",
+		});
 	}
 
 	stop() {
@@ -59,34 +79,72 @@ class TaskScheduler {
 			return;
 		}
 
-		console.log("[Scheduler] Stopping all tasks...");
+		logger.emit({
+			severityText: "info",
+			body: "Stopping all tasks",
+		});
 
 		for (const [name, timer] of this.intervals.entries()) {
 			clearInterval(timer);
-			console.log(`[Scheduler] Stopped task: ${name}`);
+			logger.emit({
+				severityText: "info",
+				body: "Task stopped",
+				attributes: {
+					taskName: name,
+				},
+			});
 		}
 
 		this.intervals.clear();
 		this.isRunning = false;
-		console.log("[Scheduler] All tasks stopped");
+		logger.emit({
+			severityText: "info",
+			body: "All tasks stopped",
+		});
 	}
 
 	private async runTask(task: Task) {
 		if (this.taskRunning.get(task.name)) {
-			console.log(`[Scheduler] Skipping ${task.name} - still running from previous execution`);
+			logger.emit({
+				severityText: "info",
+				body: "Skipping task - still running",
+				attributes: {
+					taskName: task.name,
+				},
+			});
 			return;
 		}
 
 		this.taskRunning.set(task.name, true);
 		const startTime = Date.now();
-		console.log(`[Scheduler] Running task: ${task.name}`);
+		logger.emit({
+			severityText: "info",
+			body: "Running task",
+			attributes: {
+				taskName: task.name,
+			},
+		});
 
 		try {
 			await task.handler();
 			const duration = Date.now() - startTime;
-			console.log(`[Scheduler] Task ${task.name} completed in ${duration}ms`);
+			logger.emit({
+				severityText: "info",
+				body: "Task completed",
+				attributes: {
+					taskName: task.name,
+					duration: duration.toString(),
+				},
+			});
 		} catch (error) {
-			console.error(`[Scheduler] Task ${task.name} failed:`, error);
+			logger.emit({
+				severityText: "error",
+				body: "Task failed",
+				attributes: {
+					taskName: task.name,
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 		} finally {
 			this.taskRunning.set(task.name, false);
 		}
@@ -107,10 +165,12 @@ scheduler.register({
 			.where(lt(clubInvite.expiresAt, now))
 			.returning({ id: clubInvite.id });
 
-		if (result.length > 0) {
-			console.log(`[clean-expired-invites] Deleted ${result.length} expired invite(s)`);
-		} else {
-			console.log("[clean-expired-invites] No expired invites to clean up");
-		}
+		logger.emit({
+			severityText: "info",
+			body: "Clean expired invites completed",
+			attributes: {
+				deletedCount: result.length.toString(),
+			},
+		});
 	},
 });
