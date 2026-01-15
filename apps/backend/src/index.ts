@@ -7,6 +7,7 @@ import { env } from "./lib/env";
 import { authMiddleware, pathMiddleware } from "./lib/middlewares/index";
 import { loggingMiddleware } from "./lib/middlewares/logging";
 import { handleOpenAPIRoutes } from "./lib/openapi";
+import { logger } from "./lib/posthog";
 import { jsonResponse, Router } from "./lib/router";
 import { adminRouter } from "./routes/admin";
 import { alliancesRouter } from "./routes/alliances";
@@ -108,7 +109,13 @@ async function handleRequest(request: Request): Promise<Response> {
 			};
 		}
 	} catch (error) {
-		console.error("Error getting session:", error);
+		logger.emit({
+			severityText: "error",
+			body: "Error getting session",
+			attributes: {
+				error: error instanceof Error ? error.message : String(error),
+			},
+		});
 	}
 
 	const context = {
@@ -137,18 +144,30 @@ Bun.serve({
 	fetch: handleRequest,
 });
 
-console.log(`Server is running on ${env.BETTER_AUTH_URL}`);
+logger.emit({
+	severityText: "info",
+	body: "Server started",
+	attributes: {
+		url: env.BETTER_AUTH_URL,
+	},
+});
 
 scheduler.start();
 
 process.on("SIGTERM", () => {
-	console.log("SIGTERM received, shutting down gracefully...");
+	logger.emit({
+		severityText: "info",
+		body: "SIGTERM received, shutting down gracefully",
+	});
 	scheduler.stop();
 	process.exit(0);
 });
 
 process.on("SIGINT", () => {
-	console.log("SIGINT received, shutting down gracefully...");
+	logger.emit({
+		severityText: "info",
+		body: "SIGINT received, shutting down gracefully",
+	});
 	scheduler.stop();
 	process.exit(0);
 });

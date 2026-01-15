@@ -35,7 +35,7 @@ import {
 	getUserPages,
 } from "../lib/instagram";
 import { sendEmail } from "../lib/mail";
-import { posthog } from "../lib/posthog";
+import { logger, posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
 import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
@@ -635,22 +635,24 @@ clubsRouter.get(
 		const totalData = await db.select({ count: count() }).from(club).where(whereClause);
 		const total = totalData[0]?.count || 0;
 
-		// Add member counts to clubs
-		const clubsWithCounts = await Promise.all(
-			clubs.map(async (c) => {
-				const memberCount = await db
-					.select({ count: count() })
-					.from(clubMembership)
-					.where(eq(clubMembership.clubId, c.id));
+		const clubIds = clubs.map((c) => c.id);
+		const memberCounts = await db
+			.select({
+				clubId: clubMembership.clubId,
+				count: count(),
+			})
+			.from(clubMembership)
+			.where(inArray(clubMembership.clubId, clubIds))
+			.groupBy(clubMembership.clubId);
 
-				return {
-					...c,
-					_count: {
-						members: memberCount[0]?.count || 0,
-					},
-				};
-			}),
-		);
+		const memberCountMap = new Map(memberCounts.map((mc) => [mc.clubId, Number(mc.count)]));
+
+		const clubsWithCounts = clubs.map((c) => ({
+			...c,
+			_count: {
+				members: memberCountMap.get(c.id) || 0,
+			},
+		}));
 
 		return response.json({
 			clubs: clubsWithCounts,
@@ -2544,7 +2546,13 @@ clubsRouter.post(
 				},
 			});
 		} catch (error) {
-			console.error("Failed to send invitation email:", error);
+			logger.emit({
+				severityText: "error",
+				body: "Failed to send invitation email",
+				attributes: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 		}
 
 		return response.json({ success: true, invite: newInvite[0] });
@@ -5144,7 +5152,15 @@ clubsRouter.get(
 		const clubRecord = clubData[0];
 
 		if (!clubRecord.instagramAccessToken || !clubRecord.instagramBusinessId) {
-			console.log("INSTAGRAM token ERROR: Missing access token or business ID");
+			logger.emit({
+				severityText: "error",
+				body: "Instagram token error: Missing access token or business ID",
+				attributes: {
+					clubId: clubId,
+					hasAccessToken: String(!!clubRecord.instagramAccessToken),
+					hasBusinessId: String(!!clubRecord.instagramBusinessId),
+				},
+			});
 			return response.json({ media: [], username: null });
 		}
 
@@ -5157,7 +5173,17 @@ clubsRouter.get(
 			);
 
 			if (!mediaResponse.ok) {
-				console.error("Instagram API error:", await mediaResponse.text());
+				const errorText = await mediaResponse.text();
+				logger.emit({
+					severityText: "error",
+					body: "Instagram API error",
+					attributes: {
+						clubId: clubId,
+						status: mediaResponse.status.toString(),
+						statusText: mediaResponse.statusText,
+						error: errorText,
+					},
+				});
 				return response.json({ media: [], username: null });
 			}
 
@@ -5179,7 +5205,14 @@ clubsRouter.get(
 				username: mediaData.data?.[0]?.username || clubRecord.instagramUsername || null,
 			});
 		} catch (error) {
-			console.error("Instagram fetch error:", error);
+			logger.emit({
+				severityText: "error",
+				body: "Instagram fetch error",
+				attributes: {
+					clubId: clubId,
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 			return response.json({ media: [], username: null });
 		}
 	},
@@ -5662,7 +5695,13 @@ clubsRouter.post(
 				),
 			});
 		} catch (error) {
-			console.error("Failed to send claim request email:", error);
+			logger.emit({
+				severityText: "error",
+				body: "Failed to send claim request email",
+				attributes: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 			throw apiError.internal("Failed to send email");
 		}
 

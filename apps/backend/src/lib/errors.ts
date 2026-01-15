@@ -3,6 +3,7 @@
  */
 
 import type { ZodError } from "zod";
+import { logger } from "./posthog";
 
 /**
  * Predefined error types for common scenarios
@@ -132,7 +133,14 @@ export function formatErrorResponse(error: unknown): {
  */
 export function createErrorHandler() {
 	return async (error: unknown, context: { response: { error: (error: unknown, status: number) => Response } }) => {
-		console.error("Unhandled error:", error);
+		logger.emit({
+			severityText: "error",
+			body: "Unhandled error",
+			attributes: {
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+			},
+		});
 
 		const errorResponse = formatErrorResponse(error);
 

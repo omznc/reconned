@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { featureFlag } from "../drizzle/schema";
 import { db } from "./db";
+import { logger } from "./posthog";
 import { redis } from "./redis";
 
 const CACHE_KEY_PREFIX = "feature_flag:";
@@ -27,7 +28,14 @@ export async function isFeatureEnabled(flagName: string): Promise<boolean> {
 
 		return enabled;
 	} catch (error) {
-		console.error(`Error checking feature flag "${flagName}":`, error);
+		logger.emit({
+			severityText: "error",
+			body: "Error checking feature flag",
+			attributes: {
+				flagName,
+				error: error instanceof Error ? error.message : String(error),
+			},
+		});
 		return false;
 	}
 }
@@ -46,7 +54,13 @@ export async function getEnabledFlags(): Promise<Record<string, boolean>> {
 
 		return result;
 	} catch (error) {
-		console.error("Error fetching enabled flags:", error);
+		logger.emit({
+			severityText: "error",
+			body: "Error fetching enabled flags",
+			attributes: {
+				error: error instanceof Error ? error.message : String(error),
+			},
+		});
 		return {};
 	}
 }
@@ -62,6 +76,12 @@ export async function clearFeatureFlagsCache(flagName?: string): Promise<void> {
 			}
 		}
 	} catch (error) {
-		console.error("Error clearing feature flags cache:", error);
+		logger.emit({
+			severityText: "error",
+			body: "Error clearing feature flags cache",
+			attributes: {
+				error: error instanceof Error ? error.message : String(error),
+			},
+		});
 	}
 }

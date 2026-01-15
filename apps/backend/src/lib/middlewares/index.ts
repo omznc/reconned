@@ -1,3 +1,4 @@
+import { logger } from "../posthog";
 import type { MiddlewareContext, MiddlewareHandler } from "../router";
 
 /**
@@ -210,10 +211,7 @@ export function rateLimitMiddleware(options: {
 			const requestCount = await redis.zcard(key);
 
 			if (requestCount >= maxRequests) {
-				// Note: 429 is not in the allowed error status codes (400 | 401 | 403 | 404 | 500)
-				// Using 429 would require updating ResponseHelper type definition in router.ts
-				// For now, using 400 Bad Request as closest alternative
-				return context.response.error({ error: "Too many requests" }, 400);
+				return context.response.error({ error: "Too many requests" }, 429);
 			}
 
 			await redis.zadd(key, now, now.toString());
@@ -222,7 +220,13 @@ export function rateLimitMiddleware(options: {
 
 			return next();
 		} catch (error) {
-			console.error("Rate limiting error:", error);
+			logger.emit({
+				severityText: "error",
+				body: "Rate limiting error",
+				attributes: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 			return next();
 		}
 	};
@@ -303,10 +307,17 @@ export function requestLoggingMiddleware(
 		} catch (error) {
 			const duration = Date.now() - start;
 
-			console.error(
-				`[${new Date().toISOString()}] ERROR: ${request.method} ${url.pathname} - (${duration}ms):`,
-				error,
-			);
+			logger.emit({
+				severityText: "error",
+				body: "Request processing error",
+				attributes: {
+					method: request.method,
+					pathname: url.pathname,
+					duration: duration.toString(),
+					error: error instanceof Error ? error.message : String(error),
+					stack: error instanceof Error ? error.stack : undefined,
+				},
+			});
 
 			throw error;
 		}

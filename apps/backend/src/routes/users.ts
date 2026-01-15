@@ -1615,7 +1615,7 @@ usersRouter.get(
 			description: "Get all clubs the authenticated user is a member of",
 			response: {
 				200: z.object({
-					clubs: z.array(baseClubSchema),
+					clubs: z.array(publicClubSchema),
 				}),
 				401: z.object({ error: z.string() }),
 			},

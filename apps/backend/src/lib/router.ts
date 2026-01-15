@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { env } from "./env";
+import { logger } from "./posthog";
 import { redis } from "./redis";
 
 export type RateLimitConfig = {
@@ -122,7 +123,7 @@ export type InferSuccessResponseType<TSchema extends RouteSchema | undefined> = 
 
 export type InferErrorResponseType<
 	TSchema extends RouteSchema | undefined,
-	TStatus extends 400 | 401 | 403 | 404 | 500,
+	TStatus extends 400 | 401 | 403 | 404 | 429 | 500,
 > = InferResponseCode<TSchema, TStatus>;
 
 export type ResponseHelper<TSchema extends RouteSchema | undefined> = {
@@ -130,7 +131,7 @@ export type ResponseHelper<TSchema extends RouteSchema | undefined> = {
 		data: TStatus extends 201 ? InferSuccessResponseType<TSchema> : InferResponseType<TSchema>,
 		status?: TStatus,
 	) => Response;
-	error: <TStatus extends 400 | 401 | 403 | 404 | 500 = 400>(
+	error: <TStatus extends 400 | 401 | 403 | 404 | 429 | 500 = 400>(
 		data: InferErrorResponseType<TSchema, TStatus>,
 		status?: TStatus,
 	) => Response;
@@ -167,28 +168,70 @@ export class Router {
 		return this;
 	}
 
-	private createResponseHelper<TSchema extends RouteSchema | undefined>(schema?: TSchema): ResponseHelper<TSchema> {
+	private createResponseHelper<TSchema extends RouteSchema | undefined>(
+		schema?: TSchema,
+		routePath?: string,
+	): ResponseHelper<TSchema> {
 		return {
 			json: <TStatus extends 200 | 201 = 200>(
 				data: TStatus extends 201 ? InferSuccessResponseType<TSchema> : InferResponseType<TSchema>,
 				status: TStatus = 200 as TStatus,
 			): Response => {
 				let responseData: unknown = data;
+				let strippedKeys: string[] | null = null;
+
 				if (schema?.response) {
 					const statusSchema = schema.response[status] || schema.response[`${status}`];
 					if (statusSchema) {
 						try {
+							const originalData = data;
 							responseData = statusSchema.parse(data);
+
+							// Prepare logging data for after response
+							if (
+								typeof originalData === "object" &&
+								originalData !== null &&
+								typeof responseData === "object" &&
+								responseData !== null
+							) {
+								const originalKeys = new Set(Object.keys(originalData as Record<string, unknown>));
+								const responseKeys = new Set(Object.keys(responseData as Record<string, unknown>));
+								strippedKeys = Array.from(originalKeys).filter((key) => !responseKeys.has(key));
+							}
 						} catch (error) {
-							console.error("Response validation error:", error);
-							console.error("Response data:", JSON.stringify(data, null, 2));
+							// Log validation errors after response
+							logger.emit({
+								severityText: "error",
+								body: "Response validation error",
+								attributes: {
+									error: error instanceof Error ? error.message : "Unknown error",
+									statusCode: status.toString(),
+									routePath: routePath || "unknown",
+									responseData: JSON.stringify(data),
+								},
+							});
 							throw error;
 						}
 					}
 				}
+
+				// Log stripped fields after response is sent
+				if (strippedKeys && strippedKeys.length > 0) {
+					logger.emit({
+						severityText: "info",
+						body: "Fields stripped during response validation",
+						attributes: {
+							strippedFields: JSON.stringify(strippedKeys),
+							routePath: routePath || "unknown",
+							statusCode: status.toString(),
+							fieldCount: strippedKeys.length.toString(),
+						},
+					});
+				}
+
 				return jsonResponse(responseData, status);
 			},
-			error: <TStatus extends 400 | 401 | 403 | 404 | 500 = 400>(
+			error: <TStatus extends 400 | 401 | 403 | 404 | 429 | 500 = 400>(
 				data: InferErrorResponseType<TSchema, TStatus>,
 				status: TStatus = 400 as TStatus,
 			): Response => {
@@ -199,8 +242,16 @@ export class Router {
 						try {
 							responseData = statusSchema.parse(data);
 						} catch (error) {
-							console.error("Error response validation error:", error);
-							console.error("Error response data:", JSON.stringify(data, null, 2));
+							logger.emit({
+								severityText: "error",
+								body: "Error response validation error",
+								attributes: {
+									error: error instanceof Error ? error.message : "Unknown error",
+									statusCode: status.toString(),
+									routePath: routePath || "unknown",
+									errorResponseData: JSON.stringify(data),
+								},
+							});
 							throw error;
 						}
 					}
@@ -371,7 +422,7 @@ export class Router {
 
 		const { route, params } = match;
 
-		const baseResponseHelper = this.createResponseHelper(undefined);
+		const baseResponseHelper = this.createResponseHelper(undefined, "middleware");
 
 		const middlewareContext: MiddlewareContext = {
 			...context,
@@ -415,8 +466,15 @@ export class Router {
 				Object.assign(params, validatedParams);
 			} catch (error) {
 				if (error instanceof z.ZodError) {
-					console.error("Request params validation error:", error);
-					console.error("Request params:", JSON.stringify(params, null, 2));
+					logger.emit({
+						severityText: "error",
+						body: "Request params validation error",
+						attributes: {
+							error: error.message,
+							params: JSON.stringify(params),
+							issues: JSON.stringify(error.issues),
+						},
+					});
 					return jsonResponse({ error: "Invalid parameters", details: error.issues }, 400);
 				}
 			}
@@ -429,7 +487,15 @@ export class Router {
 				query = route.schema.query.parse(queryObj);
 			} catch (error) {
 				if (error instanceof z.ZodError) {
-					console.error("Request query validation error:", error);
+					logger.emit({
+						severityText: "error",
+						body: "Request query validation error",
+						attributes: {
+							error: error.message,
+							query: JSON.stringify(query),
+							issues: JSON.stringify(error.issues),
+						},
+					});
 					return jsonResponse({ error: "Invalid query parameters", details: error.issues }, 400);
 				}
 			}
@@ -479,8 +545,15 @@ export class Router {
 
 				const parseResult = route.schema.body.safeParse(rawBody);
 				if (!parseResult.success) {
-					console.error("Request body validation error:", parseResult.error);
-					console.error("Request body:", JSON.stringify(rawBody, null, 2));
+					logger.emit({
+						severityText: "error",
+						body: "Request body validation error",
+						attributes: {
+							error: parseResult.error.message,
+							requestBody: JSON.stringify(rawBody),
+							issues: JSON.stringify(parseResult.error.issues),
+						},
+					});
 					return jsonResponse(
 						{
 							error: "Invalid request body",
@@ -518,7 +591,7 @@ export class Router {
 			}
 		}
 
-		const responseHelper = this.createResponseHelper(route.schema);
+		const responseHelper = this.createResponseHelper(route.schema, route.path);
 		try {
 			const hasQuerySchema = !!route.schema?.query;
 			if (hasBodySchema) {
@@ -629,9 +702,16 @@ export class Router {
 			const requestCount = await redis.zcard(key);
 
 			if (requestCount >= rateLimitConfig.maxRequests) {
-				console.warn(
-					`Rate limit exceeded for IP ${clientIP}: ${requestCount}/${rateLimitConfig.maxRequests} requests (${rateLimitConfig.windowMs}ms window)`,
-				);
+				logger.emit({
+					severityText: "warn",
+					body: "Rate limit exceeded",
+					attributes: {
+						clientIP,
+						requestCount: requestCount.toString(),
+						maxRequests: rateLimitConfig.maxRequests.toString(),
+						windowMs: rateLimitConfig.windowMs.toString(),
+					},
+				});
 				return new Response(JSON.stringify({ error: "Too many requests" }), {
 					status: 429,
 					headers: { "Content-Type": "application/json" },
@@ -643,7 +723,14 @@ export class Router {
 
 			return null; // No rate limit hit
 		} catch (error) {
-			console.error(`Rate limiting error for IP ${clientIP}:`, error instanceof Error ? error.message : error);
+			logger.emit({
+				severityText: "error",
+				body: "Rate limiting error",
+				attributes: {
+					clientIP,
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 			return null;
 		}
 	}
