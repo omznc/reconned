@@ -1103,38 +1103,62 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 								{availableAlliances.map((alliance: Alliance) => (
 									<div
 										key={alliance.id}
-										className="flex items-start justify-between rounded-lg border p-4 hover:bg-muted/50 transition-colors"
+										className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50 transition-colors"
 									>
-										<div className="flex items-start space-x-3 flex-1">
-											<Switch
-												id={`alliance-${alliance.id}`}
-												checked={selectedAllianceIds.includes(alliance.id)}
-												onCheckedChange={(checked) => {
-													if (checked) {
-														setSelectedAllianceIds([...selectedAllianceIds, alliance.id]);
-													} else {
-														setSelectedAllianceIds(
-															selectedAllianceIds.filter((id) => id !== alliance.id),
-														);
-													}
-												}}
-											/>
-											<label
-												htmlFor={`alliance-${alliance.id}`}
-												className="flex-1 cursor-pointer"
-											>
-												<div className="font-medium">{alliance.name}</div>
-												{alliance.description && (
-													<div className="text-sm text-muted-foreground mt-1">
-														{alliance.description}
-													</div>
-												)}
-											</label>
+										<div className="space-y-0.5 flex-1">
+											<div className="font-medium">{alliance.name}</div>
+											{alliance.description && (
+												<div className="text-sm text-muted-foreground">
+													{alliance.description}
+												</div>
+											)}
 										</div>
+										<Switch
+											id={`alliance-${alliance.id}`}
+											checked={selectedAllianceIds.includes(alliance.id)}
+											onCheckedChange={(checked) => {
+												if (checked) {
+													setSelectedAllianceIds([...selectedAllianceIds, alliance.id]);
+												} else {
+													setSelectedAllianceIds(
+														selectedAllianceIds.filter((id) => id !== alliance.id),
+													);
+												}
+											}}
+										/>
 									</div>
 								))}
 							</div>
 						)}
+
+						{/* Alliance contact message */}
+						<div className="text-sm text-muted-foreground mt-4 p-4 rounded-lg bg-muted/30 border">
+							{t.rich("Can't find your alliance? <link>Contact us here</link> to add it.", {
+								link: () => {
+									const selectedCountry = props.countries.find(
+										(country) => country.id === selectedCountryId,
+									);
+									const countryName = selectedCountry?.name || t("your country");
+									const subject = encodeURIComponent(
+										t("Alliance Request for {country}", { country: countryName }),
+									);
+									const body = encodeURIComponent(
+										t(
+											"Hi RECONNED team,\n\nI'd like to request adding a new alliance for {country}.\n\nAlliance name: \nDescription: \n\nThank you!",
+											{ country: countryName },
+										),
+									);
+									return (
+										<a
+											href={`mailto:contact@reconned.com?subject=${subject}&body=${body}`}
+											className="text-blue-500 hover:underline"
+										>
+											{t("Contact us here")}
+										</a>
+									);
+								},
+							})}
+						</div>
 					</div>
 
 					<FormField

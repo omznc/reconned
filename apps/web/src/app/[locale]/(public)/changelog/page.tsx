@@ -1,13 +1,14 @@
-import { SiGithub } from "@icons-pack/react-simple-icons";
-import { AlertTriangle, ArrowUpRight } from "lucide-react";
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { AlertTriangle } from "lucide-react";
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
+import { parse } from "yaml";
 import JsonLdScript from "@/components/json-ld-script";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
@@ -18,7 +19,15 @@ import type { CollectionPage, WithContext } from "schema-dts";
 import { ErrorPage } from "@/components/error-page";
 import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
 
-// Helper function to format GitHub release body markdown
+interface ChangelogEntry {
+	tag_name: string;
+	name: string;
+	published_at: string;
+	body: string;
+	html_url?: string;
+}
+
+// Helper function to format markdown content
 async function formatReleaseBody(body: string): Promise<string> {
 	if (!body) {
 		return "";
@@ -33,6 +42,74 @@ async function formatReleaseBody(body: string): Promise<string> {
 	return String(processedContent.value);
 }
 
+// Helper function to parse changelog markdown file
+async function parseChangelogFile(filename: string): Promise<ChangelogEntry> {
+	const filePath = join(process.cwd(), "src/content/changelogs", filename);
+	const content = await readFile(filePath, "utf-8");
+
+	// Extract version from filename (remove .md extension)
+	const tag_name = filename.replace(".md", "");
+
+	// Parse YAML front matter
+	const frontMatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+	let frontMatter: { title?: string; date?: string } | null = null;
+	let body = content;
+
+	if (frontMatterMatch?.[1] && frontMatterMatch[2]) {
+		try {
+			const parsed = parse(frontMatterMatch[1]);
+			if (parsed && typeof parsed === "object") {
+				frontMatter = parsed as { title?: string; date?: string };
+			}
+			body = frontMatterMatch[2].trim();
+		} catch (error) {
+			console.warn(`Failed to parse front matter in ${filename}:`, error);
+		}
+	}
+
+	const title = frontMatter?.title ?? `Version ${tag_name}`;
+	const published_at = frontMatter?.date ? new Date(frontMatter.date).toISOString() : new Date().toISOString();
+
+	return {
+		tag_name,
+		name: title,
+		published_at,
+		body,
+	};
+}
+
+// Load all changelog entries from markdown files
+async function loadChangelogs(): Promise<ChangelogEntry[]> {
+	try {
+		const changelogsDir = join(process.cwd(), "src/content/changelogs");
+		const files = await readdir(changelogsDir);
+
+		// Filter for .md files and sort by version (newest first)
+		const mdFiles = files
+			.filter((file) => file.endsWith(".md"))
+			.sort((a, b) => {
+				const aVersion = a.replace(".md", "").split(".").map(Number);
+				const bVersion = b.replace(".md", "").split(".").map(Number);
+
+				// Compare version numbers
+				for (let i = 0; i < Math.max(aVersion.length, bVersion.length); i++) {
+					const aPart = aVersion[i] || 0;
+					const bPart = bVersion[i] || 0;
+					if (aPart !== bPart) {
+						return bPart - aPart; // Descending order
+					}
+				}
+				return 0;
+			});
+
+		const changelogs = await Promise.all(mdFiles.map(parseChangelogFile));
+		return changelogs;
+	} catch (error) {
+		console.error("Error loading changelogs:", error);
+		return [];
+	}
+}
+
 export const revalidate = 3600; // 1 hour
 
 // Main changelog page
@@ -40,24 +117,10 @@ export default async function ChangelogPage() {
 	const t = await getExtracted();
 	const locale = await getLocale();
 
-	// Get the latest releases from GitHub
-	const response = await fetch("https://api.github.com/repos/omznc/reconned/releases", {
-		method: "GET",
-		headers: {
-			Accept: "application/vnd.github.v3+json",
-		},
-	});
+	// Load changelogs from markdown files
+	const releases = await loadChangelogs();
 
-	const releases: {
-		id: number;
-		name: string;
-		tag_name: string;
-		published_at: string;
-		body: string;
-		html_url: string;
-	}[] = await response.json();
-
-	if (!releases || releases.length === 0) {
+	if (releases.length === 0) {
 		return (
 			<div className="container mx-auto py-12 px-4 md:px-6">
 				<div className="text-center mb-12">
@@ -72,10 +135,6 @@ export default async function ChangelogPage() {
 				</Alert>
 			</div>
 		);
-	}
-
-	if (releases.length === 0) {
-		return <ErrorPage title={t("No releases found")} />;
 	}
 
 	// Get the latest release and previous releases
@@ -177,18 +236,7 @@ export default async function ChangelogPage() {
 						</div>
 					</CardContent>
 					<CardFooter className="bg-primary/5 border-t border-border flex justify-end py-4">
-						<Button variant="outline" size="sm" asChild>
-							<a
-								href={latestRelease.html_url}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="flex items-center gap-2"
-							>
-								<SiGithub className="h-4 w-4" />
-								{t("View on GitHub")}
-								<ArrowUpRight className="h-3 w-3" />
-							</a>
-						</Button>
+						<div className="text-sm text-muted-foreground">Version {latestRelease.tag_name}</div>
 					</CardFooter>
 				</Card>
 			</div>
@@ -199,7 +247,7 @@ export default async function ChangelogPage() {
 					<h2 className="text-2xl font-bold mb-6">{t("Previous versions")}</h2>
 					<div className="space-y-6">
 						{previousReleasesContent.map((release) => (
-							<Card key={release.id} className="overflow-hidden">
+							<Card key={release.tag_name} className="overflow-hidden">
 								<CardHeader>
 									<CardTitle className="text-xl">
 										{release.name ||
@@ -228,18 +276,7 @@ export default async function ChangelogPage() {
 									</div>
 								</CardContent>
 								<CardFooter className="border-t border-border flex justify-end py-4">
-									<Button variant="ghost" size="sm" asChild>
-										<a
-											href={release.html_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="flex items-center gap-2"
-										>
-											<SiGithub className="h-4 w-4" />
-											{t("View on GitHub")}
-											<ArrowUpRight className="h-3 w-3" />
-										</a>
-									</Button>
+									<div className="text-sm text-muted-foreground">Version {release.tag_name}</div>
 								</CardFooter>
 							</Card>
 						))}
