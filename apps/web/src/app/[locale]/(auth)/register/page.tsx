@@ -60,10 +60,6 @@ export default function RegisterPage() {
 		}
 	}, [email, form]);
 
-	useEffect(() => {
-		authClient.oneTap();
-	}, []);
-
 	async function onSubmit(data: RegisterFormValues) {
 		const headers = new Headers();
 		headers.append("x-captcha-response", data.turnstileToken);

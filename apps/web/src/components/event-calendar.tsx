@@ -39,7 +39,6 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
-import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
 
@@ -94,7 +93,6 @@ export function EventCalendar(props: EventCalendarProps) {
 		serialize: (date: Date) => formatDateFns(date, "yyyy-MM"),
 	});
 	const [message, setMessage] = useQueryState("message");
-	const session = useIsAuthenticated();
 	const isDashboardCalendar = Boolean(params.clubId);
 	const [clubSelectorOpen, setClubSelectorOpen] = useState(false);
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -116,12 +114,6 @@ export function EventCalendar(props: EventCalendarProps) {
 		const query = searchQuery.toLowerCase();
 		return clubs.filter((club) => club?.name?.toLowerCase().includes(query));
 	}, [props.managedClubs, searchQuery]);
-
-	useEffect(() => {
-		if (!(session.loading || session?.user)) {
-			authClient.oneTap();
-		}
-	}, [session.loading]);
 
 	useEffect(() => {
 		if (message) {
