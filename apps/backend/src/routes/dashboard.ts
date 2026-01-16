@@ -10,65 +10,89 @@ const dashboardRouter = new Router();
 dashboardRouter.get(
 	"/dashboard/clubs",
 	async ({ context, response }) => {
-		// Single optimized query with all data using subqueries
-		const clubsWithStats = await db
+		// Get user's club memberships first
+		const memberships = await db
 			.select({
-				// Club data
-				id: club.id,
-				name: club.name,
-				logo: club.logo,
-				// Membership role
-				membershipRole: clubMembership.role,
-				// Aggregated counts using subqueries
-				memberCount: sql<number>`(
-					SELECT COUNT(*)
-					FROM "ClubMembership" cm
-					WHERE cm."clubId" = "Club"."id"
-				)`,
-				eventCount: sql<number>`(
-					SELECT COUNT(*)
-					FROM "Event" e
-					WHERE e."clubId" = "Club"."id"
-				)`,
-				reviewCount: sql<number>`(
-					SELECT COUNT(*)
-					FROM "Review" r
-					WHERE r."clubId" = "Club"."id" AND r."type" = 'CLUB'
-				)`,
-				// Upcoming events (single row)
-				upcomingEventId: sql<string | null>`(
-					SELECT e."id"
-					FROM "Event" e
-					WHERE e."clubId" = "Club"."id" AND e."dateStart" >= NOW()
-					ORDER BY e."dateStart" ASC
-					LIMIT 1
-				)`,
-				upcomingEventName: sql<string | null>`(
-					SELECT e."name"
-					FROM "Event" e
-					WHERE e."clubId" = "Club"."id" AND e."dateStart" >= NOW()
-					ORDER BY e."dateStart" ASC
-					LIMIT 1
-				)`,
-				upcomingEventDateStart: sql<string | null>`(
-					SELECT e."dateStart"
-					FROM "Event" e
-					WHERE e."clubId" = "Club"."id" AND e."dateStart" >= NOW()
-					ORDER BY e."dateStart" ASC
-					LIMIT 1
-				)`,
-				// Latest review (single row)
-				latestReviewContent: sql<string | null>`(
-					SELECT r."content"
-					FROM "Review" r
-					WHERE r."clubId" = "Club"."id" AND r."type" = 'CLUB'
-					ORDER BY r."createdAt" DESC
-					LIMIT 1
-				)`,
+				clubId: clubMembership.clubId,
+				role: clubMembership.role,
 			})
 			.from(clubMembership)
-			.innerJoin(club, eq(clubMembership.clubId, club.id))
 			.where(eq(clubMembership.userId, context.user.id));
+
+		console.log("Found memberships:", memberships.length);
+
+		if (memberships.length === 0) {
+			console.log("No memberships found, returning empty array");
+			return response.json({ clubs: [] });
+		}
+
+		const clubIds = memberships.map((m) => m.clubId);
+
+		// Get club data
+		const clubsData = await db.select().from(club).where(inArray(club.id, clubIds));
+
+		console.log("Found clubs:", clubsData.length);
+
+		// Get stats for each club
+		const clubsWithStats = await Promise.all(
+			clubsData.map(async (clubData) => {
+				const membership = memberships.find((m) => m.clubId === clubData.id);
+
+				if (!membership) {
+					throw apiError.notFound("Membership not found");
+				}
+
+				// Count members
+				const memberCountResult = await db
+					.select({ count: count() })
+					.from(clubMembership)
+					.where(eq(clubMembership.clubId, clubData.id));
+
+				// Count events
+				const eventCountResult = await db
+					.select({ count: count() })
+					.from(event)
+					.where(eq(event.clubId, clubData.id));
+
+				// Count reviews
+				const reviewCountResult = await db
+					.select({ count: count() })
+					.from(review)
+					.where(and(eq(review.clubId, clubData.id), eq(review.type, "CLUB")));
+
+				// Get upcoming event
+				const upcomingEvent = await db
+					.select({
+						id: event.id,
+						name: event.name,
+						dateStart: event.dateStart,
+					})
+					.from(event)
+					.where(and(eq(event.clubId, clubData.id), sql`${event.dateStart} >= NOW()`))
+					.orderBy(event.dateStart)
+					.limit(1);
+
+				// Get latest review
+				const latestReview = await db
+					.select({ content: review.content })
+					.from(review)
+					.where(and(eq(review.clubId, clubData.id), eq(review.type, "CLUB")))
+					.orderBy(sql`${review.createdAt} DESC`)
+					.limit(1);
+
+				return {
+					id: clubData.id,
+					name: clubData.name,
+					logo: clubData.logo,
+					membershipRole: membership.role,
+					memberCount: Number(memberCountResult[0]?.count || 0),
+					eventCount: Number(eventCountResult[0]?.count || 0),
+					reviewCount: Number(reviewCountResult[0]?.count || 0),
+					upcomingEvent: upcomingEvent[0] || null,
+					latestReview: latestReview[0] || null,
+				};
+			}),
+		);
 
 		// Transform to expected response format
 		const clubs = clubsWithStats.map((c) => ({
@@ -76,22 +100,21 @@ dashboardRouter.get(
 			name: c.name,
 			logo: c.logo,
 			membershipRole: c.membershipRole,
-			events:
-				c.upcomingEventId && c.upcomingEventName && c.upcomingEventDateStart
-					? [
-							{
-								id: c.upcomingEventId,
-								name: c.upcomingEventName,
-								dateStart: c.upcomingEventDateStart,
-							},
-						]
-					: [],
+			events: c.upcomingEvent
+				? [
+						{
+							id: c.upcomingEvent.id,
+							name: c.upcomingEvent.name,
+							dateStart: c.upcomingEvent.dateStart,
+						},
+					]
+				: [],
 			_count: {
-				members: Number(c.memberCount),
-				events: Number(c.eventCount),
-				reviews: Number(c.reviewCount),
+				members: c.memberCount,
+				events: c.eventCount,
+				reviews: c.reviewCount,
 			},
-			reviews: c.latestReviewContent ? [{ content: c.latestReviewContent }] : [],
+			reviews: c.latestReview ? [{ content: c.latestReview.content }] : [],
 		}));
 
 		return response.json({ clubs });

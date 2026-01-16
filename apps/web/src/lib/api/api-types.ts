@@ -734,23 +734,6 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/auth/one-tap/callback": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Use this endpoint to authenticate with Google One Tap */
-		post: operations["authoneTapcallbackPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
 	"/auth/admin/set-role": {
 		parameters: {
 			query?: never;
@@ -7864,98 +7847,6 @@ export interface operations {
 			};
 		};
 	};
-	authoneTapcallbackPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description Google ID token, which the client obtains from the One Tap API */
-					idToken: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Successful response */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						session?: components["schemas"]["Session"];
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Invalid token */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content?: never;
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
 	setUserRole: {
 		parameters: {
 			query?: never;
@@ -10335,12 +10226,8 @@ export interface operations {
 							website: string | null;
 							instagramUsername: string | null;
 							instagramProfilePictureUrl: string | null;
-							instagramAccessToken: string | null;
-							instagramTokenExpiry: string | null;
-							instagramRefreshToken: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							facebookPageId: string | null;
 							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;

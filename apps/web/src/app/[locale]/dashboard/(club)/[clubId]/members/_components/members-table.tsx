@@ -26,6 +26,7 @@ interface MembersTableProps {
 	totalMembers: number;
 	pageSize: number;
 	currentUserId?: string;
+	currentUserRole?: "CLUB_OWNER" | "MANAGER" | "USER";
 }
 
 export function MembersTable(props: MembersTableProps) {
@@ -277,22 +278,24 @@ export function MembersTable(props: MembersTableProps) {
 									);
 								}
 
-								// Extend membership - for everyone
-								items.push(
-									<DropdownMenuItem
-										key="extend"
-										onClick={() => {
-											setMembershipToExtend({
-												...row,
-												userName: row.userName,
-												userAvatar: row.userAvatar,
-											});
-										}}
-									>
-										<Calendar className="size-4 mr-2" />
-										{t("Extend")}
-									</DropdownMenuItem>,
-								);
+								// Extend membership - only managers and owners
+								if (props.currentUserRole === "CLUB_OWNER" || props.currentUserRole === "MANAGER") {
+									items.push(
+										<DropdownMenuItem
+											key="extend"
+											onClick={() => {
+												setMembershipToExtend({
+													...row,
+													userName: row.userName,
+													userAvatar: row.userAvatar,
+												});
+											}}
+										>
+											<Calendar className="size-4 mr-2" />
+											{t("Extend")}
+										</DropdownMenuItem>,
+									);
+								}
 
 								return items;
 							},

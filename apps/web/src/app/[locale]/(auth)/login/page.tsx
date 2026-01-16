@@ -69,7 +69,6 @@ export default function LoginPage() {
 			toast.info(decodeURIComponent(message));
 			setMessage(null, { shallow: true });
 		}
-		authClient.oneTap();
 	}, [message, setMessage]);
 
 	function handleSuccessfulLogin(

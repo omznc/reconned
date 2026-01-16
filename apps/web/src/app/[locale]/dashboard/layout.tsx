@@ -1,8 +1,9 @@
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ClubsProvider } from "@/components/clubs-provider";
 import { CurrentClubProvider } from "@/components/current-club-provider";
+import { ErrorPage } from "@/components/error-page";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { CommandMenu, CommandMenuProvider } from "@/components/sidebar/command-menu";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -16,6 +17,7 @@ interface DashboardLayoutProps {
 
 export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);
+	const t = await getTranslations();
 
 	if (!user) {
 		return redirect({ href: "/login?redirectTo=/dashboard", locale });
@@ -24,7 +26,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const { data: clubsData, error: clubsError } = await apiServer.GET("/api/dashboard/clubs");
 
 	if (clubsError || !clubsData) {
-		return redirect({ href: "/login?redirectTo=/dashboard", locale });
+		return <ErrorPage title={t("An error occurred")} />;
 	}
 
 	const clubs = clubsData.clubs.map((club) => ({

@@ -36,8 +36,18 @@ export async function MembersPageFetcher(props: PageProps<"/[locale]/dashboard/[
 		return <div>Failed to load members</div>;
 	}
 
+	// Find current user's role in this club
+	const currentUserMembership = data.members.find((member) => member.userId === user?.id);
+	const currentUserRole = currentUserMembership?.role;
+
 	return (
-		<MembersTable members={data.members} totalMembers={data.total} pageSize={pageSize} currentUserId={user?.id} />
+		<MembersTable
+			members={data.members}
+			totalMembers={data.total}
+			pageSize={pageSize}
+			currentUserId={user?.id}
+			currentUserRole={currentUserRole}
+		/>
 	);
 }
 
