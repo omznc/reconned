@@ -432,7 +432,7 @@ adminRouter.use(adminFeatureFlagsRouter);
 
 ### Configuration
 - Located in `apps/backend/src/lib/auth.ts`.
-- Plugins: `passkey`, `twoFactor`, `oneTap`, `admin`, `emailHarmony`, `captcha`, `lastLoginMethod`, `openAPI`.
+- Plugins: `passkey`, `twoFactor`, `admin`, `emailHarmony`, `captcha`, `lastLoginMethod`, `openAPI`.
 
 ### Custom User Fields
 - `callsign` (string): User's callsign
