@@ -2,7 +2,7 @@ import { passkey } from "@better-auth/passkey";
 import { render } from "@react-email/components";
 import { betterAuth, logger } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, captcha, lastLoginMethod, oneTap, openAPI, twoFactor } from "better-auth/plugins";
+import { admin, captcha, lastLoginMethod, openAPI, twoFactor } from "better-auth/plugins";
 import { emailHarmony } from "better-auth-harmony";
 import { and, eq, gt } from "drizzle-orm";
 import { clubInvite, clubMembership } from "../drizzle/schema";
@@ -154,7 +154,6 @@ export const auth = betterAuth({
 				length: 10,
 			},
 		}),
-		oneTap(),
 		admin({
 			defaultRole: "user",
 		}),

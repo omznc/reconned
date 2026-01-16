@@ -22,6 +22,21 @@ interface UserOverviewProps {
 export async function UserOverview({ user }: UserOverviewProps) {
 	const t = await getExtracted();
 
+	const formatWebsiteDisplay = (url: string) => {
+		try {
+			const parsedUrl = new URL(url);
+			let host = parsedUrl.hostname;
+			if (host.startsWith("www.")) {
+				host = host.slice(4);
+			}
+			const path = parsedUrl.pathname === "/" ? "" : parsedUrl.pathname;
+			const display = `${host}${path}`;
+			return display.length > 25 ? `${display.slice(0, 25)}...` : display;
+		} catch {
+			return url.length > 25 ? `${url.slice(0, 25)}...` : url;
+		}
+	};
+
 	const futureEvents = user.eventRegistration.filter(
 		(reg: UserOverviewUser["eventRegistration"][number]) =>
 			reg.event?.dateStart && new Date(reg.event.dateStart) > new Date() && !reg.attended,
@@ -115,7 +130,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					<Link href={user.website} target="_blank" rel="noopener noreferrer" className="md:grow-0 grow">
 						<Badge className="flex items-center gap-1 hover:cursor-pointer">
 							<Globe size={16} />
-							{user.website}
+							{formatWebsiteDisplay(user.website)}
 						</Badge>
 					</Link>
 				)}

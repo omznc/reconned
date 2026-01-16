@@ -30,11 +30,9 @@ export function ClubWebsiteButton({ website, isVerified = false }: ClubWebsiteBu
 			if (host.startsWith("www.")) {
 				host = host.slice(4);
 			}
-			if (host.endsWith(".com")) {
-				host = host.slice(0, -4);
-			}
-			host = host.charAt(0).toUpperCase() + host.slice(1);
-			return host.length > 25 ? `${host.slice(0, 25)}...` : host;
+			const path = parsedUrl.pathname === "/" ? "" : parsedUrl.pathname;
+			const display = `${host}${path}`;
+			return display.length > 25 ? `${display.slice(0, 25)}...` : display;
 		} catch {
 			return url.length > 25 ? `${url.slice(0, 25)}...` : url;
 		}
