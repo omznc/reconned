@@ -2776,6 +2776,79 @@ clubsRouter.get(
 	},
 );
 
+clubsRouter.get(
+	"/club/member-invite/:inviteCode",
+	async ({ params, query, response, context }) => {
+		const inviteCode = params.inviteCode;
+		const redirectTo = (query.redirectTo as string) || "/";
+
+		if (!inviteCode) {
+			throw apiError.validation("Invite code is required");
+		}
+
+		// Find the invite
+		const inviteData = await db
+			.select({
+				id: clubInvite.id,
+				email: clubInvite.email,
+				clubId: clubInvite.clubId,
+				status: clubInvite.status,
+				expiresAt: clubInvite.expiresAt,
+				club: {
+					name: club.name,
+					slug: club.slug,
+				},
+			})
+			.from(clubInvite)
+			.innerJoin(club, eq(club.id, clubInvite.clubId))
+			.where(and(eq(clubInvite.inviteCode, inviteCode), gt(clubInvite.expiresAt, new Date().toISOString())))
+			.limit(1);
+
+		if (!inviteData[0]) {
+			throw apiError.notFound("Invite");
+		}
+
+		const invite = inviteData[0];
+
+		if (invite.status !== "PENDING") {
+			throw apiError.validation(`This invite has already been ${invite.status.toLowerCase()}`);
+		}
+
+		// If user is authenticated and email matches, redirect to accept
+		if (context.user && context.user.email === invite.email) {
+			return response.redirect(
+				`${env.FRONTEND_URL}/clubs/${invite.club.slug}?invite=${inviteCode}&redirectTo=${encodeURIComponent(redirectTo)}`,
+			);
+		}
+
+		// If user is authenticated but email doesn't match
+		if (context.user) {
+			throw apiError.forbidden("This invite is for a different email address");
+		}
+
+		// Redirect to signup/login with invite context
+		return response.redirect(
+			`${env.FRONTEND_URL}/register?invite=${inviteCode}&redirectTo=${encodeURIComponent(redirectTo)}`,
+		);
+	},
+	{
+		auth: false,
+		schema: {
+			summary: "Handle club member invite links",
+			tags: ["Clubs"],
+			query: z.object({
+				redirectTo: z.string().optional(),
+			}),
+			response: {
+				302: z.object({}), // Redirect
+				400: z.object({ error: z.string() }),
+				403: z.object({ error: z.string() }),
+				404: z.object({ error: z.string() }),
+			},
+		},
+	},
+);
+
 clubsRouter.post(
 	"/club/member-invite/:inviteCode",
 	async ({ params, query, response, context }) => {

@@ -28,6 +28,11 @@ export default function RegisterPage() {
 		clearOnDefault: true,
 		shallow: true,
 	});
+	const [inviteCode] = useQueryState("invite", {
+		defaultValue: "",
+		clearOnDefault: true,
+		shallow: true,
+	});
 	const t = useExtracted();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
@@ -117,7 +122,18 @@ export default function RegisterPage() {
 			<CardHeader>
 				<CardTitle className="text-2xl">{t("Register")}</CardTitle>
 				<CardDescription>
-					{t("Create your account and join the airsoft community.")}{" "}
+					{inviteCode ? (
+						<div className="space-y-2">
+							<p className="text-green-600 dark:text-green-400">
+								{t(
+									"You've been invited to join a club! Register with your invited email to accept the invitation.",
+								)}
+							</p>
+							<p>{t("Create your account and join the airsoft community.")}</p>
+						</div>
+					) : (
+						t("Create your account and join the airsoft community.")
+					)}{" "}
 					<Accordion type="single" collapsible className="w-full border-b-none">
 						<AccordionItem value="item-1" className="border-b-none">
 							<AccordionTrigger className="border-b-none">
