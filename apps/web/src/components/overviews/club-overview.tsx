@@ -17,6 +17,7 @@ import Image from "next/image";
 import { Logger } from "next-axiom";
 import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
+import { ClubInviteAcceptance } from "@/components/club-invite-acceptance";
 import { ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
@@ -80,7 +81,7 @@ export async function ClubOverview({
 			} as InstagramMediaResponse);
 
 	const t = await getExtracted();
-	const [postsResponse, alliancesResponse] = await Promise.all([
+	const [postsResponse, alliancesResponse, invitesResponse] = await Promise.all([
 		apiServer.GET("/api/clubs/{id}/posts", {
 			params: {
 				path: { id: club.id },
@@ -91,10 +92,13 @@ export async function ClubOverview({
 				path: { id: club.id },
 			},
 		}),
+		user ? apiServer.GET("/api/users/invites") : Promise.resolve({ data: null, error: null }),
 	]);
 
 	const posts = postsResponse.data?.posts || [];
 	const alliances = alliancesResponse.data?.alliances || [];
+	const allUserInvites = invitesResponse.data?.invites || [];
+	const clubInvites = allUserInvites.filter((invite) => invite.clubId === club.id);
 
 	if (postsResponse.error) {
 		logger.error("Error fetching club posts", { error: postsResponse.error });
@@ -104,6 +108,7 @@ export async function ClubOverview({
 
 	return (
 		<div>
+			<ClubInviteAcceptance invites={clubInvites} />
 			{/* Unified Banner Section - Always Present */}
 			<div className="relative w-full mb-6">
 				<div className="w-full h-full max-h-[300px] bg-sidebar rounded-md">
