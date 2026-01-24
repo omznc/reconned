@@ -90,9 +90,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Airsoft players - RECONNED"),
+		title: t("Airsoft Players Directory - Find & Connect with Players on RECONNED"),
 		description: t(
-			"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+			"Browse airsoft player profiles and connect with the community. Find players by location, experience level, and club membership. Build your airsoft network today.",
 		),
 		keywords: t(
 			"airsoft players, airsoft gamers, airsoft community members, find airsoft player, airsoft player profiles, airsoft player BiH, airsoft player Bosnia, airsoft player directory",
@@ -100,18 +100,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Airsoft players - RECONNED"),
+			title: t("Airsoft Players Directory - Find & Connect with Players on RECONNED"),
 			description: t(
-				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"Browse airsoft player profiles and connect with the community. Find players by location, experience level, and club membership. Build your airsoft network today.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/users", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Airsoft players - RECONNED"),
+			title: t("Airsoft Players Directory - Find & Connect with Players on RECONNED"),
 			description: t(
-				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"Browse airsoft player profiles and connect with the community. Find players by location, experience level, and club membership. Build your airsoft network today.",
 			),
 		},
 		alternates: {

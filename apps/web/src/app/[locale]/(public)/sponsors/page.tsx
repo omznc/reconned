@@ -167,23 +167,29 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Sponsors - RECONNED"),
-		description: t("Our current sponsors and partners. Thank you for your support!"),
+		title: t("Our Sponsors & Partners - Support RECONNED Airsoft Platform"),
+		description: t(
+			"Meet the amazing sponsors and partners who make RECONNED possible. Support the airsoft community in Bosnia and Herzegovina by becoming a sponsor today.",
+		),
 		keywords: t(
 			"airsoft sponsors, airsoft partners, support airsoft, airsoft donations, airsoft funding, airsoft community sponsors, airsoft BiH sponsors",
 		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Sponsors - RECONNED"),
-			description: t("Our current sponsors and partners. Thank you for your support!"),
+			title: t("Our Sponsors & Partners - Support RECONNED Airsoft Platform"),
+			description: t(
+				"Meet the amazing sponsors and partners who make RECONNED possible. Support the airsoft community in Bosnia and Herzegovina by becoming a sponsor today.",
+			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/sponsors", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Sponsors - RECONNED"),
-			description: t("Our current sponsors and partners. Thank you for your support!"),
+			title: t("Our Sponsors & Partners - Support RECONNED Airsoft Platform"),
+			description: t(
+				"Meet the amazing sponsors and partners who make RECONNED possible. Support the airsoft community in Bosnia and Herzegovina by becoming a sponsor today.",
+			),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/sponsors", locale),

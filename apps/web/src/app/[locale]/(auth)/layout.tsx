@@ -1,13 +1,15 @@
 import { House } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getExtracted } from "next-intl/server";
+import { getExtracted, getLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { AnimationWrapper } from "@/app/[locale]/(auth)/_components/animation-wrapper";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { env } from "@/lib/env";
+import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import background from "./background-blur.webp";
 import backgroundLight from "./background-blur-light.webp";
 
@@ -56,16 +58,35 @@ export default async function RootLayout({
 
 export async function generateMetadata(): Promise<Metadata> {
 	const t = await getExtracted();
+	const locale = await getLocale();
 
 	return {
-		title: t("Authentication - RECONNED"),
+		title: t("Sign In & Join RECONNED - Airsoft Community Platform"),
 		description: t(
-			"Login, register, and reset your password. The first universal platform for airsoft clubs, events, and players.",
+			"Access your RECONNED account to manage your airsoft profile, join clubs, and register for events. Sign in or create an account today.",
 		),
 		keywords: t(
-			"airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH",
+			"airsoft login, airsoft register, airsoft account, join airsoft community, airsoft platform sign in, airsoft player account",
 		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
+		openGraph: {
+			title: t("Sign In & Join RECONNED - Airsoft Community Platform"),
+			description: t(
+				"Access your RECONNED account to manage your airsoft profile, join clubs, and register for events. Sign in or create an account today.",
+			),
+			type: "website",
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: t("Sign In & Join RECONNED - Airsoft Community Platform"),
+			description: t(
+				"Access your RECONNED account to manage your airsoft profile, join clubs, and register for events. Sign in or create an account today.",
+			),
+		},
+		alternates: {
+			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/login", locale),
+			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/login", locale),
+		},
 	};
 }

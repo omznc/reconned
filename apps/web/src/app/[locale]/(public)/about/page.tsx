@@ -15,13 +15,14 @@ export default async function Home() {
 		"@context": "https://schema.org",
 		"@type": "AboutPage",
 		"@id": `${env.NEXT_PUBLIC_WEB_URL}/${locale}/about`,
-		name: t("About us - RECONNED"),
+		name: t("About RECONNED - The Universal Airsoft Platform for Clubs, Events & Players"),
 		description: t(
-			"About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players.",
+			"Discover RECONNED - the first universal platform connecting airsoft clubs, events, and players. Learn about our mission to unify the airsoft community in Bosnia and Herzegovina and beyond.",
 		),
 		url: `${env.NEXT_PUBLIC_WEB_URL}/${locale}/about`,
-		mainEntity: {
+		about: {
 			"@type": "SportsOrganization",
+			"@id": env.NEXT_PUBLIC_WEB_URL,
 			name: "Reconned",
 			sport: "Airsoft",
 			description: t(
@@ -30,7 +31,12 @@ export default async function Home() {
 			url: env.NEXT_PUBLIC_WEB_URL,
 			logo: `${env.NEXT_PUBLIC_WEB_URL}/reconned-logo-light.svg`,
 			foundingDate: "2024",
-			founder: [
+			founder: {
+				"@type": "Person",
+				name: "Omar Zunić",
+				url: "https://omarzunic.com",
+			},
+			employee: [
 				{
 					"@type": "Person",
 					name: "Omar Zunić",
@@ -128,9 +134,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("About us - RECONNED"),
+		title: t("About RECONNED - The Universal Airsoft Platform for Clubs, Events & Players"),
 		description: t(
-			"About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players.",
+			"Discover RECONNED - the first universal platform connecting airsoft clubs, events, and players. Learn about our mission to unify the airsoft community in Bosnia and Herzegovina and beyond.",
 		),
 		keywords: t(
 			"airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH",
@@ -138,18 +144,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("About us - RECONNED"),
+			title: t("About RECONNED - The Universal Airsoft Platform for Clubs, Events & Players"),
 			description: t(
-				"About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players.",
+				"Discover RECONNED - the first universal platform connecting airsoft clubs, events, and players. Learn about our mission to unify the airsoft community in Bosnia and Herzegovina and beyond.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/about", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("About us - RECONNED"),
+			title: t("About RECONNED - The Universal Airsoft Platform for Clubs, Events & Players"),
 			description: t(
-				"About us, our platform, and how you can help. The first universal platform for airsoft clubs, events, and players.",
+				"Discover RECONNED - the first universal platform connecting airsoft clubs, events, and players. Learn about our mission to unify the airsoft community in Bosnia and Herzegovina and beyond.",
 			),
 		},
 		alternates: {

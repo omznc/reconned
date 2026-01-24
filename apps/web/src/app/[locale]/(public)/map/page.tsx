@@ -70,6 +70,7 @@ export default async function MapPage() {
 
 	return (
 		<div className="h-dvh z-50 fixed top-0 left-0 w-full rounded-lg overflow-hidden border">
+			<h1 className="sr-only">{t("Airsoft Clubs Map")}</h1>
 			<JsonLdScript data={mapSchema} />
 			<ClubsMapWrapper clubs={transformedClubs} />
 		</div>
@@ -81,23 +82,23 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Club Map - RECONNED"),
+		title: t("Airsoft Clubs Map - Find Locations Near You on RECONNED"),
 		description: t(
-			"Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players.",
+			"Explore our interactive map of airsoft clubs across Bosnia and Herzegovina. Find clubs near you, get directions, and connect with local airsoft communities.",
 		),
 		openGraph: {
-			title: t("Club Map - RECONNED"),
+			title: t("Airsoft Clubs Map - Find Locations Near You on RECONNED"),
 			description: t(
-				"Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players.",
+				"Explore our interactive map of airsoft clubs across Bosnia and Herzegovina. Find clubs near you, get directions, and connect with local airsoft communities.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/map", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Club Map - RECONNED"),
+			title: t("Airsoft Clubs Map - Find Locations Near You on RECONNED"),
 			description: t(
-				"Find where our airsoft clubs are located. Explore and find communities close to you. The first universal platform for airsoft clubs, events, and players.",
+				"Explore our interactive map of airsoft clubs across Bosnia and Herzegovina. Find clubs near you, get directions, and connect with local airsoft communities.",
 			),
 		},
 		alternates: {

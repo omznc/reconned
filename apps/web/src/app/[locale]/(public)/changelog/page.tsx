@@ -292,9 +292,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Changelog - RECONNED"),
+		title: t("RECONNED Changelog - Latest Updates & Features"),
 		description: t(
-			"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+			"Stay updated with the latest changes, new features, and improvements to the RECONNED airsoft platform. See what's new and what's coming next.",
 		),
 		keywords: t(
 			"airsoft Bosnia, airsoft BiH, airsoft weapons, airsoft replicas, airsoft equipment, airsoft clubs BiH, airsoft shop BiH, airsoft store, airsoft rifles, airsoft pistols, airsoft bullets, airsoft BBs, airsoft mask, airsoft clothing, airsoft uniforms, airsoft BiH forum, airsoft events BiH, airsoft rules, airsoft tactics, airsoft players BiH, best airsoft BiH, buying airsoft BiH, selling airsoft BiH, airsoft teams BiH, airsoft locations BiH, airsoft field BiH",
@@ -302,18 +302,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Changelog - RECONNED"),
+			title: t("RECONNED Changelog - Latest Updates & Features"),
 			description: t(
-				"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				"Stay updated with the latest changes, new features, and improvements to the RECONNED airsoft platform. See what's new and what's coming next.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/changelog", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Changelog - RECONNED"),
+			title: t("RECONNED Changelog - Latest Updates & Features"),
 			description: t(
-				"The changelog for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				"Stay updated with the latest changes, new features, and improvements to the RECONNED airsoft platform. See what's new and what's coming next.",
 			),
 		},
 		alternates: {

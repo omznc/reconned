@@ -38,8 +38,12 @@ export function Search() {
 	return (
 		<div className="space-y-2">
 			<div className="relative">
+				<Label htmlFor="search-input" className="sr-only">
+					{t("Search")}
+				</Label>
 				<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-white dark:text-black opacity-50 pointer-events-none" />
 				<Input
+					id="search-input"
 					value={input}
 					onChange={(e) => {
 						const value = e.target.value;
@@ -57,6 +61,7 @@ export function Search() {
 						<Button
 							variant="ghost"
 							size="icon"
+							aria-label={t("Toggle search filters")}
 							className={cn(
 								"absolute right-1 top-1/2 -translate-y-1/2 size-8 bg-black dark:bg-white text-white dark:text-black transition-all",
 							)}

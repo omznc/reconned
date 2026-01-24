@@ -56,9 +56,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Support us - RECONNED"),
+		title: t("Support RECONNED - Help Build the Airsoft Community"),
 		description: t(
-			"Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players.",
+			"Support the development of RECONNED and help us build the best airsoft community platform. Learn how you can contribute, donate, or sponsor our mission.",
 		),
 		keywords: t(
 			"support airsoft platform, donate to airsoft, fund airsoft community, airsoft sponsorship, help airsoft development, airsoft platform funding",
@@ -66,18 +66,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Support us - RECONNED"),
+			title: t("Support RECONNED - Help Build the Airsoft Community"),
 			description: t(
-				"Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players.",
+				"Support the development of RECONNED and help us build the best airsoft community platform. Learn how you can contribute, donate, or sponsor our mission.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/support-us", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Support us - RECONNED"),
+			title: t("Support RECONNED - Help Build the Airsoft Community"),
 			description: t(
-				"Support the RECONNED platform and help us build the best airsoft community. The first universal platform for airsoft clubs, events, and players.",
+				"Support the development of RECONNED and help us build the best airsoft community platform. Learn how you can contribute, donate, or sponsor our mission.",
 			),
 		},
 		alternates: {

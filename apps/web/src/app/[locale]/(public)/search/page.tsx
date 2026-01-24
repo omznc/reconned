@@ -69,36 +69,62 @@ export async function generateMetadata(props: PageProps<"/[locale]/search">): Pr
 	const path = `/search${q ? `?q=${encodeURIComponent(q)}` : ""}`;
 
 	return {
-		title: t("Search for {query} - RECONNED", {
-			query: q,
-		}),
-		description: t(
-			"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
-			{
-				query: q,
-			},
-		),
+		title: q
+			? t("Search Results for {query} on RECONNED", {
+					query: q,
+				})
+			: t("Search Airsoft Clubs, Events & Players on RECONNED"),
+		description: q
+			? t(
+					'Search results for "{query}" on RECONNED. Find airsoft clubs, events, and players matching your search. Connect with the airsoft community in Bosnia and Herzegovina.',
+					{
+						query: q,
+					},
+				)
+			: t(
+					"Search the comprehensive airsoft database. Find clubs, events, and players across Bosnia and Herzegovina. Use filters to narrow down results by location, type, and more.",
+				),
 		keywords: t(
 			"search airsoft, find airsoft clubs, find airsoft players, find airsoft events, airsoft search, airsoft directory, airsoft community search",
 		)
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Search for {query} - RECONNED", { query: q }),
-			description: t(
-				"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
-				{ query: q },
-			),
+			title: q
+				? t("Search Results for {query} on RECONNED", {
+						query: q,
+					})
+				: t("Search Airsoft Clubs, Events & Players on RECONNED"),
+			description: q
+				? t(
+						'Search results for "{query}" on RECONNED. Find airsoft clubs, events, and players matching your search. Connect with the airsoft community in Bosnia and Herzegovina.',
+						{
+							query: q,
+						},
+					)
+				: t(
+						"Search the comprehensive airsoft database. Find clubs, events, and players across Bosnia and Herzegovina. Use filters to narrow down results by location, type, and more.",
+					),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", path, locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Search for {query} - RECONNED", { query: q }),
-			description: t(
-				"Search results for {query}. Search for clubs, players, and events on the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
-				{ query: q },
-			),
+			title: q
+				? t("Search Results for {query} on RECONNED", {
+						query: q,
+					})
+				: t("Search Airsoft Clubs, Events & Players on RECONNED"),
+			description: q
+				? t(
+						'Search results for "{query}" on RECONNED. Find airsoft clubs, events, and players matching your search. Connect with the airsoft community in Bosnia and Herzegovina.',
+						{
+							query: q,
+						},
+					)
+				: t(
+						"Search the comprehensive airsoft database. Find clubs, events, and players across Bosnia and Herzegovina. Use filters to narrow down results by location, type, and more.",
+					),
 		},
 		alternates: {
 			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", path, locale),
