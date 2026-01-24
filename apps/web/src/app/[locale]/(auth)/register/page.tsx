@@ -119,6 +119,7 @@ export default function RegisterPage() {
 
 	return (
 		<>
+			<h1 className="sr-only">{t("Create RECONNED Account")}</h1>
 			<CardHeader>
 				<CardTitle className="text-2xl">{t("Register")}</CardTitle>
 				<CardDescription>

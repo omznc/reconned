@@ -101,9 +101,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Airsoft events - RECONNED"),
+		title: t("Airsoft Events & Tournaments - Find & Join Games on RECONNED"),
 		description: t(
-			"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+			"Browse and join upcoming airsoft events, tournaments, and matches. Find games near you, register online, and connect with airsoft clubs across Bosnia and Herzegovina.",
 		),
 		keywords: t(
 			"airsoft events, airsoft matches, airsoft tournaments, airsoft games, airsoft competitions, find airsoft event, join airsoft event, airsoft event BiH, airsoft event Bosnia, airsoft event registration",
@@ -111,18 +111,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Airsoft events - RECONNED"),
+			title: t("Airsoft Events & Tournaments - Find & Join Games on RECONNED"),
 			description: t(
-				"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"Browse and join upcoming airsoft events, tournaments, and matches. Find games near you, register online, and connect with airsoft clubs across Bosnia and Herzegovina.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/events", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Airsoft events - RECONNED"),
+			title: t("Airsoft Events & Tournaments - Find & Join Games on RECONNED"),
 			description: t(
-				"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"Browse and join upcoming airsoft events, tournaments, and matches. Find games near you, register online, and connect with airsoft clubs across Bosnia and Herzegovina.",
 			),
 		},
 		alternates: {

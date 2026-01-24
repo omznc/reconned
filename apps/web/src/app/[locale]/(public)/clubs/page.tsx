@@ -72,9 +72,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Airsoft clubs - RECONNED"),
+		title: t("Airsoft Clubs Directory - Find & Join Teams on RECONNED"),
 		description: t(
-			"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+			"Discover airsoft clubs across Bosnia and Herzegovina. Browse verified teams, view member profiles, and join clubs near you. Connect with the local airsoft community today.",
 		),
 		keywords: t(
 			"airsoft clubs, airsoft teams, airsoft club directory, find airsoft club, join airsoft club, airsoft club BiH, airsoft club Bosnia, airsoft club Sarajevo, airsoft club members, airsoft club registration",
@@ -82,18 +82,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Airsoft clubs - RECONNED"),
+			title: t("Airsoft Clubs Directory - Find & Join Teams on RECONNED"),
 			description: t(
-				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"Discover airsoft clubs across Bosnia and Herzegovina. Browse verified teams, view member profiles, and join clubs near you. Connect with the local airsoft community today.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/clubs", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Airsoft clubs - RECONNED"),
+			title: t("Airsoft Clubs Directory - Find & Join Teams on RECONNED"),
 			description: t(
-				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
+				"Discover airsoft clubs across Bosnia and Herzegovina. Browse verified teams, view member profiles, and join clubs near you. Connect with the local airsoft community today.",
 			),
 		},
 		alternates: {

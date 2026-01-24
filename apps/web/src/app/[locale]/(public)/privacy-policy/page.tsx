@@ -311,9 +311,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Privacy Policy - RECONNED"),
+		title: t("Privacy Policy - How RECONNED Protects Your Data"),
 		description: t(
-			"Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players.",
+			"Learn how RECONNED collects, uses, and protects your personal information. Understand your privacy rights and our data security practices.",
 		),
 		keywords: t(
 			"privacy policy, data protection, personal information, airsoft privacy, user data, GDPR compliance, privacy rights, analytics, PostHog, tracking, user behavior",
@@ -321,18 +321,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Privacy Policy - RECONNED"),
+			title: t("Privacy Policy - How RECONNED Protects Your Data"),
 			description: t(
-				"Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players.",
+				"Learn how RECONNED collects, uses, and protects your personal information. Understand your privacy rights and our data security practices.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/privacy-policy", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Privacy Policy - RECONNED"),
+			title: t("Privacy Policy - How RECONNED Protects Your Data"),
 			description: t(
-				"Learn about our privacy practices and how we protect your information. The first universal platform for airsoft clubs, events, and players.",
+				"Learn how RECONNED collects, uses, and protects your personal information. Understand your privacy rights and our data security practices.",
 			),
 		},
 		alternates: {

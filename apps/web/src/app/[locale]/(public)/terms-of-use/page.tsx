@@ -227,9 +227,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = await getLocale();
 
 	return {
-		title: t("Terms of Use - RECONNED"),
+		title: t("Terms of Use - Rules & Guidelines for RECONNED Platform"),
 		description: t(
-			"Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+			"Read our Terms of Use to understand the rules and guidelines for using RECONNED. Learn about your rights and responsibilities as a user.",
 		),
 		keywords: t(
 			"terms of use, terms and conditions, user agreement, airsoft terms, platform rules, service agreement, legal terms",
@@ -237,18 +237,18 @@ export async function generateMetadata(): Promise<Metadata> {
 			.split(",")
 			.map((keyword: string) => keyword.trim()),
 		openGraph: {
-			title: t("Terms of Use - RECONNED"),
+			title: t("Terms of Use - Rules & Guidelines for RECONNED Platform"),
 			description: t(
-				"Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				"Read our Terms of Use to understand the rules and guidelines for using RECONNED. Learn about your rights and responsibilities as a user.",
 			),
 			type: "website",
 			url: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/terms-of-use", locale),
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: t("Terms of Use - RECONNED"),
+			title: t("Terms of Use - Rules & Guidelines for RECONNED Platform"),
 			description: t(
-				"Read our Terms of Use for the RECONNED platform. The first universal platform for airsoft clubs, events, and players.",
+				"Read our Terms of Use to understand the rules and guidelines for using RECONNED. Learn about your rights and responsibilities as a user.",
 			),
 		},
 		alternates: {

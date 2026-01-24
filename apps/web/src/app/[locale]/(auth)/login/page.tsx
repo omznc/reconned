@@ -126,6 +126,7 @@ export default function LoginPage() {
 
 	return (
 		<>
+			<h1 className="sr-only">{t("Login to RECONNED")}</h1>
 			<CardHeader>
 				<CardTitle className="text-2xl">{t("Login")}</CardTitle>
 				<CardDescription>{t("Enter your email and password to join the world of airsoft.")}</CardDescription>
