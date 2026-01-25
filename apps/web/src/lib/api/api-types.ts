@@ -4,19014 +4,19003 @@
  */
 
 export interface paths {
-	"/auth/sign-in/social": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Sign in with a social provider */
-		post: operations["socialSignIn"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/get-session": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Get the current session */
-		get: operations["getSession"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/sign-out": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Sign out the current user */
-		post: operations["signOut"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/sign-up/email": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Sign up a user using email and password */
-		post: operations["signUpWithEmailAndPassword"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/sign-in/email": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Sign in with email and password */
-		post: operations["signInEmail"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/reset-password": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Reset the password for a user */
-		post: operations["resetPassword"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/verify-password": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Verify the current user's password */
-		post: operations["verifyPassword"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/verify-email": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Verify the email of the user */
-		get: operations["authverifyEmailGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/send-verification-email": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Send a verification email to the user */
-		post: operations["sendVerificationEmail"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/change-email": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post: operations["changeEmail"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/change-password": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Change the password of the user */
-		post: operations["changePassword"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/update-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Update the current user */
-		post: operations["updateUser"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/delete-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Delete the user */
-		post: operations["deleteUser"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/request-password-reset": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Send a password reset email to the user */
-		post: operations["requestPasswordReset"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/reset-password/{token}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Redirects the user to the callback URL with the token */
-		get: operations["resetPasswordCallback"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/list-sessions": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description List all active sessions for the user */
-		get: operations["listUserSessions"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/revoke-session": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Revoke a single session */
-		post: operations["authrevokeSessionPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/revoke-sessions": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Revoke all sessions for the user */
-		post: operations["authrevokeSessionsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/revoke-other-sessions": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Revoke all other sessions for the user except the current one */
-		post: operations["authrevokeOtherSessionsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/link-social": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Link a social account to the user */
-		post: operations["linkSocialAccount"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/list-accounts": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description List all accounts linked to the user */
-		get: operations["listUserAccounts"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/delete-user/callback": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Callback to complete user deletion with verification token */
-		get: operations["authdeleteUsercallbackGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/unlink-account": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Unlink an account */
-		post: operations["authunlinkAccountPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/refresh-token": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Refresh the access token using a refresh token */
-		post: operations["authrefreshTokenPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/get-access-token": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Get a valid access token, doing a refresh if needed */
-		post: operations["authgetAccessTokenPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/account-info": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Get the account info provided by the provider */
-		get: operations["authaccountInfoGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/ok": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Check if the API is working */
-		get: operations["authokGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/error": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Displays an error page */
-		get: operations["autherrorGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/passkey/generate-register-options": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Generate registration options for a new passkey */
-		get: operations["generatePasskeyRegistrationOptions"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/passkey/generate-authenticate-options": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Generate authentication options for a passkey */
-		get: operations["passkeyGenerateAuthenticateOptions"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/passkey/verify-registration": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Verify registration of a new passkey */
-		post: operations["passkeyVerifyRegistration"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/passkey/verify-authentication": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Verify authentication of a passkey */
-		post: operations["passkeyVerifyAuthentication"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/passkey/list-user-passkeys": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description List all passkeys for the authenticated user */
-		get: operations["authpasskeylistUserPasskeysGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/passkey/delete-passkey": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Delete a specific passkey */
-		post: operations["authpasskeydeletePasskeyPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/passkey/update-passkey": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Update a specific passkey's name */
-		post: operations["authpasskeyupdatePasskeyPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/get-totp-uri": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Use this endpoint to get the TOTP URI */
-		post: operations["authtwoFactorgetTotpUriPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/verify-totp": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Verify two factor TOTP */
-		post: operations["authtwoFactorverifyTotpPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/send-otp": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Send two factor OTP to the user */
-		post: operations["authtwoFactorsendOtpPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/verify-otp": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Verify two factor OTP */
-		post: operations["authtwoFactorverifyOtpPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/verify-backup-code": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Verify a backup code for two-factor authentication */
-		post: operations["authtwoFactorverifyBackupCodePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/generate-backup-codes": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Generate new backup codes for two-factor authentication */
-		post: operations["authtwoFactorgenerateBackupCodesPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/enable": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled. */
-		post: operations["authtwoFactorenablePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/two-factor/disable": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Use this endpoint to disable two factor authentication. */
-		post: operations["authtwoFactordisablePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/set-role": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Set the role of a user */
-		post: operations["setUserRole"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/get-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description Get an existing user */
-		get: operations["getUser"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/create-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Create a new user */
-		post: operations["createUser"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/update-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Update a user's details */
-		post: operations["updateUser1"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/list-users": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** @description List users */
-		get: operations["listUsers"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/list-user-sessions": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description List user sessions */
-		post: operations["listUserSessions1"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/unban-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Unban a user */
-		post: operations["unbanUser"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/ban-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Ban a user */
-		post: operations["banUser"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/impersonate-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Impersonate a user */
-		post: operations["impersonateUser"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/stop-impersonating": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post: operations["authadminstopImpersonatingPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/revoke-user-session": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Revoke a user session */
-		post: operations["revokeUserSession"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/revoke-user-sessions": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Revoke all user sessions */
-		post: operations["revokeUserSessions"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/remove-user": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Delete a user and all their sessions and accounts. Cannot be undone. */
-		post: operations["removeUser"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/set-user-password": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Set a user's password */
-		post: operations["setUserPassword"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/auth/admin/has-permission": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/** @description Check if the user has permission */
-		post: operations["authadminhasPermissionPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/countries": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get all enabled countries
-		 * @description Returns a list of all enabled countries with their translations
-		 */
-		get: operations["countriesGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get user by ID
-		 * @description Returns a user by their ID or slug, including club memberships and event registrations
-		 */
-		get: operations["usersidGet"];
-		/**
-		 * Update user
-		 * @description Update user information
-		 */
-		put: operations["usersidPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List users
-		 * @description Returns a paginated list of users with optional search and sorting
-		 */
-		get: operations["usersGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/profile": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get user profile
-		 * @description Returns a public user profile by ID or slug
-		 */
-		get: operations["usersidprofileGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/image": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post?: never;
-		/**
-		 * Delete user image
-		 * @description Delete the user's profile image
-		 */
-		delete: operations["usersidimageDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/header-image": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post?: never;
-		/** Delete user header image */
-		delete: operations["usersidheaderImageDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/stats": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get user statistics
-		 * @description Returns statistics for a user
-		 */
-		get: operations["usersidstatsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/account": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get user account info
-		 * @description Returns account information for a user
-		 */
-		get: operations["usersidaccountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/theme": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update user theme
-		 * @description Update the user's theme preference
-		 */
-		put: operations["usersidthemePut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/font": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update user font
-		 * @description Update the user's font preference
-		 */
-		put: operations["usersidfontPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/style": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update user style
-		 * @description Update the user's style preference
-		 */
-		put: operations["usersidstylePut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/language": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update user language
-		 * @description Update the user's language preference
-		 */
-		put: operations["usersidlanguagePut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/invites": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get pending invites
-		 * @description Returns a list of pending club invites for the current user
-		 */
-		get: operations["usersinvitesGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/invites/count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get pending invites count
-		 * @description Returns the count of pending club invites for the current user
-		 */
-		get: operations["usersinvitescountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/image/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get user avatar upload URL
-		 * @description Get a presigned S3 URL for uploading a user avatar image
-		 */
-		post: operations["usersidimageuploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/header-image/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get user header image upload URL
-		 * @description Get a presigned S3 URL for uploading a user header image
-		 */
-		post: operations["usersidheaderImageuploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/daily-quota": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get user daily upload quota
-		 * @description Check user daily upload quota based on audit logs
-		 */
-		get: operations["usersiddailyQuotaGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/me/clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get current user's clubs
-		 * @description Get all clubs the authenticated user is a member of
-		 */
-		get: operations["usersmeclubsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/delete": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Delete user account
-		 * @description Delete the current user's account. Requires password confirmation if password is set. Transfers club ownership to random manager if available.
-		 */
-		post: operations["usersiddeletePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/members/{memberId}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update member role
-		 * @description Promote or demote a member (requires club owner role)
-		 */
-		put: operations["clubsidmembersmemberIdPut"];
-		post?: never;
-		/**
-		 * Remove member from club
-		 * @description Remove a member from a club (cannot remove club owner)
-		 */
-		delete: operations["clubsidmembersmemberIdDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/members": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club members
-		 * @description Get paginated list of club members with search and filtering
-		 */
-		get: operations["clubsidmembersGet"];
-		put?: never;
-		/**
-		 * Add member to club
-		 * @description Add a user as a member to a club
-		 */
-		post: operations["clubsidmembersPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/members/{memberId}/extend": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Extend membership duration
-		 * @description Extend a member's membership duration by a specified number of months
-		 */
-		put: operations["clubsidmembersmemberIdextendPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/members/leave": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Leave club
-		 * @description Leave a club (cannot leave if you are the club owner)
-		 */
-		post: operations["clubsidmembersleavePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List clubs
-		 * @description List clubs with pagination, search, and sorting
-		 */
-		get: operations["clubsGet"];
-		put?: never;
-		/**
-		 * Create club
-		 * @description Create a new club and assign the creator as owner
-		 */
-		post: operations["clubsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/rules": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club rules
-		 * @description Get all rules for a club
-		 */
-		get: operations["clubsidrulesGet"];
-		put?: never;
-		/**
-		 * Create club rule
-		 * @description Create a new rule for a club
-		 */
-		post: operations["clubsidrulesPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/rules/{ruleId}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club rule
-		 * @description Get a specific rule for a club
-		 */
-		get: operations["clubsidrulesruleIdGet"];
-		/**
-		 * Update club rule
-		 * @description Update an existing rule for a club
-		 */
-		put: operations["clubsidrulesruleIdPut"];
-		post?: never;
-		/**
-		 * Delete club rule
-		 * @description Delete a rule from a club
-		 */
-		delete: operations["clubsidrulesruleIdDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/posts": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club posts
-		 * @description Get all posts for a club with pagination
-		 */
-		get: operations["clubsidpostsGet1"];
-		put?: never;
-		/**
-		 * Create club post
-		 * @description Create a new post for a club
-		 */
-		post: operations["clubsidpostsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/posts/{postId}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club post
-		 * @description Get a specific post for a club
-		 */
-		get: operations["clubsidpostspostIdGet"];
-		/**
-		 * Update club post
-		 * @description Update an existing post for a club
-		 */
-		put: operations["clubsidpostspostIdPut"];
-		post?: never;
-		/**
-		 * Delete club post
-		 * @description Delete a post from a club
-		 */
-		delete: operations["clubsidpostspostIdDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/stats": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club statistics
-		 * @description Get statistics for a club including member growth, role distribution, events, and registrations
-		 */
-		get: operations["clubsidstatsGet2"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/storage-quota": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Check club storage quota
-		 * @description Check club storage quota usage
-		 */
-		get: operations["clubsidstorageQuotaGet1"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/posts/images/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get post image upload URL
-		 * @description Get a presigned S3 URL for uploading a post image
-		 */
-		post: operations["clubsidpostsimagesuploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/purchases": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club purchases
-		 * @description Get paginated purchases for a club
-		 */
-		get: operations["clubsidpurchasesGet"];
-		put?: never;
-		/**
-		 * Create club purchase
-		 * @description Create a new purchase for a club
-		 */
-		post: operations["clubsidpurchasesPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/audit-logs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club audit logs
-		 * @description Get audit logs for a club with pagination, search, and filtering by action type
-		 */
-		get: operations["clubsidauditLogsGet1"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/purchases/{purchaseId}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club purchase
-		 * @description Get a specific purchase for a club
-		 */
-		get: operations["clubsidpurchasespurchaseIdGet"];
-		/**
-		 * Update club purchase
-		 * @description Update an existing purchase for a club
-		 */
-		put: operations["clubsidpurchasespurchaseIdPut"];
-		post?: never;
-		/**
-		 * Delete club purchase
-		 * @description Delete a purchase from a club
-		 */
-		delete: operations["clubsidpurchasespurchaseIdDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/purchases/receipts/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get purchase receipt upload URL
-		 * @description Get a presigned S3 URL for uploading a purchase receipt
-		 */
-		post: operations["clubsidpurchasesreceiptsuploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/invites": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club invites
-		 * @description Get paginated invites for a club with search and status filtering
-		 */
-		get: operations["clubsidinvitesGet"];
-		put?: never;
-		/**
-		 * Send club invitation
-		 * @description Create and send a club invitation
-		 */
-		post: operations["clubsidinvitesPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/invites/{inviteId}/revoke": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Revoke club invitation
-		 * @description Revoke a pending club invitation
-		 */
-		put: operations["clubsidinvitesinviteIdrevokePut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/invites/count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Count club invites
-		 * @description Get count of invites for a club with optional status filter
-		 */
-		get: operations["clubsidinvitescountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/invites/requests-count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get invite requests count
-		 * @description Get count of invite requests (status REQUESTED) for a club
-		 */
-		get: operations["clubsidinvitesrequestsCountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/club/member-invite/{inviteCode}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/** Handle club member invite links */
-		get: operations["clubmemberInviteinviteCodeGet"];
-		put?: never;
-		/**
-		 * Accept or decline club invitation
-		 * @description Accept or decline a club invitation using the invite code
-		 */
-		post: operations["clubmemberInviteinviteCodePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club by ID or slug
-		 * @description Get club information by ID or slug (private clubs hidden from non-members)
-		 */
-		get: operations["clubsidGet"];
-		/**
-		 * Update club information
-		 * @description Update club information (requires manager or owner role)
-		 */
-		put: operations["clubsidPut"];
-		post?: never;
-		/**
-		 * Delete club
-		 * @description Delete a club (requires club owner role)
-		 */
-		delete: operations["clubsidDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/information": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club information for editing
-		 * @description Get club information for editing (requires manager or owner role)
-		 */
-		get: operations["clubsidinformationGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/logo/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get club logo upload URL
-		 * @description Get presigned S3 URL for uploading club logo
-		 */
-		post: operations["clubsidlogouploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/header-image/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get club header image upload URL
-		 * @description Get presigned S3 URL for uploading club header image
-		 */
-		post: operations["clubsidheaderImageuploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/logo": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post?: never;
-		/**
-		 * Delete club logo
-		 * @description Delete club logo (requires manager or owner role)
-		 */
-		delete: operations["clubsidlogoDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/header-image": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post?: never;
-		/**
-		 * Delete club header image
-		 * @description Delete club header image (requires manager or owner role)
-		 */
-		delete: operations["clubsidheaderImageDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/managers": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club managers
-		 * @description Get paginated list of club managers and owners
-		 */
-		get: operations["clubsidmanagersGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/members/count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Count club members
-		 * @description Get count of members for a club with optional role filter
-		 */
-		get: operations["clubsidmemberscountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/managed": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get managed clubs
-		 * @description Get list of club IDs managed by current user
-		 */
-		get: operations["clubsmanagedGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/membership": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Check club membership
-		 * @description Check if current user is a member of the club
-		 */
-		get: operations["clubsidmembershipGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/has-owner": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Check if club has owner
-		 * @description Check if a club has an owner
-		 */
-		get: operations["clubsidhasOwnerGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{clubId}/events": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get events for specific club
-		 * @description Get events for a specific club with pagination, search, and sorting
-		 */
-		get: operations["clubsclubIdeventsGet1"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{clubId}/events/count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Count events for club
-		 * @description Count events for a specific club with optional search filter
-		 */
-		get: operations["clubsclubIdeventscountGet1"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/instagram/auth-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get Instagram authorization URL
-		 * @description Get Instagram authorization URL for club
-		 */
-		get: operations["clubsidinstagramauthUrlGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/instagram/disconnect": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Disconnect Instagram account
-		 * @description Disconnect Instagram account from club
-		 */
-		post: operations["clubsidinstagramdisconnectPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/instagram/check-token": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Check and refresh Instagram token
-		 * @description Check Instagram token validity and refresh if needed
-		 */
-		get: operations["clubsidinstagramcheckTokenGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/instagram/exchange-code": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Exchange Instagram auth code
-		 * @description Exchange auth code for token and get pages
-		 */
-		post: operations["clubsidinstagramexchangeCodePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/instagram/page-selection": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get Instagram page selection data
-		 * @description Retrieve stored Facebook pages for Instagram connection
-		 */
-		get: operations["clubsidinstagrampageSelectionGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/instagram/select-page": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Select Facebook Page for Instagram
-		 * @description Connect selected Facebook Page and its Instagram Business Account
-		 */
-		post: operations["clubsidinstagramselectPagePost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/instagram/media": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get Instagram media
-		 * @description Fetch Instagram photos for a club
-		 */
-		get: operations["clubsidinstagrammediaGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/claim-request": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Submit claim request for unclaimed club
-		 * @description Submit a claim request for an unclaimed club. Sends email to admins for review.
-		 */
-		post: operations["clubsidclaimRequestPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/clubs/{id}/alliances": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club alliances
-		 * @description Get all alliances a club belongs to
-		 */
-		get: operations["clubsidalliancesGet"];
-		/**
-		 * Update club alliances
-		 * @description Update the alliances a club belongs to (requires manager or owner role)
-		 */
-		put: operations["clubsidalliancesPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List events
-		 * @description List events with pagination, search, sorting, and privacy filtering
-		 */
-		get: operations["eventsGet"];
-		put?: never;
-		/**
-		 * Create event
-		 * @description Create a new event
-		 */
-		post: operations["eventsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/upcoming": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get upcoming events
-		 * @description Get upcoming events with privacy filtering
-		 */
-		get: operations["eventsupcomingGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/calendar": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get events for calendar view
-		 * @description Get events within a date range for calendar display
-		 */
-		get: operations["eventscalendarGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get event by ID or slug
-		 * @description Get event details by ID or slug with club info and registration count
-		 */
-		get: operations["eventsidGet"];
-		/**
-		 * Update event
-		 * @description Update an existing event
-		 */
-		put: operations["eventsidPut"];
-		post?: never;
-		/**
-		 * Delete event
-		 * @description Delete an event
-		 */
-		delete: operations["eventsidDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}/image/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get event image upload URL
-		 * @description Get presigned S3 URL for uploading event image
-		 */
-		post: operations["eventsidimageuploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}/image": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post?: never;
-		/**
-		 * Delete event image
-		 * @description Delete event image
-		 */
-		delete: operations["eventsidimageDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}/registrations": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get event registrations
-		 * @description Get all registrations for an event
-		 */
-		get: operations["eventsidregistrationsGet"];
-		put?: never;
-		/**
-		 * Create or update event registration
-		 * @description Create or update event registration
-		 */
-		post: operations["eventsidregistrationsPost"];
-		/**
-		 * Delete event registration
-		 * @description Delete the current user's registration for an event
-		 */
-		delete: operations["eventsidregistrationsDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}/registrations/{registrationId}/attendance": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Toggle attendance
-		 * @description Toggle attendance for event registration
-		 */
-		put: operations["eventsidregistrationsregistrationIdattendancePut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}/registrations/count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Count event registrations
-		 * @description Count registrations for an event
-		 */
-		get: operations["eventsidregistrationscountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}/rules": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get rules associated with event
-		 * @description Get all rules associated with an event
-		 */
-		get: operations["eventsidrulesGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/{id}/apply-data": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get event application data
-		 * @description Get event details with rules and user's existing registration for the application form. Requires authentication.
-		 */
-		get: operations["eventsidapplyDataGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/reviews/{type}/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get reviews for specific entity
-		 * @description Get reviews for a specific club, event, or user
-		 */
-		get: operations["reviewstypeidGet1"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/dashboard/clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get clubs for sidebar
-		 * @description Get clubs for dashboard sidebar with events preview
-		 */
-		get: operations["dashboardclubsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/dashboard/invites-count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get count of pending invites
-		 * @description Get count of pending invites for current user
-		 */
-		get: operations["dashboardinvitesCountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/dashboard/invite-requests-count": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get invite requests count by club
-		 * @description Get count of invite requests grouped by club for managed clubs
-		 */
-		get: operations["dashboardinviteRequestsCountGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/dashboard/stats": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get dashboard statistics
-		 * @description Get user dashboard statistics with club memberships and event registrations
-		 */
-		get: operations["dashboardstatsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/search": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Search clubs, users, and events
-		 * @description Unified search across clubs, users, and events with pagination and type filtering
-		 */
-		get: operations["searchGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/validate-slug": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Validate slug availability
-		 * @description Check if a slug is available for club, event, or user
-		 */
-		post: operations["validateSlugPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/reviews": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get reviews
-		 * @description Get reviews filtered by clubId, eventId, or userId
-		 */
-		get: operations["reviewsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/sitemap": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Generate sitemap data
-		 * @description Get all public clubs, events, and users for sitemap generation
-		 */
-		get: operations["sitemapGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/health": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Health check endpoint
-		 * @description Check API, database, and Redis health status with latency measurements
-		 */
-		get: operations["healthGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/users": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List all users
-		 * @description Admin endpoint to list all users with pagination, search, and sorting
-		 */
-		get: operations["adminusersGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/users/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get user details
-		 * @description Admin endpoint to get user details with club memberships
-		 */
-		get: operations["adminusersidGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List all clubs
-		 * @description Admin endpoint to list all clubs with pagination, search, and sorting
-		 */
-		get: operations["adminclubsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/clubs/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get club details
-		 * @description Admin endpoint to get club details
-		 */
-		get: operations["adminclubsidGet"];
-		put?: never;
-		post?: never;
-		/**
-		 * Delete club
-		 * @description Admin endpoint to delete a club
-		 */
-		delete: operations["adminclubsidDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/clubs/{id}/ban": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Ban club
-		 * @description Admin endpoint to ban a club
-		 */
-		put: operations["adminclubsidbanPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/clubs/{id}/unban": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Unban club
-		 * @description Admin endpoint to unban a club
-		 */
-		put: operations["adminclubsidunbanPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/clubs/{id}/verify": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Verify club
-		 * @description Admin endpoint to verify a club
-		 */
-		put: operations["adminclubsidverifyPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/clubs/{id}/unverify": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Unverify club
-		 * @description Admin endpoint to unverify a club
-		 */
-		put: operations["adminclubsidunverifyPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List unclaimed clubs
-		 * @description Admin endpoint to list unclaimed clubs (clubs without CLUB_OWNER)
-		 */
-		get: operations["adminunclaimedClubsGet"];
-		put?: never;
-		/**
-		 * Create unclaimed club
-		 * @description Admin endpoint to create an unclaimed club
-		 */
-		post: operations["adminunclaimedClubsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get unclaimed club details
-		 * @description Admin endpoint to get unclaimed club details
-		 */
-		get: operations["adminunclaimedClubsidGet"];
-		/**
-		 * Update unclaimed club
-		 * @description Admin endpoint to update unclaimed club details
-		 */
-		put: operations["adminunclaimedClubsidPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs/{id}/logo": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update unclaimed club logo
-		 * @description Admin endpoint to update unclaimed club logo
-		 */
-		put: operations["adminunclaimedClubsidlogoPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs/{id}/logo/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get upload URL for unclaimed club logo
-		 * @description Presigned URL for uploading unclaimed club logo
-		 */
-		post: operations["adminunclaimedClubsidlogouploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs/{id}/header-image": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update unclaimed club header image
-		 * @description Admin endpoint to update unclaimed club header image
-		 */
-		put: operations["adminunclaimedClubsidheaderImagePut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs/{id}/header-image/upload-url": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Get upload URL for unclaimed club header image
-		 * @description Presigned URL for uploading unclaimed club header image
-		 */
-		post: operations["adminunclaimedClubsidheaderImageuploadUrlPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/unclaimed-clubs/{id}/assign-owner": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Assign club owner
-		 * @description Admin endpoint to assign owner to unclaimed club
-		 */
-		post: operations["adminunclaimedClubsidassignOwnerPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/tasks": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List background tasks
-		 * @description Admin endpoint to list all background tasks
-		 */
-		get: operations["admintasksGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/tasks/{taskName}/run": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Run background task
-		 * @description Admin endpoint to manually trigger a background task
-		 */
-		post: operations["admintaskstaskNamerunPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/alliances": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List all alliances
-		 * @description Admin endpoint to list all alliances with pagination, search, and sorting
-		 */
-		get: operations["adminalliancesGet"];
-		put?: never;
-		/**
-		 * Create alliance
-		 * @description Admin endpoint to create a new alliance
-		 */
-		post: operations["adminalliancesPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/alliances/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get alliance by ID
-		 * @description Admin endpoint to get a single alliance with its details
-		 */
-		get: operations["adminalliancesidGet"];
-		/**
-		 * Update alliance
-		 * @description Admin endpoint to update an existing alliance
-		 */
-		put: operations["adminalliancesidPut"];
-		post?: never;
-		/**
-		 * Delete alliance
-		 * @description Admin endpoint to delete an alliance and its club associations
-		 */
-		delete: operations["adminalliancesidDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/alliances/{id}/clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Add club to alliance
-		 * @description Admin endpoint to add a club to an alliance
-		 */
-		post: operations["adminalliancesidclubsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/alliances/{id}/clubs/{clubId}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post?: never;
-		/**
-		 * Remove club from alliance
-		 * @description Admin endpoint to remove a club from an alliance
-		 */
-		delete: operations["adminalliancesidclubsclubIdDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/feature-flags": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * List all feature flags
-		 * @description Admin endpoint to list all feature flags with pagination and search
-		 */
-		get: operations["adminfeatureFlagsGet"];
-		put?: never;
-		/**
-		 * Create feature flag
-		 * @description Admin endpoint to create a new feature flag
-		 */
-		post: operations["adminfeatureFlagsPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/admin/feature-flags/{id}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get feature flag details
-		 * @description Admin endpoint to get a single feature flag
-		 */
-		get: operations["adminfeatureFlagsidGet"];
-		/**
-		 * Update feature flag
-		 * @description Admin endpoint to update a feature flag
-		 */
-		put: operations["adminfeatureFlagsidPut"];
-		post?: never;
-		/**
-		 * Delete feature flag
-		 * @description Admin endpoint to delete a feature flag
-		 */
-		delete: operations["adminfeatureFlagsidDelete"];
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/public/clubs/map": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get clubs for map
-		 * @description Get public clubs with coordinates for map display
-		 */
-		get: operations["publicclubsmapGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/public/sitemap/clubs": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get clubs for sitemap
-		 * @description Get all public clubs for sitemap generation
-		 */
-		get: operations["publicsitemapclubsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/public/sitemap/events": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get events for sitemap
-		 * @description Get all public events for sitemap generation
-		 */
-		get: operations["publicsitemapeventsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/public/sitemap/users": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get users for sitemap
-		 * @description Get all public users for sitemap generation
-		 */
-		get: operations["publicsitemapusersGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/public/feature-flags": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get enabled feature flags
-		 * @description Get all enabled feature flags for frontend consumption
-		 */
-		get: operations["publicfeatureFlagsGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/alliances/{countryId}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get alliances by country
-		 * @description Returns a list of alliances for a specific country
-		 */
-		get: operations["alliancescountryIdGet"];
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
+    "/auth/sign-in/social": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sign in with a social provider */
+        post: operations["socialSignIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/get-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Get the current session */
+        get: operations["getSession"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/sign-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sign out the current user */
+        post: operations["signOut"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/sign-up/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sign up a user using email and password */
+        post: operations["signUpWithEmailAndPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/sign-in/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sign in with email and password */
+        post: operations["signInEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Reset the password for a user */
+        post: operations["resetPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/verify-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Verify the current user's password */
+        post: operations["verifyPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/verify-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Verify the email of the user */
+        get: operations["authverifyEmailGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/send-verification-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Send a verification email to the user */
+        post: operations["sendVerificationEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/change-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["changeEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Change the password of the user */
+        post: operations["changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/update-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Update the current user */
+        post: operations["updateUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/delete-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Delete the user */
+        post: operations["deleteUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/request-password-reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Send a password reset email to the user */
+        post: operations["requestPasswordReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/reset-password/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Redirects the user to the callback URL with the token */
+        get: operations["resetPasswordCallback"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/list-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description List all active sessions for the user */
+        get: operations["listUserSessions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/revoke-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Revoke a single session */
+        post: operations["authrevokeSessionPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/revoke-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Revoke all sessions for the user */
+        post: operations["authrevokeSessionsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/revoke-other-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Revoke all other sessions for the user except the current one */
+        post: operations["authrevokeOtherSessionsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/link-social": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Link a social account to the user */
+        post: operations["linkSocialAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/list-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description List all accounts linked to the user */
+        get: operations["listUserAccounts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/delete-user/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Callback to complete user deletion with verification token */
+        get: operations["authdeleteUsercallbackGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/unlink-account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Unlink an account */
+        post: operations["authunlinkAccountPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/refresh-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Refresh the access token using a refresh token */
+        post: operations["authrefreshTokenPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/get-access-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Get a valid access token, doing a refresh if needed */
+        post: operations["authgetAccessTokenPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/account-info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Get the account info provided by the provider */
+        get: operations["authaccountInfoGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/ok": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Check if the API is working */
+        get: operations["authokGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/error": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Displays an error page */
+        get: operations["autherrorGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkey/generate-register-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Generate registration options for a new passkey */
+        get: operations["generatePasskeyRegistrationOptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkey/generate-authenticate-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Generate authentication options for a passkey */
+        get: operations["passkeyGenerateAuthenticateOptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkey/verify-registration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Verify registration of a new passkey */
+        post: operations["passkeyVerifyRegistration"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkey/verify-authentication": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Verify authentication of a passkey */
+        post: operations["passkeyVerifyAuthentication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkey/list-user-passkeys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description List all passkeys for the authenticated user */
+        get: operations["authpasskeylistUserPasskeysGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkey/delete-passkey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Delete a specific passkey */
+        post: operations["authpasskeydeletePasskeyPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkey/update-passkey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Update a specific passkey's name */
+        post: operations["authpasskeyupdatePasskeyPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/get-totp-uri": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Use this endpoint to get the TOTP URI */
+        post: operations["authtwoFactorgetTotpUriPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/verify-totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Verify two factor TOTP */
+        post: operations["authtwoFactorverifyTotpPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/send-otp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Send two factor OTP to the user */
+        post: operations["authtwoFactorsendOtpPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/verify-otp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Verify two factor OTP */
+        post: operations["authtwoFactorverifyOtpPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/verify-backup-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Verify a backup code for two-factor authentication */
+        post: operations["authtwoFactorverifyBackupCodePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/generate-backup-codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Generate new backup codes for two-factor authentication */
+        post: operations["authtwoFactorgenerateBackupCodesPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled. */
+        post: operations["authtwoFactorenablePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Use this endpoint to disable two factor authentication. */
+        post: operations["authtwoFactordisablePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/set-role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Set the role of a user */
+        post: operations["setUserRole"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/get-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Get an existing user */
+        get: operations["getUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/create-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Create a new user */
+        post: operations["createUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/update-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Update a user's details */
+        post: operations["updateUser1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/list-users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description List users */
+        get: operations["listUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/list-user-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description List user sessions */
+        post: operations["listUserSessions1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/unban-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Unban a user */
+        post: operations["unbanUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/ban-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Ban a user */
+        post: operations["banUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/impersonate-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Impersonate a user */
+        post: operations["impersonateUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/stop-impersonating": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["authadminstopImpersonatingPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/revoke-user-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Revoke a user session */
+        post: operations["revokeUserSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/revoke-user-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Revoke all user sessions */
+        post: operations["revokeUserSessions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/remove-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Delete a user and all their sessions and accounts. Cannot be undone. */
+        post: operations["removeUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/set-user-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Set a user's password */
+        post: operations["setUserPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/admin/has-permission": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Check if the user has permission */
+        post: operations["authadminhasPermissionPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/countries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all enabled countries
+         * @description Returns a list of all enabled countries with their translations
+         */
+        get: operations["countriesGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user by ID
+         * @description Returns a user by their ID or slug, including club memberships and event registrations
+         */
+        get: operations["usersidGet"];
+        /**
+         * Update user
+         * @description Update user information
+         */
+        put: operations["usersidPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List users
+         * @description Returns a paginated list of users with optional search and sorting
+         */
+        get: operations["usersGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user profile
+         * @description Returns a public user profile by ID or slug
+         */
+        get: operations["usersidprofileGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete user image
+         * @description Delete the user's profile image
+         */
+        delete: operations["usersidimageDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/header-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete user header image */
+        delete: operations["usersidheaderImageDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user statistics
+         * @description Returns statistics for a user
+         */
+        get: operations["usersidstatsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user account info
+         * @description Returns account information for a user
+         */
+        get: operations["usersidaccountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/theme": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update user theme
+         * @description Update the user's theme preference
+         */
+        put: operations["usersidthemePut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/font": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update user font
+         * @description Update the user's font preference
+         */
+        put: operations["usersidfontPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/style": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update user style
+         * @description Update the user's style preference
+         */
+        put: operations["usersidstylePut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/language": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update user language
+         * @description Update the user's language preference
+         */
+        put: operations["usersidlanguagePut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get pending invites
+         * @description Returns a list of pending club invites for the current user
+         */
+        get: operations["usersinvitesGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/invites/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get pending invites count
+         * @description Returns the count of pending club invites for the current user
+         */
+        get: operations["usersinvitescountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/image/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get user avatar upload URL
+         * @description Get a presigned S3 URL for uploading a user avatar image
+         */
+        post: operations["usersidimageuploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/header-image/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get user header image upload URL
+         * @description Get a presigned S3 URL for uploading a user header image
+         */
+        post: operations["usersidheaderImageuploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/daily-quota": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user daily upload quota
+         * @description Check user daily upload quota based on audit logs
+         */
+        get: operations["usersiddailyQuotaGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/me/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current user's clubs
+         * @description Get all clubs the authenticated user is a member of
+         */
+        get: operations["usersmeclubsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delete user account
+         * @description Delete the current user's account. Requires password confirmation if password is set. Transfers club ownership to random manager if available.
+         */
+        post: operations["usersiddeletePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update member role
+         * @description Promote or demote a member (requires club owner role)
+         */
+        put: operations["clubsidmembersmemberIdPut"];
+        post?: never;
+        /**
+         * Remove member from club
+         * @description Remove a member from a club (cannot remove club owner)
+         */
+        delete: operations["clubsidmembersmemberIdDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club members
+         * @description Get paginated list of club members with search and filtering
+         */
+        get: operations["clubsidmembersGet"];
+        put?: never;
+        /**
+         * Add member to club
+         * @description Add a user as a member to a club
+         */
+        post: operations["clubsidmembersPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/members/{memberId}/extend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Extend membership duration
+         * @description Extend a member's membership duration by a specified number of months
+         */
+        put: operations["clubsidmembersmemberIdextendPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/members/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Leave club
+         * @description Leave a club (cannot leave if you are the club owner)
+         */
+        post: operations["clubsidmembersleavePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List clubs
+         * @description List clubs with pagination, search, and sorting
+         */
+        get: operations["clubsGet"];
+        put?: never;
+        /**
+         * Create club
+         * @description Create a new club and assign the creator as owner
+         */
+        post: operations["clubsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club rules
+         * @description Get all rules for a club
+         */
+        get: operations["clubsidrulesGet"];
+        put?: never;
+        /**
+         * Create club rule
+         * @description Create a new rule for a club
+         */
+        post: operations["clubsidrulesPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/rules/{ruleId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club rule
+         * @description Get a specific rule for a club
+         */
+        get: operations["clubsidrulesruleIdGet"];
+        /**
+         * Update club rule
+         * @description Update an existing rule for a club
+         */
+        put: operations["clubsidrulesruleIdPut"];
+        post?: never;
+        /**
+         * Delete club rule
+         * @description Delete a rule from a club
+         */
+        delete: operations["clubsidrulesruleIdDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club posts
+         * @description Get all posts for a club with pagination
+         */
+        get: operations["clubsidpostsGet1"];
+        put?: never;
+        /**
+         * Create club post
+         * @description Create a new post for a club
+         */
+        post: operations["clubsidpostsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/posts/{postId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club post
+         * @description Get a specific post for a club
+         */
+        get: operations["clubsidpostspostIdGet"];
+        /**
+         * Update club post
+         * @description Update an existing post for a club
+         */
+        put: operations["clubsidpostspostIdPut"];
+        post?: never;
+        /**
+         * Delete club post
+         * @description Delete a post from a club
+         */
+        delete: operations["clubsidpostspostIdDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club statistics
+         * @description Get statistics for a club including member growth, role distribution, events, and registrations
+         */
+        get: operations["clubsidstatsGet2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/storage-quota": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check club storage quota
+         * @description Check club storage quota usage
+         */
+        get: operations["clubsidstorageQuotaGet1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/posts/images/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get post image upload URL
+         * @description Get a presigned S3 URL for uploading a post image
+         */
+        post: operations["clubsidpostsimagesuploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club purchases
+         * @description Get paginated purchases for a club
+         */
+        get: operations["clubsidpurchasesGet"];
+        put?: never;
+        /**
+         * Create club purchase
+         * @description Create a new purchase for a club
+         */
+        post: operations["clubsidpurchasesPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/audit-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club audit logs
+         * @description Get audit logs for a club with pagination, search, and filtering by action type
+         */
+        get: operations["clubsidauditLogsGet1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/purchases/{purchaseId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club purchase
+         * @description Get a specific purchase for a club
+         */
+        get: operations["clubsidpurchasespurchaseIdGet"];
+        /**
+         * Update club purchase
+         * @description Update an existing purchase for a club
+         */
+        put: operations["clubsidpurchasespurchaseIdPut"];
+        post?: never;
+        /**
+         * Delete club purchase
+         * @description Delete a purchase from a club
+         */
+        delete: operations["clubsidpurchasespurchaseIdDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/purchases/receipts/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get purchase receipt upload URL
+         * @description Get a presigned S3 URL for uploading a purchase receipt
+         */
+        post: operations["clubsidpurchasesreceiptsuploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club invites
+         * @description Get paginated invites for a club with search and status filtering
+         */
+        get: operations["clubsidinvitesGet"];
+        put?: never;
+        /**
+         * Send club invitation
+         * @description Create and send a club invitation
+         */
+        post: operations["clubsidinvitesPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/invites/{inviteId}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Revoke club invitation
+         * @description Revoke a pending club invitation
+         */
+        put: operations["clubsidinvitesinviteIdrevokePut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/invites/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Count club invites
+         * @description Get count of invites for a club with optional status filter
+         */
+        get: operations["clubsidinvitescountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/invites/requests-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get invite requests count
+         * @description Get count of invite requests (status REQUESTED) for a club
+         */
+        get: operations["clubsidinvitesrequestsCountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/club/member-invite/{inviteCode}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Handle club member invite links */
+        get: operations["clubmemberInviteinviteCodeGet"];
+        put?: never;
+        /**
+         * Accept or decline club invitation
+         * @description Accept or decline a club invitation using the invite code
+         */
+        post: operations["clubmemberInviteinviteCodePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club by ID or slug
+         * @description Get club information by ID or slug (private clubs hidden from non-members)
+         */
+        get: operations["clubsidGet"];
+        /**
+         * Update club information
+         * @description Update club information (requires manager or owner role)
+         */
+        put: operations["clubsidPut"];
+        post?: never;
+        /**
+         * Delete club
+         * @description Delete a club (requires club owner role)
+         */
+        delete: operations["clubsidDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/information": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club information for editing
+         * @description Get club information for editing (requires manager or owner role)
+         */
+        get: operations["clubsidinformationGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/logo/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get club logo upload URL
+         * @description Get presigned S3 URL for uploading club logo
+         */
+        post: operations["clubsidlogouploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/header-image/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get club header image upload URL
+         * @description Get presigned S3 URL for uploading club header image
+         */
+        post: operations["clubsidheaderImageuploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete club logo
+         * @description Delete club logo (requires manager or owner role)
+         */
+        delete: operations["clubsidlogoDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/header-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete club header image
+         * @description Delete club header image (requires manager or owner role)
+         */
+        delete: operations["clubsidheaderImageDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/managers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club managers
+         * @description Get paginated list of club managers and owners
+         */
+        get: operations["clubsidmanagersGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/members/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Count club members
+         * @description Get count of members for a club with optional role filter
+         */
+        get: operations["clubsidmemberscountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/managed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get managed clubs
+         * @description Get list of club IDs managed by current user
+         */
+        get: operations["clubsmanagedGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/membership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check club membership
+         * @description Check if current user is a member of the club
+         */
+        get: operations["clubsidmembershipGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/has-owner": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check if club has owner
+         * @description Check if a club has an owner
+         */
+        get: operations["clubsidhasOwnerGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{clubId}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get events for specific club
+         * @description Get events for a specific club with pagination, search, and sorting
+         */
+        get: operations["clubsclubIdeventsGet1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{clubId}/events/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Count events for club
+         * @description Count events for a specific club with optional search filter
+         */
+        get: operations["clubsclubIdeventscountGet1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/instagram/auth-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Instagram authorization URL
+         * @description Get Instagram authorization URL for club
+         */
+        get: operations["clubsidinstagramauthUrlGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/instagram/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect Instagram account
+         * @description Disconnect Instagram account from club
+         */
+        post: operations["clubsidinstagramdisconnectPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/instagram/check-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check and refresh Instagram token
+         * @description Check Instagram token validity and refresh if needed
+         */
+        get: operations["clubsidinstagramcheckTokenGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/instagram/exchange-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchange Instagram auth code
+         * @description Exchange auth code for token and get pages
+         */
+        post: operations["clubsidinstagramexchangeCodePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/instagram/page-selection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Instagram page selection data
+         * @description Retrieve stored Facebook pages for Instagram connection
+         */
+        get: operations["clubsidinstagrampageSelectionGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/instagram/select-page": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Select Facebook Page for Instagram
+         * @description Connect selected Facebook Page and its Instagram Business Account
+         */
+        post: operations["clubsidinstagramselectPagePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/instagram/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Instagram media
+         * @description Fetch Instagram photos for a club
+         */
+        get: operations["clubsidinstagrammediaGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/claim-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit claim request for unclaimed club
+         * @description Submit a claim request for an unclaimed club. Sends email to admins for review.
+         */
+        post: operations["clubsidclaimRequestPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clubs/{id}/alliances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club alliances
+         * @description Get all alliances a club belongs to
+         */
+        get: operations["clubsidalliancesGet"];
+        /**
+         * Update club alliances
+         * @description Update the alliances a club belongs to (requires manager or owner role)
+         */
+        put: operations["clubsidalliancesPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List events
+         * @description List events with pagination, search, sorting, and privacy filtering
+         */
+        get: operations["eventsGet"];
+        put?: never;
+        /**
+         * Create event
+         * @description Create a new event
+         */
+        post: operations["eventsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/upcoming": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get upcoming events
+         * @description Get upcoming events with privacy filtering
+         */
+        get: operations["eventsupcomingGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get events for calendar view
+         * @description Get events within a date range for calendar display
+         */
+        get: operations["eventscalendarGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event by ID or slug
+         * @description Get event details by ID or slug with club info and registration count
+         */
+        get: operations["eventsidGet"];
+        /**
+         * Update event
+         * @description Update an existing event
+         */
+        put: operations["eventsidPut"];
+        post?: never;
+        /**
+         * Delete event
+         * @description Delete an event
+         */
+        delete: operations["eventsidDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/image/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get event image upload URL
+         * @description Get presigned S3 URL for uploading event image
+         */
+        post: operations["eventsidimageuploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete event image
+         * @description Delete event image
+         */
+        delete: operations["eventsidimageDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/registrations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event registrations
+         * @description Get all registrations for an event
+         */
+        get: operations["eventsidregistrationsGet"];
+        put?: never;
+        /**
+         * Create or update event registration
+         * @description Create or update event registration
+         */
+        post: operations["eventsidregistrationsPost"];
+        /**
+         * Delete event registration
+         * @description Delete the current user's registration for an event
+         */
+        delete: operations["eventsidregistrationsDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/registrations/{registrationId}/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Toggle attendance
+         * @description Toggle attendance for event registration
+         */
+        put: operations["eventsidregistrationsregistrationIdattendancePut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/registrations/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Count event registrations
+         * @description Count registrations for an event
+         */
+        get: operations["eventsidregistrationscountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get rules associated with event
+         * @description Get all rules associated with an event
+         */
+        get: operations["eventsidrulesGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{id}/apply-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event application data
+         * @description Get event details with rules and user's existing registration for the application form. Requires authentication.
+         */
+        get: operations["eventsidapplyDataGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reviews/{type}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get reviews
+         * @description Get all reviews for a user, club, or event
+         */
+        get: operations["reviewstypeidGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a review
+         * @description Leave a review for a user, club, or event. Event reviews require attendance and event completion.
+         */
+        post: operations["reviewsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get clubs for sidebar
+         * @description Get clubs for dashboard sidebar with events preview
+         */
+        get: operations["dashboardclubsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/invites-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get count of pending invites
+         * @description Get count of pending invites for current user
+         */
+        get: operations["dashboardinvitesCountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/invite-requests-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get invite requests count by club
+         * @description Get count of invite requests grouped by club for managed clubs
+         */
+        get: operations["dashboardinviteRequestsCountGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get dashboard statistics
+         * @description Get user dashboard statistics with club memberships and event registrations
+         */
+        get: operations["dashboardstatsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search clubs, users, and events
+         * @description Unified search across clubs, users, and events with pagination and type filtering
+         */
+        get: operations["searchGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/validate-slug": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate slug availability
+         * @description Check if a slug is available for club, event, or user
+         */
+        post: operations["validateSlugPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sitemap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Generate sitemap data
+         * @description Get all public clubs, events, and users for sitemap generation
+         */
+        get: operations["sitemapGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Health check endpoint
+         * @description Check API, database, and Redis health status with latency measurements
+         */
+        get: operations["healthGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all users
+         * @description Admin endpoint to list all users with pagination, search, and sorting
+         */
+        get: operations["adminusersGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user details
+         * @description Admin endpoint to get user details with club memberships
+         */
+        get: operations["adminusersidGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all clubs
+         * @description Admin endpoint to list all clubs with pagination, search, and sorting
+         */
+        get: operations["adminclubsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/clubs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get club details
+         * @description Admin endpoint to get club details
+         */
+        get: operations["adminclubsidGet"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete club
+         * @description Admin endpoint to delete a club
+         */
+        delete: operations["adminclubsidDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/clubs/{id}/ban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Ban club
+         * @description Admin endpoint to ban a club
+         */
+        put: operations["adminclubsidbanPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/clubs/{id}/unban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Unban club
+         * @description Admin endpoint to unban a club
+         */
+        put: operations["adminclubsidunbanPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/clubs/{id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Verify club
+         * @description Admin endpoint to verify a club
+         */
+        put: operations["adminclubsidverifyPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/clubs/{id}/unverify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Unverify club
+         * @description Admin endpoint to unverify a club
+         */
+        put: operations["adminclubsidunverifyPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/unclaimed-clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List unclaimed clubs
+         * @description Admin endpoint to list unclaimed clubs (clubs without CLUB_OWNER)
+         */
+        get: operations["adminunclaimedClubsGet"];
+        put?: never;
+        /**
+         * Create unclaimed club
+         * @description Admin endpoint to create an unclaimed club
+         */
+        post: operations["adminunclaimedClubsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/unclaimed-clubs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get unclaimed club details
+         * @description Admin endpoint to get unclaimed club details
+         */
+        get: operations["adminunclaimedClubsidGet"];
+        /**
+         * Update unclaimed club
+         * @description Admin endpoint to update unclaimed club details
+         */
+        put: operations["adminunclaimedClubsidPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/unclaimed-clubs/{id}/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update unclaimed club logo
+         * @description Admin endpoint to update unclaimed club logo
+         */
+        put: operations["adminunclaimedClubsidlogoPut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/unclaimed-clubs/{id}/logo/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get upload URL for unclaimed club logo
+         * @description Presigned URL for uploading unclaimed club logo
+         */
+        post: operations["adminunclaimedClubsidlogouploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/unclaimed-clubs/{id}/header-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update unclaimed club header image
+         * @description Admin endpoint to update unclaimed club header image
+         */
+        put: operations["adminunclaimedClubsidheaderImagePut"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/unclaimed-clubs/{id}/header-image/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get upload URL for unclaimed club header image
+         * @description Presigned URL for uploading unclaimed club header image
+         */
+        post: operations["adminunclaimedClubsidheaderImageuploadUrlPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/unclaimed-clubs/{id}/assign-owner": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign club owner
+         * @description Admin endpoint to assign owner to unclaimed club
+         */
+        post: operations["adminunclaimedClubsidassignOwnerPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List background tasks
+         * @description Admin endpoint to list all background tasks
+         */
+        get: operations["admintasksGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/tasks/{taskName}/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run background task
+         * @description Admin endpoint to manually trigger a background task
+         */
+        post: operations["admintaskstaskNamerunPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all alliances
+         * @description Admin endpoint to list all alliances with pagination, search, and sorting
+         */
+        get: operations["adminalliancesGet"];
+        put?: never;
+        /**
+         * Create alliance
+         * @description Admin endpoint to create a new alliance
+         */
+        post: operations["adminalliancesPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get alliance by ID
+         * @description Admin endpoint to get a single alliance with its details
+         */
+        get: operations["adminalliancesidGet"];
+        /**
+         * Update alliance
+         * @description Admin endpoint to update an existing alliance
+         */
+        put: operations["adminalliancesidPut"];
+        post?: never;
+        /**
+         * Delete alliance
+         * @description Admin endpoint to delete an alliance and its club associations
+         */
+        delete: operations["adminalliancesidDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances/{id}/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add club to alliance
+         * @description Admin endpoint to add a club to an alliance
+         */
+        post: operations["adminalliancesidclubsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances/{id}/clubs/{clubId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove club from alliance
+         * @description Admin endpoint to remove a club from an alliance
+         */
+        delete: operations["adminalliancesidclubsclubIdDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/feature-flags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all feature flags
+         * @description Admin endpoint to list all feature flags with pagination and search
+         */
+        get: operations["adminfeatureFlagsGet"];
+        put?: never;
+        /**
+         * Create feature flag
+         * @description Admin endpoint to create a new feature flag
+         */
+        post: operations["adminfeatureFlagsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/feature-flags/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get feature flag details
+         * @description Admin endpoint to get a single feature flag
+         */
+        get: operations["adminfeatureFlagsidGet"];
+        /**
+         * Update feature flag
+         * @description Admin endpoint to update a feature flag
+         */
+        put: operations["adminfeatureFlagsidPut"];
+        post?: never;
+        /**
+         * Delete feature flag
+         * @description Admin endpoint to delete a feature flag
+         */
+        delete: operations["adminfeatureFlagsidDelete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/clubs/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get clubs for map
+         * @description Get public clubs with coordinates for map display
+         */
+        get: operations["publicclubsmapGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/sitemap/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get clubs for sitemap
+         * @description Get all public clubs for sitemap generation
+         */
+        get: operations["publicsitemapclubsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/sitemap/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get events for sitemap
+         * @description Get all public events for sitemap generation
+         */
+        get: operations["publicsitemapeventsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/sitemap/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get users for sitemap
+         * @description Get all public users for sitemap generation
+         */
+        get: operations["publicsitemapusersGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/feature-flags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get enabled feature flags
+         * @description Get all enabled feature flags for frontend consumption
+         */
+        get: operations["publicfeatureFlagsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alliances/{countryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get alliances by country
+         * @description Returns a list of alliances for a specific country
+         */
+        get: operations["alliancescountryIdGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-	schemas: {
-		User: {
-			id?: string;
-			name: string;
-			email: string;
-			/** @default false */
-			readonly emailVerified: boolean;
-			image?: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
-			createdAt: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
-			updatedAt: string;
-			/** @default false */
-			readonly twoFactorEnabled: boolean;
-			readonly role?: string;
-			/** @default false */
-			readonly banned: boolean;
-			readonly banReason?: string;
-			/** Format: date-time */
-			readonly banExpires?: string;
-			readonly normalizedEmail?: string;
-			callsign?: string;
-			language?: string;
-			font?: string;
-			theme?: string;
-			style?: string;
-		};
-		Session: {
-			id?: string;
-			/** Format: date-time */
-			expiresAt: string;
-			token: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
-			createdAt: string;
-			/** Format: date-time */
-			updatedAt: string;
-			ipAddress?: string;
-			userAgent?: string;
-			userId: string;
-			impersonatedBy?: string;
-		};
-		Account: {
-			id?: string;
-			accountId: string;
-			providerId: string;
-			userId: string;
-			accessToken?: string;
-			refreshToken?: string;
-			idToken?: string;
-			/** Format: date-time */
-			accessTokenExpiresAt?: string;
-			/** Format: date-time */
-			refreshTokenExpiresAt?: string;
-			scope?: string;
-			password?: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
-			createdAt: string;
-			/** Format: date-time */
-			updatedAt: string;
-		};
-		Verification: {
-			id?: string;
-			identifier: string;
-			value: string;
-			/** Format: date-time */
-			expiresAt: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
-			createdAt: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
-			updatedAt: string;
-		};
-		Passkey: {
-			id?: string;
-			name?: string;
-			publicKey: string;
-			userId: string;
-			credentialID: string;
-			counter: number;
-			deviceType: string;
-			backedUp: boolean;
-			transports?: string;
-			/** Format: date-time */
-			createdAt?: string;
-			aaguid?: string;
-		};
-		TwoFactor: {
-			id?: string;
-			secret: string;
-			backupCodes: string;
-			userId: string;
-		};
-	};
-	responses: never;
-	parameters: never;
-	requestBodies: never;
-	headers: never;
-	pathItems: never;
+    schemas: {
+        User: {
+            id?: string;
+            name: string;
+            email: string;
+            /** @default false */
+            readonly emailVerified: boolean;
+            image?: string;
+            /**
+             * Format: date-time
+             * @default Generated at runtime
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @default Generated at runtime
+             */
+            updatedAt: string;
+            /** @default false */
+            readonly twoFactorEnabled: boolean;
+            readonly role?: string;
+            /** @default false */
+            readonly banned: boolean;
+            readonly banReason?: string;
+            /** Format: date-time */
+            readonly banExpires?: string;
+            readonly normalizedEmail?: string;
+            callsign?: string;
+            language?: string;
+            font?: string;
+            theme?: string;
+            style?: string;
+        };
+        Session: {
+            id?: string;
+            /** Format: date-time */
+            expiresAt: string;
+            token: string;
+            /**
+             * Format: date-time
+             * @default Generated at runtime
+             */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            ipAddress?: string;
+            userAgent?: string;
+            userId: string;
+            impersonatedBy?: string;
+        };
+        Account: {
+            id?: string;
+            accountId: string;
+            providerId: string;
+            userId: string;
+            accessToken?: string;
+            refreshToken?: string;
+            idToken?: string;
+            /** Format: date-time */
+            accessTokenExpiresAt?: string;
+            /** Format: date-time */
+            refreshTokenExpiresAt?: string;
+            scope?: string;
+            password?: string;
+            /**
+             * Format: date-time
+             * @default Generated at runtime
+             */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        Verification: {
+            id?: string;
+            identifier: string;
+            value: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /**
+             * Format: date-time
+             * @default Generated at runtime
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @default Generated at runtime
+             */
+            updatedAt: string;
+        };
+        Passkey: {
+            id?: string;
+            name?: string;
+            publicKey: string;
+            userId: string;
+            credentialID: string;
+            counter: number;
+            deviceType: string;
+            backedUp: boolean;
+            transports?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            aaguid?: string;
+        };
+        TwoFactor: {
+            id?: string;
+            secret: string;
+            backupCodes: string;
+            userId: string;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-	socialSignIn: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description Callback URL to redirect to after the user has signed in */
-					callbackURL?: string | null;
-					newUserCallbackURL?: string | null;
-					/** @description Callback URL to redirect to if an error happens */
-					errorCallbackURL?: string | null;
-					provider: string;
-					/** @description Disable automatic redirection to the provider. Useful for handling the redirection yourself */
-					disableRedirect?: boolean | null;
-					idToken?: {
-						/** @description ID token from the provider */
-						token: string;
-						/** @description Nonce used to generate the token */
-						nonce?: string | null;
-						/** @description Access token from the provider */
-						accessToken?: string | null;
-						/** @description Refresh token from the provider */
-						refreshToken?: string | null;
-						/** @description Expiry date of the token */
-						expiresAt?: number | null;
-					} | null;
-					/** @description Array of scopes to request from the provider. This will override the default scopes passed. */
-					scopes?: unknown[] | null;
-					/** @description Explicitly request sign-up. Useful when disableImplicitSignUp is true for this provider */
-					requestSignUp?: boolean | null;
-					/** @description The login hint to use for the authorization code request */
-					loginHint?: string | null;
-					additionalData?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success - Returns either session details or redirect URL */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						token: string;
-						user: components["schemas"]["User"];
-						url?: string;
-						/** @enum {boolean} */
-						redirect: false;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	getSession: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						session: components["schemas"]["Session"];
-						user: components["schemas"]["User"];
-					} | null;
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	signOut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": Record<string, never>;
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	signUpWithEmailAndPassword: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": {
-					/** @description The name of the user */
-					name: string;
-					/** @description The email of the user */
-					email: string;
-					/** @description The password of the user */
-					password: string;
-					/** @description The profile image URL of the user */
-					image?: string;
-					/** @description The URL to use for email verification callback */
-					callbackURL?: string;
-					/** @description If this is false, the session will not be remembered. Default is `true`. */
-					rememberMe?: boolean;
-				};
-			};
-		};
-		responses: {
-			/** @description Successfully created user */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Authentication token for the session */
-						token?: string | null;
-						user: {
-							/** @description The unique identifier of the user */
-							id: string;
-							/**
-							 * Format: email
-							 * @description The email address of the user
-							 */
-							email: string;
-							/** @description The name of the user */
-							name: string;
-							/**
-							 * Format: uri
-							 * @description The profile image URL of the user
-							 */
-							image?: string | null;
-							/** @description Whether the email has been verified */
-							emailVerified: boolean;
-							/**
-							 * Format: date-time
-							 * @description When the user was created
-							 */
-							createdAt: string;
-							/**
-							 * Format: date-time
-							 * @description When the user was last updated
-							 */
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Unprocessable Entity. User already exists or failed to create user. */
-			422: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	signInEmail: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description Email of the user */
-					email: string;
-					/** @description Password of the user */
-					password: string;
-					/** @description Callback URL to use as a redirect for email verification */
-					callbackURL?: string | null;
-					/**
-					 * @description If this is false, the session will not be remembered. Default is `true`.
-					 * @default true
-					 */
-					rememberMe?: boolean | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success - Returns either session details or redirect URL */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @enum {boolean} */
-						redirect: false;
-						/** @description Session token */
-						token: string;
-						url?: string | null;
-						user: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	resetPassword: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The new password to set */
-					newPassword: string;
-					/** @description The token to reset the password */
-					token?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	verifyPassword: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The password to verify */
-					password: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authverifyEmailGet: {
-		parameters: {
-			query: {
-				/** @description The token to verify the email */
-				token: string;
-				/** @description The URL to redirect to after email verification */
-				callbackURL?: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user: components["schemas"]["User"];
-						/** @description Indicates if the email was verified successfully */
-						status: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	sendVerificationEmail: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": {
-					/**
-					 * @description The email to send the verification email to
-					 * @example user@example.com
-					 */
-					email: string;
-					/**
-					 * @description The URL to use for email verification callback
-					 * @example https://example.com/callback
-					 */
-					callbackURL?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/**
-						 * @description Indicates if the email was sent successfully
-						 * @example true
-						 */
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/**
-						 * @description Error message
-						 * @example Verification email isn't enabled
-						 */
-						message?: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	changeEmail: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The new email address to set must be a valid email address */
-					newEmail: string;
-					/** @description The URL to redirect to after email verification */
-					callbackURL?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Email change request processed successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-						/** @description Indicates if the request was successful */
-						status: boolean;
-						/**
-						 * @description Status message of the email change process
-						 * @enum {string|null}
-						 */
-						message?: "Email updated" | "Verification email sent" | null;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Unprocessable Entity. Email already exists */
-			422: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	changePassword: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The new password to set */
-					newPassword: string;
-					/** @description The current password is required */
-					currentPassword: string;
-					/** @description Must be a boolean value */
-					revokeOtherSessions?: boolean | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Password successfully changed */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description New session token if other sessions were revoked */
-						token?: string | null;
-						user: {
-							/** @description The unique identifier of the user */
-							id: string;
-							/**
-							 * Format: email
-							 * @description The email address of the user
-							 */
-							email: string;
-							/** @description The name of the user */
-							name: string;
-							/**
-							 * Format: uri
-							 * @description The profile image URL of the user
-							 */
-							image?: string | null;
-							/** @description Whether the email has been verified */
-							emailVerified: boolean;
-							/**
-							 * Format: date-time
-							 * @description When the user was created
-							 */
-							createdAt: string;
-							/**
-							 * Format: date-time
-							 * @description When the user was last updated
-							 */
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	updateUser: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": {
-					/** @description The name of the user */
-					name?: string;
-					/** @description The image of the user */
-					image?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	deleteUser: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": {
-					/** @description The callback URL to redirect to after the user is deleted */
-					callbackURL?: string;
-					/** @description The user's password. Required if session is not fresh */
-					password?: string;
-					/** @description The deletion verification token */
-					token?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description User deletion processed successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Indicates if the operation was successful */
-						success: boolean;
-						/**
-						 * @description Status message of the deletion process
-						 * @enum {string}
-						 */
-						message: "User deleted" | "Verification email sent";
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	requestPasswordReset: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The email address of the user to send a password reset email to */
-					email: string;
-					/** @description The URL to redirect the user to reset their password. If the token isn't valid or expired, it'll be redirected with a query parameter `?error=INVALID_TOKEN`. If the token is valid, it'll be redirected with a query parameter `?token=VALID_TOKEN */
-					redirectTo?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-						message?: string;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	resetPasswordCallback: {
-		parameters: {
-			query: {
-				/** @description The URL to redirect the user to reset their password */
-				callbackURL: string;
-			};
-			header?: never;
-			path: {
-				/** @description The token to reset the password */
-				token: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						token?: string;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	listUserSessions: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": components["schemas"]["Session"][];
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authrevokeSessionPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": {
-					/** @description The token to revoke */
-					token: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Indicates if the session was revoked successfully */
-						status: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authrevokeSessionsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": Record<string, never>;
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Indicates if all sessions were revoked successfully */
-						status: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authrevokeOtherSessionsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": Record<string, never>;
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Indicates if all other sessions were revoked successfully */
-						status: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	linkSocialAccount: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The URL to redirect to after the user has signed in */
-					callbackURL?: string | null;
-					provider: string;
-					idToken?: {
-						token: string;
-						nonce?: string | null;
-						accessToken?: string | null;
-						refreshToken?: string | null;
-						scopes?: unknown[] | null;
-					} | null;
-					requestSignUp?: boolean | null;
-					/** @description Additional scopes to request from the provider */
-					scopes?: unknown[] | null;
-					/** @description The URL to redirect to if there is an error during the link process */
-					errorCallbackURL?: string | null;
-					/** @description Disable automatic redirection to the provider. Useful for handling the redirection yourself */
-					disableRedirect?: boolean | null;
-					additionalData?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description The authorization URL to redirect the user to */
-						url?: string;
-						/** @description Indicates if the user should be redirected to the authorization URL */
-						redirect: boolean;
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	listUserAccounts: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						providerId: string;
-						/** Format: date-time */
-						createdAt: string;
-						/** Format: date-time */
-						updatedAt: string;
-						accountId: string;
-						userId: string;
-						scopes: string[];
-					}[];
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authdeleteUsercallbackGet: {
-		parameters: {
-			query?: {
-				token?: string;
-				callbackURL?: string | null;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description User successfully deleted */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Indicates if the deletion was successful */
-						success: boolean;
-						/**
-						 * @description Confirmation message
-						 * @enum {string}
-						 */
-						message: "User deleted";
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authunlinkAccountPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					providerId: string;
-					accountId?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authrefreshTokenPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The provider ID for the OAuth provider */
-					providerId: string;
-					/** @description The account ID associated with the refresh token */
-					accountId?: string | null;
-					/** @description The user ID associated with the account */
-					userId?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Access token refreshed successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						tokenType?: string;
-						idToken?: string;
-						accessToken?: string;
-						refreshToken?: string;
-						/** Format: date-time */
-						accessTokenExpiresAt?: string;
-						/** Format: date-time */
-						refreshTokenExpiresAt?: string;
-					};
-				};
-			};
-			/** @description Invalid refresh token or provider configuration */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content?: never;
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authgetAccessTokenPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The provider ID for the OAuth provider */
-					providerId: string;
-					/** @description The account ID associated with the refresh token */
-					accountId?: string | null;
-					/** @description The user ID associated with the account */
-					userId?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description A Valid access token */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						tokenType?: string;
-						idToken?: string;
-						accessToken?: string;
-						refreshToken?: string;
-						/** Format: date-time */
-						accessTokenExpiresAt?: string;
-						/** Format: date-time */
-						refreshTokenExpiresAt?: string;
-					};
-				};
-			};
-			/** @description Invalid refresh token or provider configuration */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content?: never;
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authaccountInfoGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user: {
-							id: string;
-							name?: string;
-							email?: string;
-							image?: string;
-							emailVerified: boolean;
-						};
-						data: {
-							[key: string]: unknown;
-						};
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authokGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description API is working */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Indicates if the API is working */
-						ok: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	autherrorGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"text/html": string;
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	generatePasskeyRegistrationOptions: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						challenge?: string;
-						rp?: {
-							name?: string;
-							id?: string;
-						};
-						user?: {
-							id?: string;
-							name?: string;
-							displayName?: string;
-						};
-						pubKeyCredParams?: {
-							type?: string;
-							alg?: number;
-						}[];
-						timeout?: number;
-						excludeCredentials?: {
-							id?: string;
-							type?: string;
-							transports?: string[];
-						}[];
-						authenticatorSelection?: {
-							authenticatorAttachment?: string;
-							requireResidentKey?: boolean;
-							userVerification?: string;
-						};
-						attestation?: string;
-						extensions?: Record<string, never>;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	passkeyGenerateAuthenticateOptions: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						challenge?: string;
-						rp?: {
-							name?: string;
-							id?: string;
-						};
-						user?: {
-							id?: string;
-							name?: string;
-							displayName?: string;
-						};
-						timeout?: number;
-						allowCredentials?: {
-							id?: string;
-							type?: string;
-							transports?: string[];
-						}[];
-						userVerification?: string;
-						authenticatorSelection?: {
-							authenticatorAttachment?: string;
-							requireResidentKey?: boolean;
-							userVerification?: string;
-						};
-						extensions?: Record<string, never>;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	passkeyVerifyRegistration: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					response: string;
-					/** @description Name of the passkey */
-					name?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": components["schemas"]["Passkey"];
-				};
-			};
-			/** @description Bad request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content?: never;
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	passkeyVerifyAuthentication: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					response: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						session?: components["schemas"]["Session"];
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authpasskeylistUserPasskeysGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Passkeys retrieved successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": components["schemas"]["Passkey"][];
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authpasskeydeletePasskeyPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The ID of the passkey to delete. Eg: "some-passkey-id" */
-					id: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Passkey deleted successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Indicates whether the deletion was successful */
-						status: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authpasskeyupdatePasskeyPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The ID of the passkey which will be updated. Eg: "passkey-id" */
-					id: string;
-					/** @description The new name which the passkey will be updated to. Eg: "my-new-passkey-name" */
-					name: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Passkey updated successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						passkey: components["schemas"]["Passkey"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactorgetTotpUriPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description User password */
-					password: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Successful response */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						totpURI?: string;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactorverifyTotpPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The otp code to verify. Eg: "012345" */
-					code: string;
-					/** @description If true, the device will be trusted for 30 days. It'll be refreshed on every sign in request within this time. Eg: true */
-					trustDevice?: boolean | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Successful response */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactorsendOtpPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Successful response */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactorverifyOtpPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The otp code to verify. Eg: "012345" */
-					code: string;
-					trustDevice?: boolean | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Two-factor OTP verified successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description Session token for the authenticated session */
-						token: string;
-						/** @description The authenticated user object */
-						user: {
-							/** @description Unique identifier of the user */
-							id: string;
-							/**
-							 * Format: email
-							 * @description User's email address
-							 */
-							email?: string | null;
-							/** @description Whether the email is verified */
-							emailVerified?: boolean | null;
-							/** @description User's name */
-							name?: string | null;
-							/**
-							 * Format: uri
-							 * @description User's profile image URL
-							 */
-							image?: string | null;
-							/**
-							 * Format: date-time
-							 * @description Timestamp when the user was created
-							 */
-							createdAt: string;
-							/**
-							 * Format: date-time
-							 * @description Timestamp when the user was last updated
-							 */
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactorverifyBackupCodePost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description A backup code to verify. Eg: "123456" */
-					code: string;
-					/** @description If true, the session cookie will not be set. */
-					disableSession?: boolean | null;
-					/** @description If true, the device will be trusted for 30 days. It'll be refreshed on every sign in request within this time. Eg: true */
-					trustDevice?: boolean | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Backup code verified successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description The authenticated user object with two-factor details */
-						user: {
-							/** @description Unique identifier of the user */
-							id: string;
-							/**
-							 * Format: email
-							 * @description User's email address
-							 */
-							email?: string | null;
-							/** @description Whether the email is verified */
-							emailVerified?: boolean | null;
-							/** @description User's name */
-							name?: string | null;
-							/**
-							 * Format: uri
-							 * @description User's profile image URL
-							 */
-							image?: string | null;
-							/** @description Whether two-factor authentication is enabled for the user */
-							twoFactorEnabled: boolean;
-							/**
-							 * Format: date-time
-							 * @description Timestamp when the user was created
-							 */
-							createdAt: string;
-							/**
-							 * Format: date-time
-							 * @description Timestamp when the user was last updated
-							 */
-							updatedAt: string;
-						};
-						/** @description The current session object, included unless disableSession is true */
-						session: {
-							/** @description Session token */
-							token: string;
-							/** @description ID of the user associated with the session */
-							userId: string;
-							/**
-							 * Format: date-time
-							 * @description Timestamp when the session was created
-							 */
-							createdAt: string;
-							/**
-							 * Format: date-time
-							 * @description Timestamp when the session expires
-							 */
-							expiresAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactorgenerateBackupCodesPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The users password. */
-					password: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Backup codes generated successfully */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/**
-						 * @description Indicates if the backup codes were generated successfully
-						 * @enum {boolean}
-						 */
-						status: true;
-						/** @description Array of generated backup codes in plain text */
-						backupCodes: string[];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactorenablePost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description User password */
-					password: string;
-					/** @description Custom issuer for the TOTP URI */
-					issuer?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description Successful response */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @description TOTP URI */
-						totpURI?: string;
-						/** @description Backup codes */
-						backupCodes?: string[];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authtwoFactordisablePost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description User password */
-					password: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Successful response */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	setUserRole: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-					/** @description The role to set, this can be a string or an array of strings. Eg: `admin` or `[admin, user]` */
-					role: string;
-				};
-			};
-		};
-		responses: {
-			/** @description User role updated */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	getUser: {
-		parameters: {
-			query?: {
-				id?: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description User */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	createUser: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The email of the user */
-					email: string;
-					/** @description The password of the user */
-					password: string;
-					/** @description The name of the user */
-					name: string;
-					role?: string | null;
-					data?: string | null;
-				};
-			};
-		};
-		responses: {
-			/** @description User created */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	updateUser1: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-					/** @description The user data to update */
-					data: string;
-				};
-			};
-		};
-		responses: {
-			/** @description User updated */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	listUsers: {
-		parameters: {
-			query?: {
-				searchValue?: string | null;
-				searchField?: string | null;
-				searchOperator?: string | null;
-				limit?: string | null;
-				offset?: string | null;
-				sortBy?: string | null;
-				sortDirection?: string | null;
-				filterField?: string | null;
-				filterValue?: string | null;
-				filterOperator?: string | null;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description List of users */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						users: components["schemas"]["User"][];
-						total: number;
-						limit?: number;
-						offset?: number;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	listUserSessions1: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description List of user sessions */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						sessions?: components["schemas"]["Session"][];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	unbanUser: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description User unbanned */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	banUser: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-					/** @description The reason for the ban */
-					banReason?: string | null;
-					/** @description The number of seconds until the ban expires */
-					banExpiresIn?: number | null;
-				};
-			};
-		};
-		responses: {
-			/** @description User banned */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	impersonateUser: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Impersonation session created */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						session?: components["schemas"]["Session"];
-						user?: components["schemas"]["User"];
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authadminstopImpersonatingPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	revokeUserSession: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The session token */
-					sessionToken: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Session revoked */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	revokeUserSessions: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Sessions revoked */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	removeUser: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The user id */
-					userId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description User removed */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	setUserPassword: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @description The new password */
-					newPassword: string;
-					/** @description The user id */
-					userId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Password set */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status?: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	authadminhasPermissionPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: {
-			content: {
-				"application/json": {
-					/**
-					 * @deprecated
-					 * @description The permission to check
-					 */
-					permission?: Record<string, never>;
-					/** @description The permission to check */
-					permissions: Record<string, never>;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error?: string;
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Unauthorized. Due to missing or invalid authentication. */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message: string;
-					};
-				};
-			};
-			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Not Found. The requested resource was not found. */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
-			429: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
-		};
-	};
-	countriesGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: number;
-						name: string;
-						emoji: string | null;
-						iso2: string;
-						latitude: number | null;
-						longitude: number | null;
-						translations?: {
-							[key: string]: string;
-						} | null;
-					}[];
-				};
-			};
-		};
-	};
-	usersidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						slug: string | null;
-						name: string;
-						bio: string | null;
-						image: string | null;
-						headerImage: string | null;
-						location: string | null;
-						website: string | null;
-						callsign: string | null;
-						isPrivate: boolean;
-						isPrivateEmail: boolean;
-						isPrivatePhone: boolean;
-						isPrivateStats: boolean;
-						language: string;
-						email: string | null;
-						phone: string | null;
-						clubMembership: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-							club: {
-								id: string;
-								name: string;
-								slug: string | null;
-								description: string | null;
-								logo: string | null;
-								location: string | null;
-								website: string | null;
-								isPrivate: boolean;
-								verified: boolean;
-								createdAt: string;
-								_count: {
-									members: number;
-									events: number;
-									reviews: number;
-								};
-							} | null;
-						}[];
-						eventRegistration: {
-							id: string;
-							eventId: string;
-							createdById: string;
-							type: string;
-							paymentMethod: string;
-							attended: boolean;
-							createdAt: string;
-							updatedAt: string;
-							event: {
-								id: string;
-								name: string;
-								slug: string | null;
-								dateStart: string | null;
-							} | null;
-						}[];
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name?: string;
-					bio?: string;
-					website?: unknown;
-					location?: string;
-					phone?: string;
-					slug?: string;
-					callsign?: string;
-					isPrivate?: boolean;
-					isPrivateEmail?: boolean;
-					isPrivatePhone?: boolean;
-					isPrivateStats?: boolean;
-					image?: string;
-					headerImage?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sort?: "admin";
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						users: {
-							id: string;
-							slug: string | null;
-							name: string;
-							bio: string | null;
-							image: string | null;
-							headerImage: string | null;
-							location: string | null;
-							website: string | null;
-							callsign: string | null;
-							isPrivate: boolean;
-							isPrivateEmail: boolean;
-							isPrivatePhone: boolean;
-							isPrivateStats: boolean;
-							language: string;
-							email: string | null;
-							phone: string | null;
-							clubMembership?: {
-								id: string;
-								clubId: string;
-								role: string;
-								club: {
-									id: string;
-									name: string;
-								};
-							}[];
-							isAdmin: boolean;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-		};
-	};
-	usersidprofileGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						slug: string | null;
-						name: string;
-						bio: string | null;
-						image: string | null;
-						headerImage: string | null;
-						location: string | null;
-						website: string | null;
-						callsign: string | null;
-						isPrivate: boolean;
-						isPrivateEmail: boolean;
-						isPrivatePhone: boolean;
-						isPrivateStats: boolean;
-						language: string;
-						email: string | null;
-						phone: string | null;
-						clubMembership: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-							club: {
-								id: string;
-								name: string;
-								slug: string | null;
-								logo: string | null;
-							};
-						}[];
-						eventRegistration: {
-							id: string;
-							eventId: string;
-							createdById: string;
-							type: string;
-							paymentMethod: string;
-							attended: boolean;
-							createdAt: string;
-							updatedAt: string;
-							event: {
-								id: string;
-								name: string;
-								slug: string | null;
-								dateStart: string;
-								club: {
-									id: string;
-									isPrivate: boolean;
-								};
-							};
-						}[];
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidimageDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidheaderImageDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-		};
-	};
-	usersidstatsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						eventRegistration: number;
-						clubMembership: number;
-						reviewsWritten: number;
-						reviewsReceived: number;
-						clubMembershipDetails: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-							club: {
-								id: string;
-								name: string;
-								slug: string | null;
-								description: string | null;
-								logo: string | null;
-								location: string | null;
-								website: string | null;
-								isPrivate: boolean;
-								verified: boolean;
-								createdAt: string;
-								_count: {
-									members: number;
-									events: number;
-									reviews: number;
-								};
-							} | null;
-						}[];
-						eventRegistrationDetails: {
-							id: string;
-							eventId: string;
-							createdById: string;
-							type: string;
-							paymentMethod: string;
-							attended: boolean;
-							createdAt: string;
-							updatedAt: string;
-							event: {
-								id: string;
-								name: string;
-								slug: string | null;
-								dateStart: string | null;
-							} | null;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	usersidaccountGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						hasPassword: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidthemePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					theme: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidfontPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					font: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidstylePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					style: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidlanguagePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @enum {string} */
-					language: "bs" | "en" | "sr";
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersinvitesGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						invites: {
-							id: string;
-							email: string;
-							clubId: string;
-							userId: string | null;
-							/** @enum {string} */
-							status: "PENDING" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "REVOKED" | "REQUESTED";
-							inviteCode: string;
-							expiresAt: string;
-							createdAt: string;
-							updatedAt: string;
-							club: {
-								id: string;
-								name: string;
-								location: string | null;
-								latitude: number | null;
-								longitude: number | null;
-								description: string | null;
-								dateFounded: string | null;
-								slug: string | null;
-								isAllied: boolean;
-								isPrivate: boolean;
-								isPrivateStats: boolean;
-								logo: string | null;
-								contactPhone: string | null;
-								contactEmail: string | null;
-								verified: boolean;
-								website: string | null;
-								instagramUsername: string | null;
-								instagramProfilePictureUrl: string | null;
-								instagramConnected: boolean;
-								instagramBusinessId: string | null;
-								instagramTokenType: string | null;
-								countryId: number | null;
-								banned: boolean | null;
-								banReason: string | null;
-								banExpires: string | null;
-								createdAt: string;
-								updatedAt: string;
-								headerImage: string | null;
-								_count: {
-									members: number;
-								};
-							};
-						}[];
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersinvitescountGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						count: number;
-					};
-				};
-			};
-		};
-	};
-	usersidimageuploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					type: string;
-					size: number;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidheaderImageuploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					type: string;
-					size: number;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersiddailyQuotaGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						currentUsage: number;
-						limit: number;
-						remaining: number;
-						allowed: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersmeclubsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							name: string;
-							location: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							description: string | null;
-							dateFounded: string | null;
-							slug: string | null;
-							isAllied: boolean;
-							isPrivate: boolean;
-							isPrivateStats: boolean;
-							logo: string | null;
-							contactPhone: string | null;
-							contactEmail: string | null;
-							verified: boolean;
-							website: string | null;
-							instagramUsername: string | null;
-							instagramProfilePictureUrl: string | null;
-							instagramConnected: boolean;
-							instagramBusinessId: string | null;
-							instagramTokenType: string | null;
-							countryId: number | null;
-							banned: boolean | null;
-							banReason: string | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							headerImage: string | null;
-						}[];
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersiddeletePost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					password?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmembersmemberIdPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				memberId: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @enum {string} */
-					role: "USER" | "MANAGER" | "CLUB_OWNER";
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						membership: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmembersmemberIdDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				memberId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmembersGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				role?: "all" | "USER" | "MANAGER" | "CLUB_OWNER";
-				sortBy?: "userName" | "userCallsign" | "role" | "createdAt";
-				sortOrder?: "asc" | "desc";
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						page: number;
-						perPage: number;
-						total: number;
-						totalPages: number;
-						members: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-							userName: string;
-							userCallsign: string | null;
-							userAvatar: string | null;
-							userSlug: string | null;
-							user: {
-								id: string;
-								name: string;
-								email: string | null;
-								phone: string | null;
-								image: string | null;
-								callsign: string | null;
-								location: string | null;
-								bio: string | null;
-								website: string | null;
-								createdAt: string;
-								slug: string | null;
-							};
-						}[];
-						privateCount: number;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmembersPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					userId: string;
-					/** @enum {string} */
-					role?: "USER" | "MANAGER";
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						membership: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmembersmemberIdextendPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				memberId: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					duration: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						membership: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-							user: {
-								id: string;
-								name: string;
-								email: string;
-							};
-						};
-						message: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmembersleavePost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "location" | "createdAt";
-				sortOrder?: "asc" | "desc";
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							name: string;
-							location: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							description: string | null;
-							dateFounded: string | null;
-							slug: string | null;
-							isAllied: boolean;
-							isPrivate: boolean;
-							isPrivateStats: boolean;
-							logo: string | null;
-							contactPhone: string | null;
-							contactEmail: string | null;
-							verified: boolean;
-							website: string | null;
-							instagramUsername: string | null;
-							instagramProfilePictureUrl: string | null;
-							instagramConnected: boolean;
-							instagramBusinessId: string | null;
-							instagramTokenType: string | null;
-							countryId: number | null;
-							banned: boolean | null;
-							banReason: string | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							headerImage: string | null;
-							_count: {
-								members: number;
-							};
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-		};
-	};
-	clubsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name: string;
-					countryId: number;
-					location: string;
-					latitude?: number;
-					longitude?: number;
-					description?: string;
-					slug?: string;
-					/** Format: date-time */
-					dateFounded?: string;
-					isAllied?: boolean;
-					isPrivate?: boolean;
-					isPrivateStats?: boolean;
-					logo?: string;
-					headerImage?: string;
-					contactPhone?: string;
-					contactEmail?: string;
-					website?: unknown;
-					instagramUsername?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						club: {
-							id: string;
-							name: string;
-							location: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							description: string | null;
-							dateFounded: string | null;
-							slug: string | null;
-							isAllied: boolean;
-							isPrivate: boolean;
-							isPrivateStats: boolean;
-							logo: string | null;
-							contactPhone: string | null;
-							contactEmail: string | null;
-							verified: boolean;
-							website: string | null;
-							instagramUsername: string | null;
-							instagramProfilePictureUrl: string | null;
-							instagramConnected: boolean;
-							instagramBusinessId: string | null;
-							instagramTokenType: string | null;
-							countryId: number | null;
-							banned: boolean | null;
-							banReason: string | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							headerImage: string | null;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidrulesGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						rules: {
-							id: string;
-							name: string;
-							description: string | null;
-							content: string;
-							clubId: string;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidrulesPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name: string;
-					description?: string;
-					content: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						rule: {
-							id: string;
-							name: string;
-							description: string | null;
-							content: string;
-							clubId: string;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidrulesruleIdGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				ruleId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						rule: {
-							id: string;
-							name: string;
-							description: string | null;
-							content: string;
-							clubId: string;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidrulesruleIdPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				ruleId: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name: string;
-					description?: string;
-					content: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						rule: {
-							id: string;
-							name: string;
-							description: string | null;
-							content: string;
-							clubId: string;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidrulesruleIdDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				ruleId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpostsGet1: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						posts: {
-							id: string;
-							title: string;
-							content: string;
-							images: string[] | null;
-							isPublic: boolean;
-							clubId: string;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpostsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					title: string;
-					content: string;
-					images?: string[];
-					isPublic: boolean;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						post: {
-							id: string;
-							title: string;
-							content: string;
-							images: string[] | null;
-							isPublic: boolean;
-							clubId: string;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpostspostIdGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				postId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						post: {
-							id: string;
-							title: string;
-							content: string;
-							images: string[] | null;
-							isPublic: boolean;
-							clubId: string;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpostspostIdPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				postId: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					title: string;
-					content: string;
-					images?: string[];
-					isPublic: boolean;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						post: {
-							id: string;
-							title: string;
-							content: string;
-							images: string[] | null;
-							isPublic: boolean;
-							clubId: string;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpostspostIdDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				postId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidstatsGet2: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						members: {
-							date: string;
-							count: number;
-						}[];
-						roles: {
-							role: string;
-							count: number;
-						}[];
-						events: {
-							month: string;
-							count: number;
-						}[];
-						recentEvents: {
-							id: string;
-							name: string;
-							dateStart: string;
-							registrationCount: number;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidstorageQuotaGet1: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						currentUsage: number;
-						limit: number;
-						remaining: number;
-						allowed: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpostsimagesuploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					file: {
-						name: string;
-						type: string;
-						size: number;
-					};
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpurchasesGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						purchases: {
-							id: string;
-							title: string;
-							description: string | null;
-							clubId: string;
-							receiptUrls: string[] | null;
-							amount: number;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpurchasesPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					title: string;
-					description?: string;
-					amount: number;
-					receiptUrls?: string[];
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						purchase: {
-							id: string;
-							title: string;
-							description: string | null;
-							clubId: string;
-							receiptUrls: string[] | null;
-							amount: number;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidauditLogsGet1: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				actionType?: string;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						logs: {
-							id: string;
-							createdAt: string;
-							userId: string | null;
-							clubId: string;
-							actionType: string;
-							actionData: {
-								[key: string]: unknown;
-							};
-							ipAddress: string | null;
-							userAgent: string | null;
-							user: {
-								id: string;
-								name: string;
-								email: string;
-							} | null;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpurchasespurchaseIdGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				purchaseId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						purchase: {
-							id: string;
-							title: string;
-							description: string | null;
-							clubId: string;
-							receiptUrls: string[] | null;
-							amount: number;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpurchasespurchaseIdPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				purchaseId: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					title?: string;
-					description?: string;
-					amount?: number;
-					receiptUrls?: string[];
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						purchase: {
-							id: string;
-							title: string;
-							description: string | null;
-							clubId: string;
-							receiptUrls: string[] | null;
-							amount: number;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpurchasespurchaseIdDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				purchaseId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidpurchasesreceiptsuploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					file: {
-						name: string;
-						type: string;
-						size: number;
-					};
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinvitesGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				status?: string;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						invites: {
-							id: string;
-							email: string;
-							clubId: string;
-							userId: string | null;
-							/** @enum {string} */
-							status: "PENDING" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "REVOKED" | "REQUESTED";
-							inviteCode: string;
-							expiresAt: string;
-							createdAt: string;
-							updatedAt: string;
-							userName: string | null;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinvitesPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** Format: email */
-					userEmail?: string;
-					userName?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						invite: {
-							id: string;
-							email: string;
-							clubId: string;
-							userId: string | null;
-							/** @enum {string} */
-							status: "PENDING" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "REVOKED" | "REQUESTED";
-							inviteCode: string;
-							expiresAt: string;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinvitesinviteIdrevokePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				inviteId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinvitescountGet: {
-		parameters: {
-			query?: {
-				status?: string;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						count: number;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinvitesrequestsCountGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						count: number;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubmemberInviteinviteCodeGet: {
-		parameters: {
-			query?: {
-				redirectTo?: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Response */
-			302: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": Record<string, never>;
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubmemberInviteinviteCodePost: {
-		parameters: {
-			query: {
-				action: "approve" | "dismiss";
-				redirectTo?: string;
-			};
-			header?: never;
-			path: {
-				inviteCode: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						location: string | null;
-						latitude: number | null;
-						longitude: number | null;
-						description: string | null;
-						dateFounded: string | null;
-						slug: string | null;
-						isAllied: boolean;
-						isPrivate: boolean;
-						isPrivateStats: boolean;
-						logo: string | null;
-						contactPhone: string | null;
-						contactEmail: string | null;
-						verified: boolean;
-						website: string | null;
-						instagramUsername: string | null;
-						instagramProfilePictureUrl: string | null;
-						instagramConnected: boolean;
-						instagramBusinessId: string | null;
-						instagramTokenType: string | null;
-						countryId: number | null;
-						banned: boolean | null;
-						banReason: string | null;
-						banExpires: string | null;
-						createdAt: string;
-						updatedAt: string;
-						headerImage: string | null;
-						_count: {
-							members: number;
-							posts: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name?: string;
-					countryId?: number;
-					location?: string;
-					latitude?: number;
-					longitude?: number;
-					description?: string;
-					slug?: string;
-					/** Format: date-time */
-					dateFounded?: string;
-					isAllied?: boolean;
-					isPrivate?: boolean;
-					isPrivateStats?: boolean;
-					logo?: string | null;
-					headerImage?: string | null;
-					contactPhone?: string;
-					contactEmail?: string;
-					website?: unknown;
-					instagramUsername?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						club: {
-							id: string;
-							name: string;
-							location: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							description: string | null;
-							dateFounded: string | null;
-							slug: string | null;
-							isAllied: boolean;
-							isPrivate: boolean;
-							isPrivateStats: boolean;
-							logo: string | null;
-							contactPhone: string | null;
-							contactEmail: string | null;
-							verified: boolean;
-							website: string | null;
-							instagramUsername: string | null;
-							instagramProfilePictureUrl: string | null;
-							instagramConnected: boolean;
-							instagramBusinessId: string | null;
-							instagramTokenType: string | null;
-							countryId: number | null;
-							banned: boolean | null;
-							banReason: string | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							headerImage: string | null;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinformationGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						location: string | null;
-						latitude: number | null;
-						longitude: number | null;
-						description: string | null;
-						dateFounded: string | null;
-						slug: string | null;
-						isAllied: boolean;
-						isPrivate: boolean;
-						isPrivateStats: boolean;
-						logo: string | null;
-						contactPhone: string | null;
-						contactEmail: string | null;
-						verified: boolean;
-						website: string | null;
-						instagramUsername: string | null;
-						instagramProfilePictureUrl: string | null;
-						instagramAccessToken: string | null;
-						instagramTokenExpiry: string | null;
-						instagramRefreshToken: string | null;
-						instagramConnected: boolean;
-						instagramBusinessId: string | null;
-						facebookPageId: string | null;
-						instagramTokenType: string | null;
-						countryId: number | null;
-						banned: boolean | null;
-						banReason: string | null;
-						banExpires: string | null;
-						createdAt: string;
-						updatedAt: string;
-						headerImage: string | null;
-						isCurrentUserOwner: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidlogouploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					file: {
-						type: string;
-						size: number;
-					};
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidheaderImageuploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					file: {
-						type: string;
-						size: number;
-					};
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidlogoDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidheaderImageDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmanagersGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						managers: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-							user: {
-								id: string;
-								name: string;
-								email: string;
-							};
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmemberscountGet: {
-		parameters: {
-			query?: {
-				role?: string;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						count: number;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsmanagedGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							name: string | null;
-							logo: string | null;
-						}[];
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidmembershipGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						isMember: boolean;
-						membership: {
-							id: string;
-							userId: string;
-							clubId: string;
-							/** @enum {string} */
-							role: "USER" | "MANAGER" | "CLUB_OWNER";
-							startDate: string | null;
-							endDate: string | null;
-							createdAt: string;
-							updatedAt: string;
-						} | null;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidhasOwnerGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						hasOwner: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsclubIdeventsGet1: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "dateStart";
-				sortOrder?: "asc" | "desc";
-			};
-			header?: never;
-			path: {
-				clubId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						events: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsclubIdeventscountGet1: {
-		parameters: {
-			query?: {
-				search?: string;
-			};
-			header?: never;
-			path: {
-				clubId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						count: number;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinstagramauthUrlGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						authUrl: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinstagramdisconnectPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinstagramcheckTokenGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						connected: boolean;
-						igBusinessId: string | null;
-						tokenType: string | null;
-						expiresAt: string | null;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinstagramexchangeCodePost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					code: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						/** @enum {string} */
-						outcome: "SINGLE_PAGE" | "MULTIPLE_PAGES" | "NO_PAGES";
-						sessionId: string | null;
-						/** @default [] */
-						pages: {
-							id: string;
-							name: string;
-						}[];
-						page: {
-							id: string;
-							name: string;
-						} | null;
-						accessToken: string | null;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinstagrampageSelectionGet: {
-		parameters: {
-			query: {
-				sessionId: string;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						pages: {
-							id: string;
-							name: string;
-							access_token: string;
-							instagram_business_account: {
-								id: string;
-								username?: string;
-								profile_picture_url?: string;
-							} | null;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinstagramselectPagePost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					pageId: string;
-					accessToken?: string;
-					sessionId?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidinstagrammediaGet: {
-		parameters: {
-			query?: {
-				limit?: number;
-			};
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						media: {
-							id: string;
-							caption?: string | null;
-							/** @enum {string} */
-							media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
-							media_url: string;
-							permalink: string;
-							thumbnail_url?: string | null;
-							timestamp: string;
-							username?: string | null;
-						}[];
-						username: string | null;
-					};
-				};
-			};
-		};
-	};
-	clubsidclaimRequestPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					message?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						message: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidalliancesGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						alliances: {
-							id: number;
-							name: string;
-							description: string | null;
-							countryId: number;
-							link: string | null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	clubsidalliancesPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					allianceIds: number[];
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						alliances: {
-							id: number;
-							name: string;
-							description: string | null;
-							countryId: number;
-							link: string | null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "dateStart";
-				sortOrder?: "asc" | "desc";
-				isPrivate?: string;
-				filter?: "mine";
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						events: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-		};
-	};
-	eventsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					clubId: string;
-					name: string;
-					description: string;
-					costPerPerson: number;
-					location: string;
-					googleMapsLink?: string;
-					dateStart: string;
-					dateEnd: string;
-					dateRegistrationsOpen: string;
-					dateRegistrationsClose: string;
-					slug?: string;
-					image?: string;
-					isPrivate?: boolean;
-					allowFreelancers?: boolean;
-					hasBreakfast?: boolean;
-					hasLunch?: boolean;
-					hasDinner?: boolean;
-					hasSnacks?: boolean;
-					hasDrinks?: boolean;
-					hasPrizes?: boolean;
-					ruleIds?: string[];
-					mapData?: unknown;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						event: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsupcomingGet: {
-		parameters: {
-			query?: {
-				limit?: number;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						events: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-							club: {
-								name: string;
-								verified: boolean;
-							} | null;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	eventscalendarGet: {
-		parameters: {
-			query: {
-				startDate: string;
-				endDate: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						events: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-							club: {
-								name: string;
-								verified: boolean;
-								logo: string | null;
-								slug: string | null;
-								id: string;
-							} | null;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						event: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-						};
-						club: {
-							id: string;
-							name: string;
-							slug: string | null;
-							logo: string | null;
-							verified: boolean;
-						} | null;
-						registrationCount: number;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					clubId: string;
-					name: string;
-					description: string;
-					costPerPerson: number;
-					location: string;
-					googleMapsLink?: string;
-					dateStart: string;
-					dateEnd: string;
-					dateRegistrationsOpen: string;
-					dateRegistrationsClose: string;
-					slug?: string;
-					image?: string;
-					isPrivate?: boolean;
-					allowFreelancers?: boolean;
-					hasBreakfast?: boolean;
-					hasLunch?: boolean;
-					hasDinner?: boolean;
-					hasSnacks?: boolean;
-					hasDrinks?: boolean;
-					hasPrizes?: boolean;
-					ruleIds?: string[];
-					mapData?: unknown;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						event: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidimageuploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					file: {
-						type: string;
-						size: number;
-					};
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidimageDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidregistrationsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						registrations: {
-							id: string;
-							eventId: string;
-							createdById: string;
-							type: string;
-							paymentMethod: string;
-							attended: boolean;
-							createdAt: string;
-							updatedAt: string;
-							createdBy: {
-								id: string;
-								name: string;
-								email: string | null;
-								phone: string | null;
-								callsign: string | null;
-								image: string | null;
-							} | null;
-							invitedUsers: {
-								id: string;
-								name: string;
-								email: string | null;
-								phone: string | null;
-								callsign: string | null;
-								image: string | null;
-							}[];
-							invitedUsersNotOnApp: {
-								id: string;
-								eventId: string;
-								eventRegistrationId: string | null;
-								email: string;
-								name: string;
-								createdAt: string;
-								updatedAt: string;
-								expiresAt: string;
-							}[];
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidregistrationsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @enum {string} */
-					type: "solo" | "team";
-					/** @enum {string} */
-					paymentMethod: "cash" | "bank";
-					invitedUserIds?: string[];
-					invitedUsersNotOnApp?: {
-						name: string;
-						/** Format: email */
-						email: string;
-					}[];
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						registration: {
-							id: string;
-							eventId: string;
-							createdById: string;
-							type: string;
-							paymentMethod: string;
-							attended: boolean;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidregistrationsDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidregistrationsregistrationIdattendancePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-				registrationId: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					attended: boolean;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						registration: {
-							id: string;
-							eventId: string;
-							createdById: string;
-							type: string;
-							paymentMethod: string;
-							attended: boolean;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidregistrationscountGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						count: number;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidrulesGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						rules: {
-							id: string;
-							name: string;
-							description: string | null;
-							content: string;
-							clubId: string;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	eventsidapplyDataGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						event: {
-							id: string;
-							name: string;
-							description: string;
-							clubId: string;
-							image: string | null;
-							slug: string | null;
-							dateStart: string;
-							dateEnd: string;
-							dateRegistrationsClose: string;
-							dateRegistrationsOpen: string;
-							isPrivate: boolean;
-							allowFreelancers: boolean;
-							location: string;
-							googleMapsLink: string | null;
-							costPerPerson: number;
-							hasBreakfast: boolean;
-							hasLunch: boolean;
-							hasDinner: boolean;
-							hasSnacks: boolean;
-							hasDrinks: boolean;
-							hasPrizes: boolean;
-							gearRequirements: unknown[] | null;
-							mapData: unknown;
-							createdAt: string;
-							updatedAt: string;
-							club?: {
-								id: string;
-							};
-							rules: {
-								id: string;
-								name: string;
-								description: string | null;
-								content: string;
-								clubId: string;
-								eventId: string | null;
-								createdAt: string;
-								updatedAt: string;
-							}[];
-						};
-						existingRegistration: {
-							id: string;
-							/** @enum {string} */
-							type: "solo" | "team";
-							/** @enum {string} */
-							paymentMethod: "cash" | "bank";
-							invitedUsers: {
-								id: string;
-								name: string;
-								email: string | null;
-								phone: string | null;
-								callsign: string | null;
-								image: string | null;
-							}[];
-							invitedUsersNotOnApp: {
-								id: string;
-								eventId: string;
-								eventRegistrationId: string | null;
-								email: string;
-								name: string;
-							}[];
-						} | null;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	reviewstypeidGet1: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				type: "club" | "event" | "user";
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						reviews: {
-							id: string;
-							/** @enum {string} */
-							type: "USER" | "CLUB" | "EVENT";
-							rating: number;
-							content: string;
-							authorId: string;
-							userId: string | null;
-							clubId: string | null;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	dashboardclubsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							name: string;
-							logo: string | null;
-							/** @enum {string} */
-							membershipRole: "USER" | "MANAGER" | "CLUB_OWNER";
-							events: {
-								id: string;
-								name: string;
-								dateStart: string;
-							}[];
-							_count: {
-								members: number;
-								events: number;
-								reviews: number;
-							};
-							reviews: {
-								content: string;
-							}[];
-						}[];
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	dashboardinvitesCountGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						count: number;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	dashboardinviteRequestsCountGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							count: number;
-						}[];
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	dashboardstatsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						eventRegistration: number;
-						clubMembership: number;
-						reviewsWritten: number;
-						reviewsReceived: number;
-						clubMembershipDetails: {
-							id: string;
-							role: string;
-							club: {
-								id: string;
-								name: string;
-								logo: string | null;
-								_count: {
-									members: number;
-									events: number;
-									reviews: number;
-								};
-								events: {
-									id: string;
-									name: string;
-									dateStart: string;
-								}[];
-								reviews: {
-									content: string;
-								}[];
-							} | null;
-						}[];
-						eventRegistrationDetails: {
-							id: string;
-							type: string;
-							event: {
-								id: string;
-								name: string;
-								slug: string | null;
-								dateStart: string;
-							} | null;
-						}[];
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	searchGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				filter?: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						items: (
-							| {
-									/** @enum {string} */
-									type: "club";
-									id: string;
-									name: string;
-									relevanceScore: number;
-									data: {
-										id: string;
-										name: string;
-										slug: string | null;
-										logo: string | null;
-										location: string | null;
-										verified: boolean;
-										_count: {
-											members: number;
-										};
-									};
-							  }
-							| {
-									/** @enum {string} */
-									type: "user";
-									id: string;
-									name: string;
-									relevanceScore: number;
-									data: {
-										id?: string;
-										email?: string;
-										name?: string;
-										emailVerified?: boolean;
-										normalizedEmail?: string | null;
-										image?: string | null;
-										slug?: string | null;
-										bio?: string | null;
-										location?: string | null;
-										website?: string | null;
-										phone?: string | null;
-										callsign?: string | null;
-										gear?:
-											| (
-													| (string | number | boolean | null)
-													| {
-															[key: string]: unknown;
-													  }
-													| unknown[]
-											  )[]
-											| null;
-										font?: string;
-										theme?: string;
-										style?: string;
-										language?: string;
-										isPrivate?: boolean;
-										isPrivateEmail?: boolean;
-										isPrivatePhone?: boolean;
-										isPrivateStats?: boolean;
-										role?: string | null;
-										banned?: boolean | null;
-										banReason?: string | null;
-										banExpires?: string | null;
-										twoFactorEnabled?: boolean | null;
-										createdAt?: string;
-										updatedAt?: string;
-										headerImage?: string | null;
-									};
-							  }
-							| {
-									/** @enum {string} */
-									type: "event";
-									id: string;
-									name: string;
-									relevanceScore: number;
-									data: {
-										id?: string;
-										name?: string;
-										description?: string;
-										clubId?: string;
-										image?: string | null;
-										slug?: string | null;
-										dateStart?: string;
-										dateEnd?: string;
-										dateRegistrationsClose?: string;
-										dateRegistrationsOpen?: string;
-										isPrivate?: boolean;
-										allowFreelancers?: boolean;
-										location?: string;
-										googleMapsLink?: string | null;
-										costPerPerson?: number;
-										hasBreakfast?: boolean;
-										hasLunch?: boolean;
-										hasDinner?: boolean;
-										hasSnacks?: boolean;
-										hasDrinks?: boolean;
-										hasPrizes?: boolean;
-										gearRequirements?:
-											| (
-													| (string | number | boolean | null)
-													| {
-															[key: string]: unknown;
-													  }
-													| unknown[]
-											  )[]
-											| null;
-										mapData?:
-											| (
-													| (string | number | boolean | null)
-													| {
-															[key: string]: unknown;
-													  }
-													| unknown[]
-											  )
-											| null;
-										createdAt?: string;
-										updatedAt?: string;
-									};
-							  }
-						)[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-		};
-	};
-	validateSlugPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					/** @enum {string} */
-					type: "club" | "event" | "user";
-					slug: string;
-					excludeId?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						available: boolean;
-					};
-				};
-			};
-		};
-	};
-	reviewsGet: {
-		parameters: {
-			query?: {
-				clubId?: string;
-				eventId?: string;
-				userId?: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						reviews: {
-							id: string;
-							/** @enum {string} */
-							type: "USER" | "CLUB" | "EVENT";
-							rating: number;
-							content: string;
-							authorId: string;
-							userId: string | null;
-							clubId: string | null;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	sitemapGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							slug: string | null;
-							updatedAt: string;
-						}[];
-						events: {
-							id: string;
-							slug: string | null;
-							updatedAt: string;
-						}[];
-						users: {
-							id: string;
-							slug: string | null;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	healthGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status: string;
-						timestamp: string;
-						database: string;
-						redis: string;
-						databaseLatency: string;
-						redisLatency: string;
-					};
-				};
-			};
-			/** @description Response */
-			503: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						status: string;
-						timestamp: string;
-						database: string;
-						redis: string;
-						databaseLatency: string | null;
-						redisLatency: string | null;
-					};
-				};
-			};
-		};
-	};
-	adminusersGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "email" | "callsign" | "createdAt";
-				sortOrder?: "asc" | "desc";
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						users: {
-							id: string;
-							name: string;
-							email: string;
-							slug: string | null;
-							image: string | null;
-							callsign: string | null;
-							role: string | null;
-							gear: unknown[] | null;
-							banned: boolean | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							clubMembership: {
-								id: string;
-								clubId: string;
-								role: string;
-								club: {
-									name: string;
-								} | null;
-							}[];
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminusersidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						email: string;
-						slug: string | null;
-						image: string | null;
-						callsign: string | null;
-						role: string | null;
-						gear: unknown[] | null;
-						banned: boolean | null;
-						banExpires: string | null;
-						createdAt: string;
-						updatedAt: string;
-						clubMembership: {
-							id: string;
-							clubId: string;
-							role: string;
-							club: {
-								name: string;
-							} | null;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminclubsGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "location" | "createdAt";
-				sortOrder?: "asc" | "desc";
-				countryId?: number;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							name: string;
-							location: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							description: string | null;
-							dateFounded: string | null;
-							slug: string | null;
-							isAllied: boolean;
-							isPrivate: boolean;
-							isPrivateStats: boolean;
-							logo: string | null;
-							contactPhone: string | null;
-							contactEmail: string | null;
-							verified: boolean;
-							/** Format: uri */
-							website: string | null;
-							instagramUsername: string | null;
-							instagramProfilePictureUrl: string | null;
-							instagramConnected: boolean;
-							instagramBusinessId: string | null;
-							countryId: number | null;
-							banned: boolean | null;
-							banReason: string | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							headerImage: string | null;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminclubsidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						location: string | null;
-						latitude: number | null;
-						longitude: number | null;
-						description: string | null;
-						dateFounded: string | null;
-						slug: string | null;
-						isAllied: boolean;
-						isPrivate: boolean;
-						isPrivateStats: boolean;
-						logo: string | null;
-						contactPhone: string | null;
-						contactEmail: string | null;
-						verified: boolean;
-						/** Format: uri */
-						website: string | null;
-						instagramUsername: string | null;
-						instagramProfilePictureUrl: string | null;
-						instagramConnected: boolean;
-						instagramBusinessId: string | null;
-						countryId: number | null;
-						banned: boolean | null;
-						banReason: string | null;
-						banExpires: string | null;
-						createdAt: string;
-						updatedAt: string;
-						headerImage: string | null;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminclubsidDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminclubsidbanPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminclubsidunbanPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminclubsidverifyPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminclubsidunverifyPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "location" | "createdAt";
-				sortOrder?: "asc" | "desc";
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							name: string;
-							location: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							description: string | null;
-							dateFounded: string | null;
-							slug: string | null;
-							isAllied: boolean;
-							isPrivate: boolean;
-							isPrivateStats: boolean;
-							logo: string | null;
-							contactPhone: string | null;
-							contactEmail: string | null;
-							verified: boolean;
-							/** Format: uri */
-							website: string | null;
-							instagramUsername: string | null;
-							instagramProfilePictureUrl: string | null;
-							instagramConnected: boolean;
-							instagramBusinessId: string | null;
-							countryId: number | null;
-							banned: boolean | null;
-							banReason: string | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							headerImage: string | null;
-							_count: {
-								members: number;
-							};
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name: string;
-					countryId?: number;
-					location?: string;
-					latitude?: number;
-					longitude?: number;
-					description?: string;
-					slug?: string;
-					dateFounded?: string;
-					isAllied?: boolean;
-					isPrivate?: boolean;
-					isPrivateStats?: boolean;
-					contactPhone?: string;
-					/** Format: email */
-					contactEmail?: string;
-					website?: unknown;
-					instagramUsername?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						club: {
-							id: string;
-							name: string;
-							location: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							description: string | null;
-							dateFounded: string | null;
-							slug: string | null;
-							isAllied: boolean;
-							isPrivate: boolean;
-							isPrivateStats: boolean;
-							logo: string | null;
-							contactPhone: string | null;
-							contactEmail: string | null;
-							verified: boolean;
-							/** Format: uri */
-							website: string | null;
-							instagramUsername: string | null;
-							instagramProfilePictureUrl: string | null;
-							instagramConnected: boolean;
-							instagramBusinessId: string | null;
-							countryId: number | null;
-							banned: boolean | null;
-							banReason: string | null;
-							banExpires: string | null;
-							createdAt: string;
-							updatedAt: string;
-							headerImage: string | null;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						location: string | null;
-						latitude: number | null;
-						longitude: number | null;
-						description: string | null;
-						dateFounded: string | null;
-						slug: string | null;
-						isAllied: boolean;
-						isPrivate: boolean;
-						isPrivateStats: boolean;
-						logo: string | null;
-						contactPhone: string | null;
-						contactEmail: string | null;
-						verified: boolean;
-						/** Format: uri */
-						website: string | null;
-						instagramUsername: string | null;
-						instagramProfilePictureUrl: string | null;
-						instagramConnected: boolean;
-						instagramBusinessId: string | null;
-						countryId: number | null;
-						banned: boolean | null;
-						banReason: string | null;
-						banExpires: string | null;
-						createdAt: string;
-						updatedAt: string;
-						headerImage: string | null;
-						_count: {
-							members: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name?: string;
-					countryId?: number;
-					location?: string;
-					latitude?: number;
-					longitude?: number;
-					description?: string;
-					slug?: string;
-					dateFounded?: string;
-					isAllied?: boolean;
-					isPrivate?: boolean;
-					isPrivateStats?: boolean;
-					logo?: string;
-					headerImage?: string;
-					contactPhone?: string;
-					/** Format: email */
-					contactEmail?: string;
-					website?: unknown;
-					instagramUsername?: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Internal Server Error */
-			500: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidlogoPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					logo: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidlogouploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					file: {
-						type: string;
-						size: number;
-					};
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidheaderImagePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					headerImage: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidheaderImageuploadUrlPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					file: {
-						type: string;
-						size: number;
-					};
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						url: string;
-						cdnUrl: string;
-						key: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminunclaimedClubsidassignOwnerPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					userId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	admintasksGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						tasks: {
-							name: string;
-							description: string;
-							interval: string;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	admintaskstaskNamerunPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				taskName: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-						message: string;
-						duration?: string;
-						data?: {
-							deletedCount?: number;
-						};
-					};
-				};
-			};
-		};
-	};
-	adminalliancesGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "createdAt";
-				sortOrder?: "asc" | "desc";
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						alliances: {
-							id: number;
-							name: string;
-							description: string | null;
-							link: string | null;
-							countryId: number;
-							createdAt: string;
-							updatedAt: string;
-							country: {
-								id: number;
-								name: string;
-								iso2: string;
-								iso3: string;
-							};
-							clubAlliances?: {
-								club: {
-									id: string;
-									name: string;
-									location?: string | null;
-									logo?: string | null;
-								};
-							}[];
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminalliancesPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name: string;
-					description?: string;
-					link?: string | "";
-					countryId: number;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						alliance: {
-							id: number;
-							name: string;
-							description: string | null;
-							link: string | null;
-							countryId: number;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminalliancesidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: number;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						alliance: {
-							id: number;
-							name: string;
-							description: string | null;
-							link: string | null;
-							countryId: number;
-							createdAt: string;
-							updatedAt: string;
-							country: {
-								id: number;
-								name: string;
-								iso2: string;
-								iso3: string;
-							};
-							clubAlliances?: {
-								club: {
-									id: string;
-									name: string;
-									location?: string | null;
-									logo?: string | null;
-								};
-							}[];
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminalliancesidPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: number;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name?: string;
-					description?: string;
-					link?: string | "";
-					countryId?: number;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						alliance: {
-							id: number;
-							name: string;
-							description: string | null;
-							link: string | null;
-							countryId: number;
-							createdAt: string;
-							updatedAt: string;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminalliancesidDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: number;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminalliancesidclubsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: number;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					clubId: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubAlliance: {
-							id: number;
-							clubId: string;
-							allianceId: number;
-						};
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Response */
-			409: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminalliancesidclubsclubIdDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: number;
-				clubId: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminfeatureFlagsGet: {
-		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-				search?: string;
-				sortBy?: "name" | "createdAt";
-				sortOrder?: "asc" | "desc";
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						featureFlags: {
-							id: string;
-							name: string;
-							description: string | null;
-							enabled: boolean;
-							createdAt: string;
-							updatedAt: string;
-						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminfeatureFlagsPost: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name: unknown;
-					description?: string;
-					/** @default false */
-					enabled?: boolean;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						description: string | null;
-						enabled: boolean;
-						createdAt: string;
-						updatedAt: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminfeatureFlagsidGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						description: string | null;
-						enabled: boolean;
-						createdAt: string;
-						updatedAt: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminfeatureFlagsidPut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					name?: unknown;
-					description?: string;
-					enabled?: boolean;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						id: string;
-						name: string;
-						description: string | null;
-						enabled: boolean;
-						createdAt: string;
-						updatedAt: string;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	adminfeatureFlagsidDelete: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Not Found */
-			404: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	publicclubsmapGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							name: string;
-							slug: string | null;
-							logo: string | null;
-							latitude: number | null;
-							longitude: number | null;
-							location: string | null;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	publicsitemapclubsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						clubs: {
-							id: string;
-							slug: string | null;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	publicsitemapeventsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						events: {
-							id: string;
-							slug: string | null;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	publicsitemapusersGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						users: {
-							id: string;
-							slug: string | null;
-							updatedAt: string;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	publicfeatureFlagsGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						featureFlags: {
-							name: string;
-							enabled: boolean;
-						}[];
-					};
-				};
-			};
-		};
-	};
-	alliancescountryIdGet: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				countryId: number;
-			};
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						alliances: {
-							id: number;
-							name: string;
-							description: string | null;
-							countryId: number;
-						}[];
-					};
-				};
-			};
-			/** @description Bad Request */
-			400: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
+    socialSignIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Callback URL to redirect to after the user has signed in */
+                    callbackURL?: string | null;
+                    newUserCallbackURL?: string | null;
+                    /** @description Callback URL to redirect to if an error happens */
+                    errorCallbackURL?: string | null;
+                    provider: string;
+                    /** @description Disable automatic redirection to the provider. Useful for handling the redirection yourself */
+                    disableRedirect?: boolean | null;
+                    idToken?: {
+                        /** @description ID token from the provider */
+                        token: string;
+                        /** @description Nonce used to generate the token */
+                        nonce?: string | null;
+                        /** @description Access token from the provider */
+                        accessToken?: string | null;
+                        /** @description Refresh token from the provider */
+                        refreshToken?: string | null;
+                        /** @description Expiry date of the token */
+                        expiresAt?: number | null;
+                    } | null;
+                    /** @description Array of scopes to request from the provider. This will override the default scopes passed. */
+                    scopes?: unknown[] | null;
+                    /** @description Explicitly request sign-up. Useful when disableImplicitSignUp is true for this provider */
+                    requestSignUp?: boolean | null;
+                    /** @description The login hint to use for the authorization code request */
+                    loginHint?: string | null;
+                    additionalData?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success - Returns either session details or redirect URL */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        token: string;
+                        user: components["schemas"]["User"];
+                        url?: string;
+                        /** @enum {boolean} */
+                        redirect: false;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    getSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        session: components["schemas"]["Session"];
+                        user: components["schemas"]["User"];
+                    } | null;
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    signOut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    signUpWithEmailAndPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The name of the user */
+                    name: string;
+                    /** @description The email of the user */
+                    email: string;
+                    /** @description The password of the user */
+                    password: string;
+                    /** @description The profile image URL of the user */
+                    image?: string;
+                    /** @description The URL to use for email verification callback */
+                    callbackURL?: string;
+                    /** @description If this is false, the session will not be remembered. Default is `true`. */
+                    rememberMe?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Successfully created user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Authentication token for the session */
+                        token?: string | null;
+                        user: {
+                            /** @description The unique identifier of the user */
+                            id: string;
+                            /**
+                             * Format: email
+                             * @description The email address of the user
+                             */
+                            email: string;
+                            /** @description The name of the user */
+                            name: string;
+                            /**
+                             * Format: uri
+                             * @description The profile image URL of the user
+                             */
+                            image?: string | null;
+                            /** @description Whether the email has been verified */
+                            emailVerified: boolean;
+                            /**
+                             * Format: date-time
+                             * @description When the user was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description When the user was last updated
+                             */
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Unprocessable Entity. User already exists or failed to create user. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    signInEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Email of the user */
+                    email: string;
+                    /** @description Password of the user */
+                    password: string;
+                    /** @description Callback URL to use as a redirect for email verification */
+                    callbackURL?: string | null;
+                    /**
+                     * @description If this is false, the session will not be remembered. Default is `true`.
+                     * @default true
+                     */
+                    rememberMe?: boolean | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success - Returns either session details or redirect URL */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @enum {boolean} */
+                        redirect: false;
+                        /** @description Session token */
+                        token: string;
+                        url?: string | null;
+                        user: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    resetPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The new password to set */
+                    newPassword: string;
+                    /** @description The token to reset the password */
+                    token?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    verifyPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The password to verify */
+                    password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authverifyEmailGet: {
+        parameters: {
+            query: {
+                /** @description The token to verify the email */
+                token: string;
+                /** @description The URL to redirect to after email verification */
+                callbackURL?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user: components["schemas"]["User"];
+                        /** @description Indicates if the email was verified successfully */
+                        status: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    sendVerificationEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description The email to send the verification email to
+                     * @example user@example.com
+                     */
+                    email: string;
+                    /**
+                     * @description The URL to use for email verification callback
+                     * @example https://example.com/callback
+                     */
+                    callbackURL?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Indicates if the email was sent successfully
+                         * @example true
+                         */
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error message
+                         * @example Verification email isn't enabled
+                         */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    changeEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The new email address to set must be a valid email address */
+                    newEmail: string;
+                    /** @description The URL to redirect to after email verification */
+                    callbackURL?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Email change request processed successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                        /** @description Indicates if the request was successful */
+                        status: boolean;
+                        /**
+                         * @description Status message of the email change process
+                         * @enum {string|null}
+                         */
+                        message?: "Email updated" | "Verification email sent" | null;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Unprocessable Entity. Email already exists */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    changePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The new password to set */
+                    newPassword: string;
+                    /** @description The current password is required */
+                    currentPassword: string;
+                    /** @description Must be a boolean value */
+                    revokeOtherSessions?: boolean | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Password successfully changed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description New session token if other sessions were revoked */
+                        token?: string | null;
+                        user: {
+                            /** @description The unique identifier of the user */
+                            id: string;
+                            /**
+                             * Format: email
+                             * @description The email address of the user
+                             */
+                            email: string;
+                            /** @description The name of the user */
+                            name: string;
+                            /**
+                             * Format: uri
+                             * @description The profile image URL of the user
+                             */
+                            image?: string | null;
+                            /** @description Whether the email has been verified */
+                            emailVerified: boolean;
+                            /**
+                             * Format: date-time
+                             * @description When the user was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description When the user was last updated
+                             */
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    updateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The name of the user */
+                    name?: string;
+                    /** @description The image of the user */
+                    image?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    deleteUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The callback URL to redirect to after the user is deleted */
+                    callbackURL?: string;
+                    /** @description The user's password. Required if session is not fresh */
+                    password?: string;
+                    /** @description The deletion verification token */
+                    token?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description User deletion processed successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Indicates if the operation was successful */
+                        success: boolean;
+                        /**
+                         * @description Status message of the deletion process
+                         * @enum {string}
+                         */
+                        message: "User deleted" | "Verification email sent";
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    requestPasswordReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The email address of the user to send a password reset email to */
+                    email: string;
+                    /** @description The URL to redirect the user to reset their password. If the token isn't valid or expired, it'll be redirected with a query parameter `?error=INVALID_TOKEN`. If the token is valid, it'll be redirected with a query parameter `?token=VALID_TOKEN */
+                    redirectTo?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    resetPasswordCallback: {
+        parameters: {
+            query: {
+                /** @description The URL to redirect the user to reset their password */
+                callbackURL: string;
+            };
+            header?: never;
+            path: {
+                /** @description The token to reset the password */
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        token?: string;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    listUserSessions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Session"][];
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authrevokeSessionPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The token to revoke */
+                    token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Indicates if the session was revoked successfully */
+                        status: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authrevokeSessionsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Indicates if all sessions were revoked successfully */
+                        status: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authrevokeOtherSessionsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Indicates if all other sessions were revoked successfully */
+                        status: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    linkSocialAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The URL to redirect to after the user has signed in */
+                    callbackURL?: string | null;
+                    provider: string;
+                    idToken?: {
+                        token: string;
+                        nonce?: string | null;
+                        accessToken?: string | null;
+                        refreshToken?: string | null;
+                        scopes?: unknown[] | null;
+                    } | null;
+                    requestSignUp?: boolean | null;
+                    /** @description Additional scopes to request from the provider */
+                    scopes?: unknown[] | null;
+                    /** @description The URL to redirect to if there is an error during the link process */
+                    errorCallbackURL?: string | null;
+                    /** @description Disable automatic redirection to the provider. Useful for handling the redirection yourself */
+                    disableRedirect?: boolean | null;
+                    additionalData?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The authorization URL to redirect the user to */
+                        url?: string;
+                        /** @description Indicates if the user should be redirected to the authorization URL */
+                        redirect: boolean;
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    listUserAccounts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        providerId: string;
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        accountId: string;
+                        userId: string;
+                        scopes: string[];
+                    }[];
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authdeleteUsercallbackGet: {
+        parameters: {
+            query?: {
+                token?: string;
+                callbackURL?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User successfully deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Indicates if the deletion was successful */
+                        success: boolean;
+                        /**
+                         * @description Confirmation message
+                         * @enum {string}
+                         */
+                        message: "User deleted";
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authunlinkAccountPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    providerId: string;
+                    accountId?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authrefreshTokenPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The provider ID for the OAuth provider */
+                    providerId: string;
+                    /** @description The account ID associated with the refresh token */
+                    accountId?: string | null;
+                    /** @description The user ID associated with the account */
+                    userId?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Access token refreshed successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        tokenType?: string;
+                        idToken?: string;
+                        accessToken?: string;
+                        refreshToken?: string;
+                        /** Format: date-time */
+                        accessTokenExpiresAt?: string;
+                        /** Format: date-time */
+                        refreshTokenExpiresAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid refresh token or provider configuration */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authgetAccessTokenPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The provider ID for the OAuth provider */
+                    providerId: string;
+                    /** @description The account ID associated with the refresh token */
+                    accountId?: string | null;
+                    /** @description The user ID associated with the account */
+                    userId?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description A Valid access token */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        tokenType?: string;
+                        idToken?: string;
+                        accessToken?: string;
+                        refreshToken?: string;
+                        /** Format: date-time */
+                        accessTokenExpiresAt?: string;
+                        /** Format: date-time */
+                        refreshTokenExpiresAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid refresh token or provider configuration */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authaccountInfoGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user: {
+                            id: string;
+                            name?: string;
+                            email?: string;
+                            image?: string;
+                            emailVerified: boolean;
+                        };
+                        data: {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authokGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description API is working */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Indicates if the API is working */
+                        ok: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    autherrorGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    generatePasskeyRegistrationOptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        challenge?: string;
+                        rp?: {
+                            name?: string;
+                            id?: string;
+                        };
+                        user?: {
+                            id?: string;
+                            name?: string;
+                            displayName?: string;
+                        };
+                        pubKeyCredParams?: {
+                            type?: string;
+                            alg?: number;
+                        }[];
+                        timeout?: number;
+                        excludeCredentials?: {
+                            id?: string;
+                            type?: string;
+                            transports?: string[];
+                        }[];
+                        authenticatorSelection?: {
+                            authenticatorAttachment?: string;
+                            requireResidentKey?: boolean;
+                            userVerification?: string;
+                        };
+                        attestation?: string;
+                        extensions?: Record<string, never>;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    passkeyGenerateAuthenticateOptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        challenge?: string;
+                        rp?: {
+                            name?: string;
+                            id?: string;
+                        };
+                        user?: {
+                            id?: string;
+                            name?: string;
+                            displayName?: string;
+                        };
+                        timeout?: number;
+                        allowCredentials?: {
+                            id?: string;
+                            type?: string;
+                            transports?: string[];
+                        }[];
+                        userVerification?: string;
+                        authenticatorSelection?: {
+                            authenticatorAttachment?: string;
+                            requireResidentKey?: boolean;
+                            userVerification?: string;
+                        };
+                        extensions?: Record<string, never>;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    passkeyVerifyRegistration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    response: string;
+                    /** @description Name of the passkey */
+                    name?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Passkey"];
+                };
+            };
+            /** @description Bad request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    passkeyVerifyAuthentication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    response: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        session?: components["schemas"]["Session"];
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authpasskeylistUserPasskeysGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Passkeys retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Passkey"][];
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authpasskeydeletePasskeyPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The ID of the passkey to delete. Eg: "some-passkey-id" */
+                    id: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Passkey deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Indicates whether the deletion was successful */
+                        status: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authpasskeyupdatePasskeyPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The ID of the passkey which will be updated. Eg: "passkey-id" */
+                    id: string;
+                    /** @description The new name which the passkey will be updated to. Eg: "my-new-passkey-name" */
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Passkey updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        passkey: components["schemas"]["Passkey"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactorgetTotpUriPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description User password */
+                    password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        totpURI?: string;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactorverifyTotpPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The otp code to verify. Eg: "012345" */
+                    code: string;
+                    /** @description If true, the device will be trusted for 30 days. It'll be refreshed on every sign in request within this time. Eg: true */
+                    trustDevice?: boolean | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactorsendOtpPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactorverifyOtpPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The otp code to verify. Eg: "012345" */
+                    code: string;
+                    trustDevice?: boolean | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Two-factor OTP verified successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Session token for the authenticated session */
+                        token: string;
+                        /** @description The authenticated user object */
+                        user: {
+                            /** @description Unique identifier of the user */
+                            id: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email?: string | null;
+                            /** @description Whether the email is verified */
+                            emailVerified?: boolean | null;
+                            /** @description User's name */
+                            name?: string | null;
+                            /**
+                             * Format: uri
+                             * @description User's profile image URL
+                             */
+                            image?: string | null;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user was last updated
+                             */
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactorverifyBackupCodePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description A backup code to verify. Eg: "123456" */
+                    code: string;
+                    /** @description If true, the session cookie will not be set. */
+                    disableSession?: boolean | null;
+                    /** @description If true, the device will be trusted for 30 days. It'll be refreshed on every sign in request within this time. Eg: true */
+                    trustDevice?: boolean | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Backup code verified successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The authenticated user object with two-factor details */
+                        user: {
+                            /** @description Unique identifier of the user */
+                            id: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email?: string | null;
+                            /** @description Whether the email is verified */
+                            emailVerified?: boolean | null;
+                            /** @description User's name */
+                            name?: string | null;
+                            /**
+                             * Format: uri
+                             * @description User's profile image URL
+                             */
+                            image?: string | null;
+                            /** @description Whether two-factor authentication is enabled for the user */
+                            twoFactorEnabled: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user was last updated
+                             */
+                            updatedAt: string;
+                        };
+                        /** @description The current session object, included unless disableSession is true */
+                        session: {
+                            /** @description Session token */
+                            token: string;
+                            /** @description ID of the user associated with the session */
+                            userId: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the session was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the session expires
+                             */
+                            expiresAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactorgenerateBackupCodesPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The users password. */
+                    password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Backup codes generated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Indicates if the backup codes were generated successfully
+                         * @enum {boolean}
+                         */
+                        status: true;
+                        /** @description Array of generated backup codes in plain text */
+                        backupCodes: string[];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactorenablePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description User password */
+                    password: string;
+                    /** @description Custom issuer for the TOTP URI */
+                    issuer?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description TOTP URI */
+                        totpURI?: string;
+                        /** @description Backup codes */
+                        backupCodes?: string[];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authtwoFactordisablePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description User password */
+                    password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    setUserRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                    /** @description The role to set, this can be a string or an array of strings. Eg: `admin` or `[admin, user]` */
+                    role: string;
+                };
+            };
+        };
+        responses: {
+            /** @description User role updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    getUser: {
+        parameters: {
+            query?: {
+                id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    createUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The email of the user */
+                    email: string;
+                    /** @description The password of the user */
+                    password: string;
+                    /** @description The name of the user */
+                    name: string;
+                    role?: string | null;
+                    data?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description User created */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    updateUser1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                    /** @description The user data to update */
+                    data: string;
+                };
+            };
+        };
+        responses: {
+            /** @description User updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    listUsers: {
+        parameters: {
+            query?: {
+                searchValue?: string | null;
+                searchField?: string | null;
+                searchOperator?: string | null;
+                limit?: string | null;
+                offset?: string | null;
+                sortBy?: string | null;
+                sortDirection?: string | null;
+                filterField?: string | null;
+                filterValue?: string | null;
+                filterOperator?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        users: components["schemas"]["User"][];
+                        total: number;
+                        limit?: number;
+                        offset?: number;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    listUserSessions1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description List of user sessions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        sessions?: components["schemas"]["Session"][];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    unbanUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description User unbanned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    banUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                    /** @description The reason for the ban */
+                    banReason?: string | null;
+                    /** @description The number of seconds until the ban expires */
+                    banExpiresIn?: number | null;
+                };
+            };
+        };
+        responses: {
+            /** @description User banned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    impersonateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Impersonation session created */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        session?: components["schemas"]["Session"];
+                        user?: components["schemas"]["User"];
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authadminstopImpersonatingPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    revokeUserSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The session token */
+                    sessionToken: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Session revoked */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    revokeUserSessions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Sessions revoked */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    removeUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The user id */
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description User removed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    setUserPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The new password */
+                    newPassword: string;
+                    /** @description The user id */
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Password set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status?: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    authadminhasPermissionPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /**
+                     * @deprecated
+                     * @description The permission to check
+                     */
+                    permission?: Record<string, never>;
+                    /** @description The permission to check */
+                    permissions: Record<string, never>;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error?: string;
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Unauthorized. Due to missing or invalid authentication. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                    };
+                };
+            };
+            /** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Not Found. The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    countriesGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: number;
+                        name: string;
+                        emoji: string | null;
+                        iso2: string;
+                        latitude: number | null;
+                        longitude: number | null;
+                        translations?: {
+                            [key: string]: string;
+                        } | null;
+                    }[];
+                };
+            };
+        };
+    };
+    usersidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        slug: string | null;
+                        name: string;
+                        bio: string | null;
+                        image: string | null;
+                        headerImage: string | null;
+                        location: string | null;
+                        website: string | null;
+                        callsign: string | null;
+                        isPrivate: boolean;
+                        isPrivateEmail: boolean;
+                        isPrivatePhone: boolean;
+                        isPrivateStats: boolean;
+                        language: string;
+                        email: string | null;
+                        phone: string | null;
+                        clubMembership: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            club: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                description: string | null;
+                                logo: string | null;
+                                location: string | null;
+                                website: string | null;
+                                isPrivate: boolean;
+                                verified: boolean;
+                                createdAt: string;
+                                _count: {
+                                    members: number;
+                                    events: number;
+                                    reviews: number;
+                                };
+                            } | null;
+                        }[];
+                        eventRegistration: {
+                            id: string;
+                            eventId: string;
+                            createdById: string;
+                            type: string;
+                            paymentMethod: string;
+                            attended: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                            event: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                dateStart: string | null;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                    bio?: string;
+                    website?: unknown;
+                    location?: string;
+                    phone?: string;
+                    slug?: string;
+                    callsign?: string;
+                    isPrivate?: boolean;
+                    isPrivateEmail?: boolean;
+                    isPrivatePhone?: boolean;
+                    isPrivateStats?: boolean;
+                    image?: string;
+                    headerImage?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sort?: "admin";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        users: {
+                            id: string;
+                            slug: string | null;
+                            name: string;
+                            bio: string | null;
+                            image: string | null;
+                            headerImage: string | null;
+                            location: string | null;
+                            website: string | null;
+                            callsign: string | null;
+                            isPrivate: boolean;
+                            isPrivateEmail: boolean;
+                            isPrivatePhone: boolean;
+                            isPrivateStats: boolean;
+                            language: string;
+                            email: string | null;
+                            phone: string | null;
+                            clubMembership?: {
+                                id: string;
+                                clubId: string;
+                                role: string;
+                                club: {
+                                    id: string;
+                                    name: string;
+                                };
+                            }[];
+                            isAdmin: boolean;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    usersidprofileGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        slug: string | null;
+                        name: string;
+                        bio: string | null;
+                        image: string | null;
+                        headerImage: string | null;
+                        location: string | null;
+                        website: string | null;
+                        callsign: string | null;
+                        isPrivate: boolean;
+                        isPrivateEmail: boolean;
+                        isPrivatePhone: boolean;
+                        isPrivateStats: boolean;
+                        language: string;
+                        email: string | null;
+                        phone: string | null;
+                        clubMembership: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            club: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                logo: string | null;
+                            };
+                        }[];
+                        eventRegistration: {
+                            id: string;
+                            eventId: string;
+                            createdById: string;
+                            type: string;
+                            paymentMethod: string;
+                            attended: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                            event: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                dateStart: string;
+                                club: {
+                                    id: string;
+                                    isPrivate: boolean;
+                                };
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidimageDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidheaderImageDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+        };
+    };
+    usersidstatsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        eventRegistration: number;
+                        clubMembership: number;
+                        reviewsWritten: number;
+                        reviewsReceived: number;
+                        clubMembershipDetails: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            club: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                description: string | null;
+                                logo: string | null;
+                                location: string | null;
+                                website: string | null;
+                                isPrivate: boolean;
+                                verified: boolean;
+                                createdAt: string;
+                                _count: {
+                                    members: number;
+                                    events: number;
+                                    reviews: number;
+                                };
+                            } | null;
+                        }[];
+                        eventRegistrationDetails: {
+                            id: string;
+                            eventId: string;
+                            createdById: string;
+                            type: string;
+                            paymentMethod: string;
+                            attended: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                            event: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                dateStart: string | null;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    usersidaccountGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        hasPassword: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidthemePut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    theme: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidfontPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    font: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidstylePut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    style: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidlanguagePut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    language: "bs" | "en" | "sr";
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersinvitesGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        invites: {
+                            id: string;
+                            email: string;
+                            clubId: string;
+                            userId: string | null;
+                            /** @enum {string} */
+                            status: "PENDING" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "REVOKED" | "REQUESTED";
+                            inviteCode: string;
+                            expiresAt: string;
+                            createdAt: string;
+                            updatedAt: string;
+                            club: {
+                                id: string;
+                                name: string;
+                                location: string | null;
+                                latitude: number | null;
+                                longitude: number | null;
+                                description: string | null;
+                                dateFounded: string | null;
+                                slug: string | null;
+                                isAllied: boolean;
+                                isPrivate: boolean;
+                                isPrivateStats: boolean;
+                                logo: string | null;
+                                contactPhone: string | null;
+                                contactEmail: string | null;
+                                verified: boolean;
+                                website: string | null;
+                                instagramUsername: string | null;
+                                instagramProfilePictureUrl: string | null;
+                                instagramConnected: boolean;
+                                instagramBusinessId: string | null;
+                                instagramTokenType: string | null;
+                                countryId: number | null;
+                                banned: boolean | null;
+                                banReason: string | null;
+                                banExpires: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                                headerImage: string | null;
+                                _count: {
+                                    members: number;
+                                };
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersinvitescountGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        count: number;
+                    };
+                };
+            };
+        };
+    };
+    usersidimageuploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    type: string;
+                    size: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersidheaderImageuploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    type: string;
+                    size: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersiddailyQuotaGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        currentUsage: number;
+                        limit: number;
+                        remaining: number;
+                        allowed: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersmeclubsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            name: string;
+                            location: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            description: string | null;
+                            dateFounded: string | null;
+                            slug: string | null;
+                            isAllied: boolean;
+                            isPrivate: boolean;
+                            isPrivateStats: boolean;
+                            logo: string | null;
+                            contactPhone: string | null;
+                            contactEmail: string | null;
+                            verified: boolean;
+                            website: string | null;
+                            instagramUsername: string | null;
+                            instagramProfilePictureUrl: string | null;
+                            instagramConnected: boolean;
+                            instagramBusinessId: string | null;
+                            instagramTokenType: string | null;
+                            countryId: number | null;
+                            banned: boolean | null;
+                            banReason: string | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            headerImage: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    usersiddeletePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    password?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmembersmemberIdPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    role: "USER" | "MANAGER" | "CLUB_OWNER";
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        membership: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmembersmemberIdDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmembersGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                role?: "all" | "USER" | "MANAGER" | "CLUB_OWNER";
+                sortBy?: "userName" | "userCallsign" | "role" | "createdAt";
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        page: number;
+                        perPage: number;
+                        total: number;
+                        totalPages: number;
+                        members: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            userName: string;
+                            userCallsign: string | null;
+                            userAvatar: string | null;
+                            userSlug: string | null;
+                            user: {
+                                id: string;
+                                name: string;
+                                email: string | null;
+                                phone: string | null;
+                                image: string | null;
+                                callsign: string | null;
+                                location: string | null;
+                                bio: string | null;
+                                website: string | null;
+                                createdAt: string;
+                                slug: string | null;
+                            };
+                        }[];
+                        privateCount: number;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmembersPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    userId: string;
+                    /** @enum {string} */
+                    role?: "USER" | "MANAGER";
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        membership: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmembersmemberIdextendPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    duration: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        membership: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            user: {
+                                id: string;
+                                name: string;
+                                email: string;
+                            };
+                        };
+                        message: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmembersleavePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "location" | "createdAt";
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            name: string;
+                            location: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            description: string | null;
+                            dateFounded: string | null;
+                            slug: string | null;
+                            isAllied: boolean;
+                            isPrivate: boolean;
+                            isPrivateStats: boolean;
+                            logo: string | null;
+                            contactPhone: string | null;
+                            contactEmail: string | null;
+                            verified: boolean;
+                            website: string | null;
+                            instagramUsername: string | null;
+                            instagramProfilePictureUrl: string | null;
+                            instagramConnected: boolean;
+                            instagramBusinessId: string | null;
+                            instagramTokenType: string | null;
+                            countryId: number | null;
+                            banned: boolean | null;
+                            banReason: string | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            headerImage: string | null;
+                            _count: {
+                                members: number;
+                            };
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    clubsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    countryId: number;
+                    location: string;
+                    latitude?: number;
+                    longitude?: number;
+                    description?: string;
+                    slug?: string;
+                    /** Format: date-time */
+                    dateFounded?: string;
+                    isAllied?: boolean;
+                    isPrivate?: boolean;
+                    isPrivateStats?: boolean;
+                    logo?: string;
+                    headerImage?: string;
+                    contactPhone?: string;
+                    contactEmail?: string;
+                    website?: unknown;
+                    instagramUsername?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        club: {
+                            id: string;
+                            name: string;
+                            location: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            description: string | null;
+                            dateFounded: string | null;
+                            slug: string | null;
+                            isAllied: boolean;
+                            isPrivate: boolean;
+                            isPrivateStats: boolean;
+                            logo: string | null;
+                            contactPhone: string | null;
+                            contactEmail: string | null;
+                            verified: boolean;
+                            website: string | null;
+                            instagramUsername: string | null;
+                            instagramProfilePictureUrl: string | null;
+                            instagramConnected: boolean;
+                            instagramBusinessId: string | null;
+                            instagramTokenType: string | null;
+                            countryId: number | null;
+                            banned: boolean | null;
+                            banReason: string | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            headerImage: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidrulesGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        rules: {
+                            id: string;
+                            name: string;
+                            description: string | null;
+                            content: string;
+                            clubId: string;
+                            eventId: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidrulesPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    description?: string;
+                    content: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        rule: {
+                            id: string;
+                            name: string;
+                            description: string | null;
+                            content: string;
+                            clubId: string;
+                            eventId: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidrulesruleIdGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                ruleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        rule: {
+                            id: string;
+                            name: string;
+                            description: string | null;
+                            content: string;
+                            clubId: string;
+                            eventId: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidrulesruleIdPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                ruleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    description?: string;
+                    content: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        rule: {
+                            id: string;
+                            name: string;
+                            description: string | null;
+                            content: string;
+                            clubId: string;
+                            eventId: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidrulesruleIdDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                ruleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpostsGet1: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        posts: {
+                            id: string;
+                            title: string;
+                            content: string;
+                            images: string[] | null;
+                            isPublic: boolean;
+                            clubId: string;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpostsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    title: string;
+                    content: string;
+                    images?: string[];
+                    isPublic: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        post: {
+                            id: string;
+                            title: string;
+                            content: string;
+                            images: string[] | null;
+                            isPublic: boolean;
+                            clubId: string;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpostspostIdGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                postId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        post: {
+                            id: string;
+                            title: string;
+                            content: string;
+                            images: string[] | null;
+                            isPublic: boolean;
+                            clubId: string;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpostspostIdPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                postId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    title: string;
+                    content: string;
+                    images?: string[];
+                    isPublic: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        post: {
+                            id: string;
+                            title: string;
+                            content: string;
+                            images: string[] | null;
+                            isPublic: boolean;
+                            clubId: string;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpostspostIdDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                postId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidstatsGet2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        members: {
+                            date: string;
+                            count: number;
+                        }[];
+                        roles: {
+                            role: string;
+                            count: number;
+                        }[];
+                        events: {
+                            month: string;
+                            count: number;
+                        }[];
+                        recentEvents: {
+                            id: string;
+                            name: string;
+                            dateStart: string;
+                            registrationCount: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidstorageQuotaGet1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        currentUsage: number;
+                        limit: number;
+                        remaining: number;
+                        allowed: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpostsimagesuploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    file: {
+                        name: string;
+                        type: string;
+                        size: number;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpurchasesGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        purchases: {
+                            id: string;
+                            title: string;
+                            description: string | null;
+                            clubId: string;
+                            receiptUrls: string[] | null;
+                            amount: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpurchasesPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    title: string;
+                    description?: string;
+                    amount: number;
+                    receiptUrls?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        purchase: {
+                            id: string;
+                            title: string;
+                            description: string | null;
+                            clubId: string;
+                            receiptUrls: string[] | null;
+                            amount: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidauditLogsGet1: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                actionType?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        logs: {
+                            id: string;
+                            createdAt: string;
+                            userId: string | null;
+                            clubId: string;
+                            actionType: string;
+                            actionData: {
+                                [key: string]: unknown;
+                            };
+                            ipAddress: string | null;
+                            userAgent: string | null;
+                            user: {
+                                id: string;
+                                name: string;
+                                email: string;
+                            } | null;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpurchasespurchaseIdGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        purchase: {
+                            id: string;
+                            title: string;
+                            description: string | null;
+                            clubId: string;
+                            receiptUrls: string[] | null;
+                            amount: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpurchasespurchaseIdPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    title?: string;
+                    description?: string;
+                    amount?: number;
+                    receiptUrls?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        purchase: {
+                            id: string;
+                            title: string;
+                            description: string | null;
+                            clubId: string;
+                            receiptUrls: string[] | null;
+                            amount: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpurchasespurchaseIdDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                purchaseId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidpurchasesreceiptsuploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    file: {
+                        name: string;
+                        type: string;
+                        size: number;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinvitesGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                status?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        invites: {
+                            id: string;
+                            email: string;
+                            clubId: string;
+                            userId: string | null;
+                            /** @enum {string} */
+                            status: "PENDING" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "REVOKED" | "REQUESTED";
+                            inviteCode: string;
+                            expiresAt: string;
+                            createdAt: string;
+                            updatedAt: string;
+                            userName: string | null;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinvitesPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: email */
+                    userEmail?: string;
+                    userName?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        invite: {
+                            id: string;
+                            email: string;
+                            clubId: string;
+                            userId: string | null;
+                            /** @enum {string} */
+                            status: "PENDING" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "REVOKED" | "REQUESTED";
+                            inviteCode: string;
+                            expiresAt: string;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinvitesinviteIdrevokePut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                inviteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinvitescountGet: {
+        parameters: {
+            query?: {
+                status?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        count: number;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinvitesrequestsCountGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        count: number;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubmemberInviteinviteCodeGet: {
+        parameters: {
+            query?: {
+                redirectTo?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Response */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubmemberInviteinviteCodePost: {
+        parameters: {
+            query: {
+                action: "approve" | "dismiss";
+                redirectTo?: string;
+            };
+            header?: never;
+            path: {
+                inviteCode: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        location: string | null;
+                        latitude: number | null;
+                        longitude: number | null;
+                        description: string | null;
+                        dateFounded: string | null;
+                        slug: string | null;
+                        isAllied: boolean;
+                        isPrivate: boolean;
+                        isPrivateStats: boolean;
+                        logo: string | null;
+                        contactPhone: string | null;
+                        contactEmail: string | null;
+                        verified: boolean;
+                        website: string | null;
+                        instagramUsername: string | null;
+                        instagramProfilePictureUrl: string | null;
+                        instagramConnected: boolean;
+                        instagramBusinessId: string | null;
+                        instagramTokenType: string | null;
+                        countryId: number | null;
+                        banned: boolean | null;
+                        banReason: string | null;
+                        banExpires: string | null;
+                        createdAt: string;
+                        updatedAt: string;
+                        headerImage: string | null;
+                        _count: {
+                            members: number;
+                            posts: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                    countryId?: number;
+                    location?: string;
+                    latitude?: number;
+                    longitude?: number;
+                    description?: string;
+                    slug?: string;
+                    /** Format: date-time */
+                    dateFounded?: string;
+                    isAllied?: boolean;
+                    isPrivate?: boolean;
+                    isPrivateStats?: boolean;
+                    logo?: string | null;
+                    headerImage?: string | null;
+                    contactPhone?: string;
+                    contactEmail?: string;
+                    website?: unknown;
+                    instagramUsername?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        club: {
+                            id: string;
+                            name: string;
+                            location: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            description: string | null;
+                            dateFounded: string | null;
+                            slug: string | null;
+                            isAllied: boolean;
+                            isPrivate: boolean;
+                            isPrivateStats: boolean;
+                            logo: string | null;
+                            contactPhone: string | null;
+                            contactEmail: string | null;
+                            verified: boolean;
+                            website: string | null;
+                            instagramUsername: string | null;
+                            instagramProfilePictureUrl: string | null;
+                            instagramConnected: boolean;
+                            instagramBusinessId: string | null;
+                            instagramTokenType: string | null;
+                            countryId: number | null;
+                            banned: boolean | null;
+                            banReason: string | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            headerImage: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinformationGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        location: string | null;
+                        latitude: number | null;
+                        longitude: number | null;
+                        description: string | null;
+                        dateFounded: string | null;
+                        slug: string | null;
+                        isAllied: boolean;
+                        isPrivate: boolean;
+                        isPrivateStats: boolean;
+                        logo: string | null;
+                        contactPhone: string | null;
+                        contactEmail: string | null;
+                        verified: boolean;
+                        website: string | null;
+                        instagramUsername: string | null;
+                        instagramProfilePictureUrl: string | null;
+                        instagramAccessToken: string | null;
+                        instagramTokenExpiry: string | null;
+                        instagramRefreshToken: string | null;
+                        instagramConnected: boolean;
+                        instagramBusinessId: string | null;
+                        facebookPageId: string | null;
+                        instagramTokenType: string | null;
+                        countryId: number | null;
+                        banned: boolean | null;
+                        banReason: string | null;
+                        banExpires: string | null;
+                        createdAt: string;
+                        updatedAt: string;
+                        headerImage: string | null;
+                        isCurrentUserOwner: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidlogouploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    file: {
+                        type: string;
+                        size: number;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidheaderImageuploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    file: {
+                        type: string;
+                        size: number;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidlogoDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidheaderImageDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmanagersGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        managers: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            user: {
+                                id: string;
+                                name: string;
+                                email: string;
+                            };
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmemberscountGet: {
+        parameters: {
+            query?: {
+                role?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        count: number;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsmanagedGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            name: string | null;
+                            logo: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidmembershipGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        isMember: boolean;
+                        membership: {
+                            id: string;
+                            userId: string;
+                            clubId: string;
+                            /** @enum {string} */
+                            role: "USER" | "MANAGER" | "CLUB_OWNER";
+                            startDate: string | null;
+                            endDate: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidhasOwnerGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        hasOwner: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsclubIdeventsGet1: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "dateStart";
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        events: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsclubIdeventscountGet1: {
+        parameters: {
+            query?: {
+                search?: string;
+            };
+            header?: never;
+            path: {
+                clubId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        count: number;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinstagramauthUrlGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        authUrl: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinstagramdisconnectPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinstagramcheckTokenGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        connected: boolean;
+                        igBusinessId: string | null;
+                        tokenType: string | null;
+                        expiresAt: string | null;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinstagramexchangeCodePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    code: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        outcome: "SINGLE_PAGE" | "MULTIPLE_PAGES" | "NO_PAGES";
+                        sessionId: string | null;
+                        /** @default [] */
+                        pages: {
+                            id: string;
+                            name: string;
+                        }[];
+                        page: {
+                            id: string;
+                            name: string;
+                        } | null;
+                        accessToken: string | null;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinstagrampageSelectionGet: {
+        parameters: {
+            query: {
+                sessionId: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        pages: {
+                            id: string;
+                            name: string;
+                            access_token: string;
+                            instagram_business_account: {
+                                id: string;
+                                username?: string;
+                                profile_picture_url?: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinstagramselectPagePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    pageId: string;
+                    accessToken?: string;
+                    sessionId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidinstagrammediaGet: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        media: {
+                            id: string;
+                            caption?: string | null;
+                            /** @enum {string} */
+                            media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
+                            media_url: string;
+                            permalink: string;
+                            thumbnail_url?: string | null;
+                            timestamp: string;
+                            username?: string | null;
+                        }[];
+                        username: string | null;
+                    };
+                };
+            };
+        };
+    };
+    clubsidclaimRequestPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    message?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        message: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidalliancesGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        alliances: {
+                            id: number;
+                            name: string;
+                            description: string | null;
+                            countryId: number;
+                            link: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    clubsidalliancesPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    allianceIds: number[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        alliances: {
+                            id: number;
+                            name: string;
+                            description: string | null;
+                            countryId: number;
+                            link: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "dateStart";
+                sortOrder?: "asc" | "desc";
+                isPrivate?: string;
+                filter?: "mine";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        events: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    eventsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    clubId: string;
+                    name: string;
+                    description: string;
+                    costPerPerson: number;
+                    location: string;
+                    googleMapsLink?: string;
+                    dateStart: string;
+                    dateEnd: string;
+                    dateRegistrationsOpen: string;
+                    dateRegistrationsClose: string;
+                    slug?: string;
+                    image?: string;
+                    isPrivate?: boolean;
+                    allowFreelancers?: boolean;
+                    hasBreakfast?: boolean;
+                    hasLunch?: boolean;
+                    hasDinner?: boolean;
+                    hasSnacks?: boolean;
+                    hasDrinks?: boolean;
+                    hasPrizes?: boolean;
+                    ruleIds?: string[];
+                    mapData?: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        event: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsupcomingGet: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        events: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                            club: {
+                                name: string;
+                                verified: boolean;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    eventscalendarGet: {
+        parameters: {
+            query: {
+                startDate: string;
+                endDate: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        events: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                            club: {
+                                name: string;
+                                verified: boolean;
+                                logo: string | null;
+                                slug: string | null;
+                                id: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        event: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                        club: {
+                            id: string;
+                            name: string;
+                            slug: string | null;
+                            logo: string | null;
+                            verified: boolean;
+                        } | null;
+                        registrationCount: number;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    clubId: string;
+                    name: string;
+                    description: string;
+                    costPerPerson: number;
+                    location: string;
+                    googleMapsLink?: string;
+                    dateStart: string;
+                    dateEnd: string;
+                    dateRegistrationsOpen: string;
+                    dateRegistrationsClose: string;
+                    slug?: string;
+                    image?: string;
+                    isPrivate?: boolean;
+                    allowFreelancers?: boolean;
+                    hasBreakfast?: boolean;
+                    hasLunch?: boolean;
+                    hasDinner?: boolean;
+                    hasSnacks?: boolean;
+                    hasDrinks?: boolean;
+                    hasPrizes?: boolean;
+                    ruleIds?: string[];
+                    mapData?: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        event: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidimageuploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    file: {
+                        type: string;
+                        size: number;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidimageDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidregistrationsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        registrations: {
+                            id: string;
+                            eventId: string;
+                            createdById: string;
+                            type: string;
+                            paymentMethod: string;
+                            attended: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                            createdBy: {
+                                id: string;
+                                name: string;
+                                email: string | null;
+                                phone: string | null;
+                                callsign: string | null;
+                                image: string | null;
+                            } | null;
+                            invitedUsers: {
+                                id: string;
+                                name: string;
+                                email: string | null;
+                                phone: string | null;
+                                callsign: string | null;
+                                image: string | null;
+                            }[];
+                            invitedUsersNotOnApp: {
+                                id: string;
+                                eventId: string;
+                                eventRegistrationId: string | null;
+                                email: string;
+                                name: string;
+                                createdAt: string;
+                                updatedAt: string;
+                                expiresAt: string;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidregistrationsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "solo" | "team";
+                    /** @enum {string} */
+                    paymentMethod: "cash" | "bank";
+                    invitedUserIds?: string[];
+                    invitedUsersNotOnApp?: {
+                        name: string;
+                        /** Format: email */
+                        email: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        registration: {
+                            id: string;
+                            eventId: string;
+                            createdById: string;
+                            type: string;
+                            paymentMethod: string;
+                            attended: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidregistrationsDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidregistrationsregistrationIdattendancePut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                registrationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    attended: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        registration: {
+                            id: string;
+                            eventId: string;
+                            createdById: string;
+                            type: string;
+                            paymentMethod: string;
+                            attended: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidregistrationscountGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        count: number;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidrulesGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        rules: {
+                            id: string;
+                            name: string;
+                            description: string | null;
+                            content: string;
+                            clubId: string;
+                            eventId: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    eventsidapplyDataGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        event: {
+                            id: string;
+                            name: string;
+                            description: string;
+                            clubId: string;
+                            image: string | null;
+                            slug: string | null;
+                            dateStart: string;
+                            dateEnd: string;
+                            dateRegistrationsClose: string;
+                            dateRegistrationsOpen: string;
+                            isPrivate: boolean;
+                            allowFreelancers: boolean;
+                            location: string;
+                            googleMapsLink: string | null;
+                            costPerPerson: number;
+                            hasBreakfast: boolean;
+                            hasLunch: boolean;
+                            hasDinner: boolean;
+                            hasSnacks: boolean;
+                            hasDrinks: boolean;
+                            hasPrizes: boolean;
+                            gearRequirements: unknown[] | null;
+                            mapData: unknown;
+                            createdAt: string;
+                            updatedAt: string;
+                            club?: {
+                                id: string;
+                            };
+                            rules: {
+                                id: string;
+                                name: string;
+                                description: string | null;
+                                content: string;
+                                clubId: string;
+                                eventId: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                        };
+                        existingRegistration: {
+                            id: string;
+                            /** @enum {string} */
+                            type: "solo" | "team";
+                            /** @enum {string} */
+                            paymentMethod: "cash" | "bank";
+                            invitedUsers: {
+                                id: string;
+                                name: string;
+                                email: string | null;
+                                phone: string | null;
+                                callsign: string | null;
+                                image: string | null;
+                            }[];
+                            invitedUsersNotOnApp: {
+                                id: string;
+                                eventId: string;
+                                eventRegistrationId: string | null;
+                                email: string;
+                                name: string;
+                            }[];
+                        } | null;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    reviewstypeidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                type: "user" | "club" | "event";
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        reviews: {
+                            id: string;
+                            /** @enum {string} */
+                            type: "USER" | "CLUB" | "EVENT";
+                            rating: number;
+                            content: string;
+                            authorId: string;
+                            userId: string | null;
+                            clubId: string | null;
+                            eventId: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            author: {
+                                id: string;
+                                name: string;
+                                image: string | null;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    reviewsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "USER" | "CLUB" | "EVENT";
+                    rating: number;
+                    content: string;
+                    userId?: string;
+                    clubId?: string;
+                    eventId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        review: {
+                            id: string;
+                            /** @enum {string} */
+                            type: "USER" | "CLUB" | "EVENT";
+                            rating: number;
+                            content: string;
+                            authorId: string;
+                            userId: string | null;
+                            clubId: string | null;
+                            eventId: string | null;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    dashboardclubsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            name: string;
+                            logo: string | null;
+                            /** @enum {string} */
+                            membershipRole: "USER" | "MANAGER" | "CLUB_OWNER";
+                            events: {
+                                id: string;
+                                name: string;
+                                dateStart: string;
+                            }[];
+                            _count: {
+                                members: number;
+                                events: number;
+                                reviews: number;
+                            };
+                            reviews: {
+                                content: string;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    dashboardinvitesCountGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        count: number;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    dashboardinviteRequestsCountGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            count: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    dashboardstatsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        eventRegistration: number;
+                        clubMembership: number;
+                        reviewsWritten: number;
+                        reviewsReceived: number;
+                        clubMembershipDetails: {
+                            id: string;
+                            role: string;
+                            club: {
+                                id: string;
+                                name: string;
+                                logo: string | null;
+                                _count: {
+                                    members: number;
+                                    events: number;
+                                    reviews: number;
+                                };
+                                events: {
+                                    id: string;
+                                    name: string;
+                                    dateStart: string;
+                                }[];
+                                reviews: {
+                                    content: string;
+                                }[];
+                            } | null;
+                        }[];
+                        eventRegistrationDetails: {
+                            id: string;
+                            type: string;
+                            event: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                dateStart: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    searchGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: ({
+                            /** @enum {string} */
+                            type: "club";
+                            id: string;
+                            name: string;
+                            relevanceScore: number;
+                            data: {
+                                id: string;
+                                name: string;
+                                slug: string | null;
+                                logo: string | null;
+                                location: string | null;
+                                verified: boolean;
+                                _count: {
+                                    members: number;
+                                };
+                            };
+                        } | {
+                            /** @enum {string} */
+                            type: "user";
+                            id: string;
+                            name: string;
+                            relevanceScore: number;
+                            data: {
+                                id?: string;
+                                email?: string;
+                                name?: string;
+                                emailVerified?: boolean;
+                                normalizedEmail?: string | null;
+                                image?: string | null;
+                                slug?: string | null;
+                                bio?: string | null;
+                                location?: string | null;
+                                website?: string | null;
+                                phone?: string | null;
+                                callsign?: string | null;
+                                gear?: ((string | number | boolean | (null)) | {
+                                    [key: string]: unknown;
+                                } | unknown[])[] | null;
+                                font?: string;
+                                theme?: string;
+                                style?: string;
+                                language?: string;
+                                isPrivate?: boolean;
+                                isPrivateEmail?: boolean;
+                                isPrivatePhone?: boolean;
+                                isPrivateStats?: boolean;
+                                role?: string | null;
+                                banned?: boolean | null;
+                                banReason?: string | null;
+                                banExpires?: string | null;
+                                twoFactorEnabled?: boolean | null;
+                                createdAt?: string;
+                                updatedAt?: string;
+                                headerImage?: string | null;
+                            };
+                        } | {
+                            /** @enum {string} */
+                            type: "event";
+                            id: string;
+                            name: string;
+                            relevanceScore: number;
+                            data: {
+                                id?: string;
+                                name?: string;
+                                description?: string;
+                                clubId?: string;
+                                image?: string | null;
+                                slug?: string | null;
+                                dateStart?: string;
+                                dateEnd?: string;
+                                dateRegistrationsClose?: string;
+                                dateRegistrationsOpen?: string;
+                                isPrivate?: boolean;
+                                allowFreelancers?: boolean;
+                                location?: string;
+                                googleMapsLink?: string | null;
+                                costPerPerson?: number;
+                                hasBreakfast?: boolean;
+                                hasLunch?: boolean;
+                                hasDinner?: boolean;
+                                hasSnacks?: boolean;
+                                hasDrinks?: boolean;
+                                hasPrizes?: boolean;
+                                gearRequirements?: ((string | number | boolean | (null)) | {
+                                    [key: string]: unknown;
+                                } | unknown[])[] | null;
+                                mapData?: ((string | number | boolean | (null)) | {
+                                    [key: string]: unknown;
+                                } | unknown[]) | null;
+                                createdAt?: string;
+                                updatedAt?: string;
+                            };
+                        })[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    validateSlugPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "club" | "event" | "user";
+                    slug: string;
+                    excludeId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        available: boolean;
+                    };
+                };
+            };
+        };
+    };
+    sitemapGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            slug: string | null;
+                            updatedAt: string;
+                        }[];
+                        events: {
+                            id: string;
+                            slug: string | null;
+                            updatedAt: string;
+                        }[];
+                        users: {
+                            id: string;
+                            slug: string | null;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    healthGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        timestamp: string;
+                        database: string;
+                        redis: string;
+                        databaseLatency: string;
+                        redisLatency: string;
+                    };
+                };
+            };
+            /** @description Response */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        timestamp: string;
+                        database: string;
+                        redis: string;
+                        databaseLatency: string | null;
+                        redisLatency: string | null;
+                    };
+                };
+            };
+        };
+    };
+    adminusersGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "email" | "callsign" | "createdAt";
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        users: {
+                            id: string;
+                            name: string;
+                            email: string;
+                            slug: string | null;
+                            image: string | null;
+                            callsign: string | null;
+                            role: string | null;
+                            gear: unknown[] | null;
+                            banned: boolean | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            clubMembership: {
+                                id: string;
+                                clubId: string;
+                                role: string;
+                                club: {
+                                    name: string;
+                                } | null;
+                            }[];
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminusersidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        email: string;
+                        slug: string | null;
+                        image: string | null;
+                        callsign: string | null;
+                        role: string | null;
+                        gear: unknown[] | null;
+                        banned: boolean | null;
+                        banExpires: string | null;
+                        createdAt: string;
+                        updatedAt: string;
+                        clubMembership: {
+                            id: string;
+                            clubId: string;
+                            role: string;
+                            club: {
+                                name: string;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminclubsGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "location" | "createdAt";
+                sortOrder?: "asc" | "desc";
+                countryId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            name: string;
+                            location: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            description: string | null;
+                            dateFounded: string | null;
+                            slug: string | null;
+                            isAllied: boolean;
+                            isPrivate: boolean;
+                            isPrivateStats: boolean;
+                            logo: string | null;
+                            contactPhone: string | null;
+                            contactEmail: string | null;
+                            verified: boolean;
+                            /** Format: uri */
+                            website: string | null;
+                            instagramUsername: string | null;
+                            instagramProfilePictureUrl: string | null;
+                            instagramConnected: boolean;
+                            instagramBusinessId: string | null;
+                            countryId: number | null;
+                            banned: boolean | null;
+                            banReason: string | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            headerImage: string | null;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminclubsidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        location: string | null;
+                        latitude: number | null;
+                        longitude: number | null;
+                        description: string | null;
+                        dateFounded: string | null;
+                        slug: string | null;
+                        isAllied: boolean;
+                        isPrivate: boolean;
+                        isPrivateStats: boolean;
+                        logo: string | null;
+                        contactPhone: string | null;
+                        contactEmail: string | null;
+                        verified: boolean;
+                        /** Format: uri */
+                        website: string | null;
+                        instagramUsername: string | null;
+                        instagramProfilePictureUrl: string | null;
+                        instagramConnected: boolean;
+                        instagramBusinessId: string | null;
+                        countryId: number | null;
+                        banned: boolean | null;
+                        banReason: string | null;
+                        banExpires: string | null;
+                        createdAt: string;
+                        updatedAt: string;
+                        headerImage: string | null;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminclubsidDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminclubsidbanPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminclubsidunbanPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminclubsidverifyPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminclubsidunverifyPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "location" | "createdAt";
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            name: string;
+                            location: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            description: string | null;
+                            dateFounded: string | null;
+                            slug: string | null;
+                            isAllied: boolean;
+                            isPrivate: boolean;
+                            isPrivateStats: boolean;
+                            logo: string | null;
+                            contactPhone: string | null;
+                            contactEmail: string | null;
+                            verified: boolean;
+                            /** Format: uri */
+                            website: string | null;
+                            instagramUsername: string | null;
+                            instagramProfilePictureUrl: string | null;
+                            instagramConnected: boolean;
+                            instagramBusinessId: string | null;
+                            countryId: number | null;
+                            banned: boolean | null;
+                            banReason: string | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            headerImage: string | null;
+                            _count: {
+                                members: number;
+                            };
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    countryId?: number;
+                    location?: string;
+                    latitude?: number;
+                    longitude?: number;
+                    description?: string;
+                    slug?: string;
+                    dateFounded?: string;
+                    isAllied?: boolean;
+                    isPrivate?: boolean;
+                    isPrivateStats?: boolean;
+                    contactPhone?: string;
+                    /** Format: email */
+                    contactEmail?: string;
+                    website?: unknown;
+                    instagramUsername?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        club: {
+                            id: string;
+                            name: string;
+                            location: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            description: string | null;
+                            dateFounded: string | null;
+                            slug: string | null;
+                            isAllied: boolean;
+                            isPrivate: boolean;
+                            isPrivateStats: boolean;
+                            logo: string | null;
+                            contactPhone: string | null;
+                            contactEmail: string | null;
+                            verified: boolean;
+                            /** Format: uri */
+                            website: string | null;
+                            instagramUsername: string | null;
+                            instagramProfilePictureUrl: string | null;
+                            instagramConnected: boolean;
+                            instagramBusinessId: string | null;
+                            countryId: number | null;
+                            banned: boolean | null;
+                            banReason: string | null;
+                            banExpires: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            headerImage: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        location: string | null;
+                        latitude: number | null;
+                        longitude: number | null;
+                        description: string | null;
+                        dateFounded: string | null;
+                        slug: string | null;
+                        isAllied: boolean;
+                        isPrivate: boolean;
+                        isPrivateStats: boolean;
+                        logo: string | null;
+                        contactPhone: string | null;
+                        contactEmail: string | null;
+                        verified: boolean;
+                        /** Format: uri */
+                        website: string | null;
+                        instagramUsername: string | null;
+                        instagramProfilePictureUrl: string | null;
+                        instagramConnected: boolean;
+                        instagramBusinessId: string | null;
+                        countryId: number | null;
+                        banned: boolean | null;
+                        banReason: string | null;
+                        banExpires: string | null;
+                        createdAt: string;
+                        updatedAt: string;
+                        headerImage: string | null;
+                        _count: {
+                            members: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsidPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                    countryId?: number;
+                    location?: string;
+                    latitude?: number;
+                    longitude?: number;
+                    description?: string;
+                    slug?: string;
+                    dateFounded?: string;
+                    isAllied?: boolean;
+                    isPrivate?: boolean;
+                    isPrivateStats?: boolean;
+                    logo?: string;
+                    headerImage?: string;
+                    contactPhone?: string;
+                    /** Format: email */
+                    contactEmail?: string;
+                    website?: unknown;
+                    instagramUsername?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsidlogoPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    logo: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsidlogouploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    file: {
+                        type: string;
+                        size: number;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsidheaderImagePut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    headerImage: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsidheaderImageuploadUrlPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    file: {
+                        type: string;
+                        size: number;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        url: string;
+                        cdnUrl: string;
+                        key: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminunclaimedClubsidassignOwnerPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    admintasksGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        tasks: {
+                            name: string;
+                            description: string;
+                            interval: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    admintaskstaskNamerunPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        message: string;
+                        duration?: string;
+                        data?: {
+                            deletedCount?: number;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    adminalliancesGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "createdAt";
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        alliances: {
+                            id: number;
+                            name: string;
+                            description: string | null;
+                            link: string | null;
+                            countryId: number;
+                            createdAt: string;
+                            updatedAt: string;
+                            country: {
+                                id: number;
+                                name: string;
+                                iso2: string;
+                                iso3: string;
+                            };
+                            clubAlliances?: {
+                                club: {
+                                    id: string;
+                                    name: string;
+                                    location?: string | null;
+                                    logo?: string | null;
+                                };
+                            }[];
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminalliancesPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    description?: string;
+                    link?: string | "";
+                    countryId: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        alliance: {
+                            id: number;
+                            name: string;
+                            description: string | null;
+                            link: string | null;
+                            countryId: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminalliancesidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        alliance: {
+                            id: number;
+                            name: string;
+                            description: string | null;
+                            link: string | null;
+                            countryId: number;
+                            createdAt: string;
+                            updatedAt: string;
+                            country: {
+                                id: number;
+                                name: string;
+                                iso2: string;
+                                iso3: string;
+                            };
+                            clubAlliances?: {
+                                club: {
+                                    id: string;
+                                    name: string;
+                                    location?: string | null;
+                                    logo?: string | null;
+                                };
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminalliancesidPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                    description?: string;
+                    link?: string | "";
+                    countryId?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        alliance: {
+                            id: number;
+                            name: string;
+                            description: string | null;
+                            link: string | null;
+                            countryId: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminalliancesidDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminalliancesidclubsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    clubId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubAlliance: {
+                            id: number;
+                            clubId: string;
+                            allianceId: number;
+                        };
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Response */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminalliancesidclubsclubIdDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                clubId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminfeatureFlagsGet: {
+        parameters: {
+            query?: {
+                page?: unknown;
+                perPage?: unknown;
+                search?: string;
+                sortBy?: "name" | "createdAt";
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        featureFlags: {
+                            id: string;
+                            name: string;
+                            description: string | null;
+                            enabled: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                        pagination: {
+                            page: number;
+                            perPage: number;
+                            total: number;
+                            totalPages: number;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminfeatureFlagsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: unknown;
+                    description?: string;
+                    /** @default false */
+                    enabled?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        description: string | null;
+                        enabled: boolean;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminfeatureFlagsidGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        description: string | null;
+                        enabled: boolean;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminfeatureFlagsidPut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: unknown;
+                    description?: string;
+                    enabled?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                        name: string;
+                        description: string | null;
+                        enabled: boolean;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    adminfeatureFlagsidDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
+    publicclubsmapGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            name: string;
+                            slug: string | null;
+                            logo: string | null;
+                            latitude: number | null;
+                            longitude: number | null;
+                            location: string | null;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    publicsitemapclubsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        clubs: {
+                            id: string;
+                            slug: string | null;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    publicsitemapeventsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        events: {
+                            id: string;
+                            slug: string | null;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    publicsitemapusersGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        users: {
+                            id: string;
+                            slug: string | null;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    publicfeatureFlagsGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        featureFlags: {
+                            name: string;
+                            enabled: boolean;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    alliancescountryIdGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                countryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        alliances: {
+                            id: number;
+                            name: string;
+                            description: string | null;
+                            countryId: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        error: string;
+                    };
+                };
+            };
+        };
+    };
 }

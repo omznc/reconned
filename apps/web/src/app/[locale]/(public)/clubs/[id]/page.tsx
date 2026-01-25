@@ -4,6 +4,7 @@ import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
 import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import {
@@ -11,10 +12,14 @@ import {
 	createBreadcrumbList,
 	createGeoCoordinates,
 	createPostalAddress,
+	createFAQPage,
+	createReviewSchema,
 	removeUndefined,
 } from "@/lib/json-ld";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
+
+export const revalidate = 3600;
 
 export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const params = await props.params;
@@ -75,8 +80,10 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const clubUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`;
 
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
+	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
+	let reviewsResponse: ReviewsDataType | undefined;
 	if (FEATURE_FLAGS.REVIEWS) {
-		const reviewsResponse = await apiServer.GET("/api/reviews/{type}/{id}", {
+		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
 			params: {
 				path: {
 					type: "club",
@@ -84,8 +91,9 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 				},
 			},
 		});
-		if (reviewsResponse.data && reviewsResponse.data.reviews.length > 0) {
-			const reviews = reviewsResponse.data.reviews;
+		reviewsResponse = response.data;
+		if (response.data && response.data.reviews.length > 0) {
+			const reviews = response.data.reviews;
 			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 			aggregateRating = createAggregateRating({
 				ratingValue: averageRating,
@@ -141,10 +149,66 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		{ name: club.name, url: clubUrl },
 	]);
 
+	// Generate FAQ schema for club
+	let faqSchema: ReturnType<typeof createFAQPage> | undefined;
+	if (FEATURE_FLAGS.FAQ_SCHEMA) {
+		const faqs = [
+			{
+				question: t("How do I join this club?"),
+				answer: t(
+					"Click the 'Join Club' button and fill out the application form. The club managers will review your application.",
+				),
+			},
+			{
+				question: t("What are the membership fees?"),
+				answer: t(
+					"Membership fees vary by club. Contact the club directly for information about membership costs.",
+				),
+			},
+			{
+				question: t("Do I need my own equipment?"),
+				answer: t(
+					"Yes, most clubs require you to have your own airsoft equipment. Some clubs offer rental options for beginners.",
+				),
+			},
+			{
+				question: t("How often are events organized?"),
+				answer: t(
+					"Events are organized regularly throughout the year. Check the club's event page for upcoming activities.",
+				),
+			},
+		];
+		faqSchema = createFAQPage({
+			faqs,
+			name: club.name,
+			description: club.description || undefined,
+		});
+	}
+
+	// Generate review schema
+	let reviewSchema: ReturnType<typeof createReviewSchema> | undefined;
+	if (FEATURE_FLAGS.REVIEWS && reviewsResponse?.reviews) {
+		const reviews = reviewsResponse.reviews;
+		if (reviews.length > 0) {
+			reviewSchema = createReviewSchema({
+				reviews: reviews.map((review) => ({
+					author: review.author?.name || t("Anonymous"),
+					rating: review.rating,
+					content: review.content || "",
+					datePublished: new Date(review.createdAt).toISOString(),
+				})),
+				itemReviewed: club.name,
+				itemReviewedType: "SportsOrganization",
+			});
+		}
+	}
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] pb-8 px-4">
 			<JsonLdScript data={sportsOrganizationSchema} />
 			<JsonLdScript data={breadcrumbSchema} />
+			{faqSchema && <JsonLdScript data={faqSchema} />}
+			{reviewSchema && <JsonLdScript data={reviewSchema} />}
 			<ClubOverview
 				club={club}
 				isManager={isManager}

@@ -5,16 +5,20 @@ import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
 import {
 	createAggregateRating,
 	createBreadcrumbList,
 	createPostalAddress,
 	createSportsOrganizationReference,
+	createReviewSchema,
 	removeUndefined,
 } from "@/lib/json-ld";
 import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
+
+export const revalidate = 3600;
 
 export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
@@ -35,8 +39,10 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const userUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`;
 
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
+	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
+	let reviewsResponse: ReviewsDataType | undefined;
 	if (FEATURE_FLAGS.REVIEWS) {
-		const reviewsResponse = await apiServer.GET("/api/reviews/{type}/{id}", {
+		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
 			params: {
 				path: {
 					type: "user",
@@ -44,8 +50,9 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 				},
 			},
 		});
-		if (reviewsResponse.data && reviewsResponse.data.reviews.length > 0) {
-			const reviews = reviewsResponse.data.reviews;
+		reviewsResponse = response.data;
+		if (response.data && response.data.reviews.length > 0) {
+			const reviews = response.data.reviews;
 			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 			aggregateRating = createAggregateRating({
 				ratingValue: averageRating,
@@ -109,11 +116,30 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		{ name: user.name, url: userUrl },
 	]);
 
+	// Generate review schema
+	let reviewSchema: ReturnType<typeof createReviewSchema> | undefined;
+	if (FEATURE_FLAGS.REVIEWS && reviewsResponse?.reviews) {
+		const reviews = reviewsResponse.reviews;
+		if (reviews.length > 0) {
+			reviewSchema = createReviewSchema({
+				reviews: reviews.map((review) => ({
+					author: review.author?.name || t("Anonymous"),
+					rating: review.rating,
+					content: review.content || "",
+					datePublished: new Date(review.createdAt).toISOString(),
+				})),
+				itemReviewed: user.name,
+				itemReviewedType: "Person",
+			});
+		}
+	}
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
 			<JsonLdScript data={personSchema} />
 			<JsonLdScript data={profilePageSchema} />
 			<JsonLdScript data={breadcrumbSchema} />
+			{reviewSchema && <JsonLdScript data={reviewSchema} />}
 			<UserOverview user={user} />
 		</div>
 	);
