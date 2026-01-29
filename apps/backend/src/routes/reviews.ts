@@ -1,6 +1,6 @@
 import { and, desc, eq } from "drizzle-orm";
 import * as z from "zod";
-import { event, eventRegistrationToUser, review, user } from "../drizzle/schema";
+import { club, event, eventRegistration, eventRegistrationToUser, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
 import { isFeatureEnabled } from "../lib/feature-flags";
@@ -160,6 +160,31 @@ reviewsRouter.post(
 			throw apiError.validation("You cannot review yourself");
 		}
 
+		// Validate entity existence
+		if (type === "USER") {
+			const userRecord = await db
+				.select({ id: user.id })
+				.from(user)
+				.where(eq(user.id, userId as string))
+				.limit(1);
+
+			if (!userRecord.length) {
+				throw apiError.notFound("User");
+			}
+		}
+
+		if (type === "CLUB") {
+			const clubRecord = await db
+				.select({ id: club.id })
+				.from(club)
+				.where(eq(club.id, clubId as string))
+				.limit(1);
+
+			if (!clubRecord.length) {
+				throw apiError.notFound("Club");
+			}
+		}
+
 		// For event reviews: must be an attendee AND event must be finished
 		if (type === "EVENT") {
 			const eventRecord = await db
@@ -188,9 +213,13 @@ reviewsRouter.post(
 
 			// Check if user was registered (attended or not)
 			const registration = await db
-				.select()
+				.select({
+					registrationId: eventRegistrationToUser.a,
+					eventId: eventRegistration.eventId,
+				})
 				.from(eventRegistrationToUser)
-				.where(and(eq(eventRegistrationToUser.b, authorId), eq(eventRegistrationToUser.a, eventId as string)))
+				.innerJoin(eventRegistration, eq(eventRegistrationToUser.a, eventRegistration.id))
+				.where(and(eq(eventRegistrationToUser.b, authorId), eq(eventRegistration.eventId, eventId as string)))
 				.limit(1);
 
 			if (!registration.length) {
