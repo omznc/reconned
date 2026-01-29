@@ -5,6 +5,7 @@ import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { Router } from "../lib/router";
+import { sanitizeReviewContent } from "../lib/sanitization";
 
 const reviewsRouter = new Router();
 
@@ -142,6 +143,8 @@ reviewsRouter.post(
 
 		const { type, rating, content, userId, clubId, eventId } = body;
 
+		const sanitizedContent = sanitizeReviewContent(content);
+
 		const authorId = context.user.id;
 
 		// Validate entity ID is provided based on type
@@ -254,7 +257,7 @@ reviewsRouter.post(
 			const updatedReview = {
 				...existingReview,
 				rating,
-				content,
+				content: sanitizedContent,
 				updatedAt: new Date().toISOString(),
 			};
 
@@ -269,11 +272,12 @@ reviewsRouter.post(
 			id: crypto.randomUUID(),
 			type,
 			rating,
-			content,
+			content: sanitizedContent,
 			authorId,
 			userId: (type === "USER" ? userId : null) as string | null,
 			clubId: (type === "CLUB" ? clubId : null) as string | null,
 			eventId: (type === "EVENT" ? eventId : null) as string | null,
+			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
 		};
 
@@ -309,6 +313,8 @@ reviewsRouter.post(
 						userId: z.string().nullable(),
 						clubId: z.string().nullable(),
 						eventId: z.string().nullable(),
+						createdAt: z.string(),
+						updatedAt: z.string(),
 					}),
 				}),
 				201: z.object({
@@ -321,6 +327,8 @@ reviewsRouter.post(
 						userId: z.string().nullable(),
 						clubId: z.string().nullable(),
 						eventId: z.string().nullable(),
+						createdAt: z.string(),
+						updatedAt: z.string(),
 					}),
 				}),
 			},
