@@ -4,12 +4,19 @@ import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
 import apiServer from "@/lib/api/api";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
-import { createAggregateRating, createBreadcrumbList, removeUndefined } from "@/lib/json-ld";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { isFeatureEnabled } from "@/lib/feature-flags";
+import {
+	createAggregateRating,
+	createBreadcrumbList,
+	createFAQPage,
+	createReviewSchema,
+	removeUndefined,
+} from "@/lib/json-ld";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const params = await props.params;
@@ -69,8 +76,11 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const clubUrl = `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`;
 
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
-	if (FEATURE_FLAGS.REVIEWS) {
-		const reviewsResponse = await apiServer.GET("/api/reviews/{type}/{id}", {
+	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
+	let reviewsResponse: ReviewsDataType | undefined;
+	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
+	if (reviewsEnabled) {
+		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
 			params: {
 				path: {
 					type: "event",
@@ -78,8 +88,9 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 				},
 			},
 		});
-		if (reviewsResponse.data && reviewsResponse.data.reviews.length > 0) {
-			const reviews = reviewsResponse.data.reviews;
+		reviewsResponse = response.data;
+		if (response.data && response.data.reviews.length > 0) {
+			const reviews = response.data.reviews;
 			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 			aggregateRating = createAggregateRating({
 				ratingValue: averageRating,
@@ -132,8 +143,8 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		}),
 		eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
 		eventStatus: "https://schema.org/EventScheduled",
-		...(registrationsCountData?.count && {
-			maximumAttendeeCapacity: String(registrationsCountData.count),
+		...(event._count.eventRegistration && {
+			maximumAttendeeCapacity: String(event._count.eventRegistration),
 		}),
 		typicalAgeRange: "18+",
 		about: {
@@ -150,10 +161,69 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		{ name: event.name, url: eventUrl },
 	]);
 
+	const isFaqSchemaEnabled = await isFeatureEnabled("FAQ_SCHEMA");
+
+	// Generate FAQ schema for event
+	let faqSchema: ReturnType<typeof createFAQPage> | undefined;
+	if (isFaqSchemaEnabled) {
+		const faqs = [
+			{
+				question: t("What should I bring to this event?"),
+				answer: t(
+					"Bring your airsoft equipment, protective gear, water, and appropriate clothing. Full-face protection is mandatory.",
+				),
+			},
+			{
+				question: t("Is this event suitable for beginners?"),
+				answer: t(
+					"Yes, this event welcomes players of all skill levels. New players will receive a briefing and guidance.",
+				),
+			},
+			{
+				question: t("What is the cancellation policy?"),
+				answer: t(
+					"You can cancel up to 48 hours before the event. Contact the organizer for more information about refunds.",
+				),
+			},
+			{
+				question: t("Is food provided?"),
+				answer:
+					event.hasLunch || event.hasDinner || event.hasSnacks || event.hasDrinks
+						? t("Yes, food and drinks are available at this event.")
+						: t("No, please bring your own food and drinks."),
+			},
+		];
+		faqSchema = createFAQPage({
+			faqs,
+			name: event.name,
+			description: event.description || undefined,
+		});
+	}
+
+	// Generate review schema
+	let reviewSchema: ReturnType<typeof createReviewSchema> | undefined;
+	if (reviewsEnabled && reviewsResponse?.reviews) {
+		const reviews = reviewsResponse.reviews;
+		if (reviews.length > 0) {
+			reviewSchema = createReviewSchema({
+				reviews: reviews.map((review) => ({
+					author: review.author?.name || t("Anonymous"),
+					rating: review.rating,
+					content: review.content || "",
+					datePublished: new Date(review.createdAt).toISOString(),
+				})),
+				itemReviewed: event.name,
+				itemReviewedType: "SportsEvent",
+			});
+		}
+	}
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8  px-4">
 			<JsonLdScript data={sportsEventSchema} />
 			<JsonLdScript data={breadcrumbSchema} />
+			{faqSchema && <JsonLdScript data={faqSchema} />}
+			{reviewSchema && <JsonLdScript data={reviewSchema} />}
 			<EventOverview event={event} clubId={eventData.club.id} />
 		</div>
 	);
@@ -177,18 +247,28 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 		};
 	}
 	const event = data.event;
+	const club = data.club;
 
 	const pathPrefix = "/events";
 	const slugOrId = event.slug || event.id;
 	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
 
+	// Generate better meta description
+	const eventDate = new Date(event.dateStart).toLocaleDateString(locale, {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
+	const clubName = club?.name || t("an airsoft club");
+
+	const description =
+		event.description && event.description.length > 50
+			? `${event.description.slice(0, 155).trim()}...`
+			: `${event.name} - ${t("airsoft event")} ${t("organized by")} ${clubName}. ${t("Date")}: ${eventDate}. ${t("Register now on RECONNED.")}`;
+
 	return {
 		title: `${event.name} - RECONNED`,
-		description:
-			event.description.slice(0, 160) ||
-			t(
-				"The list of all airsoft events on the platform. The first universal platform for airsoft clubs, events, and players.",
-			),
+		description,
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(

@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { EventImageCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/event-image-crop-dialog";
 import { AnimatedNumber } from "@/components/animated-number";
+import { useClubs } from "@/components/clubs-provider";
 import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { createEmptySnapshot, normalizeMapData } from "@/components/map-editor/map-data";
@@ -61,6 +62,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 	const t = useExtracted();
 	const logger = useLogger();
 	const { user } = useIsAuthenticated();
+	const { refreshClubs } = useClubs();
 	const locale = useLocale();
 	const dateFnsLocale = getDateFnsLocale(locale);
 
@@ -504,6 +506,9 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				});
 			}
 
+			if (!isEditing) {
+				await refreshClubs();
+			}
 			router.push(`/dashboard/${clubId}/events/${eventId}`);
 			router.refresh();
 			toast.success(t("Successfully created event"));

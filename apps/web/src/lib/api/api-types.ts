@@ -2542,12 +2542,32 @@ export interface paths {
 			cookie?: never;
 		};
 		/**
-		 * Get reviews for specific entity
-		 * @description Get reviews for a specific club, event, or user
+		 * Get reviews
+		 * @description Get all reviews for a user, club, or event
 		 */
-		get: operations["reviewstypeidGet1"];
+		get: operations["reviewstypeidGet"];
 		put?: never;
 		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/reviews": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Create or update a review
+		 * @description Leave a review for a user, club, or event. If you've already reviewed this entity, your previous review will be replaced. Event reviews require attendance and event completion.
+		 */
+		post: operations["reviewsPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -2668,26 +2688,6 @@ export interface paths {
 		 * @description Check if a slug is available for club, event, or user
 		 */
 		post: operations["validateSlugPost"];
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/reviews": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Get reviews
-		 * @description Get reviews filtered by clubId, eventId, or userId
-		 */
-		get: operations["reviewsGet"];
-		put?: never;
-		post?: never;
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -15878,12 +15878,12 @@ export interface operations {
 			};
 		};
 	};
-	reviewstypeidGet1: {
+	reviewstypeidGet: {
 		parameters: {
 			query?: never;
 			header?: never;
 			path: {
-				type: "club" | "event" | "user";
+				type: "user" | "club" | "event";
 				id: string;
 			};
 			cookie?: never;
@@ -15909,7 +15909,77 @@ export interface operations {
 							eventId: string | null;
 							createdAt: string;
 							updatedAt: string;
+							author: {
+								id: string;
+								name: string;
+								image: string | null;
+							} | null;
 						}[];
+					};
+				};
+			};
+		};
+	};
+	reviewsPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @enum {string} */
+					type: "USER" | "CLUB" | "EVENT";
+					rating: number;
+					content: string;
+					userId?: string;
+					clubId?: string;
+					eventId?: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						review: {
+							id: string;
+							/** @enum {string} */
+							type: "USER" | "CLUB" | "EVENT";
+							rating: number;
+							content: string;
+							authorId: string;
+							userId: string | null;
+							clubId: string | null;
+							eventId: string | null;
+						};
+					};
+				};
+			};
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						review: {
+							id: string;
+							/** @enum {string} */
+							type: "USER" | "CLUB" | "EVENT";
+							rating: number;
+							content: string;
+							authorId: string;
+							userId: string | null;
+							clubId: string | null;
+							eventId: string | null;
+						};
 					};
 				};
 			};
@@ -16300,44 +16370,6 @@ export interface operations {
 				content: {
 					"application/json": {
 						available: boolean;
-					};
-				};
-			};
-		};
-	};
-	reviewsGet: {
-		parameters: {
-			query?: {
-				clubId?: string;
-				eventId?: string;
-				userId?: string;
-			};
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		requestBody?: never;
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						reviews: {
-							id: string;
-							/** @enum {string} */
-							type: "USER" | "CLUB" | "EVENT";
-							rating: number;
-							content: string;
-							authorId: string;
-							userId: string | null;
-							clubId: string | null;
-							eventId: string | null;
-							createdAt: string;
-							updatedAt: string;
-						}[];
 					};
 				};
 			};

@@ -3,12 +3,13 @@ import { AttendanceTracker } from "@/app/[locale]/dashboard/(club)/[clubId]/even
 import { ErrorPage } from "@/components/error-page";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 
 export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId]/events/[id]/attendance">) {
 	const t = await getExtracted();
+	const isEnabled = await isFeatureEnabled("EVENT_REGISTRATION");
 
-	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
+	if (!isEnabled) {
 		return <ErrorPage title={t("This functionality is not available")} />;
 	}
 

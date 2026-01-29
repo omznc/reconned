@@ -1,9 +1,8 @@
 import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { club, clubMembership, event, review, user } from "../drizzle/schema";
+import { club, clubMembership, event, user } from "../drizzle/schema";
 import { db } from "../lib/db";
-import { apiError } from "../lib/errors";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
 import { Router } from "../lib/router";
@@ -13,7 +12,6 @@ const utilsRouter = new Router();
 
 const baseUserSchema = createSelectSchema(user);
 const baseEventSchema = createSelectSchema(event);
-const baseReviewSchema = createSelectSchema(review);
 
 utilsRouter.get(
 	"/search",
@@ -499,104 +497,6 @@ utilsRouter.post(
 			response: {
 				200: z.object({
 					available: z.boolean(),
-				}),
-			},
-		},
-	},
-);
-
-utilsRouter.get(
-	"/reviews",
-	async ({ query, response }) => {
-		const clubId = query?.clubId;
-		const eventId = query?.eventId;
-		const userId = query?.userId;
-
-		const whereConditions = [];
-
-		if (clubId) {
-			whereConditions.push(eq(review.clubId, clubId));
-		}
-		if (eventId) {
-			whereConditions.push(eq(review.eventId, eventId));
-		}
-		if (userId) {
-			whereConditions.push(eq(review.userId, userId));
-		}
-
-		if (whereConditions.length === 0) {
-			throw apiError.validation("clubId, eventId, or userId is required");
-		}
-
-		const reviews = await db
-			.select()
-			.from(review)
-			.where(and(...whereConditions))
-			.orderBy(desc(review.createdAt));
-
-		return response.json({ reviews });
-	},
-	{
-		schema: {
-			tags: ["Utils"],
-			summary: "Get reviews",
-			description: "Get reviews filtered by clubId, eventId, or userId",
-			query: z.object({
-				clubId: z.string().optional(),
-				eventId: z.string().optional(),
-				userId: z.string().optional(),
-			}),
-			response: {
-				200: z.object({
-					reviews: z.array(baseReviewSchema),
-				}),
-			},
-		},
-	},
-);
-
-utilsRouter.get(
-	"/reviews/{type}/{id}",
-	async ({ params, response }) => {
-		const type = params?.type;
-		const id = params?.id;
-
-		if (!type || !id) {
-			throw apiError.validation("Type and ID are required");
-		}
-
-		let whereCondition: ReturnType<typeof eq>;
-
-		switch (type) {
-			case "club":
-				whereCondition = eq(review.clubId, id);
-				break;
-			case "event":
-				whereCondition = eq(review.eventId, id);
-				break;
-			case "user":
-				whereCondition = eq(review.userId, id);
-				break;
-			default:
-				throw apiError.validation("Invalid type");
-		}
-
-		const reviews = await db.select().from(review).where(whereCondition).orderBy(desc(review.createdAt));
-
-		return response.json({ reviews });
-	},
-	{
-		schema: {
-			tags: ["Utils"],
-			summary: "Get reviews for specific entity",
-			description: "Get reviews for a specific club, event, or user",
-			params: z.object({
-				type: z.enum(["club", "event", "user"]),
-				id: z.string(),
-			}),
-			response: {
-				200: z.object({
-					reviews: z.array(baseReviewSchema),
 				}),
 			},
 		},

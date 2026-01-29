@@ -11,11 +11,12 @@ import { MapViewer } from "@/components/map-editor/map-viewer";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -63,6 +64,8 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 		);
 	};
 
+	const eventRegistrationEnabled = await isFeatureEnabled("EVENT_REGISTRATION");
+
 	return (
 		<div className="relative flex flex-col gap-4">
 			{/* Hero Banner Section */}
@@ -102,7 +105,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 									)
 								) : (
 									<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
-										{FEATURE_FLAGS.EVENT_REGISTRATION && (
+										{eventRegistrationEnabled && (
 											<>
 												{user && canApplyToEvent(event) ? (
 													<Link
@@ -177,7 +180,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 								)
 							) : (
 								<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
-									{FEATURE_FLAGS.EVENT_REGISTRATION && (
+									{eventRegistrationEnabled && (
 										<>
 											{user && canApplyToEvent(event) ? (
 												<Link href={`/events/${event.id}/apply`} className="w-full md:w-auto">
@@ -230,18 +233,39 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 			)}
 
 			{/* Description and other content */}
-			<div className="rounded-md border p-4 bg-background w-full flex flex-col gap-1">
-				<div className="flex select-none flex-col gap-3">
-					<p className="text-accent-foreground/80">{event.description}</p>
-					{event.club && (
-						<div className="my-6">
-							<h2 className="text-xl font-semibold mb-3">{t("Hosted by")}</h2>
+			<div className="space-y-4">
+				<Card>
+					<CardHeader className="border-b">
+						<CardTitle>{t("Description")}</CardTitle>
+					</CardHeader>
+					<CardContent className="pt-4">
+						<p className="text-sm text-muted-foreground">{event.description}</p>
+					</CardContent>
+				</Card>
+
+				{event.club && (
+					<Card>
+						<CardHeader className="border-b">
+							<div className="flex flex-col gap-4">
+								<CardTitle>{t("Hosted by")}</CardTitle>
+								<p className="text-sm text-muted-foreground">{t("The club hosting this event")}</p>
+							</div>
+						</CardHeader>
+						<CardContent className="pt-4">
 							<ClubCard club={event.club} />
-						</div>
-					)}
-					{event.googleMapsLink && (
-						<div className="size-full flex flex-col gap-2">
-							<h2 className="text-xl font-semibold">{t("Location")}</h2>
+						</CardContent>
+					</Card>
+				)}
+
+				{event.googleMapsLink && (
+					<Card>
+						<CardHeader className="border-b">
+							<div className="flex flex-col gap-4">
+								<CardTitle>{t("Location")}</CardTitle>
+								<p className="text-sm text-muted-foreground">{t("Event location details")}</p>
+							</div>
+						</CardHeader>
+						<CardContent className="pt-4">
 							<LoadChildOnClick title={t("Show location")}>
 								<iframe
 									src={event.googleMapsLink}
@@ -251,19 +275,28 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 									title={t("Google Maps")}
 								/>
 							</LoadChildOnClick>
-						</div>
-					)}
-					{hasMap ? (
-						<div className="size-full flex flex-col gap-2">
-							<h2 className="text-xl font-semibold">{t("Map")}</h2>
+						</CardContent>
+					</Card>
+				)}
+
+				{hasMap && (
+					<Card>
+						<CardHeader className="border-b">
+							<div className="flex flex-col gap-4">
+								<CardTitle>{t("Match Map")}</CardTitle>
+								<p className="text-sm text-muted-foreground">{t("Interactive map for this event")}</p>
+							</div>
+						</CardHeader>
+						<CardContent className="pt-4">
 							<LoadChildOnClick title={t("Show match map")}>
 								<MapViewer data={mapSnapshot} height={800} />
 							</LoadChildOnClick>
-						</div>
-					) : null}
-					<ReviewsOverview type="event" typeId={event.id} />
-				</div>
+						</CardContent>
+					</Card>
+				)}
 			</div>
+
+			<ReviewsOverview type="event" typeId={event.id} entityName={event.name} />
 		</div>
 	);
 }
