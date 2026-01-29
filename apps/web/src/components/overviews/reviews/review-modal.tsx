@@ -1,18 +1,29 @@
 "use client";
 
-import { useState } from "react";
-import { useExtracted } from "next-intl";
-import { Star } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Star } from "lucide-react";
+import { useExtracted } from "next-intl";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
+import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
-import { Credenza, CredenzaBody, CredenzaClose, CredenzaContent, CredenzaDescription, CredenzaFooter, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
+import {
+	Credenza,
+	CredenzaBody,
+	CredenzaClose,
+	CredenzaContent,
+	CredenzaDescription,
+	CredenzaFooter,
+	CredenzaHeader,
+	CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
-import { toast } from "sonner";
 
 interface ReviewModalProps {
 	open: boolean;
@@ -26,10 +37,14 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 	const t = useExtracted();
 	const queryClient = useQueryClient();
 	const [hoveredRating, setHoveredRating] = useState(0);
+	const router = useRouter();
 
 	const formSchema = z.object({
 		rating: z.number().int().min(1).max(5),
-		content: z.string().min(1, t("Review content is required")).max(5000, t("Review content must be less than 5000 characters")),
+		content: z
+			.string()
+			.min(1, t("Review content is required"))
+			.max(5000, t("Review content must be less than 5000 characters")),
 	});
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -46,7 +61,14 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 				type,
 				rating: values.rating,
 				content: values.content,
-			} as { type: typeof type; rating: number; content: string; userId?: string; clubId?: string; eventId?: string };
+			} as {
+				type: typeof type;
+				rating: number;
+				content: string;
+				userId?: string;
+				clubId?: string;
+				eventId?: string;
+			};
 
 			if (type === "USER") {
 				body.userId = entityId;
@@ -56,7 +78,7 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 				body.eventId = entityId;
 			}
 
-			const { error } = await apiClient.POST("/reviews", { body });
+			const { error } = await apiClient.POST("/api/reviews", { body });
 			if (error) {
 				throw error;
 			}
@@ -67,10 +89,14 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 			form.reset();
 			onOpenChange(false);
 			queryClient.invalidateQueries({ queryKey: [["reviews", type, entityId]] });
+			router.refresh();
 		},
 		onError: (error) => {
 			console.error("Error submitting review:", error);
-			const errorDetail = error && typeof error === "object" && "detail" in error ? (error as { detail: string }).detail : undefined;
+			const errorDetail =
+				error && typeof error === "object" && "detail" in error
+					? (error as { detail: string }).detail
+					: undefined;
 			const errorMessage =
 				errorDetail === "You can only review events that have finished"
 					? t("You can only review events that have finished")
@@ -104,11 +130,7 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 						{type === "CLUB" && t("Review Club")}
 						{type === "EVENT" && t("Review Event")}
 					</CredenzaTitle>
-					<CredenzaDescription>
-						{type === "USER" && t("Leave a review for {name}", { name: entityName })}
-						{type === "CLUB" && t("Leave a review for {name}", { name: entityName })}
-						{type === "EVENT" && t("Leave a review for {name}", { name: entityName })}
-					</CredenzaDescription>
+					<CredenzaDescription>{t("Leave a review for {name}", { name: entityName })}</CredenzaDescription>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -168,7 +190,7 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 									</Button>
 								</CredenzaClose>
 								<Button type="submit" disabled={createReviewMutation.isPending}>
-									{createReviewMutation.isPending ? t("Submitting...") : t("Submit Review")}
+									{createReviewMutation.isPending ? <Loader size={16} /> : t("Submit Review")}
 								</Button>
 							</CredenzaFooter>
 						</form>

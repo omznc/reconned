@@ -6,6 +6,7 @@ import { EventOverview } from "@/components/overviews/event-overview";
 import apiServer from "@/lib/api/api";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import {
 	createAggregateRating,
 	createBreadcrumbList,
@@ -13,7 +14,6 @@ import {
 	createReviewSchema,
 	removeUndefined,
 } from "@/lib/json-ld";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export const revalidate = 3600;
@@ -78,7 +78,8 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
 	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
 	let reviewsResponse: ReviewsDataType | undefined;
-	if (FEATURE_FLAGS.REVIEWS) {
+	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
+	if (reviewsEnabled) {
 		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
 			params: {
 				path: {
@@ -160,9 +161,11 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		{ name: event.name, url: eventUrl },
 	]);
 
+	const isFaqSchemaEnabled = await isFeatureEnabled("FAQ_SCHEMA");
+
 	// Generate FAQ schema for event
 	let faqSchema: ReturnType<typeof createFAQPage> | undefined;
-	if (FEATURE_FLAGS.FAQ_SCHEMA) {
+	if (isFaqSchemaEnabled) {
 		const faqs = [
 			{
 				question: t("What should I bring to this event?"),
@@ -184,9 +187,10 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			},
 			{
 				question: t("Is food provided?"),
-				answer: event.hasLunch || event.hasDinner || event.hasSnacks || event.hasDrinks
-					? t("Yes, food and drinks are available at this event.")
-					: t("No, please bring your own food and drinks."),
+				answer:
+					event.hasLunch || event.hasDinner || event.hasSnacks || event.hasDrinks
+						? t("Yes, food and drinks are available at this event.")
+						: t("No, please bring your own food and drinks."),
 			},
 		];
 		faqSchema = createFAQPage({
@@ -198,7 +202,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 
 	// Generate review schema
 	let reviewSchema: ReturnType<typeof createReviewSchema> | undefined;
-	if (FEATURE_FLAGS.REVIEWS && reviewsResponse?.reviews) {
+	if (reviewsEnabled && reviewsResponse?.reviews) {
 		const reviews = reviewsResponse.reviews;
 		if (reviews.length > 0) {
 			reviewSchema = createReviewSchema({

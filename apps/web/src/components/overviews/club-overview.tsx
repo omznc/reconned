@@ -27,6 +27,7 @@ import { ExpandableDescription } from "@/components/overviews/expandable-descrip
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
@@ -111,7 +112,7 @@ export async function ClubOverview({
 			<ClubInviteAcceptance invites={clubInvites} />
 			{/* Unified Banner Section - Always Present */}
 			<div className="relative w-full mb-6">
-				<div className="w-full h-full max-h-[300px] bg-sidebar rounded-md">
+				<div className="w-full h-full max-h-75 bg-sidebar rounded-md">
 					{club.headerImage ? (
 						<Image
 							suppressHydrationWarning={true}
@@ -123,7 +124,7 @@ export async function ClubOverview({
 							width={1200}
 						/>
 					) : (
-						<div className="w-full h-full bg-gradient-to-br from-sidebar to-muted rounded-md" />
+						<div className="w-full h-full bg-linear-to-br from-sidebar to-muted rounded-md" />
 					)}
 				</div>
 
@@ -141,7 +142,7 @@ export async function ClubOverview({
 			</div>
 
 			<div className="flex flex-col gap-6">
-				<div className="flex gap-6 items-start">
+				<div className="flex gap-4 items-start">
 					<div className="shrink-0 w-32 h-32 flex items-center justify-center">
 						{club.logo ? (
 							<Image
@@ -227,172 +228,183 @@ export async function ClubOverview({
 					)}
 				</div>
 			</div>
+
 			{!hasOwner && (
-				<div className="border bg-sidebar p-6 space-y-4 rounded-md">
+				<div className="border bg-sidebar p-4 space-y-4 rounded-md">
 					<h2 className="text-xl font-semibold">{t("Claim this club")}</h2>
 					<ClaimClubForm clubId={club.id} clubName={club.name} user={user} />
 				</div>
 			)}
 			{hasOwner && (
 				<>
-					<ReviewsOverview type="club" typeId={club.id} />
-
 					{(members.length > 0 || alliances.length > 0 || club.instagramUsername) && (
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 							{members.length > 0 && (
-								<div className="h-full bg-sidebar border rounded-md">
-									<div className="flex flex-col gap-2 p-4">
-										<div className="flex gap-2 items-center">
-											<h2 className="text-xl font-semibold">{t("Members")}</h2>
+								<Card className="h-full">
+									<CardHeader className="border-b">
+										<div className="flex flex-col gap-4">
+											<CardTitle>{t("Members")}</CardTitle>
+											<p className="text-sm text-muted-foreground">
+												{t("All members of this club")}
+											</p>
 										</div>
-										<p>{t("All members of this club")}</p>
-									</div>
-									<hr className="w-full" />
-									<div className="grid gap-1 max-h-[400px] overflow-auto p-4">
-										{members
-											.sort((a, b) => {
-												const roleOrder = { CLUB_OWNER: 0, MANAGER: 1, USER: 2 };
-												return roleOrder[a.role] - roleOrder[b.role];
-											})
-											.map((member) => (
-												<Link
-													key={member.id}
-													href={`/users/${member.user.slug || member.user.id}`}
-													className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent hover:border-red-500 hover:bg-muted transition-all"
-												>
-													{member.user.image ? (
-														<Image
-															src={member.user.image}
-															alt={member.user.name}
-															width={40}
-															height={40}
-															className="w-10 h-10 object-cover rounded-md"
-															draggable={false}
-														/>
-													) : (
-														<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground font-semibold">
-															{member.user.name.charAt(0).toUpperCase()}
-														</div>
-													)}
-													<div className="flex flex-col flex-1 min-w-0">
-														<div className="flex items-center gap-2">
-															<span className="font-medium truncate">
-																{member.user.name}
-															</span>
-															{member.role === "CLUB_OWNER" && <ClubOwnerIcon />}
-															{member.role === "MANAGER" && <ClubManagerIcon />}
-														</div>
-														{member.user.callsign && (
-															<span className="text-sm text-muted-foreground truncate">
-																{member.user.callsign}
-															</span>
+									</CardHeader>
+									<CardContent className="max-h-150 overflow-auto p-4">
+										<div className="grid gap-1">
+											{members
+												.sort((a, b) => {
+													const roleOrder = { CLUB_OWNER: 0, MANAGER: 1, USER: 2 };
+													return roleOrder[a.role] - roleOrder[b.role];
+												})
+												.map((member) => (
+													<Link
+														key={member.id}
+														href={`/users/${member.user.slug || member.user.id}`}
+														className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent hover:border-red-500 hover:bg-muted transition-all"
+													>
+														{member.user.image ? (
+															<Image
+																src={member.user.image}
+																alt={member.user.name}
+																width={40}
+																height={40}
+																className="w-10 h-10 object-cover rounded-md"
+																draggable={false}
+															/>
+														) : (
+															<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground font-semibold">
+																{member.user.name.charAt(0).toUpperCase()}
+															</div>
 														)}
-													</div>
-													<ArrowUpRight className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-												</Link>
-											))}
-										{privateCount > 0 && (
-											<div className="text-sm text-muted-foreground p-2">
-												{t("+{count} private members", {
-													count: privateCount.toString(),
-												})}
-											</div>
-										)}
-									</div>
-								</div>
+														<div className="flex flex-col flex-1 min-w-0">
+															<div className="flex items-center gap-2">
+																<span className="font-medium truncate">
+																	{member.user.name}
+																</span>
+																{member.role === "CLUB_OWNER" && <ClubOwnerIcon />}
+																{member.role === "MANAGER" && <ClubManagerIcon />}
+															</div>
+															{member.user.callsign && (
+																<span className="text-sm text-muted-foreground truncate">
+																	{member.user.callsign}
+																</span>
+															)}
+														</div>
+														<ArrowUpRight className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+													</Link>
+												))}
+											{privateCount > 0 && (
+												<div className="text-sm text-muted-foreground p-2">
+													{t("+{count} private members", {
+														count: privateCount.toString(),
+													})}
+												</div>
+											)}
+										</div>
+									</CardContent>
+								</Card>
 							)}
 
 							{alliances.length > 0 && (
-								<div className="h-full bg-sidebar border rounded-md">
-									<div className="flex flex-col gap-2 p-4">
-										<div className="flex gap-2 items-center">
-											<h2 className="text-xl font-semibold">{t("Alliances")}</h2>
+								<Card className="h-full">
+									<CardHeader className="border-b">
+										<div className="flex flex-col gap-4">
+											<CardTitle>{t("Alliances")}</CardTitle>
+											<p className="text-sm text-muted-foreground">
+												{t("Club alliances and partnerships")}
+											</p>
 										</div>
-										<p>{t("Club alliances and partnerships")}</p>
-									</div>
-									<hr className="w-full" />
-									<div className="grid gap-1 max-h-[400px] overflow-auto p-4">
-										{alliances.map((alliance) => {
-											const content = (
-												<>
-													<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground shrink-0">
-														<HandshakeIcon className="h-5 w-5" />
-													</div>
-													<HoverCard>
-														<HoverCardTrigger asChild>
-															<div className="flex flex-col flex-1 min-w-0 overflow-hidden pr-2">
-																<span className="font-medium truncate block">
-																	{alliance.name}
-																</span>
-																{alliance.description && (
-																	<span className="text-sm text-muted-foreground truncate block">
-																		{alliance.description}
+									</CardHeader>
+									<CardContent className="max-h-100 overflow-auto p-4 pt-0">
+										<div className="grid gap-1">
+											{alliances.map((alliance) => {
+												const content = (
+													<>
+														<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground shrink-0">
+															<HandshakeIcon className="h-5 w-5" />
+														</div>
+														<HoverCard>
+															<HoverCardTrigger asChild>
+																<div className="flex flex-col flex-1 min-w-0 overflow-hidden pr-2">
+																	<span className="font-medium truncate block">
+																		{alliance.name}
 																	</span>
-																)}
-															</div>
-														</HoverCardTrigger>
-														<HoverCardContent className="w-100">
-															<div className="space-y-2">
-																<h4 className="font-semibold">{alliance.name}</h4>
-																{alliance.description && (
-																	<p className="text-sm text-muted-foreground">
-																		{alliance.description}
-																	</p>
-																)}
-															</div>
-														</HoverCardContent>
-													</HoverCard>
-													{alliance.link && (
-														<ArrowUpRight className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-													)}
-												</>
-											);
+																	{alliance.description && (
+																		<span className="text-sm text-muted-foreground truncate block">
+																			{alliance.description}
+																		</span>
+																	)}
+																</div>
+															</HoverCardTrigger>
+															<HoverCardContent className="w-100">
+																<div className="space-y-2">
+																	<h4 className="font-semibold">{alliance.name}</h4>
+																	{alliance.description && (
+																		<p className="text-sm text-muted-foreground">
+																			{alliance.description}
+																		</p>
+																	)}
+																</div>
+															</HoverCardContent>
+														</HoverCard>
+														{alliance.link && (
+															<ArrowUpRight className="absolute top-2 right-2 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+														)}
+													</>
+												);
 
-											if (alliance.link) {
+												if (alliance.link) {
+													return (
+														<Link
+															key={alliance.id}
+															href={alliance.link}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent transition-all min-w-0 overflow-hidden hover:border-red-500 hover:bg-muted cursor-pointer pr-8"
+														>
+															{content}
+														</Link>
+													);
+												}
+
 												return (
-													<Link
+													<div
 														key={alliance.id}
-														href={alliance.link}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent transition-all min-w-0 overflow-hidden hover:border-red-500 hover:bg-muted cursor-pointer pr-8"
+														className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent transition-all min-w-0 overflow-hidden cursor-default hover:bg-muted"
 													>
 														{content}
-													</Link>
+													</div>
 												);
-											}
-
-											return (
-												<div
-													key={alliance.id}
-													className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent transition-all min-w-0 overflow-hidden cursor-default hover:bg-muted"
-												>
-													{content}
-												</div>
-											);
-										})}
-									</div>
-								</div>
+											})}
+										</div>
+									</CardContent>
+								</Card>
 							)}
 
 							{club.instagramUsername && (
-								<div
-									className={`flex flex-col border bg-sidebar rounded-md ${members.length > 0 && alliances.length > 0 ? "md:col-span-2" : ""}`}
+								<Card
+									className={members.length > 0 && alliances.length > 0 ? "md:col-span-2" : "h-full"}
 								>
-									<div className="flex items-start justify-between border-b p-4">
-										<div className="flex flex-col gap-2">
-											<div className="flex gap-2 items-center">
+									<CardHeader className="border-b">
+										<div className="flex flex-col gap-4">
+											<div className="flex items-center gap-2">
 												<SiInstagram className="h-5 w-5 text-primary" />
-												<h2 className="text-xl font-semibold">{t("Instagram photos")}</h2>
+												<CardTitle>{t("Instagram photos")}</CardTitle>
 											</div>
-											<p>{t("View our latest posts on Instagram")}</p>
+											<p className="text-sm text-muted-foreground">
+												{t("View our latest posts on Instagram")}
+											</p>
 										</div>
-									</div>
-									<div className="p-4 flex-1 flex">
-										<ClubInstagram data={instagramData} limit={11} />
-									</div>
-								</div>
+									</CardHeader>
+									<CardContent className="flex-1">
+										<div className="flex">
+											<ClubInstagram data={instagramData} limit={11} />
+										</div>
+									</CardContent>
+								</Card>
 							)}
+
+							<ReviewsOverview type="club" typeId={club.id} entityName={club.name} isMember={isMember} />
 						</div>
 					)}
 

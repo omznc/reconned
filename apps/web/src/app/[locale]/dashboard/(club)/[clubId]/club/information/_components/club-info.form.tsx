@@ -672,6 +672,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			if (isCreating && clubId) {
 				await refreshClubs();
 				router.push(`/dashboard/${clubId}/club`);
+				router.refresh();
 			} else {
 				// Refresh breadcrumbs and data when updating existing club
 				router.refresh();

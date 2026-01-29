@@ -1,16 +1,16 @@
 import type {
 	AggregateRating,
 	BreadcrumbList,
+	FAQPage,
 	ItemList,
+	ItemPage,
 	Person,
 	PostalAddress,
+	Rating,
+	Review,
 	SportsEvent,
 	SportsOrganization,
 	WithContext,
-	FAQPage,
-	Review,
-	Rating,
-	ItemPage,
 } from "schema-dts";
 import { env } from "./env";
 
@@ -162,15 +162,16 @@ export function createReviewSchema({
 	const averageRating =
 		reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
 
-	const aggregateRating = reviews.length > 0
-		? ({
-				"@type": "AggregateRating",
-				ratingValue: averageRating,
-				ratingCount: reviews.length,
-				bestRating: 5,
-				worstRating: 1,
-			} satisfies AggregateRating)
-		: undefined;
+	const aggregateRating =
+		reviews.length > 0
+			? ({
+					"@type": "AggregateRating",
+					ratingValue: averageRating,
+					ratingCount: reviews.length,
+					bestRating: 5,
+					worstRating: 1,
+				} satisfies AggregateRating)
+			: undefined;
 
 	const reviewArray = reviews.map(
 		(review): Review => ({
@@ -190,10 +191,7 @@ export function createReviewSchema({
 		}),
 	);
 
-	let mainEntity:
-		| SportsOrganization
-		| SportsEvent
-		| Person;
+	let mainEntity: SportsOrganization | SportsEvent | Person;
 
 	if (itemReviewedType === "SportsOrganization") {
 		mainEntity = {

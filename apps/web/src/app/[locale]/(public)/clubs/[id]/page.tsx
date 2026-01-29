@@ -7,16 +7,16 @@ import apiServer from "@/lib/api/api";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import {
 	createAggregateRating,
 	createBreadcrumbList,
+	createFAQPage,
 	createGeoCoordinates,
 	createPostalAddress,
-	createFAQPage,
 	createReviewSchema,
 	removeUndefined,
 } from "@/lib/json-ld";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export const revalidate = 3600;
@@ -82,7 +82,8 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
 	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
 	let reviewsResponse: ReviewsDataType | undefined;
-	if (FEATURE_FLAGS.REVIEWS) {
+	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
+	if (reviewsEnabled) {
 		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
 			params: {
 				path: {
@@ -149,9 +150,11 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		{ name: club.name, url: clubUrl },
 	]);
 
+	const isFaqEnabled = await isFeatureEnabled("FAQ_SCHEMA");
+
 	// Generate FAQ schema for club
 	let faqSchema: ReturnType<typeof createFAQPage> | undefined;
-	if (FEATURE_FLAGS.FAQ_SCHEMA) {
+	if (isFaqEnabled) {
 		const faqs = [
 			{
 				question: t("How do I join this club?"),
@@ -187,7 +190,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 
 	// Generate review schema
 	let reviewSchema: ReturnType<typeof createReviewSchema> | undefined;
-	if (FEATURE_FLAGS.REVIEWS && reviewsResponse?.reviews) {
+	if (reviewsEnabled && reviewsResponse?.reviews) {
 		const reviews = reviewsResponse.reviews;
 		if (reviews.length > 0) {
 			reviewSchema = createReviewSchema({

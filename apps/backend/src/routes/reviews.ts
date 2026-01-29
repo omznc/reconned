@@ -1,10 +1,10 @@
-import { desc, eq, and } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import * as z from "zod";
-import { review, user, event, eventRegistrationToUser } from "../drizzle/schema";
+import { event, eventRegistrationToUser, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
-import { Router } from "../lib/router";
 import { isFeatureEnabled } from "../lib/feature-flags";
+import { Router } from "../lib/router";
 
 const reviewsRouter = new Router();
 
@@ -175,7 +175,11 @@ reviewsRouter.post(
 				throw apiError.notFound("Event");
 			}
 
-			const eventData = eventRecord[0]!;
+			const eventData =
+				eventRecord[0] ??
+				(() => {
+					throw apiError.notFound("Event");
+				})();
 
 			// Check if event has finished
 			if (new Date(eventData.dateEnd) > new Date()) {
@@ -186,12 +190,7 @@ reviewsRouter.post(
 			const registration = await db
 				.select()
 				.from(eventRegistrationToUser)
-				.where(
-					and(
-						eq(eventRegistrationToUser.b, authorId),
-						eq(eventRegistrationToUser.a, eventId as string),
-					),
-				)
+				.where(and(eq(eventRegistrationToUser.b, authorId), eq(eventRegistrationToUser.a, eventId as string)))
 				.limit(1);
 
 			if (!registration.length) {
@@ -199,7 +198,44 @@ reviewsRouter.post(
 			}
 		}
 
-		// Create the review
+		// Check if review already exists
+		let whereCondition: ReturnType<typeof and>;
+
+		switch (type) {
+			case "USER":
+				whereCondition = and(eq(review.authorId, authorId), eq(review.userId, userId as string));
+				break;
+			case "CLUB":
+				whereCondition = and(eq(review.authorId, authorId), eq(review.clubId, clubId as string));
+				break;
+			case "EVENT":
+				whereCondition = and(eq(review.authorId, authorId), eq(review.eventId, eventId as string));
+				break;
+		}
+
+		const existingReviews = await db.select().from(review).where(whereCondition).limit(1);
+
+		if (existingReviews.length > 0) {
+			// Update existing review
+			const existingReview =
+				existingReviews[0] ??
+				(() => {
+					throw apiError.internal("Review not found");
+				})();
+			const updatedReview = {
+				...existingReview,
+				rating,
+				content,
+				updatedAt: new Date().toISOString(),
+			};
+
+			await db.update(review).set(updatedReview).where(eq(review.id, existingReview.id));
+
+			return response.json({
+				review: updatedReview,
+			});
+		}
+		// Create new review
 		const newReview = {
 			id: crypto.randomUUID(),
 			type,
@@ -229,10 +265,23 @@ reviewsRouter.post(
 		},
 		schema: {
 			tags: ["Reviews"],
-			summary: "Create a review",
-			description: "Leave a review for a user, club, or event. Event reviews require attendance and event completion.",
+			summary: "Create or update a review",
+			description:
+				"Leave a review for a user, club, or event. If you've already reviewed this entity, your previous review will be replaced. Event reviews require attendance and event completion.",
 			body: createReviewBodySchema,
 			response: {
+				200: z.object({
+					review: z.object({
+						id: z.string(),
+						type: z.enum(["USER", "CLUB", "EVENT"]),
+						rating: z.number(),
+						content: z.string(),
+						authorId: z.string(),
+						userId: z.string().nullable(),
+						clubId: z.string().nullable(),
+						eventId: z.string().nullable(),
+					}),
+				}),
 				201: z.object({
 					review: z.object({
 						id: z.string(),

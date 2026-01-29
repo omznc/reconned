@@ -3,7 +3,6 @@ import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { club, clubMembership, event, user } from "../drizzle/schema";
 import { db } from "../lib/db";
-import { apiError } from "../lib/errors";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
 import { Router } from "../lib/router";

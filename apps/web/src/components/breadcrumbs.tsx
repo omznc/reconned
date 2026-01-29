@@ -3,6 +3,7 @@
 import { Building2Icon, CalendarFoldIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { Fragment } from "react";
+import { useClubs } from "@/components/clubs-provider";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -27,10 +28,14 @@ type BreadcrumbsProps = {
 	}>;
 };
 
-export function Breadcrumbs({ clubs = [] }: BreadcrumbsProps) {
+export function Breadcrumbs({ clubs: clubsProp = [] }: BreadcrumbsProps) {
 	const path = usePathname();
 	const sections = path.split("/").filter(Boolean);
 	const t = useExtracted();
+
+	// Use clubs from context (live data) if available, otherwise fall back to prop
+	const { clubs: clubsFromContext } = useClubs();
+	const clubs = clubsFromContext.length > 0 ? clubsFromContext : clubsProp;
 
 	const breadcrumbsTranslations = {
 		dashboard: t("Dashboard"),

@@ -7,15 +7,15 @@ import { UserOverview } from "@/components/overviews/user-overview";
 import apiServer from "@/lib/api/api";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import {
 	createAggregateRating,
 	createBreadcrumbList,
 	createPostalAddress,
-	createSportsOrganizationReference,
 	createReviewSchema,
+	createSportsOrganizationReference,
 	removeUndefined,
 } from "@/lib/json-ld";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export const revalidate = 3600;
@@ -41,7 +41,8 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
 	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
 	let reviewsResponse: ReviewsDataType | undefined;
-	if (FEATURE_FLAGS.REVIEWS) {
+	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
+	if (reviewsEnabled) {
 		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
 			params: {
 				path: {
@@ -118,7 +119,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 
 	// Generate review schema
 	let reviewSchema: ReturnType<typeof createReviewSchema> | undefined;
-	if (FEATURE_FLAGS.REVIEWS && reviewsResponse?.reviews) {
+	if (reviewsEnabled && reviewsResponse?.reviews) {
 		const reviews = reviewsResponse.reviews;
 		if (reviews.length > 0) {
 			reviewSchema = createReviewSchema({

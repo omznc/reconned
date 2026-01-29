@@ -1,0 +1,298 @@
+"use client";
+
+import { format } from "date-fns";
+import { Star } from "lucide-react";
+import { useExtracted } from "next-intl";
+import { useState } from "react";
+import { ReviewModal } from "@/components/overviews/reviews/review-modal";
+import { ReviewsOverviewSheet } from "@/components/overviews/reviews/reviews-overview-sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { useIsAuthenticated } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+
+interface Review {
+	id: string;
+	type: "USER" | "CLUB" | "EVENT";
+	rating: number;
+	content: string;
+	authorId: string;
+	userId: string | null;
+	clubId: string | null;
+	eventId: string | null;
+	createdAt: string;
+	updatedAt: string;
+	author: {
+		id: string;
+		name: string;
+		image: string | null;
+	} | null;
+}
+
+interface DisplayReview extends Omit<Review, "createdAt"> {
+	createdAt: Date;
+}
+
+interface ReviewsOverviewClientProps {
+	type: "club" | "event" | "user";
+	typeId: string;
+	entityName: string;
+	initialReviews: Review[];
+	averageRating: number;
+	isMember?: boolean;
+}
+
+export function ReviewsOverviewClient({
+	type,
+	typeId,
+	entityName,
+	initialReviews,
+	averageRating,
+	isMember,
+}: ReviewsOverviewClientProps) {
+	const t = useExtracted();
+	const { user } = useIsAuthenticated();
+	const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+	// Determine if review button should be disabled
+	const isReviewDisabled = (() => {
+		if (!user) return false;
+		if (type === "user" && user.id === typeId) return true;
+		if (type === "club" && isMember) return true;
+		return false;
+	})();
+
+	const reviews: DisplayReview[] = initialReviews.map((review) => ({
+		...review,
+		createdAt: new Date(review.createdAt),
+	}));
+
+	// Calculate rating distribution
+	const ratingDistribution = [5, 4, 3, 2, 1].map((star) => ({
+		star,
+		count: reviews.filter((r) => r.rating === star).length,
+	}));
+
+	const totalReviews = reviews.length;
+
+	const getInitials = (name: string) => {
+		return name
+			.split(" ")
+			.map((n) => n[0])
+			.join("")
+			.toUpperCase()
+			.slice(0, 2);
+	};
+
+	return (
+		<>
+			<Card className="overflow-hidden">
+				<CardHeader className="border-b">
+					<div className="flex items-start justify-between">
+						<div className="flex flex-col gap-2">
+							<CardTitle className="text-xl">{t("Ratings & Reviews")}</CardTitle>
+							<p className="text-sm text-muted-foreground mt-1">
+								{totalReviews} {totalReviews === 1 ? t("review") : t("reviews")}
+							</p>
+						</div>
+						{user && !isReviewDisabled && (
+							<Button size="sm" onClick={() => setIsReviewModalOpen(true)}>
+								<Star className="h-4 w-4 mr-1" />
+								{t("Write Review")}
+							</Button>
+						)}
+					</div>
+				</CardHeader>
+
+				{totalReviews > 0 ? (
+					<CardContent className="p-6">
+						{/* Rating Summary - Google Maps Style */}
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+							{/* Left: Big Average Rating */}
+							<div className="flex flex-col items-center justify-center p-6 bg-muted rounded-lg">
+								<div className="text-6xl font-bold text-primary mb-2">{averageRating.toFixed(1)}</div>
+								<div className="flex items-center gap-1 mb-2">
+									{[1, 2, 3, 4, 5].map((star) => (
+										<Star
+											key={star}
+											className={cn(
+												"h-5 w-5",
+												star <= averageRating
+													? "fill-yellow-400 text-yellow-400"
+													: "fill-muted text-muted-foreground",
+											)}
+										/>
+									))}
+								</div>
+								<p className="text-sm text-muted-foreground">
+									{totalReviews} {totalReviews === 1 ? t("review") : t("reviews")}
+								</p>
+							</div>
+
+							{/* Right: Rating Distribution Bars */}
+							<div className="flex flex-col justify-center space-y-3">
+								{ratingDistribution.map(({ star, count }) => {
+									const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
+									return (
+										<div key={star} className="flex items-center gap-3">
+											<div className="flex items-center gap-1 w-16 shrink-0">
+												<span className="text-sm font-medium">{star}</span>
+												<Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+											</div>
+											<div className="flex-1">
+												<Progress value={percentage} className="h-2.5 bg-muted" />
+											</div>
+											<div className="w-12 shrink-0 text-right">
+												<span className="text-sm text-muted-foreground">{count}</span>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+
+						<Separator className="my-6" />
+
+						{/* Latest Reviews */}
+						<div className="space-y-6">
+							<div className="flex items-center justify-between">
+								<h3 className="text-lg font-semibold">{t("Latest Reviews")}</h3>
+								{reviews.length > 3 && (
+									<ReviewsOverviewSheet
+										reviews={initialReviews}
+										title={
+											{
+												club: t("club"),
+												event: t("event"),
+												user: t("the user"),
+											}[type]
+										}
+									/>
+								)}
+							</div>
+
+							<div className="grid gap-6">
+								{reviews.slice(0, 3).map((review, index) => (
+									<div key={review.id} className="group relative">
+										<div className="flex gap-4">
+											{/* Author Avatar */}
+											<Avatar className="h-12 w-12 shrink-0 border-2 border-background shadow-sm">
+												<AvatarImage
+													src={review.author?.image || undefined}
+													alt={review.author?.name || "User"}
+												/>
+												<AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+													{review.author?.name ? getInitials(review.author.name) : "U"}
+												</AvatarFallback>
+											</Avatar>
+
+											{/* Review Content */}
+											<div className="flex-1 space-y-2">
+												<div className="flex items-start justify-between gap-4">
+													<div>
+														<div className="flex items-center gap-2">
+															<h4 className="font-semibold text-sm">
+																{review.author?.name || t("Anonymous")}
+															</h4>
+															<span className="text-xs text-muted-foreground">
+																{format(review.createdAt, "MMM dd, yyyy")}
+															</span>
+														</div>
+														<div className="flex items-center gap-1 mt-1">
+															{[1, 2, 3, 4, 5].map((star) => (
+																<Star
+																	key={star}
+																	className={cn(
+																		"h-3.5 w-3.5",
+																		star <= review.rating
+																			? "fill-yellow-400 text-yellow-400"
+																			: "fill-muted text-muted-foreground",
+																	)}
+																/>
+															))}
+														</div>
+													</div>
+												</div>
+
+												<p className="text-sm text-muted-foreground leading-relaxed">
+													{review.content}
+												</p>
+											</div>
+										</div>
+
+										{index < Math.min(reviews.length, 3) - 1 && (
+											<Separator className="mt-6 ml-16" />
+										)}
+									</div>
+								))}
+
+								{reviews.length === 0 && (
+									<div className="text-center py-8">
+										<p className="text-muted-foreground">{t("No reviews yet")}</p>
+										{user && !isReviewDisabled && (
+											<Button
+												variant="link"
+												className="mt-2"
+												onClick={() => setIsReviewModalOpen(true)}
+											>
+												{t("Be the first to write a review")}
+											</Button>
+										)}
+									</div>
+								)}
+							</div>
+
+							{reviews.length > 3 && (
+								<div className="pt-4">
+									<ReviewsOverviewSheet
+										reviews={initialReviews}
+										title={
+											{
+												club: t("club"),
+												event: t("event"),
+												user: t("the user"),
+											}[type]
+										}
+									/>
+								</div>
+							)}
+						</div>
+					</CardContent>
+				) : (
+					<CardContent className="p-12">
+						<div className="text-center space-y-4">
+							<div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+								<Star className="h-8 w-8 text-muted-foreground" />
+							</div>
+							<div>
+								<h3 className="font-semibold text-lg mb-2">{t("No reviews yet")}</h3>
+								<p className="text-sm text-muted-foreground mb-4">
+									{t("Be the first to share your experience")}
+								</p>
+								{user && !isReviewDisabled && (
+									<Button onClick={() => setIsReviewModalOpen(true)}>
+										<Star className="h-4 w-4 mr-2" />
+										{t("Write the First Review")}
+									</Button>
+								)}
+							</div>
+						</div>
+					</CardContent>
+				)}
+			</Card>
+
+			{!isReviewDisabled && (
+				<ReviewModal
+					open={isReviewModalOpen}
+					onOpenChange={setIsReviewModalOpen}
+					type={type.toUpperCase() as "USER" | "CLUB" | "EVENT"}
+					entityId={typeId}
+					entityName={entityName}
+				/>
+			)}
+		</>
+	);
+}

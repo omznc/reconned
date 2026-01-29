@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import apiPublic from "@/lib/api/api-public";
-import type { FeatureFlags } from "@/lib/feature-flags";
-import { FeatureFlagsProvider } from "@/lib/feature-flags";
+import { type FeatureFlags, FeatureFlagsProvider } from "@/lib/feature-flags/client";
 
 interface FeatureFlagsWrapperProps {
 	children: ReactNode;
