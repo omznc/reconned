@@ -9,12 +9,13 @@ import { redirect } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { FEATURE_FLAGS } from "@/lib/server-utils";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function EventApplicationPage(props: PageProps<"/[locale]/events/[id]/apply">) {
 	const t = await getExtracted();
-	if (!FEATURE_FLAGS.EVENT_REGISTRATION) {
+	const isEventRegistrationEnabled = await isFeatureEnabled("EVENT_REGISTRATION");
+	if (!isEventRegistrationEnabled) {
 		return <ErrorPage title={t("This functionality is not available")} />;
 	}
 

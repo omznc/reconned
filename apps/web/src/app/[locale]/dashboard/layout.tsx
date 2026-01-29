@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -14,6 +15,13 @@ import { isAuthenticated } from "@/lib/auth";
 interface DashboardLayoutProps {
 	children: ReactNode;
 }
+
+export const metadata: Metadata = {
+	robots: {
+		index: false,
+		follow: false,
+	},
+};
 
 export default async function DashboardLayout(props: DashboardLayoutProps) {
 	const [user, locale] = await Promise.all([isAuthenticated(), getLocale()]);

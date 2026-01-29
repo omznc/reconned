@@ -7,7 +7,6 @@ import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn } from "@/lib/utils";
 
@@ -149,10 +148,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 			</div>
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
-					<CardHeader>
-						<CardTitle>{t("Clubs")}</CardTitle>
+					<CardHeader className="border-b">
+						<div className="flex flex-col gap-4">
+							<CardTitle>{t("Clubs")}</CardTitle>
+							<p className="text-sm text-muted-foreground">{t("Clubs this user is a member of")}</p>
+						</div>
 					</CardHeader>
-					<CardContent>
+					<CardContent className="pt-4">
 						{user.clubMembership.length === 0 ? (
 							<p className="text-muted-foreground">{t("Not a member of any club")}</p>
 						) : (
@@ -194,10 +196,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</Card>
 
 				<Card>
-					<CardHeader>
-						<CardTitle>{t("Upcoming events")}</CardTitle>
+					<CardHeader className="border-b">
+						<div className="flex flex-col gap-4">
+							<CardTitle>{t("Upcoming events")}</CardTitle>
+							<p className="text-sm text-muted-foreground">{t("Events this user is registered for")}</p>
+						</div>
 					</CardHeader>
-					<CardContent>
+					<CardContent className="pt-4">
 						{futureEvents.length === 0 ? (
 							<p className="text-muted-foreground">{t("There are no upcoming matches")}</p>
 						) : (
@@ -230,10 +235,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</Card>
 
 				<Card>
-					<CardHeader>
-						<CardTitle>{t("Previous events")}</CardTitle>
+					<CardHeader className="border-b">
+						<div className="flex flex-col gap-4">
+							<CardTitle>{t("Previous events")}</CardTitle>
+							<p className="text-sm text-muted-foreground">{t("Events this user has attended")}</p>
+						</div>
 					</CardHeader>
-					<CardContent>
+					<CardContent className="pt-4">
 						{pastEvents.length === 0 ? (
 							<p className="text-muted-foreground">{t("No previous events")}</p>
 						) : (
@@ -264,9 +272,8 @@ export async function UserOverview({ user }: UserOverviewProps) {
 						)}
 					</CardContent>
 				</Card>
+				<ReviewsOverview type="user" typeId={user.id} entityName={user.name} />
 			</div>
-
-			<ReviewsOverview type="user" typeId={user.id} />
 		</div>
 	);
 }

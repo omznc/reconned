@@ -1,14 +1,23 @@
 import type {
 	AggregateRating,
 	BreadcrumbList,
+	FAQPage,
 	ItemList,
+	ItemPage,
 	Person,
 	PostalAddress,
+	Rating,
+	Review,
 	SportsEvent,
 	SportsOrganization,
 	WithContext,
 } from "schema-dts";
 import { env } from "./env";
+
+// Validate environment variables for schema generation
+if (!env.NEXT_PUBLIC_WEB_URL) {
+	console.warn("NEXT_PUBLIC_WEB_URL is not set - schemas may have invalid URLs");
+}
 
 export function removeUndefined<T extends Record<string, unknown>>(obj: T): T {
 	return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined)) as T;
@@ -86,10 +95,131 @@ export function createAggregateRating({
 }): AggregateRating {
 	return {
 		"@type": "AggregateRating" as const,
-		ratingValue: String(ratingValue),
+		ratingValue,
 		ratingCount,
-		bestRating: String(bestRating),
-		worstRating: String(worstRating),
+		bestRating,
+		worstRating,
+	};
+}
+
+export interface FAQItem {
+	question: string;
+	answer: string;
+}
+
+export function createFAQPage({
+	faqs,
+	name,
+	description,
+}: {
+	faqs: FAQItem[];
+	name: string;
+	description?: string;
+}): WithContext<FAQPage> {
+	type FAQQuestion = {
+		"@type": "Question";
+		name: string;
+		acceptedAnswer: {
+			"@type": "Answer";
+			text: string;
+		};
+	};
+
+	const mainEntity: FAQQuestion[] = faqs.map((faq) => ({
+		"@type": "Question",
+		name: faq.question,
+		acceptedAnswer: {
+			"@type": "Answer",
+			text: faq.answer,
+		},
+	}));
+
+	return {
+		"@context": "https://schema.org",
+		"@type": "FAQPage",
+		...(description && { description }),
+		...(name && { name }),
+		mainEntity,
+	};
+}
+
+export interface ReviewData {
+	author: string;
+	rating: number;
+	content: string;
+	datePublished: string;
+}
+
+export function createReviewSchema({
+	reviews,
+	itemReviewed,
+	itemReviewedType,
+}: {
+	reviews: ReviewData[];
+	itemReviewed: string;
+	itemReviewedType: "SportsOrganization" | "SportsEvent" | "Person";
+}): WithContext<ItemPage> {
+	const averageRating =
+		reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
+
+	const aggregateRating =
+		reviews.length > 0
+			? ({
+					"@type": "AggregateRating",
+					ratingValue: averageRating,
+					ratingCount: reviews.length,
+					bestRating: 5,
+					worstRating: 1,
+				} satisfies AggregateRating)
+			: undefined;
+
+	const reviewArray = reviews.map(
+		(review): Review => ({
+			"@type": "Review",
+			author: {
+				"@type": "Person",
+				name: review.author,
+			} satisfies Person,
+			reviewRating: {
+				"@type": "Rating",
+				ratingValue: review.rating,
+				bestRating: 5,
+				worstRating: 1,
+			} satisfies Rating,
+			reviewBody: review.content,
+			datePublished: review.datePublished,
+		}),
+	);
+
+	let mainEntity: SportsOrganization | SportsEvent | Person;
+
+	if (itemReviewedType === "SportsOrganization") {
+		mainEntity = {
+			"@type": "SportsOrganization",
+			name: itemReviewed,
+			...(aggregateRating && { aggregateRating }),
+			...(reviewArray.length > 0 && { review: reviewArray }),
+		} satisfies SportsOrganization;
+	} else if (itemReviewedType === "SportsEvent") {
+		mainEntity = {
+			"@type": "SportsEvent",
+			name: itemReviewed,
+			...(aggregateRating && { aggregateRating }),
+			...(reviewArray.length > 0 && { review: reviewArray }),
+		} satisfies SportsEvent;
+	} else {
+		mainEntity = {
+			"@type": "Person",
+			name: itemReviewed,
+			...(aggregateRating && { aggregateRating }),
+			...(reviewArray.length > 0 && { review: reviewArray }),
+		} satisfies Person;
+	}
+
+	return {
+		"@context": "https://schema.org",
+		"@type": "ItemPage",
+		mainEntity,
 	};
 }
 
@@ -149,6 +279,7 @@ export function createItemListWithEvents({
 					name: event.location,
 					address: event.location,
 				},
+				eventStatus: "https://schema.org/EventScheduled" as const,
 				...(event.clubId &&
 					event.clubName && {
 						organizer: createSportsOrganizationReference({
