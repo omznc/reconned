@@ -53,7 +53,22 @@ adminUsersRouter.get(
 
 		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		// Get users with membership counts for sorting
+		const { sortBy, sortOrder } = query || {};
+
+		const orderBy: Array<ReturnType<typeof asc | typeof desc>> = [];
+
+		if (sortBy && sortOrder) {
+			const orderFn = sortOrder === "desc" ? desc : asc;
+			if (sortBy === "name") orderBy.push(orderFn(user.name));
+			if (sortBy === "email") orderBy.push(orderFn(user.email));
+			if (sortBy === "callsign") orderBy.push(orderFn(user.callsign));
+			if (sortBy === "createdAt") orderBy.push(orderFn(user.createdAt));
+		}
+
+		if (sortBy !== "name") orderBy.push(asc(user.name));
+		orderBy.push(desc(user.role));
+		orderBy.push(desc(count(clubMembership.id)));
+
 		const usersWithMembershipCounts = await db
 			.select({
 				id: user.id,
@@ -74,7 +89,7 @@ adminUsersRouter.get(
 			.leftJoin(clubMembership, eq(user.id, clubMembership.userId))
 			.where(where)
 			.groupBy(user.id)
-			.orderBy(desc(user.role), desc(count(clubMembership.id)), asc(user.name))
+			.orderBy(...orderBy)
 			.limit(perPage)
 			.offset(offset);
 

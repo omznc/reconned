@@ -25,6 +25,7 @@ import { ClubPost } from "@/components/overviews/club-post";
 import { ClubWebsiteButton } from "@/components/overviews/club-website-button";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -262,20 +263,13 @@ export async function ClubOverview({
 														href={`/users/${member.user.slug || member.user.id}`}
 														className="group relative flex items-center gap-3 p-2 rounded-md border border-transparent hover:border-red-500 hover:bg-muted transition-all"
 													>
-														{member.user.image ? (
-															<Image
-																src={member.user.image}
+														<Avatar className="w-10 h-10">
+															<AvatarImage
+																src={member.user.image || undefined}
 																alt={member.user.name}
-																width={40}
-																height={40}
-																className="w-10 h-10 object-cover rounded-md"
-																draggable={false}
 															/>
-														) : (
-															<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground font-semibold">
-																{member.user.name.charAt(0).toUpperCase()}
-															</div>
-														)}
+															<AvatarFallback name={member.user.name} />
+														</Avatar>
 														<div className="flex flex-col flex-1 min-w-0">
 															<div className="flex items-center gap-2">
 																<span className="font-medium truncate">

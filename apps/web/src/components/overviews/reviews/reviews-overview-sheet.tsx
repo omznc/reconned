@@ -207,9 +207,7 @@ export function ReviewsOverviewSheet({
 												>
 													<Avatar className="h-8 w-8">
 														<AvatarImage src={review.author.image || undefined} />
-														<AvatarFallback>
-															{review.author.name.charAt(0).toUpperCase()}
-														</AvatarFallback>
+														<AvatarFallback name={review.author.name} />
 													</Avatar>
 												</Link>
 											) : (

@@ -93,11 +93,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 					<div className="flex gap-3 items-center">
 						<Avatar>
 							<AvatarImage src={registration.createdBy?.image || ""} />
-							{!registration.createdBy?.image && (
-								<AvatarFallback>
-									{registration.createdBy?.name?.slice(0, 2).toUpperCase()}
-								</AvatarFallback>
-							)}
+							{!registration.createdBy?.image && <AvatarFallback name={registration.createdBy?.name} />}
 						</Avatar>
 						<div className="flex flex-col gap-1">
 							<p className="font-semibold">{registration.createdBy?.name}</p>
@@ -120,9 +116,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 												<div key={user.id} className="flex items-center gap-2">
 													<Avatar className="h-6 w-6">
 														<AvatarImage src={user.image || ""} />
-														<AvatarFallback className="text-xs">
-															{user.name?.slice(0, 2).toUpperCase()}
-														</AvatarFallback>
+														<AvatarFallback name={user.name} className="text-xs" />
 													</Avatar>
 													<span className="text-sm">{user.name}</span>
 												</div>

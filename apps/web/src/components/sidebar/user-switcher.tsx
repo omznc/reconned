@@ -40,7 +40,7 @@ export function UserSwitcher(props: { user: User }) {
 								{user?.image && user.image.length > 0 && (
 									<AvatarImage src={user?.image} alt={user?.name} />
 								)}
-								<AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
+								<AvatarFallback name={user?.name} />
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-semibold">{user?.name}</span>
@@ -62,9 +62,7 @@ export function UserSwitcher(props: { user: User }) {
 							>
 								<Avatar className="h-8 w-8 rounded-lg">
 									<AvatarImage src={user?.image || ""} alt={user?.name} />
-									<AvatarFallback className="rounded-lg">
-										{user?.name?.charAt(0).toUpperCase()}
-									</AvatarFallback>
+									<AvatarFallback name={user?.name} className="rounded-lg" />
 								</Avatar>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-semibold">{user?.name}</span>

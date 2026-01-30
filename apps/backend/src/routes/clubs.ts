@@ -616,7 +616,21 @@ clubsRouter.get(
 
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		// Get clubs with member counts for sorting
+		const { sortBy, sortOrder } = query;
+
+		const orderBy: Array<ReturnType<typeof asc | typeof desc>> = [];
+
+		if (sortBy && sortOrder) {
+			const orderFn = sortOrder === "desc" ? desc : asc;
+			if (sortBy === "name") orderBy.push(orderFn(club.name));
+			if (sortBy === "location") orderBy.push(orderFn(club.location));
+			if (sortBy === "createdAt") orderBy.push(orderFn(club.createdAt));
+		}
+
+		if (sortBy !== "name") orderBy.push(asc(club.name));
+		orderBy.push(desc(club.verified));
+		orderBy.push(desc(count(clubMembership.id)));
+
 		const clubsWithMemberCounts = await db
 			.select({
 				id: club.id,
@@ -652,7 +666,7 @@ clubsRouter.get(
 			.leftJoin(clubMembership, eq(club.id, clubMembership.clubId))
 			.where(whereClause)
 			.groupBy(club.id)
-			.orderBy(desc(club.verified), desc(count(clubMembership.id)), asc(club.name))
+			.orderBy(...orderBy)
 			.limit(perPage)
 			.offset(offset);
 

@@ -320,7 +320,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 								<div className="flex h-7 w-7 items-center justify-center">
 									<Avatar className="h-7 w-7">
 										{user?.image && <AvatarImage src={user.image} alt={user?.name || ""} />}
-										<AvatarFallback>{user?.name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+										<AvatarFallback name={user?.name} />
 									</Avatar>
 								</div>
 								<div className="flex flex-col">

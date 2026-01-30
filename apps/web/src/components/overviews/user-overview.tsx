@@ -4,6 +4,7 @@ import Image from "next/image";
 import { getExtracted } from "next-intl/server";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
@@ -62,39 +63,25 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</div>
 
 					<div className="absolute bottom-0 left-4 transform translate-y-1/2">
-						{user.image && (
-							<Image
-								suppressHydrationWarning={true}
-								src={user.image}
-								alt={user.name}
-								width={150}
-								height={150}
-								className="h-24 w-24 md:h-32 md:w-32 bg-background object-cover shadow-lg rounded-md"
-								draggable={false}
-							/>
-						)}
+						<Avatar className="h-24 w-24 md:h-32 md:w-32 shadow-lg rounded-md border-4 border-background">
+							<AvatarImage src={user.image || undefined} alt={user.name} />
+							<AvatarFallback name={user.name} />
+						</Avatar>
 					</div>
 				</div>
 			) : (
-				user.image && (
-					<div className="flex justify-start mb-4">
-						<Image
-							suppressHydrationWarning={true}
-							src={user.image}
-							alt={user.name}
-							width={150}
-							height={150}
-							className="h-32 w-32 object-cover rounded-md"
-							draggable={false}
-						/>
-					</div>
-				)
+				<div className="flex justify-start mb-4">
+					<Avatar className="h-32 w-32 rounded-md">
+						<AvatarImage src={user.image || undefined} alt={user.name} />
+						<AvatarFallback name={user.name} />
+					</Avatar>
+				</div>
 			)}
 
 			<div
 				className={cn(
 					"flex flex-col gap-1",
-					user.image && user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : undefined,
+					user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : undefined,
 				)}
 			>
 				<div className="flex items-center gap-2">

@@ -137,12 +137,7 @@ export function MembersTable(props: MembersTableProps) {
 							component: (_, row) => (
 								<Avatar className="h-8 w-8">
 									<AvatarImage src={row?.userAvatar || undefined} alt="Avatar" />
-									<AvatarFallback>
-										{row.userName
-											.split(" ")
-											.map((name) => name[0])
-											.join("")}
-									</AvatarFallback>
+									<AvatarFallback name={row.userName} />
 								</Avatar>
 							),
 						},

@@ -37,12 +37,7 @@ export function UserTable(props: UserTableProps) {
 							component: (_, user) => (
 								<Avatar className="h-8 w-8">
 									<AvatarImage src={user.image || undefined} alt="Avatar" />
-									<AvatarFallback>
-										{user.name
-											.split(" ")
-											.map((name) => name[0])
-											.join("")}
-									</AvatarFallback>
+									<AvatarFallback name={user.name} />
 								</Avatar>
 							),
 						},

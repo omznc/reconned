@@ -146,6 +146,7 @@ export function SearchResults() {
 									return (
 										<SearchResultCard
 											image={user.image}
+											name={user.name}
 											key={`user-${item.id}`}
 											title={
 												<span className="flex gap-2 items-center">
