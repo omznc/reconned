@@ -1,8 +1,88 @@
-import type { BBox, Feature, FeatureCollection, Geometry } from "geojson";
+import type { BBox, Feature, FeatureCollection, Geometry, LineString, Point, Polygon } from "geojson";
 
 import { DEFAULT_GRID, EMPTY_FEATURE_COLLECTION, MAP_DEFAULT_STYLE } from "@/components/map-editor/constants";
-import { featuresToCollection } from "@/components/map-editor/geometry";
-import type { MapEditorSnapshot, MapFeature, MapPlayArea } from "@/components/map-editor/types";
+import type {
+	LngLatTuple,
+	MapEditorSnapshot,
+	MapFeature,
+	MapGeometry,
+	MapPlayArea,
+} from "@/components/map-editor/types";
+
+const rectangleRing = (start: LngLatTuple, end: LngLatTuple): LngLatTuple[] => {
+	const minLng = Math.min(start[0], end[0]);
+	const maxLng = Math.max(start[0], end[0]);
+	const minLat = Math.min(start[1], end[1]);
+	const maxLat = Math.max(start[1], end[1]);
+	return [
+		[minLng, minLat],
+		[maxLng, minLat],
+		[maxLng, maxLat],
+		[minLng, maxLat],
+		[minLng, minLat],
+	];
+};
+
+const geometryToGeoJSON = (geometry: MapGeometry): Point | LineString | Polygon => {
+	if (geometry.type === "Point") {
+		return { type: "Point", coordinates: geometry.coordinates };
+	}
+	if (geometry.type === "LineString") {
+		return { type: "LineString", coordinates: geometry.coordinates };
+	}
+	if (geometry.type === "Polygon") {
+		return { type: "Polygon", coordinates: geometry.coordinates };
+	}
+	if (geometry.type === "Rectangle") {
+		return { type: "Polygon", coordinates: [rectangleRing(geometry.start, geometry.end)] };
+	}
+	if (geometry.type === "Circle") {
+		return { type: "Polygon", coordinates: [[]] };
+	}
+	if (geometry.type === "Freehand" && geometry.closed) {
+		const coords = [...geometry.coordinates];
+		if (coords.length > 0) {
+			const first = coords[0];
+			const last = coords[coords.length - 1];
+			if (first && last && (first[0] !== last[0] || first[1] !== last[1])) {
+				coords.push([first[0], first[1]]);
+			}
+		}
+		return { type: "Polygon", coordinates: [coords] };
+	}
+	return { type: "LineString", coordinates: geometry.coordinates };
+};
+
+const featureToGeoJSON = (feature: MapFeature): Feature => {
+	const geometry = geometryToGeoJSON(feature.geometry);
+	return {
+		type: "Feature",
+		geometry,
+		properties: {
+			id: feature.id,
+			kind: feature.kind,
+			strokeColor: feature.style.strokeColor,
+			strokeWidth: feature.style.strokeWidth,
+			fillColor: feature.style.fillColor,
+			fillOpacity: feature.style.fillOpacity,
+			label: feature.label || "",
+			iconName: feature.iconName || "",
+			iconBackground: feature.iconBackground || true,
+			iconSize: feature.iconSize || 22,
+		},
+	};
+};
+
+const featuresToCollection = (features: MapFeature[]): FeatureCollection => {
+	const items: Feature[] = [];
+	for (const feature of features) {
+		items.push(featureToGeoJSON(feature));
+	}
+	return {
+		type: "FeatureCollection",
+		features: items,
+	};
+};
 
 const cloneBbox = (bbox: FeatureCollection["bbox"]): BBox | undefined => {
 	if (!bbox) {

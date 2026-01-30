@@ -1,6 +1,8 @@
 "use client";
 
+import NoResults from "@public/errors/no-results.png";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useEffect, useMemo, useRef } from "react";
@@ -112,8 +114,14 @@ export function SearchResults() {
 				) : error ? (
 					<div className="text-center text-destructive py-12">{t("Error loading search results")}</div>
 				) : allItems.length === 0 ? (
-					<div className="text-center text-muted-foreground py-12">
-						{t("Nothing was found matching that search")}
+					<div className="text-center text-muted-foreground py-12 flex flex-col items-center justify-center">
+						<Image
+							src={NoResults}
+							alt="No results"
+							draggable={false}
+							className="w-full max-w-[400px] dark:invert"
+						/>
+						<p className="mt-4">{t("Nothing was found matching that search")}</p>
 					</div>
 				) : (
 					<>

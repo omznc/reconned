@@ -1,7 +1,9 @@
 "use client";
 
+import LeaveReview from "@public/errors/leave-review.png";
 import { format } from "date-fns";
 import { Star } from "lucide-react";
+import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { ReviewModal } from "@/components/overviews/reviews/review-modal";
@@ -250,17 +252,14 @@ export function ReviewsOverviewClient({
 								))}
 
 								{reviews.length === 0 && (
-									<div className="text-center py-8">
-										<p className="text-muted-foreground">{t("No reviews yet")}</p>
-										{user && !isReviewDisabled && (
-											<Button
-												variant="link"
-												className="mt-2"
-												onClick={() => setIsReviewModalOpen(true)}
-											>
-												{t("Be the first to write a review")}
-											</Button>
-										)}
+									<div className="text-center py-8 flex flex-col items-center justify-center">
+										<Image
+											src={LeaveReview}
+											alt="No reviews"
+											draggable={false}
+											className="w-full max-w-[300px] dark:invert"
+										/>
+										<p className="mt-4 text-muted-foreground">{t("No reviews yet")}</p>
 									</div>
 								)}
 							</div>
@@ -288,20 +287,17 @@ export function ReviewsOverviewClient({
 				) : (
 					<CardContent className="p-12">
 						<div className="text-center space-y-4">
-							<div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-								<Star className="h-8 w-8 text-muted-foreground" />
-							</div>
+							<Image
+								src={LeaveReview}
+								alt="No reviews"
+								draggable={false}
+								className="w-full max-w-[300px] mx-auto dark:invert"
+							/>
 							<div>
 								<h3 className="font-semibold text-lg mb-2">{t("No reviews yet")}</h3>
-								<p className="text-sm text-muted-foreground mb-4">
+								<p className="text-sm text-muted-foreground">
 									{t("Be the first to share your experience")}
 								</p>
-								{user && !isReviewDisabled && (
-									<Button onClick={() => setIsReviewModalOpen(true)}>
-										<Star className="h-4 w-4 mr-2" />
-										{t("Write the First Review")}
-									</Button>
-								)}
 							</div>
 						</div>
 					</CardContent>
