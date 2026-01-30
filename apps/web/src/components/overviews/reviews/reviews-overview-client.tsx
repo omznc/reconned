@@ -80,15 +80,6 @@ export function ReviewsOverviewClient({
 
 	const totalReviews = reviews.length;
 
-	const getInitials = (name: string) => {
-		return name
-			.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
-	};
-
 	return (
 		<>
 			<Card className="overflow-hidden">
@@ -195,9 +186,10 @@ export function ReviewsOverviewClient({
 															src={review.author.image || undefined}
 															alt={review.author.name}
 														/>
-														<AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
-															{getInitials(review.author.name)}
-														</AvatarFallback>
+														<AvatarFallback
+															name={review.author.name}
+															className="bg-primary/10 text-sm font-semibold"
+														/>
 													</Avatar>
 												</Link>
 											) : (

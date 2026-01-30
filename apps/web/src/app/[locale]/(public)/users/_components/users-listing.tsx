@@ -75,6 +75,7 @@ export function UsersListing({ initialData }: UsersListingProps) {
 								key={user.id}
 								type="user"
 								image={user.image}
+								name={user.name}
 								title={
 									<span className="flex gap-2 items-center">
 										{user.name}

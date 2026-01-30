@@ -85,12 +85,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 							<div className="flex items-center gap-2">
 								<Avatar className="h-8 w-8">
 									<AvatarImage src={row?.user.image || undefined} alt="Avatar" />
-									<AvatarFallback>
-										{row.user.name
-											.split(" ")
-											.map((name) => name[0])
-											.join("")}
-									</AvatarFallback>
+									<AvatarFallback name={row.user.name} />
 								</Avatar>
 								<span>{row.user.name}</span>
 								{row.user.callsign && (

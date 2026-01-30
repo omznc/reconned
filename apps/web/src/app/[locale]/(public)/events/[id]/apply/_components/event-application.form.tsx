@@ -504,7 +504,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 					<div className="flex items-center gap-2">
 						<Avatar className="h-8 w-8">
 							{field.image && <AvatarImage src={field.image} />}
-							<AvatarFallback>{field.name.charAt(0).toUpperCase()}</AvatarFallback>
+							<AvatarFallback name={field.name} />
 						</Avatar>
 						<div className="flex flex-col">
 							<span className="font-medium">
@@ -642,7 +642,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 											>
 												<Avatar className="h-8 w-8">
 													{user.image && <AvatarImage src={user.image} />}
-													<AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+													<AvatarFallback name={user.name} />
 												</Avatar>
 												<div className="flex flex-col">
 													<span className="font-medium">
