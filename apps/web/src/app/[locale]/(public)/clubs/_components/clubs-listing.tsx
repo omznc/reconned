@@ -1,6 +1,8 @@
 "use client";
 
+import NoResults from "@public/errors/no-results.png";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
@@ -64,8 +66,14 @@ export function ClubsListing({ initialData }: ClubsListingProps) {
 						))}
 					</div>
 				) : clubs.length === 0 ? (
-					<div className="text-center py-12 text-muted-foreground">
-						<p>{t("No clubs found")}</p>
+					<div className="text-center py-12 flex flex-col items-center justify-center">
+						<Image
+							src={NoResults}
+							alt="No results"
+							draggable={false}
+							className="w-full max-w-[400px] dark:invert"
+						/>
+						<p className="mt-4 text-muted-foreground">{t("No clubs found")}</p>
 					</div>
 				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

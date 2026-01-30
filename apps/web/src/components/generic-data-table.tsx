@@ -1,7 +1,9 @@
 "use client";
 
+import NoResults from "@public/errors/no-results.png";
 import { format } from "date-fns";
 import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "lucide-react";
+import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import type { ChangeEvent, ReactNode } from "react";
@@ -480,8 +482,16 @@ export function GenericDataTable<T>({
 						<TableBody>
 							{data.length === 0 ? (
 								<TableRow>
-									<TableCell colSpan={visibleColumnsArray.length} className="text-center h-24">
-										{t("No data found")}
+									<TableCell colSpan={visibleColumnsArray.length} className="text-center">
+										<div className="flex flex-col items-center justify-center py-8">
+											<Image
+												src={NoResults}
+												alt="No results"
+												draggable={false}
+												className="w-full max-w-[300px] dark:invert"
+											/>
+											<p className="mt-4 text-muted-foreground">{t("No data found")}</p>
+										</div>
 									</TableCell>
 								</TableRow>
 							) : (
@@ -520,7 +530,15 @@ export function GenericDataTable<T>({
 			{/* Mobile Cards */}
 			<div className="space-y-4 md:hidden">
 				{data.length === 0 ? (
-					<div className="text-center py-8 text-muted-foreground">{t("No data found")}</div>
+					<div className="text-center py-8 flex flex-col items-center justify-center">
+						<Image
+							src={NoResults}
+							alt="No results"
+							draggable={false}
+							className="w-full max-w-[300px] dark:invert"
+						/>
+						<p className="mt-4 text-muted-foreground">{t("No data found")}</p>
+					</div>
 				) : (
 					data.map((item, idx) => (
 						<div

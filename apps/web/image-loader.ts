@@ -1,11 +1,17 @@
 import type { ImageLoaderProps } from "next/image";
 
+const normalizeSrc = (src: string) => {
+	return src.startsWith("/") ? src.slice(1) : src;
+};
+
 export default function cloudflareLoader({ src, width, quality }: ImageLoaderProps) {
-	const normalizedSrc = src.startsWith("/") ? src.slice(1) : src;
-
-	const params = [`width=${width}`, quality && `quality=${quality}`].filter(Boolean);
-
-	const base = process.env.NODE_ENV === "development" ? "https://beta.reconned.com" : "";
-
-	return `${base}/cdn-cgi/image/${params.join(",")}/${normalizedSrc}`;
+	const params = [`width=${width}`];
+	if (quality) {
+		params.push(`quality=${quality}`);
+	}
+	if (process.env.NODE_ENV === "development") {
+		const separator = src.includes("?") ? "&" : "?";
+		return `${src}${separator}${params.join("&")}`;
+	}
+	return `/cdn-cgi/image/${params.join(",")}/${normalizeSrc(src)}`;
 }

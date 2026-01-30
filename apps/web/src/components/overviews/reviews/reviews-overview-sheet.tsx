@@ -1,8 +1,10 @@
 "use client";
 
+import LeaveReview from "@public/errors/leave-review.png";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Filter, Star } from "lucide-react";
+import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useState } from "react";
@@ -190,8 +192,13 @@ export function ReviewsOverviewSheet({
 						</div>
 					) : reviews.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-8 text-center">
-							<Star className="h-12 w-12 text-muted-foreground mb-2" />
-							<p className="text-muted-foreground">{t("No reviews yet")}</p>
+							<Image
+								src={LeaveReview}
+								alt="No reviews"
+								draggable={false}
+								className="w-full max-w-[300px] dark:invert"
+							/>
+							<p className="mt-4 text-muted-foreground">{t("No reviews yet")}</p>
 						</div>
 					) : (
 						<div className="space-y-6">

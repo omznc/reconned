@@ -1,6 +1,8 @@
 "use client";
 
+import NoResults from "@public/errors/no-results.png";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { EventCard } from "@/components/event-card";
@@ -90,8 +92,14 @@ export function EventsListing({ initialData }: EventsListingProps) {
 						))}
 					</div>
 				) : events.length === 0 ? (
-					<div className="text-center py-12 text-muted-foreground">
-						<p>{t("There are no upcoming events")}</p>
+					<div className="text-center py-12 flex flex-col items-center justify-center">
+						<Image
+							src={NoResults}
+							alt="No results"
+							draggable={false}
+							className="w-full max-w-[400px] dark:invert"
+						/>
+						<p className="mt-4 text-muted-foreground">{t("There are no upcoming events")}</p>
 					</div>
 				) : (
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
