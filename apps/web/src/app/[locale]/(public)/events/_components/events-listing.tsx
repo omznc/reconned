@@ -1,19 +1,14 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { format, formatDistanceToNow } from "date-fns";
-import { CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
-import Image from "next/image";
-import { useExtracted, useLocale } from "next-intl";
+import { useExtracted } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { Badge } from "@/components/ui/badge";
+import { EventCard } from "@/components/event-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
-import { getDateFnsLocale } from "@/lib/date-locale";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -25,8 +20,6 @@ interface EventsListingProps {
 
 export function EventsListing({ initialData }: EventsListingProps) {
 	const t = useExtracted();
-	const locale = useLocale();
-	const dateFnsLocale = getDateFnsLocale(locale);
 	const [page, setPage] = useQueryState(
 		"page",
 		parseAsInteger.withDefault(1).withOptions({
@@ -102,122 +95,9 @@ export function EventsListing({ initialData }: EventsListingProps) {
 					</div>
 				) : (
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-						{events.map((event) => {
-							const dateStart = new Date(event.dateStart);
-							const dateEnd = event.dateEnd ? new Date(event.dateEnd) : null;
-							const dateRegistrationsClose = event.dateRegistrationsClose
-								? new Date(event.dateRegistrationsClose)
-								: null;
-
-							return (
-								<Card
-									key={event.id}
-									className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow"
-								>
-									<CardHeader className="p-0">
-										{event.image && (
-											<div className="relative w-full aspect-video">
-												<Image
-													src={event.image}
-													alt={event.name}
-													fill
-													className="object-cover"
-													sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-												/>
-											</div>
-										)}
-										<div className="px-6 pt-6">
-											<CardTitle className="text-xl mb-2">{event.name}</CardTitle>
-											{event.description && (
-												<CardDescription className="line-clamp-2">
-													{event.description}
-												</CardDescription>
-											)}
-										</div>
-									</CardHeader>
-									<CardContent className="flex-1 flex flex-col gap-3 px-6 pt-4">
-										<div className="flex items-center gap-2 text-sm">
-											<CalendarDays className="w-4 h-4 text-muted-foreground shrink-0" />
-											<span>
-												{format(dateStart, "MMM d, yyyy")}
-												{dateEnd && ` - ${format(dateEnd, "MMM d, yyyy")}`}
-											</span>
-										</div>
-										<div className="flex items-center gap-2 text-sm">
-											<Clock className="w-4 h-4 text-muted-foreground shrink-0" />
-											<span>{format(dateStart, "h:mm a")}</span>
-										</div>
-										<div className="flex items-center gap-2 text-sm">
-											<MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
-											<span className="truncate">{event.location}</span>
-										</div>
-										<div className="flex items-center gap-2 text-sm">
-											<DollarSign className="w-4 h-4 text-muted-foreground shrink-0" />
-											<span>
-												{event.costPerPerson.toFixed(2)}KM {t("per person")}
-											</span>
-										</div>
-										<div className="flex flex-wrap gap-2 mt-2">
-											<Badge variant="outline" className="text-xs">
-												{event.allowFreelancers
-													? t("Freelancer-friendly")
-													: t("No freelancers")}
-											</Badge>
-											{event.hasBreakfast && (
-												<Badge variant="outline" className="text-xs">
-													{t("Breakfast")}
-												</Badge>
-											)}
-											{event.hasLunch && (
-												<Badge variant="outline" className="text-xs">
-													{t("Lunch")}
-												</Badge>
-											)}
-											{event.hasDinner && (
-												<Badge variant="outline" className="text-xs">
-													{t("Dinner")}
-												</Badge>
-											)}
-											{event.hasSnacks && (
-												<Badge variant="outline" className="text-xs">
-													{t("Snacks")}
-												</Badge>
-											)}
-											{event.hasDrinks && (
-												<Badge variant="outline" className="text-xs">
-													{t("Drinks")}
-												</Badge>
-											)}
-											{event.hasPrizes && (
-												<Badge variant="outline" className="text-xs">
-													{t("Prizes")}
-												</Badge>
-											)}
-										</div>
-									</CardContent>
-									<CardFooter className="flex flex-col gap-3 px-6 pb-6">
-										<div className="text-xs text-muted-foreground w-full">
-											{t("Starts")}{" "}
-											{formatDistanceToNow(dateStart, {
-												addSuffix: true,
-												locale: dateFnsLocale,
-											})}
-										</div>
-										{dateRegistrationsClose && (
-											<div className="text-xs text-muted-foreground w-full">
-												{t("Registrations open for")}{" "}
-												{formatDistanceToNow(dateRegistrationsClose, {
-													locale: dateFnsLocale,
-												})}
-											</div>
-										)}
-										<Button asChild className="w-full">
-											<Link href={`/events/${event.slug || event.id}`}>{t("View")}</Link>
-										</Button>
-									</CardFooter>
-								</Card>
-							);
-						})}
+						{events.map((event) => (
+							<EventCard key={event.id} event={event} />
+						))}
 					</div>
 				)}
 			</div>

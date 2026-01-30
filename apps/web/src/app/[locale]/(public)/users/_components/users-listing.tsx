@@ -77,11 +77,11 @@ export function UsersListing({ initialData }: UsersListingProps) {
 								image={user.image}
 								title={
 									<span className="flex gap-2 items-center">
-										{user.name} {user.callsign ? `(${user.callsign})` : ""}
+										{user.name}
 										{user.isAdmin && <AdminIcon />}
 									</span>
 								}
-								description={null}
+								description={user.callsign}
 								href={`/users/${user.slug || user.id}`}
 								meta={user.location || undefined}
 							/>

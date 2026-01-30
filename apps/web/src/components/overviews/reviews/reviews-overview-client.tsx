@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "@/i18n/navigation";
 import { useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ interface Review {
 	updatedAt: string;
 	author: {
 		id: string;
+		slug: string | null;
 		name: string;
 		image: string | null;
 	} | null;
@@ -137,15 +139,15 @@ export function ReviewsOverviewClient({
 								{ratingDistribution.map(({ star, count }) => {
 									const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
 									return (
-										<div key={star} className="flex items-center gap-3">
-											<div className="flex items-center gap-1 w-16 shrink-0">
+										<div key={star} className="flex items-center">
+											<div className="flex items-center gap-1 w-8 shrink-0">
 												<span className="text-sm font-medium">{star}</span>
 												<Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
 											</div>
-											<div className="flex-1">
+											<div className="flex-1 w-full">
 												<Progress value={percentage} className="h-2.5 bg-muted" />
 											</div>
-											<div className="w-12 shrink-0 text-right">
+											<div className="w-8 shrink-0 text-right">
 												<span className="text-sm text-muted-foreground">{count}</span>
 											</div>
 										</div>
@@ -162,7 +164,11 @@ export function ReviewsOverviewClient({
 								<h3 className="text-lg font-semibold">{t("Latest Reviews")}</h3>
 								{reviews.length > 3 && (
 									<ReviewsOverviewSheet
-										reviews={initialReviews}
+										type={type}
+										entityId={typeId}
+										entityName={entityName}
+										initialReviews={initialReviews}
+										initialTotal={reviews.length}
 										title={
 											{
 												club: t("club"),
@@ -179,24 +185,46 @@ export function ReviewsOverviewClient({
 									<div key={review.id} className="group relative">
 										<div className="flex gap-4">
 											{/* Author Avatar */}
-											<Avatar className="h-12 w-12 shrink-0 border-2 border-background shadow-sm">
-												<AvatarImage
-													src={review.author?.image || undefined}
-													alt={review.author?.name || "User"}
-												/>
-												<AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
-													{review.author?.name ? getInitials(review.author.name) : "U"}
-												</AvatarFallback>
-											</Avatar>
+											{review.author ? (
+												<Link
+													href={`/users/${review.author.slug || review.author.id}`}
+													className="flex-shrink-0"
+												>
+													<Avatar className="h-12 w-12 border-2 border-background shadow-sm hover:ring-2 hover:ring-primary transition-all">
+														<AvatarImage
+															src={review.author.image || undefined}
+															alt={review.author.name}
+														/>
+														<AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+															{getInitials(review.author.name)}
+														</AvatarFallback>
+													</Avatar>
+												</Link>
+											) : (
+												<Avatar className="h-12 w-12 shrink-0 border-2 border-background shadow-sm">
+													<AvatarFallback className="bg-muted text-sm font-semibold">
+														U
+													</AvatarFallback>
+												</Avatar>
+											)}
 
 											{/* Review Content */}
 											<div className="flex-1 space-y-2">
 												<div className="flex items-start justify-between gap-4">
 													<div>
 														<div className="flex items-center gap-2">
-															<h4 className="font-semibold text-sm">
-																{review.author?.name || t("Anonymous")}
-															</h4>
+															{review.author ? (
+																<Link
+																	href={`/users/${review.author.slug || review.author.id}`}
+																	className="font-semibold text-sm hover:underline"
+																>
+																	{review.author.name}
+																</Link>
+															) : (
+																<h4 className="font-semibold text-sm">
+																	{t("Anonymous")}
+																</h4>
+															)}
 															<span className="text-xs text-muted-foreground">
 																{format(review.createdAt, "MMM dd, yyyy")}
 															</span>
@@ -248,7 +276,11 @@ export function ReviewsOverviewClient({
 							{reviews.length > 3 && (
 								<div className="pt-4">
 									<ReviewsOverviewSheet
-										reviews={initialReviews}
+										type={type}
+										entityId={typeId}
+										entityName={entityName}
+										initialReviews={initialReviews}
+										initialTotal={reviews.length}
 										title={
 											{
 												club: t("club"),

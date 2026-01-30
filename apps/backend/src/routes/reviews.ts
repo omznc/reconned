@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, gte, lte } from "drizzle-orm";
 import * as z from "zod";
 import { club, event, eventRegistration, eventRegistrationToUser, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
@@ -6,6 +6,7 @@ import { apiError } from "../lib/errors";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { Router } from "../lib/router";
 import { sanitizeReviewContent } from "../lib/sanitization";
+import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
 const reviewsRouter = new Router();
 
@@ -23,6 +24,7 @@ const reviewWithAuthorSchema = z.object({
 	author: z
 		.object({
 			id: z.string(),
+			slug: z.string().nullable(),
 			name: z.string(),
 			image: z.string().nullable(),
 		})
@@ -31,8 +33,9 @@ const reviewWithAuthorSchema = z.object({
 
 reviewsRouter.get(
 	"/reviews/:type/:id",
-	async ({ params, response }) => {
+	async ({ params, query, response }) => {
 		const { type, id } = params;
+		const { page, perPage, minRating, maxRating, rating } = query;
 
 		if (!type || !id) {
 			throw apiError.validation("Type and ID are required");
@@ -44,20 +47,30 @@ reviewsRouter.get(
 		}
 
 		// Build the where condition based on type
-		let whereCondition: ReturnType<typeof eq>;
-		switch (type) {
-			case "user":
-				whereCondition = eq(review.userId, id);
-				break;
-			case "club":
-				whereCondition = eq(review.clubId, id);
-				break;
-			case "event":
-				whereCondition = eq(review.eventId, id);
-				break;
-			default:
-				throw apiError.validation("Invalid review type");
+		const baseCondition: ReturnType<typeof eq> =
+			type === "user" ? eq(review.userId, id) : type === "club" ? eq(review.clubId, id) : eq(review.eventId, id);
+
+		// Add rating filters if provided
+		const conditions = [baseCondition];
+
+		if (rating !== undefined) {
+			// Filter by exact rating
+			conditions.push(eq(review.rating, rating));
+		} else {
+			// Filter by rating range
+			if (minRating !== undefined) {
+				conditions.push(gte(review.rating, minRating));
+			}
+			if (maxRating !== undefined) {
+				conditions.push(lte(review.rating, maxRating));
+			}
 		}
+
+		const whereCondition = conditions.length === 1 ? conditions[0] : and(...conditions);
+
+		// Get total count for pagination
+		const totalResult = await db.select({ total: count() }).from(review).where(whereCondition);
+		const total = totalResult[0]?.total || 0;
 
 		// Fetch reviews with author information (respecting privacy settings)
 		const reviews = await db
@@ -74,6 +87,7 @@ reviewsRouter.get(
 				updatedAt: review.updatedAt,
 				author: {
 					id: user.id,
+					slug: user.slug,
 					name: user.name,
 					image: user.image,
 					isPrivate: user.isPrivate,
@@ -82,7 +96,9 @@ reviewsRouter.get(
 			.from(review)
 			.leftJoin(user, eq(review.authorId, user.id))
 			.where(whereCondition)
-			.orderBy(desc(review.createdAt));
+			.orderBy(desc(review.createdAt))
+			.limit(perPage)
+			.offset((page - 1) * perPage);
 
 		// Apply privacy sanitization to author info
 		const sanitizedReviews = reviews.map((review) => ({
@@ -90,6 +106,7 @@ reviewsRouter.get(
 			author: review.author
 				? {
 						id: review.author.id,
+						slug: review.author.slug,
 						// For reviews, show name regardless of privacy (they wrote public content)
 						// But hide image if profile is private
 						name: review.author.name,
@@ -100,20 +117,32 @@ reviewsRouter.get(
 
 		return response.json({
 			reviews: sanitizedReviews,
+			pagination: {
+				page,
+				perPage,
+				total,
+				totalPages: Math.ceil(total / perPage),
+			},
 		});
 	},
 	{
 		schema: {
 			tags: ["Reviews"],
 			summary: "Get reviews",
-			description: "Get all reviews for a user, club, or event",
+			description: "Get reviews for a user, club, or event with pagination and optional rating filtering",
 			params: z.object({
 				type: z.enum(["user", "club", "event"]),
 				id: z.string(),
 			}),
+			query: paginationQuerySchema.extend({
+				minRating: z.coerce.number().int().min(1).max(5).optional(),
+				maxRating: z.coerce.number().int().min(1).max(5).optional(),
+				rating: z.coerce.number().int().min(1).max(5).optional(),
+			}),
 			response: {
 				200: z.object({
 					reviews: z.array(reviewWithAuthorSchema),
+					pagination: paginationResponseSchema,
 				}),
 			},
 		},

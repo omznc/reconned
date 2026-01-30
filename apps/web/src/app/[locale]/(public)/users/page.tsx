@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
 import { UsersListing } from "@/app/[locale]/(public)/users/_components/users-listing";
+import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
@@ -27,7 +28,7 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 	});
 
 	if (error || !data) {
-		return <div>{t("Error loading users")}</div>;
+		return <ErrorPage title={t("Error loading users")} />;
 	}
 
 	const initialData = {
