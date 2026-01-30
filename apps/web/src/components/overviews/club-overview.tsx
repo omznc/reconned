@@ -315,7 +315,7 @@ export async function ClubOverview({
 											</p>
 										</div>
 									</CardHeader>
-									<CardContent className="max-h-100 overflow-auto p-4 pt-0">
+									<CardContent className="max-h-100 overflow-auto p-4">
 										<div className="grid gap-1">
 											{alliances.map((alliance) => {
 												const content = (
@@ -325,8 +325,8 @@ export async function ClubOverview({
 														</div>
 														<HoverCard>
 															<HoverCardTrigger asChild>
-																<div className="flex flex-col flex-1 min-w-0 overflow-hidden pr-2">
-																	<span className="font-medium truncate block">
+																<div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+																	<span className="font-medium block">
 																		{alliance.name}
 																	</span>
 																	{alliance.description && (
@@ -381,6 +381,8 @@ export async function ClubOverview({
 								</Card>
 							)}
 
+							<ReviewsOverview type="club" typeId={club.id} entityName={club.name} isMember={isMember} />
+
 							{club.instagramUsername && (
 								<Card
 									className={members.length > 0 && alliances.length > 0 ? "md:col-span-2" : "h-full"}
@@ -403,8 +405,6 @@ export async function ClubOverview({
 									</CardContent>
 								</Card>
 							)}
-
-							<ReviewsOverview type="club" typeId={club.id} entityName={club.name} isMember={isMember} />
 						</div>
 					)}
 

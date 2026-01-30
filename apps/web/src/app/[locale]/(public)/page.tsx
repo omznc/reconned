@@ -1,39 +1,15 @@
-import {
-	addMonths,
-	endOfMonth,
-	format,
-	formatDistanceToNow,
-	parse as parseDateFns,
-	startOfMonth,
-	subMonths,
-} from "date-fns";
-import {
-	Building2,
-	Calendar,
-	CalendarDays,
-	Clock,
-	DollarSign,
-	LayoutDashboard,
-	MapIcon,
-	MapPin,
-	Medal,
-	Search,
-	ShieldQuestion,
-	Users,
-} from "lucide-react";
+import { addMonths, endOfMonth, parse as parseDateFns, startOfMonth, subMonths } from "date-fns";
+import { Building2, Calendar, LayoutDashboard, MapIcon, Medal, Search, ShieldQuestion, Users } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getExtracted, getLocale } from "next-intl/server";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 import { EventCalendar } from "@/components/event-calendar";
+import { EventCard } from "@/components/event-card";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
-import { getDateFnsLocale } from "@/lib/date-locale";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
@@ -42,8 +18,6 @@ export const revalidate = 3600; // 1 hour
 export default async function Home(props: PageProps<"/[locale]">) {
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
-	const locale = await getLocale();
-	const dateFnsLocale = getDateFnsLocale(locale);
 
 	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
 	const startDate = startOfMonth(subMonths(currentDate, 1));
@@ -230,118 +204,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 						)}
 
 						{upcomingEvents.map((event) => (
-							<Link key={event.id} href={`/events/${event.id}`}>
-								<Card className="flex flex-col rounded-md overflow-hidden bg-sidebar hover:border-red-500 transition-all">
-									<CardHeader className="p-0">
-										{event.image && (
-											<div className="relative w-full aspect-video">
-												<Image
-													src={event.image}
-													alt={event.name}
-													fill
-													className="object-cover"
-													sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-												/>
-											</div>
-										)}
-										<CardTitle className="mt-4 px-6">{event.name}</CardTitle>
-										<CardDescription className="px-6 pb-6">{event.description}</CardDescription>
-									</CardHeader>
-									<CardContent className="grow flex-col flex gap-1">
-										<div className="flex items-center">
-											<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
-											<span>
-												{format(event.dateStart, "MMM d, yyyy")}
-												{event.dateEnd && ` - ${format(event.dateEnd, "MMM d, yyyy")}`}
-											</span>
-										</div>
-										{event.dateStart && (
-											<div className="flex items-center">
-												<Clock className="w-5 h-5 mr-2 text-muted-foreground" />
-												<span>{format(event.dateStart, "h:mm a")}</span>
-											</div>
-										)}
-										{event.location && (
-											<div className="flex items-center">
-												<MapPin className="w-5 h-5 mr-2 text-muted-foreground" />
-												<span>{event.location}</span>
-											</div>
-										)}
-										{event.costPerPerson !== undefined && (
-											<div className="flex items-center">
-												<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
-												<span>
-													{event.costPerPerson.toFixed(2)}
-													KM po osobi
-												</span>
-											</div>
-										)}
-										<div className="flex flex-wrap gap-2 my-4">
-											<Badge variant="outline" className="grow justify-center">
-												{event.allowFreelancers
-													? t("Freelancers allowed")
-													: t("For members only")}
-											</Badge>
-											{event.hasBreakfast && (
-												<Badge variant="outline" className="grow justify-center">
-													{t("Breakfast")}
-												</Badge>
-											)}
-											{event.hasLunch && (
-												<Badge variant="outline" className="grow justify-center">
-													{t("Lunch")}
-												</Badge>
-											)}
-											{event.hasDinner && (
-												<Badge variant="outline" className="grow justify-center">
-													{t("Dinner")}
-												</Badge>
-											)}
-											{event.hasSnacks && (
-												<Badge variant="outline" className="grow justify-center">
-													{t("Snacks")}
-												</Badge>
-											)}
-											{event.hasDrinks && (
-												<Badge variant="outline" className="grow justify-center">
-													{t("Drinks")}
-												</Badge>
-											)}
-											{event.hasPrizes && (
-												<Badge variant="outline" className="grow justify-center">
-													{t("Awards")}
-												</Badge>
-											)}
-										</div>
-										{event.isPrivate && (
-											<span className="text-xs text-muted-foreground">
-												{t("This is a private event, but you are in the {clubName} club.", {
-													clubName: event.club?.name || "",
-												})}
-											</span>
-										)}
-									</CardContent>
-									<CardFooter className="flex justify-between items-center">
-										<div className="flex flex-col">
-											<div className="text-sm text-muted-foreground">
-												{t("Starts")}{" "}
-												{formatDistanceToNow(event.dateStart, {
-													addSuffix: true,
-													locale: dateFnsLocale,
-												})}
-											</div>
-											{event.dateRegistrationsClose && (
-												<div className="text-sm mr-1 text-muted-foreground">
-													{t("Registrations open for")}{" "}
-													{formatDistanceToNow(event.dateRegistrationsClose, {
-														locale: dateFnsLocale,
-													})}
-												</div>
-											)}
-										</div>
-									</CardFooter>
-								</Card>
-							</Link>
+							<EventCard key={event.id} event={event} />
 						))}
 					</div>
 				</div>

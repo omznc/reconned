@@ -2543,7 +2543,7 @@ export interface paths {
 		};
 		/**
 		 * Get reviews
-		 * @description Get all reviews for a user, club, or event
+		 * @description Get reviews for a user, club, or event with pagination and optional rating filtering
 		 */
 		get: operations["reviewstypeidGet"];
 		put?: never;
@@ -10859,7 +10859,6 @@ export interface operations {
 							instagramProfilePictureUrl: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
 							banReason: string | null;
@@ -10943,7 +10942,6 @@ export interface operations {
 							instagramProfilePictureUrl: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
 							banReason: string | null;
@@ -13021,7 +13019,6 @@ export interface operations {
 						instagramProfilePictureUrl: string | null;
 						instagramConnected: boolean;
 						instagramBusinessId: string | null;
-						instagramTokenType: string | null;
 						countryId: number | null;
 						banned: boolean | null;
 						banReason: string | null;
@@ -13123,7 +13120,6 @@ export interface operations {
 							instagramProfilePictureUrl: string | null;
 							instagramConnected: boolean;
 							instagramBusinessId: string | null;
-							instagramTokenType: string | null;
 							countryId: number | null;
 							banned: boolean | null;
 							banReason: string | null;
@@ -15880,7 +15876,13 @@ export interface operations {
 	};
 	reviewstypeidGet: {
 		parameters: {
-			query?: never;
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				minRating?: number;
+				maxRating?: number;
+				rating?: number;
+			};
 			header?: never;
 			path: {
 				type: "user" | "club" | "event";
@@ -15911,10 +15913,17 @@ export interface operations {
 							updatedAt: string;
 							author: {
 								id: string;
+								slug: string | null;
 								name: string;
 								image: string | null;
 							} | null;
 						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
 					};
 				};
 			};
@@ -15958,6 +15967,8 @@ export interface operations {
 							userId: string | null;
 							clubId: string | null;
 							eventId: string | null;
+							createdAt: string;
+							updatedAt: string;
 						};
 					};
 				};
@@ -15979,6 +15990,8 @@ export interface operations {
 							userId: string | null;
 							clubId: string | null;
 							eventId: string | null;
+							createdAt: string;
+							updatedAt: string;
 						};
 					};
 				};

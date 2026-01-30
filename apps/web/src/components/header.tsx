@@ -1,6 +1,6 @@
 "use client";
 import type { User } from "better-auth";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useExtracted } from "next-intl";
 import posthog from "posthog-js";
 import { Logo } from "@/components/logos/logo";
@@ -18,33 +18,18 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function Header({ user }: { user: User | null }) {
 	const t = useExtracted();
-	const path = usePathname();
 	const router = useRouter();
-
-	const handleBack = () => {
-		router.back();
-	};
 
 	return (
 		<header className="flex flex-col md:flex-row gap-2 select-none w-full items-center justify-between p-4 md:p-4">
 			<Link href="/" className="w-full h-auto md:w-fit md:h-full">
 				<Logo className="w-full h-auto max-h-[80px] md:w-fit md:h-full p-2 md:p-0" />
 			</Link>
-			{path !== "/" && (
-				<Button
-					onClick={handleBack}
-					variant="ghost"
-					className="w-full hover:bg-transparent md:-mr-12 shadow-none"
-				>
-					<ArrowLeft className="w-6 h-6" />
-					{t("Back")}
-				</Button>
-			)}
 			<div className="flex gap-2 md:w-fit w-full" suppressHydrationWarning={true}>
 				<LanguageSwitcher />
 				{user ? (

@@ -1,6 +1,6 @@
 import { randomUUIDv7 } from "bun";
 
-import { and, count, desc, eq, gte, ilike, inArray, lte, or, type SQL, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, ilike, inArray, lte, or, type SQL, sql } from "drizzle-orm";
 
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
@@ -31,8 +31,6 @@ eventsRouter.get(
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
 		const search = query?.search || "";
-		const sortBy = query?.sortBy || "dateStart";
-		const sortOrder = query?.sortOrder || "asc";
 		const isPrivateFilter = query?.isPrivate;
 		const filter = query?.filter;
 
@@ -105,20 +103,86 @@ eventsRouter.get(
 
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		let orderByClause: typeof event.dateStart | typeof event.name | ReturnType<typeof desc>;
-		if (sortBy === "name") {
-			orderByClause = sortOrder === "asc" ? event.name : desc(event.name);
-		} else {
-			orderByClause = sortOrder === "asc" ? event.dateStart : desc(event.dateStart);
-		}
+		// First, get attendee counts for all events
+		const attendeeCountsSubquery = db
+			.select({
+				eventId: eventRegistration.eventId,
+				attendeeCount: count(eventRegistration.id).as("attendeeCount"),
+			})
+			.from(eventRegistration)
+			.groupBy(eventRegistration.eventId)
+			.as("attendeeCounts");
 
-		const events = await db
-			.select()
+		// Get events with club verification status and attendee counts for sorting
+		const eventsWithData = await db
+			.select({
+				id: event.id,
+				name: event.name,
+				description: event.description,
+				clubId: event.clubId,
+				dateStart: event.dateStart,
+				dateEnd: event.dateEnd,
+				dateRegistrationsOpen: event.dateRegistrationsOpen,
+				dateRegistrationsClose: event.dateRegistrationsClose,
+				location: event.location,
+				image: event.image,
+				isPrivate: event.isPrivate,
+				allowFreelancers: event.allowFreelancers,
+				googleMapsLink: event.googleMapsLink,
+				costPerPerson: event.costPerPerson,
+				hasBreakfast: event.hasBreakfast,
+				hasLunch: event.hasLunch,
+				hasDinner: event.hasDinner,
+				hasSnacks: event.hasSnacks,
+				hasDrinks: event.hasDrinks,
+				hasPrizes: event.hasPrizes,
+				slug: event.slug,
+				gearRequirements: event.gearRequirements,
+				mapData: event.mapData,
+				createdAt: event.createdAt,
+				updatedAt: event.updatedAt,
+				clubVerified: club.verified,
+				attendeeCount: sql`COALESCE(${attendeeCountsSubquery.attendeeCount}, 0)`.mapWith(Number),
+			})
 			.from(event)
+			.innerJoin(club, eq(event.clubId, club.id))
+			.leftJoin(attendeeCountsSubquery, eq(event.id, attendeeCountsSubquery.eventId))
 			.where(whereClause)
-			.orderBy(orderByClause)
+			.orderBy(
+				desc(club.verified),
+				sql`COALESCE(${attendeeCountsSubquery.attendeeCount}, 0) DESC`,
+				asc(event.name),
+			)
 			.limit(perPage)
 			.offset(offset);
+
+		const events = eventsWithData.map((e) => ({
+			id: e.id,
+			name: e.name,
+			description: e.description,
+			clubId: e.clubId,
+			image: e.image,
+			allowFreelancers: e.allowFreelancers,
+			slug: e.slug,
+			dateStart: e.dateStart,
+			dateEnd: e.dateEnd,
+			dateRegistrationsOpen: e.dateRegistrationsOpen,
+			dateRegistrationsClose: e.dateRegistrationsClose,
+			location: e.location,
+			isPrivate: e.isPrivate,
+			googleMapsLink: e.googleMapsLink,
+			costPerPerson: e.costPerPerson,
+			hasBreakfast: e.hasBreakfast,
+			hasLunch: e.hasLunch,
+			hasDinner: e.hasDinner,
+			hasSnacks: e.hasSnacks,
+			hasDrinks: e.hasDrinks,
+			hasPrizes: e.hasPrizes,
+			gearRequirements: e.gearRequirements,
+			mapData: e.mapData,
+			createdAt: e.createdAt,
+			updatedAt: e.updatedAt,
+		}));
 
 		const totalData = await db.select({ count: count() }).from(event).where(whereClause);
 		const total = totalData[0]?.count || 0;

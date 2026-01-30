@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
 import { EventsListing } from "@/app/[locale]/(public)/events/_components/events-listing";
+import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
@@ -29,7 +30,7 @@ export default async function Page(props: PageProps<"/[locale]/events">) {
 	});
 
 	if (error || !data) {
-		return <div>{t("Error loading events")}</div>;
+		return <ErrorPage title={t("Error loading events")} />;
 	}
 
 	const initialData = {

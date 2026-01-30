@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, or } from "drizzle-orm";
 import * as z from "zod";
 import { clubMembership, user } from "../../drizzle/schema";
 import { createClubDataLoader } from "../../lib/dataloader";
@@ -36,7 +36,7 @@ const baseClubMembershipSchema = z.object({
 adminUsersRouter.get(
 	"/admin/users",
 	async ({ query, response, context: _context }) => {
-		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query || {};
+		const { page = 1, perPage = 25, search = "" } = query || {};
 		const offset = (page - 1) * perPage;
 
 		const whereConditions = [];
@@ -53,28 +53,35 @@ adminUsersRouter.get(
 
 		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		let orderBy:
-			| typeof user.name
-			| typeof user.email
-			| typeof user.callsign
-			| typeof user.createdAt
-			| ReturnType<typeof desc>;
-		if (sortBy === "name") {
-			orderBy = sortOrder === "desc" ? desc(user.name) : user.name;
-		} else if (sortBy === "email") {
-			orderBy = sortOrder === "desc" ? desc(user.email) : user.email;
-		} else if (sortBy === "callsign") {
-			orderBy = sortOrder === "desc" ? desc(user.callsign) : user.callsign;
-		} else {
-			orderBy = sortOrder === "desc" ? desc(user.createdAt) : user.createdAt;
-		}
-
-		const users = await db.select().from(user).where(where).orderBy(orderBy).limit(perPage).offset(offset);
+		// Get users with membership counts for sorting
+		const usersWithMembershipCounts = await db
+			.select({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				slug: user.slug,
+				image: user.image,
+				callsign: user.callsign,
+				role: user.role,
+				gear: user.gear,
+				banned: user.banned,
+				banExpires: user.banExpires,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt,
+				membershipCount: count(clubMembership.id),
+			})
+			.from(user)
+			.leftJoin(clubMembership, eq(user.id, clubMembership.userId))
+			.where(where)
+			.groupBy(user.id)
+			.orderBy(desc(user.role), desc(count(clubMembership.id)), asc(user.name))
+			.limit(perPage)
+			.offset(offset);
 
 		const clubLoader = createClubDataLoader();
 
 		const memberships = await Promise.all(
-			users.map(async (u) => {
+			usersWithMembershipCounts.map(async (u) => {
 				const userMemberships = await db
 					.select({
 						id: clubMembership.id,

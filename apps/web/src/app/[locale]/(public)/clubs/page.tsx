@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
 import { ClubsListing } from "@/app/[locale]/(public)/clubs/_components/clubs-listing";
+import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
@@ -26,7 +27,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 	});
 
 	if (error || !data) {
-		return <div>{t("Error loading clubs")}</div>;
+		return <ErrorPage title={t("Error loading clubs")} />;
 	}
 
 	const initialData = {

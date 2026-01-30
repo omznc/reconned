@@ -1,6 +1,6 @@
 import { render } from "@react-email/components";
 import { randomUUIDv7 } from "bun";
-import { and, count, desc, eq, gt, ilike, inArray, ne, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
@@ -62,6 +62,7 @@ const publicClubSchema = baseClubSchema.omit({
 	instagramRefreshToken: true,
 	instagramTokenExpiry: true,
 	facebookPageId: true,
+	instagramTokenType: true,
 });
 
 const allianceResponseSchema = z.object({
@@ -576,7 +577,7 @@ clubsRouter.post(
 clubsRouter.get(
 	"/clubs",
 	async ({ response, query, context }) => {
-		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query;
+		const { page = 1, perPage = 25, search = "" } = query;
 		const offset = (page - 1) * perPage;
 
 		const whereConditions = [];
@@ -615,47 +616,82 @@ clubsRouter.get(
 
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		let orderByClause: typeof club.name | typeof club.location | typeof club.createdAt | ReturnType<typeof desc>;
-		if (sortBy === "name") {
-			orderByClause = sortOrder === "asc" ? club.name : desc(club.name);
-		} else if (sortBy === "location") {
-			orderByClause = sortOrder === "asc" ? club.location : desc(club.location);
-		} else {
-			orderByClause = sortOrder === "asc" ? club.createdAt : desc(club.createdAt);
-		}
-
-		const clubs = await db
-			.select()
+		// Get clubs with member counts for sorting
+		const clubsWithMemberCounts = await db
+			.select({
+				id: club.id,
+				name: club.name,
+				location: club.location,
+				latitude: club.latitude,
+				longitude: club.longitude,
+				description: club.description,
+				dateFounded: club.dateFounded,
+				logo: club.logo,
+				headerImage: club.headerImage,
+				isPrivate: club.isPrivate,
+				isPrivateStats: club.isPrivateStats,
+				verified: club.verified,
+				isAllied: club.isAllied,
+				slug: club.slug,
+				createdAt: club.createdAt,
+				updatedAt: club.updatedAt,
+				countryId: club.countryId,
+				website: club.website,
+				banned: club.banned,
+				banReason: club.banReason,
+				banExpires: club.banExpires,
+				contactPhone: club.contactPhone,
+				contactEmail: club.contactEmail,
+				instagramConnected: club.instagramConnected,
+				instagramUsername: club.instagramUsername,
+				instagramProfilePictureUrl: club.instagramProfilePictureUrl,
+				instagramBusinessId: club.instagramBusinessId,
+				memberCount: count(clubMembership.id),
+			})
 			.from(club)
+			.leftJoin(clubMembership, eq(club.id, clubMembership.clubId))
 			.where(whereClause)
-			.orderBy(orderByClause)
+			.groupBy(club.id)
+			.orderBy(desc(club.verified), desc(count(clubMembership.id)), asc(club.name))
 			.limit(perPage)
 			.offset(offset);
 
 		const totalData = await db.select({ count: count() }).from(club).where(whereClause);
 		const total = totalData[0]?.count || 0;
 
-		const clubIds = clubs.map((c) => c.id);
-		const memberCounts = await db
-			.select({
-				clubId: clubMembership.clubId,
-				count: count(),
-			})
-			.from(clubMembership)
-			.where(inArray(clubMembership.clubId, clubIds))
-			.groupBy(clubMembership.clubId);
-
-		const memberCountMap = new Map(memberCounts.map((mc) => [mc.clubId, Number(mc.count)]));
-
-		const clubsWithCounts = clubs.map((c) => ({
-			...c,
-			_count: {
-				members: memberCountMap.get(c.id) || 0,
-			},
-		}));
-
 		return response.json({
-			clubs: clubsWithCounts,
+			clubs: clubsWithMemberCounts.map((c) => ({
+				id: c.id,
+				name: c.name,
+				location: c.location,
+				latitude: c.latitude,
+				longitude: c.longitude,
+				description: c.description,
+				dateFounded: c.dateFounded,
+				logo: c.logo,
+				headerImage: c.headerImage,
+				isPrivate: c.isPrivate,
+				isPrivateStats: c.isPrivateStats,
+				verified: c.verified,
+				isAllied: c.isAllied,
+				slug: c.slug,
+				createdAt: c.createdAt,
+				updatedAt: c.updatedAt,
+				countryId: c.countryId,
+				website: c.website,
+				banned: c.banned,
+				banReason: c.banReason,
+				banExpires: c.banExpires,
+				contactPhone: c.contactPhone,
+				contactEmail: c.contactEmail,
+				instagramConnected: c.instagramConnected,
+				instagramUsername: c.instagramUsername,
+				instagramProfilePictureUrl: c.instagramProfilePictureUrl,
+				instagramBusinessId: c.instagramBusinessId,
+				_count: {
+					members: Number(c.memberCount),
+				},
+			})),
 			pagination: {
 				page,
 				perPage,
