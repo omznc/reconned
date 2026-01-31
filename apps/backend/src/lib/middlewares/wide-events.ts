@@ -38,7 +38,7 @@ export function wideEventsMiddleware(): MiddlewareHandler {
 			logger.emit({
 				severityText: "info",
 				body: `${context.request.method} ${url.pathname}`,
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// biome-ignore lint/suspicious/noExplicitAny: OpenTelemetry AnyValueMap type is incompatible with LogAttributes
 				attributes: wideEvent as any,
 			});
 
@@ -56,7 +56,7 @@ export function wideEventsMiddleware(): MiddlewareHandler {
 			logger.emit({
 				severityText: "error",
 				body: `Request failed: ${context.request.method} ${url.pathname}`,
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// biome-ignore lint/suspicious/noExplicitAny: OpenTelemetry AnyValueMap type is incompatible with LogAttributes
 				attributes: wideEvent as any,
 			});
 
