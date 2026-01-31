@@ -280,28 +280,40 @@ export function requestLoggingMiddleware(
 		const start = Date.now();
 		const timestamp = new Date().toISOString();
 
-		const logData = {
-			timestamp,
-			method: request.method,
-			path: url.pathname,
-			userAgent: request.headers.get("user-agent"),
-			ip:
-				request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-				request.headers.get("x-real-ip") ||
-				request.headers.get("cf-connecting-ip") ||
-				"unknown",
-			...(includeHeaders && { headers: Object.fromEntries(request.headers.entries()) }),
-		};
-
-		console[logLevel](`[${timestamp}] REQUEST:`, logData);
+		logger.emit({
+			severityText: logLevel === "error" ? "error" : "info",
+			body: `HTTP request: ${request.method} ${url.pathname}`,
+			attributes: {
+				timestamp,
+				method: request.method,
+				path: url.pathname,
+				user_agent: request.headers.get("user-agent"),
+				ip:
+					request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+					request.headers.get("x-real-ip") ||
+					request.headers.get("cf-connecting-ip") ||
+					"unknown",
+				request_id: (context as Record<string, unknown>).requestId as string | undefined,
+				...(includeHeaders && { headers: Object.fromEntries(request.headers.entries()) }),
+			},
+		});
 
 		try {
 			const response = await next();
 			const duration = Date.now() - start;
 
-			console[logLevel](
-				`[${new Date().toISOString()}] RESPONSE: ${request.method} ${url.pathname} - ${response.status} (${duration}ms)`,
-			);
+			logger.emit({
+				severityText: logLevel === "error" ? "error" : "info",
+				body: `HTTP response: ${request.method} ${url.pathname} - ${response.status}`,
+				attributes: {
+					timestamp: new Date().toISOString(),
+					method: request.method,
+					path: url.pathname,
+					status: response.status,
+					duration_ms: duration,
+					request_id: (context as Record<string, unknown>).requestId as string | undefined,
+				},
+			});
 
 			return response;
 		} catch (error) {
@@ -313,9 +325,10 @@ export function requestLoggingMiddleware(
 				attributes: {
 					method: request.method,
 					pathname: url.pathname,
-					duration: duration.toString(),
+					duration_ms: duration,
 					error: error instanceof Error ? error.message : String(error),
 					stack: error instanceof Error ? error.stack : undefined,
+					request_id: (context as Record<string, unknown>).requestId as string | undefined,
 				},
 			});
 

@@ -90,33 +90,40 @@
 
 ---
 
-## Phase 4: Console Migration
+## Phase 4: Console Migration ✅ COMPLETED
 
 **File:** `apps/backend/src/lib/middlewares/index.ts`
 
-- [ ] Replace line 296 console.log with logger.emit
-- [ ] Replace line 302 console.log with logger.emit
-- [ ] Add request ID to request/response logs
-- [ ] Test request logging with correlation ID
+- [x] Replace line 296 console.log with logger.emit
+- [x] Replace line 302 console.log with logger.emit
+- [x] Add request ID to request/response logs
+- [x] Test request logging with correlation ID
 
 **File:** `apps/backend/src/routes/dashboard.ts`
 
-- [ ] Find and migrate debug console.log #1
-- [ ] Find and migrate debug console.log #2
+- [x] Import logger from posthog
+- [x] Migrate debug console.log at line 22 (membership count)
+- [x] Migrate debug console.log at line 25 (no memberships)
+- [x] Migrate debug console.log at line 34 (club count)
 
 **File:** `apps/backend/src/tasks/run-task.ts`
 
-- [ ] Migrate task runner console logs (9 instances)
-- [ ] Keep user-facing CLI output as console
-- [ ] Add structured logging for task events
+- [x] Review task runner console logs
+- [x] Verify structured logging already in place
+- [x] Keep user-facing CLI output as console (correct pattern)
 
 **File:** `apps/backend/src/lib/posthog.ts`
 
-- [ ] Migrate console.error on line 32 to logger.emit
+- [x] Review console.error at SDK initialization
+- [x] Keep console.error (logger not available yet, valid exception)
 
-**Status:** Not started
+**Status:** ✅ Completed
 
-**Estimated Effort:** 2 hours
+**Completed:** 2026-01-31
+
+**Commit:** (pending)
+
+**Estimated Effort:** 2 hours | **Actual:** 1 hour
 
 ---
 
