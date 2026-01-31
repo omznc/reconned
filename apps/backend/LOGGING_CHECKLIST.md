@@ -174,30 +174,34 @@
 
 ---
 
-## Phase 6: Configuration
+## Phase 6: Configuration ✅ COMPLETED
 
 **File:** `apps/backend/src/lib/env.ts`
 
-- [ ] Add LOG_LEVEL environment variable
-- [ ] Add LOG_SAMPLING_RATE environment variable
-- [ ] Add POSTHOG_LOGS_ENABLED environment variable
+- [x] Add LOG_LEVEL environment variable (debug, info, warn, error)
+- [x] Add LOG_SAMPLING_RATE environment variable (0.0 to 1.0)
+- [x] Add POSTHOG_LOGS_ENABLED environment variable (true/false)
 
 **New File:** `apps/backend/src/lib/logging-config.ts`
 
-- [ ] Create centralized logging configuration
-- [ ] Implement log level resolution
-- [ ] Implement sampling logic
-- [ ] Add feature flags for logging components
+- [x] Create centralized logging configuration
+- [x] Implement log level resolution (shouldLog function)
+- [x] Implement sampling logic (shouldSampleLog function)
+- [x] Export LoggingConfig interface and loggingConfig object
 
 **File:** `apps/backend/.env.example`
 
-- [ ] Add LOG_LEVEL=info
-- [ ] Add LOG_SAMPLING_RATE=1
-- [ ] Add POSTHOG_LOGS_ENABLED=true
+- [x] Add LOG_LEVEL=info with documentation
+- [x] Add LOG_SAMPLING_RATE=1 with documentation
+- [x] Add POSTHOG_LOGS_ENABLED=true with documentation
 
-**Status:** Not started
+**Status:** ✅ Completed
 
-**Estimated Effort:** 1 hour
+**Completed:** 2026-01-31
+
+**Commit:** (pending)
+
+**Estimated Effort:** 1 hour | **Actual:** 0.5 hours
 
 ---
 

@@ -89,6 +89,24 @@ export const env = createEnv({
 
 		CDN_URL: z.url("CDN_URL must be a valid URL").describe("CDN base URL for serving uploaded assets"),
 
+		LOG_LEVEL: z
+			.enum(["debug", "info", "warn", "error"])
+			.default("info")
+			.describe("Logging level: debug, info, warn, or error"),
+
+		LOG_SAMPLING_RATE: z
+			.string()
+			.transform((val) => Number.parseFloat(val))
+			.refine((val) => val >= 0 && val <= 1, "LOG_SAMPLING_RATE must be between 0 and 1")
+			.default(1)
+			.describe("Log sampling rate: 0.0 to 1.0"),
+
+		POSTHOG_LOGS_ENABLED: z
+			.enum(["true", "false"])
+			.default("true")
+			.transform((val) => val === "true")
+			.describe("Enable or disable PostHog logging"),
+
 		FACEBOOK_APP_ID: z
 			.string()
 			.min(1, "FACEBOOK_APP_ID is required for Facebook OAuth")
