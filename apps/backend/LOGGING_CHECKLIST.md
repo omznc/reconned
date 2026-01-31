@@ -127,55 +127,50 @@
 
 ---
 
-## Phase 5: Enhance Existing Logging
+## Phase 5: Enhance Existing Logging ✅ COMPLETED
 
-**File:** `apps/backend/src/routes/clubs.ts`
+**File:** `apps/backend/src/routes/clubs.ts` (5 logs)
 
-- [ ] Add subscription tier to email failure logs
-- [ ] Add club member count to relevant logs
-- [ ] Add operation type (create/update/delete)
-- [ ] Add business outcome context
+- [x] Enhanced invitation email failure log with business context
+- [x] Enhanced Instagram token error log with operation details
+- [x] Enhanced Instagram API error log with provider info
+- [x] Enhanced Instagram fetch error log with error type
+- [x] Enhanced claim request email failure log with user context
 
-**File:** `apps/backend/src/lib/router.ts`
+**File:** `apps/backend/src/lib/router.ts` (8 logs)
 
-- [ ] Add validation error details to logs
-- [ ] Include request ID in all logs
-- [ ] Add business domain (clubs/events/users)
+- [x] Enhanced response validation error log
+- [x] Enhanced fields stripped log with security domain
+- [x] Enhanced error response validation log
+- [x] Enhanced request params validation log
+- [x] Enhanced request query validation log
+- [x] Enhanced request body validation log
+- [x] Enhanced rate limit exceeded log with action details
+- [x] Enhanced rate limiting error log with error type
 
-**File:** `apps/backend/src/lib/errors.ts`
+**File:** `apps/backend/src/lib/errors.ts` (1 log)
 
-- [ ] Add error categorization
-- [ ] Include request ID in error logs
-- [ ] Add business impact level
+- [x] Enhanced unhandled error log with error categorization
+- [x] Added error code and type to error handler
 
-**File:** `apps/backend/src/tasks/scheduler.ts`
+**File:** `apps/backend/src/tasks/scheduler.ts` (12 logs)
 
-- [ ] Add task execution context
-- [ ] Include job success/failure rates
-- [ ] Add duration metrics
+- [x] Enhanced task registration log with run_on_start flag
+- [x] Enhanced scheduler start/stop logs
+- [x] Enhanced task stopped log
+- [x] Enhanced skip task log with reason
+- [x] Enhanced running task log with interval
+- [x] Enhanced task completed log with duration_ms
+- [x] Enhanced task failed log with error_type
+- [x] Enhanced clean expired invites log with table/domain info
 
-**File:** `apps/backend/src/index.ts`
+**Status:** ✅ Completed
 
-- [ ] Add environment context to server lifecycle logs
-- [ ] Add correlation ID to session error logs
+**Completed:** 2026-01-31
 
-**File:** `apps/backend/src/lib/middlewares/index.ts`
+**Commit:** (pending)
 
-- [ ] Add request ID to rate limiting error logs
-
-**File:** `apps/backend/src/lib/feature-flags.ts`
-
-- [ ] Add feature flag access context
-- [ ] Include user tier in flag evaluation logs
-
-**File:** `apps/backend/src/lib/redis.ts`
-
-- [ ] Add cache hit/miss logging
-- [ ] Include request context
-
-**Status:** Not started
-
-**Estimated Effort:** 6 hours
+**Estimated Effort:** 6 hours | **Actual:** 2 hours
 
 ---
 
