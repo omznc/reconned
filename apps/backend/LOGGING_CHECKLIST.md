@@ -28,26 +28,37 @@
 
 ---
 
-## Phase 2: Request Correlation Middleware
+## Phase 2: Request Correlation Middleware ✅ COMPLETED
 
 **New File:** `apps/backend/src/lib/middlewares/correlation.ts`
 
-- [ ] Create correlation middleware file
-- [ ] Generate unique request ID using `randomUUIDv7()`
-- [ ] Add request ID to response headers (`X-Request-ID`)
-- [ ] Integrate with existing router context
+- [x] Create correlation middleware file
+- [x] Generate unique request ID using `randomUUIDv7()`
+- [x] Add request ID to response headers (`X-Request-ID`)
+- [x] Add response time header (`X-Response-Time`)
+- [x] Integrate with existing router context
 
 **File:** `apps/backend/src/lib/router.ts`
 
-- [ ] Update RouteContext type to include requestId
-- [ ] Update RouteContext type to include requestStartTime
-- [ ] Update RouteContext type to include businessContext
-- [ ] Pass context through middleware chain
-- [ ] Test correlation ID appears in all requests
+- [x] Update RouteContext type to include requestId
+- [x] Update RouteContext type to include requestStartTime
+- [x] Update RouteContext type to include businessContext
+- [x] Pass context through middleware chain
+- [x] Test correlation ID appears in all requests
 
-**Status:** Not started
+**File:** `apps/backend/src/index.ts`
 
-**Estimated Effort:** 3 hours
+- [x] Import correlationMiddleware
+- [x] Add correlation middleware to middleware chain (before logging)
+- [x] Initialize context with requestId and requestStartTime defaults
+
+**Status:** ✅ Completed
+
+**Completed:** 2026-01-31
+
+**Commit:** (pending)
+
+**Estimated Effort:** 3 hours | **Actual:** 1.5 hours
 
 ---
 

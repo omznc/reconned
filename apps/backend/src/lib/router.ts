@@ -26,6 +26,9 @@ export type RouteContext<TAuth extends boolean = false> = {
 		: { id: string; email: string; name: string; role?: string } | undefined;
 	session?: { id: string };
 	isAdmin: boolean;
+	requestId: string;
+	requestStartTime: number;
+	businessContext?: Record<string, unknown>;
 };
 
 export type MiddlewareContext = RouteContext & {

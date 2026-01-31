@@ -4,6 +4,7 @@ import { auth } from "./lib/auth";
 import { addCORSHeaders, handleCORS } from "./lib/cors";
 import { db } from "./lib/db";
 import { env } from "./lib/env";
+import { correlationMiddleware } from "./lib/middlewares/correlation";
 import { authMiddleware, pathMiddleware } from "./lib/middlewares/index";
 import { loggingMiddleware } from "./lib/middlewares/logging";
 import { handleOpenAPIRoutes } from "./lib/openapi";
@@ -25,6 +26,7 @@ const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.t
 
 const mainRouter = new Router();
 
+mainRouter.middleware(correlationMiddleware());
 mainRouter.middleware(loggingMiddleware);
 
 mainRouter.middleware(
@@ -122,6 +124,8 @@ async function handleRequest(request: Request): Promise<Response> {
 		user,
 		session,
 		isAdmin,
+		requestId: "",
+		requestStartTime: 0,
 	};
 
 	const response = await mainRouter.handle(request, context, jsonResponse);
