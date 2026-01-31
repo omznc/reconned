@@ -38,6 +38,7 @@ export function wideEventsMiddleware(): MiddlewareHandler {
 			logger.emit({
 				severityText: "info",
 				body: `${context.request.method} ${url.pathname}`,
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				attributes: wideEvent as any,
 			});
 
@@ -55,6 +56,7 @@ export function wideEventsMiddleware(): MiddlewareHandler {
 			logger.emit({
 				severityText: "error",
 				body: `Request failed: ${context.request.method} ${url.pathname}`,
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				attributes: wideEvent as any,
 			});
 
