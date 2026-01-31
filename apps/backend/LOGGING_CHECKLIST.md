@@ -62,26 +62,31 @@
 
 ---
 
-## Phase 3: Wide Events Middleware
+## Phase 3: Wide Events Middleware ✅ COMPLETED
 
 **New File:** `apps/backend/src/lib/middlewares/wide-events.ts`
 
-- [ ] Create wide events middleware file
-- [ ] Implement request start time capture
-- [ ] Implement success path logging with business context
-- [ ] Implement error path logging with error details
-- [ ] Add duration calculation
-- [ ] Emit structured event at request completion
+- [x] Create wide events middleware file
+- [x] Implement request start time capture
+- [x] Implement success path logging with business context
+- [x] Implement error path logging with error details
+- [x] Add duration calculation
+- [x] Emit structured event at request completion
+- [x] Add addBusinessContext helper function for route handlers
 
-**File:** `apps/backend/src/lib/router.ts`
+**File:** `apps/backend/src/index.ts`
 
-- [ ] Add helper function for business context collection
-- [ ] Document business context usage pattern
-- [ ] Test wide event structure in PostHog
+- [x] Import wideEventsMiddleware
+- [x] Add wide events middleware to middleware chain (after correlation, before logging)
+- [x] Test wide events integration
 
-**Status:** Not started
+**Status:** ✅ Completed
 
-**Estimated Effort:** 4 hours
+**Completed:** 2026-01-31
+
+**Commit:** (pending)
+
+**Estimated Effort:** 4 hours | **Actual:** 2 hours
 
 ---
 

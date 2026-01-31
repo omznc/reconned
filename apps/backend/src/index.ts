@@ -7,6 +7,7 @@ import { env } from "./lib/env";
 import { correlationMiddleware } from "./lib/middlewares/correlation";
 import { authMiddleware, pathMiddleware } from "./lib/middlewares/index";
 import { loggingMiddleware } from "./lib/middlewares/logging";
+import { wideEventsMiddleware } from "./lib/middlewares/wide-events";
 import { handleOpenAPIRoutes } from "./lib/openapi";
 import { logger } from "./lib/posthog";
 import { jsonResponse, Router } from "./lib/router";
@@ -27,6 +28,7 @@ const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.t
 const mainRouter = new Router();
 
 mainRouter.middleware(correlationMiddleware());
+mainRouter.middleware(wideEventsMiddleware());
 mainRouter.middleware(loggingMiddleware);
 
 mainRouter.middleware(
