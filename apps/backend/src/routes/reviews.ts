@@ -4,6 +4,7 @@ import { club, event, eventRegistration, eventRegistrationToUser, review, user }
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
 import { isFeatureEnabled } from "../lib/feature-flags";
+import { logger } from "../lib/posthog";
 import { Router } from "../lib/router";
 import { sanitizeReviewContent } from "../lib/sanitization";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
@@ -33,16 +34,34 @@ const reviewWithAuthorSchema = z.object({
 
 reviewsRouter.get(
 	"/reviews/:type/:id",
-	async ({ params, query, response }) => {
+	async ({ context, params, query, response }) => {
 		const { type, id } = params;
 		const { page, perPage, minRating, maxRating, rating } = query;
 
 		if (!type || !id) {
+			logger.emit({
+				severityText: "warn",
+				body: "Missing review type or ID",
+				attributes: {
+					type,
+					id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("Type and ID are required");
 		}
 
 		const validTypes = ["user", "club", "event"];
 		if (!validTypes.includes(type)) {
+			logger.emit({
+				severityText: "warn",
+				body: "Invalid review type",
+				attributes: {
+					type,
+					valid_types: validTypes,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("Invalid review type. Must be 'user', 'club', or 'event'");
 		}
 
@@ -101,19 +120,32 @@ reviewsRouter.get(
 			.offset((page - 1) * perPage);
 
 		// Apply privacy sanitization to author info
-		const sanitizedReviews = reviews.map((review) => ({
-			...review,
-			author: review.author
+		const sanitizedReviews = reviews.map((reviewItem) => ({
+			...reviewItem,
+			author: reviewItem.author
 				? {
-						id: review.author.id,
-						slug: review.author.slug,
+						id: reviewItem.author.id,
+						slug: reviewItem.author.slug,
 						// For reviews, show name regardless of privacy (they wrote public content)
 						// But hide image if profile is private
-						name: review.author.name,
-						image: review.author.isPrivate ? null : review.author.image,
+						name: reviewItem.author.name,
+						image: reviewItem.author.isPrivate ? null : reviewItem.author.image,
 					}
 				: null,
 		}));
+
+		logger.emit({
+			severityText: "info",
+			body: "Retrieved reviews",
+			attributes: {
+				type,
+				entity_id: id,
+				review_count: sanitizedReviews.length,
+				total_reviews: total,
+				page,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json({
 			reviews: sanitizedReviews,
@@ -162,11 +194,26 @@ reviewsRouter.post(
 	"/reviews",
 	async ({ body, response, context }) => {
 		if (!context.user) {
+			logger.emit({
+				severityText: "warn",
+				body: "Unauthorized review attempt",
+				attributes: {
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.unauthorized("You must be logged in to leave a review");
 		}
 
 		const reviewsEnabled = await isFeatureEnabled("REVIEWS");
 		if (!reviewsEnabled) {
+			logger.emit({
+				severityText: "warn",
+				body: "Reviews feature disabled",
+				attributes: {
+					user_id: context.user.id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.forbidden("Reviews are currently disabled");
 		}
 
@@ -178,17 +225,49 @@ reviewsRouter.post(
 
 		// Validate entity ID is provided based on type
 		if (type === "USER" && !userId) {
+			logger.emit({
+				severityText: "warn",
+				body: "Missing userId for user review",
+				attributes: {
+					user_id: authorId,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("userId is required for user reviews");
 		}
 		if (type === "CLUB" && !clubId) {
+			logger.emit({
+				severityText: "warn",
+				body: "Missing clubId for club review",
+				attributes: {
+					user_id: authorId,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("clubId is required for club reviews");
 		}
 		if (type === "EVENT" && !eventId) {
+			logger.emit({
+				severityText: "warn",
+				body: "Missing eventId for event review",
+				attributes: {
+					user_id: authorId,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("eventId is required for event reviews");
 		}
 
 		// Can't review yourself
 		if (type === "USER" && userId === authorId) {
+			logger.emit({
+				severityText: "warn",
+				body: "User attempted to review themselves",
+				attributes: {
+					user_id: authorId,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("You cannot review yourself");
 		}
 
@@ -201,6 +280,15 @@ reviewsRouter.post(
 				.limit(1);
 
 			if (!userRecord.length) {
+				logger.emit({
+					severityText: "warn",
+					body: "User not found for review",
+					attributes: {
+						target_user_id: userId,
+						author_id: authorId,
+						request_id: context.requestId,
+					},
+				});
 				throw apiError.notFound("User");
 			}
 		}
@@ -213,6 +301,15 @@ reviewsRouter.post(
 				.limit(1);
 
 			if (!clubRecord.length) {
+				logger.emit({
+					severityText: "warn",
+					body: "Club not found for review",
+					attributes: {
+						target_club_id: clubId,
+						author_id: authorId,
+						request_id: context.requestId,
+					},
+				});
 				throw apiError.notFound("Club");
 			}
 		}
@@ -229,6 +326,15 @@ reviewsRouter.post(
 				.limit(1);
 
 			if (!eventRecord.length) {
+				logger.emit({
+					severityText: "warn",
+					body: "Event not found for review",
+					attributes: {
+						target_event_id: eventId,
+						author_id: authorId,
+						request_id: context.requestId,
+					},
+				});
 				throw apiError.notFound("Event");
 			}
 
@@ -240,6 +346,16 @@ reviewsRouter.post(
 
 			// Check if event has finished
 			if (new Date(eventData.dateEnd) > new Date()) {
+				logger.emit({
+					severityText: "warn",
+					body: "Attempt to review unfinished event",
+					attributes: {
+						event_id: eventId,
+						author_id: authorId,
+						event_end_date: eventData.dateEnd,
+						request_id: context.requestId,
+					},
+				});
 				throw apiError.validation("You can only review events that have finished");
 			}
 
@@ -255,6 +371,15 @@ reviewsRouter.post(
 				.limit(1);
 
 			if (!registration.length) {
+				logger.emit({
+					severityText: "warn",
+					body: "Attempt to review event without attending",
+					attributes: {
+						event_id: eventId,
+						author_id: authorId,
+						request_id: context.requestId,
+					},
+				});
 				throw apiError.forbidden("You can only review events you attended");
 			}
 		}
@@ -292,6 +417,18 @@ reviewsRouter.post(
 
 			await db.update(review).set(updatedReview).where(eq(review.id, existingReview.id));
 
+			logger.emit({
+				severityText: "info",
+				body: "Review updated",
+				attributes: {
+					review_id: existingReview.id,
+					type,
+					rating,
+					author_id: authorId,
+					request_id: context.requestId,
+				},
+			});
+
 			return response.json({
 				review: updatedReview,
 			});
@@ -311,6 +448,18 @@ reviewsRouter.post(
 		};
 
 		await db.insert(review).values(newReview);
+
+		logger.emit({
+			severityText: "info",
+			body: "Review created",
+			attributes: {
+				review_id: newReview.id,
+				type,
+				rating,
+				author_id: authorId,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json(
 			{

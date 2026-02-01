@@ -133,24 +133,32 @@ export function formatErrorResponse(error: unknown): {
  */
 export function createErrorHandler() {
 	return async (error: unknown, context: { response: { error: (error: unknown, status: number) => Response } }) => {
+		const errorCode = error instanceof AppError ? error.code : undefined;
+		const statusCode =
+			error instanceof AppError
+				? error.statusCode
+				: error instanceof Error && error.name === "ValidationError"
+					? 400
+					: 500;
+
 		logger.emit({
 			severityText: "error",
 			body: "Unhandled error",
 			attributes: {
 				error: error instanceof Error ? error.message : String(error),
+				error_code: errorCode,
+				error_type: error instanceof Error ? error.name : "Unknown",
+				status_code: statusCode.toString(),
 				stack: error instanceof Error ? error.stack : undefined,
+				business: {
+					operation: "handle_uncaught_error",
+					domain: "error_handling",
+					error_category: errorCode || "unhandled",
+				},
 			},
 		});
 
 		const errorResponse = formatErrorResponse(error);
-
-		// Determine status code
-		let statusCode = 500;
-		if (error instanceof AppError) {
-			statusCode = error.statusCode;
-		} else if (error instanceof Error && error.name === "ValidationError") {
-			statusCode = 400;
-		}
 
 		return context.response.error(errorResponse.error, statusCode);
 	};

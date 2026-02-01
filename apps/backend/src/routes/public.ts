@@ -3,13 +3,14 @@ import * as z from "zod";
 import { club, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
+import { logger } from "../lib/posthog";
 import { Router } from "../lib/router";
 
 const publicRouter = new Router();
 
 publicRouter.get(
 	"/public/clubs/map",
-	async ({ response }) => {
+	async ({ context, response }) => {
 		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
 		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
 
@@ -35,6 +36,16 @@ publicRouter.get(
 			})
 			.from(club)
 			.where(and(...whereConditions));
+
+		logger.emit({
+			severityText: "info",
+			body: "Retrieved clubs for map",
+			attributes: {
+				club_count: clubs.length,
+				only_verified: onlyVerifiedClubs,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json({ clubs });
 	},
@@ -187,7 +198,7 @@ publicRouter.get(
 
 publicRouter.get(
 	"/public/feature-flags",
-	async ({ response }) => {
+	async ({ context, response }) => {
 		const flags = await db
 			.select({
 				name: featureFlag.name,
@@ -195,6 +206,16 @@ publicRouter.get(
 			})
 			.from(featureFlag)
 			.where(eq(featureFlag.enabled, true));
+
+		logger.emit({
+			severityText: "info",
+			body: "Retrieved feature flags",
+			attributes: {
+				flag_count: flags.length,
+				flags: flags.map((f) => f.name),
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json({ featureFlags: flags });
 	},

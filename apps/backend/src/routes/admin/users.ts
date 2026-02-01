@@ -4,6 +4,7 @@ import { clubMembership, user } from "../../drizzle/schema";
 import { createClubDataLoader } from "../../lib/dataloader";
 import { db } from "../../lib/db";
 import { apiError } from "../../lib/errors";
+import { logger } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 
@@ -35,7 +36,7 @@ const baseClubMembershipSchema = z.object({
 
 adminUsersRouter.get(
 	"/admin/users",
-	async ({ query, response, context: _context }) => {
+	async ({ query, response, context }) => {
 		const { page = 1, perPage = 25, search = "" } = query || {};
 		const offset = (page - 1) * perPage;
 
@@ -124,6 +125,22 @@ adminUsersRouter.get(
 
 		const total = await db.select({ count: count() }).from(user).where(where);
 
+		logger.emit({
+			severityText: "info",
+			body: "Admin: Listed users",
+			attributes: {
+				admin_user_id: context.user?.id,
+				user_count: memberships.length,
+				total_users: total[0]?.count || 0,
+				page,
+				per_page: perPage,
+				search,
+				sort_by: sortBy,
+				sort_order: sortOrder,
+				request_id: context.requestId,
+			},
+		});
+
 		return response.json({
 			users: memberships,
 			pagination: {
@@ -166,15 +183,32 @@ adminUsersRouter.get(
 
 adminUsersRouter.get(
 	"/admin/users/:id",
-	async ({ params, response, context: _context }) => {
+	async ({ params, response, context }) => {
 		const userId = params.id;
 		if (!userId) {
+			logger.emit({
+				severityText: "warn",
+				body: "Admin: Missing user ID in request",
+				attributes: {
+					admin_user_id: context.user?.id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("User ID is required");
 		}
 
 		const userData = await db.select().from(user).where(eq(user.id, userId)).limit(1);
 
 		if (!userData[0]) {
+			logger.emit({
+				severityText: "warn",
+				body: "Admin: User not found",
+				attributes: {
+					target_user_id: userId,
+					admin_user_id: context.user?.id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.notFound("User");
 		}
 
@@ -195,6 +229,18 @@ adminUsersRouter.get(
 			...m,
 			club: clubsData.get(m.clubId) || null,
 		}));
+
+		logger.emit({
+			severityText: "info",
+			body: "Admin: Retrieved user details",
+			attributes: {
+				target_user_id: userId,
+				target_user_name: userData[0].name,
+				membership_count: memberships.length,
+				admin_user_id: context.user?.id,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json({
 			...userData[0],
