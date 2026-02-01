@@ -3,6 +3,7 @@ import * as z from "zod";
 import { alliance } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
+import { logger } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
 
 const allianceSchema = z.object({
@@ -16,10 +17,18 @@ export const alliancesRouter = new Router();
 
 alliancesRouter.get(
 	"/alliances/:countryId",
-	async ({ params, response }) => {
+	async ({ context, params, response }) => {
 		const countryId = Number(params.countryId);
 
 		if (!countryId || Number.isNaN(countryId)) {
+			logger.emit({
+				severityText: "warn",
+				body: "Invalid country ID provided",
+				attributes: {
+					country_id: params.countryId,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("Country ID is required and must be a valid number");
 		}
 
@@ -32,6 +41,16 @@ alliancesRouter.get(
 				countryId: true,
 			},
 			orderBy: [asc(alliance.name)],
+		});
+
+		logger.emit({
+			severityText: "info",
+			body: "Retrieved alliances by country",
+			attributes: {
+				country_id: countryId,
+				alliance_count: alliances.length,
+				request_id: context.requestId,
+			},
 		});
 
 		return response.json({ alliances });

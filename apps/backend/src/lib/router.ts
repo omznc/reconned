@@ -26,6 +26,9 @@ export type RouteContext<TAuth extends boolean = false> = {
 		: { id: string; email: string; name: string; role?: string } | undefined;
 	session?: { id: string };
 	isAdmin: boolean;
+	requestId: string;
+	requestStartTime: number;
+	businessContext?: Record<string, unknown>;
 };
 
 export type MiddlewareContext = RouteContext & {
@@ -199,15 +202,19 @@ export class Router {
 								strippedKeys = Array.from(originalKeys).filter((key) => !responseKeys.has(key));
 							}
 						} catch (error) {
-							// Log validation errors after response
 							logger.emit({
 								severityText: "error",
 								body: "Response validation error",
 								attributes: {
 									error: error instanceof Error ? error.message : "Unknown error",
-									statusCode: status.toString(),
-									routePath: routePath || "unknown",
-									responseData: JSON.stringify(data),
+									status_code: status.toString(),
+									route_path: routePath || "unknown",
+									response_type: typeof data,
+									business: {
+										operation: "validate_response",
+										domain: "request_validation",
+										validation_target: "response_body",
+									},
 								},
 							});
 							throw error;
@@ -215,16 +222,20 @@ export class Router {
 					}
 				}
 
-				// Log stripped fields after response is sent
 				if (strippedKeys && strippedKeys.length > 0) {
 					logger.emit({
 						severityText: "info",
 						body: "Fields stripped during response validation",
 						attributes: {
-							strippedFields: JSON.stringify(strippedKeys),
-							routePath: routePath || "unknown",
-							statusCode: status.toString(),
-							fieldCount: strippedKeys.length.toString(),
+							stripped_fields: JSON.stringify(strippedKeys),
+							route_path: routePath || "unknown",
+							status_code: status.toString(),
+							field_count: strippedKeys.length,
+							business: {
+								operation: "sanitize_response",
+								domain: "security",
+								reason: "schema_validation",
+							},
 						},
 					});
 				}
@@ -247,9 +258,13 @@ export class Router {
 								body: "Error response validation error",
 								attributes: {
 									error: error instanceof Error ? error.message : "Unknown error",
-									statusCode: status.toString(),
-									routePath: routePath || "unknown",
-									errorResponseData: JSON.stringify(data),
+									status_code: status.toString(),
+									route_path: routePath || "unknown",
+									business: {
+										operation: "validate_error_response",
+										domain: "request_validation",
+										validation_target: "error_response",
+									},
 								},
 							});
 							throw error;
@@ -471,8 +486,13 @@ export class Router {
 						body: "Request params validation error",
 						attributes: {
 							error: error.message,
-							params: JSON.stringify(params),
-							issues: JSON.stringify(error.issues),
+							param_count: Object.keys(params).length,
+							validation_issues: error.issues.length,
+							business: {
+								operation: "validate_request_params",
+								domain: "request_validation",
+								validation_target: "url_parameters",
+							},
 						},
 					});
 					return jsonResponse({ error: "Invalid parameters", details: error.issues }, 400);
@@ -492,8 +512,12 @@ export class Router {
 						body: "Request query validation error",
 						attributes: {
 							error: error.message,
-							query: JSON.stringify(query),
-							issues: JSON.stringify(error.issues),
+							validation_issues: error.issues.length,
+							business: {
+								operation: "validate_request_query",
+								domain: "request_validation",
+								validation_target: "query_parameters",
+							},
 						},
 					});
 					return jsonResponse({ error: "Invalid query parameters", details: error.issues }, 400);
@@ -550,8 +574,14 @@ export class Router {
 						body: "Request body validation error",
 						attributes: {
 							error: parseResult.error.message,
-							requestBody: JSON.stringify(rawBody),
-							issues: JSON.stringify(parseResult.error.issues),
+							content_type: request.headers.get("content-type"),
+							validation_issues: parseResult.error.issues.length,
+							has_body: Boolean(rawBody),
+							business: {
+								operation: "validate_request_body",
+								domain: "request_validation",
+								validation_target: "request_body",
+							},
 						},
 					});
 					return jsonResponse(
@@ -706,10 +736,15 @@ export class Router {
 					severityText: "warn",
 					body: "Rate limit exceeded",
 					attributes: {
-						clientIP,
-						requestCount: requestCount.toString(),
-						maxRequests: rateLimitConfig.maxRequests.toString(),
-						windowMs: rateLimitConfig.windowMs.toString(),
+						client_ip: clientIP,
+						request_count: requestCount.toString(),
+						max_requests: rateLimitConfig.maxRequests.toString(),
+						window_ms: rateLimitConfig.windowMs.toString(),
+						business: {
+							operation: "rate_limit_check",
+							domain: "security",
+							action: "block_request",
+						},
 					},
 				});
 				return new Response(JSON.stringify({ error: "Too many requests" }), {
@@ -727,8 +762,13 @@ export class Router {
 				severityText: "error",
 				body: "Rate limiting error",
 				attributes: {
-					clientIP,
+					client_ip: clientIP,
 					error: error instanceof Error ? error.message : String(error),
+					business: {
+						operation: "rate_limit_check",
+						domain: "security",
+						error_type: "redis_error",
+					},
 				},
 			});
 			return null;

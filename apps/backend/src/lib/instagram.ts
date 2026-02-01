@@ -1,5 +1,29 @@
 import { env } from "../lib/env";
 import { apiError } from "../lib/errors";
+import { logger } from "./posthog";
+
+async function logExternalApiCall(
+	operation: string,
+	url: string,
+	method: string,
+	response: Response,
+	durationMs: number,
+	additionalContext?: Record<string, unknown>,
+) {
+	logger.emit({
+		severityText: response.ok ? "info" : "error",
+		body: `External API call: ${operation}`,
+		attributes: {
+			operation,
+			url: url.replace(/access_token=[^&]+/, "access_token=REDACTED"),
+			method,
+			status_code: response.status,
+			duration_ms: durationMs,
+			success: response.ok,
+			...additionalContext,
+		},
+	});
+}
 
 export interface InstagramMedia {
 	id: string;
@@ -62,12 +86,19 @@ interface FacebookDebugTokenResponse {
 export async function exchangeCodeForToken(code: string): Promise<FacebookAuthResponse> {
 	// The redirect_uri must match exactly what was used in the auth dialog
 	const redirectUri = `${env.BETTER_AUTH_URL}/api/club/instagram/callback`;
+	const url = "https://graph.facebook.com/v19.0/oauth/access_token";
 
+	const startTime = Date.now();
 	const response = await fetch(
-		`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${env.FACEBOOK_APP_ID}&client_secret=${
+		`${url}?client_id=${env.FACEBOOK_APP_ID}&client_secret=${
 			env.FACEBOOK_APP_SECRET
 		}&redirect_uri=${encodeURIComponent(redirectUri)}&code=${code}`,
 	);
+	const duration = Date.now() - startTime;
+
+	await logExternalApiCall("exchange_code_for_token", url, "GET", response, duration, {
+		has_code: Boolean(code),
+	});
 
 	if (!response.ok) {
 		throw apiError.internal(`Failed to exchange code for token: ${await response.text()}`);
@@ -80,9 +111,17 @@ export async function exchangeCodeForToken(code: string): Promise<FacebookAuthRe
  * Exchange a short-lived user token for a long-lived user token
  */
 export async function exchangeForLongLivedToken(shortLivedToken: string): Promise<FacebookLongLivedTokenResponse> {
+	const url = "https://graph.facebook.com/v19.0/oauth/access_token";
+
+	const startTime = Date.now();
 	const response = await fetch(
-		`https://graph.facebook.com/v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${env.FACEBOOK_APP_ID}&client_secret=${env.FACEBOOK_APP_SECRET}&fb_exchange_token=${shortLivedToken}`,
+		`${url}?grant_type=fb_exchange_token&client_id=${env.FACEBOOK_APP_ID}&client_secret=${env.FACEBOOK_APP_SECRET}&fb_exchange_token=${shortLivedToken}`,
 	);
+	const duration = Date.now() - startTime;
+
+	await logExternalApiCall("exchange_for_long_lived_token", url, "GET", response, duration, {
+		has_token: Boolean(shortLivedToken),
+	});
 
 	if (!response.ok) {
 		throw apiError.internal(`Failed to exchange for long-lived token: ${await response.text()}`);
@@ -96,14 +135,18 @@ export async function exchangeForLongLivedToken(shortLivedToken: string): Promis
  */
 export async function debugToken(accessToken: string): Promise<FacebookDebugTokenResponse> {
 	const appAccessToken = `${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`;
+	const url = "https://graph.facebook.com/v19.0/debug_token";
 
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/debug_token?input_token=${accessToken}&access_token=${appAccessToken}`,
-		{
-			// Backend fetch caching if needed, but usually we want fresh data
-			cache: "no-store",
-		},
-	);
+	const startTime = Date.now();
+	const response = await fetch(`${url}?input_token=${accessToken}&access_token=${appAccessToken}`, {
+		// Backend fetch caching if needed, but usually we want fresh data
+		cache: "no-store",
+	});
+	const duration = Date.now() - startTime;
+
+	await logExternalApiCall("debug_token", url, "GET", response, duration, {
+		has_input_token: Boolean(accessToken),
+	});
 
 	if (!response.ok) {
 		throw apiError.internal(`Failed to debug token: ${await response.text()}`);
@@ -116,7 +159,15 @@ export async function debugToken(accessToken: string): Promise<FacebookDebugToke
  * Get Facebook pages associated with a user
  */
 export async function getUserPages(accessToken: string): Promise<FacebookPageResponse> {
-	const response = await fetch(`https://graph.facebook.com/v19.0/me/accounts?access_token=${accessToken}`);
+	const url = "https://graph.facebook.com/v19.0/me/accounts";
+
+	const startTime = Date.now();
+	const response = await fetch(`${url}?access_token=${accessToken}`);
+	const duration = Date.now() - startTime;
+
+	await logExternalApiCall("get_user_pages", url, "GET", response, duration, {
+		has_access_token: Boolean(accessToken),
+	});
 
 	if (!response.ok) {
 		throw apiError.internal(`Failed to get user pages: ${await response.text()}`);
@@ -142,17 +193,31 @@ export async function getInstagramBusinessAccount(
 	pageId: string,
 	pageAccessToken: string,
 ): Promise<InstagramBusinessAccountResponse | undefined> {
-	const response = await fetch(
-		`https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${pageAccessToken}`,
-	);
+	const url = `https://graph.facebook.com/v19.0/${pageId}`;
+
+	const startTime = Date.now();
+	const response = await fetch(`${url}?fields=instagram_business_account&access_token=${pageAccessToken}`);
+	const duration = Date.now() - startTime;
+
+	await logExternalApiCall("get_instagram_business_account", url, "GET", response, duration, {
+		page_id: pageId,
+		has_access_token: Boolean(pageAccessToken),
+	});
 
 	if (response.ok) {
 		const data = (await response.json()) as { instagram_business_account?: { id: string } };
 		if (data.instagram_business_account?.id) {
 			// Get Instagram details using the business account ID
+			const igUrl = `https://graph.facebook.com/v19.0/${data.instagram_business_account.id}`;
+			const igStartTime = Date.now();
 			const igDetailsResponse = await fetch(
-				`https://graph.facebook.com/v19.0/${data.instagram_business_account.id}?fields=id,username,profile_picture_url&access_token=${pageAccessToken}`,
+				`${igUrl}?fields=id,username,profile_picture_url&access_token=${pageAccessToken}`,
 			);
+			const igDuration = Date.now() - igStartTime;
+
+			await logExternalApiCall("get_instagram_details", igUrl, "GET", igDetailsResponse, igDuration, {
+				ig_business_id: data.instagram_business_account.id,
+			});
 
 			if (igDetailsResponse.ok) {
 				const igDetails = (await igDetailsResponse.json()) as {
@@ -183,9 +248,19 @@ export async function getInstagramMedia(
 	accessToken: string,
 	limit = 12,
 ): Promise<InstagramMediaResponse> {
+	const url = `https://graph.facebook.com/v19.0/${igBusinessId}/media`;
+
+	const startTime = Date.now();
 	const response = await fetch(
-		`https://graph.facebook.com/v19.0/${igBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${accessToken}`,
+		`${url}?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${accessToken}`,
 	);
+	const duration = Date.now() - startTime;
+
+	await logExternalApiCall("get_instagram_media", url, "GET", response, duration, {
+		ig_business_id: igBusinessId,
+		media_limit: limit,
+		has_access_token: Boolean(accessToken),
+	});
 
 	if (!response.ok) {
 		throw apiError.internal(`Failed to get media: ${await response.text()}`);

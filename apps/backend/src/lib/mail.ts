@@ -1,5 +1,5 @@
 import { env } from "./env";
-import { posthog } from "./posthog";
+import { logger, posthog } from "./posthog";
 
 type SendEmailParams = {
 	to: string | string[];
@@ -22,11 +22,14 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 		},
 	});
 
-	const response = await fetch("https://onesignal.com/api/v1/notifications", {
+	const url = "https://onesignal.com/api/v1/notifications";
+
+	const startTime = Date.now();
+	const response = await fetch(url, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: `Basic ${env.ONESIGNAL_API_KEY}`,
+			Authorization: `Basic ${env.ONESIGNAL_API_KEY.substring(0, 10)}...`,
 		},
 		body: JSON.stringify({
 			app_id: env.ONESIGNAL_APP_ID,
@@ -36,8 +39,33 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 			channel_for_external_user_ids: "email",
 		}),
 	});
+	const duration = Date.now() - startTime;
+
+	logger.emit({
+		severityText: response.ok ? "info" : "error",
+		body: "OneSignal API call: send_email",
+		attributes: {
+			url,
+			method: "POST",
+			status_code: response.status,
+			duration_ms: duration,
+			success: response.ok,
+			recipient_count: recipients.length,
+			subject,
+		},
+	});
 
 	if (!response.ok) {
+		const errorText = await response.text();
+		logger.emit({
+			severityText: "error",
+			body: "OneSignal API error",
+			attributes: {
+				status_code: response.status,
+				error: errorText,
+				recipient_count: recipients.length,
+			},
+		});
 		throw new Error(`OneSignal API error: ${response.statusText}`);
 	}
 

@@ -2601,6 +2601,16 @@ clubsRouter.post(
 				body: "Failed to send invitation email",
 				attributes: {
 					error: error instanceof Error ? error.message : String(error),
+					club_id: clubId,
+					club_name: clubData[0]?.name,
+					recipient_email: target.email,
+					inviter_id: context.user.id,
+					request_id: context.requestId,
+					business: {
+						operation: "send_invitation_email",
+						domain: "club_management",
+						recipient_is_existing_user: Boolean(existingUser[0]),
+					},
 				},
 			});
 		}
@@ -5279,9 +5289,15 @@ clubsRouter.get(
 				severityText: "error",
 				body: "Instagram token error: Missing access token or business ID",
 				attributes: {
-					clubId: clubId,
-					hasAccessToken: String(!!clubRecord.instagramAccessToken),
-					hasBusinessId: String(!!clubRecord.instagramBusinessId),
+					club_id: clubId,
+					club_name: clubRecord.name,
+					has_access_token: String(!!clubRecord.instagramAccessToken),
+					has_business_id: String(!!clubRecord.instagramBusinessId),
+					business: {
+						operation: "fetch_instagram_media",
+						domain: "instagram_integration",
+						error_type: "missing_credentials",
+					},
 				},
 			});
 			return response.json({ media: [], username: null });
@@ -5301,10 +5317,19 @@ clubsRouter.get(
 					severityText: "error",
 					body: "Instagram API error",
 					attributes: {
-						clubId: clubId,
-						status: mediaResponse.status.toString(),
-						statusText: mediaResponse.statusText,
+						club_id: clubId,
+						club_name: clubRecord.name,
+						status_code: mediaResponse.status.toString(),
+						status_text: mediaResponse.statusText,
 						error: errorText,
+						instagram_business_id: clubRecord.instagramBusinessId,
+						media_limit: limit,
+						business: {
+							operation: "fetch_instagram_media",
+							domain: "instagram_integration",
+							error_type: "api_error",
+							provider: "facebook_graph_api",
+						},
 					},
 				});
 				return response.json({ media: [], username: null });
@@ -5332,8 +5357,15 @@ clubsRouter.get(
 				severityText: "error",
 				body: "Instagram fetch error",
 				attributes: {
-					clubId: clubId,
+					club_id: clubId,
+					club_name: clubRecord.name,
 					error: error instanceof Error ? error.message : String(error),
+					error_type: error instanceof Error ? error.name : "Unknown",
+					business: {
+						operation: "fetch_instagram_media",
+						domain: "instagram_integration",
+						error_type: "fetch_error",
+					},
 				},
 			});
 			return response.json({ media: [], username: null });
@@ -5823,6 +5855,18 @@ clubsRouter.post(
 				body: "Failed to send claim request email",
 				attributes: {
 					error: error instanceof Error ? error.message : String(error),
+					club_id: clubId,
+					club_name: clubData[0]?.name,
+					requester_id: context.user.id,
+					requester_email: requesterData[0]?.email,
+					requester_name: requesterData[0]?.name,
+					admin_count: adminEmails.length,
+					request_id: context.requestId,
+					business: {
+						operation: "send_claim_request_email",
+						domain: "club_management",
+						email_type: "admin_notification",
+					},
 				},
 			});
 			throw apiError.internal("Failed to send email");

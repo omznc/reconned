@@ -3,6 +3,7 @@ import * as z from "zod";
 import { club, clubInvite, clubMembership, event, eventRegistration, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
+import { logger } from "../lib/posthog";
 import { Router } from "../lib/router";
 
 const dashboardRouter = new Router();
@@ -19,19 +20,41 @@ dashboardRouter.get(
 			.from(clubMembership)
 			.where(eq(clubMembership.userId, context.user.id));
 
-		console.log("Found memberships:", memberships.length);
+		logger.emit({
+			severityText: "debug",
+			body: "Dashboard: Found memberships",
+			attributes: {
+				user_id: context.user.id,
+				membership_count: memberships.length,
+				request_id: context.requestId,
+			},
+		});
 
 		if (memberships.length === 0) {
-			console.log("No memberships found, returning empty array");
+			logger.emit({
+				severityText: "debug",
+				body: "Dashboard: No memberships found",
+				attributes: {
+					user_id: context.user.id,
+					request_id: context.requestId,
+				},
+			});
 			return response.json({ clubs: [] });
 		}
 
 		const clubIds = memberships.map((m) => m.clubId);
 
-		// Get club data
 		const clubsData = await db.select().from(club).where(inArray(club.id, clubIds));
 
-		console.log("Found clubs:", clubsData.length);
+		logger.emit({
+			severityText: "debug",
+			body: "Dashboard: Found clubs",
+			attributes: {
+				user_id: context.user.id,
+				club_count: clubsData.length,
+				request_id: context.requestId,
+			},
+		});
 
 		// Get stats for each club
 		const clubsWithStats = await Promise.all(

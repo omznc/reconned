@@ -32,8 +32,13 @@ class TaskScheduler {
 			severityText: "info",
 			body: "Task registered",
 			attributes: {
-				taskName: task.name,
-				interval: task.interval.toString(),
+				task_name: task.name,
+				interval_ms: task.interval.toString(),
+				run_on_start: String(task.runOnStart !== false),
+				business: {
+					operation: "register_task",
+					domain: "scheduler",
+				},
 			},
 		});
 	}
@@ -43,6 +48,13 @@ class TaskScheduler {
 			logger.emit({
 				severityText: "warn",
 				body: "Scheduler already running",
+				attributes: {
+					business: {
+						operation: "start_scheduler",
+						domain: "scheduler",
+						status: "already_running",
+					},
+				},
 			});
 			return;
 		}
@@ -52,7 +64,11 @@ class TaskScheduler {
 			severityText: "info",
 			body: "Scheduler starting",
 			attributes: {
-				taskCount: this.tasks.length.toString(),
+				task_count: this.tasks.length.toString(),
+				business: {
+					operation: "start_scheduler",
+					domain: "scheduler",
+				},
 			},
 		});
 
@@ -71,6 +87,13 @@ class TaskScheduler {
 		logger.emit({
 			severityText: "info",
 			body: "All tasks started",
+			attributes: {
+				scheduled_task_count: this.intervals.size.toString(),
+				business: {
+					operation: "start_scheduler",
+					domain: "scheduler",
+				},
+			},
 		});
 	}
 
@@ -82,6 +105,13 @@ class TaskScheduler {
 		logger.emit({
 			severityText: "info",
 			body: "Stopping all tasks",
+			attributes: {
+				task_count: this.intervals.size.toString(),
+				business: {
+					operation: "stop_scheduler",
+					domain: "scheduler",
+				},
+			},
 		});
 
 		for (const [name, timer] of this.intervals.entries()) {
@@ -90,7 +120,11 @@ class TaskScheduler {
 				severityText: "info",
 				body: "Task stopped",
 				attributes: {
-					taskName: name,
+					task_name: name,
+					business: {
+						operation: "stop_task",
+						domain: "scheduler",
+					},
 				},
 			});
 		}
@@ -100,6 +134,12 @@ class TaskScheduler {
 		logger.emit({
 			severityText: "info",
 			body: "All tasks stopped",
+			attributes: {
+				business: {
+					operation: "stop_scheduler",
+					domain: "scheduler",
+				},
+			},
 		});
 	}
 
@@ -109,7 +149,12 @@ class TaskScheduler {
 				severityText: "info",
 				body: "Skipping task - still running",
 				attributes: {
-					taskName: task.name,
+					task_name: task.name,
+					business: {
+						operation: "skip_task",
+						domain: "scheduler",
+						reason: "already_running",
+					},
 				},
 			});
 			return;
@@ -121,7 +166,12 @@ class TaskScheduler {
 			severityText: "info",
 			body: "Running task",
 			attributes: {
-				taskName: task.name,
+				task_name: task.name,
+				interval_ms: task.interval.toString(),
+				business: {
+					operation: "run_task",
+					domain: "scheduler",
+				},
 			},
 		});
 
@@ -132,8 +182,13 @@ class TaskScheduler {
 				severityText: "info",
 				body: "Task completed",
 				attributes: {
-					taskName: task.name,
-					duration: duration.toString(),
+					task_name: task.name,
+					duration_ms: duration.toString(),
+					business: {
+						operation: "run_task",
+						domain: "scheduler",
+						outcome: "success",
+					},
 				},
 			});
 		} catch (error) {
@@ -141,8 +196,14 @@ class TaskScheduler {
 				severityText: "error",
 				body: "Task failed",
 				attributes: {
-					taskName: task.name,
+					task_name: task.name,
 					error: error instanceof Error ? error.message : String(error),
+					error_type: error instanceof Error ? error.name : "Unknown",
+					business: {
+						operation: "run_task",
+						domain: "scheduler",
+						outcome: "error",
+					},
 				},
 			});
 		} finally {
@@ -169,7 +230,13 @@ scheduler.register({
 			severityText: "info",
 			body: "Clean expired invites completed",
 			attributes: {
-				deletedCount: result.length.toString(),
+				deleted_count: result.length.toString(),
+				cutoff_date: now,
+				business: {
+					operation: "cleanup_expired_records",
+					domain: "maintenance",
+					table: "club_invites",
+				},
 			},
 		});
 	},
