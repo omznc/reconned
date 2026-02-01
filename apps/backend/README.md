@@ -24,7 +24,3 @@ The database schema is managed with Drizzle ORM. The schema is located in `src/d
 API documentation is available via Swagger UI at `http://localhost:3002/api/docs`.
 
 The OpenAPI specification is automatically generated from your route schemas and is available at `http://localhost:3002/api/openapi.json`.
-
-## Developer Documentation
-
-- **[Logging Guidelines](./docs/LOGGING.md)** - Comprehensive guide to logging with wide events pattern, business context, and troubleshooting
