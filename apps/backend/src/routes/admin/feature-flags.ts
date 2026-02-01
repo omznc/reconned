@@ -4,6 +4,7 @@ import { featureFlag } from "../../drizzle/schema";
 import { db } from "../../lib/db";
 import { apiError } from "../../lib/errors";
 import { clearFeatureFlagsCache } from "../../lib/feature-flags";
+import { logger } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 
@@ -42,7 +43,7 @@ const updateFeatureFlagSchema = z.object({
 // List all feature flags (admin only)
 adminFeatureFlagsRouter.get(
 	"/admin/feature-flags",
-	async ({ query, response }) => {
+	async ({ context, query, response }) => {
 		const { page = 1, perPage = 25, search = "", sortBy = "createdAt", sortOrder = "desc" } = query || {};
 		const offset = (page - 1) * perPage;
 
@@ -64,6 +65,20 @@ adminFeatureFlagsRouter.get(
 		const flags = await db.select().from(featureFlag).where(where).orderBy(orderBy).limit(perPage).offset(offset);
 
 		const total = await db.select({ count: count() }).from(featureFlag).where(where);
+
+		logger.emit({
+			severityText: "info",
+			body: "Admin: Listed feature flags",
+			attributes: {
+				admin_user_id: context.user?.id,
+				flag_count: flags.length,
+				total_flags: total[0]?.count || 0,
+				page,
+				per_page: perPage,
+				search,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json({
 			featureFlags: flags,
@@ -134,7 +149,7 @@ adminFeatureFlagsRouter.get(
 // Create feature flag (admin only)
 adminFeatureFlagsRouter.post(
 	"/admin/feature-flags",
-	async ({ body, response }) => {
+	async ({ context, body, response }) => {
 		const { name, description, enabled } = body;
 
 		const newFlag = await db
@@ -147,11 +162,32 @@ adminFeatureFlagsRouter.post(
 			.returning();
 
 		if (!newFlag[0]) {
+			logger.emit({
+				severityText: "error",
+				body: "Admin: Failed to create feature flag",
+				attributes: {
+					flag_name: name,
+					admin_user_id: context.user?.id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("Failed to create feature flag");
 		}
 
 		// Clear cache for the new flag
 		await clearFeatureFlagsCache(newFlag[0].name);
+
+		logger.emit({
+			severityText: "info",
+			body: "Admin: Created feature flag",
+			attributes: {
+				flag_id: newFlag[0].id,
+				flag_name: newFlag[0].name,
+				enabled: newFlag[0].enabled,
+				admin_user_id: context.user?.id,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json(newFlag[0]);
 	},
@@ -173,7 +209,7 @@ adminFeatureFlagsRouter.post(
 // Update feature flag (admin only)
 adminFeatureFlagsRouter.put(
 	"/admin/feature-flags/:id",
-	async ({ params, body, response }) => {
+	async ({ context, params, body, response }) => {
 		const flagId = params.id;
 		if (!flagId) {
 			throw apiError.validation("Feature flag ID is required");
@@ -182,9 +218,19 @@ adminFeatureFlagsRouter.put(
 		const existingFlag = await db.select().from(featureFlag).where(eq(featureFlag.id, flagId)).limit(1);
 
 		if (!existingFlag[0]) {
+			logger.emit({
+				severityText: "warn",
+				body: "Admin: Feature flag not found for update",
+				attributes: {
+					flag_id: flagId,
+					admin_user_id: context.user?.id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.notFound("Feature flag");
 		}
 
+		const previousEnabled = existingFlag[0].enabled;
 		const updatedFlag = await db
 			.update(featureFlag)
 			.set({
@@ -195,11 +241,34 @@ adminFeatureFlagsRouter.put(
 			.returning();
 
 		if (!updatedFlag[0]) {
+			logger.emit({
+				severityText: "error",
+				body: "Admin: Failed to update feature flag",
+				attributes: {
+					flag_id: flagId,
+					flag_name: existingFlag[0].name,
+					admin_user_id: context.user?.id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.validation("Failed to update feature flag");
 		}
 
 		// Clear cache for the updated flag
 		await clearFeatureFlagsCache(updatedFlag[0].name);
+
+		logger.emit({
+			severityText: "info",
+			body: "Admin: Updated feature flag",
+			attributes: {
+				flag_id: updatedFlag[0].id,
+				flag_name: updatedFlag[0].name,
+				enabled: updatedFlag[0].enabled,
+				previous_enabled: previousEnabled,
+				admin_user_id: context.user?.id,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json(updatedFlag[0]);
 	},
@@ -224,7 +293,7 @@ adminFeatureFlagsRouter.put(
 // Delete feature flag (admin only)
 adminFeatureFlagsRouter.delete(
 	"/admin/feature-flags/:id",
-	async ({ params, response }) => {
+	async ({ context, params, response }) => {
 		const flagId = params.id;
 		if (!flagId) {
 			throw apiError.validation("Feature flag ID is required");
@@ -233,13 +302,37 @@ adminFeatureFlagsRouter.delete(
 		const existingFlag = await db.select().from(featureFlag).where(eq(featureFlag.id, flagId)).limit(1);
 
 		if (!existingFlag[0]) {
+			logger.emit({
+				severityText: "warn",
+				body: "Admin: Feature flag not found for deletion",
+				attributes: {
+					flag_id: flagId,
+					admin_user_id: context.user?.id,
+					request_id: context.requestId,
+				},
+			});
 			throw apiError.notFound("Feature flag");
 		}
+
+		const flagName = existingFlag[0].name;
+		const flagEnabled = existingFlag[0].enabled;
 
 		// Clear cache before deleting
 		await clearFeatureFlagsCache(existingFlag[0].name);
 
 		await db.delete(featureFlag).where(eq(featureFlag.id, flagId));
+
+		logger.emit({
+			severityText: "info",
+			body: "Admin: Deleted feature flag",
+			attributes: {
+				flag_id: flagId,
+				flag_name: flagName,
+				enabled: flagEnabled,
+				admin_user_id: context.user?.id,
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json({ success: true });
 	},

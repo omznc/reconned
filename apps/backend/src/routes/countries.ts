@@ -2,6 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import * as z from "zod";
 import { country } from "../drizzle/schema";
 import { db } from "../lib/db";
+import { logger } from "../lib/posthog";
 import { Router } from "../lib/router";
 
 const VALID_LOCALES = ["en", "bs", "sr"];
@@ -20,7 +21,7 @@ export const countriesRouter = new Router();
 
 countriesRouter.get(
 	"/countries",
-	async ({ response }) => {
+	async ({ context, response }) => {
 		const countries = await db
 			.select({
 				id: country.id,
@@ -62,6 +63,15 @@ countriesRouter.get(
 			}
 
 			return countryResult;
+		});
+
+		logger.emit({
+			severityText: "info",
+			body: "Retrieved enabled countries",
+			attributes: {
+				country_count: result.length,
+				request_id: context.requestId,
+			},
 		});
 
 		return response.json(result);

@@ -1,3 +1,4 @@
+import { loggingConfig, shouldSampleLog } from "../logging-config";
 import { createLogAttributes, type LogAttributes, logger } from "../posthog";
 import type { MiddlewareHandler } from "../router";
 
@@ -28,6 +29,8 @@ export function wideEventsMiddleware(): MiddlewareHandler {
 			business: context.businessContext || {},
 		});
 
+		const shouldLogRequest = loggingConfig.enabled && shouldSampleLog();
+
 		try {
 			const response = await next();
 
@@ -35,12 +38,14 @@ export function wideEventsMiddleware(): MiddlewareHandler {
 			wideEvent.outcome = "success";
 			wideEvent.duration_ms = Date.now() - startTime;
 
-			logger.emit({
-				severityText: "info",
-				body: `${context.request.method} ${url.pathname}`,
-				// biome-ignore lint/suspicious/noExplicitAny: OpenTelemetry AnyValueMap type is incompatible with LogAttributes
-				attributes: wideEvent as any,
-			});
+			if (shouldLogRequest) {
+				logger.emit({
+					severityText: "info",
+					body: `${context.request.method} ${url.pathname}`,
+					// biome-ignore lint/suspicious/noExplicitAny: OpenTelemetry AnyValueMap type is incompatible with LogAttributes
+					attributes: wideEvent as any,
+				});
+			}
 
 			return response;
 		} catch (error) {
@@ -53,12 +58,14 @@ export function wideEventsMiddleware(): MiddlewareHandler {
 			};
 			wideEvent.duration_ms = Date.now() - startTime;
 
-			logger.emit({
-				severityText: "error",
-				body: `Request failed: ${context.request.method} ${url.pathname}`,
-				// biome-ignore lint/suspicious/noExplicitAny: OpenTelemetry AnyValueMap type is incompatible with LogAttributes
-				attributes: wideEvent as any,
-			});
+			if (shouldLogRequest) {
+				logger.emit({
+					severityText: "error",
+					body: `Request failed: ${context.request.method} ${url.pathname}`,
+					// biome-ignore lint/suspicious/noExplicitAny: OpenTelemetry AnyValueMap type is incompatible with LogAttributes
+					attributes: wideEvent as any,
+				});
+			}
 
 			throw error;
 		}

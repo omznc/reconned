@@ -1,3 +1,4 @@
+import packageJson from "../../package.json";
 import { env } from "./env";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
@@ -15,7 +16,7 @@ export const loggingConfig: LoggingConfig = {
 	enabled: env.POSTHOG_LOGS_ENABLED,
 	level: env.LOG_LEVEL,
 	samplingRate: env.LOG_SAMPLING_RATE,
-	serviceVersion: "0.1.0",
+	serviceVersion: packageJson.version,
 	commitHash: process.env.GIT_COMMIT || "unknown",
 	environment: process.env.NODE_ENV || "development",
 };

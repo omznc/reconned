@@ -1,3 +1,4 @@
+import { loggingConfig, shouldSampleLog } from "../logging-config";
 import { logger } from "../posthog";
 import type { MiddlewareContext, MiddlewareHandler } from "../router";
 
@@ -277,60 +278,67 @@ export function requestLoggingMiddleware(
 			return next();
 		}
 
+		const shouldLogRequest = loggingConfig.enabled && shouldSampleLog();
 		const start = Date.now();
 		const timestamp = new Date().toISOString();
 
-		logger.emit({
-			severityText: logLevel === "error" ? "error" : "info",
-			body: `HTTP request: ${request.method} ${url.pathname}`,
-			attributes: {
-				timestamp,
-				method: request.method,
-				path: url.pathname,
-				user_agent: request.headers.get("user-agent"),
-				ip:
-					request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-					request.headers.get("x-real-ip") ||
-					request.headers.get("cf-connecting-ip") ||
-					"unknown",
-				request_id: (context as Record<string, unknown>).requestId as string | undefined,
-				...(includeHeaders && { headers: Object.fromEntries(request.headers.entries()) }),
-			},
-		});
+		if (shouldLogRequest) {
+			logger.emit({
+				severityText: logLevel === "error" ? "error" : "info",
+				body: `HTTP request: ${request.method} ${url.pathname}`,
+				attributes: {
+					timestamp,
+					method: request.method,
+					path: url.pathname,
+					user_agent: request.headers.get("user-agent"),
+					ip:
+						request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+						request.headers.get("x-real-ip") ||
+						request.headers.get("cf-connecting-ip") ||
+						"unknown",
+					request_id: (context as Record<string, unknown>).requestId as string | undefined,
+					...(includeHeaders && { headers: Object.fromEntries(request.headers.entries()) }),
+				},
+			});
+		}
 
 		try {
 			const response = await next();
 			const duration = Date.now() - start;
 
-			logger.emit({
-				severityText: logLevel === "error" ? "error" : "info",
-				body: `HTTP response: ${request.method} ${url.pathname} - ${response.status}`,
-				attributes: {
-					timestamp: new Date().toISOString(),
-					method: request.method,
-					path: url.pathname,
-					status: response.status,
-					duration_ms: duration,
-					request_id: (context as Record<string, unknown>).requestId as string | undefined,
-				},
-			});
+			if (shouldLogRequest) {
+				logger.emit({
+					severityText: logLevel === "error" ? "error" : "info",
+					body: `HTTP response: ${request.method} ${url.pathname} - ${response.status}`,
+					attributes: {
+						timestamp: new Date().toISOString(),
+						method: request.method,
+						path: url.pathname,
+						status: response.status,
+						duration_ms: duration,
+						request_id: (context as Record<string, unknown>).requestId as string | undefined,
+					},
+				});
+			}
 
 			return response;
 		} catch (error) {
 			const duration = Date.now() - start;
 
-			logger.emit({
-				severityText: "error",
-				body: "Request processing error",
-				attributes: {
-					method: request.method,
-					pathname: url.pathname,
-					duration_ms: duration,
-					error: error instanceof Error ? error.message : String(error),
-					stack: error instanceof Error ? error.stack : undefined,
-					request_id: (context as Record<string, unknown>).requestId as string | undefined,
-				},
-			});
+			if (shouldLogRequest) {
+				logger.emit({
+					severityText: "error",
+					body: "Request processing error",
+					attributes: {
+						method: request.method,
+						pathname: url.pathname,
+						duration_ms: duration,
+						error: error instanceof Error ? error.message : String(error),
+						stack: error instanceof Error ? error.stack : undefined,
+						request_id: (context as Record<string, unknown>).requestId as string | undefined,
+					},
+				});
+			}
 
 			throw error;
 		}

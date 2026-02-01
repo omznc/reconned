@@ -101,17 +101,4 @@ export function createLogAttributes(baseAttributes: Partial<LogAttributes> = {})
 	};
 }
 
-export function shouldLog(level: LogLevel): boolean {
-	const configuredLevel = (process.env.LOG_LEVEL as LogLevel) || "info";
-	const levels: LogLevel[] = ["debug", "info", "warn", "error"];
-	return levels.indexOf(level) >= levels.indexOf(configuredLevel);
-}
-
-export const loggingConfig = {
-	enabled: process.env.POSTHOG_LOGS_ENABLED !== "false",
-	level: (process.env.LOG_LEVEL as LogLevel) || "info",
-	samplingRate: Number.parseFloat(process.env.LOG_SAMPLING_RATE || "1"),
-	serviceVersion: SERVICE_VERSION,
-	commitHash: GIT_COMMIT,
-	environment: ENVIRONMENT,
-};
+export { loggingConfig, shouldLog } from "./logging-config";

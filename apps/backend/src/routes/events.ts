@@ -17,7 +17,7 @@ import {
 import { logClubAudit } from "../lib/audit-logger";
 import { db } from "../lib/db";
 import { apiError } from "../lib/errors";
-import { posthog } from "../lib/posthog";
+import { logger, posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
 import { baseClubRuleSchema, baseEventSchema, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../lib/storage";
@@ -186,6 +186,21 @@ eventsRouter.get(
 
 		const totalData = await db.select({ count: count() }).from(event).where(whereClause);
 		const total = totalData[0]?.count || 0;
+
+		logger.emit({
+			severityText: "info",
+			body: "Retrieved events list",
+			attributes: {
+				event_count: events.length,
+				total_events: total,
+				page,
+				per_page: perPage,
+				filter,
+				search,
+				user_id: requestingUserId || "anonymous",
+				request_id: context.requestId,
+			},
+		});
 
 		return response.json({
 			events,
