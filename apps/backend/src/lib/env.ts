@@ -119,6 +119,11 @@ export const env = createEnv({
 			.optional()
 			.describe("Facebook application secret"),
 
+		POSTHOG_PUBLIC_KEY: z
+			.string()
+			.min(1, "POSTHOG_PUBLIC_KEY is required for PostHog logging")
+			.describe("PostHog public API key"),
+
 		CI: z.string().optional().describe("CI environment indicator"),
 	},
 	runtimeEnv: process.env,
