@@ -6,8 +6,7 @@ import { NodeSDK } from "@opentelemetry/sdk-node";
 import { PostHog } from "posthog-node";
 import packageJson from "../../package.json";
 
-const POSTHOG_PUBLIC_KEY =
-	process.env.NODE_ENV === "development" ? "" : "phc_dz8FuOeoRtR3dc1HCFZIaEVK1nRWAcDbPVc2oWkgicX";
+const POSTHOG_PUBLIC_KEY = process.env.POSTHOG_PUBLIC_KEY || "";
 
 export const posthog = new PostHog(POSTHOG_PUBLIC_KEY, {
 	host: "https://eu.i.posthog.com",
