@@ -1,5 +1,5 @@
 import { env } from "./env";
-import { logger, posthog } from "./posthog";
+import { logger } from "./posthog";
 
 type SendEmailParams = {
 	to: string | string[];
@@ -10,18 +10,6 @@ type SendEmailParams = {
 
 export async function sendEmail({ to, subject, html }: SendEmailParams) {
 	const recipients = Array.isArray(to) ? to : [to];
-
-	// Track email sending
-	posthog.capture({
-		distinctId: "system",
-		event: "email_sent",
-		properties: {
-			recipient_count: recipients.length,
-			subject: subject,
-			has_html: Boolean(html),
-		},
-	});
-
 	const url = "https://onesignal.com/api/v1/notifications";
 
 	const startTime = Date.now();
@@ -41,33 +29,33 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 	});
 	const duration = Date.now() - startTime;
 
-	logger.emit({
-		severityText: response.ok ? "info" : "error",
-		body: "OneSignal API call: send_email",
-		attributes: {
-			url,
-			method: "POST",
-			status_code: response.status,
-			duration_ms: duration,
-			success: response.ok,
-			recipient_count: recipients.length,
-			subject,
-		},
-	});
-
-	if (!response.ok) {
-		const errorText = await response.text();
+	if (response.ok) {
 		logger.emit({
-			severityText: "error",
-			body: "OneSignal API error",
+			severityText: "info",
+			body: "OneSignal API call: send_email",
 			attributes: {
+				url,
+				method: "POST",
 				status_code: response.status,
-				error: errorText,
+				duration_ms: duration,
+				success: true,
 				recipient_count: recipients.length,
+				subject,
 			},
 		});
-		throw new Error(`OneSignal API error: ${response.statusText}`);
+
+		return (await response.json()) as { MessageId: string };
 	}
 
-	return (await response.json()) as { MessageId: string };
+	const errorText = await response.text();
+	logger.emit({
+		severityText: "error",
+		body: "OneSignal API error",
+		attributes: {
+			status_code: response.status,
+			error: errorText,
+			recipient_count: recipients.length,
+		},
+	});
+	throw new Error(`OneSignal API error: ${response.statusText}`);
 }

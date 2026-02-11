@@ -73,6 +73,16 @@
 		},
 		"clubClaimRequest": {
 			"subject": "Club Claim Request: {clubName}"
+		},
+		"clubOwnerAssigned": {
+			"subject": "You've been assigned as owner of {clubName}",
+			"preview": "You are now the owner of {clubName}",
+			"heading": "You're now a club owner!",
+			"greeting": "Hi {userName}",
+			"greetingGeneric": "Hello",
+			"description": "You have been assigned as owner of {clubName} club. You can now manage club, invite members, create events, and more.",
+			"button": "Go to club dashboard",
+			"footer": "If you did not expect this assignment, please contact support."
 		}
 	}
 }

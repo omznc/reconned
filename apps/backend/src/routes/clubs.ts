@@ -26,6 +26,7 @@ import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
 import { apiError } from "../lib/errors";
 import { isFeatureEnabled } from "../lib/feature-flags";
+import { isValidLanguage } from "../lib/i18n";
 import {
 	debugToken,
 	exchangeCodeForToken,
@@ -38,10 +39,6 @@ import { sendEmail } from "../lib/mail";
 import { logger, posthog } from "../lib/posthog";
 import { Router, responseSchema } from "../lib/router";
 import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
-
-function isValidLanguage(lang: unknown): lang is "en" | "bs" | "sr" {
-	return typeof lang === "string" && (lang === "en" || lang === "bs" || lang === "sr");
-}
 
 import { deleteS3Files, extractSizeFromKey, getS3UploadUrl } from "../lib/storage";
 import { Sanitize } from "../lib/user-sanitization";
