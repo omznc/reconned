@@ -1,8 +1,7 @@
 import bsMessages from "../messages/bs.json";
 import enMessages from "../messages/en.json";
 import srMessages from "../messages/sr.json";
-
-type Language = "en" | "bs" | "sr";
+import type { SupportedLanguage } from "./i18n";
 
 const messages = {
 	en: enMessages,
@@ -10,7 +9,7 @@ const messages = {
 	sr: srMessages,
 } as const;
 
-export function getEmailMessages(language: Language = "bs") {
+export function getEmailMessages(language: SupportedLanguage = "bs") {
 	return messages[language] || messages.bs;
 }
 

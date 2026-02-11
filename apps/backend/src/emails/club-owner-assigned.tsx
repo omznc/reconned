@@ -1,14 +1,15 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
 import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
+import type { SupportedLanguage } from "../lib/i18n";
 import { emailStyles } from "./styles";
 
 interface ClubOwnerAssignedEmailProps {
-	userName?: string;
+	userName: string;
 	clubName: string;
 	clubLogo: string | null;
 	clubUrl: string;
-	language?: "en" | "bs" | "sr";
+	language?: SupportedLanguage;
 }
 
 export const ClubOwnerAssignedEmail = ({
@@ -41,7 +42,7 @@ export const ClubOwnerAssignedEmail = ({
 					<Text style={emailStyles.text}>
 						{userName
 							? interpolateMessage(messages.emails.clubOwnerAssigned.greeting, { userName })
-							: messages.emails.clubOwnerAssigned.greeting.replace("{userName}", "").trim()}
+							: messages.emails.clubOwnerAssigned.greetingGeneric}
 					</Text>
 					<Text style={emailStyles.text}>
 						{interpolateMessage(messages.emails.clubOwnerAssigned.description, { clubName })}

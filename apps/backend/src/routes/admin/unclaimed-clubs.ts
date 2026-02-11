@@ -9,15 +9,12 @@ import { db } from "../../lib/db";
 import { getEmailMessages, interpolateMessage } from "../../lib/email-messages";
 import { env } from "../../lib/env";
 import { apiError } from "../../lib/errors";
+import { isValidLanguage } from "../../lib/i18n";
 import { sendEmail } from "../../lib/mail";
 import { logger, posthog } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
 import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 import { getS3UploadUrl } from "../../lib/storage";
-
-function isValidLanguage(lang: unknown): lang is "en" | "bs" | "sr" {
-	return typeof lang === "string" && (lang === "en" || lang === "bs" || lang === "sr");
-}
 
 const adminUnclaimedClubsRouter = new Router();
 
@@ -625,7 +622,7 @@ adminUnclaimedClubsRouter.post(
 						ClubOwnerAssignedEmail({
 							userName: newOwner[0].name,
 							clubName: clubData[0].name,
-							clubLogo: clubData[0].logo || `${env.FRONTEND_URL}/logo.png`,
+							clubLogo: clubData[0].logo,
 							clubUrl: clubDashboardUrl,
 							language,
 						}),

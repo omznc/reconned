@@ -79,6 +79,7 @@
 			"preview": "Sada ste vlasnik kluba {clubName}",
 			"heading": "Sada ste vlasnik kluba!",
 			"greeting": "Zdravo {userName}",
+			"greetingGeneric": "Zdravo",
 			"description": "Dodijeljeno vam je vlasništvo nad klubom {clubName}. Sada možete upravljati klubom, pozivati članove, kreirati događaje i još mnogo toga.",
 			"button": "Idi na kontrolnu tablu kluba",
 			"footer": "Ako niste očekivali ovo dodjeljivanje, molimo vas da kontaktirate podršku."
