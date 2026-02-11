@@ -29,7 +29,7 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: `Basic ${env.ONESIGNAL_API_KEY.substring(0, 10)}...`,
+			Authorization: `Basic ${env.ONESIGNAL_API_KEY}`,
 		},
 		body: JSON.stringify({
 			app_id: env.ONESIGNAL_APP_ID,
