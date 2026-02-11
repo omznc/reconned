@@ -1,45 +1,48 @@
 import { logs } from "@opentelemetry/api-logs";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
-import { BatchLogRecordProcessor } from "@opentelemetry/sdk-logs";
-import { NodeSDK } from "@opentelemetry/sdk-node";
+import { BatchLogRecordProcessor, LoggerProvider } from "@opentelemetry/sdk-logs";
 import { PostHog } from "posthog-node";
 import packageJson from "../../package.json";
+import { env } from "./env";
 
-const POSTHOG_PUBLIC_KEY = process.env.POSTHOG_PUBLIC_KEY || "";
-
-export const posthog = new PostHog(POSTHOG_PUBLIC_KEY, {
-	host: "https://eu.i.posthog.com",
-});
-
+const POSTHOG_PUBLIC_KEY = env.POSTHOG_PUBLIC_KEY;
 const SERVICE_VERSION = packageJson.version;
 const GIT_COMMIT = process.env.GIT_COMMIT || "unknown";
 const ENVIRONMENT = process.env.NODE_ENV || "development";
 
-const sdk = new NodeSDK({
+// Determine the correct PostHog host based on the key
+// If the key is configured for EU (which is common), use EU endpoints
+const POSTHOG_HOST = "https://eu.i.posthog.com";
+
+export const posthog = new PostHog(POSTHOG_PUBLIC_KEY, {
+	host: POSTHOG_HOST,
+});
+
+// Set up OpenTelemetry logging
+const logExporter = new OTLPLogExporter({
+	url: `${POSTHOG_HOST}/i/v1/logs`,
+	headers: {
+		Authorization: `Bearer ${POSTHOG_PUBLIC_KEY}`,
+	},
+});
+
+const logRecordProcessor = new BatchLogRecordProcessor(logExporter);
+
+const loggerProvider = new LoggerProvider({
 	resource: resourceFromAttributes({
 		"service.name": "reconned-backend",
 		"service.version": SERVICE_VERSION,
 		"service.commit_hash": GIT_COMMIT,
 		"deployment.environment": ENVIRONMENT,
 	}),
-	logRecordProcessor: new BatchLogRecordProcessor(
-		new OTLPLogExporter({
-			url: "https://us.i.posthog.com/i/v1/logs",
-			headers: {
-				Authorization: `Bearer ${POSTHOG_PUBLIC_KEY}`,
-			},
-		}),
-	),
+	processors: [logRecordProcessor],
 });
 
-try {
-	sdk.start();
-} catch (error) {
-	console.error("Failed to start OpenTelemetry logging SDK:", error);
-}
+// Set the global logger provider
+logs.setGlobalLoggerProvider(loggerProvider);
 
-export const logger = logs.getLogger("reconned-backend");
+export const logger = logs.getLogger("reconned-backend", SERVICE_VERSION);
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
 
@@ -101,3 +104,14 @@ export function createLogAttributes(baseAttributes: Partial<LogAttributes> = {})
 }
 
 export { loggingConfig, shouldLog } from "./logging-config";
+
+// Graceful shutdown
+process.on("SIGTERM", async () => {
+	await loggerProvider.shutdown();
+	await posthog.shutdown();
+});
+
+process.on("SIGINT", async () => {
+	await loggerProvider.shutdown();
+	await posthog.shutdown();
+});
