@@ -632,18 +632,6 @@ adminUnclaimedClubsRouter.post(
 						{ pretty: true },
 					),
 				});
-
-				posthog.capture({
-					distinctId: context.user.id,
-					event: "club_owner_assigned_email_sent",
-					properties: {
-						recipient_email: newOwner[0].email,
-						club_id: clubId,
-						club_name: clubData[0].name,
-						assigned_to_user_id: body.userId,
-						language,
-					},
-				});
 			} catch (error) {
 				logger.emit({
 					severityText: "error",
