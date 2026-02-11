@@ -73,6 +73,15 @@
 		},
 		"clubClaimRequest": {
 			"subject": "Zahtjev za preuzimanje kluba: {clubName}"
+		},
+		"clubOwnerAssigned": {
+			"subject": "Dodijeljen vam je vlasništvo nad klubom {clubName}",
+			"preview": "Sada ste vlasnik kluba {clubName}",
+			"heading": "Sada ste vlasnik kluba!",
+			"greeting": "Zdravo {userName}",
+			"description": "Dodijeljen vam je klub {clubName}. Sada možete upravljati klubom, pozivati članove, kreirati događaje i još mnogo toga.",
+			"button": "Idi na kontrolnu tablu kluba",
+			"footer": "Ako niste očekivali ovo dodjeljivanje, molimo vas da kontaktirate podršku."
 		}
 	}
 }

@@ -1,14 +1,23 @@
+import { render } from "@react-email/components";
 import { randomUUIDv7 } from "bun";
 import { and, count, desc, eq, ilike, inArray, not, or } from "drizzle-orm";
 import * as z from "zod";
-import { club, clubMembership } from "../../drizzle/schema";
+import { club, clubMembership, user } from "../../drizzle/schema";
+import ClubOwnerAssignedEmail from "../../emails/club-owner-assigned";
 import { logClubAudit } from "../../lib/audit-logger";
 import { db } from "../../lib/db";
+import { getEmailMessages, interpolateMessage } from "../../lib/email-messages";
+import { env } from "../../lib/env";
 import { apiError } from "../../lib/errors";
-import { posthog } from "../../lib/posthog";
+import { sendEmail } from "../../lib/mail";
+import { logger, posthog } from "../../lib/posthog";
 import { Router, responseSchema } from "../../lib/router";
 import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 import { getS3UploadUrl } from "../../lib/storage";
+
+function isValidLanguage(lang: unknown): lang is "en" | "bs" | "sr" {
+	return typeof lang === "string" && (lang === "en" || lang === "bs" || lang === "sr");
+}
 
 const adminUnclaimedClubsRouter = new Router();
 
@@ -594,6 +603,62 @@ adminUnclaimedClubsRouter.post(
 			},
 			userId: context.user.id,
 		});
+
+		const newOwner = await db
+			.select({ name: user.name, email: user.email, language: user.language })
+			.from(user)
+			.where(eq(user.id, body.userId))
+			.limit(1);
+
+		if (newOwner[0]) {
+			try {
+				const language = isValidLanguage(newOwner[0].language) ? newOwner[0].language : "bs";
+				const messages = getEmailMessages(language);
+				const clubDashboardUrl = `${env.FRONTEND_URL}/dashboard/${clubId}/club`;
+
+				await sendEmail({
+					to: newOwner[0].email,
+					subject: interpolateMessage(messages.emails.clubOwnerAssigned.subject, {
+						clubName: clubData[0].name,
+					}),
+					html: await render(
+						ClubOwnerAssignedEmail({
+							userName: newOwner[0].name,
+							clubName: clubData[0].name,
+							clubLogo: clubData[0].logo || `${env.FRONTEND_URL}/logo.png`,
+							clubUrl: clubDashboardUrl,
+							language,
+						}),
+						{ pretty: true },
+					),
+				});
+
+				posthog.capture({
+					distinctId: context.user.id,
+					event: "club_owner_assigned_email_sent",
+					properties: {
+						recipient_email: newOwner[0].email,
+						club_id: clubId,
+						club_name: clubData[0].name,
+						assigned_to_user_id: body.userId,
+						language,
+					},
+				});
+			} catch (error) {
+				logger.emit({
+					severityText: "error",
+					body: "Failed to send club owner assignment email",
+					attributes: {
+						error: error instanceof Error ? error.message : String(error),
+						club_id: clubId,
+						club_name: clubData[0]?.name,
+						recipient_email: newOwner[0].email,
+						assigned_by: context.user.id,
+						request_id: context.requestId,
+					},
+				});
+			}
+		}
 
 		return response.json({ success: true });
 	},
