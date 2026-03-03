@@ -1,5 +1,5 @@
+import { apiError } from "@reconned/router";
 import { env } from "../lib/env";
-import { apiError } from "../lib/errors";
 import { logger } from "./posthog";
 
 async function logExternalApiCall(

@@ -1,5 +1,5 @@
+import { Router } from "@reconned/router";
 import { adminMiddleware } from "../../lib/middlewares/admin";
-import { Router } from "../../lib/router";
 import { adminAlliancesRouter } from "./alliances";
 import { adminClubsRouter } from "./clubs";
 import { adminFeatureFlagsRouter } from "./feature-flags";
