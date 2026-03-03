@@ -1,5 +1,6 @@
 "use client";
 import { Globe } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
@@ -24,6 +25,7 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 	const t = useExtracted();
 	const router = useRouter();
 	const path = usePathname();
+	const searchParams = useSearchParams();
 	const locale = useLocale();
 	const { user } = useIsAuthenticated();
 	const [isChanging, setIsChanging] = useState(false);
@@ -111,10 +113,9 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 
 		setIsChanging(true);
 		try {
-			// Set cookie before navigation
 			if (typeof window !== "undefined" && "cookieStore" in window) {
 				const expiryDate = new Date();
-				expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1 year
+				expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 				await window.cookieStore.set({
 					name: "NEXT_LOCALE",
 					value: localeOption,
@@ -123,20 +124,18 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 					sameSite: "lax",
 				});
 			} else if (typeof document !== "undefined") {
-				// Fallback for browsers that don't support Cookie Store API
 				// biome-ignore lint/suspicious/noDocumentCookie: It's a fallback
 				document.cookie = `NEXT_LOCALE=${localeOption}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
 			}
 
-			router.push(path, { locale: localeOption });
-			// Give the router time to update before refreshing
-			setTimeout(() => {
-				router.refresh();
-				setIsChanging(false);
-			}, 100);
+			const query = Object.fromEntries(searchParams.entries());
+			const href = Object.keys(query).length > 0 ? { pathname: path, query } : path;
+			router.replace(href, { locale: localeOption });
+			router.refresh();
 		} catch (error) {
 			console.error("Failed to change language:", error);
 			toast.error(t("Failed to change language. Please try again."));
+		} finally {
 			setIsChanging(false);
 		}
 	};
