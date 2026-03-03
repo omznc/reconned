@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.4
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Detect version bump type
+        id: bump
+        run: |
+          # Get commits since last tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"%s")
+          else
+            COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"%s")
+          fi
+          
+          # Check for breaking changes
+          if echo "$COMMITS" | grep -qE "^(feat|fix|refactor|perf|style|test|docs|chore)(\(.+\))?!:"; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          # Check for features
+          elif echo "$COMMITS" | grep -qE "^feat(\(.+\))?:"; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          # Default to patch
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Bump version
+        id: version
+        run: |
+          cd packages/router
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          # Bump version using npm version command
+          case ${{ steps.bump.outputs.type }} in
+            major) NEW_VERSION=$(npm version major --no-git-tag-version) ;;
+            minor) NEW_VERSION=$(npm version minor --no-git-tag-version) ;;
+            patch) NEW_VERSION=$(npm version patch --no-git-tag-version) ;;
+          esac
+          
+          echo "version=${NEW_VERSION#v}" >> $GITHUB_OUTPUT
+          echo "current=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Build package
+        run: |
+          cd packages/router
+          bun run build
+          bun run build:types
+
+      - name: Commit version bump
+        run: |
+          git add packages/router/package.json
+          git commit -m "chore(release): @reconned/router@${{ steps.version.outputs.version }}" || echo "No changes to commit"
+
+      - name: Create tag
+        run: |
+          git tag -a "@reconned/router@${{ steps.version.outputs.version }}" -m "Release @reconned/router@${{ steps.version.outputs.version }}"
+
+      - name: Push changes
+        run: |
+          git push origin main
+          git push origin "@reconned/router@${{ steps.version.outputs.version }}"
+
+      - name: Publish to npm
+        run: |
+          cd packages/router
+          npm publish --provenance --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

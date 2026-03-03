@@ -16,8 +16,7 @@ RECONNED is a monorepo built with Bun workspaces, consisting of:
   - Uses Drizzle ORM for database access
   - Provides authentication endpoints via better-auth
   - OpenAPI documentation available at `/api/docs`
-
-Both applications share the same PostgreSQL database but use different ORMs optimized for their respective use cases.
+  - Uses a custom [@reconned/router](https://github.com/omznc/reconned-router) package
 
 ## Tech Stack
 
@@ -34,10 +33,10 @@ Both applications share the same PostgreSQL database but use different ORMs opti
 - **i18n:** next-intl
 
 ### Backend
-- **Framework:** Bun's built-in HTTP server
+- **Framework:** Bun's built-in HTTP server with [@reconned/router](https://github.com/omznc/reconned-router)
 - **Database:** Drizzle ORM + PostgreSQL
 - **Authentication:** better-auth
-- **API Docs:** OpenAPI/Swagger
+- **API Docs:** OpenAPI/Scalar
 
 ### Shared
 - **Package Manager:** Bun

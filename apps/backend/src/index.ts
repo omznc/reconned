@@ -1,16 +1,21 @@
+import {
+	addCORSHeaders,
+	authMiddleware,
+	correlationMiddleware,
+	handleCORS,
+	jsonResponse,
+	pathMiddleware,
+	Router,
+} from "@reconned/router";
 import { eq } from "drizzle-orm";
 import { user as userTable } from "./drizzle/schema";
 import { auth } from "./lib/auth";
-import { addCORSHeaders, handleCORS } from "./lib/cors";
 import { db } from "./lib/db";
 import { env } from "./lib/env";
-import { correlationMiddleware } from "./lib/middlewares/correlation";
-import { authMiddleware, pathMiddleware } from "./lib/middlewares/index";
 import { loggingMiddleware } from "./lib/middlewares/logging";
 import { wideEventsMiddleware } from "./lib/middlewares/wide-events";
 import { handleOpenAPIRoutes } from "./lib/openapi";
 import { logger } from "./lib/posthog";
-import { jsonResponse, Router } from "./lib/router";
 import { adminRouter } from "./routes/admin";
 import { alliancesRouter } from "./routes/alliances";
 import { clubsRouter } from "./routes/clubs";

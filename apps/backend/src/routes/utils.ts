@@ -1,3 +1,4 @@
+import { Router } from "@reconned/router";
 import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
@@ -5,7 +6,6 @@ import { club, clubMembership, event, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
-import { Router } from "../lib/router";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
 const utilsRouter = new Router();
