@@ -1,6 +1,6 @@
 "use client";
 
-import { FileDown } from "lucide-react";
+import { AlertCircle, FileDown } from "lucide-react";
 import maplibregl, { type GeoJSONSource, type LngLat, type Map as MapLibreMap, type MapMouseEvent } from "maplibre-gl";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -39,6 +39,7 @@ import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { checkWebGLSupport, getWebGLErrorMessage } from "@/lib/webgl-support";
 
 const baseStyle = {
 	version: 8,
@@ -174,6 +175,7 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		return;
 	}, [visible]);
 	const [mapReady, setMapReady] = useState(false);
+	const [webglError, setWebglError] = useState<string | null>(null);
 	const [isFreehandDrawing, setIsFreehandDrawing] = useState(false);
 	const importRef = useRef<HTMLInputElement | null>(null);
 	const markersRef = useRef<Map<string, { marker: maplibregl.Marker; root: Root; size: number }>>(new Map());
@@ -1127,6 +1129,13 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		if (!container) {
 			return;
 		}
+
+		const webglSupport = checkWebGLSupport();
+		if (!webglSupport.supported) {
+			setWebglError(getWebGLErrorMessage(webglSupport));
+			return;
+		}
+
 		const existing = mapRef.current;
 		if (existing && existing.getContainer() !== container) {
 			setMapReady(false);
@@ -1137,22 +1146,43 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 			mapRef.current.resize();
 			return;
 		}
-		const map = new maplibregl.Map({
-			container,
-			style: baseStyle,
-			center: [15, 45],
-			zoom: 13,
-			bearing: 0,
-			pitch: 0,
-			dragRotate: false,
-			pitchWithRotate: false,
-			attributionControl: false,
-			preserveDrawingBuffer: true,
-		} as maplibregl.MapOptions & { preserveDrawingBuffer: boolean });
+
+		let map: MapLibreMap;
+		try {
+			map = new maplibregl.Map({
+				container,
+				style: baseStyle,
+				center: [15, 45],
+				zoom: 13,
+				bearing: 0,
+				pitch: 0,
+				dragRotate: false,
+				pitchWithRotate: false,
+				attributionControl: false,
+				preserveDrawingBuffer: true,
+			} as maplibregl.MapOptions & { preserveDrawingBuffer: boolean });
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Failed to initialize map";
+			if (message.includes("WebGL") || message.includes("context")) {
+				setWebglError("WebGL is not available. Please enable hardware acceleration in your browser settings.");
+			} else {
+				setWebglError(message);
+			}
+			return;
+		}
+
 		mapRef.current = map;
 		map.dragRotate.disable();
 		map.touchZoomRotate.disableRotation();
 		map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-left");
+
+		map.on("error", (e) => {
+			const error = e.error;
+			if (error?.message?.includes("WebGL") || error?.message?.includes("context")) {
+				setWebglError("WebGL context lost. Try refreshing the page.");
+			}
+		});
+
 		map.on("load", mapLayersReady);
 		return () => {
 			setMapReady(false);
@@ -2321,6 +2351,30 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		}
 		handleNewMap();
 	};
+
+	if (webglError) {
+		return (
+			<div className={containerClass}>
+				<Dialog open={visible} onOpenChange={(open) => !open && onClose?.()}>
+					<DialogContent className="sm:max-w-md">
+						<div className="flex flex-col items-center gap-3 p-6 text-center">
+							<AlertCircle className="h-10 w-10 text-muted-foreground" />
+							<div>
+								<h3 className="font-semibold text-lg">Map Editor Unavailable</h3>
+								<p className="text-sm text-muted-foreground mt-1">{webglError}</p>
+							</div>
+							<p className="text-xs text-muted-foreground">
+								Try enabling hardware acceleration in your browser settings, or use a different browser.
+							</p>
+							<Button variant="outline" size="sm" onClick={onClose}>
+								Close
+							</Button>
+						</div>
+					</DialogContent>
+				</Dialog>
+			</div>
+		);
+	}
 
 	return (
 		<div className={containerClass}>
