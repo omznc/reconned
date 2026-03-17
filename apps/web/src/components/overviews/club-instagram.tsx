@@ -1,8 +1,7 @@
 "use client";
 
-import { SiInstagram } from "@icons-pack/react-simple-icons";
 import Error404 from "@public/errors/404.webp";
-import { ArrowUpRight, PlusIcon } from "lucide-react";
+import { ArrowUpRight, InstagramIcon, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
@@ -95,7 +94,7 @@ export function ClubInstagram({ data, limit = 7 }: ClubInstagramProps) {
 					rel="noopener noreferrer"
 					className="overflow-hidden rounded-md aspect-square relative group hover:opacity-70 transition-opacity flex flex-col items-center justify-center bg-sidebar border border-border"
 				>
-					<SiInstagram className="h-8 w-8 mb-2" />
+					<InstagramIcon className="h-8 w-8 mb-2" />
 					<p className="text-sm text-center font-medium">{t("View more on Instagram")}</p>
 					<div className="flex items-center text-xs text-muted-foreground mt-1">
 						<span>{data.media.length - displayPhotos.length}+ </span>

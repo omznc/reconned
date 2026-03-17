@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from "../router";
+import type { MiddlewareHandler } from "@reconned/router";
 
 /**
  * Admin authorization middleware

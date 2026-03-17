@@ -2,11 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "better-auth";
-import DOMPurify from "isomorphic-dompurify";
 import { AlertCircle, ChevronsUpDown, CirclePlus, Mail, Plus, UserIcon, Users, X } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import sanitizeHtml from "sanitize-html";
 import * as z from "zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -816,7 +816,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 											)}
 											// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 											dangerouslySetInnerHTML={{
-												__html: DOMPurify.sanitize(rule.content),
+												__html: sanitizeHtml(rule.content),
 											}}
 										/>
 										{index < event.rules.length - 1 && <hr className="border-t" />}

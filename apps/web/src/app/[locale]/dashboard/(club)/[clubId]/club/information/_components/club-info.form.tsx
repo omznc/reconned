@@ -1,6 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SiInstagram } from "@icons-pack/react-simple-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
@@ -10,6 +9,7 @@ import {
 	Check,
 	CheckCircle,
 	ChevronsUpDown,
+	InstagramIcon,
 	Trash,
 } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -1256,7 +1256,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						<div id="instagram" className="border rounded-lg p-4 space-y-4 mt-4">
 							<div className="flex sm:flex-row flex-col gap-2 items-center justify-between">
 								<div className="flex items-center gap-2">
-									<SiInstagram className="h-5 w-5" />
+									<InstagramIcon className="h-5 w-5" />
 									<h4 className="font-medium">{t("Instagram Connection")}</h4>
 								</div>
 

@@ -1,0 +1,22 @@
+$ sh -c 'bun run dev:backend & BACK_PID=$!; bun run backend:wait; bun run --filter backend build; bun run --filter web build; kill $BACK_PID 2>/dev/null || true'
+$ sh -c "until curl -sf http://localhost:3002/api/openapi.json > /dev/null 2>&1; do sleep 0.5; done"
+$ bun run --filter 'backend' dev
+backend build: Bundled 1 module in 1ms
+backend build: 
+backend build:   index.js  4.41 KB  (entry point)
+backend build: 
+backend build: Exited with code 0
+web build: ▲ Next.js 16.1.7 (Turbopack)
+web build: - Environments: .env
+web build: - Experiments (use with caution):
+web build:   · cpus: 1
+web build:   · staleTimes
+web build:   ✓ viewTransition
+web build:   ✓ webpackMemoryOptimizations
+web build: 
+web build:   Creating an optimized production build ...
+web build: Turbopack tracing enabled with targets: 1
+web build:   Note that this might have a small performance impact.
+web build:   Trace output will be written to /home/omznc/dev/reconned/apps/web/.next/trace-turbopack
+web build: ✓ Compiled successfully in 27.0s
+web build:   Running TypeScript ...

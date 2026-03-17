@@ -1,4 +1,3 @@
-import { SiInstagram } from "@icons-pack/react-simple-icons";
 import {
 	ArrowUpRight,
 	Cog,
@@ -6,6 +5,7 @@ import {
 	EyeOff,
 	Handshake,
 	HandshakeIcon,
+	InstagramIcon,
 	MailOpenIcon,
 	MapIcon,
 	MapPin,
@@ -384,7 +384,7 @@ export async function ClubOverview({
 									<CardHeader className="border-b">
 										<div className="flex flex-col gap-4">
 											<div className="flex items-center gap-2">
-												<SiInstagram className="h-5 w-5 text-primary" />
+												<InstagramIcon className="h-5 w-5 text-primary" />
 												<CardTitle>{t("Instagram photos")}</CardTitle>
 											</div>
 											<p className="text-sm text-muted-foreground">

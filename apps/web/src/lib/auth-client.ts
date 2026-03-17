@@ -1,5 +1,5 @@
 import { passkeyClient } from "@better-auth/passkey/client";
-import type { auth } from "backend/lib/auth";
+import type { AuthType } from "backend/lib/auth-types";
 import { adminClient, inferAdditionalFields, lastLoginMethodClient, twoFactorClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { env } from "./env";
@@ -14,7 +14,7 @@ export const authClient = createAuthClient({
 		adminClient(),
 		twoFactorClient(),
 		lastLoginMethodClient(),
-		inferAdditionalFields<typeof auth>(),
+		inferAdditionalFields<AuthType>(),
 	],
 });
 

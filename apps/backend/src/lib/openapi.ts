@@ -1,11 +1,9 @@
 import { join } from "node:path";
+import type { Router } from "@reconned/router";
+import { addCORSHeaders, jsonResponse } from "@reconned/router";
 import * as z from "zod";
 import { auth } from "./auth";
-import { addCORSHeaders } from "./cors";
 import { logger } from "./posthog";
-import type { Router } from "./router";
-import { jsonResponse } from "./router";
-
 export interface OpenAPISpec {
 	openapi: string;
 	info: {

@@ -1,10 +1,17 @@
-import { requestLoggingMiddleware } from "./index";
+import { requestLoggingMiddleware } from "@reconned/router";
+import { loggingConfig, shouldSampleLog } from "../logging-config";
+import { logger } from "../posthog";
 
-/**
- * Logging middleware that logs all requests
- * Uses the enhanced request logging middleware
- */
 export const loggingMiddleware = requestLoggingMiddleware({
-	logLevel: "info",
+	log: (level, message, data) => {
+		if (!loggingConfig.enabled || !shouldSampleLog()) {
+			return;
+		}
+		logger.emit({
+			severityText: level === "error" ? "error" : "info",
+			body: message,
+			attributes: data as unknown as Record<string, never>,
+		});
+	},
 	excludePaths: ["/api/docs", "/api/openapi.json"],
 });

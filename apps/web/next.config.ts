@@ -44,8 +44,7 @@ const nextConfig = {
 		loaderFile: "./image-loader.ts",
 		qualities: [50, 75, 100],
 	},
-	transpilePackages: ["prettier", "pg", "backend"],
-	serverExternalPackages: ["jsdom", "isomorphic-dompurify"],
+	transpilePackages: ["backend"],
 	async redirects() {
 		return [
 			{
