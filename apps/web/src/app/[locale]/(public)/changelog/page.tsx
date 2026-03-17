@@ -6,6 +6,7 @@ import { getExtracted, getLocale } from "next-intl/server";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
+import sanitizeHtml from "sanitize-html";
 import { parse } from "yaml";
 import JsonLdScript from "@/components/json-ld-script";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,7 +15,7 @@ import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 import "./markdown.css";
-import DOMPurify from "isomorphic-dompurify";
+import sanitize from "sanitize-html";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { ErrorPage } from "@/components/error-page";
 import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
@@ -230,7 +231,7 @@ export default async function ChangelogPage() {
 							<div
 								// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 								dangerouslySetInnerHTML={{
-									__html: DOMPurify.sanitize(content),
+									__html: sanitizeHtml(content),
 								}}
 							/>
 						</div>
@@ -270,7 +271,7 @@ export default async function ChangelogPage() {
 										<div
 											// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 											dangerouslySetInnerHTML={{
-												__html: DOMPurify.sanitize(release.formattedBody),
+												__html: sanitizeHtml(release.formattedBody),
 											}}
 										/>
 									</div>

@@ -18,9 +18,9 @@ import apiClient from "@/lib/api/api.client";
 import type { ClubRule } from "@/lib/api/api-type-helpers";
 import "@/components/editor/editor.css";
 import { format } from "date-fns";
-import DOMPurify from "isomorphic-dompurify";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
+import sanitizeHtml from "sanitize-html";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -293,7 +293,7 @@ export function RulesForm({ rules, clubId, editingRule }: RulesFormProps) {
 									)}
 									// biome-ignore lint/security/noDangerouslySetInnerHtml: It's md content
 									dangerouslySetInnerHTML={{
-										__html: DOMPurify.sanitize(selectedRule.content),
+										__html: sanitizeHtml(selectedRule.content),
 									}}
 								/>
 							</div>

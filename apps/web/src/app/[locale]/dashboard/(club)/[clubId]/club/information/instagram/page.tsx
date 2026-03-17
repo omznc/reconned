@@ -1,7 +1,6 @@
 "use client";
 
-import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons";
-import { AlertCircle, ArrowLeft, Info, ShieldAlert, Verified } from "lucide-react";
+import { AlertCircle, ArrowLeft, Facebook, Info, Instagram, InstagramIcon, ShieldAlert, Verified } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useEffect, useState } from "react";
@@ -165,7 +164,7 @@ export default function InstagramPageSelection() {
 		<Card className="max-w-3xl mx-auto">
 			<CardHeader>
 				<div className="flex items-center gap-2">
-					<SiInstagram className="h-5 w-5" />
+					<Instagram className="h-5 w-5" />
 					<CardTitle>{t("Select Facebook Page")}</CardTitle>
 				</div>
 				<CardDescription>
@@ -208,7 +207,7 @@ export default function InstagramPageSelection() {
 							>
 								<div className="flex items-center gap-3 flex-1">
 									<div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
-										<SiFacebook className="h-6 w-6 text-muted-foreground" />
+										<Facebook className="h-6 w-6 text-muted-foreground" />
 									</div>
 									<div className="flex-1">
 										<div className="font-medium">{page.name}</div>
@@ -261,7 +260,7 @@ export default function InstagramPageSelection() {
 						</>
 					) : (
 						<>
-							<SiInstagram className="h-4 w-4" />
+							<InstagramIcon className="h-4 w-4" />
 							<span>{t("Connect Instagram")}</span>
 						</>
 					)}

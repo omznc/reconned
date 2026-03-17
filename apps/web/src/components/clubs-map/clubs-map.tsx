@@ -3,7 +3,6 @@
 import { MapContainer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Marker } from "@adamscybot/react-leaflet-component-marker";
-import { SiInstagram } from "@icons-pack/react-simple-icons";
 import L from "leaflet";
 import {
 	ArrowUpRightIcon,
@@ -12,6 +11,7 @@ import {
 	EyeOff,
 	Globe,
 	Handshake,
+	InstagramIcon,
 	MailOpenIcon,
 	MapPin,
 	Phone,
@@ -783,7 +783,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 													target="_blank"
 													rel="noopener noreferrer"
 												>
-													<SiInstagram />
+													<InstagramIcon />
 													{t("Instagram")}
 												</Link>
 											</Button>

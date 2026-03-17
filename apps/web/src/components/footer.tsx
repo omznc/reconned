@@ -1,5 +1,15 @@
-import { SiDiscord, SiFacebook, SiGithub, SiInstagram } from "@icons-pack/react-simple-icons";
-import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
+import {
+	ArrowUpRightIcon,
+	Calendar,
+	Facebook,
+	Github,
+	Instagram,
+	LayoutDashboard,
+	MapIcon,
+	Search,
+	ShieldQuestion,
+	StarIcon,
+} from "lucide-react";
 import { getExtracted, getLocale } from "next-intl/server";
 import { BadgeSoon } from "@/components/badge-soon";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
@@ -99,7 +109,7 @@ export async function Footer() {
 									href="https://discord.gg/fANDrYmFSy"
 									className="hover:text-red-500 transition-all flex items-center gap-2"
 								>
-									<SiDiscord className="size-4" />
+									{/*<Discord className="size-4" />*/}
 									<span>Discord</span>
 								</Link>
 							</li>
@@ -109,7 +119,7 @@ export async function Footer() {
 									href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
 									className="hover:text-red-500 transition-all flex items-center gap-2"
 								>
-									<SiInstagram className="size-4" />
+									<Instagram className="size-4" />
 									<span>Instagram</span>
 								</Link>
 							</li>
@@ -119,7 +129,7 @@ export async function Footer() {
 									href="https://github.com/omznc/reconned?utm_source=reconned.com"
 									className="hover:text-red-500 transition-all flex items-center gap-2"
 								>
-									<SiGithub className="size-4" />
+									<Github className="size-4" />
 									<span>Github</span>
 								</Link>
 							</li>
@@ -128,7 +138,7 @@ export async function Footer() {
 									href="https://www.facebook.com/profile.php?id=61572533350106"
 									className="hover:text-red-500 transition-all flex items-center gap-2"
 								>
-									<SiFacebook className="size-4" />
+									<Facebook className="size-4" />
 									<span>Facebook</span>
 								</Link>
 							</li>
