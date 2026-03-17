@@ -1,6 +1,6 @@
+import type { MiddlewareHandler } from "@reconned/router";
 import { loggingConfig, shouldSampleLog } from "../logging-config";
 import { createLogAttributes, type LogAttributes, logger } from "../posthog";
-import type { MiddlewareHandler } from "../router";
 
 export function wideEventsMiddleware(): MiddlewareHandler {
 	return async ({ context, next }) => {

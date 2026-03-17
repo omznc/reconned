@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.4 AS base
+FROM oven/bun:1.3.10 AS base
 
 WORKDIR /app
 
@@ -10,7 +10,8 @@ COPY apps/web/package.json ./apps/web/
 COPY apps/backend/package.json ./apps/backend/
 
 WORKDIR /app
-RUN bun install --no-save --frozen-lockfile
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --no-save --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
@@ -47,8 +48,8 @@ ENV CI=${CI:-false} \
 
 WORKDIR /app/apps/web
 
-# Bun build is broken because of whatever "napi_register_module_v1" is.
-RUN node node_modules/next/dist/bin/next build --turbo
+RUN --mount=type=cache,target=/app/apps/web/.next/cache \
+    bun node_modules/next/dist/bin/next build --turbo
 
 FROM base AS runner
 WORKDIR /app
@@ -61,6 +62,7 @@ ENV NODE_ENV=production \
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
+
 
 COPY --from=builder /app/apps/web/public ./apps/web/public
 

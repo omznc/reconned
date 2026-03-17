@@ -2,8 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, differenceInDays, format, subHours } from "date-fns";
-
-import DOMPurify from "isomorphic-dompurify";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useLogger } from "next-axiom";
@@ -11,6 +9,7 @@ import { useExtracted, useLocale } from "next-intl";
 import posthog from "posthog-js";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type Resolver, useForm } from "react-hook-form";
+import sanitizeHtml from "sanitize-html";
 import { toast } from "sonner";
 import * as z from "zod";
 import { EventImageCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/events/create/_components/event-image-crop-dialog";
@@ -1302,7 +1301,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 																			)}
 																			// biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized
 																			dangerouslySetInnerHTML={{
-																				__html: DOMPurify.sanitize(
+																				__html: sanitizeHtml(
 																					selectedRule.content,
 																				),
 																			}}

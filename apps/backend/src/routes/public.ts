@@ -1,10 +1,10 @@
+import { Router } from "@reconned/router";
 import { and, eq, or, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
-import { Router } from "../lib/router";
 
 const publicRouter = new Router();
 

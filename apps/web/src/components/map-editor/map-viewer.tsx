@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertCircle } from "lucide-react";
 import maplibregl, { type GeoJSONSource, type LngLatLike, type Map as MapLibreMap } from "maplibre-gl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -12,6 +13,7 @@ import { MAP_DEFAULT_STYLE } from "@/components/map-editor/constants";
 import { createEmptySnapshot, playAreaFromBbox } from "@/components/map-editor/map-data";
 import type { BasemapId, MapEditorSnapshot, MapPlayArea } from "@/components/map-editor/types";
 import { cn } from "@/lib/utils";
+import { checkWebGLSupport, getWebGLErrorMessage } from "@/lib/webgl-support";
 
 type MapViewerProps = {
 	data?: MapEditorSnapshot | null;
@@ -335,6 +337,7 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 	const gridCanvasRef = useRef<HTMLCanvasElement | null>(null);
 	const markersRef = useRef<Map<string, { marker: maplibregl.Marker; root: Root; size: number }>>(new Map());
 	const [mapReady, setMapReady] = useState(false);
+	const [webglError, setWebglError] = useState<string | null>(null);
 	const playArea = useMemo(() => snapshot.playArea || playAreaFromBbox(snapshot.collection.bbox), [snapshot]);
 
 	// View control states
@@ -442,6 +445,13 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		if (!container) {
 			return;
 		}
+
+		const webglSupport = checkWebGLSupport();
+		if (!webglSupport.supported) {
+			setWebglError(getWebGLErrorMessage(webglSupport));
+			return;
+		}
+
 		const existing = mapRef.current;
 		if (existing && existing.getContainer() !== container) {
 			setMapReady(false);
@@ -452,21 +462,42 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 			mapRef.current.resize();
 			return;
 		}
-		const map = new maplibregl.Map({
-			container,
-			style: baseStyle,
-			center: [15, 45],
-			zoom: 13,
-			bearing: 0,
-			pitch: 0,
-			dragRotate: false,
-			pitchWithRotate: false,
-			attributionControl: false,
-		});
+
+		let map: MapLibreMap;
+		try {
+			map = new maplibregl.Map({
+				container,
+				style: baseStyle,
+				center: [15, 45],
+				zoom: 13,
+				bearing: 0,
+				pitch: 0,
+				dragRotate: false,
+				pitchWithRotate: false,
+				attributionControl: false,
+			});
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Failed to initialize map";
+			if (message.includes("WebGL") || message.includes("context")) {
+				setWebglError("WebGL is not available. Please enable hardware acceleration in your browser settings.");
+			} else {
+				setWebglError(message);
+			}
+			return;
+		}
+
 		mapRef.current = map;
 		map.dragRotate.disable();
 		map.touchZoomRotate.disableRotation();
 		map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-left");
+
+		map.on("error", (e) => {
+			const error = e.error;
+			if (error?.message?.includes("WebGL") || error?.message?.includes("context")) {
+				setWebglError("WebGL context lost. Try refreshing the page.");
+			}
+		});
+
 		map.on("load", mapLayersReady);
 		return () => {
 			setMapReady(false);
@@ -688,6 +719,29 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 	}, [mapReady]);
 
 	const containerStyle = typeof height === "number" ? { height: `${height}px` } : { height };
+
+	if (webglError) {
+		return (
+			<div
+				className={cn(
+					"relative w-full overflow-hidden rounded-lg border bg-muted/50 flex items-center justify-center",
+					className,
+				)}
+				style={containerStyle}
+			>
+				<div className="flex flex-col items-center gap-3 p-6 text-center max-w-md">
+					<AlertCircle className="h-10 w-10 text-muted-foreground" />
+					<div>
+						<h3 className="font-semibold text-lg">Map Unavailable</h3>
+						<p className="text-sm text-muted-foreground mt-1">{webglError}</p>
+					</div>
+					<p className="text-xs text-muted-foreground">
+						Try enabling hardware acceleration in your browser settings, or use a different browser.
+					</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className={cn("relative w-full overflow-hidden rounded-lg border", className)} style={containerStyle}>

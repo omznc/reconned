@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { Post } from "@/lib/api/api-type-helpers";
 import "@/components/editor/editor.css";
-import DOMPurify from "isomorphic-dompurify";
 import { useExtracted, useLocale } from "next-intl";
+import sanitizeHtml from "sanitize-html";
 import { useOverflow } from "@/hooks/use-overflow";
 import { getDateFnsLocale } from "@/lib/date-locale";
 import { cn } from "@/lib/utils";
@@ -55,7 +55,7 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					className="prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 p-4"
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: It's sanitized content
 					dangerouslySetInnerHTML={{
-						__html: DOMPurify.sanitize(post.content),
+						__html: sanitizeHtml(post.content),
 					}}
 				/>
 				{!isExpanded && isOverflowing && (
