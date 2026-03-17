@@ -8,5 +8,6 @@
 		"noEmit": true
 	},
 	"files": [],
+	"exclude": ["node_modules"],
 	"references": [{ "path": "./apps/web" }, { "path": "./apps/backend" }]
 }
