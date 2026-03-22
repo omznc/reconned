@@ -146,7 +146,7 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 				<Button
 					variant={variant || "ghost"}
 					suppressHydrationWarning
-					className={cn("items-center w-full justify-start cursor-pointer shadow-none", className)}
+					className={cn("w-auto shrink-0 cursor-pointer items-center justify-center shadow-none", className)}
 					{...props}
 				>
 					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 ml-2 scale-100 transition-all" />

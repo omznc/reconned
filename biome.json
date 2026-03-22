@@ -45,7 +45,8 @@
 			},
 			"suspicious": {
 				"noReactSpecificProps": "off",
-				"noUnknownAtRules": "off"
+				"noUnknownAtRules": "off",
+				"noArrayIndexKey": "off"
 			},
 			"security": {
 				"noDangerouslySetInnerHtml": "warn"

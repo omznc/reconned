@@ -95,7 +95,7 @@ export function UserSwitcher(props: { user: User }) {
 							<StyleSwitcher />
 						</DropdownMenuItem>
 						<DropdownMenuItem asChild={true}>
-							<LanguageSwitcher />
+							<LanguageSwitcher className="w-full justify-start" />
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>

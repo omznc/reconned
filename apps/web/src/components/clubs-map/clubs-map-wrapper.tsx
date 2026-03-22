@@ -29,6 +29,7 @@ interface ClubsMapWrapperProps {
 	clubs: MapClub[];
 	onLocationSelect?: (lat: number, lng: number) => void;
 	interactive?: boolean;
+	controlsBelowHeader?: boolean;
 }
 
 export function ClubsMapWrapper(props: ClubsMapWrapperProps) {

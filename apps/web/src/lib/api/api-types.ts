@@ -21,6 +21,22 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/auth/callback/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get: operations["authcallbackidGet"];
+		put?: never;
+		post: operations["authcallbackidPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/auth/get-session": {
 		parameters: {
 			query?: never;
@@ -31,7 +47,8 @@ export interface paths {
 		/** @description Get the current session */
 		get: operations["getSession"];
 		put?: never;
-		post?: never;
+		/** @description Get the current session */
+		post: operations["getSession1"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -184,6 +201,23 @@ export interface paths {
 		put?: never;
 		/** @description Change the password of the user */
 		post: operations["changePassword"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/update-session": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Update the current session */
+		post: operations["updateSession"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -3310,6 +3344,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/public/stats": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Public platform counts
+		 * @description Aggregated counts of public clubs, events, and player profiles for marketing display
+		 */
+		get: operations["publicstatsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/public/feature-flags": {
 		parameters: {
 			query?: never;
@@ -3500,6 +3554,14 @@ export interface operations {
 						refreshToken?: string | null;
 						/** @description Expiry date of the token */
 						expiresAt?: number | null;
+						/** @description The user object from the provider. Only available for some providers like Apple. */
+						user?: {
+							name?: {
+								firstName?: string | null;
+								lastName?: string | null;
+							} | null;
+							email?: string | null;
+						} | null;
 					} | null;
 					/** @description Array of scopes to request from the provider. This will override the default scopes passed. */
 					scopes?: unknown[] | null;
@@ -3595,6 +3657,164 @@ export interface operations {
 			};
 		};
 	};
+	authcallbackidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authcallbackidPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: {
+			content: {
+				"application/json": Record<string, never>;
+			};
+		};
+		responses: {
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
 	getSession: {
 		parameters: {
 			query?: never;
@@ -3603,6 +3823,99 @@ export interface operations {
 			cookie?: never;
 		};
 		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						session: components["schemas"]["Session"];
+						user: components["schemas"]["User"];
+					} | null;
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	getSession1: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: {
+			content: {
+				"application/json": Record<string, never>;
+			};
+		};
 		responses: {
 			/** @description Success */
 			200: {
@@ -4508,17 +4821,6 @@ export interface operations {
 					};
 				};
 			};
-			/** @description Unprocessable Entity. Email already exists */
-			422: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						message?: string;
-					};
-				};
-			};
 			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
 			429: {
 				headers: {
@@ -4600,6 +4902,98 @@ export interface operations {
 							 */
 							updatedAt: string;
 						};
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	updateSession: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: {
+			content: {
+				"application/json": Record<string, never>;
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						session?: components["schemas"]["Session"];
 					};
 				};
 			};
@@ -5968,11 +6362,8 @@ export interface operations {
 						tokenType?: string;
 						idToken?: string;
 						accessToken?: string;
-						refreshToken?: string;
 						/** Format: date-time */
 						accessTokenExpiresAt?: string;
-						/** Format: date-time */
-						refreshTokenExpiresAt?: string;
 					};
 				};
 			};
@@ -8047,8 +8438,7 @@ export interface operations {
 				"application/json": {
 					/** @description The email of the user */
 					email: string;
-					/** @description The password of the user */
-					password: string;
+					password?: string | null;
 					/** @description The name of the user */
 					name: string;
 					role?: string | null;
@@ -9189,11 +9579,6 @@ export interface operations {
 		requestBody?: {
 			content: {
 				"application/json": {
-					/**
-					 * @deprecated
-					 * @description The permission to check
-					 */
-					permission?: Record<string, never>;
 					/** @description The permission to check */
 					permissions: Record<string, never>;
 				};
@@ -18989,6 +19374,32 @@ export interface operations {
 							slug: string | null;
 							updatedAt: string;
 						}[];
+					};
+				};
+			};
+		};
+	};
+	publicstatsGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						stats: {
+							clubs: number;
+							events: number;
+							players: number;
+						};
 					};
 				};
 			};
