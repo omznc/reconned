@@ -5,6 +5,10 @@ import { club, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
+import { redis } from "../lib/redis";
+
+const STATS_CACHE_KEY = "public:stats";
+const STATS_CACHE_TTL = 86400;
 
 const publicRouter = new Router();
 
@@ -199,53 +203,48 @@ publicRouter.get(
 publicRouter.get(
 	"/public/stats",
 	async ({ response }) => {
-		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
-
-		const clubConditions = [eq(club.isPrivate, false), or(eq(club.banned, false), sql`${club.banned} IS NULL`)];
-		if (onlyVerifiedClubs) {
-			clubConditions.push(eq(club.verified, true));
+		try {
+			const cached = await redis.get(STATS_CACHE_KEY);
+			if (cached) {
+				return response.json(JSON.parse(cached));
+			}
+		} catch (error) {
+			logger.emit({
+				severityText: "error",
+				body: "Error reading stats from cache",
+				attributes: { error: error instanceof Error ? error.message : String(error) },
+			});
 		}
 
-		const [clubCountRow] = await db
-			.select({ value: count() })
-			.from(club)
-			.where(and(...clubConditions));
+		const [clubCountRow] = await db.select({ value: count() }).from(club);
+		const [eventCountRow] = await db.select({ value: count() }).from(event);
+		const [userCountRow] = await db.select({ value: count() }).from(user);
 
-		const [eventCountRow] = await db
-			.select({ value: count() })
-			.from(event)
-			.where(
-				and(
-					eq(event.isPrivate, false),
-					sql`
-						EXISTS (
-							SELECT 1
-							FROM "Club" c
-							WHERE c."id" = ${event.clubId}
-							AND c."isPrivate" = false
-						)
-					`,
-				),
-			);
-
-		const [userCountRow] = await db
-			.select({ value: count() })
-			.from(user)
-			.where(and(eq(user.isPrivate, false), or(eq(user.banned, false), sql`${user.banned} IS NULL`)));
-
-		return response.json({
+		const stats = {
 			stats: {
 				clubs: Number(clubCountRow?.value ?? 0),
 				events: Number(eventCountRow?.value ?? 0),
 				players: Number(userCountRow?.value ?? 0),
 			},
-		});
+		};
+
+		try {
+			await redis.setex(STATS_CACHE_KEY, STATS_CACHE_TTL, JSON.stringify(stats));
+		} catch (error) {
+			logger.emit({
+				severityText: "error",
+				body: "Error caching stats",
+				attributes: { error: error instanceof Error ? error.message : String(error) },
+			});
+		}
+
+		return response.json(stats);
 	},
 	{
 		schema: {
 			tags: ["Public"],
 			summary: "Public platform counts",
-			description: "Aggregated counts of public clubs, events, and player profiles for marketing display",
+			description: "Aggregated counts of all clubs, events, and player profiles for marketing display",
 			response: {
 				200: z.object({
 					stats: z.object({
