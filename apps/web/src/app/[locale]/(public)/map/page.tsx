@@ -69,10 +69,10 @@ export default async function MapPage() {
 	};
 
 	return (
-		<div className="h-dvh z-50 fixed top-0 left-0 w-full rounded-lg overflow-hidden border">
+		<div className="fixed top-0 left-0 z-40 h-dvh w-full">
 			<h1 className="sr-only">{t("Airsoft Clubs Map")}</h1>
 			<JsonLdScript data={mapSchema} />
-			<ClubsMapWrapper clubs={transformedClubs} />
+			<ClubsMapWrapper clubs={transformedClubs} controlsBelowHeader={true} />
 		</div>
 	);
 }

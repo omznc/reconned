@@ -339,7 +339,7 @@ utilsRouter.get(
 		const total = allItems.length;
 		const paginatedItems = allItems.slice(offset, offset + perPage);
 
-		const searchItemSchema = z.discriminatedUnion("type", [
+		const _searchItemSchema = z.discriminatedUnion("type", [
 			z.object({
 				type: z.literal("club"),
 				id: z.string(),
@@ -372,7 +372,7 @@ utilsRouter.get(
 		]);
 
 		return response.json({
-			items: paginatedItems as z.infer<typeof searchItemSchema>[],
+			items: paginatedItems as z.infer<typeof _searchItemSchema>[],
 			pagination: {
 				page,
 				perPage,

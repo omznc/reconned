@@ -1,11 +1,9 @@
 import {
 	ArrowUpRightIcon,
 	Calendar,
-	Facebook,
-	Github,
-	Instagram,
 	LayoutDashboard,
 	MapIcon,
+	Network,
 	Search,
 	ShieldQuestion,
 	StarIcon,
@@ -53,7 +51,7 @@ export async function Footer() {
 						<h3 className="font-bold mb-4">{t("Quick links")}</h3>
 						<ul className="space-y-2 text-sm">
 							<li>
-								<Link href="/about" className="flex items-center hover:text-red-500 transition-all">
+								<Link href="#about-us" className="flex items-center hover:text-red-500 transition-all">
 									<ShieldQuestion className="w-5 h-5 mr-2" />
 									{t("About us")}
 								</Link>
@@ -119,7 +117,6 @@ export async function Footer() {
 									href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
 									className="hover:text-red-500 transition-all flex items-center gap-2"
 								>
-									<Instagram className="size-4" />
 									<span>Instagram</span>
 								</Link>
 							</li>
@@ -129,7 +126,6 @@ export async function Footer() {
 									href="https://github.com/omznc/reconned?utm_source=reconned.com"
 									className="hover:text-red-500 transition-all flex items-center gap-2"
 								>
-									<Github className="size-4" />
 									<span>Github</span>
 								</Link>
 							</li>
@@ -138,7 +134,6 @@ export async function Footer() {
 									href="https://www.facebook.com/profile.php?id=61572533350106"
 									className="hover:text-red-500 transition-all flex items-center gap-2"
 								>
-									<Facebook className="size-4" />
 									<span>Facebook</span>
 								</Link>
 							</li>
@@ -163,6 +158,17 @@ export async function Footer() {
 							</li>
 							<li>
 								<Link href="/changelog">{t("Changelog")}</Link>
+							</li>
+							<li>
+								<a
+									href="/sitemap.xml"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="flex items-center hover:text-red-500 transition-all"
+								>
+									<Network className="w-5 h-5 mr-2 shrink-0" />
+									{t("Sitemap")}
+								</a>
 							</li>
 						</ul>
 					</div>
