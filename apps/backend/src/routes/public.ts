@@ -1,5 +1,5 @@
 import { Router } from "@reconned/router";
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, count, eq, or, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
@@ -190,6 +190,69 @@ publicRouter.get(
 							updatedAt: z.string(),
 						}),
 					),
+				}),
+			},
+		},
+	},
+);
+
+publicRouter.get(
+	"/public/stats",
+	async ({ response }) => {
+		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
+
+		const clubConditions = [eq(club.isPrivate, false), or(eq(club.banned, false), sql`${club.banned} IS NULL`)];
+		if (onlyVerifiedClubs) {
+			clubConditions.push(eq(club.verified, true));
+		}
+
+		const [clubCountRow] = await db
+			.select({ value: count() })
+			.from(club)
+			.where(and(...clubConditions));
+
+		const [eventCountRow] = await db
+			.select({ value: count() })
+			.from(event)
+			.where(
+				and(
+					eq(event.isPrivate, false),
+					sql`
+						EXISTS (
+							SELECT 1
+							FROM "Club" c
+							WHERE c."id" = ${event.clubId}
+							AND c."isPrivate" = false
+						)
+					`,
+				),
+			);
+
+		const [userCountRow] = await db
+			.select({ value: count() })
+			.from(user)
+			.where(and(eq(user.isPrivate, false), or(eq(user.banned, false), sql`${user.banned} IS NULL`)));
+
+		return response.json({
+			stats: {
+				clubs: Number(clubCountRow?.value ?? 0),
+				events: Number(eventCountRow?.value ?? 0),
+				players: Number(userCountRow?.value ?? 0),
+			},
+		});
+	},
+	{
+		schema: {
+			tags: ["Public"],
+			summary: "Public platform counts",
+			description: "Aggregated counts of public clubs, events, and player profiles for marketing display",
+			response: {
+				200: z.object({
+					stats: z.object({
+						clubs: z.number(),
+						events: z.number(),
+						players: z.number(),
+					}),
 				}),
 			},
 		},

@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 // Minimal club type for map marker
 interface MapClub {
@@ -460,6 +461,7 @@ interface ClubsMapProps {
 	onLocationSelect?: (lat: number, lng: number) => void;
 	interactive?: boolean;
 	focusPoint?: MapFocusPoint | null;
+	controlsBelowHeader?: boolean;
 }
 
 function LocationMarker({
@@ -520,7 +522,13 @@ function MapInstanceCapturer({ onMapReady }: { onMapReady: (map: L.Map) => void 
 	return null;
 }
 
-export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPoint }: ClubsMapProps) {
+export function ClubsMap({
+	clubs,
+	onLocationSelect,
+	interactive = false,
+	focusPoint,
+	controlsBelowHeader = false,
+}: ClubsMapProps) {
 	const [mounted, setMounted] = useState(false);
 	const [logoSize, setLogoSize] = useState(32); // Default size
 	const [clubId] = useQueryState("clubId");
@@ -593,11 +601,19 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 			? ([clubs[0].latitude, clubs[0].longitude] as [number, number])
 			: null;
 
+	const controlsTopInset = controlsBelowHeader ? "top-[calc(1rem+3.5rem)] sm:top-[calc(1rem+4rem)]" : "top-4";
+
 	return (
-		<div className="relative h-full w-full">
+		<div
+			className={cn(
+				"relative h-full w-full",
+				controlsBelowHeader &&
+					"[&_.leaflet-top]:top-[calc(1rem+3.5rem)] sm:[&_.leaflet-top]:top-[calc(1rem+4rem)]",
+			)}
+		>
 			{!interactive && (
 				<>
-					<div className="hidden md:flex absolute top-4 left-4 z-10">
+					<div className={cn("hidden md:flex absolute left-4 z-10", controlsTopInset)}>
 						<div className="bg-white dark:bg-[#0d0d0d] border rounded-md p-3 w-80 flex flex-col gap-4">
 							<label className="flex items-center gap-2 cursor-pointer">
 								<input
@@ -690,7 +706,7 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 					</div>
 
 					{selectedClubForOverview && (
-						<div className="hidden md:flex absolute top-4 right-4 z-10">
+						<div className={cn("hidden md:flex absolute right-4 z-10", controlsTopInset)}>
 							<div className="relative bg-white dark:bg-[#0d0d0d] border rounded-md p-4 w-80 flex flex-col gap-3">
 								<Button
 									variant="ghost"
@@ -819,9 +835,16 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 						</div>
 					)}
 
-					<div className="md:hidden absolute bottom-4 left-4 right-4 z-10 space-y-2">
+					<div
+						className={cn(
+							"md:hidden absolute left-4 right-4 z-[1200] space-y-2 shadow-lg",
+							controlsBelowHeader
+								? "bottom-[max(1rem,calc(env(safe-area-inset-bottom,0px)+5.5rem))]"
+								: "bottom-4",
+						)}
+					>
 						{searchQuery && filteredClubs.length > 0 && (
-							<div className="bg-white dark:bg-[#0d0d0d] border rounded-md max-h-48 overflow-y-auto">
+							<div className="bg-white dark:bg-[#0d0d0d] border rounded-md max-h-48 overflow-y-auto shadow-md">
 								{filteredClubs.slice(0, 5).map((club) => (
 									<button
 										key={club.id}
@@ -857,9 +880,9 @@ export function ClubsMap({ clubs, onLocationSelect, interactive = false, focusPo
 							</div>
 						)}
 
-						<div className="bg-white dark:bg-[#0d0d0d] border rounded-md p-3">
+						<div className="rounded-md border bg-white p-3 shadow-md dark:bg-[#0d0d0d]">
 							<div className="relative">
-								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+								<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
 								<Input
 									placeholder={t("Search clubs...")}
 									value={searchQuery}

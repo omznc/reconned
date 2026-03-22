@@ -5,11 +5,9 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => {
 	const { className, ...rest } = props;
 
 	return (
-		<>
+		<span className={cn("inline-flex items-center", className)}>
 			<svg
-				width={196}
-				className={cn("inline dark:hidden", className)}
-				height={30}
+				className="block h-full w-auto dark:hidden"
 				viewBox="0 0 1967 301"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
@@ -75,9 +73,7 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => {
 				<path d="M873.254 248.084L873.254 254.7L790.56 254.7L790.56 248.084L873.254 248.084Z" fill="#FF0000" />
 			</svg>
 			<svg
-				width={196}
-				className={cn("dark:inline hidden", className)}
-				height={30}
+				className="hidden dark:block h-full w-auto"
 				viewBox="0 0 1967 301"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
@@ -142,6 +138,6 @@ export const Logo = (props: SVGProps<SVGSVGElement>) => {
 					fill="#FF0000"
 				/>
 			</svg>
-		</>
+		</span>
 	);
 };
