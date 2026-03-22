@@ -44,7 +44,7 @@ export function EventCard({ event }: EventCardProps) {
 
 	return (
 		<Link href={`/events/${event.slug || event.id}`} className="block group h-full">
-			<Card className="relative flex flex-col h-full rounded-md overflow-hidden bg-sidebar hover:border-red-500 transition-all">
+			<Card className="relative flex flex-col h-full rounded-md overflow-hidden bg-background hover:border-red-500 transition-all">
 				<CardHeader className="p-0">
 					{event.image && (
 						<div className="relative w-full aspect-video">
@@ -77,12 +77,14 @@ export function EventCard({ event }: EventCardProps) {
 						<MapPin className="w-5 h-5 mr-2 text-muted-foreground" />
 						<span>{event.location}</span>
 					</div>
-					<div className="flex items-center">
-						<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
-						<span>
-							{event.costPerPerson.toFixed(2)}KM {t("per person")}
-						</span>
-					</div>
+					{event.costPerPerson > 0 && (
+						<div className="flex items-center">
+							<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
+							<span>
+								{event.costPerPerson.toFixed(2)}KM {t("per person")}
+							</span>
+						</div>
+					)}
 
 					<div className="flex-1" />
 

@@ -546,7 +546,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																				</>
 																			)}
 
-																			{event?.costPerPerson && (
+																			{event?.costPerPerson > 0 && (
 																				<>
 																					<span className="font-medium">
 																						{t("Price")}:

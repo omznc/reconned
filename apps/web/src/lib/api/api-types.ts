@@ -3353,7 +3353,7 @@ export interface paths {
 		};
 		/**
 		 * Public platform counts
-		 * @description Aggregated counts of public clubs, events, and player profiles for marketing display
+		 * @description Aggregated counts of all clubs, events, and player profiles for marketing display
 		 */
 		get: operations["publicstatsGet"];
 		put?: never;
