@@ -15,7 +15,6 @@ import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 import "./markdown.css";
-import sanitize from "sanitize-html";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { ErrorPage } from "@/components/error-page";
 import { PeekingDrawing } from "@/components/logos/drawings/peeking-drawing";
