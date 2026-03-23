@@ -127,11 +127,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 						</h1>
 						<div className="flex flex-wrap items-center gap-2">
 							<Link href="/changelog">
-								<span
-									className={
-										"inline-flex items-center rounded-full border border-green-500/30 dark:text-white bg-green-500/50 px-2.5 py-0.5 text-xs font text-black transition-colors hover:bg-green-500/20"
-									}
-								>
+								<span className="m-0 inline-flex max-w-full list-none overflow-hidden rounded-full border border-border/60 bg-green-500/50 py-1.5 px-2 text-xs font-semibold text-foreground">
 									{t("View the changelog")}
 								</span>
 							</Link>

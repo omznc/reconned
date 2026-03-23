@@ -1,9 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { LoadingPage } from "../loading-page";
 
 const ClubsMap = dynamic(() => import("@/components/clubs-map/clubs-map").then((mod) => mod.ClubsMap), {
 	ssr: false,
+	loading: () => <LoadingPage />,
 });
 
 interface MapClub {

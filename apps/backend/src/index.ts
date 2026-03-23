@@ -14,6 +14,7 @@ import { db } from "./lib/db";
 import { env } from "./lib/env";
 import { loggingMiddleware } from "./lib/middlewares/logging";
 import { wideEventsMiddleware } from "./lib/middlewares/wide-events";
+import { runMigrations } from "./lib/migrate";
 import { handleOpenAPIRoutes } from "./lib/openapi";
 import { logger } from "./lib/posthog";
 import { adminRouter } from "./routes/admin";
@@ -29,6 +30,8 @@ import { utilsRouter } from "./routes/utils";
 import { scheduler } from "./tasks/scheduler";
 
 const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.trim());
+
+await runMigrations();
 
 const mainRouter = new Router();
 

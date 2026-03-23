@@ -285,6 +285,11 @@ export const clubMembership = pgTable(
 		),
 		index("ClubMembership_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
 		index("ClubMembership_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		index("ClubMembership_clubId_role_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.role.asc().nullsLast(),
+		),
 		foreignKey({
 			columns: [table.userId],
 			foreignColumns: [user.id],
@@ -356,6 +361,12 @@ export const clubAuditLog = pgTable(
 		index("ClubAuditLog_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
 		index("ClubAuditLog_createdAt_idx").using("btree", table.createdAt.asc().nullsLast().op("timestamp_ops")),
 		index("ClubAuditLog_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		index("ClubAuditLog_clubId_actionType_createdAt_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.actionType.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
 		foreignKey({
 			columns: [table.userId],
 			foreignColumns: [user.id],
@@ -456,6 +467,11 @@ export const eventRegistration = pgTable(
 	(table) => [
 		index("EventRegistration_createdById_idx").using("btree", table.createdById.asc().nullsLast().op("text_ops")),
 		index("EventRegistration_eventId_idx").using("btree", table.eventId.asc().nullsLast().op("text_ops")),
+		index("EventRegistration_eventId_attended_idx").using(
+			"btree",
+			table.eventId.asc().nullsLast().op("text_ops"),
+			table.attended.asc().nullsLast().op("bool_ops"),
+		),
 		foreignKey({
 			columns: [table.eventId],
 			foreignColumns: [event.id],
@@ -584,6 +600,11 @@ export const post = pgTable(
 	},
 	(table) => [
 		index("Post_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
+		index("Post_clubId_isPublic_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.isPublic.asc().nullsLast().op("bool_ops"),
+		),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],

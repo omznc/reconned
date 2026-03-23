@@ -273,27 +273,74 @@ eventsRouter.get(
 
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		const events = whereClause
-			? await db.select().from(event).where(whereClause).orderBy(event.dateStart).limit(limit)
-			: await db.select().from(event).orderBy(event.dateStart).limit(limit);
-
-		const eventsWithDetails = await Promise.all(
-			events.map(async (e) => {
-				const clubData = await db
-					.select({ name: club.name, verified: club.verified })
-					.from(club)
-					.where(eq(club.id, e.clubId))
-					.limit(1);
-
-				return {
-					...e,
-					club: clubData[0] || null,
-				};
-			}),
-		);
+		const eventsWithDetails = await db
+			.select({
+				id: event.id,
+				name: event.name,
+				description: event.description,
+				clubId: event.clubId,
+				dateStart: event.dateStart,
+				dateEnd: event.dateEnd,
+				dateRegistrationsOpen: event.dateRegistrationsOpen,
+				dateRegistrationsClose: event.dateRegistrationsClose,
+				location: event.location,
+				image: event.image,
+				isPrivate: event.isPrivate,
+				allowFreelancers: event.allowFreelancers,
+				googleMapsLink: event.googleMapsLink,
+				costPerPerson: event.costPerPerson,
+				hasBreakfast: event.hasBreakfast,
+				hasLunch: event.hasLunch,
+				hasDinner: event.hasDinner,
+				hasSnacks: event.hasSnacks,
+				hasDrinks: event.hasDrinks,
+				hasPrizes: event.hasPrizes,
+				slug: event.slug,
+				gearRequirements: event.gearRequirements,
+				mapData: event.mapData,
+				createdAt: event.createdAt,
+				updatedAt: event.updatedAt,
+				clubName: club.name,
+				clubVerified: club.verified,
+			})
+			.from(event)
+			.innerJoin(club, eq(event.clubId, club.id))
+			.where(whereClause)
+			.orderBy(event.dateStart)
+			.limit(limit);
 
 		return response.json({
-			events: eventsWithDetails,
+			events: eventsWithDetails.map((e) => ({
+				id: e.id,
+				name: e.name,
+				description: e.description,
+				clubId: e.clubId,
+				dateStart: e.dateStart,
+				dateEnd: e.dateEnd,
+				dateRegistrationsOpen: e.dateRegistrationsOpen,
+				dateRegistrationsClose: e.dateRegistrationsClose,
+				location: e.location,
+				image: e.image,
+				isPrivate: e.isPrivate,
+				allowFreelancers: e.allowFreelancers,
+				googleMapsLink: e.googleMapsLink,
+				costPerPerson: e.costPerPerson,
+				hasBreakfast: e.hasBreakfast,
+				hasLunch: e.hasLunch,
+				hasDinner: e.hasDinner,
+				hasSnacks: e.hasSnacks,
+				hasDrinks: e.hasDrinks,
+				hasPrizes: e.hasPrizes,
+				slug: e.slug,
+				gearRequirements: e.gearRequirements,
+				mapData: e.mapData,
+				createdAt: e.createdAt,
+				updatedAt: e.updatedAt,
+				club: {
+					name: e.clubName,
+					verified: e.clubVerified,
+				},
+			})),
 		});
 	},
 	{
@@ -369,25 +416,79 @@ eventsRouter.get(
 
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		const events = await db.select().from(event).where(whereClause).orderBy(event.dateStart);
-
-		const eventsWithDetails = await Promise.all(
-			events.map(async (e) => {
-				const clubData = await db
-					.select({ name: club.name, verified: club.verified, logo: club.logo, id: club.id, slug: club.slug })
-					.from(club)
-					.where(eq(club.id, e.clubId))
-					.limit(1);
-
-				return {
-					...e,
-					club: clubData[0] || null,
-				};
-			}),
-		);
+		const eventsWithDetails = await db
+			.select({
+				id: event.id,
+				name: event.name,
+				description: event.description,
+				eventClubId: event.clubId,
+				dateStart: event.dateStart,
+				dateEnd: event.dateEnd,
+				dateRegistrationsOpen: event.dateRegistrationsOpen,
+				dateRegistrationsClose: event.dateRegistrationsClose,
+				location: event.location,
+				image: event.image,
+				isPrivate: event.isPrivate,
+				allowFreelancers: event.allowFreelancers,
+				googleMapsLink: event.googleMapsLink,
+				costPerPerson: event.costPerPerson,
+				hasBreakfast: event.hasBreakfast,
+				hasLunch: event.hasLunch,
+				hasDinner: event.hasDinner,
+				hasSnacks: event.hasSnacks,
+				hasDrinks: event.hasDrinks,
+				hasPrizes: event.hasPrizes,
+				slug: event.slug,
+				gearRequirements: event.gearRequirements,
+				mapData: event.mapData,
+				createdAt: event.createdAt,
+				updatedAt: event.updatedAt,
+				clubId: club.id,
+				clubName: club.name,
+				clubVerified: club.verified,
+				clubLogo: club.logo,
+				clubSlug: club.slug,
+			})
+			.from(event)
+			.innerJoin(club, eq(event.clubId, club.id))
+			.where(whereClause)
+			.orderBy(event.dateStart);
 
 		return response.json({
-			events: eventsWithDetails,
+			events: eventsWithDetails.map((e) => ({
+				id: e.id,
+				name: e.name,
+				description: e.description,
+				clubId: e.eventClubId,
+				dateStart: e.dateStart,
+				dateEnd: e.dateEnd,
+				dateRegistrationsOpen: e.dateRegistrationsOpen,
+				dateRegistrationsClose: e.dateRegistrationsClose,
+				location: e.location,
+				image: e.image,
+				isPrivate: e.isPrivate,
+				allowFreelancers: e.allowFreelancers,
+				googleMapsLink: e.googleMapsLink,
+				costPerPerson: e.costPerPerson,
+				hasBreakfast: e.hasBreakfast,
+				hasLunch: e.hasLunch,
+				hasDinner: e.hasDinner,
+				hasSnacks: e.hasSnacks,
+				hasDrinks: e.hasDrinks,
+				hasPrizes: e.hasPrizes,
+				slug: e.slug,
+				gearRequirements: e.gearRequirements,
+				mapData: e.mapData,
+				createdAt: e.createdAt,
+				updatedAt: e.updatedAt,
+				club: {
+					id: e.clubId,
+					name: e.clubName,
+					verified: e.clubVerified,
+					logo: e.clubLogo,
+					slug: e.clubSlug,
+				},
+			})),
 		});
 	},
 	{

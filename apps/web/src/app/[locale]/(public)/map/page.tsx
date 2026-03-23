@@ -2,17 +2,20 @@ import type { Metadata } from "next";
 import { getExtracted, getLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
+import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
+
+export const revalidate = 300;
 
 export default async function MapPage() {
 	const { data, error } = await apiServer.GET("/api/clubs");
 
 	if (error) {
 		console.error("Error loading clubs:", error);
-		return <div>Error loading clubs</div>;
+		return <ErrorPage title="Error loading clubs" link="/" />;
 	}
 
 	const transformedClubs = data.clubs

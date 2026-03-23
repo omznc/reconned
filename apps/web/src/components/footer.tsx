@@ -1,13 +1,4 @@
-import {
-	ArrowUpRightIcon,
-	Calendar,
-	LayoutDashboard,
-	MapIcon,
-	Network,
-	Search,
-	ShieldQuestion,
-	StarIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
 import { getExtracted, getLocale } from "next-intl/server";
 import { BadgeSoon } from "@/components/badge-soon";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
@@ -166,7 +157,6 @@ export async function Footer() {
 									rel="noopener noreferrer"
 									className="flex items-center hover:text-red-500 transition-all"
 								>
-									<Network className="w-5 h-5 mr-2 shrink-0" />
 									{t("Sitemap")}
 								</a>
 							</li>

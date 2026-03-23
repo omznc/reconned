@@ -11,11 +11,18 @@ declare global {
 
 let db: ReturnType<typeof drizzle<typeof fullSchema>>;
 
+const connectionOptions = {
+	schema: fullSchema,
+	max: 20,
+	maxTimeout: 30000,
+	idleTimeout: 30000,
+};
+
 if (process.env.NODE_ENV === "production") {
-	db = drizzle(env.DATABASE_URL, { schema: fullSchema });
+	db = drizzle(env.DATABASE_URL, connectionOptions);
 } else {
 	if (!global.__db) {
-		global.__db = drizzle(env.DATABASE_URL, { schema: fullSchema });
+		global.__db = drizzle(env.DATABASE_URL, connectionOptions);
 	}
 	db = global.__db;
 }

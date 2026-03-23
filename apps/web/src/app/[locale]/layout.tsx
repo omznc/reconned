@@ -106,8 +106,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 							enableSystem={false}
 							disableTransitionOnChange
 						>
-							{/* TODO: Do we even need this? */}
-							<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 							<Toaster
 								richColors
 								toastOptions={{

@@ -5,7 +5,7 @@ import { logger } from "./posthog";
 import { redis } from "./redis";
 
 const CACHE_KEY_PREFIX = "feature_flag:";
-const CACHE_TTL = 60;
+const CACHE_TTL = 300;
 
 export async function isFeatureEnabled(flagName: string): Promise<boolean> {
 	const cacheKey = `${CACHE_KEY_PREFIX}${flagName}`;
