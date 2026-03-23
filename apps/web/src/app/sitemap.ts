@@ -9,7 +9,7 @@ import {
 	generatePageLanguages,
 } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 86400;
 
 const defaultLocale = routing.defaultLocale;
 const baseUrl = env.NEXT_PUBLIC_WEB_URL;

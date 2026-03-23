@@ -14,7 +14,7 @@ function AvatarImage({ className, ...props }: React.ComponentProps<typeof Faceha
 }
 
 function AvatarFallback({ className, ...props }: React.ComponentProps<typeof FacehashAvatarFallback>) {
-  return <FacehashAvatarFallback className={cn("flex size-full items-center justify-center rounded-md dark:invert-0 invert", className)} {...props} />
+  return <FacehashAvatarFallback className={cn("flex size-full items-center justify-center rounded-md  invert", className)} {...props} />
 }
 
 export { Avatar, AvatarImage, AvatarFallback }

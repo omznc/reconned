@@ -4,8 +4,12 @@ import * as z from "zod";
 import { country } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { logger } from "../lib/posthog";
+import { redis } from "../lib/redis";
 
 const VALID_LOCALES = ["en", "bs", "sr"];
+
+const COUNTRIES_CACHE_KEY = "countries:enabled";
+const COUNTRIES_CACHE_TTL = 3600;
 
 const countrySchema = z.object({
 	id: z.number(),
@@ -19,9 +23,32 @@ const countrySchema = z.object({
 
 export const countriesRouter = new Router();
 
+function cachedJson<T>(data: T, cacheControl: string): Response {
+	return new Response(JSON.stringify(data), {
+		status: 200,
+		headers: {
+			"Content-Type": "application/json",
+			"Cache-Control": cacheControl,
+		},
+	});
+}
+
 countriesRouter.get(
 	"/countries",
-	async ({ context, response }) => {
+	async ({ context }) => {
+		try {
+			const cached = await redis.get(COUNTRIES_CACHE_KEY);
+			if (cached) {
+				return cachedJson(JSON.parse(cached), "public, max-age=3600, stale-while-revalidate=86400");
+			}
+		} catch (error) {
+			logger.emit({
+				severityText: "error",
+				body: "Error reading countries from cache",
+				attributes: { error: error instanceof Error ? error.message : String(error) },
+			});
+		}
+
 		const countries = await db
 			.select({
 				id: country.id,
@@ -74,7 +101,17 @@ countriesRouter.get(
 			},
 		});
 
-		return response.json(result);
+		try {
+			await redis.setex(COUNTRIES_CACHE_KEY, COUNTRIES_CACHE_TTL, JSON.stringify(result));
+		} catch (error) {
+			logger.emit({
+				severityText: "error",
+				body: "Error caching countries",
+				attributes: { error: error instanceof Error ? error.message : String(error) },
+			});
+		}
+
+		return cachedJson(result, "public, max-age=3600, stale-while-revalidate=86400");
 	},
 	{
 		schema: {

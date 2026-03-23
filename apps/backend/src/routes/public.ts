@@ -12,9 +12,19 @@ const STATS_CACHE_TTL = 86400;
 
 const publicRouter = new Router();
 
+function cachedJson<T>(data: T, cacheControl: string): Response {
+	return new Response(JSON.stringify(data), {
+		status: 200,
+		headers: {
+			"Content-Type": "application/json",
+			"Cache-Control": cacheControl,
+		},
+	});
+}
+
 publicRouter.get(
 	"/public/clubs/map",
-	async ({ context, response }) => {
+	async ({ context }) => {
 		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
 		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
 
@@ -51,7 +61,7 @@ publicRouter.get(
 			},
 		});
 
-		return response.json({ clubs });
+		return cachedJson({ clubs }, "public, max-age=30, stale-while-revalidate=60");
 	},
 	{
 		schema: {
@@ -79,8 +89,7 @@ publicRouter.get(
 
 publicRouter.get(
 	"/public/sitemap/clubs",
-	async ({ response }) => {
-		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
+	async () => {
 		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
 
 		const whereConditions = [eq(club.isPrivate, false), or(eq(club.banned, false), sql`${club.banned} IS NULL`)];
@@ -98,7 +107,7 @@ publicRouter.get(
 			.from(club)
 			.where(and(...whereConditions));
 
-		return response.json({ clubs });
+		return cachedJson({ clubs }, "public, max-age=3600, stale-while-revalidate=86400");
 	},
 	{
 		schema: {
@@ -122,7 +131,7 @@ publicRouter.get(
 
 publicRouter.get(
 	"/public/sitemap/events",
-	async ({ response }) => {
+	async () => {
 		const events = await db
 			.select({
 				id: event.id,
@@ -144,7 +153,7 @@ publicRouter.get(
 				),
 			);
 
-		return response.json({ events });
+		return cachedJson({ events }, "public, max-age=3600, stale-while-revalidate=86400");
 	},
 	{
 		schema: {
@@ -168,7 +177,7 @@ publicRouter.get(
 
 publicRouter.get(
 	"/public/sitemap/users",
-	async ({ response }) => {
+	async () => {
 		const users = await db
 			.select({
 				id: user.id,
@@ -178,7 +187,7 @@ publicRouter.get(
 			.from(user)
 			.where(and(eq(user.isPrivate, false), or(eq(user.banned, false), sql`${user.banned} IS NULL`)));
 
-		return response.json({ users });
+		return cachedJson({ users }, "public, max-age=3600, stale-while-revalidate=86400");
 	},
 	{
 		schema: {
@@ -202,11 +211,11 @@ publicRouter.get(
 
 publicRouter.get(
 	"/public/stats",
-	async ({ response }) => {
+	async () => {
 		try {
 			const cached = await redis.get(STATS_CACHE_KEY);
 			if (cached) {
-				return response.json(JSON.parse(cached));
+				return cachedJson(JSON.parse(cached), "public, max-age=3600, stale-while-revalidate=86400");
 			}
 		} catch (error) {
 			logger.emit({
@@ -238,7 +247,7 @@ publicRouter.get(
 			});
 		}
 
-		return response.json(stats);
+		return cachedJson(stats, "public, max-age=3600, stale-while-revalidate=86400");
 	},
 	{
 		schema: {
@@ -260,7 +269,7 @@ publicRouter.get(
 
 publicRouter.get(
 	"/public/feature-flags",
-	async ({ context, response }) => {
+	async ({ context }) => {
 		const flags = await db
 			.select({
 				name: featureFlag.name,
@@ -279,7 +288,7 @@ publicRouter.get(
 			},
 		});
 
-		return response.json({ featureFlags: flags });
+		return cachedJson({ featureFlags: flags }, "public, max-age=60, stale-while-revalidate=300");
 	},
 	{
 		schema: {

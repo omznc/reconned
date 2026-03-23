@@ -10,7 +10,7 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function Page(props: PageProps<"/[locale]/users">) {
 	const [searchParams, locale] = await Promise.all([props.searchParams, getLocale()]);

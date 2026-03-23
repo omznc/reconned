@@ -7,8 +7,9 @@
 		"apps/*"
 	],
 	"scripts": {
+		"start:postgres": "sh scripts/start-postgres.sh",
 		"backend:wait": "sh -c \"until curl -sf http://localhost:3002/api/openapi.json > /dev/null 2>&1; do sleep 0.5; done\"",
-		"dev": "sh -c 'bun run kill && bun run dev:backend & BACK_PID=$!; bun run backend:wait; bun run dev:web; kill $BACK_PID 2>/dev/null || true'",
+		"dev": "sh -c 'bun run start:postgres && bun run kill && bun run dev:backend & BACK_PID=$!; bun run backend:wait; bun run dev:web; kill $BACK_PID 2>/dev/null || true'",
 		"dev:backend": "bun run --filter 'backend' dev",
 		"dev:web": "bun run --filter 'web' dev",
 		"build": "sh -c 'bun run dev:backend & BACK_PID=$!; bun run backend:wait; bun run --filter backend build; bun run --filter web build; kill $BACK_PID 2>/dev/null || true'",

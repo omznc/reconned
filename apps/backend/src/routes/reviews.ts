@@ -5,10 +5,23 @@ import { club, event, eventRegistration, eventRegistrationToUser, review, user }
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
+import { redis } from "../lib/redis";
 import { sanitizeReviewContent } from "../lib/sanitization";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
+const REVIEWS_CACHE_TTL = 300;
+
 const reviewsRouter = new Router();
+
+function cachedJson<T>(data: T, cacheControl: string): Response {
+	return new Response(JSON.stringify(data), {
+		status: 200,
+		headers: {
+			"Content-Type": "application/json",
+			"Cache-Control": cacheControl,
+		},
+	});
+}
 
 const reviewWithAuthorSchema = z.object({
 	id: z.string(),
@@ -33,7 +46,7 @@ const reviewWithAuthorSchema = z.object({
 
 reviewsRouter.get(
 	"/reviews/:type/:id",
-	async ({ context, params, query, response }) => {
+	async ({ context, params, query }) => {
 		const { type, id } = params;
 		const { page, perPage, minRating, maxRating, rating } = query;
 
@@ -64,6 +77,24 @@ reviewsRouter.get(
 			throw apiError.validation("Invalid review type. Must be 'user', 'club', or 'event'");
 		}
 
+		const hasRatingFilters = rating !== undefined || minRating !== undefined || maxRating !== undefined;
+		const cacheKey = `reviews:${type}:${id}:page:${page}:perPage:${perPage}`;
+
+		if (!hasRatingFilters) {
+			try {
+				const cached = await redis.get(cacheKey);
+				if (cached) {
+					return cachedJson(JSON.parse(cached), "public, max-age=60, stale-while-revalidate=300");
+				}
+			} catch (error) {
+				logger.emit({
+					severityText: "error",
+					body: "Error reading reviews from cache",
+					attributes: { error: error instanceof Error ? error.message : String(error) },
+				});
+			}
+		}
+
 		// Build the where condition based on type
 		const baseCondition: ReturnType<typeof eq> =
 			type === "user" ? eq(review.userId, id) : type === "club" ? eq(review.clubId, id) : eq(review.eventId, id);
@@ -72,10 +103,8 @@ reviewsRouter.get(
 		const conditions = [baseCondition];
 
 		if (rating !== undefined) {
-			// Filter by exact rating
 			conditions.push(eq(review.rating, rating));
 		} else {
-			// Filter by rating range
 			if (minRating !== undefined) {
 				conditions.push(gte(review.rating, minRating));
 			}
@@ -146,7 +175,7 @@ reviewsRouter.get(
 			},
 		});
 
-		return response.json({
+		const result = {
 			reviews: sanitizedReviews,
 			pagination: {
 				page,
@@ -154,7 +183,21 @@ reviewsRouter.get(
 				total,
 				totalPages: Math.ceil(total / perPage),
 			},
-		});
+		};
+
+		if (!hasRatingFilters) {
+			try {
+				await redis.setex(cacheKey, REVIEWS_CACHE_TTL, JSON.stringify(result));
+			} catch (error) {
+				logger.emit({
+					severityText: "error",
+					body: "Error caching reviews",
+					attributes: { error: error instanceof Error ? error.message : String(error) },
+				});
+			}
+		}
+
+		return cachedJson(result, "public, max-age=60, stale-while-revalidate=300");
 	},
 	{
 		schema: {

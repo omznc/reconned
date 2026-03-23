@@ -1,5 +1,5 @@
 import { Building2, Calendar, Users } from "lucide-react";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
 type HomeCommunityStatsProps = {
@@ -10,10 +10,12 @@ type HomeCommunityStatsProps = {
 	};
 };
 
+function formatNumber(value: number): string {
+	return value.toLocaleString("en-US");
+}
+
 export async function HomeCommunityStats({ stats }: HomeCommunityStatsProps) {
 	const t = await getExtracted();
-	const locale = await getLocale();
-	const nf = new Intl.NumberFormat(locale);
 
 	const segments = [
 		{ href: "/users" as const, icon: Users, value: stats.players, label: t("Players") },
@@ -22,7 +24,7 @@ export async function HomeCommunityStats({ stats }: HomeCommunityStatsProps) {
 	];
 
 	return (
-		<ul className="m-0 inline-flex max-w-full list-none overflow-hidden rounded-full border border-border/60 bg-background/70 p-0 text-xs font-semibold text-foreground shadow-sm backdrop-blur-sm">
+		<ul className="m-0 inline-flex max-w-full list-none overflow-hidden rounded-full border border-border/60 bg-background/70 p-0 text-xs font-semibold text-foreground">
 			{segments.map((item, index) => {
 				const Icon = item.icon;
 				return (
@@ -35,7 +37,7 @@ export async function HomeCommunityStats({ stats }: HomeCommunityStatsProps) {
 							}
 						>
 							<Icon className="size-3.5 shrink-0 opacity-80" aria-hidden />
-							<span className="tabular-nums tracking-tight">{nf.format(item.value)}</span>
+							<span className="tabular-nums tracking-tight">{formatNumber(item.value)}</span>
 							<span className="sr-only">{item.label}</span>
 						</Link>
 					</li>
