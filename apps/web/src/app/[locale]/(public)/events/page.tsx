@@ -8,7 +8,7 @@ import { env } from "@/lib/env";
 import { createItemListWithEvents } from "@/lib/json-ld";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 const ITEMS_PER_PAGE = 12;
 

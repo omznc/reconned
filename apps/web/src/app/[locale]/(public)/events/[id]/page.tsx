@@ -253,7 +253,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 	const slugOrId = event.slug || event.id;
 	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
 
-	// Generate better meta description
 	const eventDate = new Date(event.dateStart).toLocaleDateString(locale, {
 		year: "numeric",
 		month: "long",
@@ -266,9 +265,46 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 			? `${event.description.slice(0, 155).trim()}...`
 			: `${event.name} - ${t("airsoft event")} ${t("organized by")} ${clubName}. ${t("Date")}: ${eventDate}. ${t("Register now on RECONNED.")}`;
 
+	const eventKeywords = [
+		"airsoft event",
+		"airsoft match",
+		"airsoft tournament",
+		"airsoft game",
+		"airsoft event BiH",
+		"airsoft event Bosnia",
+		event.name,
+		club?.name ? `airsoft ${club.name}` : null,
+		event.location || null,
+		`airsoft event ${event.location || ""}`,
+	]
+		.filter(Boolean)
+		.join(", ");
+
 	return {
 		title: `${event.name} - RECONNED`,
 		description,
+		keywords: eventKeywords,
+		openGraph: {
+			title: `${event.name} - RECONNED`,
+			description,
+			type: "website",
+			url: canonicalUrl,
+			...(event.image && {
+				images: [
+					{
+						url: event.image,
+						width: 1200,
+						height: 630,
+						alt: event.name,
+					},
+				],
+			}),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: `${event.name} - RECONNED`,
+			description,
+		},
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(
@@ -279,18 +315,6 @@ export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">
 				event.slug || undefined,
 			),
 		},
-		openGraph: event.image
-			? {
-					images: [
-						{
-							url: event.image,
-							width: 1200,
-							height: 630,
-							alt: event.name,
-						},
-					],
-				}
-			: undefined,
 		metadataBase: env.NEXT_PUBLIC_WEB_URL ? new URL(env.NEXT_PUBLIC_WEB_URL) : undefined,
 	};
 }
