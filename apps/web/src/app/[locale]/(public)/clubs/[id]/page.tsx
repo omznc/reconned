@@ -228,7 +228,6 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 
 export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">): Promise<Metadata> {
 	const [params, locale] = await Promise.all([props.params, getLocale()]);
-	const t = await getExtracted();
 
 	const { data: club, error } = await apiServer.GET("/api/clubs/{id}", {
 		params: {
@@ -248,13 +247,42 @@ export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">)
 	const slugOrId = club.slug || club.id;
 	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
 
+	const clubKeywords = [
+		"airsoft club",
+		"airsoft team",
+		"verified airsoft club",
+		"airsoft club BiH",
+		"airsoft club Bosnia",
+		club.name,
+		club.location ? `airsoft club ${club.location}` : null,
+		club.location || null,
+		...(club.verified ? ["verified airsoft team", "official airsoft club"] : []),
+	]
+		.filter(Boolean)
+		.join(", ");
+
+	const description = club.description
+		? club.description.length > 150
+			? `${club.description.slice(0, 147)}...`
+			: club.description
+		: `${club.name} is an airsoft club${club.location ? ` in ${club.location}` : ""}.${club.verified ? " Verified airsoft club on RECONNED." : ""}`;
+
 	return {
 		title: `${club.name} - RECONNED`,
-		description:
-			club.description?.slice(0, 160) ||
-			t(
-				"The list of all airsoft clubs on the platform. The first universal platform for airsoft clubs, events, and players.",
-			),
+		description,
+		keywords: clubKeywords,
+		openGraph: {
+			title: `${club.name} - RECONNED`,
+			description,
+			type: "website",
+			url: canonicalUrl,
+			...(club.logo && { images: [{ url: club.logo, alt: club.name }] }),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: `${club.name} - RECONNED`,
+			description,
+		},
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(

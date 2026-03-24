@@ -148,7 +148,6 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 
 export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">): Promise<Metadata> {
 	const params = await props.params;
-	const t = await getExtracted();
 	const locale = await getLocale();
 
 	const { data: user, error } = await apiServer.GET("/api/users/{id}/profile", {
@@ -169,13 +168,46 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 	const slugOrId = user.slug || user.id;
 	const canonicalUrl = constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", `${pathPrefix}/${slugOrId}`, locale);
 
+	const clubNames = user.clubMembership?.map((m) => m.club.name).filter(Boolean) || [];
+
+	const userKeywords = [
+		"airsoft player",
+		"airsoft gamer",
+		"verified airsoft player",
+		"airsoft player BiH",
+		"airsoft player Bosnia",
+		user.name,
+		user.callsign || null,
+		user.location || null,
+		`airsoft player ${user.location || ""}`,
+		user.callsign ? `airsoft ${user.callsign}` : null,
+		...clubNames.map((name) => `airsoft ${name}`),
+	]
+		.filter(Boolean)
+		.join(", ");
+
+	const description = user.bio
+		? user.bio.length > 150
+			? `${user.bio.slice(0, 147)}...`
+			: user.bio
+		: `${user.name}${user.callsign ? ` (${user.callsign})` : ""} is an airsoft player${user.location ? ` from ${user.location}` : ""}${clubNames.length > 0 ? `, member of ${clubNames.join(", ")}` : ""}.`;
+
 	return {
 		title: `${user.name} - RECONNED`,
-		description:
-			user.bio?.slice(0, 160) ||
-			t(
-				"The list of all airsoft players on the platform. The first universal platform for airsoft clubs, events, and players.",
-			),
+		description,
+		keywords: userKeywords,
+		openGraph: {
+			title: `${user.name} - RECONNED`,
+			description,
+			type: "profile",
+			url: canonicalUrl,
+			...(user.image && { images: [{ url: user.image, alt: user.name }] }),
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: `${user.name} - RECONNED`,
+			description,
+		},
 		alternates: {
 			canonical: canonicalUrl,
 			languages: generateHreflangAlternatesForSluggableEntity(
