@@ -11,7 +11,7 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 export const revalidate = 300;
 
 export default async function MapPage() {
-	const { data, error } = await apiServer.GET("/public/clubs/map");
+	const { data, error } = await apiServer.GET("/api/public/clubs/map");
 
 	if (error) {
 		console.error("Error loading clubs:", error);
