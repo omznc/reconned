@@ -8,13 +8,12 @@ import { cn } from "@/lib/utils";
 
 interface ExpandableDescriptionProps {
 	description: string;
-	translationNamespace?: string;
 }
 
-export function ExpandableDescription({ description, translationNamespace = "common.ui" }: ExpandableDescriptionProps) {
+export function ExpandableDescription({ description }: ExpandableDescriptionProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const shouldShowButton = description.length > 300; // Show expand button if text is long
-	const t = useExtracted(translationNamespace);
+	const t = useExtracted();
 
 	return (
 		<div className="space-y-2">
