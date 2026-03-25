@@ -31,8 +31,9 @@ import { scheduler } from "./tasks/scheduler";
 
 const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.trim());
 
-await runMigrations();
-
+if (process.env.NODE_ENV === "production") {
+	await runMigrations();
+}
 const mainRouter = new Router();
 
 mainRouter.middleware(correlationMiddleware());

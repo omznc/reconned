@@ -95,6 +95,8 @@ const CountrySelect = ({
         [onChange],
     );
 
+    const selectedOption = options.find((option) => option.value === value);
+
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -104,7 +106,7 @@ const CountrySelect = ({
                     className={cn("flex gap-1 rounded-e-none rounded-s-lg px-3")}
                     disabled={disabled}
                 >
-                    <FlagComponent country={value} countryName={value} />
+                    <FlagComponent country={value} countryName={selectedOption?.label ?? value} />
                     <ChevronsUpDown
                         className={cn(
                             "-mr-2 h-4 w-4 opacity-50",
