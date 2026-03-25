@@ -140,7 +140,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 				throw new Error("Must save club first");
 			}
 
-			const { data, error } = await apiClient.POST("/api/clubs/{id}/logo/upload-url", {
+			const { data, error } = await apiClient.POST("/api/admin/unclaimed-clubs/{id}/logo/upload-url", {
 				params: {
 					path: {
 						id: club.id,
