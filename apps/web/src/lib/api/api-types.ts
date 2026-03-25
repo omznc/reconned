@@ -12979,8 +12979,7 @@ export interface operations {
 		requestBody: {
 			content: {
 				"application/json": {
-					/** Format: email */
-					userEmail?: string;
+					userEmail?: string | "";
 					userName?: string;
 				};
 			};
@@ -17636,8 +17635,7 @@ export interface operations {
 					isPrivate?: boolean;
 					isPrivateStats?: boolean;
 					contactPhone?: string;
-					/** Format: email */
-					contactEmail?: string;
+					contactEmail?: string | "";
 					website?: unknown;
 					instagramUsername?: string;
 				};
@@ -17855,8 +17853,7 @@ export interface operations {
 					logo?: string;
 					headerImage?: string;
 					contactPhone?: string;
-					/** Format: email */
-					contactEmail?: string;
+					contactEmail?: string | "";
 					website?: unknown;
 					instagramUsername?: string;
 				};

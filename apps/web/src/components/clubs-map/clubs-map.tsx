@@ -433,7 +433,21 @@ function createClubIcon(
 			}}
 		/>
 	) : (
-		<MapPin size={size} strokeWidth={2} className="text-red-500" />
+		<svg
+			width={size}
+			height={size}
+			viewBox="0 0 24 24"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			aria-label={clubName || t("Club location")}
+		>
+			<title>{clubName || t("Club location")}</title>
+			<path
+				d="M12 21C12 21 19 13.5 19 9C19 5.13401 15.866 2 12 2C8.13401 2 5 5.13401 5 9C5 13.5 12 21 12 21Z"
+				fill="#EF4444"
+			/>
+			<circle cx="12" cy="9" r="3" fill="white" />
+		</svg>
 	);
 
 	return (
