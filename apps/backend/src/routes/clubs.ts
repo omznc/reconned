@@ -2623,7 +2623,7 @@ clubsRouter.post(
 				id: z.string(),
 			}),
 			body: z.object({
-				userEmail: z.email().optional(),
+				userEmail: z.email().or(z.literal("")).optional(),
 				userName: z.string().optional(),
 			}),
 			response: {
