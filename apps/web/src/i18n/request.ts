@@ -14,12 +14,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
 	const resolvedLocale = await requestLocale;
 
-	// Check cookie first, then URL locale, then country-based default, then fallback
+	const acceptLanguage = allHeaders.get("accept-language");
+	const browserLocale = acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase();
+
+	// Check cookie first, then URL locale, then Accept-Language, then country-based default, then fallback
 	let locale: string;
 	if (cookieLocale && hasLocale(routing.locales, cookieLocale)) {
 		locale = cookieLocale;
 	} else if (hasLocale(routing.locales, resolvedLocale)) {
 		locale = resolvedLocale;
+	} else if (browserLocale && hasLocale(routing.locales, browserLocale)) {
+		locale = browserLocale;
 	} else {
 		locale = defaultLanguage;
 	}
