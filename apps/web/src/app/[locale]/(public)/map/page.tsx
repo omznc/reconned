@@ -11,7 +11,7 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 export const revalidate = 300;
 
 export default async function MapPage() {
-	const { data, error } = await apiServer.GET("/api/clubs");
+	const { data, error } = await apiServer.GET("/public/clubs/map");
 
 	if (error) {
 		console.error("Error loading clubs:", error);
@@ -19,12 +19,13 @@ export default async function MapPage() {
 	}
 
 	const transformedClubs = data.clubs
-		.filter((club) => !club.isPrivate && club.latitude && club.longitude)
+		.filter((club) => club.latitude && club.longitude)
 		.map((club) => ({
 			...club,
 			location: club.location || null,
 			slug: club.slug || null,
 			logo: club.logo || null,
+			isPrivate: false,
 		}));
 
 	const t = await getExtracted();
