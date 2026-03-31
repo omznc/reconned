@@ -590,21 +590,26 @@ export const post = pgTable(
 	"Post",
 	{
 		id: text().primaryKey().notNull(),
-		title: text().notNull(),
+		title: text(),
 		content: text().notNull(),
 		images: text().array(),
-		isPublic: boolean().default(false).notNull(),
-		clubId: text().notNull(),
+		authorId: text().notNull(),
+		clubId: text(),
+		isPublic: boolean().default(true).notNull(),
 		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
 	},
 	(table) => [
 		index("Post_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
-		index("Post_clubId_isPublic_idx").using(
-			"btree",
-			table.clubId.asc().nullsLast().op("text_ops"),
-			table.isPublic.asc().nullsLast().op("bool_ops"),
-		),
+		index("Post_authorId_idx").using("btree", table.authorId.asc()),
+		index("Post_createdAt_idx").using("btree", table.createdAt.asc()),
+		foreignKey({
+			columns: [table.authorId],
+			foreignColumns: [user.id],
+			name: "Post_authorId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -612,6 +617,65 @@ export const post = pgTable(
 		})
 			.onUpdate("cascade")
 			.onDelete("cascade"),
+	],
+);
+
+export const postLike = pgTable(
+	"PostLike",
+	{
+		postId: text().notNull(),
+		userId: text().notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	},
+	(table) => [
+		primaryKey({ columns: [table.postId, table.userId] }),
+		foreignKey({
+			columns: [table.postId],
+			foreignColumns: [post.id],
+			name: "PostLike_postId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "PostLike_userId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		index("PostLike_postId_idx").using("btree", table.postId.asc()),
+		index("PostLike_userId_idx").using("btree", table.userId.asc()),
+	],
+);
+
+export const comment = pgTable(
+	"Comment",
+	{
+		id: text().primaryKey().notNull(),
+		postId: text().notNull(),
+		authorId: text().notNull(),
+		content: text().notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+	},
+	(table) => [
+		foreignKey({
+			columns: [table.postId],
+			foreignColumns: [post.id],
+			name: "Comment_postId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.authorId],
+			foreignColumns: [user.id],
+			name: "Comment_authorId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		index("Comment_postId_idx").using("btree", table.postId.asc()),
+		index("Comment_authorId_idx").using("btree", table.authorId.asc()),
+		index("Comment_createdAt_idx").using("btree", table.createdAt.asc()),
 	],
 );
 

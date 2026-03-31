@@ -23,6 +23,7 @@ import { clubsRouter } from "./routes/clubs";
 import { countriesRouter } from "./routes/countries";
 import { dashboardRouter } from "./routes/dashboard";
 import { eventsRouter } from "./routes/events";
+import { postsRouter } from "./routes/posts";
 import { publicRouter } from "./routes/public";
 import { reviewsRouter } from "./routes/reviews";
 import { usersRouter } from "./routes/users";
@@ -81,6 +82,7 @@ async function handleRequest(request: Request): Promise<Response> {
 			adminRouter,
 			publicRouter,
 			alliancesRouter,
+			postsRouter,
 		],
 		corsOrigins,
 	);
@@ -153,6 +155,7 @@ mainRouter.use(utilsRouter, "/api");
 mainRouter.use(adminRouter, "/api");
 mainRouter.use(publicRouter, "/api");
 mainRouter.use(alliancesRouter, "/api");
+mainRouter.use(postsRouter, "/api");
 
 Bun.serve({
 	port: 3002,

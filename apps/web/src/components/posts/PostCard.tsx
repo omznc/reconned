@@ -1,61 +1,158 @@
 "use client";
 
 import { formatRelative } from "date-fns";
-import { ChevronLeft, ChevronRight, Pencil, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle, Pencil, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import type { Post } from "@/lib/api/api-type-helpers";
 import "@/components/editor/editor.css";
 import { useExtracted, useLocale } from "next-intl";
 import sanitizeHtml from "sanitize-html";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useOverflow } from "@/hooks/use-overflow";
 import { getDateFnsLocale } from "@/lib/date-locale";
-import { cn } from "@/lib/utils";
+import { cn as classNames, cn } from "@/lib/utils";
+import { CommentSection } from "./CommentSection";
+import { LikeButton } from "./LikeButton";
 
-interface ClubPostProps {
-	post: Post;
-	clubId: string;
-	isManager?: boolean;
+export interface PostAuthor {
+	id: string;
+	slug: string | null;
+	name: string;
+	image: string | null;
 }
 
-export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
+export interface PostClub {
+	id: string;
+	name: string;
+	slug: string | null;
+	logo: string | null;
+}
+
+export interface PostData {
+	id: string;
+	title: string | null;
+	content: string;
+	images: string[] | null;
+	authorId: string;
+	clubId: string | null;
+	isPublic: boolean;
+	createdAt: string;
+	updatedAt: string;
+	author: PostAuthor;
+	club: PostClub | null;
+	likesCount: number;
+	commentsCount: number;
+	isLiked: boolean;
+}
+
+interface PostCardProps {
+	post: PostData;
+	currentUserId?: string;
+	isClubManager?: boolean;
+	showComments?: boolean;
+	onPostUpdated?: (post: PostData) => void;
+	onPostDeleted?: (postId: string) => void;
+}
+
+export function PostCard({
+	post,
+	currentUserId,
+	isClubManager,
+	showComments = false,
+	onPostUpdated,
+	onPostDeleted,
+}: PostCardProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 	const dateLocale = getDateFnsLocale(locale);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+	const [showAllComments, setShowAllComments] = useState(showComments);
+	const [localPost, setLocalPost] = useState(post);
 	const { ref, isOverflowing } = useOverflow();
-	const images = (post.images || []).filter((src): src is string => Boolean(src));
+	const images = (localPost.images || []).filter((src): src is string => Boolean(src));
+
+	const isOwner = currentUserId === localPost.authorId;
+	const canEdit = isOwner || isClubManager;
+
+	const handleLikeUpdate = (newLikesCount: number, newIsLiked: boolean) => {
+		setLocalPost((prev) => ({
+			...prev,
+			likesCount: newLikesCount,
+			isLiked: newIsLiked,
+		}));
+	};
 
 	return (
 		<div className="border bg-sidebar rounded-md p-4 space-y-3">
 			<div className="flex justify-between items-start gap-4">
-				<div className="space-y-1">
-					<h3 className="font-medium">{post.title}</h3>
+				<div className="space-y-1 min-w-0 flex-1">
+					<div className="flex items-center gap-2 flex-wrap">
+						<Link href={`/${localPost.author.slug || localPost.author.id}`} className="hover:underline">
+							<span className="font-medium">{localPost.author.name}</span>
+						</Link>
+						{localPost.club && (
+							<>
+								<span className="text-muted-foreground">in</span>
+								<Link
+									href={`/clubs/${localPost.club.slug || localPost.club.id}`}
+									className="hover:underline flex items-center gap-1"
+								>
+									{localPost.club.logo && (
+										<Image
+											src={localPost.club.logo}
+											alt={localPost.club.name}
+											width={16}
+											height={16}
+											className="rounded-sm"
+										/>
+									)}
+									<span className="text-muted-foreground">{localPost.club.name}</span>
+								</Link>
+							</>
+						)}
+					</div>
 					<p className="text-sm text-muted-foreground">
-						{t("Posted on {date}", {
-							date: formatRelative(new Date(post.createdAt), new Date(), {
-								locale: dateLocale,
-							}),
+						{formatRelative(new Date(localPost.createdAt), new Date(), {
+							locale: dateLocale,
 						})}
 					</p>
 				</div>
-				{isManager && (
-					<Button variant="ghost" size="icon" asChild className="shrink-0">
-						<Link href={`/dashboard/${clubId}/club/posts?postId=${post.id}`}>
-							<Pencil className="h-4 w-4" />
-						</Link>
-					</Button>
+				{canEdit && (
+					<div className="flex items-center gap-1 shrink-0">
+						{isOwner && (
+							<Button variant="ghost" size="icon" asChild className="shrink-0">
+								<Link href={`/posts/${localPost.id}/edit`}>
+									<Pencil className="h-4 w-4" />
+								</Link>
+							</Button>
+						)}
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={() => {
+								if (confirm(t("Are you sure you want to delete this post?"))) {
+									onPostDeleted?.(localPost.id);
+								}
+							}}
+							className="shrink-0 text-destructive hover:text-destructive"
+						>
+							<Trash2 className="h-4 w-4" />
+						</Button>
+					</div>
 				)}
 			</div>
+
+			{localPost.title && <h3 className="font-medium text-lg">{localPost.title}</h3>}
+
 			<div ref={ref} className={cn("relative", !isExpanded && "max-h-[500px] overflow-hidden")}>
 				<div
 					className="prose prose-sm max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 p-4"
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: It's sanitized content
 					dangerouslySetInnerHTML={{
-						__html: sanitizeHtml(post.content),
+						__html: sanitizeHtml(localPost.content),
 					}}
 				/>
 				{!isExpanded && isOverflowing && (
@@ -71,19 +168,41 @@ export function ClubPost({ post, clubId, isManager }: ClubPostProps) {
 					{isExpanded ? t("Show less") : t("Read more")}
 				</Button>
 			)}
+
 			{images.length > 0 && (
 				<PostImages
 					images={images}
-					title={post.title ?? ""}
+					title={localPost.title || localPost.author.name}
 					onImageClick={(index) => {
 						setViewerIndex(index);
 					}}
 				/>
 			)}
+
+			<div className="flex items-center gap-4 pt-2 border-t">
+				<LikeButton
+					postId={localPost.id}
+					initialLikesCount={localPost.likesCount}
+					initialIsLiked={localPost.isLiked}
+					onUpdate={handleLikeUpdate}
+				/>
+				<Button
+					variant="ghost"
+					size="sm"
+					className="gap-2"
+					onClick={() => setShowAllComments(!showAllComments)}
+				>
+					<MessageCircle className="h-4 w-4" />
+					<span>{localPost.commentsCount}</span>
+				</Button>
+			</div>
+
+			{showAllComments && <CommentSection postId={localPost.id} currentUserId={currentUserId} />}
+
 			{viewerIndex !== null && images[viewerIndex] && (
 				<PostImageViewer
 					images={images}
-					title={post.title ?? ""}
+					title={localPost.title || localPost.author.name}
 					index={viewerIndex}
 					onClose={() => {
 						setViewerIndex(null);
@@ -224,6 +343,25 @@ function PostImageViewer({ images, title, index, onClose, onChangeIndex }: PostI
 					height={1200}
 					className="h-full w-full object-contain"
 				/>
+			</div>
+		</div>
+	);
+}
+
+export function PostCardSkeleton() {
+	return (
+		<div className="border bg-sidebar rounded-md p-4 space-y-3">
+			<div className="flex justify-between items-start gap-4">
+				<div className="space-y-2">
+					<Skeleton className="h-4 w-32" />
+					<Skeleton className="h-3 w-24" />
+				</div>
+			</div>
+			<Skeleton className="h-6 w-3/4" />
+			<div className="space-y-2">
+				<Skeleton className="h-4 w-full" />
+				<Skeleton className="h-4 w-full" />
+				<Skeleton className="h-4 w-2/3" />
 			</div>
 		</div>
 	);

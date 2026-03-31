@@ -136,6 +136,10 @@ export function CommandMenu({ user }: CommandMenuProps) {
 			}
 			return club.membershipRole === "MANAGER" || club.membershipRole === "CLUB_OWNER";
 		},
+		(clubId) => {
+			const club = clubs.find((c) => c.id === clubId);
+			return !!club?.membershipRole;
+		},
 		true,
 	);
 

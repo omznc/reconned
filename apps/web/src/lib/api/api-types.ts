@@ -3404,6 +3404,182 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/posts/feed": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get global feed
+		 * @description Get a global feed of public posts from all users
+		 */
+		get: operations["postsfeedGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/posts": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get own posts
+		 * @description Get current user's posts
+		 */
+		get: operations["postsGet"];
+		put?: never;
+		/**
+		 * Create post
+		 * @description Create a new user post
+		 */
+		post: operations["postsPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/users/{id}/posts": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get user posts
+		 * @description Get posts for a specific user
+		 */
+		get: operations["usersidpostsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/posts/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get single post
+		 * @description Get a single post by ID
+		 */
+		get: operations["postsidGet"];
+		/**
+		 * Update post
+		 * @description Update your own post
+		 */
+		put: operations["postsidPut"];
+		post?: never;
+		/**
+		 * Delete post
+		 * @description Delete your own post or a post in your club
+		 */
+		delete: operations["postsidDelete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/posts/{id}/like": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Toggle like
+		 * @description Like or unlike a post
+		 */
+		post: operations["postsidlikePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/posts/{id}/comments": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get comments
+		 * @description Get comments for a post
+		 */
+		get: operations["postsidcommentsGet"];
+		put?: never;
+		/**
+		 * Add comment
+		 * @description Add a comment to a post
+		 */
+		post: operations["postsidcommentsPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/posts/{postId}/comments/{commentId}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/**
+		 * Delete comment
+		 * @description Delete your own comment
+		 */
+		delete: operations["postspostIdcommentscommentIdDelete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/posts/images/upload-url": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Get post image upload URL
+		 * @description Get a presigned S3 URL for uploading a user post image
+		 */
+		post: operations["postsimagesuploadUrlPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -11760,11 +11936,12 @@ export interface operations {
 					"application/json": {
 						posts: {
 							id: string;
-							title: string;
+							title: string | null;
 							content: string;
 							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
 							isPublic: boolean;
-							clubId: string;
 							createdAt: string;
 							updatedAt: string;
 						}[];
@@ -11842,11 +12019,12 @@ export interface operations {
 						success: boolean;
 						post: {
 							id: string;
-							title: string;
+							title: string | null;
 							content: string;
 							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
 							isPublic: boolean;
-							clubId: string;
 							createdAt: string;
 							updatedAt: string;
 						};
@@ -11909,11 +12087,12 @@ export interface operations {
 					"application/json": {
 						post: {
 							id: string;
-							title: string;
+							title: string | null;
 							content: string;
 							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
 							isPublic: boolean;
-							clubId: string;
 							createdAt: string;
 							updatedAt: string;
 						};
@@ -11997,11 +12176,12 @@ export interface operations {
 						success: boolean;
 						post: {
 							id: string;
-							title: string;
+							title: string | null;
 							content: string;
 							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
 							isPublic: boolean;
-							clubId: string;
 							createdAt: string;
 							updatedAt: string;
 						};
@@ -19456,6 +19636,765 @@ export interface operations {
 			};
 			/** @description Bad Request */
 			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsfeedGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						posts: {
+							id: string;
+							title: string | null;
+							content: string;
+							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
+							isPublic: boolean;
+							createdAt: string;
+							updatedAt: string;
+							author: {
+								id: string;
+								slug: string | null;
+								name: string;
+								image: string | null;
+							};
+							club: {
+								id: string;
+								name: string;
+								slug: string | null;
+								logo: string | null;
+							} | null;
+							likesCount: number;
+							commentsCount: number;
+							isLiked: boolean;
+						}[];
+						page: number;
+						perPage: number;
+						total: number;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						posts: {
+							id: string;
+							title: string | null;
+							content: string;
+							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
+							isPublic: boolean;
+							createdAt: string;
+							updatedAt: string;
+							author: {
+								id: string;
+								slug: string | null;
+								name: string;
+								image: string | null;
+							};
+							club: {
+								id: string;
+								name: string;
+								slug: string | null;
+								logo: string | null;
+							} | null;
+							likesCount: number;
+							commentsCount: number;
+							isLiked: boolean;
+						}[];
+						page: number;
+						perPage: number;
+						total: number;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					title?: string;
+					content: string;
+					images?: string[];
+					clubId?: string;
+					/** @default true */
+					isPublic?: boolean;
+				};
+			};
+		};
+		responses: {
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						post: {
+							id: string;
+							title: string | null;
+							content: string;
+							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
+							isPublic: boolean;
+							createdAt: string;
+							updatedAt: string;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	usersidpostsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						posts: {
+							id: string;
+							title: string | null;
+							content: string;
+							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
+							isPublic: boolean;
+							createdAt: string;
+							updatedAt: string;
+							author: {
+								id: string;
+								slug: string | null;
+								name: string;
+								image: string | null;
+							};
+							club: {
+								id: string;
+								name: string;
+								slug: string | null;
+								logo: string | null;
+							} | null;
+							likesCount: number;
+							commentsCount: number;
+							isLiked: boolean;
+						}[];
+						page: number;
+						perPage: number;
+						total: number;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsidGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						title: string | null;
+						content: string;
+						images: string[] | null;
+						authorId: string;
+						clubId: string | null;
+						isPublic: boolean;
+						createdAt: string;
+						updatedAt: string;
+						author: {
+							id: string;
+							slug: string | null;
+							name: string;
+							image: string | null;
+						};
+						club: {
+							id: string;
+							name: string;
+							slug: string | null;
+							logo: string | null;
+						} | null;
+						likesCount: number;
+						commentsCount: number;
+						isLiked: boolean;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsidPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					title?: string;
+					content?: string;
+					images?: string[];
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						post: {
+							id: string;
+							title: string | null;
+							content: string;
+							images: string[] | null;
+							authorId: string;
+							clubId: string | null;
+							isPublic: boolean;
+							createdAt: string;
+							updatedAt: string;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsidDelete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsidlikePost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						liked: boolean;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsidcommentsGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						comments: {
+							id: string;
+							postId: string;
+							authorId: string;
+							content: string;
+							createdAt: string;
+							updatedAt: string;
+							author: {
+								id: string;
+								slug: string | null;
+								name: string;
+								image: string | null;
+							};
+						}[];
+						page: number;
+						perPage: number;
+						total: number;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsidcommentsPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					content: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						postId: string;
+						authorId: string;
+						content: string;
+						createdAt: string;
+						updatedAt: string;
+						author: {
+							id: string;
+							slug: string | null;
+							name: string;
+							image: string | null;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postspostIdcommentscommentIdDelete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				postId: string;
+				commentId: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	postsimagesuploadUrlPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					file: {
+						name: string;
+						type: string;
+						size: number;
+					};
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						url: string;
+						cdnUrl: string;
+						key: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
 				headers: {
 					[name: string]: unknown;
 				};

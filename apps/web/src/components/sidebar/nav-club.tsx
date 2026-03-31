@@ -21,7 +21,8 @@ export function NavClub({ clubId, clubs }: NavClubProps) {
 	const club = clubs.find((c) => c.id === clubId);
 	const role = club?.membershipRole;
 	const isManager = role === "MANAGER" || role === "CLUB_OWNER";
-	const items = useClubNavigationItems(clubId, isManager);
+	const isMember = !!role;
+	const items = useClubNavigationItems(clubId, isManager, isMember);
 
 	return (
 		<SidebarGroup>

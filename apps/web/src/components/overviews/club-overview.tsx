@@ -22,6 +22,7 @@ import { ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/i
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
 import { ClubPost } from "@/components/overviews/club-post";
+import { ClubPostsSection } from "@/components/overviews/club-posts-section";
 import { ClubWebsiteButton } from "@/components/overviews/club-website-button";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
@@ -402,28 +403,13 @@ export async function ClubOverview({
 						</div>
 					)}
 
-					<div className="space-y-4 mt-8">
-						<div className="flex h-10 items-center justify-between">
-							<h2 className="text-xl font-semibold flex items-center gap-2">{t("Announcements")}</h2>
-							{isManager && (
-								<Button asChild size="sm">
-									<Link href={`/dashboard/${club.id}/club/posts`}>
-										<Pencil className="h-4 w-4" />
-										{t("New post")}
-									</Link>
-								</Button>
-							)}
-						</div>
-						{!posts || posts.length === 0 ? (
-							<p className="text-muted-foreground">{t("There are no posts")}</p>
-						) : (
-							<div className="space-y-4">
-								{posts?.map((post) => (
-									<ClubPost key={post.id} post={post} clubId={club.id} isManager={isManager} />
-								))}
-							</div>
-						)}
-					</div>
+					<ClubPostsSection
+						posts={posts}
+						clubId={club.id}
+						clubName={club.name}
+						isMember={isMember ?? false}
+						isManager={isManager ?? false}
+					/>
 				</>
 			)}
 		</div>

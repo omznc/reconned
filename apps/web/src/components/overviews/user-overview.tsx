@@ -4,11 +4,14 @@ import Image from "next/image";
 import { getExtracted } from "next-intl/server";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
+import { UserPosts } from "@/components/overviews/user-posts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import apiServer from "@/lib/api/api";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { isAuthenticated } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 type UserResponse = ApiResponse<"/api/users/{id}", "get">;
@@ -21,6 +24,18 @@ interface UserOverviewProps {
 
 export async function UserOverview({ user }: UserOverviewProps) {
 	const t = await getExtracted();
+	const [currentUser, postsResponse] = await Promise.all([
+		isAuthenticated(),
+		apiServer.GET("/users/{id}/posts", {
+			params: {
+				path: { id: user.id },
+				query: { page: 1, perPage: 20 },
+			},
+		}),
+	]);
+
+	const posts = postsResponse.data?.posts || [];
+	const currentUserId = currentUser?.id;
 
 	const formatWebsiteDisplay = (url: string) => {
 		try {
@@ -261,6 +276,13 @@ export async function UserOverview({ user }: UserOverviewProps) {
 				</Card>
 				<ReviewsOverview type="user" typeId={user.id} entityName={user.name} />
 			</div>
+			{(posts.length > 0 || currentUserId === user.id) && (
+				<UserPosts
+					posts={posts as never}
+					currentUserId={currentUserId}
+					isOwnProfile={currentUserId === user.id}
+				/>
+			)}
 		</div>
 	);
 }

@@ -1507,17 +1507,18 @@ clubsRouter.post(
 
 		const managerMembership = managerMembershipData[0];
 
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
+		if (!managerMembership) {
+			throw apiError.forbidden("You must be a member of the club to post");
 		}
 
-		const postId = crypto.randomUUID();
+		const postId = randomUUIDv7();
 
 		const newPost = await db
 			.insert(post)
 			.values({
 				id: postId,
 				clubId,
+				authorId: context.user.id,
 				title: body.title,
 				content: body.content,
 				images: body.images || [],
@@ -1683,16 +1684,16 @@ clubsRouter.delete(
 			throw apiError.validation("Club ID and Post ID are required");
 		}
 
-		const managerMembershipData = await db
+		const membershipData = await db
 			.select()
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
 
-		const managerMembership = managerMembershipData[0];
+		const membership = membershipData[0];
 
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
+		if (!membership) {
+			throw apiError.forbidden("You must be a member of the club");
 		}
 
 		const postData = await db
@@ -1703,6 +1704,13 @@ clubsRouter.delete(
 
 		if (!postData[0]) {
 			throw apiError.notFound("Post not found");
+		}
+
+		const isAuthor = postData[0].authorId === context.user.id;
+		const isManager = membership.role === "MANAGER" || membership.role === "CLUB_OWNER";
+
+		if (!isAuthor && !isManager && !context.isAdmin) {
+			throw apiError.forbidden("You can only delete your own posts or posts in your club");
 		}
 
 		if (postData[0].images && postData[0].images.length > 0) {
@@ -1756,16 +1764,16 @@ clubsRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
+		const membershipData = await db
 			.select()
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
 
-		const managerMembership = managerMembershipData[0];
+		const membership = membershipData[0];
 
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
+		if (!membership) {
+			throw apiError.forbidden("You must be a member of the club to upload images");
 		}
 
 		const secureFilename = `${Date.now()}_${body.file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;

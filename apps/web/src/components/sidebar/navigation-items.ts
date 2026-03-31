@@ -128,7 +128,7 @@ export function useAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 	return items;
 }
 
-export function useClubNavigationItems(clubId: string, isManager: boolean, flat = false): NavItem[] {
+export function useClubNavigationItems(clubId: string, isManager: boolean, isMember: boolean, flat = false): NavItem[] {
 	const t = useExtracted();
 
 	const items: NavItem[] = [
@@ -173,6 +173,14 @@ export function useClubNavigationItems(clubId: string, isManager: boolean, flat 
 				protected: true,
 			},
 		);
+	}
+
+	if (isMember && !isManager && items[0]?.items) {
+		items[0].items.push({
+			title: t("New post"),
+			url: `/dashboard/${clubId}/club`,
+			icon: NotebookPen,
+		});
 	}
 
 	items.push({
@@ -246,6 +254,7 @@ export function useClubNavigationItems(clubId: string, isManager: boolean, flat 
 export function useClubsNavigationItems(
 	clubs: DashboardClubs,
 	isManagerFn: (clubId: string) => boolean,
+	isMemberFn: (clubId: string) => boolean,
 	flat = false,
 ): NavItem[] {
 	const t = useExtracted();
@@ -253,6 +262,7 @@ export function useClubsNavigationItems(
 
 	for (const club of clubs) {
 		const isManager = isManagerFn(club.id);
+		const isMember = isMemberFn(club.id);
 		const items: NavItem[] = [
 			{
 				title: t("Club"),
@@ -295,6 +305,14 @@ export function useClubsNavigationItems(
 					protected: true,
 				},
 			);
+		}
+
+		if (isMember && !isManager && items[0]?.items) {
+			items[0].items.push({
+				title: t("New post"),
+				url: `/dashboard/${club.id}/club`,
+				icon: NotebookPen,
+			});
 		}
 
 		items.push({
