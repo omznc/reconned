@@ -3,12 +3,10 @@
 import NoResults from "@public/errors/no-results.png";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useExtracted } from "next-intl";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useEffect, useMemo, useRef } from "react";
-import { SearchResultCard } from "@/app/[locale]/(public)/search/_components/search-result-card";
-import { SearchResultCardSkeleton } from "@/app/[locale]/(public)/search/_components/search-result-card-skeleton";
-import { AdminIcon, VerifiedClubIcon } from "@/components/icons";
+import { ListingCard } from "@/components/listing-card";
+import { ListingCardSkeleton } from "@/components/listing-card-skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
@@ -23,7 +21,6 @@ export function SearchResults() {
 	const [filterClubs] = useQueryState("filterClubs", parseAsBoolean.withDefault(true));
 	const [filterUsers] = useQueryState("filterUsers", parseAsBoolean.withDefault(true));
 	const [filterEvents] = useQueryState("filterEvents", parseAsBoolean.withDefault(true));
-	const t = useExtracted();
 	const loadMoreRef = useRef<HTMLDivElement>(null);
 
 	const filterString = useMemo(() => {
@@ -106,44 +103,39 @@ export function SearchResults() {
 		<TooltipProvider>
 			<div className="space-y-4">
 				{isLoading && allItems.length === 0 ? (
-					<div className="grid gap-4">
-						{Array.from({ length: 3 }).map((_, i) => (
-							<SearchResultCardSkeleton key={i} type="club" />
+					<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+						{Array.from({ length: 12 }).map((_, i) => (
+							<ListingCardSkeleton key={i} type={i % 3 === 0 ? "event" : i % 3 === 1 ? "club" : "user"} />
 						))}
 					</div>
 				) : error ? (
-					<div className="text-center text-destructive py-12">{t("Error loading search results")}</div>
+					<div className="text-center text-destructive py-16">Error loading search results</div>
 				) : allItems.length === 0 ? (
-					<div className="text-center text-muted-foreground py-12 flex flex-col items-center justify-center">
+					<div className="text-center py-16 flex flex-col items-center justify-center">
 						<Image
 							src={NoResults}
 							alt="No results"
 							draggable={false}
-							className="w-full max-w-[400px] dark:invert"
+							className="w-full max-w-[250px] dark:invert"
 						/>
-						<p className="mt-4">{t("Nothing was found matching that search")}</p>
+						<p className="mt-4 text-muted-foreground">Nothing was found matching that search</p>
 					</div>
 				) : (
 					<>
-						<div className="grid gap-4">
+						<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 							{allItems.map((item) => {
 								if (item.type === "club") {
 									const club = item.data as Extract<SearchItem, { type: "club" }>["data"];
 									return (
-										<SearchResultCard
-											image={club.logo}
+										<ListingCard
 											key={`club-${item.id}`}
-											title={
-												<span className="flex gap-2 items-center">
-													{club.name} {club.verified && <VerifiedClubIcon />}
-												</span>
-											}
-											description={undefined}
-											href={`/clubs/${club.slug || club.id}`}
-											meta={`${club._count.members} ${
-												club._count.members === 1 ? t("member") : t("members")
-											}`}
 											type="club"
+											image={club.logo}
+											title={club.name}
+											href={`/clubs/${club.slug || club.id}`}
+											verified={club.verified}
+											memberCount={club._count.members}
+											meta={club.location || undefined}
 										/>
 									);
 								}
@@ -152,25 +144,23 @@ export function SearchResults() {
 										clubMembership?: Array<{ club: { name: string } }>;
 									};
 									return (
-										<SearchResultCard
+										<ListingCard
+											key={`user-${item.id}`}
+											type="user"
 											image={user.image}
 											name={user.name}
-											key={`user-${item.id}`}
-											title={
-												<span className="flex gap-2 items-center">
-													{user.name} {user.callsign ? `(${user.callsign})` : ""}{" "}
-													{user.role === "admin" && <AdminIcon />}
-												</span>
-											}
-											description={user.bio}
+											title={user.name}
+											description={user.callsign}
 											href={`/users/${user.slug || user.id}`}
-											badges={
-												user.clubMembership && user.clubMembership.length > 0
-													? user.clubMembership.map((membership) => membership.club.name)
-													: ["Freelancer"]
-											}
 											meta={user.location || undefined}
-											type="user"
+											isAdmin={user.role === "admin"}
+											badges={
+												user.role === "admin"
+													? ["Admin"]
+													: user.clubMembership && user.clubMembership.length > 0
+														? user.clubMembership.map((m) => m.club.name)
+														: undefined
+											}
 										/>
 									);
 								}
@@ -179,25 +169,18 @@ export function SearchResults() {
 										club?: { name: string };
 									};
 									return (
-										<SearchResultCard
-											image={event.image || undefined}
+										<ListingCard
 											key={`event-${item.id}`}
+											type="event"
+											image={event.image || undefined}
 											title={event.name}
 											description={event.description || undefined}
 											href={`/events/${event.slug || event.id}`}
+											location={event.location || undefined}
 											badges={[
 												event.club?.name || "",
-												event.isPrivate ? t("Private") : t("Public"),
-												event.dateStart
-													? new Date(event.dateStart).toLocaleDateString(undefined, {
-															year: "numeric",
-															month: "long",
-															day: "numeric",
-														})
-													: "",
+												event.isPrivate ? "Private" : "Public",
 											].filter(Boolean)}
-											meta={event.location || undefined}
-											type="event"
 										/>
 									);
 								}
@@ -206,9 +189,9 @@ export function SearchResults() {
 						</div>
 
 						{isFetchingNextPage && (
-							<div className="grid gap-4">
-								{Array.from({ length: 2 }).map((_, i) => (
-									<SearchResultCardSkeleton key={`loading-${i}`} type="club" />
+							<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+								{Array.from({ length: 4 }).map((_, i) => (
+									<ListingCardSkeleton key={`loading-${i}`} type="club" />
 								))}
 							</div>
 						)}

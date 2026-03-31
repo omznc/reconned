@@ -1,13 +1,14 @@
 "use client";
 
 import { format } from "date-fns";
-import { ArrowUpRight, CalendarDays, Clock, DollarSign, MapPin } from "lucide-react";
+import { CalendarDays, Clock, MapPin } from "lucide-react";
 import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getDateFnsLocale } from "@/lib/date-locale";
+import { cn } from "@/lib/utils";
 
 interface EventCardProps {
 	event: {
@@ -40,14 +41,22 @@ export function EventCard({ event }: EventCardProps) {
 	const dateFnsLocale = getDateFnsLocale(locale);
 
 	const dateStart = new Date(event.dateStart);
-	const dateEnd = event.dateEnd ? new Date(event.dateEnd) : null;
+
+	const amenities: string[] = [];
+	if (event.hasBreakfast) amenities.push(t("Breakfast"));
+	if (event.hasLunch) amenities.push(t("Lunch"));
+	if (event.hasDinner) amenities.push(t("Dinner"));
+	if (event.hasSnacks) amenities.push(t("Snacks"));
+	if (event.hasDrinks) amenities.push(t("Drinks"));
+	if (event.hasPrizes) amenities.push(t("Awards"));
 
 	return (
-		<Link href={`/events/${event.slug || event.id}`} className="block group h-full">
-			<Card className="relative flex flex-col h-full rounded-md overflow-hidden bg-background hover:border-red-500 transition-all">
-				<CardHeader className="p-0">
-					{event.image && (
-						<div className="relative w-full aspect-video">
+		<Link href={`/events/${event.slug || event.id}`} className="block group">
+			<Card className="overflow-hidden transition-all duration-150 hover:border-red-500 border-border/50 h-full relative">
+				<div className="absolute inset-0 bg-gradient-to-t from-red-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
+				<div className="flex flex-col h-full relative">
+					<div className="relative aspect-video overflow-hidden bg-muted">
+						{event.image ? (
 							<Image
 								src={event.image}
 								alt={event.name}
@@ -55,85 +64,75 @@ export function EventCard({ event }: EventCardProps) {
 								className="object-cover"
 								sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
 							/>
-						</div>
-					)}
-					<CardTitle className="mt-4 px-6">{event.name}</CardTitle>
-					<CardDescription className="px-6 pb-6 line-clamp-2">{event.description}</CardDescription>
-				</CardHeader>
+						) : (
+							<div className="w-full h-full flex items-center justify-center">
+								<CalendarDays className="w-10 h-10 text-muted-foreground/50" />
+							</div>
+						)}
 
-				<CardContent className="grow flex-col flex gap-1">
-					<div className="flex items-center">
-						<CalendarDays className="w-5 h-5 mr-2 text-muted-foreground" />
-						<span>
-							{format(dateStart, "MMM d, yyyy", { locale: dateFnsLocale })}
-							{dateEnd && ` - ${format(dateEnd, "MMM d, yyyy", { locale: dateFnsLocale })}`}
-						</span>
+						{event.isPrivate && (
+							<div className="absolute top-2 right-2 bg-amber-500/90 text-amber-foreground rounded-full px-2 py-0.5 text-xs font-medium shadow-sm">
+								{t("Private")}
+							</div>
+						)}
 					</div>
-					<div className="flex items-center">
-						<Clock className="w-5 h-5 mr-2 text-muted-foreground" />
-						<span>{format(dateStart, "h:mm a", { locale: dateFnsLocale })}</span>
-					</div>
-					<div className="flex items-center">
-						<MapPin className="w-5 h-5 mr-2 text-muted-foreground" />
-						<span>{event.location}</span>
-					</div>
-					{event.costPerPerson > 0 && (
-						<div className="flex items-center">
-							<DollarSign className="w-5 h-5 mr-2 text-muted-foreground" />
-							<span>
+
+					<CardHeader className="p-3 pb-1">
+						<CardTitle className="text-sm font-semibold line-clamp-1">{event.name}</CardTitle>
+						{event.club && <p className="text-xs text-muted-foreground">{event.club.name}</p>}
+						{event.description && (
+							<CardDescription className="line-clamp-1 text-xs mt-0.5">
+								{event.description}
+							</CardDescription>
+						)}
+					</CardHeader>
+
+					<div className="px-3 pb-3 pt-0 mt-auto">
+						<div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+							<div className="flex items-center gap-1">
+								<CalendarDays className="w-3 h-3 shrink-0" />
+								<span>{format(dateStart, "MMM d, yyyy", { locale: dateFnsLocale })}</span>
+							</div>
+							<div className="flex items-center gap-1">
+								<Clock className="w-3 h-3 shrink-0" />
+								<span>{format(dateStart, "h:mm a", { locale: dateFnsLocale })}</span>
+							</div>
+						</div>
+
+						<div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+							<MapPin className="w-3 h-3 shrink-0" />
+							<span className="truncate">{event.location}</span>
+						</div>
+
+						{event.costPerPerson > 0 && (
+							<div className="text-xs font-medium text-foreground mb-2">
 								{event.costPerPerson.toFixed(2)}KM {t("per person")}
-							</span>
+							</div>
+						)}
+
+						<div className="flex flex-wrap gap-1">
+							<Badge
+								variant={event.allowFreelancers ? "secondary" : "outline"}
+								className={cn(
+									"text-xs px-1.5 py-0 font-normal",
+									!event.allowFreelancers && "border-amber-500/50 text-amber-600 dark:text-amber-400",
+								)}
+							>
+								{event.allowFreelancers ? t("Freelancers") : t("Members")}
+							</Badge>
+							{amenities.slice(0, 2).map((amenity) => (
+								<Badge key={amenity} variant="secondary" className="text-xs px-1.5 py-0 font-normal">
+									{amenity}
+								</Badge>
+							))}
+							{amenities.length > 2 && (
+								<Badge variant="secondary" className="text-xs px-1.5 py-0 font-normal">
+									+{amenities.length - 2}
+								</Badge>
+							)}
 						</div>
-					)}
-
-					<div className="flex-1" />
-
-					<div className="flex flex-wrap gap-2 my-4">
-						<Badge variant="outline" className="grow justify-center">
-							{event.allowFreelancers ? t("Freelancers allowed") : t("For members only")}
-						</Badge>
-						{event.hasBreakfast && (
-							<Badge variant="outline" className="grow justify-center">
-								{t("Breakfast")}
-							</Badge>
-						)}
-						{event.hasLunch && (
-							<Badge variant="outline" className="grow justify-center">
-								{t("Lunch")}
-							</Badge>
-						)}
-						{event.hasDinner && (
-							<Badge variant="outline" className="grow justify-center">
-								{t("Dinner")}
-							</Badge>
-						)}
-						{event.hasSnacks && (
-							<Badge variant="outline" className="grow justify-center">
-								{t("Snacks")}
-							</Badge>
-						)}
-						{event.hasDrinks && (
-							<Badge variant="outline" className="grow justify-center">
-								{t("Drinks")}
-							</Badge>
-						)}
-						{event.hasPrizes && (
-							<Badge variant="outline" className="grow justify-center">
-								{t("Awards")}
-							</Badge>
-						)}
 					</div>
-
-					{event.isPrivate && (
-						<span className="text-xs text-muted-foreground">
-							{t("This is a private event, but you are in the {clubName} club.", {
-								clubName: event.club?.name || "",
-							})}
-						</span>
-					)}
-
-					<ArrowUpRight className="absolute top-4 right-4 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-				</CardContent>
+				</div>
 			</Card>
 		</Link>
 	);
