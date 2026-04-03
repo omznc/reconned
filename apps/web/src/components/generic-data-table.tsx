@@ -354,7 +354,7 @@ export function GenericDataTable<T>({
 						placeholder={searchPlaceholder}
 						value={inputValue}
 						onChange={handleSearchChange}
-						className="pl-9 pr-9 h-10"
+						className="pl-9 pr-9 h-10 !bg-background"
 						maxLength={100}
 					/>
 					{inputValue && (
@@ -438,7 +438,7 @@ export function GenericDataTable<T>({
 			</div>
 
 			{/* Desktop Table */}
-			<div className="rounded-md overflow-hidden border hidden md:block">
+			<div className="rounded-md overflow-hidden border hidden md:block bg-background">
 				<div className={cn(hasActionsAsLastColumn && "overflow-x-auto")}>
 					<Table>
 						<TableHeader>

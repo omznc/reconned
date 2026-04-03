@@ -18,18 +18,20 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function UserSwitcher(props: { user: User }) {
-	const { isMobile } = useSidebar();
+	const sidebar = useSidebar();
+	const isMobile = useIsMobile();
 	const t = useExtracted();
 	const router = useRouter();
 	const { user } = props;
 
 	return (
 		<SidebarMenu>
-			<SidebarMenuItem>
+			<SidebarMenuItem className={!isMobile && sidebar.state === "collapsed" ? "pl-1" : ""}>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild={true}>
 						<SidebarMenuButton
@@ -51,7 +53,7 @@ export function UserSwitcher(props: { user: User }) {
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
 						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-						side={isMobile ? "bottom" : "right"}
+						side={sidebar.isMobile ? "bottom" : "right"}
 						align="end"
 						sideOffset={4}
 					>

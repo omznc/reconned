@@ -26,12 +26,11 @@ interface AdditionalProps {
 }
 
 export const renderCollapsedItem = (item: NavItem, path: string) => (
-	<SidebarMenuItem key={item.title}>
+	<SidebarMenuItem key={item.title} className="pl-1">
 		{item.items ? (
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<SidebarMenuButton
-						tooltip={item.title}
 						isActive={item.url === path || item.items?.some((subItem) => subItem.url === path)}
 					>
 						{item.icon && <item.icon />}
@@ -41,7 +40,7 @@ export const renderCollapsedItem = (item: NavItem, path: string) => (
 					<DropdownMenuLabel>{item.title}</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					<DropdownMenuGroup>
-						{item.items.map((subItem) => (
+						{(item.items ?? []).map((subItem) => (
 							<DropdownMenuItem key={subItem.title} asChild>
 								<Link href={subItem.url}>
 									{subItem.icon && <subItem.icon className="mr-2 size-4" />}

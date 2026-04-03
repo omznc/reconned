@@ -93,7 +93,7 @@ export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 
 	return (
 		<SidebarMenu>
-			<SidebarMenuItem>
+			<SidebarMenuItem className={sidebar.state === "collapsed" ? "pl-1" : ""}>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild={true}>
 						<SidebarMenuButton

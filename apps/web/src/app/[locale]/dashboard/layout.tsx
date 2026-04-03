@@ -69,7 +69,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 				}));
 
 	return (
-		<SidebarProvider>
+		<SidebarProvider defaultOpen={true}>
 			<ClubsProvider initialClubs={clubsData.clubs}>
 				<CurrentClubProvider>
 					<CommandMenuProvider>
@@ -80,8 +80,9 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 						/>
 						<CommandMenu user={user} />
 						<SidebarInset className="relative flex flex-col items-center p-4">
+							<div className="absolute top-0 left-0 right-0 z-10 h-[400px] rounded-md bg-linear-to-b from-red-600/20 to-transparent pointer-events-none" />
 							<Breadcrumbs clubs={simplifiedClubs} />
-							<div className="space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+							<div className="relative z-20 space-y-4 transition-all w-full max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
 								{props.children}
 							</div>
 						</SidebarInset>
