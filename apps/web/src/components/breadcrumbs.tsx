@@ -119,11 +119,11 @@ export function Breadcrumbs({ clubs: clubsProp = [] }: BreadcrumbsProps) {
 		<div className="sticky top-4 left-4 w-full z-10 mb-4">
 			<header
 				className={cn(
-					"z-10 h-10 w-fit border border-border rounded-md flex items-center transition-all bg-background/80 backdrop-blur-xs px-2 shrink-0 gap-2 ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8",
+					"z-10 h-10 w-fit border border-border rounded-sm flex items-center transition-all bg-background/80 backdrop-blur-xs px-2 shrink-0 gap-2 ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8",
 				)}
 			>
 				<TooltipProvider>
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-2 px-1">
 						<SidebarTrigger className="-ml-1" />
 						<Separator orientation="vertical" className="hidden md:flex mr-2 h-4" />
 						<Breadcrumb className="hidden md:flex overflow-hidden whitespace-nowrap flex-nowrap">

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
 	user: User & { role?: string | null | undefined };
@@ -137,7 +138,11 @@ export function AppSidebar(props: AppSidebarProps) {
 						</Link>
 					))}
 				{isBeta && (
-					<SidebarMenu>
+					<SidebarMenu
+						className={cn({
+							"pl-1": sidebar.state === "collapsed",
+						})}
+					>
 						<SidebarMenuItem>
 							{sidebar.open ? (
 								<div className="px-3 py-2 border bg-background/20">
