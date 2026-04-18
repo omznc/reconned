@@ -29,5 +29,8 @@
 	},
 	"overrides": {
 		"import-in-the-middle": "1.14.2"
+	},
+	"dependencies": {
+		"@types/turndown": "^5.0.6"
 	}
 }
