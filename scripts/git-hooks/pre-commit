@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "Running frontend build before commit..."
+bun run --filter web build

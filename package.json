@@ -13,12 +13,14 @@
 		"dev:backend": "bun run --filter 'backend' dev",
 		"dev:web": "bun run --filter 'web' dev",
 		"build": "sh -c 'bun run dev:backend & BACK_PID=$!; bun run backend:wait; bun run --filter backend build; bun run --filter web build; kill $BACK_PID 2>/dev/null || true'",
+		"hooks:install": "sh -c 'mkdir -p .git/hooks && cp scripts/git-hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit'",
 		"check": "bunx --bun @biomejs/biome check --write .",
 		"format": "bunx --bun @biomejs/biome format --write .",
 		"lint": "bunx biome lint --write .",
 		"knip": "knip",
 		"typecheck": "bun run --filter '*' typecheck",
-		"kill": "sh -c 'pids=\"$(lsof -t -i:3002) $(lsof -t -i:3000)\"; if [ -n \"$pids\" ]; then kill $pids 2>/dev/null || true; fi'"
+		"kill": "sh -c 'pids=\"$(lsof -t -i:3002) $(lsof -t -i:3000)\"; if [ -n \"$pids\" ]; then kill $pids 2>/dev/null || true; fi'",
+		"postinstall": "bun run hooks:install"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.7",
