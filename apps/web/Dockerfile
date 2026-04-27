@@ -8,6 +8,7 @@ FROM base AS deps
 COPY package.json bun.lock* ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/backend/package.json ./apps/backend/
+COPY scripts ./scripts/
 
 WORKDIR /app
 RUN --mount=type=cache,target=/root/.bun/install/cache \
