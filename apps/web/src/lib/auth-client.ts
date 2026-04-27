@@ -1,6 +1,7 @@
 import { passkeyClient } from "@better-auth/passkey/client";
 import type { AuthType } from "backend/lib/auth-types";
 import { adminClient, inferAdditionalFields, lastLoginMethodClient, twoFactorClient } from "better-auth/client/plugins";
+import { createMcpAuthClient } from "better-auth/plugins/mcp/client";
 import { createAuthClient } from "better-auth/react";
 import { env } from "./env";
 
@@ -26,3 +27,7 @@ export function useIsAuthenticated() {
 		loading: session.isPending,
 	};
 }
+
+export const mcpAuth = createMcpAuthClient({
+	authURL: `${env.NEXT_PUBLIC_BACKEND_URL}/api/auth`,
+});

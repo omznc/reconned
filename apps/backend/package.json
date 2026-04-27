@@ -1,7 +1,9 @@
 {
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "^8.5.0",
+		"@better-auth/api-key": "1.5.6",
 		"@better-auth/passkey": "1.5.6",
+		"@modelcontextprotocol/sdk": "1.29.0",
 		"@opentelemetry/api-logs": "^0.213.0",
 		"@opentelemetry/exporter-logs-otlp-http": "^0.213.0",
 		"@opentelemetry/resources": "^2.6.0",
