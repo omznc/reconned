@@ -33,6 +33,9 @@
 		"import-in-the-middle": "1.14.2"
 	},
 	"dependencies": {
-		"@types/turndown": "^5.0.6"
+		"@better-auth/api-key": "^1.6.9",
+		"@modelcontextprotocol/sdk": "^1.29.0",
+		"@types/turndown": "^5.0.6",
+		"mcp-use": "^1.25.0"
 	}
 }

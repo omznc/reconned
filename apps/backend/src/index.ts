@@ -19,10 +19,12 @@ import { handleOpenAPIRoutes } from "./lib/openapi";
 import { logger } from "./lib/posthog";
 import { adminRouter } from "./routes/admin";
 import { alliancesRouter } from "./routes/alliances";
+import { apiKeysRouter } from "./routes/api-keys";
 import { clubsRouter } from "./routes/clubs";
 import { countriesRouter } from "./routes/countries";
 import { dashboardRouter } from "./routes/dashboard";
 import { eventsRouter } from "./routes/events";
+import { handleMCPRequest } from "./routes/mcp";
 import { publicRouter } from "./routes/public";
 import { reviewsRouter } from "./routes/reviews";
 import { usersRouter } from "./routes/users";
@@ -81,6 +83,7 @@ async function handleRequest(request: Request): Promise<Response> {
 			adminRouter,
 			publicRouter,
 			alliancesRouter,
+			apiKeysRouter,
 		],
 		corsOrigins,
 	);
@@ -90,6 +93,10 @@ async function handleRequest(request: Request): Promise<Response> {
 
 	if (url.pathname.startsWith("/api/auth")) {
 		return handleBetterAuth(request);
+	}
+
+	if (url.pathname === "/api/mcp") {
+		return handleMCPRequest(request);
 	}
 
 	let user: { id: string; email: string; name: string; role?: string } | undefined;
@@ -153,6 +160,7 @@ mainRouter.use(utilsRouter, "/api");
 mainRouter.use(adminRouter, "/api");
 mainRouter.use(publicRouter, "/api");
 mainRouter.use(alliancesRouter, "/api");
+mainRouter.use(apiKeysRouter, "/api");
 
 Bun.serve({
 	port: 3002,

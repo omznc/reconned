@@ -1022,6 +1022,206 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/auth/api-key/create": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Create a new API key for a user */
+		post: operations["authapiKeycreatePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/api-key/get": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description Retrieve an existing API key by ID */
+		get: operations["authapiKeygetGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/api-key/update": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Update an existing API key by ID */
+		post: operations["authapiKeyupdatePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/api-key/delete": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Delete an existing API key */
+		post: operations["authapiKeydeletePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/api-key/list": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description List all API keys for the authenticated user or for a specific organization */
+		get: operations["authapiKeylistGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/oauth2/consent": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Handle OAuth2 consent. Supports both URL parameter-based flows (consent_code in body) and cookie-based flows (signed cookie). */
+		post: operations["authoauth2consentPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/.well-known/oauth-authorization-server": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get: operations["auth.wellKnownoauthAuthorizationServerGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/.well-known/oauth-protected-resource": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get: operations["auth.wellKnownoauthProtectedResourceGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/mcp/authorize": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description Authorize an OAuth2 request using MCP */
+		get: operations["authmcpauthorizeGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/mcp/token": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post: operations["authmcptokenPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/mcp/register": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Register an OAuth2 application */
+		post: operations["authmcpregisterPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/auth/mcp/get-session": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get: operations["authmcpgetSessionGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/countries": {
 		parameters: {
 			query?: never;
@@ -3404,6 +3604,50 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/api-keys": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List API keys
+		 * @description List all API keys for the current user
+		 */
+		get: operations["apiKeysGet"];
+		put?: never;
+		/**
+		 * Create API key
+		 * @description Create a new API key for the current user
+		 */
+		post: operations["apiKeysPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api-keys/{id}/revoke": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Revoke API key
+		 * @description Revoke an API key by ID
+		 */
+		post: operations["apiKeysidrevokePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3515,6 +3759,85 @@ export interface components {
 			secret: string;
 			backupCodes: string;
 			userId: string;
+		};
+		Apikey: {
+			id?: string;
+			/** @default default */
+			readonly configId: string;
+			readonly name?: string;
+			readonly start?: string;
+			readonly referenceId?: string;
+			readonly prefix?: string;
+			readonly key?: string;
+			readonly refillInterval?: number;
+			readonly refillAmount?: number;
+			/** Format: date-time */
+			readonly lastRefillAt?: string;
+			/** @default true */
+			readonly enabled: boolean;
+			/** @default true */
+			readonly rateLimitEnabled: boolean;
+			/** @default 86400000 */
+			readonly rateLimitTimeWindow: number;
+			/** @default 10 */
+			readonly rateLimitMax: number;
+			/** @default 0 */
+			readonly requestCount: number;
+			readonly remaining?: number;
+			/** Format: date-time */
+			readonly lastRequest?: string;
+			/** Format: date-time */
+			readonly expiresAt?: string;
+			/** Format: date-time */
+			readonly createdAt?: string;
+			/** Format: date-time */
+			readonly updatedAt?: string;
+			readonly permissions?: string;
+			metadata?: string;
+		};
+		OauthApplication: {
+			id?: string;
+			name?: string;
+			icon?: string;
+			metadata?: string;
+			clientId?: string;
+			clientSecret?: string;
+			redirectUrls?: string;
+			type?: string;
+			/** @default false */
+			disabled: boolean;
+			userId?: string;
+			/** Format: date-time */
+			createdAt?: string;
+			/** Format: date-time */
+			updatedAt?: string;
+		};
+		OauthAccessToken: {
+			id?: string;
+			accessToken?: string;
+			refreshToken?: string;
+			/** Format: date-time */
+			accessTokenExpiresAt?: string;
+			/** Format: date-time */
+			refreshTokenExpiresAt?: string;
+			clientId?: string;
+			userId?: string;
+			scopes?: string;
+			/** Format: date-time */
+			createdAt?: string;
+			/** Format: date-time */
+			updatedAt?: string;
+		};
+		OauthConsent: {
+			id?: string;
+			clientId?: string;
+			userId?: string;
+			scopes?: string;
+			/** Format: date-time */
+			createdAt?: string;
+			/** Format: date-time */
+			updatedAt?: string;
+			consentGiven?: boolean;
 		};
 	};
 	responses: never;
@@ -9597,6 +9920,1422 @@ export interface operations {
 					};
 				};
 			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authapiKeycreatePost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description The configuration ID to use for the API key. If not provided, the default configuration will be used. */
+					configId?: string | null;
+					/** @description Name of the Api Key */
+					name?: string | null;
+					/** @default null */
+					expiresIn: string;
+					/** @description Prefix of the Api Key */
+					prefix?: string | null;
+					/** @default null */
+					remaining: string;
+					metadata?: string | null;
+					/** @description Amount to refill the remaining count of the Api Key. server-only. Eg: 100 */
+					refillAmount?: number | null;
+					/** @description Interval to refill the Api Key in milliseconds. server-only. Eg: 1000 */
+					refillInterval?: number | null;
+					/** @description The duration in milliseconds where each request is counted. Once the `maxRequests` is reached, the request will be rejected until the `timeWindow` has passed, at which point the `timeWindow` will be reset. server-only. Eg: 1000 */
+					rateLimitTimeWindow?: number | null;
+					/** @description Maximum amount of requests allowed within a window. Once the `maxRequests` is reached, the request will be rejected until the `timeWindow` has passed, at which point the `timeWindow` will be reset. server-only. Eg: 100 */
+					rateLimitMax?: number | null;
+					/** @description Whether the key has rate limiting enabled. server-only. Eg: true */
+					rateLimitEnabled?: boolean | null;
+					/** @description Permissions of the Api Key. */
+					permissions?: string | null;
+					/** @description User Id of the user that the Api Key belongs to. server-only. Eg: "user-id" */
+					userId?: string | null;
+					/** @description Organization Id of the organization that the Api Key belongs to. Eg: 'org-id' */
+					organizationId?: string | null;
+				};
+			};
+		};
+		responses: {
+			/** @description API key created successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						/** @description Unique identifier of the API key */
+						id: string;
+						/**
+						 * Format: date-time
+						 * @description Creation timestamp
+						 */
+						createdAt: string;
+						/**
+						 * Format: date-time
+						 * @description Last update timestamp
+						 */
+						updatedAt: string;
+						/** @description Name of the API key */
+						name?: string | null;
+						/** @description Prefix of the API key */
+						prefix?: string | null;
+						/** @description Starting characters of the key (if configured) */
+						start?: string | null;
+						/** @description The full API key (only returned on creation) */
+						key: string;
+						/** @description Whether the key is enabled */
+						enabled: boolean;
+						/**
+						 * Format: date-time
+						 * @description Expiration timestamp
+						 */
+						expiresAt?: string | null;
+						/** @description ID of the reference owning the key */
+						referenceId: string;
+						/**
+						 * Format: date-time
+						 * @description Last refill timestamp
+						 */
+						lastRefillAt?: string | null;
+						/**
+						 * Format: date-time
+						 * @description Last request timestamp
+						 */
+						lastRequest?: string | null;
+						/** @description Metadata associated with the key */
+						metadata?: {
+							[key: string]: unknown;
+						} | null;
+						/** @description Maximum requests in time window */
+						rateLimitMax?: number | null;
+						/** @description Rate limit time window in milliseconds */
+						rateLimitTimeWindow?: number | null;
+						/** @description Remaining requests */
+						remaining?: number | null;
+						/** @description Amount to refill */
+						refillAmount?: number | null;
+						/** @description Refill interval in milliseconds */
+						refillInterval?: number | null;
+						/** @description Whether rate limiting is enabled */
+						rateLimitEnabled: boolean;
+						/** @description Current request count in window */
+						requestCount: number;
+						/** @description Permissions associated with the key */
+						permissions?: {
+							[key: string]: string[];
+						} | null;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authapiKeygetGet: {
+		parameters: {
+			query?: {
+				configId?: string | null;
+				id?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description API key retrieved successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						/** @description ID */
+						id: string;
+						/** @description The name of the key */
+						name?: string | null;
+						/** @description Shows the first few characters of the API key, including the prefix. This allows you to show those few characters in the UI to make it easier for users to identify the API key. */
+						start?: string | null;
+						/** @description The API Key prefix. Stored as plain text. */
+						prefix?: string | null;
+						/** @description The owner of the user id */
+						userId: string;
+						/** @description The interval in milliseconds between refills of the `remaining` count. Example: 3600000 // refill every hour (3600000ms = 1h) */
+						refillInterval?: number | null;
+						/** @description The amount to refill */
+						refillAmount?: number | null;
+						/**
+						 * Format: date-time
+						 * @description The last refill date
+						 */
+						lastRefillAt?: string | null;
+						/**
+						 * @description Sets if key is enabled or disabled
+						 * @default true
+						 */
+						enabled: boolean;
+						/** @description Whether the key has rate limiting enabled */
+						rateLimitEnabled: boolean;
+						/** @description The duration in milliseconds */
+						rateLimitTimeWindow?: number | null;
+						/** @description Maximum amount of requests allowed within a window */
+						rateLimitMax?: number | null;
+						/** @description The number of requests made within the rate limit time window */
+						requestCount: number;
+						/** @description Remaining requests (every time api key is used this should updated and should be updated on refill as well) */
+						remaining?: number | null;
+						/**
+						 * Format: date-time
+						 * @description When last request occurred
+						 */
+						lastRequest?: string | null;
+						/**
+						 * Format: date-time
+						 * @description Expiry date of a key
+						 */
+						expiresAt?: string | null;
+						/**
+						 * Format: date-time
+						 * @description created at
+						 */
+						createdAt: string;
+						/**
+						 * Format: date-time
+						 * @description updated at
+						 */
+						updatedAt: string;
+						/** @description Extra metadata about the apiKey */
+						metadata?: {
+							[key: string]: unknown;
+						} | null;
+						/** @description Permissions for the api key (stored as JSON string) */
+						permissions?: string | null;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authapiKeyupdatePost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description The configuration ID to use for the API key lookup. If not provided, the default configuration will be used. */
+					configId?: string | null;
+					/** @description The id of the Api Key */
+					keyId: string;
+					/** @description The id of the user which the api key belongs to. server-only. Eg: "some-user-id" */
+					userId?: string | null;
+					/** @description The name of the key */
+					name?: string | null;
+					/** @description Whether the Api Key is enabled or not */
+					enabled?: boolean | null;
+					/** @description The number of remaining requests */
+					remaining?: number | null;
+					/** @description The refill amount */
+					refillAmount?: number | null;
+					/** @description The refill interval */
+					refillInterval?: number | null;
+					metadata?: string | null;
+					expiresIn: string;
+					/** @description Whether the key has rate limiting enabled. */
+					rateLimitEnabled?: boolean | null;
+					/** @description The duration in milliseconds where each request is counted. server-only. Eg: 1000 */
+					rateLimitTimeWindow?: number | null;
+					/** @description Maximum amount of requests allowed within a window. Once the `maxRequests` is reached, the request will be rejected until the `timeWindow` has passed, at which point the `timeWindow` will be reset. server-only. Eg: 100 */
+					rateLimitMax?: number | null;
+					permissions: string;
+				};
+			};
+		};
+		responses: {
+			/** @description API key updated successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						/** @description ID */
+						id: string;
+						/** @description The name of the key */
+						name?: string | null;
+						/** @description Shows the first few characters of the API key, including the prefix. This allows you to show those few characters in the UI to make it easier for users to identify the API key. */
+						start?: string | null;
+						/** @description The API Key prefix. Stored as plain text. */
+						prefix?: string | null;
+						/** @description The owner of the user id */
+						userId: string;
+						/** @description The interval in milliseconds between refills of the `remaining` count. Example: 3600000 // refill every hour (3600000ms = 1h) */
+						refillInterval?: number | null;
+						/** @description The amount to refill */
+						refillAmount?: number | null;
+						/**
+						 * Format: date-time
+						 * @description The last refill date
+						 */
+						lastRefillAt?: string | null;
+						/**
+						 * @description Sets if key is enabled or disabled
+						 * @default true
+						 */
+						enabled: boolean;
+						/** @description Whether the key has rate limiting enabled */
+						rateLimitEnabled: boolean;
+						/** @description The duration in milliseconds */
+						rateLimitTimeWindow?: number | null;
+						/** @description Maximum amount of requests allowed within a window */
+						rateLimitMax?: number | null;
+						/** @description The number of requests made within the rate limit time window */
+						requestCount: number;
+						/** @description Remaining requests (every time api key is used this should updated and should be updated on refill as well) */
+						remaining?: number | null;
+						/**
+						 * Format: date-time
+						 * @description When last request occurred
+						 */
+						lastRequest?: string | null;
+						/**
+						 * Format: date-time
+						 * @description Expiry date of a key
+						 */
+						expiresAt?: string | null;
+						/**
+						 * Format: date-time
+						 * @description created at
+						 */
+						createdAt: string;
+						/**
+						 * Format: date-time
+						 * @description updated at
+						 */
+						updatedAt: string;
+						/** @description Extra metadata about the apiKey */
+						metadata?: {
+							[key: string]: unknown;
+						} | null;
+						/** @description Permissions for the api key (stored as JSON string) */
+						permissions?: string | null;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authapiKeydeletePost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: {
+			content: {
+				"application/json": {
+					/** @description The id of the API key to delete */
+					keyId: string;
+				};
+			};
+		};
+		responses: {
+			/** @description API key deleted successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						/** @description Indicates if the API key was successfully deleted */
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authapiKeylistGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description API keys retrieved successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						apiKeys: {
+							/** @description ID */
+							id: string;
+							/** @description The name of the key */
+							name?: string | null;
+							/** @description Shows the first few characters of the API key, including the prefix. This allows you to show those few characters in the UI to make it easier for users to identify the API key. */
+							start?: string | null;
+							/** @description The API Key prefix. Stored as plain text. */
+							prefix?: string | null;
+							/** @description The owner of the user id */
+							userId: string;
+							/** @description The interval in milliseconds between refills of the `remaining` count. Example: 3600000 // refill every hour (3600000ms = 1h) */
+							refillInterval?: number | null;
+							/** @description The amount to refill */
+							refillAmount?: number | null;
+							/**
+							 * Format: date-time
+							 * @description The last refill date
+							 */
+							lastRefillAt?: string | null;
+							/**
+							 * @description Sets if key is enabled or disabled
+							 * @default true
+							 */
+							enabled: boolean;
+							/** @description Whether the key has rate limiting enabled */
+							rateLimitEnabled: boolean;
+							/** @description The duration in milliseconds */
+							rateLimitTimeWindow?: number | null;
+							/** @description Maximum amount of requests allowed within a window */
+							rateLimitMax?: number | null;
+							/** @description The number of requests made within the rate limit time window */
+							requestCount: number;
+							/** @description Remaining requests (every time api key is used this should updated and should be updated on refill as well) */
+							remaining?: number | null;
+							/**
+							 * Format: date-time
+							 * @description When last request occurred
+							 */
+							lastRequest?: string | null;
+							/**
+							 * Format: date-time
+							 * @description Expiry date of a key
+							 */
+							expiresAt?: string | null;
+							/**
+							 * Format: date-time
+							 * @description created at
+							 */
+							createdAt: string;
+							/**
+							 * Format: date-time
+							 * @description updated at
+							 */
+							updatedAt: string;
+							/** @description Extra metadata about the apiKey */
+							metadata?: {
+								[key: string]: unknown;
+							} | null;
+							/** @description Permissions for the api key (stored as JSON string) */
+							permissions?: string | null;
+						}[];
+						/** @description Total number of API keys */
+						total: number;
+						/** @description The limit used for pagination */
+						limit?: number | null;
+						/** @description The offset used for pagination */
+						offset?: number | null;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authoauth2consentPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description Whether the user accepts or denies the consent request */
+					accept: boolean;
+					/** @description The consent code from the authorization request. Optional if using cookie-based flow. */
+					consent_code?: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Consent processed successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						/**
+						 * Format: uri
+						 * @description The URI to redirect to, either with an authorization code or an error
+						 */
+						redirectURI: string;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	"auth.wellKnownoauthAuthorizationServerGet": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	"auth.wellKnownoauthProtectedResourceGet": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authmcpauthorizeGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Authorization response generated successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						[key: string]: unknown;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authmcptokenPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authmcpregisterPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					redirect_uris: unknown[];
+					/** @default client_secret_basic */
+					token_endpoint_auth_method?: string | null;
+					/**
+					 * @default [
+					 *       "authorization_code"
+					 *     ]
+					 */
+					grant_types?: unknown[] | null;
+					/**
+					 * @default [
+					 *       "code"
+					 *     ]
+					 */
+					response_types?: unknown[] | null;
+					client_name?: string | null;
+					client_uri?: string | null;
+					logo_uri?: string | null;
+					scope?: string | null;
+					contacts?: unknown[] | null;
+					tos_uri?: string | null;
+					policy_uri?: string | null;
+					jwks_uri?: string | null;
+					jwks?: string | null;
+					metadata?: string | null;
+					software_id?: string | null;
+					software_version?: string | null;
+					software_statement?: string | null;
+				};
+			};
+		};
+		responses: {
+			/** @description OAuth2 application registered successfully */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						/** @description Name of the OAuth2 application */
+						name: string;
+						/** @description Icon URL for the application */
+						icon?: string | null;
+						/** @description Additional metadata for the application */
+						metadata?: {
+							[key: string]: unknown;
+						} | null;
+						/** @description Unique identifier for the client */
+						clientId: string;
+						/** @description Secret key for the client. Not included for public clients. */
+						clientSecret?: string;
+						/** @description List of allowed redirect URLs */
+						redirectUrls: string[];
+						/**
+						 * @description Type of the client
+						 * @enum {string}
+						 */
+						type: "web" | "public";
+						/**
+						 * @description Authentication scheme used by the client
+						 * @enum {string}
+						 */
+						authenticationScheme: "client_secret" | "none";
+						/**
+						 * @description Whether the client is disabled
+						 * @enum {boolean}
+						 */
+						disabled: false;
+						/** @description ID of the user who registered the client, null if registered anonymously */
+						userId?: string | null;
+						/**
+						 * Format: date-time
+						 * @description Creation timestamp
+						 */
+						createdAt: string;
+						/**
+						 * Format: date-time
+						 * @description Last update timestamp
+						 */
+						updatedAt: string;
+					};
+				};
+			};
+			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
+	authmcpgetSessionGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
 			/** @description Bad Request. Usually due to missing parameters, or invalid parameters. */
 			400: {
 				headers: {
@@ -19456,6 +21195,129 @@ export interface operations {
 			};
 			/** @description Bad Request */
 			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	apiKeysGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						apiKeys: {
+							[key: string]: unknown;
+						}[];
+						total: number;
+						limit?: number;
+						offset?: number;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	apiKeysPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					name: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						[key: string]: unknown;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	apiKeysidrevokePost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
 				headers: {
 					[name: string]: unknown;
 				};

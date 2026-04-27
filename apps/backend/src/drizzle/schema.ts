@@ -235,6 +235,39 @@ export const session = pgTable(
 	],
 );
 
+export const apikey = pgTable(
+	"apikey",
+	{
+		id: text().primaryKey().notNull(),
+		configId: text().notNull(),
+		name: text(),
+		start: text(),
+		prefix: text(),
+		key: text().notNull(),
+		referenceId: text().notNull(),
+		refillInterval: integer(),
+		refillAmount: integer(),
+		lastRefillAt: timestamp({ precision: 3, mode: "string" }),
+		enabled: boolean().default(true).notNull(),
+		rateLimitEnabled: boolean().default(true).notNull(),
+		rateLimitTimeWindow: integer(),
+		rateLimitMax: integer(),
+		requestCount: integer().default(0).notNull(),
+		remaining: integer(),
+		lastRequest: timestamp({ precision: 3, mode: "string" }),
+		expiresAt: timestamp({ precision: 3, mode: "string" }),
+		createdAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		permissions: text(),
+		metadata: text(),
+	},
+	(table) => [
+		index("apikey_configId_idx").using("btree", table.configId.asc().nullsLast().op("text_ops")),
+		index("apikey_key_idx").using("btree", table.key.asc().nullsLast().op("text_ops")),
+		index("apikey_referenceId_idx").using("btree", table.referenceId.asc().nullsLast().op("text_ops")),
+	],
+);
+
 export const clubRule = pgTable(
 	"ClubRule",
 	{
@@ -626,6 +659,8 @@ export const country = pgTable(
 		longitude: numeric({ precision: 11, scale: 8 }),
 		emoji: text(),
 		translations: jsonb(),
+		currency: text(),
+		currencyCode: text(),
 		enabled: boolean().default(true).notNull(),
 		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),

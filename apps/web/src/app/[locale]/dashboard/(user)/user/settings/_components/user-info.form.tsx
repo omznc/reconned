@@ -24,6 +24,7 @@ import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
 import { addImageVersion } from "@/lib/utils";
 import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 import { ImageCropDialog } from "./image-crop-dialog.tsx";
+import { McpSection } from "./mcp-section";
 
 type User = ApiResponse<"/api/users/{id}", "get">;
 interface UserInfoFormProps {
@@ -472,6 +473,10 @@ export function UserInfoForm(props: UserInfoFormProps) {
 							</FormItem>
 						)}
 					/>
+
+					<div>
+						<McpSection />
+					</div>
 
 					<div>
 						<h3 className="text-lg font-semibold flex items-center gap-2">
