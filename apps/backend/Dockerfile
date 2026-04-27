@@ -8,9 +8,9 @@ FROM base AS deps
 COPY package.json bun.lock* ./
 COPY apps/backend/package.json ./apps/backend/
 COPY apps/web/package.json ./apps/web/
+COPY scripts ./scripts/
 
-# Install from the backend workspace directory to create local node_modules
-WORKDIR /app/apps/backend
+WORKDIR /app
 RUN bun install --no-save --frozen-lockfile
 
 FROM base AS runner
