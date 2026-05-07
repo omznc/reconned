@@ -28,6 +28,7 @@ const appUrl = new URL(env.FRONTEND_URL);
 
 export const auth = betterAuth({
 	telemetry: { enabled: false },
+	rateLimit: { enabled: false },
 	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
@@ -171,6 +172,7 @@ export const auth = betterAuth({
 		apiKey({
 			defaultPrefix: "rec_",
 			enableSessionForAPIKeys: true,
+			rateLimit: { enabled: false },
 		}),
 		mcp({
 			loginPage: "/sign-in",
