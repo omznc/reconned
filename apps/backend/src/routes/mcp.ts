@@ -790,950 +790,996 @@ export async function handleMCPRequest(request: Request): Promise<Response> {
 		return new Response("Method Not Allowed", { status: 405 });
 	}
 
-	const session = await auth.api.getSession({
-		headers: request.headers,
-	});
+	const headers = new Headers(request.headers);
 
-	if (!session?.user) {
-		return new Response(
-			JSON.stringify({
-				jsonrpc: "2.0",
-				error: { code: -32001, message: "Unauthorized" },
-				id: null,
-			}),
-			{ status: 401, headers: { "Content-Type": "application/json" } },
-		);
+	const apiKey = headers.get("X-API-Key");
+	if (apiKey && !headers.has("Authorization")) {
+		headers.set("Authorization", `Bearer ${apiKey}`);
 	}
 
-	const userId = session.user.id;
-
-	if (!checkRateLimit(mcpRateLimits, userId, MAX_REQUESTS)) {
-		return new Response(
-			JSON.stringify({
-				jsonrpc: "2.0",
-				error: {
-					code: -32002,
-					message: `Rate limit exceeded. Limited to ${MAX_REQUESTS} requests/minute.`,
-				},
-				id: null,
-			}),
-			{ status: 429, headers: { "Content-Type": "application/json", "Retry-After": "60" } },
-		);
+	const authHeader = headers.get("Authorization");
+	if (authHeader?.startsWith("Bearer ") && !headers.has("X-API-Key")) {
+		headers.set("X-API-Key", authHeader.slice(7));
 	}
 
-	const server = new Server(
-		{
-			name: "reconned-mcp",
-			version: "1.0.0",
-		},
-		{
-			capabilities: {
-				tools: {},
-			},
-		},
-	);
+	try {
+		const session = await auth.api.getSession({
+			headers,
+		});
 
-	server.setRequestHandler(ListToolsRequestSchema, async () => {
-		return { tools: TOOLS };
-	});
-
-	server.setRequestHandler(CallToolRequestSchema, async (req) => {
-		const { name, arguments: args } = req.params;
-
-		if (WRITE_TOOLS.has(name) && !checkRateLimit(mcpWriteRateLimits, userId, MAX_WRITES)) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: JSON.stringify({
-							error: `Write rate limit exceeded. Limited to ${MAX_WRITES} writes per minute.`,
-						}),
-					},
-				],
-				isError: true,
-			};
+		if (!session?.user) {
+			return new Response(
+				JSON.stringify({
+					jsonrpc: "2.0",
+					error: { code: -32001, message: "Unauthorized" },
+					id: null,
+				}),
+				{ status: 401, headers: { "Content-Type": "application/json" } },
+			);
 		}
 
-		try {
-			let result: unknown;
+		const userId = session.user.id;
 
-			switch (name) {
-				case "get_profile": {
-					const profile = await db
-						.select({
-							id: user.id,
-							name: user.name,
-							email: user.email,
-							bio: user.bio,
-							location: user.location,
-							website: user.website,
-							phone: user.phone,
-							callsign: user.callsign,
-							image: user.image,
-							language: user.language,
-							theme: user.theme,
-							font: user.font,
-							style: user.style,
-						})
-						.from(user)
-						.where(eq(user.id, userId))
-						.limit(1);
-					result = profile[0] || null;
-					break;
-				}
+		if (!checkRateLimit(mcpRateLimits, userId, MAX_REQUESTS)) {
+			return new Response(
+				JSON.stringify({
+					jsonrpc: "2.0",
+					error: {
+						code: -32002,
+						message: `Rate limit exceeded. Limited to ${MAX_REQUESTS} requests/minute.`,
+					},
+					id: null,
+				}),
+				{ status: 429, headers: { "Content-Type": "application/json", "Retry-After": "60" } },
+			);
+		}
 
-				case "update_profile": {
-					const parsed = toolArgsSchemas.update_profile.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const updateData = {
-						...parsed.data,
-						updatedAt: new Date().toISOString(),
-					};
-					await db.update(user).set(updateData).where(eq(user.id, userId));
-					result = { success: true };
-					break;
-				}
+		const server = new Server(
+			{
+				name: "reconned-mcp",
+				version: "1.0.0",
+			},
+			{
+				capabilities: {
+					tools: {},
+				},
+			},
+		);
 
-				case "get_user": {
-					const parsed = toolArgsSchemas.get_user.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const userData = await db
-						.select({
-							id: user.id,
-							name: user.name,
-							email: user.email,
-							bio: user.bio,
-							image: user.image,
-							location: user.location,
-							callsign: user.callsign,
-						})
-						.from(user)
-						.where(eq(user.id, parsed.data.userId))
-						.limit(1);
-					result = userData[0] || null;
-					break;
-				}
+		server.setRequestHandler(ListToolsRequestSchema, async () => {
+			return { tools: TOOLS };
+		});
 
-				case "list_users": {
-					const parsed = toolArgsSchemas.list_users.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const limit = parsed.data.limit || 20;
-					const offset = parsed.data.offset || 0;
-					const users = await db
-						.select({
-							id: user.id,
-							name: user.name,
-							email: user.email,
-							image: user.image,
-							bio: user.bio,
-						})
-						.from(user)
-						.limit(limit)
-						.offset(offset);
-					result = users;
-					break;
-				}
+		server.setRequestHandler(CallToolRequestSchema, async (req) => {
+			const { name, arguments: args } = req.params;
 
-				case "get_user_profile": {
-					const parsed = toolArgsSchemas.get_user_profile.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const userData = await db
-						.select({
-							id: user.id,
-							name: user.name,
-							image: user.image,
-							bio: user.bio,
-							location: user.location,
-							callsign: user.callsign,
-							createdAt: user.createdAt,
-						})
-						.from(user)
-						.where(eq(user.id, parsed.data.userId))
-						.limit(1);
-					result = userData[0] || null;
-					break;
-				}
-
-				case "get_user_stats": {
-					const parsed = toolArgsSchemas.get_user_stats.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const [clubCount] = await db
-						.select({ count: count() })
-						.from(clubMembership)
-						.where(eq(clubMembership.userId, parsed.data.userId));
-					const [eventCount] = await db
-						.select({ count: count() })
-						.from(eventRegistration)
-						.where(eq(eventRegistration.createdById, parsed.data.userId));
-					result = {
-						clubs: clubCount?.count || 0,
-						events: eventCount?.count || 0,
-					};
-					break;
-				}
-
-				case "get_pending_invites": {
-					const invites = await db
-						.select({
-							id: clubInvite.id,
-							email: clubInvite.email,
-							clubId: clubInvite.clubId,
-							status: clubInvite.status,
-							expiresAt: clubInvite.expiresAt,
-							createdAt: clubInvite.createdAt,
-						})
-						.from(clubInvite)
-						.where(and(eq(clubInvite.userId, userId), eq(clubInvite.status, "PENDING")));
-					result = invites;
-					break;
-				}
-
-				case "get_invites_count": {
-					const [countResult] = await db
-						.select({ count: count() })
-						.from(clubInvite)
-						.where(and(eq(clubInvite.userId, userId), eq(clubInvite.status, "PENDING")));
-					result = { count: countResult?.count || 0 };
-					break;
-				}
-
-				case "get_daily_quota": {
-					result = {
-						uploadLimit: "10MB",
-						used: "0MB",
-						remaining: "10MB",
-					};
-					break;
-				}
-
-				case "update_user_theme": {
-					const parsed = toolArgsSchemas.update_user_theme.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					await db
-						.update(user)
-						.set({ theme: parsed.data.theme, updatedAt: new Date().toISOString() })
-						.where(eq(user.id, userId));
-					result = { success: true };
-					break;
-				}
-
-				case "update_user_font": {
-					const parsed = toolArgsSchemas.update_user_font.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					await db
-						.update(user)
-						.set({ font: parsed.data.font, updatedAt: new Date().toISOString() })
-						.where(eq(user.id, userId));
-					result = { success: true };
-					break;
-				}
-
-				case "update_user_style": {
-					const parsed = toolArgsSchemas.update_user_style.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					await db
-						.update(user)
-						.set({ style: parsed.data.style, updatedAt: new Date().toISOString() })
-						.where(eq(user.id, userId));
-					result = { success: true };
-					break;
-				}
-
-				case "update_user_language": {
-					const parsed = toolArgsSchemas.update_user_language.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					await db
-						.update(user)
-						.set({ language: parsed.data.language, updatedAt: new Date().toISOString() })
-						.where(eq(user.id, userId));
-					result = { success: true };
-					break;
-				}
-
-				case "list_clubs": {
-					const memberships = await db.select().from(clubMembership).where(eq(clubMembership.userId, userId));
-
-					const clubs = await Promise.all(
-						memberships.map(async (membership) => {
-							const clubData = await db
-								.select()
-								.from(club)
-								.where(eq(club.id, membership.clubId))
-								.limit(1);
-							return {
-								membership: {
-									id: membership.id,
-									role: membership.role,
-									startDate: membership.startDate,
-									endDate: membership.endDate,
-								},
-								club: clubData[0] || null,
-							};
-						}),
-					);
-					result = clubs;
-					break;
-				}
-
-				case "get_club": {
-					const parsed = toolArgsSchemas.get_club.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const clubData = await db.select().from(club).where(eq(club.id, parsed.data.clubId)).limit(1);
-
-					const members = await db
-						.select()
-						.from(clubMembership)
-						.where(eq(clubMembership.clubId, parsed.data.clubId));
-
-					result = {
-						club: clubData[0] || null,
-						members: members.map((m) => ({
-							id: m.id,
-							userId: m.userId,
-							role: m.role,
-							startDate: m.startDate,
-							endDate: m.endDate,
-						})),
-					};
-					break;
-				}
-
-				case "list_club_members": {
-					const parsed = toolArgsSchemas.list_club_members.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const members = await db
-						.select({
-							id: clubMembership.id,
-							userId: clubMembership.userId,
-							role: clubMembership.role,
-							startDate: clubMembership.startDate,
-							endDate: clubMembership.endDate,
-							userName: user.name,
-							userEmail: user.email,
-						})
-						.from(clubMembership)
-						.innerJoin(user, eq(clubMembership.userId, user.id))
-						.where(eq(clubMembership.clubId, parsed.data.clubId));
-					result = members;
-					break;
-				}
-
-				case "create_club": {
-					const parsed = toolArgsSchemas.create_club.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const newClubId = crypto.randomUUID();
-					const now = new Date().toISOString();
-					const newClub = await db
-						.insert(club)
-						.values({
-							id: newClubId,
-							name: parsed.data.name,
-							description: parsed.data.description || null,
-							location: parsed.data.location || null,
-							isPrivate: parsed.data.isPrivate || false,
-							createdAt: now,
-							updatedAt: now,
-						})
-						.returning();
-
-					await db.insert(clubMembership).values({
-						id: crypto.randomUUID(),
-						userId: userId,
-						clubId: newClubId,
-						role: "CLUB_OWNER",
-						createdAt: now,
-						updatedAt: now,
-					});
-
-					result = newClub[0];
-					break;
-				}
-
-				case "update_club": {
-					const parsed = toolArgsSchemas.update_club.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					if (!(await isClubOwner(parsed.data.clubId, userId))) {
-						throw new Error("Only club owner can update club information");
-					}
-					const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
-					if (parsed.data.name) updateData.name = parsed.data.name;
-					if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
-					if (parsed.data.location !== undefined) updateData.location = parsed.data.location;
-					if (parsed.data.website !== undefined) updateData.website = parsed.data.website;
-					if (parsed.data.contactEmail !== undefined) updateData.contactEmail = parsed.data.contactEmail;
-					if (parsed.data.contactPhone !== undefined) updateData.contactPhone = parsed.data.contactPhone;
-
-					await db.update(club).set(updateData).where(eq(club.id, parsed.data.clubId));
-					result = { success: true };
-					break;
-				}
-
-				case "get_club_rules": {
-					const parsed = toolArgsSchemas.get_club_rules.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					if (!(await isClubManager(parsed.data.clubId, userId))) {
-						throw new Error("Only club managers and owners can view rules");
-					}
-					const rules = await db.select().from(clubRule).where(eq(clubRule.clubId, parsed.data.clubId));
-					result = rules;
-					break;
-				}
-
-				case "get_club_rule": {
-					const parsed = toolArgsSchemas.get_club_rule.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const rule = await db.select().from(clubRule).where(eq(clubRule.id, parsed.data.ruleId)).limit(1);
-					if (rule[0] && !(await isClubManager(rule[0].clubId, userId))) {
-						throw new Error("Only club managers and owners can view rules");
-					}
-					result = rule[0] || null;
-					break;
-				}
-
-				case "create_club_rule": {
-					const parsed = toolArgsSchemas.create_club_rule.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					if (!(await isClubManager(parsed.data.clubId, userId))) {
-						throw new Error("Only club managers and owners can create rules");
-					}
-					const now = new Date().toISOString();
-					const newRule = await db
-						.insert(clubRule)
-						.values({
-							id: crypto.randomUUID(),
-							clubId: parsed.data.clubId,
-							name: parsed.data.name,
-							description: parsed.data.description || null,
-							content: parsed.data.content,
-							createdAt: now,
-							updatedAt: now,
-						})
-						.returning();
-					result = newRule[0];
-					break;
-				}
-
-				case "update_club_rule": {
-					const parsed = toolArgsSchemas.update_club_rule.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const existingRule = await db
-						.select()
-						.from(clubRule)
-						.where(eq(clubRule.id, parsed.data.ruleId))
-						.limit(1);
-					if (!existingRule[0]) {
-						throw new Error("Rule not found");
-					}
-					if (!(await isClubManager(existingRule[0].clubId, userId))) {
-						throw new Error("Only club managers and owners can update rules");
-					}
-					const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
-					if (parsed.data.name) updateData.name = parsed.data.name;
-					if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
-					if (parsed.data.content !== undefined) updateData.content = parsed.data.content;
-
-					await db.update(clubRule).set(updateData).where(eq(clubRule.id, parsed.data.ruleId));
-					result = { success: true };
-					break;
-				}
-
-				case "delete_club_rule": {
-					const parsed = toolArgsSchemas.delete_club_rule.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const existingRule = await db
-						.select()
-						.from(clubRule)
-						.where(eq(clubRule.id, parsed.data.ruleId))
-						.limit(1);
-					if (!existingRule[0]) {
-						throw new Error("Rule not found");
-					}
-					if (!(await isClubManager(existingRule[0].clubId, userId))) {
-						throw new Error("Only club managers and owners can delete rules");
-					}
-					await db.delete(clubRule).where(eq(clubRule.id, parsed.data.ruleId));
-					result = { success: true };
-					break;
-				}
-
-				case "get_club_posts": {
-					const parsed = toolArgsSchemas.get_club_posts.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const posts = await db
-						.select()
-						.from(post)
-						.where(eq(post.clubId, parsed.data.clubId))
-						.orderBy(desc(post.createdAt));
-					result = posts;
-					break;
-				}
-
-				case "get_club_post": {
-					const parsed = toolArgsSchemas.get_club_post.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const postData = await db.select().from(post).where(eq(post.id, parsed.data.postId)).limit(1);
-					result = postData[0] || null;
-					break;
-				}
-
-				case "create_club_post": {
-					const parsed = toolArgsSchemas.create_club_post.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					if (!(await isClubManager(parsed.data.clubId, userId))) {
-						throw new Error("Only club managers and owners can create posts");
-					}
-					const now = new Date().toISOString();
-					const newPost = await db
-						.insert(post)
-						.values({
-							id: crypto.randomUUID(),
-							clubId: parsed.data.clubId,
-							title: parsed.data.title,
-							content: parsed.data.content,
-							images: parsed.data.images || null,
-							isPublic: parsed.data.isPublic || false,
-							createdAt: now,
-							updatedAt: now,
-						})
-						.returning();
-					result = newPost[0];
-					break;
-				}
-
-				case "update_club_post": {
-					const parsed = toolArgsSchemas.update_club_post.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const existingPost = await db.select().from(post).where(eq(post.id, parsed.data.postId)).limit(1);
-					if (!existingPost[0]) {
-						throw new Error("Post not found");
-					}
-					if (!(await isClubManager(existingPost[0].clubId, userId))) {
-						throw new Error("Only club managers and owners can update posts");
-					}
-					const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
-					if (parsed.data.title) updateData.title = parsed.data.title;
-					if (parsed.data.content !== undefined) updateData.content = parsed.data.content;
-					if (parsed.data.images !== undefined) updateData.images = parsed.data.images;
-					if (parsed.data.isPublic !== undefined) updateData.isPublic = parsed.data.isPublic;
-
-					await db.update(post).set(updateData).where(eq(post.id, parsed.data.postId));
-					result = { success: true };
-					break;
-				}
-
-				case "add_club_member": {
-					const parsed = toolArgsSchemas.add_club_member.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					if (!(await isClubManager(parsed.data.clubId, userId))) {
-						throw new Error("Only club managers and owners can add members");
-					}
-					const now = new Date().toISOString();
-					const newMembership = await db
-						.insert(clubMembership)
-						.values({
-							id: crypto.randomUUID(),
-							userId: parsed.data.userId,
-							clubId: parsed.data.clubId,
-							role: (parsed.data.role as "USER" | "MANAGER") || "USER",
-							createdAt: now,
-							updatedAt: now,
-						})
-						.returning();
-					result = newMembership[0];
-					break;
-				}
-
-				case "remove_club_member": {
-					const parsed = toolArgsSchemas.remove_club_member.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const membership = await getUserMembership(parsed.data.clubId, parsed.data.userId);
-					if (!membership) {
-						throw new Error("Membership not found");
-					}
-					if (membership.role === "CLUB_OWNER") {
-						throw new Error("Cannot remove club owner");
-					}
-					const isManager = await isClubManager(parsed.data.clubId, userId);
-					if (!isManager && userId !== parsed.data.userId) {
-						throw new Error("Only managers can remove other members");
-					}
-					await db
-						.delete(clubMembership)
-						.where(
-							and(
-								eq(clubMembership.clubId, parsed.data.clubId),
-								eq(clubMembership.userId, parsed.data.userId),
-							),
-						);
-					result = { success: true };
-					break;
-				}
-
-				case "extend_membership": {
-					const parsed = toolArgsSchemas.extend_membership.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					if (!(await isClubManager(parsed.data.clubId, userId))) {
-						throw new Error("Only club managers and owners can extend memberships");
-					}
-					await db
-						.update(clubMembership)
-						.set({ endDate: parsed.data.endDate, updatedAt: new Date().toISOString() })
-						.where(
-							and(
-								eq(clubMembership.clubId, parsed.data.clubId),
-								eq(clubMembership.userId, parsed.data.userId),
-							),
-						);
-					result = { success: true };
-					break;
-				}
-
-				case "leave_club": {
-					const parsed = toolArgsSchemas.leave_club.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const membership = await getUserMembership(parsed.data.clubId, userId);
-					if (!membership) {
-						throw new Error("Not a member of this club");
-					}
-					if (membership.role === "CLUB_OWNER") {
-						throw new Error("Club owner cannot leave. Transfer ownership first.");
-					}
-					await db
-						.delete(clubMembership)
-						.where(and(eq(clubMembership.clubId, parsed.data.clubId), eq(clubMembership.userId, userId)));
-					result = { success: true };
-					break;
-				}
-
-				case "list_events": {
-					const parsed = toolArgsSchemas.list_events.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-
-					let query = db.select().from(event);
-					if (parsed.data.clubId) {
-						query = query.where(eq(event.clubId, parsed.data.clubId)) as typeof query;
-					}
-
-					const events = await query.orderBy(desc(event.dateStart));
-					result = events;
-					break;
-				}
-
-				case "get_event": {
-					const parsed = toolArgsSchemas.get_event.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const eventData = await db.select().from(event).where(eq(event.id, parsed.data.eventId)).limit(1);
-					result = eventData[0] || null;
-					break;
-				}
-
-				case "list_event_registrations": {
-					const parsed = toolArgsSchemas.list_event_registrations.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const registrations = await db
-						.select({
-							id: eventRegistration.id,
-							eventId: eventRegistration.eventId,
-							createdById: eventRegistration.createdById,
-							type: eventRegistration.type,
-							paymentMethod: eventRegistration.paymentMethod,
-							attended: eventRegistration.attended,
-							createdAt: eventRegistration.createdAt,
-							userName: user.name,
-						})
-						.from(eventRegistration)
-						.innerJoin(user, eq(eventRegistration.createdById, user.id))
-						.where(eq(eventRegistration.eventId, parsed.data.eventId));
-					result = registrations;
-					break;
-				}
-
-				case "register_for_event": {
-					const parsed = toolArgsSchemas.register_for_event.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-
-					const eventData = await db.select().from(event).where(eq(event.id, parsed.data.eventId)).limit(1);
-
-					if (!eventData[0]) {
-						throw new Error("Event not found");
-					}
-
-					const existing = await db
-						.select()
-						.from(eventRegistration)
-						.where(
-							and(
-								eq(eventRegistration.eventId, parsed.data.eventId),
-								eq(eventRegistration.createdById, userId),
-							),
-						)
-						.limit(1);
-
-					if (existing[0]) {
-						throw new Error("Already registered for this event");
-					}
-
-					const newRegistration = await db
-						.insert(eventRegistration)
-						.values({
-							id: crypto.randomUUID(),
-							eventId: parsed.data.eventId,
-							createdById: userId,
-							type: "solo",
-							paymentMethod: "cash",
-							attended: false,
-							createdAt: new Date().toISOString(),
-							updatedAt: new Date().toISOString(),
-						})
-						.returning();
-
-					result = newRegistration[0] || null;
-					break;
-				}
-
-				case "create_event": {
-					const parsed = toolArgsSchemas.create_event.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					if (!(await isClubManager(parsed.data.clubId, userId))) {
-						throw new Error("Only club managers and owners can create events");
-					}
-					const now = new Date().toISOString();
-					const newEvent = await db
-						.insert(event)
-						.values({
-							id: crypto.randomUUID(),
-							clubId: parsed.data.clubId,
-							name: parsed.data.name,
-							description: parsed.data.description,
-							dateStart: parsed.data.dateStart,
-							dateEnd: parsed.data.dateEnd,
-							dateRegistrationsOpen: parsed.data.dateRegistrationsOpen,
-							dateRegistrationsClose: parsed.data.dateRegistrationsClose,
-							location: parsed.data.location,
-							costPerPerson: parsed.data.costPerPerson || 0,
-							isPrivate: parsed.data.isPrivate || false,
-							allowFreelancers: parsed.data.allowFreelancers || false,
-							hasBreakfast: parsed.data.hasBreakfast || false,
-							hasLunch: parsed.data.hasLunch || false,
-							hasDinner: parsed.data.hasDinner || false,
-							hasSnacks: parsed.data.hasSnacks || false,
-							hasDrinks: parsed.data.hasDrinks || false,
-							hasPrizes: parsed.data.hasPrizes || false,
-							createdAt: now,
-							updatedAt: now,
-						})
-						.returning();
-					result = newEvent[0];
-					break;
-				}
-
-				case "update_event": {
-					const parsed = toolArgsSchemas.update_event.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const existingEvent = await db
-						.select()
-						.from(event)
-						.where(eq(event.id, parsed.data.eventId))
-						.limit(1);
-					if (!existingEvent[0]) {
-						throw new Error("Event not found");
-					}
-					if (!(await isClubManager(existingEvent[0].clubId, userId))) {
-						throw new Error("Only club managers and owners can update events");
-					}
-					const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
-					if (parsed.data.name) updateData.name = parsed.data.name;
-					if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
-					if (parsed.data.dateStart) updateData.dateStart = parsed.data.dateStart;
-					if (parsed.data.dateEnd) updateData.dateEnd = parsed.data.dateEnd;
-					if (parsed.data.dateRegistrationsOpen)
-						updateData.dateRegistrationsOpen = parsed.data.dateRegistrationsOpen;
-					if (parsed.data.dateRegistrationsClose)
-						updateData.dateRegistrationsClose = parsed.data.dateRegistrationsClose;
-					if (parsed.data.location) updateData.location = parsed.data.location;
-					if (parsed.data.costPerPerson !== undefined) updateData.costPerPerson = parsed.data.costPerPerson;
-					if (parsed.data.isPrivate !== undefined) updateData.isPrivate = parsed.data.isPrivate;
-
-					await db.update(event).set(updateData).where(eq(event.id, parsed.data.eventId));
-					result = { success: true };
-					break;
-				}
-
-				case "get_event_rules": {
-					const parsed = toolArgsSchemas.get_event_rules.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const rules = await db.select().from(clubRule).where(eq(clubRule.eventId, parsed.data.eventId));
-					result = rules;
-					break;
-				}
-
-				case "get_registrations_count": {
-					const parsed = toolArgsSchemas.get_registrations_count.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const [countResult] = await db
-						.select({ count: count() })
-						.from(eventRegistration)
-						.where(eq(eventRegistration.eventId, parsed.data.eventId));
-					result = { count: countResult?.count || 0 };
-					break;
-				}
-
-				case "update_registration_attendance": {
-					const parsed = toolArgsSchemas.update_registration_attendance.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const registration = await db
-						.select()
-						.from(eventRegistration)
-						.where(eq(eventRegistration.id, parsed.data.registrationId))
-						.limit(1);
-					if (!registration[0]) {
-						throw new Error("Registration not found");
-					}
-					const eventData = await db
-						.select()
-						.from(event)
-						.where(eq(event.id, registration[0].eventId))
-						.limit(1);
-					if (!eventData[0]) {
-						throw new Error("Event not found");
-					}
-					if (!(await isClubManager(eventData[0].clubId, userId))) {
-						throw new Error("Only club managers and owners can update attendance");
-					}
-					await db
-						.update(eventRegistration)
-						.set({ attended: parsed.data.attended, updatedAt: new Date().toISOString() })
-						.where(eq(eventRegistration.id, parsed.data.registrationId));
-					result = { success: true };
-					break;
-				}
-
-				case "create_review": {
-					const parsed = toolArgsSchemas.create_review.safeParse(args);
-					if (!parsed.success) {
-						throw new Error(`Invalid arguments: ${parsed.error.message}`);
-					}
-					const now = new Date().toISOString();
-					const newReview = await db
-						.insert(review)
-						.values({
-							id: crypto.randomUUID(),
-							type: parsed.data.type,
-							rating: parsed.data.rating,
-							content: parsed.data.content,
-							authorId: userId,
-							userId: parsed.data.userId || null,
-							clubId: parsed.data.clubId || null,
-							eventId: parsed.data.eventId || null,
-							createdAt: now,
-							updatedAt: now,
-						})
-						.returning();
-					result = newReview[0];
-					break;
-				}
-
-				default:
-					throw new Error(`Unknown tool: ${name}`);
+			if (WRITE_TOOLS.has(name) && !checkRateLimit(mcpWriteRateLimits, userId, MAX_WRITES)) {
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify({
+								error: `Write rate limit exceeded. Limited to ${MAX_WRITES} writes per minute.`,
+							}),
+						},
+					],
+					isError: true,
+				};
 			}
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: JSON.stringify(result, null, 2),
-					},
-				],
-			};
-		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			return {
-				content: [
-					{
-						type: "text",
-						text: JSON.stringify({ error: message }),
-					},
-				],
-				isError: true,
-			};
-		}
-	});
+			try {
+				let result: unknown;
 
-	const transport = new WebStandardStreamableHTTPServerTransport({
-		sessionIdGenerator: undefined,
-	});
+				switch (name) {
+					case "get_profile": {
+						const profile = await db
+							.select({
+								id: user.id,
+								name: user.name,
+								email: user.email,
+								bio: user.bio,
+								location: user.location,
+								website: user.website,
+								phone: user.phone,
+								callsign: user.callsign,
+								image: user.image,
+								language: user.language,
+								theme: user.theme,
+								font: user.font,
+								style: user.style,
+							})
+							.from(user)
+							.where(eq(user.id, userId))
+							.limit(1);
+						result = profile[0] || null;
+						break;
+					}
 
-	await server.connect(transport);
+					case "update_profile": {
+						const parsed = toolArgsSchemas.update_profile.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const updateData = {
+							...parsed.data,
+							updatedAt: new Date().toISOString(),
+						};
+						await db.update(user).set(updateData).where(eq(user.id, userId));
+						result = { success: true };
+						break;
+					}
 
-	return transport.handleRequest(request);
+					case "get_user": {
+						const parsed = toolArgsSchemas.get_user.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const userData = await db
+							.select({
+								id: user.id,
+								name: user.name,
+								email: user.email,
+								bio: user.bio,
+								image: user.image,
+								location: user.location,
+								callsign: user.callsign,
+							})
+							.from(user)
+							.where(eq(user.id, parsed.data.userId))
+							.limit(1);
+						result = userData[0] || null;
+						break;
+					}
+
+					case "list_users": {
+						const parsed = toolArgsSchemas.list_users.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const limit = parsed.data.limit || 20;
+						const offset = parsed.data.offset || 0;
+						const users = await db
+							.select({
+								id: user.id,
+								name: user.name,
+								email: user.email,
+								image: user.image,
+								bio: user.bio,
+							})
+							.from(user)
+							.limit(limit)
+							.offset(offset);
+						result = users;
+						break;
+					}
+
+					case "get_user_profile": {
+						const parsed = toolArgsSchemas.get_user_profile.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const userData = await db
+							.select({
+								id: user.id,
+								name: user.name,
+								image: user.image,
+								bio: user.bio,
+								location: user.location,
+								callsign: user.callsign,
+								createdAt: user.createdAt,
+							})
+							.from(user)
+							.where(eq(user.id, parsed.data.userId))
+							.limit(1);
+						result = userData[0] || null;
+						break;
+					}
+
+					case "get_user_stats": {
+						const parsed = toolArgsSchemas.get_user_stats.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const [clubCount] = await db
+							.select({ count: count() })
+							.from(clubMembership)
+							.where(eq(clubMembership.userId, parsed.data.userId));
+						const [eventCount] = await db
+							.select({ count: count() })
+							.from(eventRegistration)
+							.where(eq(eventRegistration.createdById, parsed.data.userId));
+						result = {
+							clubs: clubCount?.count || 0,
+							events: eventCount?.count || 0,
+						};
+						break;
+					}
+
+					case "get_pending_invites": {
+						const invites = await db
+							.select({
+								id: clubInvite.id,
+								email: clubInvite.email,
+								clubId: clubInvite.clubId,
+								status: clubInvite.status,
+								expiresAt: clubInvite.expiresAt,
+								createdAt: clubInvite.createdAt,
+							})
+							.from(clubInvite)
+							.where(and(eq(clubInvite.userId, userId), eq(clubInvite.status, "PENDING")));
+						result = invites;
+						break;
+					}
+
+					case "get_invites_count": {
+						const [countResult] = await db
+							.select({ count: count() })
+							.from(clubInvite)
+							.where(and(eq(clubInvite.userId, userId), eq(clubInvite.status, "PENDING")));
+						result = { count: countResult?.count || 0 };
+						break;
+					}
+
+					case "get_daily_quota": {
+						result = {
+							uploadLimit: "10MB",
+							used: "0MB",
+							remaining: "10MB",
+						};
+						break;
+					}
+
+					case "update_user_theme": {
+						const parsed = toolArgsSchemas.update_user_theme.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						await db
+							.update(user)
+							.set({ theme: parsed.data.theme, updatedAt: new Date().toISOString() })
+							.where(eq(user.id, userId));
+						result = { success: true };
+						break;
+					}
+
+					case "update_user_font": {
+						const parsed = toolArgsSchemas.update_user_font.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						await db
+							.update(user)
+							.set({ font: parsed.data.font, updatedAt: new Date().toISOString() })
+							.where(eq(user.id, userId));
+						result = { success: true };
+						break;
+					}
+
+					case "update_user_style": {
+						const parsed = toolArgsSchemas.update_user_style.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						await db
+							.update(user)
+							.set({ style: parsed.data.style, updatedAt: new Date().toISOString() })
+							.where(eq(user.id, userId));
+						result = { success: true };
+						break;
+					}
+
+					case "update_user_language": {
+						const parsed = toolArgsSchemas.update_user_language.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						await db
+							.update(user)
+							.set({ language: parsed.data.language, updatedAt: new Date().toISOString() })
+							.where(eq(user.id, userId));
+						result = { success: true };
+						break;
+					}
+
+					case "list_clubs": {
+						const memberships = await db
+							.select()
+							.from(clubMembership)
+							.where(eq(clubMembership.userId, userId));
+
+						const clubs = await Promise.all(
+							memberships.map(async (membership) => {
+								const clubData = await db
+									.select()
+									.from(club)
+									.where(eq(club.id, membership.clubId))
+									.limit(1);
+								return {
+									membership: {
+										id: membership.id,
+										role: membership.role,
+										startDate: membership.startDate,
+										endDate: membership.endDate,
+									},
+									club: clubData[0] || null,
+								};
+							}),
+						);
+						result = clubs;
+						break;
+					}
+
+					case "get_club": {
+						const parsed = toolArgsSchemas.get_club.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const clubData = await db.select().from(club).where(eq(club.id, parsed.data.clubId)).limit(1);
+
+						const members = await db
+							.select()
+							.from(clubMembership)
+							.where(eq(clubMembership.clubId, parsed.data.clubId));
+
+						result = {
+							club: clubData[0] || null,
+							members: members.map((m) => ({
+								id: m.id,
+								userId: m.userId,
+								role: m.role,
+								startDate: m.startDate,
+								endDate: m.endDate,
+							})),
+						};
+						break;
+					}
+
+					case "list_club_members": {
+						const parsed = toolArgsSchemas.list_club_members.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const members = await db
+							.select({
+								id: clubMembership.id,
+								userId: clubMembership.userId,
+								role: clubMembership.role,
+								startDate: clubMembership.startDate,
+								endDate: clubMembership.endDate,
+								userName: user.name,
+								userEmail: user.email,
+							})
+							.from(clubMembership)
+							.innerJoin(user, eq(clubMembership.userId, user.id))
+							.where(eq(clubMembership.clubId, parsed.data.clubId));
+						result = members;
+						break;
+					}
+
+					case "create_club": {
+						const parsed = toolArgsSchemas.create_club.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const newClubId = crypto.randomUUID();
+						const now = new Date().toISOString();
+						const newClub = await db
+							.insert(club)
+							.values({
+								id: newClubId,
+								name: parsed.data.name,
+								description: parsed.data.description || null,
+								location: parsed.data.location || null,
+								isPrivate: parsed.data.isPrivate || false,
+								createdAt: now,
+								updatedAt: now,
+							})
+							.returning();
+
+						await db.insert(clubMembership).values({
+							id: crypto.randomUUID(),
+							userId: userId,
+							clubId: newClubId,
+							role: "CLUB_OWNER",
+							createdAt: now,
+							updatedAt: now,
+						});
+
+						result = newClub[0];
+						break;
+					}
+
+					case "update_club": {
+						const parsed = toolArgsSchemas.update_club.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						if (!(await isClubOwner(parsed.data.clubId, userId))) {
+							throw new Error("Only club owner can update club information");
+						}
+						const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+						if (parsed.data.name) updateData.name = parsed.data.name;
+						if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
+						if (parsed.data.location !== undefined) updateData.location = parsed.data.location;
+						if (parsed.data.website !== undefined) updateData.website = parsed.data.website;
+						if (parsed.data.contactEmail !== undefined) updateData.contactEmail = parsed.data.contactEmail;
+						if (parsed.data.contactPhone !== undefined) updateData.contactPhone = parsed.data.contactPhone;
+
+						await db.update(club).set(updateData).where(eq(club.id, parsed.data.clubId));
+						result = { success: true };
+						break;
+					}
+
+					case "get_club_rules": {
+						const parsed = toolArgsSchemas.get_club_rules.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						if (!(await isClubManager(parsed.data.clubId, userId))) {
+							throw new Error("Only club managers and owners can view rules");
+						}
+						const rules = await db.select().from(clubRule).where(eq(clubRule.clubId, parsed.data.clubId));
+						result = rules;
+						break;
+					}
+
+					case "get_club_rule": {
+						const parsed = toolArgsSchemas.get_club_rule.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const rule = await db
+							.select()
+							.from(clubRule)
+							.where(eq(clubRule.id, parsed.data.ruleId))
+							.limit(1);
+						if (rule[0] && !(await isClubManager(rule[0].clubId, userId))) {
+							throw new Error("Only club managers and owners can view rules");
+						}
+						result = rule[0] || null;
+						break;
+					}
+
+					case "create_club_rule": {
+						const parsed = toolArgsSchemas.create_club_rule.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						if (!(await isClubManager(parsed.data.clubId, userId))) {
+							throw new Error("Only club managers and owners can create rules");
+						}
+						const now = new Date().toISOString();
+						const newRule = await db
+							.insert(clubRule)
+							.values({
+								id: crypto.randomUUID(),
+								clubId: parsed.data.clubId,
+								name: parsed.data.name,
+								description: parsed.data.description || null,
+								content: parsed.data.content,
+								createdAt: now,
+								updatedAt: now,
+							})
+							.returning();
+						result = newRule[0];
+						break;
+					}
+
+					case "update_club_rule": {
+						const parsed = toolArgsSchemas.update_club_rule.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const existingRule = await db
+							.select()
+							.from(clubRule)
+							.where(eq(clubRule.id, parsed.data.ruleId))
+							.limit(1);
+						if (!existingRule[0]) {
+							throw new Error("Rule not found");
+						}
+						if (!(await isClubManager(existingRule[0].clubId, userId))) {
+							throw new Error("Only club managers and owners can update rules");
+						}
+						const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+						if (parsed.data.name) updateData.name = parsed.data.name;
+						if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
+						if (parsed.data.content !== undefined) updateData.content = parsed.data.content;
+
+						await db.update(clubRule).set(updateData).where(eq(clubRule.id, parsed.data.ruleId));
+						result = { success: true };
+						break;
+					}
+
+					case "delete_club_rule": {
+						const parsed = toolArgsSchemas.delete_club_rule.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const existingRule = await db
+							.select()
+							.from(clubRule)
+							.where(eq(clubRule.id, parsed.data.ruleId))
+							.limit(1);
+						if (!existingRule[0]) {
+							throw new Error("Rule not found");
+						}
+						if (!(await isClubManager(existingRule[0].clubId, userId))) {
+							throw new Error("Only club managers and owners can delete rules");
+						}
+						await db.delete(clubRule).where(eq(clubRule.id, parsed.data.ruleId));
+						result = { success: true };
+						break;
+					}
+
+					case "get_club_posts": {
+						const parsed = toolArgsSchemas.get_club_posts.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const posts = await db
+							.select()
+							.from(post)
+							.where(eq(post.clubId, parsed.data.clubId))
+							.orderBy(desc(post.createdAt));
+						result = posts;
+						break;
+					}
+
+					case "get_club_post": {
+						const parsed = toolArgsSchemas.get_club_post.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const postData = await db.select().from(post).where(eq(post.id, parsed.data.postId)).limit(1);
+						result = postData[0] || null;
+						break;
+					}
+
+					case "create_club_post": {
+						const parsed = toolArgsSchemas.create_club_post.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						if (!(await isClubManager(parsed.data.clubId, userId))) {
+							throw new Error("Only club managers and owners can create posts");
+						}
+						const now = new Date().toISOString();
+						const newPost = await db
+							.insert(post)
+							.values({
+								id: crypto.randomUUID(),
+								clubId: parsed.data.clubId,
+								title: parsed.data.title,
+								content: parsed.data.content,
+								images: parsed.data.images || null,
+								isPublic: parsed.data.isPublic || false,
+								createdAt: now,
+								updatedAt: now,
+							})
+							.returning();
+						result = newPost[0];
+						break;
+					}
+
+					case "update_club_post": {
+						const parsed = toolArgsSchemas.update_club_post.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const existingPost = await db
+							.select()
+							.from(post)
+							.where(eq(post.id, parsed.data.postId))
+							.limit(1);
+						if (!existingPost[0]) {
+							throw new Error("Post not found");
+						}
+						if (!(await isClubManager(existingPost[0].clubId, userId))) {
+							throw new Error("Only club managers and owners can update posts");
+						}
+						const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+						if (parsed.data.title) updateData.title = parsed.data.title;
+						if (parsed.data.content !== undefined) updateData.content = parsed.data.content;
+						if (parsed.data.images !== undefined) updateData.images = parsed.data.images;
+						if (parsed.data.isPublic !== undefined) updateData.isPublic = parsed.data.isPublic;
+
+						await db.update(post).set(updateData).where(eq(post.id, parsed.data.postId));
+						result = { success: true };
+						break;
+					}
+
+					case "add_club_member": {
+						const parsed = toolArgsSchemas.add_club_member.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						if (!(await isClubManager(parsed.data.clubId, userId))) {
+							throw new Error("Only club managers and owners can add members");
+						}
+						const now = new Date().toISOString();
+						const newMembership = await db
+							.insert(clubMembership)
+							.values({
+								id: crypto.randomUUID(),
+								userId: parsed.data.userId,
+								clubId: parsed.data.clubId,
+								role: (parsed.data.role as "USER" | "MANAGER") || "USER",
+								createdAt: now,
+								updatedAt: now,
+							})
+							.returning();
+						result = newMembership[0];
+						break;
+					}
+
+					case "remove_club_member": {
+						const parsed = toolArgsSchemas.remove_club_member.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const membership = await getUserMembership(parsed.data.clubId, parsed.data.userId);
+						if (!membership) {
+							throw new Error("Membership not found");
+						}
+						if (membership.role === "CLUB_OWNER") {
+							throw new Error("Cannot remove club owner");
+						}
+						const isManager = await isClubManager(parsed.data.clubId, userId);
+						if (!isManager && userId !== parsed.data.userId) {
+							throw new Error("Only managers can remove other members");
+						}
+						await db
+							.delete(clubMembership)
+							.where(
+								and(
+									eq(clubMembership.clubId, parsed.data.clubId),
+									eq(clubMembership.userId, parsed.data.userId),
+								),
+							);
+						result = { success: true };
+						break;
+					}
+
+					case "extend_membership": {
+						const parsed = toolArgsSchemas.extend_membership.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						if (!(await isClubManager(parsed.data.clubId, userId))) {
+							throw new Error("Only club managers and owners can extend memberships");
+						}
+						await db
+							.update(clubMembership)
+							.set({ endDate: parsed.data.endDate, updatedAt: new Date().toISOString() })
+							.where(
+								and(
+									eq(clubMembership.clubId, parsed.data.clubId),
+									eq(clubMembership.userId, parsed.data.userId),
+								),
+							);
+						result = { success: true };
+						break;
+					}
+
+					case "leave_club": {
+						const parsed = toolArgsSchemas.leave_club.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const membership = await getUserMembership(parsed.data.clubId, userId);
+						if (!membership) {
+							throw new Error("Not a member of this club");
+						}
+						if (membership.role === "CLUB_OWNER") {
+							throw new Error("Club owner cannot leave. Transfer ownership first.");
+						}
+						await db
+							.delete(clubMembership)
+							.where(
+								and(eq(clubMembership.clubId, parsed.data.clubId), eq(clubMembership.userId, userId)),
+							);
+						result = { success: true };
+						break;
+					}
+
+					case "list_events": {
+						const parsed = toolArgsSchemas.list_events.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+
+						let query = db.select().from(event);
+						if (parsed.data.clubId) {
+							query = query.where(eq(event.clubId, parsed.data.clubId)) as typeof query;
+						}
+
+						const events = await query.orderBy(desc(event.dateStart));
+						result = events;
+						break;
+					}
+
+					case "get_event": {
+						const parsed = toolArgsSchemas.get_event.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const eventData = await db
+							.select()
+							.from(event)
+							.where(eq(event.id, parsed.data.eventId))
+							.limit(1);
+						result = eventData[0] || null;
+						break;
+					}
+
+					case "list_event_registrations": {
+						const parsed = toolArgsSchemas.list_event_registrations.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const registrations = await db
+							.select({
+								id: eventRegistration.id,
+								eventId: eventRegistration.eventId,
+								createdById: eventRegistration.createdById,
+								type: eventRegistration.type,
+								paymentMethod: eventRegistration.paymentMethod,
+								attended: eventRegistration.attended,
+								createdAt: eventRegistration.createdAt,
+								userName: user.name,
+							})
+							.from(eventRegistration)
+							.innerJoin(user, eq(eventRegistration.createdById, user.id))
+							.where(eq(eventRegistration.eventId, parsed.data.eventId));
+						result = registrations;
+						break;
+					}
+
+					case "register_for_event": {
+						const parsed = toolArgsSchemas.register_for_event.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+
+						const eventData = await db
+							.select()
+							.from(event)
+							.where(eq(event.id, parsed.data.eventId))
+							.limit(1);
+
+						if (!eventData[0]) {
+							throw new Error("Event not found");
+						}
+
+						const existing = await db
+							.select()
+							.from(eventRegistration)
+							.where(
+								and(
+									eq(eventRegistration.eventId, parsed.data.eventId),
+									eq(eventRegistration.createdById, userId),
+								),
+							)
+							.limit(1);
+
+						if (existing[0]) {
+							throw new Error("Already registered for this event");
+						}
+
+						const newRegistration = await db
+							.insert(eventRegistration)
+							.values({
+								id: crypto.randomUUID(),
+								eventId: parsed.data.eventId,
+								createdById: userId,
+								type: "solo",
+								paymentMethod: "cash",
+								attended: false,
+								createdAt: new Date().toISOString(),
+								updatedAt: new Date().toISOString(),
+							})
+							.returning();
+
+						result = newRegistration[0] || null;
+						break;
+					}
+
+					case "create_event": {
+						const parsed = toolArgsSchemas.create_event.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						if (!(await isClubManager(parsed.data.clubId, userId))) {
+							throw new Error("Only club managers and owners can create events");
+						}
+						const now = new Date().toISOString();
+						const newEvent = await db
+							.insert(event)
+							.values({
+								id: crypto.randomUUID(),
+								clubId: parsed.data.clubId,
+								name: parsed.data.name,
+								description: parsed.data.description,
+								dateStart: parsed.data.dateStart,
+								dateEnd: parsed.data.dateEnd,
+								dateRegistrationsOpen: parsed.data.dateRegistrationsOpen,
+								dateRegistrationsClose: parsed.data.dateRegistrationsClose,
+								location: parsed.data.location,
+								costPerPerson: parsed.data.costPerPerson || 0,
+								isPrivate: parsed.data.isPrivate || false,
+								allowFreelancers: parsed.data.allowFreelancers || false,
+								hasBreakfast: parsed.data.hasBreakfast || false,
+								hasLunch: parsed.data.hasLunch || false,
+								hasDinner: parsed.data.hasDinner || false,
+								hasSnacks: parsed.data.hasSnacks || false,
+								hasDrinks: parsed.data.hasDrinks || false,
+								hasPrizes: parsed.data.hasPrizes || false,
+								createdAt: now,
+								updatedAt: now,
+							})
+							.returning();
+						result = newEvent[0];
+						break;
+					}
+
+					case "update_event": {
+						const parsed = toolArgsSchemas.update_event.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const existingEvent = await db
+							.select()
+							.from(event)
+							.where(eq(event.id, parsed.data.eventId))
+							.limit(1);
+						if (!existingEvent[0]) {
+							throw new Error("Event not found");
+						}
+						if (!(await isClubManager(existingEvent[0].clubId, userId))) {
+							throw new Error("Only club managers and owners can update events");
+						}
+						const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+						if (parsed.data.name) updateData.name = parsed.data.name;
+						if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
+						if (parsed.data.dateStart) updateData.dateStart = parsed.data.dateStart;
+						if (parsed.data.dateEnd) updateData.dateEnd = parsed.data.dateEnd;
+						if (parsed.data.dateRegistrationsOpen)
+							updateData.dateRegistrationsOpen = parsed.data.dateRegistrationsOpen;
+						if (parsed.data.dateRegistrationsClose)
+							updateData.dateRegistrationsClose = parsed.data.dateRegistrationsClose;
+						if (parsed.data.location) updateData.location = parsed.data.location;
+						if (parsed.data.costPerPerson !== undefined)
+							updateData.costPerPerson = parsed.data.costPerPerson;
+						if (parsed.data.isPrivate !== undefined) updateData.isPrivate = parsed.data.isPrivate;
+
+						await db.update(event).set(updateData).where(eq(event.id, parsed.data.eventId));
+						result = { success: true };
+						break;
+					}
+
+					case "get_event_rules": {
+						const parsed = toolArgsSchemas.get_event_rules.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const rules = await db.select().from(clubRule).where(eq(clubRule.eventId, parsed.data.eventId));
+						result = rules;
+						break;
+					}
+
+					case "get_registrations_count": {
+						const parsed = toolArgsSchemas.get_registrations_count.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const [countResult] = await db
+							.select({ count: count() })
+							.from(eventRegistration)
+							.where(eq(eventRegistration.eventId, parsed.data.eventId));
+						result = { count: countResult?.count || 0 };
+						break;
+					}
+
+					case "update_registration_attendance": {
+						const parsed = toolArgsSchemas.update_registration_attendance.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const registration = await db
+							.select()
+							.from(eventRegistration)
+							.where(eq(eventRegistration.id, parsed.data.registrationId))
+							.limit(1);
+						if (!registration[0]) {
+							throw new Error("Registration not found");
+						}
+						const eventData = await db
+							.select()
+							.from(event)
+							.where(eq(event.id, registration[0].eventId))
+							.limit(1);
+						if (!eventData[0]) {
+							throw new Error("Event not found");
+						}
+						if (!(await isClubManager(eventData[0].clubId, userId))) {
+							throw new Error("Only club managers and owners can update attendance");
+						}
+						await db
+							.update(eventRegistration)
+							.set({ attended: parsed.data.attended, updatedAt: new Date().toISOString() })
+							.where(eq(eventRegistration.id, parsed.data.registrationId));
+						result = { success: true };
+						break;
+					}
+
+					case "create_review": {
+						const parsed = toolArgsSchemas.create_review.safeParse(args);
+						if (!parsed.success) {
+							throw new Error(`Invalid arguments: ${parsed.error.message}`);
+						}
+						const now = new Date().toISOString();
+						const newReview = await db
+							.insert(review)
+							.values({
+								id: crypto.randomUUID(),
+								type: parsed.data.type,
+								rating: parsed.data.rating,
+								content: parsed.data.content,
+								authorId: userId,
+								userId: parsed.data.userId || null,
+								clubId: parsed.data.clubId || null,
+								eventId: parsed.data.eventId || null,
+								createdAt: now,
+								updatedAt: now,
+							})
+							.returning();
+						result = newReview[0];
+						break;
+					}
+
+					default:
+						throw new Error(`Unknown tool: ${name}`);
+				}
+
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify(result, null, 2),
+						},
+					],
+				};
+			} catch (error) {
+				const message = error instanceof Error ? error.message : String(error);
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify({ error: message }),
+						},
+					],
+					isError: true,
+				};
+			}
+		});
+
+		const transport = new WebStandardStreamableHTTPServerTransport({
+			sessionIdGenerator: undefined,
+		});
+
+		await server.connect(transport);
+
+		return transport.handleRequest(request);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return new Response(
+			JSON.stringify({
+				jsonrpc: "2.0",
+				error: { code: -32000, message: message },
+				id: null,
+			}),
+			{ status: 500, headers: { "Content-Type": "application/json" } },
+		);
+	}
 }
