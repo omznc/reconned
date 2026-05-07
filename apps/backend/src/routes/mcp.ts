@@ -17,6 +17,71 @@ import {
 import { auth } from "../lib/auth";
 import { db } from "../lib/db";
 
+const WRITE_TOOLS = new Set([
+	"update_profile",
+	"update_user_theme",
+	"update_user_font",
+	"update_user_style",
+	"update_user_language",
+	"create_club",
+	"update_club",
+	"delete_club",
+	"create_club_rule",
+	"update_club_rule",
+	"delete_club_rule",
+	"create_club_post",
+	"update_club_post",
+	"delete_club_post",
+	"add_club_member",
+	"remove_club_member",
+	"extend_membership",
+	"leave_club",
+	"create_event",
+	"delete_event",
+	"update_event",
+	"register_for_event",
+	"update_registration_attendance",
+	"create_review",
+]);
+
+interface RateLimitEntry {
+	count: number;
+	resetAt: number;
+}
+
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const MAX_REQUESTS = 300;
+const MAX_WRITES = 30;
+
+const mcpRateLimits = new Map<string, RateLimitEntry>();
+const mcpWriteRateLimits = new Map<string, RateLimitEntry>();
+
+setInterval(() => {
+	const now = Date.now();
+	for (const [key, entry] of mcpRateLimits) {
+		if (now > entry.resetAt) mcpRateLimits.delete(key);
+	}
+	for (const [key, entry] of mcpWriteRateLimits) {
+		if (now > entry.resetAt) mcpWriteRateLimits.delete(key);
+	}
+}, 60_000).unref();
+
+function checkRateLimit(map: Map<string, RateLimitEntry>, key: string, max: number): boolean {
+	const now = Date.now();
+	const entry = map.get(key);
+	if (entry) {
+		if (now > entry.resetAt) {
+			map.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+			return true;
+		}
+		if (entry.count >= max) return false;
+		entry.count++;
+		return true;
+	}
+	map.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+	return true;
+}
+
 async function isClubManager(clubId: string, userId: string): Promise<boolean> {
 	const membership = await db
 		.select()
@@ -715,8 +780,6 @@ const toolArgsSchemas = {
 	}),
 };
 
-const mcpRateLimitMap = new Map<string, { count: number; resetAt: number }>();
-
 export async function handleMCPRequest(request: Request): Promise<Response> {
 	const url = new URL(request.url);
 	if (url.pathname !== "/api/mcp") {
@@ -725,38 +788,6 @@ export async function handleMCPRequest(request: Request): Promise<Response> {
 
 	if (request.method !== "POST" && request.method !== "GET") {
 		return new Response("Method Not Allowed", { status: 405 });
-	}
-
-	const isMCPClient = request.headers.get("X-MCP-Client") === "true";
-
-	if (isMCPClient) {
-		const clientIP = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
-		const now = Date.now();
-		const windowMs = 60 * 1000;
-		const maxRequests = 100;
-
-		const clientData = mcpRateLimitMap.get(clientIP);
-		if (clientData) {
-			if (now > clientData.resetAt) {
-				mcpRateLimitMap.set(clientIP, { count: 1, resetAt: now + windowMs });
-			} else if (clientData.count >= maxRequests) {
-				return new Response(
-					JSON.stringify({
-						jsonrpc: "2.0",
-						error: {
-							code: -32002,
-							message: "Rate limit exceeded. MCP clients limited to 100 requests/minute.",
-						},
-						id: null,
-					}),
-					{ status: 429, headers: { "Content-Type": "application/json", "Retry-After": "60" } },
-				);
-			} else {
-				clientData.count++;
-			}
-		} else {
-			mcpRateLimitMap.set(clientIP, { count: 1, resetAt: now + windowMs });
-		}
 	}
 
 	const session = await auth.api.getSession({
@@ -776,6 +807,20 @@ export async function handleMCPRequest(request: Request): Promise<Response> {
 
 	const userId = session.user.id;
 
+	if (!checkRateLimit(mcpRateLimits, userId, MAX_REQUESTS)) {
+		return new Response(
+			JSON.stringify({
+				jsonrpc: "2.0",
+				error: {
+					code: -32002,
+					message: `Rate limit exceeded. Limited to ${MAX_REQUESTS} requests/minute.`,
+				},
+				id: null,
+			}),
+			{ status: 429, headers: { "Content-Type": "application/json", "Retry-After": "60" } },
+		);
+	}
+
 	const server = new Server(
 		{
 			name: "reconned-mcp",
@@ -794,6 +839,20 @@ export async function handleMCPRequest(request: Request): Promise<Response> {
 
 	server.setRequestHandler(CallToolRequestSchema, async (req) => {
 		const { name, arguments: args } = req.params;
+
+		if (WRITE_TOOLS.has(name) && !checkRateLimit(mcpWriteRateLimits, userId, MAX_WRITES)) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: JSON.stringify({
+							error: `Write rate limit exceeded. Limited to ${MAX_WRITES} writes per minute.`,
+						}),
+					},
+				],
+				isError: true,
+			};
+		}
 
 		try {
 			let result: unknown;
