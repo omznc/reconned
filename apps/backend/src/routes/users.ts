@@ -1672,6 +1672,7 @@ usersRouter.get(
 			tags: ["Users"],
 			summary: "Get current user's clubs",
 			description: "Get all clubs the authenticated user is a member of",
+			mcpTool: true,
 			response: {
 				200: z.object({
 					clubs: z.array(publicClubSchema),

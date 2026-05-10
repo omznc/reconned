@@ -1397,6 +1397,7 @@ clubsRouter.get(
 			params: z.object({
 				id: z.string(),
 			}),
+			mcpTool: true,
 			response: {
 				200: z.object({
 					members: z.array(
@@ -1489,6 +1490,7 @@ clubsRouter.get(
 			params: z.object({
 				id: z.string(),
 			}),
+			mcpTool: true,
 			response: {
 				200: z.object({
 					currentUsage: z.number(),
@@ -1879,6 +1881,7 @@ clubsRouter.get(
 				id: z.string(),
 			}),
 			query: paginationQuerySchema,
+			mcpTool: true,
 			response: {
 				200: z.object({
 					purchases: z.array(baseClubPurchaseSchema),
@@ -2109,6 +2112,7 @@ clubsRouter.post(
 				id: z.string(),
 			}),
 			body: createPurchaseBodySchema,
+			mcpTool: true,
 			response: {
 				200: z.object({
 					success: z.boolean(),
@@ -3190,6 +3194,7 @@ clubsRouter.get(
 			params: z.object({
 				id: z.string(),
 			}),
+			mcpTool: true,
 			response: {
 				200: baseClubSchema.extend({
 					isCurrentUserOwner: z.boolean(),
@@ -3802,6 +3807,7 @@ clubsRouter.put(
 			body: z.object({
 				role: z.enum(["USER", "MANAGER", "CLUB_OWNER"]),
 			}),
+			mcpTool: true,
 			response: {
 				200: z.object({
 					success: z.boolean(),
@@ -4015,6 +4021,7 @@ clubsRouter.get(
 			tags: ["Clubs"],
 			summary: "Get managed clubs",
 			description: "Get list of club IDs managed by current user",
+			mcpTool: true,
 			response: {
 				200: z.object({
 					clubs: z.array(
@@ -4064,6 +4071,7 @@ clubsRouter.get(
 			params: z.object({
 				id: z.string(),
 			}),
+			mcpTool: true,
 			response: {
 				200: z.object({
 					isMember: z.boolean(),
@@ -5898,19 +5906,24 @@ clubsRouter.post(
 		schema: {
 			tags: ["Clubs"],
 			summary: "Submit claim request for unclaimed club",
-			description: "Submit a claim request for an unclaimed club. Sends email to admins for review.",
+			description:
+				"Submit a claim request for an unclaimed club. Sends email to admins for review.",
 			params: z.object({
 				id: z.string(),
 			}),
 			body: z.object({
 				message: z.string().optional(),
 			}),
+			mcpTool: true,
 			response: {
 				200: z.object({
 					success: z.boolean(),
 					message: z.string(),
 				}),
-				...responseSchema([400, 401, 403, 404, 500], z.object({ error: z.string() })),
+				...responseSchema(
+					[400, 401, 403, 404, 500],
+					z.object({ error: z.string() }),
+				),
 			},
 		},
 	},

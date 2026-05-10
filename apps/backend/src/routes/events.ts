@@ -349,6 +349,7 @@ eventsRouter.get(
 			tags: ["Events"],
 			summary: "Get upcoming events",
 			description: "Get upcoming events with privacy filtering",
+			mcpTool: true,
 			query: z.object({
 				limit: z.coerce.number().optional().default(25),
 			}),
@@ -1542,6 +1543,7 @@ eventsRouter.delete(
 			tags: ["Events"],
 			summary: "Delete event registration",
 			description: "Delete the current user's registration for an event",
+			mcpTool: true,
 			params: z.object({
 				id: z.string(),
 			}),

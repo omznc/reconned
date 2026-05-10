@@ -32,7 +32,7 @@
         "@opentelemetry/sdk-logs": "^0.213.0",
         "@opentelemetry/sdk-node": "^0.213.0",
         "@react-email/components": "^1.0.10",
-        "@reconned/router": "^0.2.1",
+        "@reconned/router": "^0.3.0",
         "@scalar/api-reference": "^1.49.3",
         "@t3-oss/env-core": "^0.13.11",
         "@types/bcrypt": "^6.0.0",
@@ -904,7 +904,7 @@
 
     "@react-leaflet/core": ["@react-leaflet/core@3.0.0", "", { "peerDependencies": { "leaflet": "^1.9.0", "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ=="],
 
-    "@reconned/router": ["@reconned/router@0.2.1", "", { "dependencies": { "zod": "^4.3.6" }, "peerDependencies": { "bun": ">=1.0.0" }, "optionalPeers": ["bun"] }, "sha512-Kp+8a12P2Y+C1mFA2evpeO3d1ONyo5nBMSa/6cQbVnX/U3kQOninvRyfUn/ibmjc25LMACEhD2TwrA0RvY/Ihg=="],
+    "@reconned/router": ["@reconned/router@0.3.0", "", { "dependencies": { "zod": "^4.3.6" }, "peerDependencies": { "bun": ">=1.0.0" }, "optionalPeers": ["bun"] }, "sha512-rwOC7o8xhrujSSg/ktP/LakR0NJs3vtEgBTvmPi3kFMXlZc7l9c+FUdzD8fbnBXkZqxg47D12PD/LFAceRmSmQ=="],
 
     "@redis/bloom": ["@redis/bloom@5.12.1", "", { "peerDependencies": { "@redis/client": "^5.12.1" } }, "sha512-PUUfv+ms7jgPSBVoo/DN4AkPHj4D5TZSd6SbJX7egzBplkYUcKmHRE8RKia7UtZ8bSQbLguLvxVO+asKtQfZWA=="],
 
