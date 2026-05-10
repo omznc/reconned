@@ -207,7 +207,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	}
 
 	return (
-		<div className="flex flex-col size-full gap-8 max-w-[1200px] pb-8 px-4">
+		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
 			<JsonLdScript data={sportsOrganizationSchema} />
 			<JsonLdScript data={breadcrumbSchema} />
 			{faqSchema && <JsonLdScript data={faqSchema} />}
