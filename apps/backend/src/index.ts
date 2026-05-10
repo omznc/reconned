@@ -96,7 +96,7 @@ async function handleRequest(request: Request): Promise<Response> {
 	}
 
 	if (url.pathname === "/api/mcp") {
-		return handleMCPRequest(request);
+		return handleMCPRequest(request, mainRouter);
 	}
 
 	let user: { id: string; email: string; name: string; role?: string } | undefined;

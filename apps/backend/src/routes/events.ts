@@ -227,6 +227,7 @@ eventsRouter.get(
 					pagination: paginationResponseSchema,
 				}),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -630,6 +631,7 @@ eventsRouter.get(
 				400: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -789,6 +791,7 @@ eventsRouter.post(
 				}),
 				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -953,6 +956,7 @@ eventsRouter.put(
 				}),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1034,6 +1038,7 @@ eventsRouter.delete(
 				200: z.object({ success: z.boolean() }),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1112,6 +1117,7 @@ eventsRouter.get(
 				}),
 				400: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1481,6 +1487,7 @@ eventsRouter.post(
 				}),
 				...responseSchema([400, 401, 404], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1616,6 +1623,7 @@ eventsRouter.put(
 				}),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1791,6 +1799,7 @@ eventsRouter.get(
 				}),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1826,6 +1835,7 @@ eventsRouter.get(
 				}),
 				400: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1859,6 +1869,7 @@ eventsRouter.get(
 				}),
 				400: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
