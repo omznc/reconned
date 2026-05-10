@@ -255,6 +255,7 @@ clubsRouter.delete(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -355,6 +356,7 @@ clubsRouter.post(
 				}),
 				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -505,6 +507,7 @@ clubsRouter.put(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -566,6 +569,7 @@ clubsRouter.post(
 				401: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -732,6 +736,7 @@ clubsRouter.get(
 					pagination: paginationResponseSchema,
 				}),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -778,6 +783,7 @@ clubsRouter.get(
 				401: z.object({ error: z.string() }),
 				403: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -835,6 +841,7 @@ clubsRouter.get(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -911,6 +918,7 @@ clubsRouter.post(
 				401: z.object({ error: z.string() }),
 				403: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -996,6 +1004,7 @@ clubsRouter.put(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1062,6 +1071,7 @@ clubsRouter.delete(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1124,6 +1134,7 @@ clubsRouter.get(
 				400: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1181,6 +1192,7 @@ clubsRouter.get(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1565,6 +1577,7 @@ clubsRouter.post(
 				401: z.object({ error: z.string() }),
 				403: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1669,6 +1682,7 @@ clubsRouter.put(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -1743,6 +1757,7 @@ clubsRouter.delete(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -3129,6 +3144,7 @@ clubsRouter.get(
 				400: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -3279,6 +3295,7 @@ clubsRouter.post(
 				400: z.object({ error: z.string() }),
 				401: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -3381,6 +3398,7 @@ clubsRouter.put(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -3457,6 +3475,7 @@ clubsRouter.delete(
 				403: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -5778,6 +5797,7 @@ clubsRouter.get(
 				}),
 				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
 			},
+			mcpTool: true,
 		},
 	},
 );

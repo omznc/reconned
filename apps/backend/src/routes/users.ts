@@ -309,6 +309,54 @@ usersRouter.get(
 				200: userWithRelationsSchema,
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
+		},
+	},
+);
+
+usersRouter.get(
+	"/users/me",
+	async ({ response, context }) => {
+		if (!context.user) {
+			throw apiError.unauthorized("Authentication required");
+		}
+		const userId = context.user.id;
+		const profile = await db
+			.select({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				bio: user.bio,
+				location: user.location,
+				website: user.website,
+				phone: user.phone,
+				callsign: user.callsign,
+				image: user.image,
+				language: user.language,
+				theme: user.theme,
+				font: user.font,
+				style: user.style,
+			})
+			.from(user)
+			.where(eq(user.id, userId))
+			.limit(1);
+		return response.json(profile[0] || null);
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Users"],
+			summary: "Get current user profile",
+			description: "Get the authenticated user's full profile information",
+			response: {
+				200: baseUserSchema.pick({
+					id: true, name: true, email: true, bio: true, location: true,
+					website: true, phone: true, callsign: true, image: true,
+					language: true, theme: true, font: true, style: true,
+				}),
+				401: z.object({ error: z.string() }),
+			},
+			mcpTool: { name: "get_profile", description: "Get the current user's profile information" },
 		},
 	},
 );
@@ -514,6 +562,7 @@ usersRouter.get(
 					pagination: paginationResponseSchema,
 				}),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -696,6 +745,7 @@ usersRouter.get(
 				}),
 				404: z.object({ error: z.string() }),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -808,8 +858,10 @@ usersRouter.put(
 			}),
 			response: {
 				200: z.object({ success: z.boolean() }),
+				400: z.object({ error: z.string() }),
 				401: z.object({ error: z.string() }),
 			},
+			mcpTool: { name: "update_profile", description: "Update the current user's profile. Only provide fields you want to change." },
 		},
 	},
 );
@@ -1121,11 +1173,12 @@ usersRouter.get(
 	{
 		schema: {
 			tags: ["Users"],
-			summary: "Get user statistics",
-			description: "Returns statistics for a user",
+			summary: "Get user stats",
+			description: "Returns aggregated statistics for a user",
 			params: z.object({
 				id: z.string(),
 			}),
+			mcpTool: true,
 			response: {
 				200: z.object({
 					eventRegistration: z.number(),
@@ -1205,6 +1258,7 @@ usersRouter.put(
 			tags: ["Users"],
 			summary: "Update user theme",
 			description: "Update the user's theme preference",
+			mcpTool: true,
 			params: z.object({
 				id: z.string(),
 			}),
@@ -1247,6 +1301,7 @@ usersRouter.put(
 			tags: ["Users"],
 			summary: "Update user font",
 			description: "Update the user's font preference",
+			mcpTool: true,
 			params: z.object({
 				id: z.string(),
 			}),
@@ -1289,6 +1344,7 @@ usersRouter.put(
 			tags: ["Users"],
 			summary: "Update user style",
 			description: "Update the user's style preference",
+			mcpTool: true,
 			params: z.object({
 				id: z.string(),
 			}),
@@ -1331,6 +1387,7 @@ usersRouter.put(
 			tags: ["Users"],
 			summary: "Update user language",
 			description: "Update the user's language preference",
+			mcpTool: true,
 			params: z.object({
 				id: z.string(),
 			}),
@@ -1387,6 +1444,7 @@ usersRouter.get(
 			tags: ["Users"],
 			summary: "Get pending invites",
 			description: "Returns a list of pending club invites for the current user",
+			mcpTool: true,
 			response: {
 				200: z.object({
 					invites: z.array(
@@ -1424,6 +1482,7 @@ usersRouter.get(
 			tags: ["Users"],
 			summary: "Get pending invites count",
 			description: "Returns the count of pending club invites for the current user",
+			mcpTool: true,
 			response: {
 				200: z.object({
 					count: z.number(),
@@ -1571,6 +1630,7 @@ usersRouter.get(
 			tags: ["Users"],
 			summary: "Get user daily upload quota",
 			description: "Check user daily upload quota based on audit logs",
+			mcpTool: true,
 			params: z.object({
 				id: z.string(),
 			}),

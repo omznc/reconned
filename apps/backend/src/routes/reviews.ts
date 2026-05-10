@@ -522,6 +522,7 @@ reviewsRouter.post(
 			description:
 				"Leave a review for a user, club, or event. If you've already reviewed this entity, your previous review will be replaced. Event reviews require attendance and event completion.",
 			body: createReviewBodySchema,
+			mcpTool: true,
 			response: {
 				200: z.object({
 					review: z.object({

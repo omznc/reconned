@@ -10,7 +10,7 @@
 		"@opentelemetry/sdk-logs": "^0.213.0",
 		"@opentelemetry/sdk-node": "^0.213.0",
 		"@react-email/components": "^1.0.10",
-		"@reconned/router": "^0.2.1",
+		"@reconned/router": "^0.3.0",
 		"@scalar/api-reference": "^1.49.3",
 		"@t3-oss/env-core": "^0.13.11",
 		"@types/bcrypt": "^6.0.0",
