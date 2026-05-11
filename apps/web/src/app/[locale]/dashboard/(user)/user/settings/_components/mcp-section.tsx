@@ -177,7 +177,8 @@ export function McpSection() {
 				<p className="font-medium text-foreground mb-1">{t("How to use")}</p>
 				<p>{t("Send requests with the X-API-Key header")}:</p>
 				<code className="block bg-muted rounded-md px-3 py-2 text-sm font-mono mt-2">
-					curl -H "X-API-Key: your-api-key" -H "Accept: text/event-stream" https://reconned.com/api/mcp
+					curl -H "X-API-Key: your-api-key" -H "Accept: application/json, text/event-stream"
+					https://reconned.com/api/mcp
 				</code>
 				<p className="mt-2">
 					{t("Endpoint")}: <code className="bg-muted px-1 py-0.5 rounded text-xs">POST /api/mcp</code>

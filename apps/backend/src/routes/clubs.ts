@@ -5906,8 +5906,7 @@ clubsRouter.post(
 		schema: {
 			tags: ["Clubs"],
 			summary: "Submit claim request for unclaimed club",
-			description:
-				"Submit a claim request for an unclaimed club. Sends email to admins for review.",
+			description: "Submit a claim request for an unclaimed club. Sends email to admins for review.",
 			params: z.object({
 				id: z.string(),
 			}),
@@ -5920,10 +5919,7 @@ clubsRouter.post(
 					success: z.boolean(),
 					message: z.string(),
 				}),
-				...responseSchema(
-					[400, 401, 403, 404, 500],
-					z.object({ error: z.string() }),
-				),
+				...responseSchema([400, 401, 403, 404, 500], z.object({ error: z.string() })),
 			},
 		},
 	},

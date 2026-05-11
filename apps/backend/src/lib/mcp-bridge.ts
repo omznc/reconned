@@ -1,52 +1,76 @@
-import type { Router, RouteSchema, Route } from "@reconned/router";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Route, Router, RouteSchema } from "@reconned/router";
 import { jsonResponse } from "@reconned/router";
 import { z } from "zod";
-import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 type McpRouteMap = Map<string, { route: Route; method: string }>;
 
 function singularize(word: string): string {
-	if (word.endsWith("ies") && word.length > 4) return word.slice(0, -3) + "y";
+	if (word.endsWith("ies") && word.length > 4) return `${word.slice(0, -3)}y`;
 	if (word.endsWith("s") && !word.endsWith("ss") && word.length > 2) return word.slice(0, -1);
 	return word;
 }
 
 function generateToolName(method: string, path: string): string {
-	const prefixMap: Record<string, string> = { GET: "get", POST: "create", PUT: "update", DELETE: "delete", PATCH: "update" };
+	const prefixMap: Record<string, string> = {
+		GET: "get",
+		POST: "create",
+		PUT: "update",
+		DELETE: "delete",
+		PATCH: "update",
+	};
 	const prefix = prefixMap[method] || "get";
 
-	const parts = path.replace(/^\/api\//, "").split("/").filter(Boolean);
+	const parts = path
+		.replace(/^\/api\//, "")
+		.split("/")
+		.filter(Boolean);
 	const hasParams = parts.some((p) => p.startsWith(":"));
 
 	const actualPrefix = method === "GET" && !hasParams ? "list" : prefix;
 
 	const staticParts = parts.filter((p) => !p.startsWith(":"));
 	const shouldSingularize = !(method === "GET" && !hasParams);
-	const name = shouldSingularize
-		? staticParts.map(singularize).join("_")
-		: staticParts.join("_");
+	const name = shouldSingularize ? staticParts.map(singularize).join("_") : staticParts.join("_");
 
 	return `${actualPrefix}_${name}`;
 }
 
 function zodToJsonSchemaValue(schema: z.ZodTypeAny): Record<string, unknown> {
-	const unwrapped = schema instanceof z.ZodOptional || schema instanceof z.ZodDefault || schema instanceof z.ZodNullable
-		? (schema._def as { innerType?: z.ZodTypeAny; schema?: z.ZodTypeAny }).innerType ?? schema
-		: schema;
+	const unwrapped =
+		schema instanceof z.ZodOptional || schema instanceof z.ZodDefault || schema instanceof z.ZodNullable
+			? ((schema._def as unknown as { innerType?: z.ZodTypeAny; schema?: z.ZodTypeAny }).innerType ?? schema)
+			: schema;
 	const result: Record<string, unknown> = {};
 	if (unwrapped instanceof z.ZodString) result.type = "string";
 	else if (unwrapped instanceof z.ZodNumber) result.type = "number";
 	else if (unwrapped instanceof z.ZodBoolean) result.type = "boolean";
 	else if (unwrapped instanceof z.ZodArray) {
 		result.type = "array";
-		result.items = zodToJsonSchemaValue(unwrapped.element);
+		result.items = zodToJsonSchemaValue(unwrapped.element as unknown as z.ZodTypeAny);
 	} else if (unwrapped instanceof z.ZodEnum) {
 		result.type = "string";
-		result.enum = unwrapped._def.values as string[];
-	} else if (unwrapped instanceof z.ZodNativeEnum) {
+		result.enum = unwrapped.options as string[];
+	} else if (unwrapped instanceof z.ZodObject) {
+		result.type = "object";
+		const shape = unwrapped.shape as Record<string, z.ZodTypeAny>;
+		const properties: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(shape)) {
+			properties[key] = zodToJsonSchemaValue(value);
+		}
+		result.properties = properties;
+	} else if (unwrapped instanceof z.ZodRecord) {
+		result.type = "object";
+		const def = unwrapped.def as unknown as { valueType?: z.ZodTypeAny };
+		if (def.valueType) {
+			result.additionalProperties = zodToJsonSchemaValue(def.valueType as unknown as z.ZodTypeAny);
+		}
+	} else if (unwrapped instanceof z.ZodDate) {
 		result.type = "string";
+		result.format = "date-time";
 	} else if (unwrapped instanceof z.ZodLiteral) {
-		result.type = typeof unwrapped.value === "string" ? "string" : typeof unwrapped.value === "number" ? "number" : "boolean";
+		result.type =
+			typeof unwrapped.value === "string" ? "string" : typeof unwrapped.value === "number" ? "number" : "boolean";
 	} else {
 		result.type = "string";
 	}
@@ -57,7 +81,7 @@ function zodToJsonSchemaValue(schema: z.ZodTypeAny): Record<string, unknown> {
 }
 
 function buildMcpInputSchema(schema?: RouteSchema): Tool["inputSchema"] {
-	const properties: Record<string, unknown> = {};
+	const properties: Record<string, object> = {};
 	const required: string[] = [];
 
 	const zodSchemas = [schema?.params, schema?.query, schema?.body].filter(Boolean) as z.ZodTypeAny[];
@@ -66,7 +90,7 @@ function buildMcpInputSchema(schema?: RouteSchema): Tool["inputSchema"] {
 		if (s instanceof z.ZodObject) {
 			const shape = s.shape as Record<string, z.ZodTypeAny>;
 			for (const [key, value] of Object.entries(shape)) {
-				properties[key] = zodToJsonSchemaValue(value);
+				properties[key] = zodToJsonSchemaValue(value) as unknown as object;
 				if (!(value instanceof z.ZodOptional) && !(value instanceof z.ZodDefault)) {
 					if (!required.includes(key)) required.push(key);
 				}
@@ -78,7 +102,7 @@ function buildMcpInputSchema(schema?: RouteSchema): Tool["inputSchema"] {
 		type: "object",
 		properties,
 		...(required.length > 0 && { required }),
-	};
+	} as Tool["inputSchema"];
 }
 
 function separateArgs(
@@ -89,8 +113,14 @@ function separateArgs(
 	const query: Record<string, unknown> = {};
 	const body: Record<string, unknown> = {};
 
-	const paramKeys = schema?.params instanceof z.ZodObject ? Object.keys((schema.params as z.ZodObject<Record<string, z.ZodTypeAny>>).shape) : [];
-	const queryKeys = schema?.query instanceof z.ZodObject ? Object.keys((schema.query as z.ZodObject<Record<string, z.ZodTypeAny>>).shape) : [];
+	const paramKeys =
+		schema?.params instanceof z.ZodObject
+			? Object.keys((schema.params as z.ZodObject<Record<string, z.ZodTypeAny>>).shape)
+			: [];
+	const queryKeys =
+		schema?.query instanceof z.ZodObject
+			? Object.keys((schema.query as z.ZodObject<Record<string, z.ZodTypeAny>>).shape)
+			: [];
 
 	for (const [key, value] of Object.entries(args)) {
 		if (paramKeys.includes(key)) params[key] = value;
@@ -112,7 +142,8 @@ function buildMcpToolCache(router: Router): { tools: Tool[]; routeMap: McpRouteM
 		const config = route.schema?.mcpTool;
 		if (!config) continue;
 
-		const name = typeof config === "object" && config.name ? config.name : generateToolName(route.method, route.path);
+		const name =
+			typeof config === "object" && config.name ? config.name : generateToolName(route.method, route.path);
 		const description =
 			typeof config === "object" && config.description
 				? config.description
@@ -190,7 +221,11 @@ export async function executeMcpTool(
 	};
 
 	try {
-		const response = await router.handle(request, context, jsonResponse as (data: unknown, status?: number) => Response);
+		const response = await router.handle(
+			request,
+			context,
+			jsonResponse as (data: unknown, status?: number) => Response,
+		);
 		const data = await response.json();
 		return {
 			content: [{ type: "text", text: JSON.stringify(data) }],

@@ -1266,6 +1266,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/users/me": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get current user profile
+		 * @description Get the authenticated user's full profile information
+		 */
+		get: operations["usersmeGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/users": {
 		parameters: {
 			query?: never;
@@ -1351,8 +1371,8 @@ export interface paths {
 			cookie?: never;
 		};
 		/**
-		 * Get user statistics
-		 * @description Returns statistics for a user
+		 * Get user stats
+		 * @description Returns aggregated statistics for a user
 		 */
 		get: operations["usersidstatsGet"];
 		put?: never;
@@ -11565,6 +11585,62 @@ export interface operations {
 				content: {
 					"application/json": {
 						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	usersmeGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						id: string;
+						name: string;
+						email: string;
+						bio: string | null;
+						location: string | null;
+						website: string | null;
+						phone: string | null;
+						callsign: string | null;
+						image: string | null;
+						language: string;
+						theme: string;
+						font: string;
+						style: string;
 					};
 				};
 			};
