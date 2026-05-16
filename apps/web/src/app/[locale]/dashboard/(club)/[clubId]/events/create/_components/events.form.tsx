@@ -140,11 +140,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		)
 		.refine(
 			(data) => {
-				const hourBeforeEvent = new Date(data.dateStart.getTime() - 60 * 60 * 1000);
-				return data.dateRegistrationsClose < hourBeforeEvent;
+				return data.dateRegistrationsClose <= data.dateStart;
 			},
 			{
-				message: t("Registrations must close at least 1 hour before event starts"),
+				message: t("Registrations close date must be on or before the event start date"),
 				path: ["dateRegistrationsClose"],
 			},
 		)

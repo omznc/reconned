@@ -67,6 +67,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			slug: eventData.club.slug,
 			logo: eventData.club.logo,
 			verified: eventData.club.verified,
+			description: eventData.club.description,
 		},
 		rules: rulesData?.rules || [],
 	};

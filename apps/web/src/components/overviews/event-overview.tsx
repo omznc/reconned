@@ -8,6 +8,7 @@ import { ClubCard } from "@/components/club-card";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { normalizeMapData, snapshotHasData } from "@/components/map-editor/map-data";
 import { MapViewer } from "@/components/map-editor/map-viewer";
+import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -239,7 +240,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 						<CardTitle>{t("Description")}</CardTitle>
 					</CardHeader>
 					<CardContent className="pt-4">
-						<p className="text-sm text-muted-foreground">{event.description}</p>
+						<ExpandableDescription description={event.description || ""} />
 					</CardContent>
 				</Card>
 
@@ -252,7 +253,7 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 							</div>
 						</CardHeader>
 						<CardContent className="pt-4">
-							<ClubCard club={event.club} />
+							<ClubCard club={event.club} showDescription />
 						</CardContent>
 					</Card>
 				)}

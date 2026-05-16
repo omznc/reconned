@@ -9,7 +9,6 @@ import {
 	Check,
 	CheckCircle,
 	ChevronsUpDown,
-	InstagramIcon,
 	Trash,
 } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -21,6 +20,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { BannerCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/banner-crop-dialog";
 import { useClubs } from "@/components/clubs-provider";
+import { InstagramIcon } from "@/components/icons";
 import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";

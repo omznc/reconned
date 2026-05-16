@@ -829,7 +829,7 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description Update a user's details */
-		post: operations["updateUser1"];
+		post: operations["adminUpdateUser"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -863,7 +863,7 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** @description List user sessions */
-		post: operations["listUserSessions1"];
+		post: operations["adminListUserSessions"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -3779,6 +3779,8 @@ export interface components {
 			secret: string;
 			backupCodes: string;
 			userId: string;
+			/** @default true */
+			readonly verified: boolean;
 		};
 		Apikey: {
 			id?: string;
@@ -3917,18 +3919,17 @@ export interface operations {
 			};
 		};
 		responses: {
-			/** @description Success - Returns either session details or redirect URL */
+			/** @description Success - Returns session details (idToken branch) or an authorize URL (redirect branch) */
 			200: {
 				headers: {
 					[name: string]: unknown;
 				};
 				content: {
 					"application/json": {
-						token: string;
-						user: components["schemas"]["User"];
+						token?: string;
+						user?: components["schemas"]["User"];
 						url?: string;
-						/** @enum {boolean} */
-						redirect: false;
+						redirect: boolean;
 					};
 				};
 			};
@@ -8869,7 +8870,7 @@ export interface operations {
 			};
 		};
 	};
-	updateUser1: {
+	adminUpdateUser: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -9068,7 +9069,7 @@ export interface operations {
 			};
 		};
 	};
-	listUserSessions1: {
+	adminListUserSessions: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -17183,6 +17184,7 @@ export interface operations {
 							slug: string | null;
 							logo: string | null;
 							verified: boolean;
+							description: string | null;
 						} | null;
 						registrationCount: number;
 					};

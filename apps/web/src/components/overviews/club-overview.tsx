@@ -5,7 +5,6 @@ import {
 	EyeOff,
 	Handshake,
 	HandshakeIcon,
-	InstagramIcon,
 	MailOpenIcon,
 	MapIcon,
 	MapPin,
@@ -18,7 +17,7 @@ import { Logger } from "next-axiom";
 import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
 import { ClubInviteAcceptance } from "@/components/club-invite-acceptance";
-import { ClubManagerIcon, ClubOwnerIcon, VerifiedClubIcon } from "@/components/icons";
+import { ClubManagerIcon, ClubOwnerIcon, InstagramIcon, VerifiedClubIcon } from "@/components/icons";
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
 import { ClubPost } from "@/components/overviews/club-post";

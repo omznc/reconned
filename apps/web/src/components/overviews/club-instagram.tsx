@@ -1,9 +1,10 @@
 "use client";
 
 import Error404 from "@public/errors/404.webp";
-import { ArrowUpRight, InstagramIcon, PlusIcon } from "lucide-react";
+import { ArrowUpRight, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
+import { InstagramIcon } from "@/components/icons";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type InstagramMediaResponse = ApiResponse<"/api/clubs/{id}/instagram/media", "get">;

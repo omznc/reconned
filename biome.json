@@ -82,7 +82,8 @@
 			"!**/src/components/ui",
 			"!**/.unlighthouse",
 			"!**/generated",
-			"!**/*.d.json.ts"
+			"!**/*.d.json.ts",
+			"!apps/web/messages"
 		],
 		"maxSize": 10000000
 	}
