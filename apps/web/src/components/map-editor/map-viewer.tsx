@@ -53,7 +53,7 @@ const collectionBounds = (collection: FeatureCollection): maplibregl.LngLatBound
 	let maxLat: number | null = null;
 	for (let index = 0; index < collection.features.length; index += 1) {
 		const feature = collection.features[index];
-		if (!feature || !feature.geometry) {
+		if (!feature?.geometry) {
 			continue;
 		}
 		const geometry = feature.geometry;

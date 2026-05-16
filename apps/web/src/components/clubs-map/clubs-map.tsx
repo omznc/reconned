@@ -11,7 +11,6 @@ import {
 	EyeOff,
 	Globe,
 	Handshake,
-	InstagramIcon,
 	MailOpenIcon,
 	MapPin,
 	Phone,
@@ -22,7 +21,7 @@ import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
-import { VerifiedClubIcon } from "@/components/icons";
+import { InstagramIcon, VerifiedClubIcon } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -269,7 +268,7 @@ function arrangeClusterInGrid(cluster: ClusterGroup, map: L.Map, markerSize: num
 	const centerPixel = map.latLngToContainerPoint(center);
 
 	clubs.forEach((club, index) => {
-		if (!club || !club.latitude || !club.longitude) return;
+		if (!club?.latitude || !club.longitude) return;
 
 		const row = Math.floor(index / gridSize);
 		const col = index % gridSize;

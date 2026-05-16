@@ -10,7 +10,7 @@ turndownService.remove(["script", "style", "noscript", "head", "meta", "link", "
 
 export async function GET(request: NextRequest) {
 	const source = request.nextUrl.searchParams.get("source") ?? request.headers.get("x-md-source");
-	if (!source || !source.startsWith("/") || source.startsWith("/api") || source.startsWith("/_next")) {
+	if (!source?.startsWith("/") || source.startsWith("/api") || source.startsWith("/_next")) {
 		return new Response("Invalid path", { status: 400 });
 	}
 

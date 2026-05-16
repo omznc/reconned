@@ -8,7 +8,6 @@ import {
 	DollarSign,
 	FileCheck,
 	Globe,
-	Instagram,
 	LayoutDashboard,
 	Link2,
 	Lock,
@@ -37,6 +36,7 @@ import { MessageHandler } from "@/app/[locale]/(public)/_components/message-hand
 
 import { EventCalendar } from "@/components/event-calendar";
 import { EventCard } from "@/components/event-card";
+import { InstagramIcon } from "@/components/icons";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
 import { Logo } from "@/components/logos/logo";
 import { Badge } from "@/components/ui/badge";
@@ -346,7 +346,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							>
 								<div className="flex items-start justify-between">
 									<div className="rounded-md bg-red-500/10 p-2">
-										<Instagram className="h-5 w-5 text-red-500" />
+										<InstagramIcon className="h-5 w-5 text-red-500" />
 									</div>
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>

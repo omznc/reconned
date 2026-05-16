@@ -551,6 +551,7 @@ eventsRouter.get(
 				slug: club.slug,
 				logo: club.logo,
 				verified: club.verified,
+				description: club.description,
 				isPrivate: club.isPrivate,
 			})
 			.from(club)
@@ -600,6 +601,7 @@ eventsRouter.get(
 				slug: clubRecord.slug,
 				logo: clubRecord.logo,
 				verified: clubRecord.verified,
+				description: clubRecord.description,
 			},
 			registrationCount: Number(registrationCount[0]?.count || 0),
 		});
@@ -625,6 +627,7 @@ eventsRouter.get(
 							slug: z.string().nullable(),
 							logo: z.string().nullable(),
 							verified: z.boolean(),
+							description: z.string().nullable(),
 						})
 						.nullable(),
 					registrationCount: z.number(),

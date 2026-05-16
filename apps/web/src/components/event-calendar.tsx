@@ -427,7 +427,7 @@ export function EventCalendar(props: EventCalendarProps) {
 											<div className="flex-1 relative">
 												{Array.from(new Set(getEventsForDay(day))).map((event) => {
 													const display = getEventDisplayProperties(event, day, week);
-													if (!display || !display.shouldRender) {
+													if (!display?.shouldRender) {
 														return null;
 													}
 
