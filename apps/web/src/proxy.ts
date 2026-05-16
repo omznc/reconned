@@ -10,33 +10,6 @@ export default async function authProxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const country = request.headers.get("CF-IPCountry");
 	const defaultLocale = getDefaultLocaleFromCountry(country);
-	const acceptHeader = request.headers.get("accept") ?? "";
-	const wantsMarkdown = acceptHeader.includes("text/markdown");
-	const isMarkdownPath = pathname.endsWith(".md");
-
-	if (pathname === "/robots.txt") {
-		return NextResponse.next();
-	}
-
-	if (pathname.startsWith("/.well-known/")) {
-		return NextResponse.next();
-	}
-
-	if (
-		!pathname.startsWith("/dashboard") &&
-		!pathname.startsWith("/api") &&
-		!pathname.startsWith("/_next") &&
-		(wantsMarkdown || isMarkdownPath)
-	) {
-		const markdownUrl = new URL("/api/public-markdown", request.url);
-		const normalizedPath = isMarkdownPath ? pathname.slice(0, -3) : pathname;
-		const source = `${normalizedPath}${request.nextUrl.search}`;
-		markdownUrl.searchParams.set("source", source);
-		const headers = new Headers(request.headers);
-		headers.set("x-md-source", source);
-		return NextResponse.rewrite(markdownUrl, { request: { headers } });
-	}
-
 	const hasLocalePrefix = routing.locales.some(
 		(locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
 	);
@@ -67,5 +40,5 @@ export default async function authProxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/((?!api|_next|.*\\..*).*)", "/:path*.md", "/.well-known/:path*", "/robots.txt"],
+	matcher: ["/((?!api|_next|.*\\..*).*)", "/.well-known/:path*", "/robots.txt"],
 };
