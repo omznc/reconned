@@ -40,5 +40,5 @@ export default async function authProxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/((?!api|_next|.*\\..*).*)", "/.well-known/:path*", "/robots.txt"],
+	matcher: ["/((?!api|_next|.*\\..*).*)", "/.well-known/:path*"],
 };
