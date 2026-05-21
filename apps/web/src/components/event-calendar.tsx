@@ -346,8 +346,8 @@ export function EventCalendar(props: EventCalendarProps) {
 				</div>
 			</header>
 
-			<div className="flex-1 overflow-auto border-t rounded-t-md">
-				<div className="grid grid-cols-7 ">
+			<div className="flex-1 overflow-hidden border-t rounded-t-md">
+				<div className="grid grid-cols-7 min-w-0">
 					{/* Day headers */}
 					{[t("Mon"), t("Tue"), t("Wed"), t("Thu"), t("Fri"), t("Sat"), t("Sun")].map((day, index) => (
 						<div
@@ -401,7 +401,7 @@ export function EventCalendar(props: EventCalendarProps) {
 										<div
 											key={day.toISOString()}
 											className={cn(
-												"border-r border-b p-1",
+												"border-r border-b p-1 min-w-0",
 												isFirstDay && "border-l",
 												"flex flex-col",
 												isSameMonth(day, currentDate) ? "" : "text-muted-foreground",
@@ -457,12 +457,13 @@ export function EventCalendar(props: EventCalendarProps) {
 																		position: "absolute",
 																		zIndex: eventPositions.get(event.id) || 1,
 																		left: 0,
-																		width: `calc(${display.span * 100}% - ${display.span * 2}px)`,
+																		right: 0,
 																		top: `${(eventPositions.get(event.id) || 0) * 32}px`,
-																		height: "28px",
+																		minHeight: "28px",
+																		height: "auto",
 																	}}
 																	className={cn(
-																		"text-left px-2 py-1 text-xs font-medium text-background",
+																		"text-left px-2 py-1 text-xs font-medium text-background whitespace-normal text-wrap",
 																		"bg-primary hover:bg-primary/90 hover:text-background",
 																		{
 																			"rounded-l-none": !display.isStart,
@@ -561,7 +562,7 @@ export function EventCalendar(props: EventCalendarProps) {
 
 																	{event.description && (
 																		<div className="text-sm border-t pt-2">
-																			<p className="text-muted-foreground">
+																			<p className="text-muted-foreground max-h-24 overflow-y-auto text-ellipsis">
 																				{event.description}
 																			</p>
 																		</div>

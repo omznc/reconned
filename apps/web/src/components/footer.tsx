@@ -148,7 +148,7 @@ export async function Footer() {
 								<Link href="/terms-of-use">{t("Terms of Use")}</Link>
 							</li>
 							<li>
-								<Link href="/changelog">{t("Changelog")}</Link>
+								<Link href="/developers">{t("Developers")}</Link>
 							</li>
 							<li>
 								<a

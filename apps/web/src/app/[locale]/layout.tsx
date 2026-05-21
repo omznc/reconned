@@ -75,6 +75,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	const organizationSchema: WithContext<SportsOrganization> = {
 		"@context": "https://schema.org",
 		"@type": "SportsOrganization",
+		"@id": `${env.NEXT_PUBLIC_WEB_URL}/#organization`,
 		name: "Reconned",
 		sport: "Airsoft",
 		description: t("The first universal platform for airsoft clubs, events, and players."),

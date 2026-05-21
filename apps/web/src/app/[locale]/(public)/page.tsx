@@ -126,9 +126,9 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							})}
 						</h1>
 						<div className="flex flex-wrap items-center gap-2">
-							<Link href="/changelog">
-								<span className="m-0 inline-flex max-w-full list-none overflow-hidden rounded-full border border-border/60 bg-green-500/50 py-1.5 px-2 text-xs font-semibold text-foreground">
-									{t("View the changelog")}
+							<Link href="/developers">
+								<span className="m-0 inline-flex max-w-full list-none overflow-hidden rounded-full border border-border/60 bg-blue-500/50 py-1.5 px-2 text-xs font-semibold text-foreground">
+									{t("API is live")}
 								</span>
 							</Link>
 							<HomeCommunityStats stats={publicStats} />

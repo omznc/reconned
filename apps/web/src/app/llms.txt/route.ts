@@ -1,5 +1,5 @@
-import { env } from "@/lib/env";
 import { routing } from "@/i18n/routing";
+import { env } from "@/lib/env";
 
 export function GET() {
 	const isBeta = env.NEXT_PUBLIC_BETA || env.NEXT_PUBLIC_WEB_URL.includes("beta.");
@@ -41,7 +41,7 @@ export function GET() {
 		`- [Home](${baseUrl}/en): Platform overview`,
 		`- [Sponsors](${baseUrl}/en/sponsors): RECONNED sponsors`,
 		`- [Support Us](${baseUrl}/en/support-us): How to support the platform`,
-		`- [Changelog](${baseUrl}/en/changelog): Recent updates and changes`,
+		`- [Developers](${baseUrl}/en/developers): API documentation and developer resources`,
 		"",
 		"## Optional",
 		"",

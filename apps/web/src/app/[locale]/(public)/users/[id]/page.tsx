@@ -5,14 +5,12 @@ import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { UserOverview } from "@/components/overviews/user-overview";
 import apiServer from "@/lib/api/api";
-import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import {
 	createAggregateRating,
 	createBreadcrumbList,
 	createPostalAddress,
-	createReviewSchema,
 	createSportsOrganizationReference,
 	removeUndefined,
 } from "@/lib/json-ld";
@@ -39,11 +37,9 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const userUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/users/${user.slug || user.id}`;
 
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
-	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
-	let reviewsResponse: ReviewsDataType | undefined;
 	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
 	if (reviewsEnabled) {
-		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
+		const { data: reviewsData } = await apiServer.GET("/api/reviews/{type}/{id}", {
 			params: {
 				path: {
 					type: "user",
@@ -51,9 +47,8 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 				},
 			},
 		});
-		reviewsResponse = response.data;
-		if (response.data && response.data.reviews.length > 0) {
-			const reviews = response.data.reviews;
+		if (reviewsData && reviewsData.reviews.length > 0) {
+			const reviews = reviewsData.reviews;
 			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 			aggregateRating = createAggregateRating({
 				ratingValue: averageRating,
@@ -117,30 +112,11 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		{ name: user.name, url: userUrl },
 	]);
 
-	// Generate review schema
-	let reviewSchema: ReturnType<typeof createReviewSchema> | undefined;
-	if (reviewsEnabled && reviewsResponse?.reviews) {
-		const reviews = reviewsResponse.reviews;
-		if (reviews.length > 0) {
-			reviewSchema = createReviewSchema({
-				reviews: reviews.map((review) => ({
-					author: review.author?.name || t("Anonymous"),
-					rating: review.rating,
-					content: review.content || "",
-					datePublished: new Date(review.createdAt).toISOString(),
-				})),
-				itemReviewed: user.name,
-				itemReviewedType: "Person",
-			});
-		}
-	}
-
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
 			<JsonLdScript data={personSchema} />
 			<JsonLdScript data={profilePageSchema} />
 			<JsonLdScript data={breadcrumbSchema} />
-			{reviewSchema && <JsonLdScript data={reviewSchema} />}
 			<UserOverview user={user} />
 		</div>
 	);
