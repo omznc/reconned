@@ -15,6 +15,13 @@
 			"when": 1778157160713,
 			"tag": "0001_awesome_liz_osborn",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1779465948083,
+			"tag": "0002_gigantic_sleepwalker",
+			"breakpoints": true
 		}
 	]
 }

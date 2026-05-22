@@ -4,7 +4,8 @@ import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
 import apiServer from "@/lib/api/api";
-import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import type { ApiResponse, ClubRule } from "@/lib/api/api-type-helpers";
+import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import {
@@ -16,11 +17,12 @@ import {
 } from "@/lib/json-ld";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const params = await props.params;
 	const t = await getExtracted();
+	const user = await isAuthenticated();
 
 	const { data: eventData, error: eventError } = await apiServer.GET("/api/events/{id}", {
 		params: {
@@ -30,27 +32,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		},
 	});
 
-	if (eventError || !eventData) {
-		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
-	}
-
-	const { data: rulesData } = await apiServer.GET("/api/events/{id}/rules", {
-		params: {
-			path: {
-				id: eventData.event.id,
-			},
-		},
-	});
-
-	const { data: registrationsCountData } = await apiServer.GET("/api/events/{id}/registrations/count", {
-		params: {
-			path: {
-				id: eventData.event.id,
-			},
-		},
-	});
-
-	if (!eventData.club) {
+	if (eventError || !eventData || !eventData.club) {
 		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
@@ -59,7 +41,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const event = {
 		...base,
 		_count: {
-			eventRegistration: registrationsCountData?.count || 0,
+			eventRegistration: eventData.registrationCount || 0,
 		},
 		club: {
 			id: eventData.club.id,
@@ -69,7 +51,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			verified: eventData.club.verified,
 			description: eventData.club.description,
 		},
-		rules: rulesData?.rules || [],
+		rules: ((eventData as Record<string, unknown>).rules as ClubRule[]) || [],
 	};
 
 	const locale = await getLocale();
@@ -225,7 +207,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			<JsonLdScript data={breadcrumbSchema} />
 			{faqSchema && <JsonLdScript data={faqSchema} />}
 			{reviewSchema && <JsonLdScript data={reviewSchema} />}
-			<EventOverview event={event} clubId={eventData.club.id} />
+			<EventOverview event={event} clubId={eventData.club.id} user={user} />
 		</div>
 	);
 }

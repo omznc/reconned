@@ -138,6 +138,9 @@ eventsRouter.get(
 				mapData: event.mapData,
 				createdAt: event.createdAt,
 				updatedAt: event.updatedAt,
+				clubName: club.name,
+				clubSlug: club.slug,
+				clubLogo: club.logo,
 				clubVerified: club.verified,
 				attendeeCount: sql`COALESCE(${attendeeCountsSubquery.attendeeCount}, 0)`.mapWith(Number),
 			})
@@ -179,6 +182,12 @@ eventsRouter.get(
 			mapData: e.mapData,
 			createdAt: e.createdAt,
 			updatedAt: e.updatedAt,
+			club: {
+				id: e.clubId,
+				name: e.clubName,
+				slug: e.clubSlug,
+				logo: e.clubLogo,
+			},
 		}));
 
 		const totalData = await db.select({ count: count() }).from(event).where(whereClause);
@@ -212,7 +221,8 @@ eventsRouter.get(
 	{
 		cache: {
 			key: "events",
-			ttl: 60,
+			ttl: 300,
+			swr: 1800,
 			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder", "isPrivate", "filter"],
 		},
 		schema: {
@@ -228,7 +238,18 @@ eventsRouter.get(
 			}),
 			response: {
 				200: z.object({
-					events: z.array(baseEventSchema),
+					events: z.array(
+						baseEventSchema.extend({
+							club: z
+								.object({
+									id: z.string(),
+									name: z.string(),
+									slug: z.string().nullable(),
+									logo: z.string().nullable(),
+								})
+								.nullable(),
+						}),
+					),
 					pagination: paginationResponseSchema,
 				}),
 			},
@@ -554,19 +575,24 @@ eventsRouter.get(
 		}
 
 		const eventRecord = eventData[0];
-		const clubData = await db
-			.select({
-				id: club.id,
-				name: club.name,
-				slug: club.slug,
-				logo: club.logo,
-				verified: club.verified,
-				description: club.description,
-				isPrivate: club.isPrivate,
-			})
-			.from(club)
-			.where(eq(club.id, eventRecord.clubId))
-			.limit(1);
+
+		const [clubData, registrationCountData, rulesData] = await Promise.all([
+			db
+				.select({
+					id: club.id,
+					name: club.name,
+					slug: club.slug,
+					logo: club.logo,
+					verified: club.verified,
+					description: club.description,
+					isPrivate: club.isPrivate,
+				})
+				.from(club)
+				.where(eq(club.id, eventRecord.clubId))
+				.limit(1),
+			db.select({ count: count() }).from(eventRegistration).where(eq(eventRegistration.eventId, eventRecord.id)),
+			db.select().from(clubRule).where(eq(clubRule.eventId, eventRecord.id)),
+		]);
 
 		if (!clubData[0]) {
 			throw apiError.notFound("Event not found");
@@ -583,21 +609,17 @@ eventsRouter.get(
 				throw apiError.notFound("Event not found");
 			}
 
-			const userMembership = await db
+			await db
 				.select()
 				.from(clubMembership)
 				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, requestingUserId)))
-				.limit(1);
-
-			if (!userMembership[0]) {
-				throw apiError.notFound("Event not found");
-			}
+				.limit(1)
+				.then((rows) => {
+					if (!rows[0]) {
+						throw apiError.notFound("Event not found");
+					}
+				});
 		}
-
-		const registrationCount = await db
-			.select({ count: count() })
-			.from(eventRegistration)
-			.where(eq(eventRegistration.eventId, eventRecord.id));
 
 		return response.json({
 			event: {
@@ -613,7 +635,8 @@ eventsRouter.get(
 				verified: clubRecord.verified,
 				description: clubRecord.description,
 			},
-			registrationCount: Number(registrationCount[0]?.count || 0),
+			registrationCount: Number(registrationCountData[0]?.count || 0),
+			rules: rulesData,
 		});
 	},
 	{
@@ -646,6 +669,7 @@ eventsRouter.get(
 						})
 						.nullable(),
 					registrationCount: z.number(),
+					rules: z.array(baseClubRuleSchema),
 				}),
 				400: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
@@ -1845,6 +1869,10 @@ eventsRouter.get(
 		return response.json({ count: total });
 	},
 	{
+		cache: {
+			key: "event:{id}:registrations",
+			ttl: 60,
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "Count event registrations",
@@ -1879,6 +1907,10 @@ eventsRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "event:{id}:rules",
+			ttl: 300,
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "Get rules associated with event",

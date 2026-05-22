@@ -84,6 +84,8 @@ export const club = pgTable(
 			table.slug.asc().nullsLast().op("text_ops"),
 		),
 		uniqueIndex("Club_slug_key").using("btree", table.slug.asc().nullsLast().op("text_ops")),
+		index("Club_isPrivate_idx").using("btree", table.isPrivate.asc().nullsLast()),
+		index("Club_verified_idx").using("btree", table.verified.asc().nullsLast()),
 		foreignKey({
 			columns: [table.countryId],
 			foreignColumns: [country.id],
@@ -475,6 +477,12 @@ export const event = pgTable(
 			table.clubId.asc().nullsLast().op("text_ops"),
 			table.dateStart.asc().nullsLast().op("timestamp_ops"),
 		),
+		index("Event_isPrivate_idx").using("btree", table.isPrivate.asc().nullsLast()),
+		index("Event_clubId_isPrivate_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.isPrivate.asc().nullsLast(),
+		),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -804,6 +812,7 @@ export const eventRegistrationToUser = pgTable(
 	},
 	(table) => [
 		index().using("btree", table.b.asc().nullsLast().op("text_ops")),
+		index("EventRegistrationToUser_a_idx").using("btree", table.a.asc().nullsLast().op("text_ops")),
 		foreignKey({
 			columns: [table.a],
 			foreignColumns: [eventRegistration.id],

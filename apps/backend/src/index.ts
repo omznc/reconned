@@ -109,39 +109,48 @@ async function handleRequest(request: Request): Promise<Response> {
 	let session: { id: string } | undefined;
 	let isAdmin = false;
 
-	try {
-		const sessionData = await auth.api.getSession({
-			headers: request.headers,
-		});
-		if (sessionData?.user) {
-			const userRecord = await db
-				.select({ role: userTable.role })
-				.from(userTable)
-				.where(eq(userTable.id, sessionData.user.id))
-				.limit(1);
+	// Skip session lookup for anonymous public requests to reduce latency
+	const shouldCheckSession = !(
+		url.pathname.startsWith("/api/public/") ||
+		(url.pathname.startsWith("/api/events") && !request.headers.get("cookie")?.includes("session")) ||
+		(url.pathname.startsWith("/api/clubs") && !request.headers.get("cookie")?.includes("session"))
+	);
 
-			user = {
-				id: sessionData.user.id,
-				email: sessionData.user.email,
-				name: sessionData.user.name,
-				role: userRecord[0]?.role || undefined,
-			};
+	if (shouldCheckSession) {
+		try {
+			const sessionData = await auth.api.getSession({
+				headers: request.headers,
+			});
+			if (sessionData?.user) {
+				const userRecord = await db
+					.select({ role: userTable.role })
+					.from(userTable)
+					.where(eq(userTable.id, sessionData.user.id))
+					.limit(1);
 
-			isAdmin = userRecord[0]?.role === "admin";
+				user = {
+					id: sessionData.user.id,
+					email: sessionData.user.email,
+					name: sessionData.user.name,
+					role: userRecord[0]?.role || undefined,
+				};
+
+				isAdmin = userRecord[0]?.role === "admin";
+			}
+			if (sessionData?.session) {
+				session = {
+					id: sessionData.session.id,
+				};
+			}
+		} catch (error) {
+			logger.emit({
+				severityText: "error",
+				body: "Error getting session",
+				attributes: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
 		}
-		if (sessionData?.session) {
-			session = {
-				id: sessionData.session.id,
-			};
-		}
-	} catch (error) {
-		logger.emit({
-			severityText: "error",
-			body: "Error getting session",
-			attributes: {
-				error: error instanceof Error ? error.message : String(error),
-			},
-		});
 	}
 
 	const context = {

@@ -38,30 +38,16 @@ export default async function Page(props: PageProps<"/[locale]/events">) {
 		pagination: data.pagination,
 	};
 
-	const uniqueClubIds = [...new Set(data.events.map((e) => e.clubId).filter(Boolean))];
-	const clubDataMap = new Map<string, { id: string; name: string; slug: string | null; logo: string | null }>();
-
-	await Promise.all(
-		uniqueClubIds.map(async (clubId) => {
-			const clubResponse = await apiServer.GET("/api/clubs/{id}", {
-				params: {
-					path: { id: clubId },
-				},
-			});
-			if (clubResponse.data) {
-				clubDataMap.set(clubId, {
-					id: clubResponse.data.id,
-					name: clubResponse.data.name,
-					slug: clubResponse.data.slug,
-					logo: clubResponse.data.logo,
-				});
-			}
-		}),
-	);
-
 	const itemListSchema = createItemListWithEvents({
 		events: data.events.map((event) => {
-			const club = event.clubId ? clubDataMap.get(event.clubId) : undefined;
+			const club = (event as Record<string, unknown>).club as
+				| {
+						id: string;
+						name: string;
+						slug: string | null;
+						logo: string | null;
+				  }
+				| undefined;
 			return {
 				id: event.id,
 				slug: event.slug,

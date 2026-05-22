@@ -2,6 +2,7 @@ import { isAfter, isBefore } from "date-fns";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
 import Image from "next/image";
 import { getExtracted } from "next-intl/server";
+import { Suspense } from "react";
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
 import { BadgeSoon } from "@/components/badge-soon";
 import { ClubCard } from "@/components/club-card";
@@ -16,7 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
-import { isAuthenticated } from "@/lib/auth";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 
 interface EventOverviewProps {
@@ -34,11 +34,11 @@ interface EventOverviewProps {
 		};
 	};
 	clubId?: string;
+	user?: import("better-auth").User | null;
 }
 
-export async function EventOverview({ event, clubId }: EventOverviewProps) {
+export async function EventOverview({ event, clubId, user }: EventOverviewProps) {
 	const t = await getExtracted();
-	const user = await isAuthenticated();
 	const membershipPromise =
 		user && clubId
 			? apiServer.GET("/api/clubs/{id}/membership", {
@@ -297,7 +297,9 @@ export async function EventOverview({ event, clubId }: EventOverviewProps) {
 				)}
 			</div>
 
-			<ReviewsOverview type="event" typeId={event.id} entityName={event.name} />
+			<Suspense fallback={null}>
+				<ReviewsOverview type="event" typeId={event.id} entityName={event.name} />
+			</Suspense>
 		</div>
 	);
 }

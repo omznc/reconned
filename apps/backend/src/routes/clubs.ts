@@ -1,7 +1,7 @@
 import { render } from "@react-email/components";
 import { apiError, Router, responseSchema } from "@reconned/router";
 import { randomUUIDv7 } from "bun";
-import { and, asc, count, desc, eq, gt, ilike, inArray, ne, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, ilike, inArray, ne, or, type SQL, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
@@ -618,7 +618,7 @@ clubsRouter.get(
 
 		const { sortBy, sortOrder } = query;
 
-		const orderBy: Array<ReturnType<typeof asc | typeof desc>> = [];
+		const orderBy: Array<ReturnType<typeof asc | typeof desc> | SQL> = [];
 
 		if (sortBy && sortOrder) {
 			const orderFn = sortOrder === "desc" ? desc : asc;
@@ -629,7 +629,7 @@ clubsRouter.get(
 
 		if (sortBy !== "name") orderBy.push(asc(club.name));
 		orderBy.push(desc(club.verified));
-		orderBy.push(desc(count(clubMembership.id)));
+		orderBy.push(sql`(SELECT COUNT(*) FROM "ClubMembership" cm WHERE cm."clubId" = ${club.id}) DESC`);
 
 		const clubsWithMemberCounts = await db
 			.select({
@@ -660,12 +660,10 @@ clubsRouter.get(
 				instagramUsername: club.instagramUsername,
 				instagramProfilePictureUrl: club.instagramProfilePictureUrl,
 				instagramBusinessId: club.instagramBusinessId,
-				memberCount: count(clubMembership.id),
+				memberCount: sql<number>`COALESCE((SELECT COUNT(*) FROM "ClubMembership" cm WHERE cm."clubId" = ${club.id}), 0)`,
 			})
 			.from(club)
-			.leftJoin(clubMembership, eq(club.id, clubMembership.clubId))
 			.where(whereClause)
-			.groupBy(club.id)
 			.orderBy(...orderBy)
 			.limit(perPage)
 			.offset(offset);
@@ -717,7 +715,8 @@ clubsRouter.get(
 	{
 		cache: {
 			key: "clubs",
-			ttl: 60,
+			ttl: 300,
+			swr: 1800,
 			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder"],
 		},
 		schema: {
@@ -3138,7 +3137,8 @@ clubsRouter.get(
 		auth: false,
 		cache: {
 			key: "club:{id}",
-			ttl: 300,
+			ttl: 3600,
+			swr: 86400,
 		},
 		schema: {
 			tags: ["Clubs"],
@@ -4076,6 +4076,11 @@ clubsRouter.get(
 	},
 	{
 		auth: false,
+		cache: {
+			key: "club:{id}:membership:{userId}",
+			ttl: 60,
+			varyByUser: true,
+		},
 		schema: {
 			tags: ["Clubs"],
 			summary: "Check club membership",

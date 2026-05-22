@@ -14,6 +14,7 @@ import { getEmailMessages } from "./email-messages";
 import { env } from "./env";
 import { sendEmail } from "./mail";
 import { posthog } from "./posthog";
+import { redis } from "./redis";
 
 interface UserWithLanguage {
 	id: string;
@@ -33,7 +34,32 @@ export const auth = betterAuth({
 		provider: "pg",
 	}),
 	session: {
-		freshAge: 0,
+		freshAge: 300,
+	},
+	secondaryStorage: {
+		get: async (key) => {
+			try {
+				return await redis.get(key);
+			} catch {
+				return null;
+			}
+		},
+		set: async (key: string, value: string, ttl?: number) => {
+			try {
+				if (ttl) {
+					await redis.setex(key, ttl, value);
+				}
+			} catch {
+				// fallback to DB storage
+			}
+		},
+		delete: async (key) => {
+			try {
+				await redis.del(key);
+			} catch {
+				// best effort
+			}
+		},
 	},
 	experimental: { joins: true },
 	trustedOrigins: (() => {

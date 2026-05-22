@@ -1,21 +1,14 @@
 import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
 import { getExtracted, getLocale } from "next-intl/server";
+import { Suspense } from "react";
 import { BadgeSoon } from "@/components/badge-soon";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
 
 const CURRENT_COMMIT = env.NEXT_PUBLIC_SOURCE_COMMIT;
-type CommitResponse = {
-	commit?: {
-		committer?: {
-			date?: string;
-		};
-	};
-};
 
-export async function Footer() {
-	const t = await getExtracted();
+async function FooterVersion() {
 	const locale = await getLocale();
 
 	const commitDateResponse = await fetch(`https://api.github.com/repos/omznc/reconned/commits/${CURRENT_COMMIT}`, {
@@ -24,7 +17,32 @@ export async function Footer() {
 			revalidate: false,
 		},
 	});
-	const body: CommitResponse = await commitDateResponse.json();
+	const body = (await commitDateResponse.json()) as {
+		commit?: { committer?: { date?: string } };
+	};
+
+	if (!CURRENT_COMMIT || !body.commit?.committer?.date) return null;
+
+	return (
+		<Link
+			href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
+			target="_blank"
+			className="font-mono mt-4 w-fit opacity-30 hover:opacity-60 flex items-center gap-1 transition-opacity"
+		>
+			Version {CURRENT_COMMIT.slice(0, 7)} (
+			{new Date(body.commit.committer.date).toLocaleDateString(locale, {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			})}
+			)
+			<ArrowUpRightIcon className="w-4 h-4 -mt-0.5" />
+		</Link>
+	);
+}
+
+export async function Footer() {
+	const t = await getExtracted();
 
 	return (
 		<footer className="relative w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
@@ -168,23 +186,9 @@ export async function Footer() {
 					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
 						{t("Check out our sponsors and partners")}
 					</Link>
-					{CURRENT_COMMIT && body.commit?.committer?.date && (
-						<Link
-							href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
-							target="_blank"
-							className="font-mono mt-4 w-fit opacity-30 hover:opacity-60 flex items-center gap-1 transition-opacity"
-						>
-							{t("Version {commit} ({date})", {
-								commit: CURRENT_COMMIT.slice(0, 7),
-								date: new Date(body.commit.committer.date).toLocaleDateString(locale, {
-									year: "numeric",
-									month: "long",
-									day: "numeric",
-								}),
-							})}
-							<ArrowUpRightIcon className="w-4 h-4 -mt-0.5" />
-						</Link>
-					)}
+					<Suspense fallback={null}>
+						<FooterVersion />
+					</Suspense>
 				</div>
 			</div>
 			<FooterDrawing className="transition-all opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none" />
