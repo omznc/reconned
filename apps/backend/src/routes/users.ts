@@ -298,6 +298,11 @@ usersRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "user:{id}",
+			ttl: 300,
+			varyByUser: false,
+		},
 		schema: {
 			tags: ["Users"],
 			summary: "Get user by ID",
@@ -554,6 +559,11 @@ usersRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "users",
+			ttl: 60,
+			varyByQuery: ["page", "perPage", "search", "sort"],
+		},
 		schema: {
 			tags: ["Users"],
 			summary: "List users",
@@ -716,6 +726,11 @@ usersRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "user:{id}:profile",
+			ttl: 300,
+			varyByUser: false,
+		},
 		schema: {
 			tags: ["Users"],
 			summary: "Get user profile",
@@ -844,6 +859,7 @@ usersRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["users", "user:{id}", "user:{id}:profile"],
 		schema: {
 			tags: ["Users"],
 			summary: "Update user",
@@ -1828,6 +1844,7 @@ usersRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["users", "user:{id}", "user:{id}:profile"],
 		schema: {
 			tags: ["Users"],
 			summary: "Delete user account",

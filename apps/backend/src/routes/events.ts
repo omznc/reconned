@@ -210,6 +210,11 @@ eventsRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "events",
+			ttl: 60,
+			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder", "isPrivate", "filter"],
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "List events",
@@ -345,6 +350,11 @@ eventsRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "events:upcoming",
+			ttl: 300,
+			varyByQuery: ["limit"],
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "Get upcoming events",
@@ -607,6 +617,11 @@ eventsRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "event:{id}",
+			ttl: 300,
+			varyByUser: false,
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "Get event by ID or slug",
@@ -760,6 +775,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create event",
@@ -922,6 +938,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Update event",
@@ -1031,6 +1048,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event",

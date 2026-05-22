@@ -715,6 +715,11 @@ clubsRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "clubs",
+			ttl: 60,
+			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder"],
+		},
 		schema: {
 			tags: ["Clubs"],
 			summary: "List clubs",
@@ -3131,6 +3136,10 @@ clubsRouter.get(
 	},
 	{
 		auth: false,
+		cache: {
+			key: "club:{id}",
+			ttl: 300,
+		},
 		schema: {
 			tags: ["Clubs"],
 			summary: "Get club by ID or slug",
@@ -3287,6 +3296,7 @@ clubsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Create club",
@@ -3385,6 +3395,7 @@ clubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club information",
@@ -3466,6 +3477,7 @@ clubsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club",

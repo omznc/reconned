@@ -10,6 +10,7 @@ import {
 import { eq } from "drizzle-orm";
 import { user as userTable } from "./drizzle/schema";
 import { auth } from "./lib/auth";
+import { redisCacheStore } from "./lib/cache";
 import { db } from "./lib/db";
 import { env } from "./lib/env";
 import { loggingMiddleware } from "./lib/middlewares/logging";
@@ -36,7 +37,12 @@ const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.t
 if (process.env.NODE_ENV === "production") {
 	await runMigrations();
 }
-const mainRouter = new Router();
+const mainRouter = new Router({
+	cache: {
+		store: redisCacheStore,
+		keyPrefix: "route:",
+	},
+});
 
 mainRouter.middleware(correlationMiddleware());
 mainRouter.middleware(wideEventsMiddleware());
