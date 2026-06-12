@@ -13,7 +13,6 @@ import {
 	ShieldBan,
 } from "lucide-react";
 import Image from "next/image";
-import { Logger } from "next-axiom";
 import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
 import { ClubInviteAcceptance } from "@/components/club-invite-acceptance";
@@ -30,7 +29,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link } from "@/i18n/navigation";
-import apiServer from "@/lib/api/api";
 import type { ApiResponse, ClubMembership } from "@/lib/api/api-type-helpers";
 
 interface ClubOverviewProps {
@@ -42,11 +40,11 @@ interface ClubOverviewProps {
 	user?: { id: string; name: string; email: string; callsign?: string | null } | null;
 	members?: ApiResponse<"/api/clubs/{id}/members", "get">["members"];
 	privateCount?: number;
+	posts?: ApiResponse<"/api/clubs/{id}/posts", "get">["posts"];
+	alliances?: ApiResponse<"/api/clubs/{id}/alliances", "get">["alliances"];
+	instagramData?: ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
+	invites?: Array<{ id: string; clubId: string; role: string; status: string }>;
 }
-
-const logger = new Logger({ source: "ClubOverview" });
-
-type InstagramMediaResponse = ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
 
 export async function ClubOverview({
 	club,
@@ -57,59 +55,18 @@ export async function ClubOverview({
 	user,
 	members = [],
 	privateCount = 0,
+	posts = [],
+	alliances = [],
+	instagramData = { media: [], username: club.instagramUsername || null },
+	invites = [],
 }: ClubOverviewProps) {
-	const instagramData = club.instagramConnected
-		? await apiServer
-				.GET("/api/clubs/{id}/instagram/media", {
-					params: {
-						path: { id: club.id },
-						query: { limit: 20 },
-					},
-				})
-				.then((response) => {
-					if (response.data) {
-						return response.data;
-					}
-
-					return {
-						media: [],
-						username: club.instagramUsername || null,
-					} as InstagramMediaResponse;
-				})
-		: ({
-				media: [],
-				username: club.instagramUsername || null,
-			} as InstagramMediaResponse);
-
 	const t = await getExtracted();
-	const [postsResponse, alliancesResponse, invitesResponse] = await Promise.all([
-		apiServer.GET("/api/clubs/{id}/posts", {
-			params: {
-				path: { id: club.id },
-			},
-		}),
-		apiServer.GET("/api/clubs/{id}/alliances", {
-			params: {
-				path: { id: club.id },
-			},
-		}),
-		user ? apiServer.GET("/api/users/invites") : Promise.resolve({ data: null, error: null }),
-	]);
-
-	const posts = postsResponse.data?.posts || [];
-	const alliances = alliancesResponse.data?.alliances || [];
-	const allUserInvites = invitesResponse.data?.invites || [];
-	const clubInvites = allUserInvites.filter((invite) => invite.clubId === club.id);
-
-	if (postsResponse.error) {
-		logger.error("Error fetching club posts", { error: postsResponse.error });
-	}
 
 	const isClubOwner = currentUserMembership?.role === "CLUB_OWNER";
 
 	return (
 		<div>
-			<ClubInviteAcceptance invites={clubInvites} />
+			<ClubInviteAcceptance invites={invites} />
 			{/* Unified Banner Section - Always Present */}
 			<div className="relative w-full mb-6">
 				<div className="w-full h-full max-h-75 bg-sidebar rounded-md">

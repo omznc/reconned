@@ -23,7 +23,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
 
 	return (
 		<div className="flex h-dvh w-full fade-in-up flex-col items-center justify-center p-8">
-			<Image src={Error500} alt="500" className="w-full max-w-[400px] dark:invert" />
+			<Image src={Error500} alt="500" sizes="100vw" className="w-full max-w-[400px] dark:invert" />
 			<h1 className="text-4xl font-bold mb-4 text-center">{t("Something went wrong")}</h1>
 			<p className="text-lg mb-8 text-center">{t("An unexpected error occurred. Please try again.")}</p>
 			<Button asChild={true}>

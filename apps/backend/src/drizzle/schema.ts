@@ -201,6 +201,7 @@ export const clubPurchase = pgTable(
 		updatedAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	},
 	(table) => [
+		index("ClubPurchase_clubId_idx").using("btree", table.clubId.asc().nullsLast()),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -283,6 +284,8 @@ export const clubRule = pgTable(
 		updatedAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	},
 	(table) => [
+		index("ClubRule_clubId_idx").using("btree", table.clubId.asc().nullsLast()),
+		index("ClubRule_eventId_idx").using("btree", table.eventId.asc().nullsLast()),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],

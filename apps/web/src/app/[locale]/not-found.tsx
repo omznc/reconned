@@ -22,7 +22,13 @@ export default async function NotFound() {
 
 	return (
 		<main className="flex h-dvh w-full fade-in-up flex-col items-center justify-center p-8">
-			<Image src={Error404} alt="404" draggable={false} className="w-full max-w-[400px] dark:invert" />
+			<Image
+				src={Error404}
+				alt="404"
+				draggable={false}
+				sizes="100vw"
+				className="w-full max-w-[400px] dark:invert"
+			/>
 			<h1 className="text-4xl font-bold mb-4 text-center">{t("You are lost")}</h1>
 			<p className="text-lg mb-8 text-center">{t("Page not found")}</p>
 			<Button asChild={true}>

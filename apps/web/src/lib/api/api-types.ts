@@ -48,7 +48,7 @@ export interface paths {
 		get: operations["getSession"];
 		put?: never;
 		/** @description Get the current session */
-		post: operations["getSession1"];
+		post: operations["getSessionPost"];
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -1796,9 +1796,9 @@ export interface paths {
 		};
 		/**
 		 * Get club posts
-		 * @description Get all posts for a club with pagination
+		 * @description Get all posts for a club (private clubs: members only, public clubs: published posts)
 		 */
-		get: operations["clubsidpostsGet1"];
+		get: operations["clubsidpostsGet"];
 		put?: never;
 		/**
 		 * Create club post
@@ -1834,6 +1834,26 @@ export interface paths {
 		 * @description Delete a post from a club
 		 */
 		delete: operations["clubsidpostspostIdDelete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/clubs/{id}/posts/paginated": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get club posts
+		 * @description Get all posts for a club with pagination
+		 */
+		get: operations["clubsidpostspaginatedGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
@@ -3719,7 +3739,7 @@ export interface components {
 			ipAddress?: string;
 			userAgent?: string;
 			userId: string;
-			impersonatedBy?: string;
+			readonly impersonatedBy?: string;
 		};
 		Account: {
 			id?: string;
@@ -3741,23 +3761,6 @@ export interface components {
 			 */
 			createdAt: string;
 			/** Format: date-time */
-			updatedAt: string;
-		};
-		Verification: {
-			id?: string;
-			identifier: string;
-			value: string;
-			/** Format: date-time */
-			expiresAt: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
-			createdAt: string;
-			/**
-			 * Format: date-time
-			 * @default Generated at runtime
-			 */
 			updatedAt: string;
 		};
 		Passkey: {
@@ -4248,7 +4251,7 @@ export interface operations {
 			};
 		};
 	};
-	getSession1: {
+	getSessionPost: {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -11703,6 +11706,7 @@ export interface operations {
 								club: {
 									id: string;
 									name: string;
+									slug: string | null;
 								};
 							}[];
 							isAdmin: boolean;
@@ -13553,12 +13557,9 @@ export interface operations {
 			};
 		};
 	};
-	clubsidpostsGet1: {
+	clubsidpostsGet: {
 		parameters: {
-			query?: {
-				page?: unknown;
-				perPage?: unknown;
-			};
+			query?: never;
 			header?: never;
 			path: {
 				id: string;
@@ -13584,12 +13585,6 @@ export interface operations {
 							createdAt: string;
 							updatedAt: string;
 						}[];
-						pagination: {
-							page: number;
-							perPage: number;
-							total: number;
-							totalPages: number;
-						};
 					};
 				};
 			};
@@ -13604,19 +13599,8 @@ export interface operations {
 					};
 				};
 			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-			/** @description Forbidden */
-			403: {
+			/** @description Not Found */
+			404: {
 				headers: {
 					[name: string]: unknown;
 				};
@@ -13928,6 +13912,81 @@ export interface operations {
 			};
 			/** @description Not Found */
 			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidpostspaginatedGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+			};
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						posts: {
+							id: string;
+							title: string;
+							content: string;
+							images: string[] | null;
+							isPublic: boolean;
+							clubId: string;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
 				headers: {
 					[name: string]: unknown;
 				};
@@ -15975,7 +16034,9 @@ export interface operations {
 	};
 	clubsidmembershipGet: {
 		parameters: {
-			query?: never;
+			query?: {
+				limit?: number;
+			};
 			header?: never;
 			path: {
 				id: string;
@@ -16889,6 +16950,12 @@ export interface operations {
 							mapData: unknown;
 							createdAt: string;
 							updatedAt: string;
+							club: {
+								id: string;
+								name: string;
+								slug: string | null;
+								logo: string | null;
+							} | null;
 						}[];
 						pagination: {
 							page: number;
@@ -17187,6 +17254,16 @@ export interface operations {
 							description: string | null;
 						} | null;
 						registrationCount: number;
+						rules: {
+							id: string;
+							name: string;
+							description: string | null;
+							content: string;
+							clubId: string;
+							eventId: string | null;
+							createdAt: string;
+							updatedAt: string;
+						}[];
 					};
 				};
 			};

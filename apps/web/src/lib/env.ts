@@ -21,6 +21,11 @@ export const env = createEnv({
 			.describe("Secret key for bypassing rate limits on internal API calls"),
 
 		CI: z.string().optional().describe("CI environment indicator"),
+
+		NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: z
+			.string()
+			.min(32, "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY must be at least 32 characters")
+			.describe("Encryption key for server actions. Generate with: openssl rand -base64 32"),
 	},
 	client: {
 		NEXT_PUBLIC_BACKEND_URL: z

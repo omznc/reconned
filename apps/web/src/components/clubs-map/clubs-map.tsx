@@ -964,3 +964,5 @@ export function ClubsMap({
 		</div>
 	);
 }
+
+export default ClubsMap;

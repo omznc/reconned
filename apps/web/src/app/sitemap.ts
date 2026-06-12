@@ -18,9 +18,9 @@ const logger = new Logger({ source: "sitemap" });
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const [clubsResponse, eventsResponse, usersResponse] = await Promise.all([
-		apiServer.GET("/api/public/sitemap/clubs"),
-		apiServer.GET("/api/public/sitemap/events"),
-		apiServer.GET("/api/public/sitemap/users"),
+		apiServer.GET("/api/public/sitemap/clubs", { next: { revalidate: 86400 } }),
+		apiServer.GET("/api/public/sitemap/events", { next: { revalidate: 86400 } }),
+		apiServer.GET("/api/public/sitemap/users", { next: { revalidate: 86400 } }),
 	]);
 
 	const clubs = clubsResponse?.data?.clubs || [];

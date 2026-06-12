@@ -27,6 +27,7 @@ export default async function Page(props: PageProps<"/[locale]/events">) {
 				sortOrder: "asc",
 			},
 		},
+		next: { revalidate: 300 },
 	});
 
 	if (error || !data) {

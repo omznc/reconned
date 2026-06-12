@@ -9,6 +9,14 @@ type ApiPaths = paths & {
 	[K in keyof paths as K extends string ? `/api${K}` : never]: paths[K];
 };
 
+type NextFetchOptions = {
+	next?: {
+		revalidate?: number | false;
+		tags?: string[];
+	};
+	cache?: RequestInit["cache"];
+};
+
 // Normalize backend base URL: strip trailing slashes only; keep explicit /api suffix if provided.
 const backendBaseUrl = (() => {
 	const raw = env.NEXT_PUBLIC_BACKEND_URL?.trim();
@@ -20,7 +28,7 @@ const backendBaseUrl = (() => {
 const apiServer = createClient<ApiPaths>({
 	baseUrl: backendBaseUrl,
 	credentials: "include",
-	fetch: async (request) => {
+	fetch: (async (request: Request, init?: RequestInit) => {
 		const headersList = await headers();
 		const requestHeaders = new Headers(headersList);
 
@@ -29,10 +37,21 @@ const apiServer = createClient<ApiPaths>({
 			requestHeaders.set("x-internal-api-secret", env.INTERNAL_API_SECRET);
 		}
 
+		// Forward Next.js caching options (next.revalidate, next.tags, cache)
+		// openapi-fetch copies user init options onto the Request object
+		// but Next.js's augmented fetch only reads them from the 2nd arg (init).
+		const nextOptions: NextFetchOptions = {};
+		const req = request as Request & NextFetchOptions;
+		if (req.next) {
+			nextOptions.next = req.next;
+		}
+
 		return fetch(request, {
+			...init,
+			...nextOptions,
 			headers: requestHeaders,
 		});
-	},
+	}) as (input: Request) => Promise<Response>,
 });
 
 export default apiServer;

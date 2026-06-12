@@ -138,7 +138,7 @@ const cloneMapGeometry = (geometry: MapGeometry): MapGeometry => {
 	return { type: "Freehand", coordinates: coords, closed: geometry.closed };
 };
 
-export function MapEditor({ visible = false, onClose, initialData, onSnapshotChange }: MapEditorProps) {
+function MapEditor({ visible = false, onClose, initialData, onSnapshotChange }: MapEditorProps) {
 	const t = useExtracted();
 	const mapEditorStore = useMapEditorStore();
 	const { features, selectedId, gridVisible, basemap, gridLabelsVisible, gridOpacity, labelOpacity, mode } =
@@ -1319,8 +1319,8 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		for (const [id, entry] of markers.entries()) {
 			if (!nextIds.has(id)) {
 				entry.marker.remove();
-				entry.root.unmount();
 				markers.delete(id);
+				queueMicrotask(() => entry.root.unmount());
 			}
 		}
 	}, [features, mapReady]);
@@ -1345,11 +1345,12 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		map?.on("zoom", onZoom);
 		return () => {
 			map?.off("zoom", onZoom);
-			for (const entry of markers.values()) {
-				entry.marker.remove();
-				entry.root.unmount();
-			}
+			const entries = Array.from(markers.values());
 			markers.clear();
+			for (const entry of entries) {
+				entry.marker.remove();
+				queueMicrotask(() => entry.root.unmount());
+			}
 		};
 	}, [mapReady]);
 
@@ -2586,3 +2587,5 @@ export function MapEditor({ visible = false, onClose, initialData, onSnapshotCha
 		</div>
 	);
 }
+
+export default MapEditor;

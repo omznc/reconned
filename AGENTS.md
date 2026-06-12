@@ -123,6 +123,11 @@ Auto-generated from backend OpenAPI spec. Regenerate: `bun run api:generate-type
 - **SEO**: `constructCanonicalUrl()`, `generatePageLanguages()` from `@/lib/utils.ts`
 - **API response types**: `type Entity = ApiResponse<"/api/.../{id}", "get">["entity"]`
 
+## Production Architecture
+
+- **Nginx** proxies public traffic. API requests go directly to backend (`localhost:3002`), not through Next.js. The Next.js `rewrites()` for `/api/:path*` are dev-only. Next.js serves HTML/static only in production.
+- All services run in Docker on a single Hetzner box (`168.119.49.134`) via Coolify.
+
 ## Backend Patterns
 
 - **Router**: Custom router at `src/lib/router.ts` with `.get()`, `.post()`, `.put()`, `.delete()` methods. Compose sub-routers with `router.use(subRouter)`.

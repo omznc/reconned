@@ -65,6 +65,7 @@ const userSchema = baseUserSchema
 					club: z.object({
 						id: z.string(),
 						name: z.string(),
+						slug: z.string().nullable(),
 					}),
 				}),
 			)
@@ -456,6 +457,7 @@ usersRouter.get(
 				membershipId: clubMembership.id,
 				membershipClubId: clubMembership.clubId,
 				membershipClubName: club.name,
+				membershipClubSlug: club.slug,
 				membershipRole: clubMembership.role,
 			})
 			.from(user)
@@ -499,7 +501,7 @@ usersRouter.get(
 					id: string;
 					clubId: string;
 					role: string;
-					club: { id: string; name: string };
+					club: { id: string; name: string; slug: string | null };
 				}>;
 				isAdmin: boolean;
 			}
@@ -543,6 +545,7 @@ usersRouter.get(
 					club: {
 						id: row.membershipClubId,
 						name: row.membershipClubName,
+						slug: row.membershipClubSlug,
 					},
 				});
 			}
@@ -561,7 +564,7 @@ usersRouter.get(
 	{
 		cache: {
 			key: "users",
-			ttl: 60,
+			ttl: 300,
 			varyByQuery: ["page", "perPage", "search", "sort"],
 		},
 		schema: {
@@ -610,7 +613,8 @@ usersRouter.get(
 
 		const u = targetUser[0];
 
-		const memberships = await db
+		// Single JOIN query for memberships + clubs (filters private clubs in WHERE)
+		const membershipRows = await db
 			.select({
 				id: clubMembership.id,
 				userId: clubMembership.userId,
@@ -620,39 +624,36 @@ usersRouter.get(
 				endDate: clubMembership.endDate,
 				createdAt: clubMembership.createdAt,
 				updatedAt: clubMembership.updatedAt,
+				clubId_: club.id,
+				clubName: club.name,
+				clubSlug: club.slug,
+				clubLogo: club.logo,
+				clubIsPrivate: club.isPrivate,
 			})
 			.from(clubMembership)
-			.where(eq(clubMembership.userId, u.id));
+			.innerJoin(club, eq(clubMembership.clubId, club.id))
+			.where(and(eq(clubMembership.userId, u.id), eq(club.isPrivate, false)));
 
-		// Get club details for memberships and filter out private clubs
-		const membershipsWithClubs = await Promise.all(
-			memberships.map(async (membership) => {
-				const clubData = await db
-					.select({
-						id: club.id,
-						name: club.name,
-						slug: club.slug,
-						logo: club.logo,
-						isPrivate: club.isPrivate,
-					})
-					.from(club)
-					.where(eq(club.id, membership.clubId))
-					.limit(1);
-				const clubItem = clubData[0];
-				if (!clubItem || clubItem.isPrivate) {
-					return null;
-				}
-				return {
-					...membership,
-					club: clubItem,
-				};
-			}),
-		);
+		const filteredMemberships = membershipRows.map((m) => ({
+			id: m.id,
+			userId: m.userId,
+			clubId: m.clubId,
+			role: m.role,
+			startDate: m.startDate,
+			endDate: m.endDate,
+			createdAt: m.createdAt,
+			updatedAt: m.updatedAt,
+			club: {
+				id: m.clubId_,
+				name: m.clubName,
+				slug: m.clubSlug,
+				logo: m.clubLogo,
+				isPrivate: m.clubIsPrivate,
+			},
+		}));
 
-		// Filter out null memberships (private clubs)
-		const filteredMemberships = membershipsWithClubs.filter((m) => m !== null);
-
-		const registrations = await db
+		// Single JOIN query for registrations + events + clubs (filters private in WHERE)
+		const registrationRows = await db
 			.select({
 				id: eventRegistration.id,
 				eventId: eventRegistration.eventId,
@@ -662,62 +663,38 @@ usersRouter.get(
 				attended: eventRegistration.attended,
 				createdAt: eventRegistration.createdAt,
 				updatedAt: eventRegistration.updatedAt,
+				eventId_: event.id,
+				eventName: event.name,
+				eventSlug: event.slug,
+				eventDateStart: event.dateStart,
+				eventClubId: event.clubId,
+				clubIsPrivate: club.isPrivate,
 			})
 			.from(eventRegistration)
-			.where(eq(eventRegistration.createdById, u.id));
+			.innerJoin(event, eq(eventRegistration.eventId, event.id))
+			.innerJoin(club, eq(event.clubId, club.id))
+			.where(and(eq(eventRegistration.createdById, u.id), eq(event.isPrivate, false), eq(club.isPrivate, false)));
 
-		// Get event details and filter out private events/clubs
-		const registrationsWithEvents = await Promise.all(
-			registrations.map(async (registration) => {
-				const eventData = await db
-					.select({
-						id: event.id,
-						name: event.name,
-						slug: event.slug,
-						dateStart: event.dateStart,
-						isPrivate: event.isPrivate,
-						clubId: event.clubId,
-					})
-					.from(event)
-					.where(eq(event.id, registration.eventId))
-					.limit(1);
-				const eventItem = eventData[0];
-				if (!eventItem) {
-					return null;
-				}
-
-				// Check if club is private
-				const clubData = await db
-					.select({
-						isPrivate: club.isPrivate,
-					})
-					.from(club)
-					.where(eq(club.id, eventItem.clubId))
-					.limit(1);
-				const clubItem = clubData[0];
-
-				if (eventItem.isPrivate || clubItem?.isPrivate) {
-					return null;
-				}
-
-				return {
-					...registration,
-					event: {
-						id: eventItem.id,
-						name: eventItem.name,
-						slug: eventItem.slug,
-						dateStart: eventItem.dateStart,
-						club: {
-							id: eventItem.clubId,
-							isPrivate: clubItem?.isPrivate || false,
-						},
-					},
-				};
-			}),
-		);
-
-		// Filter out null registrations (private events/clubs)
-		const filteredRegistrations = registrationsWithEvents.filter((r) => r !== null);
+		const filteredRegistrations = registrationRows.map((r) => ({
+			id: r.id,
+			eventId: r.eventId,
+			createdById: r.createdById,
+			type: r.type,
+			paymentMethod: r.paymentMethod,
+			attended: r.attended,
+			createdAt: r.createdAt,
+			updatedAt: r.updatedAt,
+			event: {
+				id: r.eventId_,
+				name: r.eventName,
+				slug: r.eventSlug,
+				dateStart: r.eventDateStart,
+				club: {
+					id: r.eventClubId,
+					isPrivate: r.clubIsPrivate,
+				},
+			},
+		}));
 
 		return response.json({
 			...u,
@@ -1200,6 +1177,10 @@ usersRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "user:{id}:stats",
+			ttl: 300,
+		},
 		schema: {
 			tags: ["Users"],
 			summary: "Get user stats",
@@ -1437,35 +1418,95 @@ usersRouter.get(
 		if (!context.user) {
 			throw apiError.unauthorized("Authentication required");
 		}
-		const invitesData = await db
-			.select()
+		const memberCountSubquery = db
+			.select({ count: count() })
+			.from(clubMembership)
+			.where(eq(clubMembership.clubId, club.id))
+			.as("member_count");
+
+		const invites = await db
+			.select({
+				id: clubInvite.id,
+				clubId: clubInvite.clubId,
+				email: clubInvite.email,
+				userId: clubInvite.userId,
+				status: clubInvite.status,
+				inviteCode: clubInvite.inviteCode,
+				expiresAt: clubInvite.expiresAt,
+				createdAt: clubInvite.createdAt,
+				updatedAt: clubInvite.updatedAt,
+				clubId_: club.id,
+				clubName: club.name,
+				clubSlug: club.slug,
+				clubDescription: club.description,
+				clubLogo: club.logo,
+				clubLocation: club.location,
+				clubIsPrivate: club.isPrivate,
+				clubVerified: club.verified,
+				clubCreatedAt: club.createdAt,
+				clubContactEmail: club.contactEmail,
+				clubContactPhone: club.contactPhone,
+				clubDateFounded: club.dateFounded,
+				clubHeaderImage: club.headerImage,
+				clubWebsite: club.website,
+				clubLatitude: club.latitude,
+				clubLongitude: club.longitude,
+				clubIsAllied: club.isAllied,
+				clubCountryId: club.countryId,
+				clubInstagramConnected: club.instagramConnected,
+				clubInstagramUsername: club.instagramUsername,
+				clubInstagramProfilePictureUrl: club.instagramProfilePictureUrl,
+				clubInstagramBusinessId: club.instagramBusinessId,
+				clubInstagramTokenType: club.instagramTokenType,
+				clubIsPrivateStats: club.isPrivateStats,
+				clubBanned: club.banned,
+				clubBanReason: club.banReason,
+				clubBanExpires: club.banExpires,
+				clubUpdatedAt: club.updatedAt,
+				memberCount: sql<number>`COALESCE((${memberCountSubquery}), 0)`,
+			})
 			.from(clubInvite)
+			.innerJoin(club, eq(clubInvite.clubId, club.id))
 			.where(and(eq(clubInvite.email, context.user.email), eq(clubInvite.status, "PENDING")));
 
-		const invitesWithClubs = await Promise.all(
-			invitesData.map(async (invite) => {
-				const [clubData, memberCountData] = await Promise.all([
-					db.select().from(club).where(eq(club.id, invite.clubId)).limit(1),
-					db.select({ count: count() }).from(clubMembership).where(eq(clubMembership.clubId, invite.clubId)),
-				]);
-				if (!clubData[0]) {
-					return null;
-				}
-				return {
-					...invite,
-					club: {
-						...clubData[0],
-						_count: {
-							members: memberCountData[0]?.count || 0,
-						},
-					},
-				} as typeof invite & { club: (typeof clubData)[0] & { _count: { members: number } } };
-			}),
-		);
+		const formattedInvites = invites.map((invite) => ({
+			...invite,
+			club: {
+				id: invite.clubId_,
+				name: invite.clubName,
+				slug: invite.clubSlug,
+				description: invite.clubDescription,
+				logo: invite.clubLogo,
+				location: invite.clubLocation,
+				isPrivate: invite.clubIsPrivate,
+				verified: invite.clubVerified,
+				createdAt: invite.clubCreatedAt,
+				contactEmail: invite.clubContactEmail,
+				contactPhone: invite.clubContactPhone,
+				dateFounded: invite.clubDateFounded,
+				headerImage: invite.clubHeaderImage,
+				website: invite.clubWebsite,
+				latitude: invite.clubLatitude,
+				longitude: invite.clubLongitude,
+				isAllied: invite.clubIsAllied,
+				countryId: invite.clubCountryId,
+				instagramConnected: invite.clubInstagramConnected,
+				instagramUsername: invite.clubInstagramUsername,
+				instagramProfilePictureUrl: invite.clubInstagramProfilePictureUrl,
+				instagramBusinessId: invite.clubInstagramBusinessId,
+				instagramTokenType: invite.clubInstagramTokenType,
+				isPrivateStats: invite.clubIsPrivateStats,
+				banned: invite.clubBanned,
+				banReason: invite.clubBanReason,
+				banExpires: invite.clubBanExpires,
+				updatedAt: invite.clubUpdatedAt,
+				_count: {
+					members: Number(invite.memberCount),
+				},
+			},
+		}));
 
-		const invites = invitesWithClubs.filter((invite): invite is NonNullable<typeof invite> => invite !== null);
-
-		return response.json({ invites });
+		return response.json({ invites: formattedInvites });
 	},
 	{
 		auth: true,
@@ -1683,17 +1724,43 @@ usersRouter.get(
 			throw apiError.unauthorized("Authentication required");
 		}
 
-		const memberships = await db.select().from(clubMembership).where(eq(clubMembership.userId, context.user.id));
-
-		const userClubs = await Promise.all(
-			memberships.map(async (membership) => {
-				const clubData = await db.select().from(club).where(eq(club.id, membership.clubId)).limit(1);
-				return clubData[0];
-			}),
-		);
+		const userClubRows = await db
+			.select({
+				id: club.id,
+				name: club.name,
+				slug: club.slug,
+				description: club.description,
+				logo: club.logo,
+				location: club.location,
+				website: club.website,
+				isPrivate: club.isPrivate,
+				isPrivateStats: club.isPrivateStats,
+				verified: club.verified,
+				isAllied: club.isAllied,
+				latitude: club.latitude,
+				longitude: club.longitude,
+				dateFounded: club.dateFounded,
+				contactEmail: club.contactEmail,
+				contactPhone: club.contactPhone,
+				headerImage: club.headerImage,
+				countryId: club.countryId,
+				instagramConnected: club.instagramConnected,
+				instagramUsername: club.instagramUsername,
+				instagramProfilePictureUrl: club.instagramProfilePictureUrl,
+				instagramBusinessId: club.instagramBusinessId,
+				instagramTokenType: club.instagramTokenType,
+				banned: club.banned,
+				banReason: club.banReason,
+				banExpires: club.banExpires,
+				createdAt: club.createdAt,
+				updatedAt: club.updatedAt,
+			})
+			.from(clubMembership)
+			.innerJoin(club, eq(clubMembership.clubId, club.id))
+			.where(eq(clubMembership.userId, context.user.id));
 
 		return response.json({
-			clubs: userClubs.filter((club): club is NonNullable<typeof club> => club !== undefined),
+			clubs: userClubRows,
 		});
 	},
 	{

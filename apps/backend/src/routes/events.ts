@@ -18,7 +18,18 @@ import { db } from "../lib/db";
 import { logger, posthog } from "../lib/posthog";
 import { baseClubRuleSchema, baseEventSchema, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../lib/storage";
-import { Sanitize } from "../lib/user-sanitization";
+
+function sanitizeField(
+	value: string | null,
+	isPrivate: boolean,
+	requestingUserId?: string,
+	targetUserId?: string,
+	isAdmin?: boolean,
+): string | null {
+	if (isAdmin) return value;
+	if (requestingUserId && requestingUserId === targetUserId) return value;
+	return isPrivate ? null : value;
+}
 
 const eventsRouter = new Router();
 
@@ -40,15 +51,19 @@ eventsRouter.get(
 		const isAdmin = context.isAdmin;
 		const requestingUserId = context.user?.id;
 
-		// Handle "mine" filter - only show events from clubs the user is a member of
-		if (filter === "mine" && requestingUserId) {
+		// Fetch user club memberships once and reuse
+		let userClubIds: string[] = [];
+		if (requestingUserId) {
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
 				.where(eq(clubMembership.userId, requestingUserId));
 
-			const userClubIds = userClubMemberships.map((m) => m.clubId);
+			userClubIds = userClubMemberships.map((m) => m.clubId);
+		}
 
+		// Handle "mine" filter - only show events from clubs the user is a member of
+		if (filter === "mine" && requestingUserId) {
 			if (userClubIds.length === 0) {
 				// User is not a member of any clubs, return empty result
 				return response.json({
@@ -81,13 +96,6 @@ eventsRouter.get(
 			whereConditions.push(eq(event.isPrivate, false));
 			whereConditions.push(publicClubCondition);
 		} else if (!isAdmin) {
-			const userClubMemberships = await db
-				.select({ clubId: clubMembership.clubId })
-				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
-
-			const userClubIds = userClubMemberships.map((m) => m.clubId);
-
 			if (userClubIds.length > 0) {
 				whereConditions.push(
 					or(and(eq(event.isPrivate, false), publicClubCondition), inArray(event.clubId, userClubIds)),
@@ -525,6 +533,11 @@ eventsRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "events:calendar",
+			ttl: 300,
+			varyByQuery: ["startDate", "endDate"],
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "Get events for calendar view",
@@ -1144,6 +1157,12 @@ eventsRouter.get(
 		});
 	},
 	{
+		cache: {
+			key: "club:{clubId}:events",
+			ttl: 300,
+			swr: 1800,
+			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder"],
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "Get events for specific club",
@@ -1196,6 +1215,10 @@ eventsRouter.get(
 		return response.json({ count: total });
 	},
 	{
+		cache: {
+			key: "club:{clubId}:events:count",
+			ttl: 300,
+		},
 		schema: {
 			tags: ["Events"],
 			summary: "Count events for club",
@@ -1706,91 +1729,146 @@ eventsRouter.get(
 
 		const registrations = await db.select().from(eventRegistration).where(eq(eventRegistration.eventId, eventId));
 
-		// Enhance registrations with invited users and creator info
-		const registrationsWithDetails = await Promise.all(
-			registrations.map(async (registration) => {
-				const sanitize = new Sanitize({
-					requestingUserId: context.user?.id,
-					targetUserId: registration.createdById,
-					isAdmin: context.isAdmin,
-				});
+		if (registrations.length === 0) {
+			return response.json({ registrations: [] });
+		}
 
-				// Get creator info
-				const creatorData = await db
-					.select({
-						id: user.id,
-						name: user.name,
-						email: sanitize.field<string | null>(user.email, user.isPrivateEmail),
-						phone: sanitize.field<string | null>(user.phone, user.isPrivatePhone),
-						callsign: user.callsign,
-						image: user.image,
-					})
-					.from(user)
-					.where(eq(user.id, registration.createdById))
-					.limit(1);
+		const registrationIds = registrations.map((r) => r.id);
+		const creatorIds = [...new Set(registrations.map((r) => r.createdById))];
 
-				// Get invited users (on platform)
-				const invitedUsersData = await db
-					.select()
-					.from(eventRegistrationToUser)
-					.where(eq(eventRegistrationToUser.a, registration.id));
+		// Batch fetch all creators
+		const creatorRows = await db
+			.select({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				phone: user.phone,
+				callsign: user.callsign,
+				image: user.image,
+				isPrivateEmail: user.isPrivateEmail,
+				isPrivatePhone: user.isPrivatePhone,
+			})
+			.from(user)
+			.where(inArray(user.id, creatorIds));
 
-				const invitedUsers = await Promise.all(
-					invitedUsersData.map(async (regToUser) => {
-						const sanitize = new Sanitize({
-							requestingUserId: context.user?.id,
-							targetUserId: regToUser.b,
-							isAdmin: context.isAdmin,
-						});
+		const creatorMap = new Map(creatorRows.map((u) => [u.id, u]));
 
-						const userData = await db
-							.select({
-								id: user.id,
-								name: user.name,
-								email: sanitize.field(user.email, user.isPrivateEmail),
-								phone: sanitize.field(user.phone, user.isPrivatePhone),
-								callsign: user.callsign,
-								image: user.image,
-							})
-							.from(user)
-							.where(eq(user.id, regToUser.b))
-							.limit(1);
-						return userData[0];
-					}),
-				);
+		// Batch fetch all invited user links
+		const invitedUsersData = await db
+			.select()
+			.from(eventRegistrationToUser)
+			.where(inArray(eventRegistrationToUser.a, registrationIds));
 
-				// Get invited users not on platform
-				const invitedUsersNotOnApp = await db
-					.select()
-					.from(eventInvite)
-					.where(eq(eventInvite.eventRegistrationId, registration.id));
+		// Batch fetch all invited user data
+		const invitedUserIds = [...new Set(invitedUsersData.map((link) => link.b))];
+		const invitedUserRows =
+			invitedUserIds.length > 0
+				? await db
+						.select({
+							id: user.id,
+							name: user.name,
+							email: user.email,
+							phone: user.phone,
+							callsign: user.callsign,
+							image: user.image,
+							isPrivateEmail: user.isPrivateEmail,
+							isPrivatePhone: user.isPrivatePhone,
+						})
+						.from(user)
+						.where(inArray(user.id, invitedUserIds))
+				: [];
 
-				return {
-					...registration,
-					createdBy: creatorData[0]
-						? {
-								id: String(creatorData[0].id),
-								name: String(creatorData[0].name),
-								email: creatorData[0].email,
-								phone: creatorData[0].phone,
-								callsign: creatorData[0].callsign ? String(creatorData[0].callsign) : null,
-								image: creatorData[0].image ? String(creatorData[0].image) : null,
-							}
-						: null,
-					invitedUsers: invitedUsers
-						.filter((u): u is NonNullable<typeof u> => u !== undefined)
-						.map((u) => ({
-							id: String(u.id),
-							name: String(u.name),
-							email: u.email,
-							phone: u.phone,
-							callsign: u.callsign ? String(u.callsign) : null,
-							image: u.image ? String(u.image) : null,
-						})),
-					invitedUsersNotOnApp,
-				};
-			}),
-		);
+		const invitedUserMap = new Map(invitedUserRows.map((u) => [u.id, u]));
+
+		// Batch fetch all invited users not on platform
+		const allInvitedUsersNotOnApp = await db
+			.select()
+			.from(eventInvite)
+			.where(inArray(eventInvite.eventRegistrationId, registrationIds));
+
+		const invitesByRegistrationId = new Map<string, typeof allInvitedUsersNotOnApp>();
+		for (const invite of allInvitedUsersNotOnApp) {
+			if (!invite.eventRegistrationId) continue;
+			const list = invitesByRegistrationId.get(invite.eventRegistrationId);
+			if (list) {
+				list.push(invite);
+			} else {
+				invitesByRegistrationId.set(invite.eventRegistrationId, [invite]);
+			}
+		}
+
+		// Group invited user links by registration
+		const invitedLinksByRegistration = new Map<string, typeof invitedUsersData>();
+		for (const link of invitedUsersData) {
+			const list = invitedLinksByRegistration.get(link.a);
+			if (list) {
+				list.push(link);
+			} else {
+				invitedLinksByRegistration.set(link.a, [link]);
+			}
+		}
+
+		const { isAdmin } = context;
+		const requestingUserId = context.user?.id;
+
+		const registrationsWithDetails = registrations.map((registration) => {
+			const creator = creatorMap.get(registration.createdById);
+			const links = invitedLinksByRegistration.get(registration.id) || [];
+			const invitedUsers = links
+				.map((link) => {
+					const invitedUser = invitedUserMap.get(link.b);
+					if (!invitedUser) return null;
+					return {
+						id: invitedUser.id,
+						name: invitedUser.name,
+						email: sanitizeField(
+							invitedUser.email,
+							invitedUser.isPrivateEmail,
+							requestingUserId,
+							invitedUser.id,
+							isAdmin,
+						),
+						phone: sanitizeField(
+							invitedUser.phone,
+							invitedUser.isPrivatePhone,
+							requestingUserId,
+							invitedUser.id,
+							isAdmin,
+						),
+						callsign: invitedUser.callsign,
+						image: invitedUser.image,
+					};
+				})
+				.filter((u): u is NonNullable<typeof u> => u !== null);
+
+			return {
+				...registration,
+				createdBy: creator
+					? {
+							id: creator.id,
+							name: creator.name,
+							email: sanitizeField(
+								creator.email,
+								creator.isPrivateEmail,
+								requestingUserId,
+								creator.id,
+								isAdmin,
+							),
+							phone: sanitizeField(
+								creator.phone,
+								creator.isPrivatePhone,
+								requestingUserId,
+								creator.id,
+								isAdmin,
+							),
+							callsign: creator.callsign,
+							image: creator.image,
+						}
+					: null,
+				invitedUsers,
+				invitedUsersNotOnApp: invitesByRegistrationId.get(registration.id) || [],
+			};
+		});
 
 		return response.json({
 			registrations: registrationsWithDetails,
@@ -1871,7 +1949,7 @@ eventsRouter.get(
 	{
 		cache: {
 			key: "event:{id}:registrations",
-			ttl: 60,
+			ttl: 300,
 		},
 		schema: {
 			tags: ["Events"],
@@ -1986,54 +2064,67 @@ eventsRouter.get(
 		let registrationWithInvites = null;
 
 		if (existingRegistration[0]) {
-			// Get invited users (on platform)
-			const invitedUsersData = await db
+			const registrationId = existingRegistration[0].id;
+
+			// Get invited users (on platform) - batch fetch
+			const invitedUserLinks = await db
 				.select()
 				.from(eventRegistrationToUser)
-				.where(eq(eventRegistrationToUser.a, existingRegistration[0].id));
+				.where(eq(eventRegistrationToUser.a, registrationId));
 
-			const invitedUsers = (
-				await Promise.all(
-					invitedUsersData.map(async (regToUser) => {
-						const sanitize = new Sanitize({
-							requestingUserId: context.user?.id,
-							targetUserId: regToUser.b,
-							isAdmin: context.isAdmin,
-						});
-
-						const userData = await db
+			const invitedUserIds = invitedUserLinks.map((link) => link.b);
+			const invitedUserRows =
+				invitedUserIds.length > 0
+					? await db
 							.select({
 								id: user.id,
 								name: user.name,
-								email: sanitize.field(user.email, user.isPrivateEmail),
-								phone: sanitize.field(user.phone, user.isPrivatePhone),
+								email: user.email,
+								phone: user.phone,
 								callsign: user.callsign,
 								image: user.image,
+								isPrivateEmail: user.isPrivateEmail,
+								isPrivatePhone: user.isPrivatePhone,
 							})
 							.from(user)
-							.where(eq(user.id, regToUser.b))
-							.limit(1);
-						return userData[0];
-					}),
-				)
-			).filter(
-				(
-					u,
-				): u is {
-					id: string;
-					name: string;
-					email: string | null;
-					phone: string | null;
-					callsign: string | null;
-					image: string | null;
-				} => u !== undefined,
-			);
+							.where(inArray(user.id, invitedUserIds))
+					: [];
+
+			const invitedUserMap = new Map(invitedUserRows.map((u) => [u.id, u]));
+			const { isAdmin } = context;
+
+			const invitedUsers = invitedUserLinks
+				.map((link) => {
+					const userData = invitedUserMap.get(link.b);
+					if (!userData) return null;
+					return {
+						id: userData.id,
+						name: userData.name,
+						email: sanitizeField(
+							userData.email,
+							userData.isPrivateEmail,
+							context.user?.id,
+							userData.id,
+							isAdmin,
+						),
+						phone: sanitizeField(
+							userData.phone,
+							userData.isPrivatePhone,
+							context.user?.id,
+							userData.id,
+							isAdmin,
+						),
+						callsign: userData.callsign,
+						image: userData.image,
+					};
+				})
+				.filter((u): u is NonNullable<typeof u> => u !== null);
 
 			// Get invited users not on platform
 			const invitedUsersNotOnApp = await db
 				.select()
 				.from(eventInvite)
-				.where(eq(eventInvite.eventRegistrationId, existingRegistration[0].id));
+				.where(eq(eventInvite.eventRegistrationId, registrationId));
 
 			registrationWithInvites = {
 				...existingRegistration[0],

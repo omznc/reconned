@@ -41,9 +41,10 @@ dashboardRouter.get(
 			return response.json({ clubs: [] });
 		}
 
-		const clubIds = memberships.map((m) => m.clubId);
+		const membershipMap = new Map(memberships.map((m) => [m.clubId, m]));
+		const memberClubIds = memberships.map((m) => m.clubId);
 
-		const clubsData = await db.select().from(club).where(inArray(club.id, clubIds));
+		const clubsData = await db.select().from(club).where(inArray(club.id, memberClubIds));
 
 		logger.emit({
 			severityText: "debug",
@@ -55,66 +56,72 @@ dashboardRouter.get(
 			},
 		});
 
-		// Get stats for each club
-		const clubsWithStats = await Promise.all(
-			clubsData.map(async (clubData) => {
-				const membership = memberships.find((m) => m.clubId === clubData.id);
+		// Batch all count queries using GROUP BY
+		const clubIds = clubsData.map((c) => c.id);
 
-				if (!membership) {
-					throw apiError.notFound("Membership not found");
-				}
+		const [memberCounts, eventCounts, reviewCounts, upcomingEvents, latestReviews] = await Promise.all([
+			db
+				.select({ clubId: clubMembership.clubId, count: count() })
+				.from(clubMembership)
+				.where(inArray(clubMembership.clubId, clubIds))
+				.groupBy(clubMembership.clubId),
+			db
+				.select({ clubId: event.clubId, count: count() })
+				.from(event)
+				.where(inArray(event.clubId, clubIds))
+				.groupBy(event.clubId),
+			db
+				.select({ clubId: review.clubId, count: count() })
+				.from(review)
+				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
+				.groupBy(review.clubId),
+			db
+				.select({
+					id: event.id,
+					name: event.name,
+					dateStart: event.dateStart,
+					clubId: event.clubId,
+				})
+				.from(event)
+				.where(and(inArray(event.clubId, clubIds), sql`${event.dateStart} >= NOW()`))
+				.orderBy(event.dateStart),
+			db
+				.select({
+					content: review.content,
+					clubId: review.clubId,
+				})
+				.from(review)
+				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
+				.orderBy(sql`${review.createdAt} DESC`),
+		]);
 
-				// Count members
-				const memberCountResult = await db
-					.select({ count: count() })
-					.from(clubMembership)
-					.where(eq(clubMembership.clubId, clubData.id));
+		// Group in application code
+		const memberCountMap = new Map(memberCounts.map((r) => [r.clubId, Number(r.count)]));
+		const eventCountMap = new Map(eventCounts.map((r) => [r.clubId, Number(r.count)]));
+		const reviewCountMap = new Map(reviewCounts.map((r) => [r.clubId, Number(r.count)]));
+		const upcomingEventMap = new Map<string, { id: string; name: string; dateStart: string }>();
+		for (const e of upcomingEvents) {
+			if (e.clubId && !upcomingEventMap.has(e.clubId)) upcomingEventMap.set(e.clubId, e);
+		}
+		const latestReviewMap = new Map<string, { content: string }>();
+		for (const r of latestReviews) {
+			if (r.clubId && !latestReviewMap.has(r.clubId)) latestReviewMap.set(r.clubId, { content: r.content });
+		}
 
-				// Count events
-				const eventCountResult = await db
-					.select({ count: count() })
-					.from(event)
-					.where(eq(event.clubId, clubData.id));
-
-				// Count reviews
-				const reviewCountResult = await db
-					.select({ count: count() })
-					.from(review)
-					.where(and(eq(review.clubId, clubData.id), eq(review.type, "CLUB")));
-
-				// Get upcoming event
-				const upcomingEvent = await db
-					.select({
-						id: event.id,
-						name: event.name,
-						dateStart: event.dateStart,
-					})
-					.from(event)
-					.where(and(eq(event.clubId, clubData.id), sql`${event.dateStart} >= NOW()`))
-					.orderBy(event.dateStart)
-					.limit(1);
-
-				// Get latest review
-				const latestReview = await db
-					.select({ content: review.content })
-					.from(review)
-					.where(and(eq(review.clubId, clubData.id), eq(review.type, "CLUB")))
-					.orderBy(sql`${review.createdAt} DESC`)
-					.limit(1);
-
-				return {
-					id: clubData.id,
-					name: clubData.name,
-					logo: clubData.logo,
-					membershipRole: membership.role,
-					memberCount: Number(memberCountResult[0]?.count || 0),
-					eventCount: Number(eventCountResult[0]?.count || 0),
-					reviewCount: Number(reviewCountResult[0]?.count || 0),
-					upcomingEvent: upcomingEvent[0] || null,
-					latestReview: latestReview[0] || null,
-				};
-			}),
-		);
+		const clubsWithStats = clubsData.map((clubData) => {
+			const membership = membershipMap.get(clubData.id);
+			return {
+				id: clubData.id,
+				name: clubData.name,
+				logo: clubData.logo,
+				membershipRole: membership?.role || "USER",
+				memberCount: memberCountMap.get(clubData.id) || 0,
+				eventCount: eventCountMap.get(clubData.id) || 0,
+				reviewCount: reviewCountMap.get(clubData.id) || 0,
+				upcomingEvent: upcomingEventMap.get(clubData.id) || null,
+				latestReview: latestReviewMap.get(clubData.id) || null,
+			};
+		});
 
 		// Transform to expected response format
 		const clubs = clubsWithStats.map((c) => ({
@@ -305,62 +312,90 @@ dashboardRouter.get(
 			.from(clubMembership)
 			.where(eq(clubMembership.userId, context.user.id));
 
-		const clubMemberships = await Promise.all(
-			memberships.map(async (m) => {
-				const clubData = await db.select().from(club).where(eq(club.id, m.clubId)).limit(1);
-				const clubRecord = clubData[0];
+		const clubIds = memberships.map((m) => m.clubId);
 
-				if (!clubRecord) {
-					return {
-						id: m.id,
-						role: m.role,
-						club: null,
-					};
-				}
+		// Batch fetch all clubs
+		const clubsData = await db
+			.select({ id: club.id, name: club.name, logo: club.logo })
+			.from(club)
+			.where(inArray(club.id, clubIds));
 
-				const [membersCount, eventsCount, reviewsCount, upcomingEvents, latestReviews] = await Promise.all([
-					db.select({ count: count() }).from(clubMembership).where(eq(clubMembership.clubId, clubRecord.id)),
-					db.select({ count: count() }).from(event).where(eq(event.clubId, clubRecord.id)),
-					db
-						.select({ count: count() })
-						.from(review)
-						.where(and(eq(review.clubId, clubRecord.id), eq(review.type, "CLUB"))),
-					db
-						.select({
-							id: event.id,
-							name: event.name,
-							dateStart: event.dateStart,
-						})
-						.from(event)
-						.where(and(eq(event.clubId, clubRecord.id), sql`${event.dateStart} >= NOW()`))
-						.orderBy(event.dateStart)
-						.limit(1),
-					db
-						.select({ content: review.content })
-						.from(review)
-						.where(and(eq(review.clubId, clubRecord.id), eq(review.type, "CLUB")))
-						.orderBy(sql`${review.createdAt} DESC`)
-						.limit(1),
-				]);
+		// Batch all count queries
+		const [membersCounts, eventsCounts, reviewsCounts, upcomingEvents, latestReviews] = await Promise.all([
+			db
+				.select({ clubId: clubMembership.clubId, count: count() })
+				.from(clubMembership)
+				.where(inArray(clubMembership.clubId, clubIds))
+				.groupBy(clubMembership.clubId),
+			db
+				.select({ clubId: event.clubId, count: count() })
+				.from(event)
+				.where(inArray(event.clubId, clubIds))
+				.groupBy(event.clubId),
+			db
+				.select({ clubId: review.clubId, count: count() })
+				.from(review)
+				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
+				.groupBy(review.clubId),
+			db
+				.select({
+					id: event.id,
+					name: event.name,
+					dateStart: event.dateStart,
+					clubId: event.clubId,
+				})
+				.from(event)
+				.where(and(inArray(event.clubId, clubIds), sql`${event.dateStart} >= NOW()`))
+				.orderBy(event.dateStart),
+			db
+				.select({
+					content: review.content,
+					clubId: review.clubId,
+				})
+				.from(review)
+				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
+				.orderBy(sql`${review.createdAt} DESC`),
+		]);
 
-				return {
-					id: m.id,
-					role: m.role,
-					club: {
-						id: clubRecord.id,
-						name: clubRecord.name,
-						logo: clubRecord.logo,
-						_count: {
-							members: Number(membersCount[0]?.count || 0),
-							events: Number(eventsCount[0]?.count || 0),
-							reviews: Number(reviewsCount[0]?.count || 0),
-						},
-						events: upcomingEvents,
-						reviews: latestReviews.map((r) => ({ content: r.content })),
+		const memberCountMap = new Map(membersCounts.map((r) => [r.clubId, Number(r.count)]));
+		const eventCountMap = new Map(eventsCounts.map((r) => [r.clubId, Number(r.count)]));
+		const reviewCountMap = new Map(reviewsCounts.map((r) => [r.clubId, Number(r.count)]));
+		const clubDataMap = new Map(clubsData.map((c) => [c.id, c]));
+		const upcomingEventMap = new Map<string, { id: string; name: string; dateStart: string }>();
+		for (const e of upcomingEvents) {
+			if (e.clubId && !upcomingEventMap.has(e.clubId)) upcomingEventMap.set(e.clubId, e);
+		}
+		const latestReviewByClub = new Map<string, { content: string }>();
+		for (const r of latestReviews) {
+			if (r.clubId && !latestReviewByClub.has(r.clubId)) latestReviewByClub.set(r.clubId, { content: r.content });
+		}
+
+		const clubMemberships = memberships.map((m) => {
+			const clubRecord = clubDataMap.get(m.clubId);
+			if (!clubRecord) {
+				return { id: m.id, role: m.role, club: null };
+			}
+			const upcoming = upcomingEventMap.get(m.clubId);
+			const latest = latestReviewByClub.get(m.clubId);
+			const clubEvents = upcoming ? [upcoming] : [];
+			const clubReviews = latest ? [{ content: latest.content }] : [];
+			return {
+				id: m.id,
+				role: m.role,
+				club: {
+					id: clubRecord.id,
+					name: clubRecord.name,
+					logo: clubRecord.logo,
+					_count: {
+						members: memberCountMap.get(m.clubId) || 0,
+						events: eventCountMap.get(m.clubId) || 0,
+						reviews: reviewCountMap.get(m.clubId) || 0,
 					},
-				};
-			}),
-		);
+					events: clubEvents,
+					reviews: clubReviews,
+				},
+			};
+		});
 
 		const eventRegistrations = await db
 			.select({

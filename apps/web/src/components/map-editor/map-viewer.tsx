@@ -330,7 +330,7 @@ const drawGrid = (
 	context.restore();
 };
 
-export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
+function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 	const snapshot = useMemo(() => data || createEmptySnapshot(), [data]);
 	const mapRef = useRef<MapLibreMap | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -681,8 +681,8 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		for (const [id, entry] of markers.entries()) {
 			if (!nextIds.has(id)) {
 				entry.marker.remove();
-				entry.root.unmount();
 				markers.delete(id);
+				queueMicrotask(() => entry.root.unmount());
 			}
 		}
 	}, [mapReady, snapshot.collection.features]);
@@ -710,11 +710,12 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		map.on("zoom", onZoom);
 		return () => {
 			map.off("zoom", onZoom);
-			for (const entry of markers.values()) {
-				entry.marker.remove();
-				entry.root.unmount();
-			}
+			const entries = Array.from(markers.values());
 			markers.clear();
+			for (const entry of entries) {
+				entry.marker.remove();
+				queueMicrotask(() => entry.root.unmount());
+			}
 		};
 	}, [mapReady]);
 
@@ -762,3 +763,5 @@ export function MapViewer({ data, className, height = 400 }: MapViewerProps) {
 		</div>
 	);
 }
+
+export default MapViewer;

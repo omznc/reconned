@@ -250,3 +250,5 @@ export const MapComponent = ({ defaultMapData, onSaveMapData, readOnly = false }
 		</MapContainer>
 	);
 };
+
+export default MapComponent;

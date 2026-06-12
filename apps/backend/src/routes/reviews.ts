@@ -84,7 +84,7 @@ reviewsRouter.get(
 			try {
 				const cached = await redis.get(cacheKey);
 				if (cached) {
-					return cachedJson(JSON.parse(cached), "public, max-age=60, stale-while-revalidate=300");
+					return cachedJson(JSON.parse(cached), "public, max-age=300, stale-while-revalidate=1800");
 				}
 			} catch (error) {
 				logger.emit({
@@ -197,7 +197,7 @@ reviewsRouter.get(
 			}
 		}
 
-		return cachedJson(result, "public, max-age=60, stale-while-revalidate=300");
+		return cachedJson(result, "public, max-age=300, stale-while-revalidate=1800");
 	},
 	{
 		schema: {

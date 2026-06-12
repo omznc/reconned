@@ -627,9 +627,19 @@ clubsRouter.get(
 			if (sortBy === "createdAt") orderBy.push(orderFn(club.createdAt));
 		}
 
+		// Build member count subquery once, reuse in SELECT and ORDER BY
+		const memberCountSubquery = db
+			.select({
+				clubId: clubMembership.clubId,
+				count: count().as("member_count"),
+			})
+			.from(clubMembership)
+			.groupBy(clubMembership.clubId)
+			.as("member_counts");
+
 		if (sortBy !== "name") orderBy.push(asc(club.name));
 		orderBy.push(desc(club.verified));
-		orderBy.push(sql`(SELECT COUNT(*) FROM "ClubMembership" cm WHERE cm."clubId" = ${club.id}) DESC`);
+		orderBy.push(desc(memberCountSubquery.count));
 
 		const clubsWithMemberCounts = await db
 			.select({
@@ -660,9 +670,10 @@ clubsRouter.get(
 				instagramUsername: club.instagramUsername,
 				instagramProfilePictureUrl: club.instagramProfilePictureUrl,
 				instagramBusinessId: club.instagramBusinessId,
-				memberCount: sql<number>`COALESCE((SELECT COUNT(*) FROM "ClubMembership" cm WHERE cm."clubId" = ${club.id}), 0)`,
+				memberCount: sql<number>`COALESCE(${memberCountSubquery.count}, 0)`,
 			})
 			.from(club)
+			.leftJoin(memberCountSubquery, eq(club.id, memberCountSubquery.clubId))
 			.where(whereClause)
 			.orderBy(...orderBy)
 			.limit(perPage)
@@ -1124,6 +1135,11 @@ clubsRouter.get(
 		return response.json({ posts });
 	},
 	{
+		cache: {
+			key: "club:{id}:posts",
+			ttl: 300,
+			swr: 1800,
+		},
 		schema: {
 			tags: ["Clubs"],
 			summary: "Get club posts",
@@ -1202,7 +1218,7 @@ clubsRouter.get(
 );
 
 clubsRouter.get(
-	"/clubs/:id/posts",
+	"/clubs/:id/posts/paginated",
 	async ({ params, response, context, query }) => {
 		const clubId = params.id;
 
@@ -1297,22 +1313,22 @@ clubsRouter.get(
 		const clubCreatedAt = clubData[0].createdAt;
 
 		const membersOverTime = (await db.execute(sql`
-			WITH RECURSIVE dates AS (
-				SELECT DATE(date_trunc('day', ${clubCreatedAt}::timestamp))::timestamp as date
+			WITH RECURSIVE months AS (
+				SELECT DATE(date_trunc('month', ${clubCreatedAt}::timestamp))::timestamp as month
 				UNION ALL
-				SELECT (date + INTERVAL '1 day')::timestamp
-				FROM dates
-				WHERE date < DATE(NOW())
+				SELECT (month + INTERVAL '1 month')::timestamp
+				FROM months
+				WHERE month < DATE_TRUNC('month', NOW())
 			)
 			SELECT
-				d.date::date as date,
+				m.month::date as date,
 				COUNT(DISTINCT cm.id)::integer as count
-			FROM dates d
+			FROM months m
 			LEFT JOIN "ClubMembership" cm ON
-				DATE(cm."createdAt") <= d.date::date
+				DATE_TRUNC('month', cm."createdAt"::timestamp) <= m.month::date
 				AND cm."clubId" = ${clubId}
-			GROUP BY d.date
-			ORDER BY d.date ASC
+			GROUP BY m.month
+			ORDER BY m.month ASC
 		`)) as Array<{ date: Date | string; count: number | string }>;
 
 		const roleDistribution = await db
@@ -4078,7 +4094,7 @@ clubsRouter.get(
 		auth: false,
 		cache: {
 			key: "club:{id}:membership:{userId}",
-			ttl: 60,
+			ttl: 120,
 			varyByUser: true,
 		},
 		schema: {
@@ -4087,6 +4103,9 @@ clubsRouter.get(
 			description: "Check if current user is a member of the club",
 			params: z.object({
 				id: z.string(),
+			}),
+			query: z.object({
+				limit: z.coerce.number().optional(),
 			}),
 			mcpTool: true,
 			response: {
@@ -5412,6 +5431,11 @@ clubsRouter.get(
 		}
 	},
 	{
+		cache: {
+			key: "club:{id}:instagram",
+			ttl: 600,
+			swr: 3600,
+		},
 		schema: {
 			tags: ["Clubs"],
 			summary: "Get Instagram media",
@@ -5782,6 +5806,12 @@ clubsRouter.get(
 	},
 	{
 		auth: false,
+		cache: {
+			key: "club:{id}:members",
+			ttl: 300,
+			swr: 1800,
+			varyByQuery: ["page", "perPage", "search", "role", "sortBy", "sortOrder"],
+		},
 		schema: {
 			tags: ["Clubs"],
 			summary: "Get club members",

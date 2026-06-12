@@ -18,6 +18,7 @@ import { wideEventsMiddleware } from "./lib/middlewares/wide-events";
 import { runMigrations } from "./lib/migrate";
 import { handleOpenAPIRoutes } from "./lib/openapi";
 import { logger } from "./lib/posthog";
+import { redis } from "./lib/redis";
 import { adminRouter } from "./routes/admin";
 import { alliancesRouter } from "./routes/alliances";
 import { apiKeysRouter } from "./routes/api-keys";
@@ -122,20 +123,45 @@ async function handleRequest(request: Request): Promise<Response> {
 				headers: request.headers,
 			});
 			if (sessionData?.user) {
-				const userRecord = await db
-					.select({ role: userTable.role })
-					.from(userTable)
-					.where(eq(userTable.id, sessionData.user.id))
-					.limit(1);
+				const userId = sessionData.user.id;
+				const cacheKey = `user:${userId}:role`;
+
+				let role: string | null = null;
+				try {
+					const cachedRole = await redis.get(cacheKey);
+					if (cachedRole) {
+						role = cachedRole;
+					}
+				} catch {
+					// Cache miss or error — fall through to DB
+				}
+
+				if (!role) {
+					const userRecord = await db
+						.select({ role: userTable.role })
+						.from(userTable)
+						.where(eq(userTable.id, userId))
+						.limit(1);
+
+					role = userRecord[0]?.role || null;
+
+					if (role) {
+						try {
+							await redis.setex(cacheKey, 30, role);
+						} catch {
+							// Cache write failure is non-fatal
+						}
+					}
+				}
 
 				user = {
-					id: sessionData.user.id,
+					id: userId,
 					email: sessionData.user.email,
 					name: sessionData.user.name,
-					role: userRecord[0]?.role || undefined,
+					role: role || undefined,
 				};
 
-				isAdmin = userRecord[0]?.role === "admin";
+				isAdmin = role === "admin";
 			}
 			if (sessionData?.session) {
 				session = {

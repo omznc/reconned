@@ -91,6 +91,7 @@ export default async function DashboardPage() {
 													suppressHydrationWarning
 													width={IMAGE_SIZES.THUMBNAIL}
 													height={IMAGE_SIZES.THUMBNAIL}
+													sizes="48px"
 													src={membership.club.logo}
 													alt={membership.club.name}
 													className="h-full w-full object-contain"

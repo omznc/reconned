@@ -7,10 +7,9 @@ import { env } from "@/lib/env";
 const withNextIntl = createNextIntlPlugin({
 	experimental: {
 		srcPath: "./src",
-		extract: {
-			sourceLocale: "en",
-		},
+		extract: true,
 		messages: {
+			sourceLocale: "en",
 			path: "./messages",
 			format: "json",
 			locales: "infer",
@@ -33,10 +32,8 @@ const nextConfig = {
 	reactCompiler: true,
 	experimental: {
 		staleTimes: {
-			staleTimes: {
-				dynamic: 30,
-				static: 180,
-			},
+			dynamic: 30,
+			static: 180,
 		},
 		webpackMemoryOptimizations: true,
 		viewTransition: true,

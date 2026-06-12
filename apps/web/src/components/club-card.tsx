@@ -30,6 +30,7 @@ export async function ClubCard({ club, showDescription = false }: ClubCardProps)
 								alt={club.name}
 								width={IMAGE_SIZES.THUMBNAIL}
 								height={IMAGE_SIZES.THUMBNAIL}
+								sizes="150px"
 								className="object-contain h-full w-full"
 							/>
 						) : (

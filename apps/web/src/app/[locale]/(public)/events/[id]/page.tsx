@@ -30,6 +30,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 				id: params.id,
 			},
 		},
+		next: { revalidate: 300 },
 	});
 
 	if (eventError || !eventData || !eventData.club) {
@@ -70,6 +71,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 					id: event.id,
 				},
 			},
+			next: { revalidate: 300 },
 		});
 		reviewsResponse = response.data;
 		if (response.data && response.data.reviews.length > 0) {

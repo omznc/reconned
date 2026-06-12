@@ -8,7 +8,7 @@ import { BadgeSoon } from "@/components/badge-soon";
 import { ClubCard } from "@/components/club-card";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { normalizeMapData, snapshotHasData } from "@/components/map-editor/map-data";
-import { MapViewer } from "@/components/map-editor/map-viewer";
+import { MapViewer } from "@/components/map-editor/map-viewer-wrapper";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Badge } from "@/components/ui/badge";

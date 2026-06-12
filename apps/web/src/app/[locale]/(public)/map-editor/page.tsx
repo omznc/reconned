@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getExtracted } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
-import { MapEditor } from "@/components/map-editor/map-editor";
+import { MapEditor } from "@/components/map-editor/map-editor-wrapper";
 import { env } from "@/lib/env";
 
 export async function generateMetadata(): Promise<Metadata> {

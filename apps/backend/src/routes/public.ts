@@ -61,7 +61,7 @@ publicRouter.get(
 			},
 		});
 
-		return cachedJson({ clubs }, "public, max-age=30, stale-while-revalidate=60");
+		return cachedJson({ clubs }, "public, max-age=300, stale-while-revalidate=1800");
 	},
 	{
 		schema: {
@@ -288,7 +288,7 @@ publicRouter.get(
 			},
 		});
 
-		return cachedJson({ featureFlags: flags }, "public, max-age=60, stale-while-revalidate=300");
+		return cachedJson({ featureFlags: flags }, "public, max-age=300, stale-while-revalidate=1800");
 	},
 	{
 		schema: {

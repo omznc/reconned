@@ -24,6 +24,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs">) {
 				perPage: String(ITEMS_PER_PAGE),
 			},
 		},
+		next: { revalidate: 300 },
 	});
 
 	if (error || !data) {

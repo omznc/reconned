@@ -71,6 +71,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 					endDate: endDate.toISOString(),
 				},
 			},
+			next: { revalidate: 3600 },
 		}),
 		apiServer.GET("/api/events/upcoming", {
 			params: {
@@ -78,8 +79,9 @@ export default async function Home(props: PageProps<"/[locale]">) {
 					limit: 3,
 				},
 			},
+			next: { revalidate: 3600 },
 		}),
-		apiServer.GET("/api/public/stats"),
+		apiServer.GET("/api/public/stats", { next: { revalidate: 3600 } }),
 	]);
 
 	const publicStats = publicStatsResult.data?.stats ?? {

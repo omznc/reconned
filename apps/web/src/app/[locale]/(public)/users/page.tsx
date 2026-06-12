@@ -25,6 +25,7 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 				sort: "admin",
 			},
 		},
+		next: { revalidate: 300 },
 	});
 
 	if (error || !data) {
@@ -36,24 +37,6 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 		pagination: data.pagination,
 	};
 
-	const uniqueClubIds = [
-		...new Set(data.users.flatMap((u) => u.clubMembership?.map((m) => m.club.id) || []).filter(Boolean)),
-	];
-	const clubSlugMap = new Map<string, string | null>();
-
-	await Promise.all(
-		uniqueClubIds.map(async (clubId) => {
-			const clubResponse = await apiServer.GET("/api/clubs/{id}", {
-				params: {
-					path: { id: clubId },
-				},
-			});
-			if (clubResponse.data) {
-				clubSlugMap.set(clubId, clubResponse.data.slug);
-			}
-		}),
-	);
-
 	const itemListSchema = createItemListWithUsers({
 		users: data.users.map((user) => ({
 			id: user.id,
@@ -64,7 +47,7 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 			location: user.location,
 			clubMembership: user.clubMembership?.map((membership) => ({
 				clubId: membership.club.id,
-				clubSlug: clubSlugMap.get(membership.club.id) || null,
+				clubSlug: membership.club.slug || null,
 				clubName: membership.club.name,
 			})),
 		})),

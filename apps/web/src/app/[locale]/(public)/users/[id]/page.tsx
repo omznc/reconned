@@ -28,6 +28,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 				id: params.id,
 			},
 		},
+		next: { revalidate: 3600 },
 	});
 
 	if (error || !user) {
@@ -132,6 +133,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">)
 				id: params.id,
 			},
 		},
+		next: { revalidate: 3600 },
 	});
 
 	if (error || !user) {

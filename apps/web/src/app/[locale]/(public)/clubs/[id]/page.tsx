@@ -32,13 +32,22 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 				id: params.id,
 			},
 		},
+		next: { revalidate: 3600 },
 	});
 
 	if (clubError || !clubData) {
 		return <ErrorPage title={t("Club not found.")} />;
 	}
 
-	const [membershipData, hasOwnerData, membersData] = await Promise.all([
+	const [
+		{ data: membershipData },
+		{ data: hasOwnerData },
+		{ data: membersData },
+		postsData,
+		alliancesData,
+		instagramMediaData,
+		invitesData,
+	] = await Promise.all([
 		user
 			? apiServer.GET("/api/clubs/{id}/membership", {
 					params: {
@@ -54,6 +63,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 					id: clubData.id,
 				},
 			},
+			next: { revalidate: 3600 },
 		}),
 		apiServer.GET("/api/clubs/{id}/members", {
 			params: {
@@ -61,21 +71,55 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 					id: clubData.id,
 				},
 			},
+			next: { revalidate: 3600 },
 		}),
+		apiServer.GET("/api/clubs/{id}/posts", {
+			params: {
+				path: { id: clubData.id },
+			},
+			next: { revalidate: 300 },
+		}),
+		apiServer.GET("/api/clubs/{id}/alliances", {
+			params: {
+				path: { id: clubData.id },
+			},
+			next: { revalidate: 3600 },
+		}),
+		clubData.instagramConnected
+			? apiServer.GET("/api/clubs/{id}/instagram/media", {
+					params: {
+						path: { id: clubData.id },
+						query: { limit: 20 },
+					},
+				})
+			: Promise.resolve({ data: null, error: null }),
+		user
+			? apiServer.GET("/api/users/invites", {
+					next: { revalidate: 60 },
+				})
+			: Promise.resolve({ data: null, error: null }),
 	]);
 
 	const club = clubData;
 
-	const isMemberOfClub = !!membershipData?.data?.isMember;
-	const hasOwner = hasOwnerData?.data?.hasOwner || false;
-	const role = membershipData?.data?.membership?.role;
+	const isMemberOfClub = !!membershipData?.isMember;
+	const hasOwner = hasOwnerData?.hasOwner || false;
+	const role = membershipData?.membership?.role;
 	const isManager = role === "MANAGER" || role === "CLUB_OWNER";
-	const userMembership =
-		membershipData?.data?.isMember && membershipData?.data?.membership ? membershipData.data.membership : null;
+	const userMembership = membershipData?.isMember && membershipData?.membership ? membershipData.membership : null;
 
 	if (!club) {
 		return <ErrorPage title={t("Club not found.")} />;
 	}
+
+	const inviteData = invitesData?.data?.invites || [];
+	const clubInvites = inviteData.filter((invite: { clubId: string }) => invite.clubId === club.id);
+	const posts = postsData?.data?.posts || [];
+	const alliances = alliancesData?.data?.alliances || [];
+	const instagramData = instagramMediaData?.data || {
+		media: [],
+		username: club.instagramUsername || null,
+	};
 
 	const clubUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`;
 
@@ -91,6 +135,7 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 					id: club.id,
 				},
 			},
+			next: { revalidate: 3600 },
 		});
 		reviewsResponse = response.data;
 		if (response.data && response.data.reviews.length > 0) {
@@ -219,8 +264,12 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 				currentUserMembership={userMembership}
 				hasOwner={hasOwner}
 				user={user}
-				members={membersData?.data?.members || []}
-				privateCount={membersData?.data?.privateCount || 0}
+				members={membersData?.members || []}
+				privateCount={membersData?.privateCount || 0}
+				posts={posts}
+				alliances={alliances}
+				instagramData={instagramData}
+				invites={clubInvites}
 			/>
 		</div>
 	);
