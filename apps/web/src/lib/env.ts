@@ -2,7 +2,7 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import * as z from "zod";
 
 export const env = createEnv({
-	skipValidation: process.env.CI === "true",
+	skipValidation: process.env.NEXT_PHASE === "phase-production-build" || process.env.CI === "true",
 	server: {
 		ADMIN_WEBHOOK_TOKEN: z
 			.string()
