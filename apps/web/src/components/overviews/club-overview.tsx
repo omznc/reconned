@@ -195,7 +195,7 @@ export async function ClubOverview({
 			{hasOwner && (
 				<>
 					{(members.length > 0 || alliances.length > 0 || club.instagramUsername) && (
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4 grid-span-last-odd">
 							{members.length > 0 && (
 								<Card className="h-full">
 									<CardHeader className="border-b">
@@ -334,9 +334,7 @@ export async function ClubOverview({
 							<ReviewsOverview type="club" typeId={club.id} entityName={club.name} isMember={isMember} />
 
 							{club.instagramUsername && (
-								<Card
-									className={members.length > 0 && alliances.length > 0 ? "md:col-span-2" : "h-full"}
-								>
+								<Card className="h-full">
 									<CardHeader className="border-b">
 										<div className="flex flex-col gap-4">
 											<div className="flex items-center gap-2">
