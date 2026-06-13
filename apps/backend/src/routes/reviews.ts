@@ -31,6 +31,21 @@ function cachedJson<T>(data: T, cacheControl: string): Response {
 	});
 }
 
+async function bustReviewCache(type: string, entityId: string): Promise<void> {
+	try {
+		const keys = await redis.keys(`reviews:${type}:${entityId}:page:*`);
+		if (keys.length > 0) {
+			await redis.del(...keys);
+		}
+	} catch (error) {
+		logger.emit({
+			severityText: "error",
+			body: "Error busting review cache",
+			attributes: { error: error instanceof Error ? error.message : String(error) },
+		});
+	}
+}
+
 const reviewWithAuthorSchema = z.object({
 	id: z.string(),
 	type: z.enum(["USER", "CLUB", "EVENT"]),
@@ -479,6 +494,11 @@ reviewsRouter.post(
 				},
 			});
 
+			const bustEntityId = userId || clubId || eventId;
+			if (bustEntityId) {
+				void bustReviewCache(body.type.toLowerCase(), bustEntityId);
+			}
+
 			return response.json({
 				review: updatedReview,
 			});
@@ -510,6 +530,11 @@ reviewsRouter.post(
 				request_id: context.requestId,
 			},
 		});
+
+		const bustEntityId = userId || clubId || eventId;
+		if (bustEntityId) {
+			void bustReviewCache(type.toLowerCase(), bustEntityId);
+		}
 
 		return response.json(
 			{
@@ -632,6 +657,12 @@ reviewsRouter.patch(
 				throw apiError.internal("Failed to retrieve updated review");
 			})();
 
+		const bustType = existingReview.type.toLowerCase();
+		const bustEntityId = existingReview.userId || existingReview.clubId || existingReview.eventId;
+		if (bustEntityId) {
+			void bustReviewCache(bustType, bustEntityId);
+		}
+
 		return response.json({ review: updatedReview });
 	},
 	{
@@ -711,6 +742,12 @@ reviewsRouter.delete(
 					admin_action: true,
 				},
 			});
+		}
+
+		const bustType = existingReview.type.toLowerCase();
+		const bustEntityId = existingReview.userId || existingReview.clubId || existingReview.eventId;
+		if (bustEntityId) {
+			void bustReviewCache(bustType, bustEntityId);
 		}
 
 		return response.json({ success: true });

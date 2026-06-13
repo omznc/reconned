@@ -279,7 +279,9 @@ export function ReviewsOverviewClient({
 																))}
 															</div>
 														</div>
-														<div className="flex items-center gap-1 shrink-0">
+													</div>
+													{(isEdited || isOwner) && (
+														<div className="flex items-center gap-1">
 															{isEdited && <ReviewEditHistory reviewId={review.id} />}
 															{isOwner && (
 																<>
@@ -302,7 +304,7 @@ export function ReviewsOverviewClient({
 																</>
 															)}
 														</div>
-													</div>
+													)}
 
 													<p className="text-sm text-muted-foreground leading-relaxed">
 														{review.content}
