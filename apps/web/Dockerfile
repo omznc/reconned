@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.13 AS base
+FROM oven/bun:1.3.14 AS base
 
 WORKDIR /app
 
@@ -74,4 +74,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["bun", "apps/web/server.js"]
+CMD ["bun", "--no-orphans", "apps/web/server.js"]

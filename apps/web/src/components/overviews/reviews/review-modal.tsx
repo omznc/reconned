@@ -31,13 +31,19 @@ interface ReviewModalProps {
 	type: "USER" | "CLUB" | "EVENT";
 	entityId: string;
 	entityName: string;
+	existingReview?: {
+		id: string;
+		rating: number;
+		content: string;
+	} | null;
 }
 
-export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: ReviewModalProps) {
+export function ReviewModal({ open, onOpenChange, type, entityId, entityName, existingReview }: ReviewModalProps) {
 	const t = useExtracted();
 	const queryClient = useQueryClient();
 	const [hoveredRating, setHoveredRating] = useState(0);
 	const router = useRouter();
+	const isEditing = !!existingReview;
 
 	const formSchema = z.object({
 		rating: z.number().int().min(1).max(5),
@@ -50,45 +56,50 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			rating: 0,
-			content: "",
+			rating: existingReview?.rating || 0,
+			content: existingReview?.content || "",
 		},
 	});
 
-	const createReviewMutation = useMutation({
+	const submitMutation = useMutation({
 		mutationFn: async (values: z.infer<typeof formSchema>) => {
-			const body = {
-				type,
-				rating: values.rating,
-				content: values.content,
-			} as {
-				type: typeof type;
-				rating: number;
-				content: string;
-				userId?: string;
-				clubId?: string;
-				eventId?: string;
-			};
+			if (isEditing && existingReview) {
+				const { error } = await apiClient.PATCH("/api/reviews/{id}", {
+					params: { path: { id: existingReview.id } },
+					body: { rating: values.rating, content: values.content },
+				});
+				if (error) throw error;
+			} else {
+				const body = {
+					type,
+					rating: values.rating,
+					content: values.content,
+				} as {
+					type: typeof type;
+					rating: number;
+					content: string;
+					userId?: string;
+					clubId?: string;
+					eventId?: string;
+				};
 
-			if (type === "USER") {
-				body.userId = entityId;
-			} else if (type === "CLUB") {
-				body.clubId = entityId;
-			} else if (type === "EVENT") {
-				body.eventId = entityId;
-			}
+				if (type === "USER") {
+					body.userId = entityId;
+				} else if (type === "CLUB") {
+					body.clubId = entityId;
+				} else if (type === "EVENT") {
+					body.eventId = entityId;
+				}
 
-			const { error } = await apiClient.POST("/api/reviews", { body });
-			if (error) {
-				throw error;
+				const { error } = await apiClient.POST("/api/reviews", { body });
+				if (error) throw error;
 			}
-			return error;
 		},
 		onSuccess: () => {
-			toast.success(t("Review submitted successfully"));
+			toast.success(isEditing ? t("Review updated successfully") : t("Review submitted successfully"));
 			form.reset();
 			onOpenChange(false);
-			queryClient.invalidateQueries({ queryKey: [["reviews", type, entityId]] });
+			queryClient.invalidateQueries({ queryKey: [["reviews", type.toLowerCase(), entityId]] });
 			router.refresh();
 		},
 		onError: (error) => {
@@ -110,7 +121,7 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		createReviewMutation.mutate(values);
+		submitMutation.mutate(values);
 	};
 
 	const handleOpenChange = (newOpen: boolean) => {
@@ -121,16 +132,26 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 		onOpenChange(newOpen);
 	};
 
+	const title = isEditing
+		? t("Edit Review")
+		: type === "USER"
+			? t("Review User")
+			: type === "CLUB"
+				? t("Review Club")
+				: t("Review Event");
+
+	const description = isEditing
+		? t("Update your review for {name}", { name: entityName })
+		: t("Leave a review for {name}", { name: entityName });
+
+	const submitLabel = isEditing ? t("Update Review") : t("Submit Review");
+
 	return (
 		<Credenza open={open} onOpenChange={handleOpenChange}>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>
-						{type === "USER" && t("Review User")}
-						{type === "CLUB" && t("Review Club")}
-						{type === "EVENT" && t("Review Event")}
-					</CredenzaTitle>
-					<CredenzaDescription>{t("Leave a review for {name}", { name: entityName })}</CredenzaDescription>
+					<CredenzaTitle>{title}</CredenzaTitle>
+					<CredenzaDescription>{description}</CredenzaDescription>
 				</CredenzaHeader>
 				<CredenzaBody>
 					<Form {...form}>
@@ -189,8 +210,8 @@ export function ReviewModal({ open, onOpenChange, type, entityId, entityName }: 
 										{t("Cancel")}
 									</Button>
 								</CredenzaClose>
-								<Button type="submit" disabled={createReviewMutation.isPending}>
-									{createReviewMutation.isPending ? <Loader size={16} /> : t("Submit Review")}
+								<Button type="submit" disabled={submitMutation.isPending}>
+									{submitMutation.isPending ? <Loader size={16} /> : submitLabel}
 								</Button>
 							</CredenzaFooter>
 						</form>

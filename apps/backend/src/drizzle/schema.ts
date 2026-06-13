@@ -565,6 +565,39 @@ export const eventInvite = pgTable(
 	],
 );
 
+export const reviewEditHistory = pgTable(
+	"ReviewEditHistory",
+	{
+		id: text().primaryKey().notNull(),
+		reviewId: text()
+			.notNull()
+			.references(() => review.id, { onDelete: "cascade" }),
+		previousRating: smallint().notNull(),
+		previousContent: text().notNull(),
+		editedBy: text()
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	},
+	(table) => [
+		index("ReviewEditHistory_reviewId_idx").using("btree", table.reviewId.asc().nullsLast().op("text_ops")),
+		foreignKey({
+			columns: [table.reviewId],
+			foreignColumns: [review.id],
+			name: "ReviewEditHistory_reviewId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.editedBy],
+			foreignColumns: [user.id],
+			name: "ReviewEditHistory_editedBy_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+	],
+);
+
 export const review = pgTable(
 	"Review",
 	{

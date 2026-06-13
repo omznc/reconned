@@ -20,6 +20,7 @@ import {
 	Plus,
 	Search,
 	Shield,
+	Star,
 	User,
 } from "lucide-react";
 import { useExtracted } from "next-intl";
@@ -120,6 +121,11 @@ export function useAppNavigationItems(isAdmin: boolean, pendingInvites: number):
 					title: t("Feature Flags"),
 					url: "/dashboard/admin/feature-flags",
 					icon: Flag,
+				},
+				{
+					title: t("Reviews"),
+					url: "/dashboard/admin/reviews",
+					icon: Star,
 				},
 			],
 		});

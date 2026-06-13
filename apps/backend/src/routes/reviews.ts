@@ -1,7 +1,15 @@
 import { apiError, Router } from "@reconned/router";
 import { and, count, desc, eq, gte, lte } from "drizzle-orm";
 import * as z from "zod";
-import { club, event, eventRegistration, eventRegistrationToUser, review, user } from "../drizzle/schema";
+import {
+	club,
+	event,
+	eventRegistration,
+	eventRegistrationToUser,
+	review,
+	reviewEditHistory,
+	user,
+} from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
@@ -551,6 +559,226 @@ reviewsRouter.post(
 						createdAt: z.string(),
 						updatedAt: z.string(),
 					}),
+				}),
+			},
+		},
+	},
+);
+
+const updateReviewBodySchema = z.object({
+	rating: z.number().int().min(1).max(5),
+	content: z.string().min(1).max(5000),
+});
+
+reviewsRouter.patch(
+	"/reviews/:id",
+	async ({ params, body, response, context }) => {
+		if (!context.user) {
+			throw apiError.unauthorized("You must be logged in to edit a review");
+		}
+
+		const reviewId = params.id;
+		if (!reviewId) {
+			throw apiError.validation("Review ID is required");
+		}
+
+		const existing = await db.select().from(review).where(eq(review.id, reviewId)).limit(1);
+
+		const existingReview =
+			existing[0] ??
+			(() => {
+				throw apiError.notFound("Review");
+			})();
+
+		if (existingReview.authorId !== context.user.id) {
+			throw apiError.forbidden("You can only edit your own reviews");
+		}
+
+		const sanitizedContent = sanitizeReviewContent(body.content);
+
+		await db.insert(reviewEditHistory).values({
+			id: crypto.randomUUID(),
+			reviewId: existingReview.id,
+			previousRating: existingReview.rating,
+			previousContent: existingReview.content,
+			editedBy: context.user.id,
+			createdAt: new Date().toISOString(),
+		});
+
+		await db
+			.update(review)
+			.set({
+				rating: body.rating,
+				content: sanitizedContent,
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(review.id, reviewId));
+
+		const updated = await db.select().from(review).where(eq(review.id, reviewId)).limit(1);
+
+		logger.emit({
+			severityText: "info",
+			body: "Review updated via PATCH",
+			attributes: {
+				review_id: reviewId,
+				author_id: context.user.id,
+				request_id: context.requestId,
+			},
+		});
+
+		const updatedReview =
+			updated[0] ??
+			(() => {
+				throw apiError.internal("Failed to retrieve updated review");
+			})();
+
+		return response.json({ review: updatedReview });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Reviews"],
+			summary: "Edit a review",
+			description: "Edit your own review. Previous version is saved to edit history.",
+			params: z.object({ id: z.string() }),
+			body: updateReviewBodySchema,
+			response: {
+				200: z.object({
+					review: z.object({
+						id: z.string(),
+						type: z.enum(["USER", "CLUB", "EVENT"]),
+						rating: z.number(),
+						content: z.string(),
+						authorId: z.string(),
+						userId: z.string().nullable(),
+						clubId: z.string().nullable(),
+						eventId: z.string().nullable(),
+						createdAt: z.string(),
+						updatedAt: z.string(),
+					}),
+				}),
+			},
+		},
+	},
+);
+
+reviewsRouter.delete(
+	"/reviews/:id",
+	async ({ params, response, context }) => {
+		if (!context.user) {
+			throw apiError.unauthorized("You must be logged in to delete a review");
+		}
+
+		const reviewId = params.id;
+		if (!reviewId) {
+			throw apiError.validation("Review ID is required");
+		}
+
+		const existing = await db.select().from(review).where(eq(review.id, reviewId)).limit(1);
+
+		const existingReview =
+			existing[0] ??
+			(() => {
+				throw apiError.notFound("Review");
+			})();
+
+		if (existingReview.authorId !== context.user.id && !context.isAdmin) {
+			throw apiError.forbidden("You can only delete your own reviews");
+		}
+
+		await db.delete(review).where(eq(review.id, reviewId));
+
+		logger.emit({
+			severityText: "info",
+			body: "Review deleted",
+			attributes: {
+				review_id: reviewId,
+				author_id: existingReview.authorId,
+				deleted_by: context.user.id,
+				is_admin_action: context.isAdmin,
+				request_id: context.requestId,
+			},
+		});
+
+		if (context.isAdmin) {
+			const { posthog } = await import("../lib/posthog");
+			posthog.capture({
+				distinctId: context.user.id,
+				event: "review_deleted_by_admin",
+				properties: {
+					review_id: reviewId,
+					author_id: existingReview.authorId,
+					admin_action: true,
+				},
+			});
+		}
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		schema: {
+			tags: ["Reviews"],
+			summary: "Delete a review",
+			description: "Delete your own review. Admins can delete any review.",
+			params: z.object({ id: z.string() }),
+			response: {
+				200: z.object({ success: z.boolean() }),
+			},
+		},
+	},
+);
+
+reviewsRouter.get(
+	"/reviews/:id/history",
+	async ({ params, response }) => {
+		const reviewId = params.id;
+		if (!reviewId) {
+			throw apiError.validation("Review ID is required");
+		}
+
+		const existing = await db.select({ id: review.id }).from(review).where(eq(review.id, reviewId)).limit(1);
+
+		if (!existing[0]) {
+			throw apiError.notFound("Review");
+		}
+
+		const history = await db
+			.select({
+				previousRating: reviewEditHistory.previousRating,
+				previousContent: reviewEditHistory.previousContent,
+				createdAt: reviewEditHistory.createdAt,
+				editedBy: {
+					id: user.id,
+					name: user.name,
+				},
+			})
+			.from(reviewEditHistory)
+			.innerJoin(user, eq(reviewEditHistory.editedBy, user.id))
+			.where(eq(reviewEditHistory.reviewId, reviewId))
+			.orderBy(desc(reviewEditHistory.createdAt));
+
+		return response.json({ history });
+	},
+	{
+		schema: {
+			tags: ["Reviews"],
+			summary: "Get review edit history",
+			description: "Get the public edit history for a review.",
+			params: z.object({ id: z.string() }),
+			response: {
+				200: z.object({
+					history: z.array(
+						z.object({
+							previousRating: z.number(),
+							previousContent: z.string(),
+							createdAt: z.string(),
+							editedBy: z.object({
+								id: z.string(),
+								name: z.string(),
+							}),
+						}),
+					),
 				}),
 			},
 		},

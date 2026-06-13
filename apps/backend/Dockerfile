@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.13 AS base
+FROM oven/bun:1.3.14 AS base
 
 WORKDIR /app
 
@@ -31,4 +31,4 @@ WORKDIR /app/apps/backend
 
 EXPOSE 3002
 
-CMD ["bun", "run", "src/index.ts"]
+CMD ["bun", "--no-orphans", "run", "src/index.ts"]

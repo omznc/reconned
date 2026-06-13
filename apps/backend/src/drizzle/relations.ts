@@ -19,6 +19,7 @@ import {
 	passkey,
 	post,
 	review,
+	reviewEditHistory,
 	session,
 	twoFactor,
 	user,
@@ -178,7 +179,7 @@ export const eventInviteRelations = relations(eventInvite, ({ one }) => ({
 	}),
 }));
 
-export const reviewRelations = relations(review, ({ one }) => ({
+export const reviewRelations = relations(review, ({ one, many }) => ({
 	user_authorId: one(user, {
 		fields: [review.authorId],
 		references: [user.id],
@@ -196,6 +197,18 @@ export const reviewRelations = relations(review, ({ one }) => ({
 	event: one(event, {
 		fields: [review.eventId],
 		references: [event.id],
+	}),
+	editHistory: many(reviewEditHistory),
+}));
+
+export const reviewEditHistoryRelations = relations(reviewEditHistory, ({ one }) => ({
+	review: one(review, {
+		fields: [reviewEditHistory.reviewId],
+		references: [review.id],
+	}),
+	editor: one(user, {
+		fields: [reviewEditHistory.editedBy],
+		references: [user.id],
 	}),
 }));
 

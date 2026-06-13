@@ -3,6 +3,7 @@ import { adminMiddleware } from "../../lib/middlewares/admin";
 import { adminAlliancesRouter } from "./alliances";
 import { adminClubsRouter } from "./clubs";
 import { adminFeatureFlagsRouter } from "./feature-flags";
+import { adminReviewsRouter } from "./reviews";
 
 import { adminTasksRouter } from "./tasks";
 
@@ -19,5 +20,6 @@ adminRouter.use(adminUnclaimedClubsRouter);
 adminRouter.use(adminTasksRouter);
 adminRouter.use(adminAlliancesRouter);
 adminRouter.use(adminFeatureFlagsRouter);
+adminRouter.use(adminReviewsRouter);
 
 export { adminRouter };
