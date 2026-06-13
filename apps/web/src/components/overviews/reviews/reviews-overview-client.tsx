@@ -211,7 +211,7 @@ export function ReviewsOverviewClient({
 							<div className="grid gap-6">
 								{reviews.slice(0, 3).map((review, index) => {
 									const isOwner = user?.id === review.authorId;
-									const isEdited = review.updatedAt !== review.createdAt;
+									const isEdited = review.updatedAt.getTime() !== review.createdAt.getTime();
 
 									return (
 										<div key={review.id} className="group relative">
