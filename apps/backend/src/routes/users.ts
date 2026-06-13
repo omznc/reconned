@@ -1421,8 +1421,7 @@ usersRouter.get(
 		const memberCountSubquery = db
 			.select({ count: count() })
 			.from(clubMembership)
-			.where(eq(clubMembership.clubId, club.id))
-			.as("member_count");
+			.where(eq(clubMembership.clubId, club.id));
 
 		const invites = await db
 			.select({

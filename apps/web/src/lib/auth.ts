@@ -1,8 +1,9 @@
 import { headers } from "next/headers";
-import { cache } from "react";
 import { authClient } from "@/lib/auth-client";
 
-const sessionCache = new Map<string, { data: NonNullable<Awaited<ReturnType<typeof fetchSession>>>; expiry: number }>();
+type SessionData = NonNullable<Awaited<ReturnType<typeof fetchSession>>>;
+
+const sessionCache = new Map<string, { data: SessionData; expiry: number }>();
 const CACHE_TTL = 5_000;
 const MAX_CACHE_SIZE = 200;
 let cacheWrites = 0;
@@ -39,7 +40,7 @@ async function fetchSession(requestHeaders: Headers) {
 	};
 }
 
-export const isAuthenticated = cache(async () => {
+export const isAuthenticated = async () => {
 	const headersList = await headers();
 	const cookie = headersList.get("cookie") || "";
 	const sessionToken = getSessionToken(cookie);
@@ -56,7 +57,7 @@ export const isAuthenticated = cache(async () => {
 		return null;
 	}
 
-	for (let attempt = 0; attempt < 2; attempt++) {
+	for (let attempt = 0; attempt < 3; attempt++) {
 		try {
 			const data = await fetchSession(headersList);
 
@@ -73,12 +74,19 @@ export const isAuthenticated = cache(async () => {
 
 			return data;
 		} catch {
-			if (attempt === 1) {
-				return null;
+			if (attempt < 2) {
+				await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
 			}
-			await new Promise((r) => setTimeout(r, 500));
+		}
+	}
+
+	// All retries failed — return stale cache if available, null otherwise
+	if (sessionToken) {
+		const stale = sessionCache.get(sessionToken);
+		if (stale) {
+			return stale.data;
 		}
 	}
 
 	return null;
-});
+};

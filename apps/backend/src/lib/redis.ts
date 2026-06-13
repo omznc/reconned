@@ -9,15 +9,15 @@ function getRedis(): RedisClient {
 		redisInstance = new RedisClient(env.REDIS_URL, {
 			connectionTimeout: 10000,
 			idleTimeout: 120000,
-			maxRetries: 2,
+			maxRetries: 5,
 		});
 	}
 	return redisInstance;
 }
 
-const retryDelays = [200, 500, 1000];
+const retryDelays = [200, 500, 1000, 1500, 2000];
 
-async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 2): Promise<T> {
+async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 5): Promise<T> {
 	for (let attempt = 0; attempt < maxRetries; attempt++) {
 		try {
 			return await operation();

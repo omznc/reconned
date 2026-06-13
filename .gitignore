@@ -18,6 +18,7 @@ node_modules
 # production
 /build
 dist/
+apps/backend/index
 
 # misc
 .DS_Store

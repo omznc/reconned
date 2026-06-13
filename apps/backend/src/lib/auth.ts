@@ -34,7 +34,8 @@ export const auth = betterAuth({
 		provider: "pg",
 	}),
 	session: {
-		freshAge: 300,
+		freshAge: 0,
+		storeSessionInDatabase: true,
 	},
 	secondaryStorage: {
 		get: async (key) => {

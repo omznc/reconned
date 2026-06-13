@@ -1,7 +1,12 @@
 import { logs } from "@opentelemetry/api-logs";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
-import { BatchLogRecordProcessor, LoggerProvider } from "@opentelemetry/sdk-logs";
+import {
+	BatchLogRecordProcessor,
+	ConsoleLogRecordExporter,
+	LoggerProvider,
+	SimpleLogRecordProcessor,
+} from "@opentelemetry/sdk-logs";
 import { PostHog } from "posthog-node";
 import packageJson from "../../package.json";
 import { env } from "./env";
@@ -29,6 +34,12 @@ const logExporter = new OTLPLogExporter({
 
 const logRecordProcessor = new BatchLogRecordProcessor(logExporter);
 
+const processors = [logRecordProcessor];
+
+if (ENVIRONMENT === "development") {
+	processors.push(new SimpleLogRecordProcessor(new ConsoleLogRecordExporter()));
+}
+
 const loggerProvider = new LoggerProvider({
 	resource: resourceFromAttributes({
 		"service.name": "reconned-backend",
@@ -36,7 +47,7 @@ const loggerProvider = new LoggerProvider({
 		"service.commit_hash": GIT_COMMIT,
 		"deployment.environment": ENVIRONMENT,
 	}),
-	processors: [logRecordProcessor],
+	processors,
 });
 
 // Set the global logger provider

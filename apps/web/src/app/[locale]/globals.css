@@ -264,4 +264,9 @@ img {
 	[role="button"]:not(:disabled) {
 		cursor: pointer;
 	}
+	input:where(:not([type="checkbox"], [type="radio"])),
+	textarea,
+	select {
+		background-color: hsl(var(--background));
+	}
 }
