@@ -7,15 +7,17 @@ let redisInstance: RedisClient | null = null;
 function getRedis(): RedisClient {
 	if (!redisInstance) {
 		redisInstance = new RedisClient(env.REDIS_URL, {
-			connectionTimeout: 30000,
-			idleTimeout: 300000, // 5 minutes
-			maxRetries: 5,
+			connectionTimeout: 10000,
+			idleTimeout: 120000,
+			maxRetries: 2,
 		});
 	}
 	return redisInstance;
 }
 
-async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
+const retryDelays = [200, 500, 1000];
+
+async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 2): Promise<T> {
 	for (let attempt = 0; attempt < maxRetries; attempt++) {
 		try {
 			return await operation();
@@ -29,8 +31,8 @@ async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 3):
 				throw error;
 			}
 
-			redisInstance = null; // Force reconnection
-			await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+			redisInstance = null;
+			await new Promise((resolve) => setTimeout(resolve, retryDelays[attempt] ?? 500));
 		}
 	}
 	throw new Error("Max retries exceeded");
