@@ -1,7 +1,7 @@
 import { env } from "@/lib/env";
 
 export function GET() {
-	const isBeta = env.NEXT_PUBLIC_BETA || env.NEXT_PUBLIC_WEB_URL.includes("beta.");
+	const isBeta = env.NEXT_PUBLIC_BETA === "true" || env.NEXT_PUBLIC_WEB_URL.includes("beta.");
 
 	if (isBeta) {
 		const body = ["User-agent: *", "Disallow: /", "Content-Signal: ai-train=no, search=no, ai-input=no"].join("\n");
