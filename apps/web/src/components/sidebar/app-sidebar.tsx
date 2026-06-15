@@ -18,14 +18,10 @@ import {
 	SidebarContent,
 	SidebarFooter,
 	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuItem,
 	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
-import { env } from "@/lib/env";
-import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
 	user: User & { role?: string | null | undefined };
@@ -67,8 +63,6 @@ export function AppSidebar(props: AppSidebarProps) {
 	const path = usePathname();
 	const t = useExtracted();
 	const [isMac, setIsMac] = useState(false);
-
-	const isBeta = env.NEXT_PUBLIC_BETA || false;
 
 	useEffect(() => {
 		// Detect if user is on macOS
@@ -137,30 +131,6 @@ export function AppSidebar(props: AppSidebarProps) {
 							<MailPlus size={12} />
 						</Link>
 					))}
-				{isBeta && (
-					<SidebarMenu
-						className={cn({
-							"pl-1": sidebar.state === "collapsed",
-						})}
-					>
-						<SidebarMenuItem>
-							{sidebar.open ? (
-								<div className="px-3 py-2 border bg-background/20">
-									<p className="text-xs text-muted-foreground">
-										{t("Beta version - Changes and errors are possible.")}
-									</p>
-								</div>
-							) : (
-								<div className="px-1 py-2 border bg-background/20 flex flex-col items-center">
-									<p className="text-xs text-muted-foreground">B</p>
-									<p className="text-xs text-muted-foreground">E</p>
-									<p className="text-xs text-muted-foreground">T</p>
-									<p className="text-xs text-muted-foreground">A</p>
-								</div>
-							)}
-						</SidebarMenuItem>
-					</SidebarMenu>
-				)}
 				<UserSwitcher user={props.user} />
 			</SidebarFooter>
 			<SidebarRail />

@@ -2,17 +2,6 @@ import { routing } from "@/i18n/routing";
 import { env } from "@/lib/env";
 
 export function GET() {
-	const isBeta = env.NEXT_PUBLIC_BETA || env.NEXT_PUBLIC_WEB_URL.includes("beta.");
-
-	if (isBeta) {
-		const body = "# BETA\n\nThis site is in beta and not yet indexed for AI discovery.";
-		return new Response(body, {
-			headers: {
-				"content-type": "text/plain; charset=utf-8",
-			},
-		});
-	}
-
 	const baseUrl = env.NEXT_PUBLIC_WEB_URL.replace(/\/$/, "");
 	const localeInfo = routing.locales.join(", ");
 	const defaultLocale = routing.defaultLocale;

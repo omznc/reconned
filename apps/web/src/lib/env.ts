@@ -59,12 +59,6 @@ export const env = createEnv({
 			.string()
 			.min(1, "NEXT_PUBLIC_AXIOM_TOKEN is required for logging")
 			.describe("Axiom API token"),
-
-		NEXT_PUBLIC_BETA: z
-			.string()
-			.optional()
-			.transform((val) => (val || "false") === "true")
-			.describe("Enable beta features (true/false)"),
 	},
 	experimental__runtimeEnv: {
 		NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
@@ -75,6 +69,5 @@ export const env = createEnv({
 		NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 		NEXT_PUBLIC_AXIOM_TOKEN: process.env.NEXT_PUBLIC_AXIOM_TOKEN,
-		NEXT_PUBLIC_BETA: process.env.NEXT_PUBLIC_BETA,
 	},
 });
