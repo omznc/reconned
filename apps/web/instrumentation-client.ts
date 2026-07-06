@@ -18,7 +18,9 @@ posthog.init(POSTHOG_PUBLIC_KEY, {
 			const isOpaqueScriptError =
 				Array.isArray(values) &&
 				values.length > 0 &&
-				values.every((exception) => exception?.value === "Script error." || exception?.value === "Script error");
+				values.every(
+					(exception) => exception?.value === "Script error." || exception?.value === "Script error",
+				);
 
 			if (isOpaqueScriptError) {
 				return null;
