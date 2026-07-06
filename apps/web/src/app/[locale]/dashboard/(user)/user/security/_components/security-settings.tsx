@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMounted } from "@/hooks/use-mounted";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import { getDateFnsLocale } from "@/lib/date-locale";
@@ -63,6 +64,9 @@ export function SecuritySettings({
 	const t = useExtracted();
 	const locale = useLocale();
 	const dateLocale = getDateFnsLocale(locale);
+	// Date formatting below depends on the browser's timezone/locale and the
+	// current time, so it must only run after mount to avoid hydration mismatches.
+	const mounted = useMounted();
 	const hasBackupCodes = regeneratedBackupCodes && regeneratedBackupCodes.length > 0;
 
 	const getDeviceIcon = (userAgent?: string) => {
@@ -89,11 +93,13 @@ export function SecuritySettings({
 							<AlertTitle>{passkey.name || t("Passkey")}</AlertTitle>
 							<AlertDescription>
 								{t("Created on {date}", {
-									date: new Date(passkey.createdAt).toLocaleDateString(locale, {
-										year: "numeric",
-										month: "long",
-										day: "numeric",
-									}),
+									date: mounted
+										? new Date(passkey.createdAt).toLocaleDateString(locale, {
+												year: "numeric",
+												month: "long",
+												day: "numeric",
+											})
+										: "…",
 								})}
 							</AlertDescription>
 						</div>
@@ -514,10 +520,12 @@ export function SecuritySettings({
 											)}
 											<span className="block text-xs">
 												{t("Last used on {date}", {
-													date: formatDistanceToNow(session.updatedAt, {
-														addSuffix: true,
-														locale: dateLocale,
-													}),
+													date: mounted
+														? formatDistanceToNow(session.updatedAt, {
+																addSuffix: true,
+																locale: dateLocale,
+															})
+														: "…",
 												})}
 											</span>
 										</AlertDescription>

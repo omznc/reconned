@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, type ReactNode, useContext, useState } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 
 type FontType = "mono" | "sans";
 
@@ -14,14 +14,15 @@ const FontContext = createContext<FontContextType | undefined>(undefined);
 export function FontProvider({ initial, children }: { initial: "mono" | "sans"; children: ReactNode }) {
 	const [font, setFontState] = useState<FontType>(initial);
 
-	if (typeof window !== "undefined") {
+	// Read the stored preference after mount rather than during render: reading
+	// localStorage while rendering diverges between server and client and is a
+	// latent source of hydration mismatches.
+	useEffect(() => {
 		const stored = window.localStorage.getItem("reconned-font");
 		if (stored === "mono" || stored === "sans") {
-			if (stored !== font) {
-				setFontState(stored);
-			}
+			setFontState(stored);
 		}
-	}
+	}, []);
 
 	const setFont = (newFont: FontType) => {
 		setFontState(newFont);

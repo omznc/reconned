@@ -12,6 +12,7 @@ import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { useMounted } from "@/hooks/use-mounted";
 import { Link } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ClubMembership } from "@/lib/api/api-type-helpers";
@@ -34,6 +35,9 @@ export function MembersTable(props: MembersTableProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 	const router = useRouter();
+	// `toLocaleDateString` output depends on the browser's timezone/locale, so the
+	// dates below are only formatted after mount to avoid hydration mismatches.
+	const mounted = useMounted();
 	const [membershipToExtend, setMembershipToExtend] = useState<
 		| (ClubMembership & {
 				userName: string;
@@ -195,11 +199,13 @@ export function MembersTable(props: MembersTableProps) {
 							component: (_, row) => (
 								<span>
 									{row.startDate
-										? new Date(row.startDate).toLocaleDateString(locale, {
-												day: "2-digit",
-												month: "long",
-												year: "numeric",
-											})
+										? mounted
+											? new Date(row.startDate).toLocaleDateString(locale, {
+													day: "2-digit",
+													month: "long",
+													year: "numeric",
+												})
+											: "…"
 										: t("Not set")}
 								</span>
 							),
@@ -214,11 +220,13 @@ export function MembersTable(props: MembersTableProps) {
 							component: (_, row) => (
 								<span>
 									{row.endDate
-										? new Date(row.endDate).toLocaleDateString(locale, {
-												day: "2-digit",
-												month: "long",
-												year: "numeric",
-											})
+										? mounted
+											? new Date(row.endDate).toLocaleDateString(locale, {
+													day: "2-digit",
+													month: "long",
+													year: "numeric",
+												})
+											: "…"
 										: t("Unlimited")}
 								</span>
 							),
