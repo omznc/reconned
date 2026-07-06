@@ -81,6 +81,22 @@ const nextConfig = {
 	},
 	async rewrites() {
 		return [
+			// OAuth discovery for the MCP server. The better-auth mcp() plugin serves these
+			// under /api/auth/.well-known/*, but connectors (e.g. claude.ai) probe the domain
+			// root, so alias them here. The protected-resource wildcard covers the RFC 9728
+			// resource-path form (/.well-known/oauth-protected-resource/api/mcp).
+			{
+				source: "/.well-known/oauth-authorization-server",
+				destination: "http://localhost:3002/api/auth/.well-known/oauth-authorization-server",
+			},
+			{
+				source: "/.well-known/oauth-protected-resource",
+				destination: "http://localhost:3002/api/auth/.well-known/oauth-protected-resource",
+			},
+			{
+				source: "/.well-known/oauth-protected-resource/:path*",
+				destination: "http://localhost:3002/api/auth/.well-known/oauth-protected-resource",
+			},
 			{
 				source: "/api/:path*",
 				destination: "http://localhost:3002/api/:path*",

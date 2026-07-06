@@ -271,6 +271,109 @@ export const apikey = pgTable(
 	],
 );
 
+// better-auth OIDC provider tables, used by the mcp() plugin for OAuth 2.0
+// (dynamic client registration, authorize/token, consent) and by id_token signing.
+export const oauthApplication = pgTable(
+	"oauthApplication",
+	{
+		id: text().primaryKey().notNull(),
+		name: text().notNull(),
+		icon: text(),
+		metadata: text(),
+		clientId: text().notNull().unique(),
+		clientSecret: text(),
+		redirectUrls: text().notNull(),
+		type: text().notNull(),
+		disabled: boolean().default(false).notNull(),
+		userId: text(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+	},
+	(table) => [
+		index("oauthApplication_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "oauthApplication_userId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+	],
+);
+
+export const oauthAccessToken = pgTable(
+	"oauthAccessToken",
+	{
+		id: text().primaryKey().notNull(),
+		accessToken: text().notNull().unique(),
+		refreshToken: text().notNull().unique(),
+		accessTokenExpiresAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		refreshTokenExpiresAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		clientId: text().notNull(),
+		userId: text(),
+		scopes: text().notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+	},
+	(table) => [
+		index("oauthAccessToken_clientId_idx").using("btree", table.clientId.asc().nullsLast().op("text_ops")),
+		index("oauthAccessToken_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		foreignKey({
+			columns: [table.clientId],
+			foreignColumns: [oauthApplication.clientId],
+			name: "oauthAccessToken_clientId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "oauthAccessToken_userId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+	],
+);
+
+export const oauthConsent = pgTable(
+	"oauthConsent",
+	{
+		id: text().primaryKey().notNull(),
+		clientId: text().notNull(),
+		userId: text().notNull(),
+		scopes: text().notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+		consentGiven: boolean().notNull(),
+	},
+	(table) => [
+		index("oauthConsent_clientId_idx").using("btree", table.clientId.asc().nullsLast().op("text_ops")),
+		index("oauthConsent_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		foreignKey({
+			columns: [table.clientId],
+			foreignColumns: [oauthApplication.clientId],
+			name: "oauthConsent_clientId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "oauthConsent_userId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
+	],
+);
+
+export const jwks = pgTable("jwks", {
+	id: text().primaryKey().notNull(),
+	publicKey: text().notNull(),
+	privateKey: text().notNull(),
+	createdAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+	expiresAt: timestamp({ precision: 3, mode: "string" }),
+});
+
 export const clubRule = pgTable(
 	"ClubRule",
 	{

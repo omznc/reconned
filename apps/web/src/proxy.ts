@@ -8,6 +8,13 @@ import { routing } from "@/i18n/routing";
 
 export default async function authProxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
+
+	// Never apply i18n/locale routing to well-known metadata (e.g. OAuth discovery for
+	// the MCP server); let the next.config rewrites proxy them to the backend as-is.
+	if (pathname.startsWith("/.well-known/")) {
+		return NextResponse.next();
+	}
+
 	const country = request.headers.get("CF-IPCountry");
 	const defaultLocale = getDefaultLocaleFromCountry(country);
 	const hasLocalePrefix = routing.locales.some(
