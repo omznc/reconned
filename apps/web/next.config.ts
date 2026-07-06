@@ -82,7 +82,7 @@ const nextConfig = {
 	async rewrites() {
 		// In Docker, BACKEND_INTERNAL_URL lets the web container reach the backend
 		// directly; in dev, falls back to localhost.
-		const backendUrl = process.env.BACKEND_INTERNAL_URL || "http://localhost:3002";
+		const backendUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
 		return [
 			// OAuth discovery for the MCP server. The better-auth mcp() plugin serves these
 			// under /api/auth/.well-known/*, but connectors (e.g. claude.ai) probe the domain
