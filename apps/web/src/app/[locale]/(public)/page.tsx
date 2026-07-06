@@ -49,37 +49,55 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export const revalidate = 3600; // 1 hour
 
+// Guard against network-level fetch rejections (backend unreachable, DNS, timeout).
+// openapi-fetch's underlying fetch rejects on those, which would otherwise throw
+// during the RSC render. Degrade to the same { data: null, error } shape the
+// HTTP-error handling below already expects so the empty-state fallbacks kick in.
+async function safeRequest<T>(request: Promise<T>): Promise<T | { data: null; error: unknown }> {
+	try {
+		return await request;
+	} catch (error) {
+		return { data: null, error };
+	}
+}
+
 export default async function Home(props: PageProps<"/[locale]">) {
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
 
-	const currentDate = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
+	const parsedMonth = month ? parseDateFns(month as string, "yyyy-MM", new Date()) : new Date();
+	// A malformed ?month= param produces an Invalid Date, which throws on .toISOString().
+	const currentDate = Number.isNaN(parsedMonth.getTime()) ? new Date() : parsedMonth;
 	const startDate = startOfMonth(subMonths(currentDate, 1));
 	const endDate = endOfMonth(addMonths(currentDate, 1));
 
 	const [dashboardClubsResult, calendarEventsResult, upcomingEventsResult, publicStatsResult] = await Promise.all([
 		user
-			? apiServer.GET("/api/dashboard/clubs")
+			? safeRequest(apiServer.GET("/api/dashboard/clubs"))
 			: Promise.resolve({
 					data: null,
 					error: null,
 				}),
-		apiServer.GET("/api/events/calendar", {
-			params: {
-				query: {
-					startDate: startDate.toISOString(),
-					endDate: endDate.toISOString(),
+		safeRequest(
+			apiServer.GET("/api/events/calendar", {
+				params: {
+					query: {
+						startDate: startDate.toISOString(),
+						endDate: endDate.toISOString(),
+					},
 				},
-			},
-		}),
-		apiServer.GET("/api/events/upcoming", {
-			params: {
-				query: {
-					limit: 3,
+			}),
+		),
+		safeRequest(
+			apiServer.GET("/api/events/upcoming", {
+				params: {
+					query: {
+						limit: 3,
+					},
 				},
-			},
-		}),
-		apiServer.GET("/api/public/stats"),
+			}),
+		),
+		safeRequest(apiServer.GET("/api/public/stats")),
 	]);
 
 	const publicStats = publicStatsResult.data?.stats ?? {
