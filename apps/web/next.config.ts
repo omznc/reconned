@@ -80,24 +80,22 @@ const nextConfig = {
 		];
 	},
 	async rewrites() {
-		// In Docker, BACKEND_INTERNAL_URL lets the web container reach the backend
-		// directly; in dev, falls back to localhost.
-		const backendUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
 		return [
-			// OAuth discovery for the MCP server. The better-auth mcp() plugin serves these
-			// under /api/auth/.well-known/*, but connectors (e.g. claude.ai) probe the domain
-			// root, so proxy them here.
+			// OAuth discovery is handled in proxy.ts (middleware), which avoids the
+			// same-origin rewrite issue and works in both dev and Docker. The next.config
+			// rewrites below (/api/, locale-prefixed, etc.) are dev-only — in production
+			// Traefik routes those paths to the backend before reaching Next.js.
 			{
 				source: "/.well-known/oauth-authorization-server",
-				destination: `${backendUrl}/api/auth/.well-known/oauth-authorization-server`,
+				destination: "http://localhost:3002/api/auth/.well-known/oauth-authorization-server",
 			},
 			{
 				source: "/.well-known/oauth-protected-resource",
-				destination: `${backendUrl}/api/auth/.well-known/oauth-protected-resource`,
+				destination: "http://localhost:3002/api/auth/.well-known/oauth-protected-resource",
 			},
 			{
 				source: "/.well-known/oauth-protected-resource/:path*",
-				destination: `${backendUrl}/api/auth/.well-known/oauth-protected-resource`,
+				destination: "http://localhost:3002/api/auth/.well-known/oauth-protected-resource",
 			},
 			{
 				source: "/api/:path*",

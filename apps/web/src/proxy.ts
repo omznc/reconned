@@ -9,10 +9,19 @@ import { routing } from "@/i18n/routing";
 export default async function authProxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
-	// Never apply i18n/locale routing to well-known metadata (e.g. OAuth discovery for
-	// the MCP server); let the next.config rewrites proxy them to the backend as-is.
+	// Proxy well-known metadata (OAuth discovery for MCP server) to the backend.
+	// Must fetch manually — NextResponse.rewrite with our own origin does an
+	// internal rewrite instead of proxying, and Rewrite with an external origin
+	// would break in Docker.
 	if (pathname.startsWith("/.well-known/")) {
-		return NextResponse.next();
+		const backendUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
+		const target = new URL(`/api/auth${pathname}`, backendUrl);
+		const response = await fetch(target);
+		return new Response(response.body, {
+			status: response.status,
+			statusText: response.statusText,
+			headers: response.headers,
+		});
 	}
 
 	const country = request.headers.get("CF-IPCountry");
