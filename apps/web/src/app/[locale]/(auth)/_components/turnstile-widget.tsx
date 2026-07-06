@@ -59,6 +59,12 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
 						}, 0);
 					}
 				},
+				"error-callback": () => {
+					// Turnstile surfaces network hiccups and challenge failures here.
+					// Log them explicitly so they stay traceable instead of bubbling up
+					// as an opaque cross-origin "Script error.".
+					logger.error("Turnstile error-callback triggered");
+				},
 				size: "normal",
 				appearance: "always",
 				execution: "render",
@@ -108,6 +114,9 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
 		script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
 		script.async = true;
 		script.defer = true;
+		// Allow the browser to surface real error details from Cloudflare's
+		// cross-origin script instead of masking them as an opaque "Script error."
+		script.crossOrigin = "anonymous";
 		script.onload = () => {
 			isTurnstileScriptLoaded = true;
 			setIsScriptReady(true);
