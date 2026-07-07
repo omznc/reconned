@@ -15,7 +15,12 @@ type McpUser = { id: string; email: string; name: string; role?: string };
 // used by CLI/curl) or an OAuth 2.0 access token issued via the better-auth mcp()
 // plugin (used by remote connectors like the claude.ai MCP integration).
 async function resolveMcpUser(request: Request, headers: Headers): Promise<McpUser | null> {
-	const session = await auth.api.getSession({ headers });
+	// Strip any Authorization header from the cookie-based session check — the
+	// api-key plugin (enableSessionForAPIKeys) would try to validate an OAuth
+	// Bearer token as an API key and throw FORBIDDEN.
+	const cookieHeaders = new Headers(headers);
+	cookieHeaders.delete("Authorization");
+	const session = await auth.api.getSession({ headers: cookieHeaders });
 	if (session?.user) {
 		return {
 			id: session.user.id,
@@ -87,8 +92,8 @@ export async function handleMCPRequest(request: Request, router: Router): Promis
 	const headers = new Headers(request.headers);
 	const apiKey = headers.get("X-API-Key");
 	if (apiKey && !headers.has("Authorization")) headers.set("Authorization", `Bearer ${apiKey}`);
-	const authHeader = headers.get("Authorization");
-	if (authHeader?.startsWith("Bearer ") && !headers.has("X-API-Key")) headers.set("X-API-Key", authHeader.slice(7));
+	// Don't sync Authorization → X-API-Key: the api-key plugin would try to
+	// validate an OAuth access token as an API key and reject it.
 
 	try {
 		const authUser = await resolveMcpUser(request, headers);
