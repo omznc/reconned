@@ -48,6 +48,16 @@ const nextConfig = {
 	async redirects() {
 		return [
 			{
+				source: "/sign-in",
+				destination: "/login",
+				permanent: false,
+			},
+			{
+				source: `/:locale(${localesString})/sign-in`,
+				destination: "/:locale/login",
+				permanent: false,
+			},
+			{
 				source: `/:locale(${localesString})/u/:path*`,
 				destination: "/:locale/users/:path*",
 				permanent: true,
