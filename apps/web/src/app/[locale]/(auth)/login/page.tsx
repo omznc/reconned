@@ -39,7 +39,17 @@ export default function LoginPage() {
 	});
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
+	const [responseType] = useQueryState("response_type");
 	const [lastMethod, setLastMethod] = useState<string | null>(null);
+	const [mcpAuthorizeUrl, setMcpAuthorizeUrl] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (responseType && !redirectTo) {
+			setMcpAuthorizeUrl(`/api/auth/mcp/authorize${window.location.search}`);
+		}
+	}, [responseType, redirectTo]);
+
+	const effectiveRedirectTo = mcpAuthorizeUrl || redirectTo;
 
 	useEffect(() => {
 		setLastMethod(authClient.getLastUsedLoginMethod());
@@ -79,7 +89,7 @@ export default function LoginPage() {
 			router.push("/two-factor");
 			return;
 		}
-		router.push(redirectTo ? redirectTo : "/");
+		router.push(effectiveRedirectTo || "/");
 		router.refresh();
 	}
 
@@ -299,14 +309,14 @@ export default function LoginPage() {
 									</>
 								)}
 							</Button>
-							<GoogleLoginButton redirectTo={redirectTo} wasLastMethod={lastMethod === "google"} />
+							<GoogleLoginButton redirectTo={effectiveRedirectTo} wasLastMethod={lastMethod === "google"} />
 						</div>
 					</form>
 				</Form>
 				<div className="mt-8 text-center text-sm">
 					{t("Don't have an account?")}{" "}
 					<Link
-						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
+						href={effectiveRedirectTo ? `/register?redirectTo=${encodeURIComponent(effectiveRedirectTo)}` : "/register"}
 						className="underline"
 					>
 						{t("Register")}
