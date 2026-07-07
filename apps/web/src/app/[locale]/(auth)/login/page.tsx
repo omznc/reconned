@@ -39,21 +39,28 @@ export default function LoginPage() {
 	});
 	const [redirectTo] = useQueryState("redirectTo");
 	const [message, setMessage] = useQueryState("message");
-	const [responseType] = useQueryState("response_type");
+	const [mcp] = useQueryState("mcp");
 	const [lastMethod, setLastMethod] = useState<string | null>(null);
-	const [mcpAuthorizeUrl, setMcpAuthorizeUrl] = useState<string | null>(null);
+	const [hasPendingMcp, setHasPendingMcp] = useState(false);
 
 	useEffect(() => {
-		if (responseType && !redirectTo) {
-			setMcpAuthorizeUrl(`/api/auth/mcp/authorize${window.location.search}`);
+		if (mcp === "1") {
+			const params = sessionStorage.getItem("mcp_oauth_params");
+			if (params) {
+				sessionStorage.removeItem("mcp_oauth_params");
+				router.replace(`/api/auth/mcp/authorize${params}`);
+			}
+			return;
 		}
-	}, [responseType, redirectTo]);
-
-	const effectiveRedirectTo = mcpAuthorizeUrl || redirectTo;
-
-	useEffect(() => {
 		setLastMethod(authClient.getLastUsedLoginMethod());
-	}, []);
+		const isMcpOAuth = !!new URLSearchParams(window.location.search).get("response_type");
+		if (isMcpOAuth) {
+			sessionStorage.setItem("mcp_oauth_params", window.location.search);
+			setHasPendingMcp(true);
+		} else if (sessionStorage.getItem("mcp_oauth_params")) {
+			sessionStorage.removeItem("mcp_oauth_params");
+		}
+	}, [mcp, router]);
 
 	const loginSchema = z.object({
 		email: z.string().email(t("Invalid email")),
@@ -89,7 +96,13 @@ export default function LoginPage() {
 			router.push("/two-factor");
 			return;
 		}
-		router.push(effectiveRedirectTo || "/");
+		const mcpParams = sessionStorage.getItem("mcp_oauth_params");
+		if (mcpParams) {
+			sessionStorage.removeItem("mcp_oauth_params");
+			router.replace(`/api/auth/mcp/authorize${mcpParams}`);
+			return;
+		}
+		router.push(redirectTo || "/");
 		router.refresh();
 	}
 
@@ -309,14 +322,14 @@ export default function LoginPage() {
 									</>
 								)}
 							</Button>
-							<GoogleLoginButton redirectTo={effectiveRedirectTo} wasLastMethod={lastMethod === "google"} />
+							<GoogleLoginButton redirectTo={hasPendingMcp ? "/login?mcp=1" : redirectTo} wasLastMethod={lastMethod === "google"} />
 						</div>
 					</form>
 				</Form>
 				<div className="mt-8 text-center text-sm">
 					{t("Don't have an account?")}{" "}
 					<Link
-						href={effectiveRedirectTo ? `/register?redirectTo=${encodeURIComponent(effectiveRedirectTo)}` : "/register"}
+						href={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}
 						className="underline"
 					>
 						{t("Register")}
