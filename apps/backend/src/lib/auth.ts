@@ -32,6 +32,9 @@ export const auth = betterAuth({
 	rateLimit: { enabled: false },
 	database: drizzleAdapter(db, {
 		provider: "pg",
+		verification: {
+			storeInDatabase: true,
+		},
 	}),
 	session: {
 		freshAge: 0,
@@ -59,6 +62,13 @@ export const auth = betterAuth({
 				await redis.del(key);
 			} catch {
 				// best effort
+			}
+		},
+		getAndDelete: async (key) => {
+			try {
+				return await redis.getdel(key);
+			} catch {
+				return null;
 			}
 		},
 	},
