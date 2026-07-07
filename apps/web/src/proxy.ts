@@ -16,11 +16,10 @@ export default async function authProxy(request: NextRequest) {
 	if (pathname.startsWith("/.well-known/")) {
 		const backendUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
 		const target = new URL(`/api/auth${pathname}`, backendUrl);
-		const response = await fetch(target);
-		return new Response(response.body, {
-			status: response.status,
-			statusText: response.statusText,
-			headers: response.headers,
+		const proxy = await fetch(target);
+		return new Response(await proxy.text(), {
+			status: proxy.status,
+			headers: proxy.headers,
 		});
 	}
 
