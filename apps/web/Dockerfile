@@ -65,4 +65,4 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["bun", "--no-orphans", "apps/web/server.js"]
+CMD ["bun", "--smol", "--no-orphans", "apps/web/server.js"]

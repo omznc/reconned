@@ -14,7 +14,8 @@ export default async function authProxy(request: NextRequest) {
 	// internal rewrite instead of proxying, and Rewrite with an external origin
 	// would break in Docker.
 	if (pathname.startsWith("/.well-known/")) {
-		const backendUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
+		const backendUrl =
+			process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
 		const target = new URL(`/api/auth${pathname}`, backendUrl);
 		const proxy = await fetch(target);
 		return new Response(await proxy.text(), {

@@ -32,10 +32,12 @@ export const auth = betterAuth({
 	rateLimit: { enabled: false },
 	database: drizzleAdapter(db, {
 		provider: "pg",
-		verification: {
-			storeInDatabase: true,
-		},
 	}),
+	// Keep OAuth codes & other verification values in Postgres even though
+	// secondaryStorage is configured — a Redis blip must not invalidate them.
+	verification: {
+		storeInDatabase: true,
+	},
 	session: {
 		freshAge: 0,
 		storeSessionInDatabase: true,

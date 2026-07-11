@@ -48,7 +48,11 @@ export default function LoginPage() {
 			const params = sessionStorage.getItem("mcp_oauth_params");
 			if (params) {
 				sessionStorage.removeItem("mcp_oauth_params");
-				router.replace(`/api/auth/mcp/authorize${params}`);
+				// Full browser navigation — the Next client router would fetch this
+				// redirecting API route as RSC and then hard-navigate on failure,
+				// running the authorize endpoint twice and hitting Claude's OAuth
+				// callback twice with the same state (invalid_grant).
+				window.location.replace(`/api/auth/mcp/authorize${params}`);
 			}
 			return;
 		}
@@ -60,7 +64,7 @@ export default function LoginPage() {
 		} else if (sessionStorage.getItem("mcp_oauth_params")) {
 			sessionStorage.removeItem("mcp_oauth_params");
 		}
-	}, [mcp, router]);
+	}, [mcp]);
 
 	const loginSchema = z.object({
 		email: z.string().email(t("Invalid email")),
@@ -99,7 +103,8 @@ export default function LoginPage() {
 		const mcpParams = sessionStorage.getItem("mcp_oauth_params");
 		if (mcpParams) {
 			sessionStorage.removeItem("mcp_oauth_params");
-			router.replace(`/api/auth/mcp/authorize${mcpParams}`);
+			// Full browser navigation, not router.replace — see the mcp=1 effect above.
+			window.location.replace(`/api/auth/mcp/authorize${mcpParams}`);
 			return;
 		}
 		router.push(redirectTo || "/");
@@ -322,7 +327,10 @@ export default function LoginPage() {
 									</>
 								)}
 							</Button>
-							<GoogleLoginButton redirectTo={hasPendingMcp ? "/login?mcp=1" : redirectTo} wasLastMethod={lastMethod === "google"} />
+							<GoogleLoginButton
+								redirectTo={hasPendingMcp ? "/login?mcp=1" : redirectTo}
+								wasLastMethod={lastMethod === "google"}
+							/>
 						</div>
 					</form>
 				</Form>
