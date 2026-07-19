@@ -7,6 +7,7 @@ import { club, clubMembership, post } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
 import { db } from "../../lib/db";
 import { isFeatureEnabled } from "../../lib/feature-flags";
+import { logger } from "../../lib/posthog";
 import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../../lib/storage";
 
@@ -658,13 +659,16 @@ clubsCoreRouter.delete(
 
 		await db.delete(club).where(eq(club.id, clubId));
 
-		await logClubAudit({
-			clubId,
-			actionType: "CLUB_DELETE",
-			actionData: {
-				name: clubData[0].name,
+		// ClubAuditLog rows cascade with the club, so a CLUB_DELETE audit row can never
+		// survive the delete — log to telemetry instead.
+		logger.emit({
+			severityText: "info",
+			body: "Club deleted",
+			attributes: {
+				clubId,
+				clubName: clubData[0].name,
+				userId: context.user.id,
 			},
-			userId: context.user.id,
 		});
 
 		return response.json({ success: true });

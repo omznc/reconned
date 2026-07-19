@@ -1,4 +1,4 @@
-import { apiError, Router } from "@reconned/router";
+import { AppError, apiError, Router } from "@reconned/router";
 import { and, count, desc, eq } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
@@ -431,6 +431,9 @@ clubsPurchasesRouter.post(
 			const result = await getS3UploadUrl(key, body.file.type, body.file.size, context.user.id);
 			return response.json(result);
 		} catch (error) {
+			if (error instanceof AppError) {
+				throw error;
+			}
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},

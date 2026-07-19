@@ -202,17 +202,13 @@ describe("clubs core", () => {
 			expect(response.status).toBe(403);
 		});
 
-		// BUG: the handler deletes the club row, then tries to insert a ClubAuditLog row
-		// referencing that same (now-gone) clubId. ClubAuditLog.clubId has an FK to Club.id,
-		// so the insert violates the constraint and the request 500s even though the club row
-		// is in fact deleted. Asserting the actual (buggy) behavior here per the task brief.
-		test("deletes the club as owner, but the response 500s because the post-delete audit-log insert violates its FK to the deleted club", async () => {
+		test("deletes the club as owner", async () => {
 			const owner = await createUser();
 			const club = await createClub(owner);
 
 			const response = await api(owner.cookie).delete(`/api/clubs/${club.id}`);
-			expect(response.status).toBe(500);
-			expect(response.body.error.code).toBe("INTERNAL_ERROR");
+			expect(response.status).toBe(200);
+			expect(response.body.success).toBeTrue();
 
 			const fetched = await api(owner.cookie).get(`/api/clubs/${club.id}`);
 			expect(fetched.status).toBe(404);

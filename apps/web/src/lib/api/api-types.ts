@@ -12028,6 +12028,14 @@ export interface operations {
 									events: number;
 									reviews: number;
 								};
+								events: {
+									id: string;
+									name: string;
+									dateStart: string;
+								}[];
+								reviews: {
+									content: string;
+								}[];
 							} | null;
 						}[];
 						eventRegistrationDetails: {

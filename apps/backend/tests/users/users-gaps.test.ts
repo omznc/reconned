@@ -155,6 +155,8 @@ describe("GET /users/:id/stats with aggregated club data", () => {
 		expect(detail.club._count.members).toBeGreaterThanOrEqual(2);
 		expect(detail.club._count.reviews).toBeGreaterThanOrEqual(1);
 		expect(detail.club._count.events).toBeGreaterThanOrEqual(1);
+		expect(detail.club.reviews).toEqual([{ content: "Great club" }]);
+		expect(detail.club.events.map((e: { id: string }) => e.id)).toContain(event.id);
 
 		expect(response.body.eventRegistrationDetails.length).toBeGreaterThanOrEqual(1);
 		const regDetail = response.body.eventRegistrationDetails.find(
@@ -251,7 +253,7 @@ describe("POST /users/:id/image/upload-url validation errors", () => {
 			type: "application/pdf",
 			size: 1024,
 		});
-		expect(response.status).toBe(500);
+		expect(response.status).toBe(400);
 	});
 
 	test("rejects a file that is too large", async () => {
@@ -261,6 +263,6 @@ describe("POST /users/:id/image/upload-url validation errors", () => {
 			type: "image/png",
 			size: 100 * 1024 * 1024,
 		});
-		expect(response.status).toBe(500);
+		expect(response.status).toBe(400);
 	});
 });

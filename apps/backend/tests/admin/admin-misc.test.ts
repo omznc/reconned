@@ -63,13 +63,10 @@ describe("admin tasks", () => {
 		expect(rows.length).toBe(0);
 	});
 
-	test("running an unknown task returns 500", async () => {
-		// The route's switch-default throws apiError.notFound("Task"), but that throw happens
-		// inside the surrounding try/catch, which re-wraps any error (including AppError) into
-		// apiError.internal — so callers actually observe a 500, not a 404.
+	test("running an unknown task returns 404", async () => {
 		const admin = await makeAdmin(await createUser());
 		const response = await api(admin.cookie).post("/api/admin/tasks/not-a-real-task/run", {});
-		expect(response.status).toBe(500);
+		expect(response.status).toBe(404);
 	});
 
 	test("non-admin cannot run a task", async () => {

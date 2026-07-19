@@ -10,7 +10,7 @@ import {
 import { eq } from "drizzle-orm";
 import { user as userTable } from "./drizzle/schema";
 import { auth } from "./lib/auth";
-import { RATE_LIMIT_BYPASS_PREFIX, redisCacheStore, redisRateLimitStore } from "./lib/cache";
+import { rateLimitKey, redisCacheStore, redisRateLimitStore } from "./lib/cache";
 import { db } from "./lib/db";
 import { env } from "./lib/env";
 import { loggingMiddleware } from "./lib/middlewares/logging";
@@ -37,25 +37,6 @@ const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.t
 if (process.env.NODE_ENV === "production") {
 	await runMigrations();
 }
-/**
- * Requests carrying the shared internal secret are the SSR layer in apps/web, which fronts every
- * end user from a handful of container IPs — IP-based limiting would throttle the whole site as
- * one client. They get a bypass key that the store short-circuits (see lib/cache.ts).
- */
-function rateLimitKey(request: Request): string {
-	if (request.headers.get("x-internal-api-secret") === env.INTERNAL_API_SECRET) {
-		return RATE_LIMIT_BYPASS_PREFIX;
-	}
-
-	const ip =
-		request.headers.get("cf-connecting-ip") ||
-		request.headers.get("x-real-ip") ||
-		request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-		"unknown";
-
-	return `ratelimit:${ip}`;
-}
-
 const mainRouter = new Router({
 	// Deliberately generous — this is an abuse ceiling, not a quota. Normal page loads fan out to
 	// several API calls, so the limit has to sit well above regular interactive usage.

@@ -448,6 +448,12 @@ adminUnclaimedClubsRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
+		const clubData = await db.select({ id: club.id }).from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!clubData[0]) {
+			throw apiError.notFound("Club not found");
+		}
+
 		const uploadUrl = await getS3UploadUrl(`club/${clubId}/logo`, body.file.type, body.file.size, context.user.id);
 
 		return response.json(uploadUrl);
@@ -524,6 +530,12 @@ adminUnclaimedClubsRouter.post(
 		const clubId = params.id;
 		if (!clubId) {
 			throw apiError.validation("Club ID is required");
+		}
+
+		const clubData = await db.select({ id: club.id }).from(club).where(eq(club.id, clubId)).limit(1);
+
+		if (!clubData[0]) {
+			throw apiError.notFound("Club not found");
 		}
 
 		const uploadUrl = await getS3UploadUrl(

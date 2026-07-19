@@ -1,3 +1,4 @@
+import { apiError } from "@reconned/router";
 import { S3Client } from "bun";
 import { env } from "./env";
 import { posthog } from "./posthog";
@@ -52,17 +53,19 @@ export async function getS3UploadUrl(
 	size: number,
 	userId?: string,
 ): Promise<UploadUrlResponse> {
-	// Basic validation
+	// Basic validation — thrown as AppError(400) so every presign route returns a 400, not a 500
 	if (!type || !size || !key) {
-		throw new Error("File type, size, and key are required");
+		throw apiError.validation("File type, size, and key are required");
 	}
 
 	if (!allowedFileTypes.includes(type)) {
-		throw new Error(`Unsupported file type: ${type}. Allowed: ${allowedFileTypes.join(", ")}`);
+		throw apiError.validation(`Unsupported file type: ${type}. Allowed: ${allowedFileTypes.join(", ")}`);
 	}
 
 	if (size > maxFileSize) {
-		throw new Error(`File size exceeds the maximum allowed size of ${Math.round(maxFileSize / 1024 / 1024)}MB`);
+		throw apiError.validation(
+			`File size exceeds the maximum allowed size of ${Math.round(maxFileSize / 1024 / 1024)}MB`,
+		);
 	}
 
 	// Generate key with size information for accurate quota tracking

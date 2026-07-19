@@ -118,16 +118,18 @@ describe("admin unclaimed clubs", () => {
 		expect(headerUpload.body.url).toBeString();
 	});
 
-	test("the upload URL endpoint presigns without checking the club exists", async () => {
-		// Unlike the other unclaimed-club endpoints, /logo/upload-url never looks the club up in
-		// the DB before presigning — it's pure local crypto keyed off the id in the path — so a
-		// bogus id still succeeds with 200 rather than 404.
+	test("the upload URL endpoints 404 for a club that does not exist", async () => {
 		const admin = await makeAdmin(await createUser());
-		const response = await api(admin.cookie).post("/api/admin/unclaimed-clubs/does-not-exist/logo/upload-url", {
+		const logoResponse = await api(admin.cookie).post("/api/admin/unclaimed-clubs/does-not-exist/logo/upload-url", {
 			file: { type: "image/png", size: 1024 },
 		});
-		expect(response.status).toBe(200);
-		expect(response.body.url).toBeString();
+		expect(logoResponse.status).toBe(404);
+
+		const headerResponse = await api(admin.cookie).post(
+			"/api/admin/unclaimed-clubs/does-not-exist/header-image/upload-url",
+			{ file: { type: "image/jpeg", size: 1024 } },
+		);
+		expect(headerResponse.status).toBe(404);
 	});
 
 	test("requesting an upload URL with an invalid file size fails validation", async () => {

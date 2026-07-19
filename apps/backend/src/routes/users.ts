@@ -1,4 +1,4 @@
-import { apiError, Router, responseSchema } from "@reconned/router";
+import { AppError, apiError, Router, responseSchema } from "@reconned/router";
 import { randomUUIDv7 } from "bun";
 import { and, count, eq, getTableColumns, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
@@ -94,6 +94,39 @@ const clubMembershipWithClubSchema = baseClubMembershipSchema.extend({
 				events: z.number(),
 				reviews: z.number(),
 			}),
+		})
+		.nullable(),
+});
+
+// Stats endpoint enriches each membership's club with its next upcoming event and latest review
+const statsClubMembershipSchema = clubMembershipWithClubSchema.extend({
+	club: baseClubSchema
+		.pick({
+			id: true,
+			name: true,
+			slug: true,
+			description: true,
+			logo: true,
+			location: true,
+			website: true,
+			isPrivate: true,
+			verified: true,
+			createdAt: true,
+		})
+		.extend({
+			_count: z.object({
+				members: z.number(),
+				events: z.number(),
+				reviews: z.number(),
+			}),
+			events: z.array(
+				z.object({
+					id: z.string(),
+					name: z.string(),
+					dateStart: z.string(),
+				}),
+			),
+			reviews: z.array(z.object({ content: z.string() })),
 		})
 		.nullable(),
 });
@@ -1221,7 +1254,7 @@ usersRouter.get(
 					clubMembership: z.number(),
 					reviewsWritten: z.number(),
 					reviewsReceived: z.number(),
-					clubMembershipDetails: z.array(clubMembershipWithClubSchema),
+					clubMembershipDetails: z.array(statsClubMembershipSchema),
 					eventRegistrationDetails: z.array(eventRegistrationWithEventSchema),
 				}),
 			},
@@ -1603,6 +1636,9 @@ usersRouter.post(
 			const result = await getS3UploadUrl(`user/${userId}/image`, body.type, body.size, userId);
 			return response.json(result);
 		} catch (error) {
+			if (error instanceof AppError) {
+				throw error;
+			}
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},
@@ -1648,6 +1684,9 @@ usersRouter.post(
 			const result = await getS3UploadUrl(`user/${userId}/header`, body.type, body.size, userId);
 			return response.json(result);
 		} catch (error) {
+			if (error instanceof AppError) {
+				throw error;
+			}
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},

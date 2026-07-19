@@ -50,6 +50,11 @@ adminTasksRouter.post(
 			throw apiError.validation("Task name is required");
 		}
 
+		const knownTasks = ["clean-expired-invites"];
+		if (!knownTasks.includes(taskName)) {
+			throw apiError.notFound("Task");
+		}
+
 		const startTime = Date.now();
 		let result: { success: boolean; message: string; data?: unknown };
 

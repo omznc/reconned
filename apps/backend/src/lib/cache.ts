@@ -1,4 +1,5 @@
 import type { CacheStore, RateLimitStore } from "@reconned/router";
+import { env } from "./env";
 import { logger } from "./posthog";
 import { redis } from "./redis";
 
@@ -94,6 +95,25 @@ export const redisCacheStore: CacheStore = {
  * every store operation short-circuits — no Redis round-trips at all for internal traffic.
  */
 export const RATE_LIMIT_BYPASS_PREFIX = "ratelimit:bypass";
+
+/**
+ * Requests carrying the shared internal secret are the SSR layer in apps/web, which fronts every
+ * end user from a handful of container IPs — IP-based limiting would throttle the whole site as
+ * one client. They get a bypass key that the store above short-circuits.
+ */
+export function rateLimitKey(request: Request): string {
+	if (request.headers.get("x-internal-api-secret") === env.INTERNAL_API_SECRET) {
+		return RATE_LIMIT_BYPASS_PREFIX;
+	}
+
+	const ip =
+		request.headers.get("cf-connecting-ip") ||
+		request.headers.get("x-real-ip") ||
+		request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+		"unknown";
+
+	return `ratelimit:${ip}`;
+}
 
 /**
  * Redis-backed sliding-window rate limit store.

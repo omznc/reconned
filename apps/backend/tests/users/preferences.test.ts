@@ -156,16 +156,15 @@ describe("POST /users/:id/image/upload-url", () => {
 		expect(response.status).toBe(401);
 	});
 
-	// The handler wraps getS3UploadUrl in a try/catch that always rethrows as apiError.internal,
-	// so an unsupported type surfaces as 500 rather than the 400 documented in the schema.
-	test("an unsupported file type surfaces as an internal error", async () => {
+	test("rejects an unsupported file type with a validation error", async () => {
 		const user = await createUser();
 
 		const response = await api(user.cookie).post(`/api/users/${user.id}/image/upload-url`, {
 			type: "application/pdf",
 			size: 1024,
 		});
-		expect(response.status).toBe(500);
+		expect(response.status).toBe(400);
+		expect(response.body.error.code).toBe("VALIDATION_ERROR");
 	});
 });
 
