@@ -3300,7 +3300,8 @@ clubsRouter.post(
 		schema: {
 			tags: ["Clubs"],
 			summary: "Create club",
-			description: "Create a new club and assign the creator as owner",
+			description:
+				"Create a new club and assign the creator as owner. Requires a numeric countryId - use the list_countries tool to look up the ID for a country.",
 			body: createClubBodySchema,
 			response: {
 				200: z.object({
@@ -3399,7 +3400,8 @@ clubsRouter.put(
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club information",
-			description: "Update club information (requires manager or owner role)",
+			description:
+				"Update club information (requires manager or owner role). To change the country, provide a numeric countryId - use the list_countries tool to look up the ID for a country.",
 			params: z.object({
 				id: z.string(),
 			}),

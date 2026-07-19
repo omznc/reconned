@@ -121,6 +121,11 @@ countriesRouter.get(
 			response: {
 				200: z.array(countrySchema),
 			},
+			mcpTool: {
+				name: "list_countries",
+				description:
+					"List all enabled countries with their numeric IDs. Use this to look up the countryId required when creating or updating a club.",
+			},
 		},
 	},
 );
