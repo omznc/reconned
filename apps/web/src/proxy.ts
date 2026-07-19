@@ -16,6 +16,17 @@ const i18nMiddlewares = new Map<string, ReturnType<typeof createMiddleware>>();
 /** The only `/.well-known/` paths better-auth serves, and so the only ones worth proxying. */
 const OAUTH_DISCOVERY_PREFIXES = ["/.well-known/oauth-authorization-server", "/.well-known/oauth-protected-resource"];
 
+/** `/.well-known/` paths served by route handlers; everything else 404s. */
+const SERVED_WELL_KNOWN = new Set([
+	"/.well-known/api-catalog",
+	"/.well-known/mcp/server-card.json",
+	"/.well-known/mcp.json",
+	"/.well-known/agent-card.json",
+]);
+
+/** Routes that serve markdown themselves, exempt from the `.md` → HTML-page rewrite. */
+const MARKDOWN_ROUTES = new Set(["/auth.md", "/AGENTS.md", "/sitemap.md"]);
+
 function getI18nMiddleware(defaultLocale: (typeof routing.locales)[number]) {
 	let middleware = i18nMiddlewares.get(defaultLocale);
 	if (!middleware) {
@@ -58,11 +69,38 @@ export default async function authProxy(request: NextRequest) {
 		});
 	}
 
-	// Other `/.well-known/` paths (api-catalog, mcp/server-card.json) are served by
-	// route handlers — locale negotiation below would rewrite them into `[locale]`
-	// and answer with the HTML 404 page.
+	// Other `/.well-known/` paths we actually serve — locale negotiation below
+	// would rewrite them into `[locale]` and answer with the HTML 404 page.
+	// Everything else under `/.well-known/` gets a plain 404: with no matching
+	// route, Next renders the root not-found outside the locale tree and 500s,
+	// and agent scanners read HTML error pages as malformed discovery documents.
 	if (pathname.startsWith("/.well-known/")) {
+		return SERVED_WELL_KNOWN.has(pathname) ? NextResponse.next() : new Response("Not Found", { status: 404 });
+	}
+
+	// Real routes that already serve markdown — the `.md` matcher pulls them in
+	// here, and the rewrite below (or the locale rewriter) would break them.
+	if (MARKDOWN_ROUTES.has(pathname)) {
 		return NextResponse.next();
+	}
+
+	// Markdown for agents: `Accept: text/markdown` (or a `.md` path suffix, e.g.
+	// `/clubs.md`) rewrites public pages to a route that renders them as markdown.
+	const wantsMarkdown = (request.headers.get("accept") ?? "").includes("text/markdown");
+	const isMarkdownPath = pathname.endsWith(".md");
+	if (
+		(wantsMarkdown || isMarkdownPath) &&
+		!pathname.startsWith("/dashboard") &&
+		!pathname.startsWith("/api") &&
+		!pathname.startsWith("/_next")
+	) {
+		const markdownUrl = new URL("/api/public-markdown", request.url);
+		const normalizedPath = isMarkdownPath ? pathname.slice(0, -3) : pathname;
+		const source = `${normalizedPath}${request.nextUrl.search}`;
+		markdownUrl.searchParams.set("source", source);
+		const headers = new Headers(request.headers);
+		headers.set("x-md-source", source);
+		return NextResponse.rewrite(markdownUrl, { request: { headers } });
 	}
 
 	const country = request.headers.get("CF-IPCountry");
@@ -97,5 +135,5 @@ export default async function authProxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/((?!api|_next|.*\\..*).*)", "/.well-known/:path*"],
+	matcher: ["/((?!api|_next|.*\\..*).*)", "/.well-known/:path*", "/:path*.md"],
 };
