@@ -18,6 +18,9 @@ const webEnv = {
 	NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=",
 	NEXT_PUBLIC_CDN_URL: "http://localhost:9000/test",
 	GOOGLE_CLIENT_ID: "test-google-client-id",
+	// Client-bundle env validation can't see CI=true (it's not NEXT_PUBLIC_), so every var in
+	// env.ts's `client` block must be present or auth pages crash in the browser.
+	NEXT_PUBLIC_GOOGLE_CLIENT_ID: "test-google-client-id",
 	NEXT_PUBLIC_AXIOM_DATASET: "test",
 	NEXT_PUBLIC_AXIOM_TOKEN: "test",
 	ADMIN_WEBHOOK_TOKEN: "test-admin-webhook-token",
