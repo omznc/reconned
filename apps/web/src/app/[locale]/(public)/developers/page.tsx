@@ -59,7 +59,7 @@ export default async function DevelopersPage(props: PageProps<"/[locale]/develop
 				</div>
 				<p className="mb-4">
 					{t(
-						"API keys allow you to authenticate with the RECONNED API and MCP server. You can create and manage your keys from your account settings.",
+						"API keys are for scripts, CLI tools, and server-to-server integrations with the REST API and MCP server. If you're connecting an AI assistant to our MCP server you don't need one — see the OAuth section below. You can create and manage your keys from your account settings.",
 					)}
 				</p>
 				<Link
@@ -112,9 +112,26 @@ export default async function DevelopersPage(props: PageProps<"/[locale]/develop
 				<code className="block bg-muted rounded-md px-3 py-2 text-sm font-mono mb-4">POST /api/mcp</code>
 				<p className="font-medium mb-2">{t("Authentication")}:</p>
 				<p className="mb-4">
-					{t("Pass your API key via the X-API-Key header or the Authorization: Bearer header.")}
+					{t(
+						"The easiest way to connect is OAuth — no API key required. MCP clients that support OAuth (claude.ai, Claude Code, ChatGPT, Cursor, and most others) discover our authorization server automatically: just add the server URL and you'll be prompted to sign in with your RECONNED account.",
+					)}
 				</p>
-				<p className="font-medium mb-2">{t("Client configuration")}:</p>
+				<p className="mb-4">
+					{t(
+						"For scripted or headless use you can authenticate with an API key instead, passed via the X-API-Key header or the Authorization: Bearer header.",
+					)}
+				</p>
+				<p className="font-medium mb-2">{t("Client configuration (OAuth)")}:</p>
+				<pre className="bg-muted rounded-md px-3 py-2 text-sm font-mono overflow-x-auto mb-4">
+					{`{
+  "mcpServers": {
+    "reconned": {
+      "url": "${env.NEXT_PUBLIC_WEB_URL}/api/mcp"
+    }
+  }
+}`}
+				</pre>
+				<p className="font-medium mb-2">{t("Client configuration (API key)")}:</p>
 				<pre className="bg-muted rounded-md px-3 py-2 text-sm font-mono overflow-x-auto">
 					{`{
   "mcpServers": {

@@ -1,4 +1,13 @@
-import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
+import {
+	ArrowUpRightIcon,
+	Calendar,
+	Code2,
+	LayoutDashboard,
+	MapIcon,
+	Search,
+	ShieldQuestion,
+	StarIcon,
+} from "lucide-react";
 import { getExtracted, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { BadgeSoon } from "@/components/badge-soon";
@@ -98,6 +107,15 @@ export async function Footer({ locale }: { locale: string }) {
 									{t("Sponsors")}
 								</Link>
 							</li>
+							<li>
+								<Link
+									href="/developers"
+									className="flex items-center hover:text-red-500 transition-all"
+								>
+									<Code2 className="w-5 h-5 mr-2" />
+									{t("For developers")}
+								</Link>
+							</li>
 							{/* <li>
 								<Link
 									href="/stats"
@@ -167,9 +185,6 @@ export async function Footer({ locale }: { locale: string }) {
 							</li>
 							<li>
 								<Link href="/terms-of-use">{t("Terms of Use")}</Link>
-							</li>
-							<li>
-								<Link href="/developers">{t("Developers")}</Link>
 							</li>
 							<li>
 								<a

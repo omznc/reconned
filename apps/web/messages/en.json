@@ -74,7 +74,6 @@
   "vHE0Cj": "Build on RECONNED with our REST API and MCP server. Create API keys, integrate with your tools, and automate your airsoft community workflows.",
   "U8ryi-": "RECONNED API",
   "jSp63j": "API Keys",
-  "HwWqVl": "API keys allow you to authenticate with the RECONNED API and MCP server. You can create and manage your keys from your account settings.",
   "o3cVXM": "Create an API key in your settings",
   "wbsq7O": "Usage",
   "yKOyCk": "API Documentation",
@@ -84,7 +83,6 @@
   "gU8IZY": "RECONNED provides a Model Context Protocol (MCP) server that lets AI assistants and tools interact with the platform. The MCP server exposes tools for searching clubs, events, and players, as well as managing your RECONNED data.",
   "ljmS5P": "Endpoint",
   "YeKWbP": "Authentication",
-  "i4E9EM": "Pass your API key via the X-API-Key header or the Authorization: Bearer header.",
   "_akpwH": "Client configuration",
   "S--KKU": "Code Examples",
   "mp_yEf": "Here are some example requests to get you started with the RECONNED API.",
@@ -1242,7 +1240,6 @@
   "4CrCbD": "Community",
   "HqRNN8": "Support",
   "W8nHSd": "FAQ",
-  "aMWgjX": "Developers",
   "_xvc73": "Sitemap",
   "sJeD-I": "Check out our sponsors and partners",
   "HtvybT": "Show columns",
@@ -1478,5 +1475,12 @@
   "_BNC-M": "Some files failed to upload",
   "8ohAhE": "Website URL must be shorter than 150 characters",
   "EBz1Ck": "Website URL cannot contain spaces",
-  "bj_fvY": "Website must be a valid HTTPS URL with a proper domain (e.g., example.com)"
+  "bj_fvY": "Website must be a valid HTTPS URL with a proper domain (e.g., example.com)",
+  "gsNSMG": "API keys are for scripts, CLI tools, and server-to-server integrations with the REST API and MCP server. If you're connecting an AI assistant to our MCP server you don't need one — see the OAuth section below. You can create and manage your keys from your account settings.",
+  "rnXa0V": "The easiest way to connect is OAuth — no API key required. MCP clients that support OAuth (claude.ai, Claude Code, ChatGPT, Cursor, and most others) discover our authorization server automatically: just add the server URL and you'll be prompted to sign in with your RECONNED account.",
+  "BWr2yB": "For scripted or headless use you can authenticate with an API key instead, passed via the X-API-Key header or the Authorization: Bearer header.",
+  "AtEV/p": "Client configuration (OAuth)",
+  "lSToRO": "Client configuration (API key)",
+  "Fk0CGP": "Connect AI assistants like Claude or ChatGPT to RECONNED with one click",
+  "o0kPeK": "For developers"
 }
