@@ -7,6 +7,7 @@ WORKDIR /app
 COPY package.json bun.lock* ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/backend/package.json ./apps/backend/
+COPY packages/router/package.json ./packages/router/
 COPY scripts ./scripts/
 
 RUN --mount=type=cache,target=/root/.bun/install/cache \
@@ -14,6 +15,7 @@ RUN --mount=type=cache,target=/root/.bun/install/cache \
 
 COPY apps/web ./apps/web
 COPY apps/backend ./apps/backend
+COPY packages/router ./packages/router
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
