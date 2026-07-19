@@ -117,10 +117,12 @@ countriesRouter.get(
 		schema: {
 			tags: ["Countries"],
 			summary: "Get all enabled countries",
-			description: "Returns a list of all enabled countries with their translations",
+			description:
+				"Returns a list of all enabled countries with their translations. Use this to look up a country's ID before passing it as countryId to other tools (e.g. creating or updating a club).",
 			response: {
 				200: z.array(countrySchema),
 			},
+			mcpTool: true,
 		},
 	},
 );
