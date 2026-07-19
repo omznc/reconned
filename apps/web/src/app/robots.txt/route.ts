@@ -6,6 +6,7 @@ export function GET() {
 		"Allow: /",
 		"Disallow: /api/",
 		"Disallow: /dashboard/",
+		"Content-Signal: search=yes, ai-input=yes, ai-train=no",
 		`Sitemap: ${env.NEXT_PUBLIC_WEB_URL}/sitemap.xml`,
 	].join("\n");
 

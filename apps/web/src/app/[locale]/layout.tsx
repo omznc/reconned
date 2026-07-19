@@ -20,6 +20,7 @@ import PosthogIdentify from "@/components/posthog-identify";
 import { Providers } from "@/components/providers";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { WebMCP } from "@/components/webmcp";
 import { routing } from "@/i18n/routing";
 import { env } from "@/lib/env";
 
@@ -111,6 +112,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 			</head>
 			<PosthogIdentify />
 			<AxiomWebVitals />
+			<WebMCP />
 			<NextIntlClientProvider locale={locale} messages={messages}>
 				<FontProvider initial={font}>
 					<StyleProvider initial={style}>

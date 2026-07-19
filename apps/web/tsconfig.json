@@ -55,7 +55,7 @@
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		".next/dev/types/**/*.ts",
-		"src/app/.well-known/api-catalog/route.ts"
+		"src/app/.well-known/**/*.ts"
 	],
 	"exclude": ["node_modules"]
 }

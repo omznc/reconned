@@ -58,6 +58,13 @@ export default async function authProxy(request: NextRequest) {
 		});
 	}
 
+	// Other `/.well-known/` paths (api-catalog, mcp/server-card.json) are served by
+	// route handlers — locale negotiation below would rewrite them into `[locale]`
+	// and answer with the HTML 404 page.
+	if (pathname.startsWith("/.well-known/")) {
+		return NextResponse.next();
+	}
+
 	const country = request.headers.get("CF-IPCountry");
 	const defaultLocale = getDefaultLocaleFromCountry(country);
 	const hasLocalePrefix = routing.locales.some(
