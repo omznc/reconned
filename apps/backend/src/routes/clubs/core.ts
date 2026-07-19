@@ -25,7 +25,7 @@ const publicClubSchema = baseClubSchema.omit({
 
 const createClubBodySchema = z.object({
 	name: z.string().min(1).max(50),
-	countryId: z.number(),
+	countryId: z.number().describe("Country ID. Use the list_countries tool to find the correct ID."),
 	location: z.string().min(1).max(50),
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
@@ -45,7 +45,7 @@ const createClubBodySchema = z.object({
 
 const updateClubBodySchema = z.object({
 	name: z.string().min(1).max(50).optional(),
-	countryId: z.number().optional(),
+	countryId: z.number().optional().describe("Country ID. Use the list_countries tool to find the correct ID."),
 	location: z.string().min(1).max(50).optional(),
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
