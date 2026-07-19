@@ -59,3 +59,10 @@ certificates
 .unlighthouse
 generated
 .opencode
+
+# Test artifacts
+apps/backend/tests/.server.log
+e2e/.auth
+e2e/.backend.log
+playwright-report
+test-results

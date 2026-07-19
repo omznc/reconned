@@ -1,6 +1,6 @@
 import { isAfter, isBefore } from "date-fns";
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { EventApplicationForm } from "@/app/[locale]/(public)/events/[id]/apply/_components/event-application.form";
 import { ErrorPage } from "@/components/error-page";
@@ -13,13 +13,15 @@ import { isFeatureEnabled } from "@/lib/feature-flags";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 
 export default async function EventApplicationPage(props: PageProps<"/[locale]/events/[id]/apply">) {
+	const params = await props.params;
+	setRequestLocale(params.locale);
 	const t = await getExtracted();
 	const isEventRegistrationEnabled = await isFeatureEnabled("EVENT_REGISTRATION");
 	if (!isEventRegistrationEnabled) {
 		return <ErrorPage title={t("This functionality is not available")} />;
 	}
 
-	const [user, params] = await Promise.all([isAuthenticated(), props.params]);
+	const user = await isAuthenticated();
 	const locale = params.locale;
 	if (!user) {
 		return redirect({
@@ -126,7 +128,9 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/events/[id]/apply">): Promise<Metadata> {
-	const [params, locale] = await Promise.all([props.params, getLocale()]);
+	const params = await props.params;
+	const { locale } = params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
 
 	const { data: eventData } = await apiServer.GET("/api/events/{id}", {

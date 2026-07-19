@@ -1,33 +1,23 @@
-import { cookies, headers } from "next/headers";
 import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
-import { getDefaultLocaleFromCountry } from "@/i18n/country-locale";
 import { routing } from "@/i18n/routing";
 
+/**
+ * Resolves the locale purely from the route segment (`requestLocale`).
+ *
+ * Deliberately does NOT read `headers()` or `cookies()`: doing so opts every
+ * route in the app out of static rendering, which made every `export const
+ * revalidate` and `generateStaticParams()` dead code.
+ *
+ * Cookie (`NEXT_LOCALE`), `Accept-Language` and geo (`CF-IPCountry`) based
+ * detection all still happen — in `src/proxy.ts` (the middleware), which is the
+ * correct layer for it: it runs before routing and can redirect/rewrite to the
+ * locale-prefixed path, so by the time we get here the URL already encodes the
+ * negotiated locale.
+ */
 export default getRequestConfig(async ({ requestLocale }) => {
-	const allHeaders = await headers();
-	const allCookies = await cookies();
-
-	const cookieLocale = allCookies.get("NEXT_LOCALE")?.value;
-	const country = allHeaders.get("CF-IPCountry");
-	const defaultLanguage = getDefaultLocaleFromCountry(country);
-
-	const resolvedLocale = await requestLocale;
-
-	const acceptLanguage = allHeaders.get("accept-language");
-	const browserLocale = acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase();
-
-	// Check cookie first, then URL locale, then Accept-Language, then country-based default, then fallback
-	let locale: string;
-	if (cookieLocale && hasLocale(routing.locales, cookieLocale)) {
-		locale = cookieLocale;
-	} else if (hasLocale(routing.locales, resolvedLocale)) {
-		locale = resolvedLocale;
-	} else if (browserLocale && hasLocale(routing.locales, browserLocale)) {
-		locale = browserLocale;
-	} else {
-		locale = defaultLanguage;
-	}
+	const requested = await requestLocale;
+	const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
 
 	return {
 		locale,

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import apiPublic from "@/lib/api/api-public";
 import { type FeatureFlags, FeatureFlagsProvider } from "@/lib/feature-flags/client";
+import { getFeatureFlags } from "@/lib/feature-flags/server";
 
 interface FeatureFlagsWrapperProps {
 	children: ReactNode;
@@ -8,17 +8,18 @@ interface FeatureFlagsWrapperProps {
 
 /**
  * Wrapper component that fetches feature flags server-side
- * and provides them to the client-side FeatureFlagsProvider
+ * and provides them to the client-side FeatureFlagsProvider.
+ *
+ * Uses the shared, cached `getFeatureFlags()` so this does not add an uncached
+ * backend round-trip to every page render.
  */
 export async function FeatureFlagsWrapper({ children }: FeatureFlagsWrapperProps) {
-	const response = await apiPublic.GET("/api/public/feature-flags");
+	const featureFlags = await getFeatureFlags();
 
+	// Convert array to object for easier lookup
 	const flags: FeatureFlags = {};
-	if (response.data) {
-		// Convert array to object for easier lookup
-		for (const flag of response.data.featureFlags) {
-			flags[flag.name] = flag.enabled;
-		}
+	for (const flag of featureFlags) {
+		flags[flag.name] = flag.enabled;
 	}
 
 	return <FeatureFlagsProvider initialFlags={flags}>{children}</FeatureFlagsProvider>;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
@@ -20,6 +20,7 @@ export const revalidate = 3600;
 
 export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	const params = await props.params;
+	setRequestLocale(params.locale);
 	const t = await getExtracted();
 
 	const { data: user, error } = await apiServer.GET("/api/users/{id}/profile", {
@@ -125,7 +126,7 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 
 export async function generateMetadata(props: PageProps<"/[locale]/users/[id]">): Promise<Metadata> {
 	const params = await props.params;
-	const locale = await getLocale();
+	const { locale } = params;
 
 	const { data: user, error } = await apiServer.GET("/api/users/{id}/profile", {
 		params: {

@@ -5,6 +5,7 @@ import {
 	BatchLogRecordProcessor,
 	ConsoleLogRecordExporter,
 	LoggerProvider,
+	type LogRecordProcessor,
 	SimpleLogRecordProcessor,
 } from "@opentelemetry/sdk-logs";
 import { PostHog } from "posthog-node";
@@ -22,6 +23,9 @@ const POSTHOG_HOST = "https://eu.i.posthog.com";
 
 export const posthog = new PostHog(POSTHOG_PUBLIC_KEY, {
 	host: POSTHOG_HOST,
+	// POSTHOG_LOGS_ENABLED doubles as the telemetry kill-switch for tests: with it off, neither
+	// the OTLP exporter below nor analytics capture may hit the network.
+	disabled: !env.POSTHOG_LOGS_ENABLED,
 });
 
 // Set up OpenTelemetry logging
@@ -32,9 +36,13 @@ const logExporter = new OTLPLogExporter({
 	},
 });
 
-const logRecordProcessor = new BatchLogRecordProcessor(logExporter);
+// Annotated as the interface, not inferred — the dev-only SimpleLogRecordProcessor below is a
+// sibling implementation, not a subtype.
+const processors: LogRecordProcessor[] = [];
 
-const processors = [logRecordProcessor];
+if (env.POSTHOG_LOGS_ENABLED) {
+	processors.push(new BatchLogRecordProcessor(logExporter));
+}
 
 if (ENVIRONMENT === "development") {
 	processors.push(new SimpleLogRecordProcessor(new ConsoleLogRecordExporter()));

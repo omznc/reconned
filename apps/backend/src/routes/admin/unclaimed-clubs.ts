@@ -1,7 +1,7 @@
 import { render } from "@react-email/components";
 import { apiError, Router, responseSchema } from "@reconned/router";
 import { randomUUIDv7 } from "bun";
-import { and, count, desc, eq, ilike, inArray, not, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, user } from "../../drizzle/schema";
 import ClubOwnerAssignedEmail from "../../emails/club-owner-assigned";
@@ -66,16 +66,15 @@ adminUnclaimedClubsRouter.get(
 			whereConditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)));
 		}
 
-		const ownerMemberships = await db
-			.select({ clubId: clubMembership.clubId })
-			.from(clubMembership)
-			.where(eq(clubMembership.role, "CLUB_OWNER"));
-
-		const ownedClubIds = ownerMemberships.map((m) => m.clubId);
-
-		if (ownedClubIds.length > 0) {
-			whereConditions.push(not(inArray(club.id, ownedClubIds)));
-		}
+		// Correlated NOT EXISTS instead of loading every owner membership into an IN (...) list.
+		whereConditions.push(
+			sql`NOT EXISTS (
+				SELECT 1
+				FROM "ClubMembership" cm
+				WHERE cm."clubId" = ${club.id}
+				AND cm."role" = 'CLUB_OWNER'
+			)`,
+		);
 
 		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
@@ -88,25 +87,30 @@ adminUnclaimedClubsRouter.get(
 			orderBy = sortOrder === "desc" ? desc(club.createdAt) : club.createdAt;
 		}
 
-		const clubs = await db.select().from(club).where(where).orderBy(orderBy).limit(perPage).offset(offset);
+		const [clubs, total] = await Promise.all([
+			db.select().from(club).where(where).orderBy(orderBy).limit(perPage).offset(offset),
+			db.select({ count: count() }).from(club).where(where),
+		]);
 
-		const clubsWithCounts = await Promise.all(
-			clubs.map(async (c) => {
-				const memberCount = await db
-					.select({ count: count() })
+		const clubIds = clubs.map((c) => c.id);
+
+		// Single grouped count for the whole page instead of one query per club.
+		const memberCounts = clubIds.length
+			? await db
+					.select({ clubId: clubMembership.clubId, count: count() })
 					.from(clubMembership)
-					.where(eq(clubMembership.clubId, c.id));
+					.where(inArray(clubMembership.clubId, clubIds))
+					.groupBy(clubMembership.clubId)
+			: [];
 
-				return {
-					...c,
-					_count: {
-						members: memberCount[0]?.count || 0,
-					},
-				};
-			}),
-		);
+		const memberCountMap = new Map(memberCounts.map((r) => [r.clubId, Number(r.count)]));
 
-		const total = await db.select({ count: count() }).from(club).where(where);
+		const clubsWithCounts = clubs.map((c) => ({
+			...c,
+			_count: {
+				members: memberCountMap.get(c.id) || 0,
+			},
+		}));
 
 		return response.json({
 			clubs: clubsWithCounts,

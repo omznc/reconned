@@ -1,2 +1,7 @@
 [install]
 globalStore = false
+
+[test]
+# Running `bun test` from the repo root picks up every workspace's tests without their
+# per-package setup (see apps/backend/bunfig.toml). The guard aborts with instructions.
+preload = ["./scripts/test-root-guard.ts"]

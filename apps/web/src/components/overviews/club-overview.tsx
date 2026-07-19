@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link } from "@/i18n/navigation";
-import type { ApiResponse, ClubMembership } from "@/lib/api/api-type-helpers";
+import type { ApiResponse, ClubMembership, EventInvite } from "@/lib/api/api-type-helpers";
 
 interface ClubOverviewProps {
 	club: ApiResponse<"/api/clubs/{id}", "get">;
@@ -43,7 +43,7 @@ interface ClubOverviewProps {
 	posts?: ApiResponse<"/api/clubs/{id}/posts", "get">["posts"];
 	alliances?: ApiResponse<"/api/clubs/{id}/alliances", "get">["alliances"];
 	instagramData?: ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
-	invites?: Array<{ id: string; clubId: string; role: string; status: string }>;
+	invites?: EventInvite[];
 }
 
 export async function ClubOverview({

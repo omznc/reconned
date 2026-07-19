@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { SearchResultsPage, WithContext } from "schema-dts";
 import { Search } from "@/app/[locale]/(public)/search/_components/search";
 import { SearchResults } from "@/app/[locale]/(public)/search/_components/search-results";
@@ -8,7 +8,12 @@ import { env } from "@/lib/env";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export default async function SearchPage(props: PageProps<"/[locale]/search">) {
-	const [{ q }, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const [{ q: rawQuery }, { locale }] = await Promise.all([props.searchParams, props.params]);
+	setRequestLocale(locale);
+	// `?q=a&q=b` parses to an array; every use below treats the query as a plain string.
+	// Empty string is falsy, so the `q ? ...` branches below behave exactly as they did for
+	// `undefined` — this only removes the `string[] | undefined` cases from every use site.
+	const q = (Array.isArray(rawQuery) ? rawQuery[0] : rawQuery) ?? "";
 	const t = await getExtracted();
 
 	const searchSchema: WithContext<SearchResultsPage> = {
@@ -63,7 +68,12 @@ export default async function SearchPage(props: PageProps<"/[locale]/search">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/search">): Promise<Metadata> {
-	const [{ q }, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const [{ q: rawQuery }, { locale }] = await Promise.all([props.searchParams, props.params]);
+	setRequestLocale(locale);
+	// `?q=a&q=b` parses to an array; every use below treats the query as a plain string.
+	// Empty string is falsy, so the `q ? ...` branches below behave exactly as they did for
+	// `undefined` — this only removes the `string[] | undefined` cases from every use site.
+	const q = (Array.isArray(rawQuery) ? rawQuery[0] : rawQuery) ?? "";
 	const t = await getExtracted();
 
 	const path = `/search${q ? `?q=${encodeURIComponent(q)}` : ""}`;

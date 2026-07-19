@@ -25,17 +25,23 @@ const localesString = routing.locales.map((locale) => `${locale}`).join("|");
 const nextConfig = {
 	output: "standalone",
 	reactStrictMode: true,
-	typescript: {
-		ignoreBuildErrors: true,
-	},
+	// `typescript.ignoreBuildErrors` used to be set here. The only thing it was still hiding was a
+	// dead shadcn `ui/calendar` wrapper written against react-day-picker v8; that component was
+	// never rendered and has been removed, so the build type-checks cleanly and the gate is back on.
 	// typedRoutes: true, // Disabled - causes build errors with missing AppRouteHandlerRoutes
 	reactCompiler: true,
 	experimental: {
 		staleTimes: {
-			dynamic: 30,
+			// Client Router Cache. `dynamic` was 30s, which meant navigating back to a
+			// page replayed a up-to-30s-old RSC payload without hitting the server —
+			// the classic "I edited something, went back, and saw the old data" bug.
+			// React Query already owns freshness for client-fetched data, so the router
+			// cache was only ever masking updates to server-rendered content. 0 (the
+			// Next default) refetches the RSC payload on navigation; prefetching still
+			// keeps this cheap.
+			dynamic: 0,
 			static: 180,
 		},
-		webpackMemoryOptimizations: true,
 		viewTransition: true,
 		serverComponentsHmrCache: true,
 	},
@@ -44,7 +50,8 @@ const nextConfig = {
 		loaderFile: "./image-loader.ts",
 		qualities: [50, 75, 100],
 	},
-	transpilePackages: ["backend"],
+	// No transpilePackages: the only `backend` import in this app is a type-only
+	// import in src/lib/auth-client.ts, which is erased at compile time.
 	async redirects() {
 		return [
 			{
@@ -90,30 +97,26 @@ const nextConfig = {
 		];
 	},
 	async rewrites() {
+		// Same override proxy.ts uses; lets the E2E harness point the dev rewrite at an
+		// isolated backend instead of the default dev one.
+		const backendInternalUrl = process.env.BACKEND_INTERNAL_URL || "http://localhost:3002";
 		return [
 			// OAuth discovery is handled in proxy.ts (middleware), which avoids the
 			// same-origin rewrite issue and works in both dev and Docker. The next.config
 			// rewrites below (/api/, locale-prefixed, etc.) are dev-only — in production
-			// Traefik routes those paths to the backend before reaching Next.js.
-			{
-				source: "/.well-known/oauth-authorization-server",
-				destination: "http://localhost:3002/api/auth/.well-known/oauth-authorization-server",
-			},
-			{
-				source: "/.well-known/oauth-protected-resource",
-				destination: "http://localhost:3002/api/auth/.well-known/oauth-protected-resource",
-			},
-			{
-				source: "/.well-known/oauth-protected-resource/:path*",
-				destination: "http://localhost:3002/api/auth/.well-known/oauth-protected-resource",
-			},
+			// the edge proxy routes those paths to the backend before reaching Next.js.
+			//
+			// There used to be three `/.well-known/oauth-*` rewrites here. They were unreachable:
+			// middleware runs before rewrites, and proxy.ts already claims those paths. They also
+			// hardcoded `localhost:3002`, which resolves to nothing inside the standalone web
+			// container — so had they ever fired in production they would have failed anyway.
 			{
 				source: "/api/:path*",
-				destination: "http://localhost:3002/api/:path*",
+				destination: `${backendInternalUrl}/api/:path*`,
 			},
 			{
 				source: `/:locale(${localesString})/api/:path*`,
-				destination: "http://localhost:3002/api/:path*",
+				destination: `${backendInternalUrl}/api/:path*`,
 			},
 			{
 				source: `/:locale(${localesString})/warmind/static/:path*`,

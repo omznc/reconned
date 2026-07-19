@@ -108,13 +108,18 @@ eventsRouter.get(
 
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		// First, get attendee counts for all events
+		// Attendee counts, constrained to the events actually visible to this request.
+		// Without the inner filter this aggregates the ENTIRE EventRegistration table on
+		// every page view, including registrations for events the caller can never see.
+		const visibleEventIds = db.select({ id: event.id }).from(event).where(whereClause);
+
 		const attendeeCountsSubquery = db
 			.select({
 				eventId: eventRegistration.eventId,
 				attendeeCount: count(eventRegistration.id).as("attendeeCount"),
 			})
 			.from(eventRegistration)
+			.where(inArray(eventRegistration.eventId, visibleEventIds))
 			.groupBy(eventRegistration.eventId)
 			.as("attendeeCounts");
 
@@ -232,6 +237,9 @@ eventsRouter.get(
 			ttl: 300,
 			swr: 1800,
 			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder", "isPrivate", "filter"],
+			// NOT public-safe: the result set depends on the caller (private events of the
+			// user's own clubs, admin visibility, and the "mine" filter).
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Events"],
@@ -383,6 +391,8 @@ eventsRouter.get(
 			key: "events:upcoming",
 			ttl: 300,
 			varyByQuery: ["limit"],
+			// NOT public-safe: includes private events from the caller's own clubs.
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Events"],
@@ -537,6 +547,8 @@ eventsRouter.get(
 			key: "events:calendar",
 			ttl: 300,
 			varyByQuery: ["startDate", "endDate"],
+			// NOT public-safe: includes private events from the caller's own clubs.
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Events"],
@@ -656,7 +668,10 @@ eventsRouter.get(
 		cache: {
 			key: "event:{id}",
 			ttl: 300,
-			varyByUser: false,
+			// Private events (or events of private clubs) are membership-gated in the handler.
+			// Only 2xx responses are cached, so a shared key would let a member's successful
+			// response be replayed to a non-member. Must stay per-user.
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Events"],
@@ -709,7 +724,7 @@ eventsRouter.post(
 	"/events",
 	async ({ context, body, response }) => {
 		const managerMembershipData = await db
-			.select()
+			.select({ role: clubMembership.role })
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, body.clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
@@ -875,7 +890,7 @@ eventsRouter.put(
 		}
 
 		const managerMembershipData = await db
-			.select()
+			.select({ role: clubMembership.role })
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
@@ -1037,7 +1052,7 @@ eventsRouter.delete(
 		const existingEvent = existingEventData[0];
 
 		const managerMembershipData = await db
-			.select()
+			.select({ role: clubMembership.role })
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
@@ -1102,143 +1117,6 @@ eventsRouter.delete(
 	},
 );
 
-eventsRouter.get(
-	"/clubs/:clubId/events",
-	async ({ params, query, response }) => {
-		const clubId = params.clubId;
-
-		if (!clubId) {
-			throw apiError.validation("Club ID is required");
-		}
-
-		const { page, perPage } = query;
-		const offset = (page - 1) * perPage;
-		const search = query?.search || "";
-		const sortBy = query?.sortBy || "dateStart";
-		const sortOrder = query?.sortOrder || "desc";
-
-		const whereConditions = [eq(event.clubId, clubId)];
-
-		if (search) {
-			const searchCondition = or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`));
-			if (searchCondition) {
-				whereConditions.push(searchCondition);
-			}
-		}
-
-		const whereClause = and(...whereConditions);
-
-		let orderByClause: typeof event.dateStart | typeof event.name | ReturnType<typeof desc>;
-		if (sortBy === "name") {
-			orderByClause = sortOrder === "asc" ? event.name : desc(event.name);
-		} else {
-			orderByClause = sortOrder === "asc" ? event.dateStart : desc(event.dateStart);
-		}
-
-		const events = await db
-			.select()
-			.from(event)
-			.where(whereClause)
-			.orderBy(orderByClause)
-			.limit(perPage)
-			.offset(offset);
-
-		const totalData = await db.select({ count: count() }).from(event).where(whereClause);
-		const total = totalData[0]?.count || 0;
-
-		return response.json({
-			events,
-			pagination: {
-				page,
-				perPage,
-				total,
-				totalPages: Math.ceil(total / perPage),
-			},
-		});
-	},
-	{
-		cache: {
-			key: "club:{clubId}:events",
-			ttl: 300,
-			swr: 1800,
-			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder"],
-		},
-		schema: {
-			tags: ["Events"],
-			summary: "Get events for specific club",
-			description: "Get events for a specific club with pagination, search, and sorting",
-			params: z.object({
-				clubId: z.string(),
-			}),
-			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
-				sortBy: z.enum(["name", "dateStart"]).optional(),
-				sortOrder: z.enum(["asc", "desc"]).optional(),
-			}),
-			response: {
-				200: z.object({
-					events: z.array(baseEventSchema),
-					pagination: paginationResponseSchema,
-				}),
-				400: z.object({ error: z.string() }),
-			},
-			mcpTool: true,
-		},
-	},
-);
-
-eventsRouter.get(
-	"/clubs/:clubId/events/count",
-	async ({ params, query, response }) => {
-		const clubId = params.clubId;
-
-		if (!clubId) {
-			throw apiError.validation("Club ID is required");
-		}
-
-		const search = query?.search || "";
-
-		const whereConditions = [eq(event.clubId, clubId)];
-
-		if (search) {
-			const searchCondition = or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`));
-			if (searchCondition) {
-				whereConditions.push(searchCondition);
-			}
-		}
-
-		const whereClause = and(...whereConditions);
-
-		const totalData = await db.select({ count: count() }).from(event).where(whereClause);
-		const total = totalData[0]?.count || 0;
-
-		return response.json({ count: total });
-	},
-	{
-		cache: {
-			key: "club:{clubId}:events:count",
-			ttl: 300,
-		},
-		schema: {
-			tags: ["Events"],
-			summary: "Count events for club",
-			description: "Count events for a specific club with optional search filter",
-			params: z.object({
-				clubId: z.string(),
-			}),
-			query: z.object({
-				search: z.string().optional(),
-			}),
-			response: {
-				200: z.object({
-					count: z.number(),
-				}),
-				400: z.object({ error: z.string() }),
-			},
-		},
-	},
-);
-
 const eventImageUploadBodySchema = z.object({
 	file: z.object({
 		type: z.string(),
@@ -1264,7 +1142,7 @@ eventsRouter.post(
 		const existingEvent = existingEventData[0];
 
 		const managerMembershipData = await db
-			.select()
+			.select({ role: clubMembership.role })
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
@@ -1323,7 +1201,7 @@ eventsRouter.delete(
 		const existingEvent = existingEventData[0];
 
 		const managerMembershipData = await db
-			.select()
+			.select({ role: clubMembership.role })
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
@@ -1644,7 +1522,7 @@ eventsRouter.put(
 		const eventRecord = eventData[0];
 
 		const managerMembershipData = await db
-			.select()
+			.select({ role: clubMembership.role })
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
@@ -1716,7 +1594,7 @@ eventsRouter.get(
 		const eventRecord = eventData[0];
 
 		const managerMembershipData = await db
-			.select()
+			.select({ role: clubMembership.role })
 			.from(clubMembership)
 			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
 			.limit(1);
@@ -1950,6 +1828,8 @@ eventsRouter.get(
 		cache: {
 			key: "event:{id}:registrations",
 			ttl: 300,
+			// Plain registration count, identical for every caller.
+			varyByUser: false,
 		},
 		schema: {
 			tags: ["Events"],
@@ -1988,6 +1868,8 @@ eventsRouter.get(
 		cache: {
 			key: "event:{id}:rules",
 			ttl: 300,
+			// Rules are the same for every caller.
+			varyByUser: false,
 		},
 		schema: {
 			tags: ["Events"],

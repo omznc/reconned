@@ -1,9 +1,48 @@
 import { passkeyClient } from "@better-auth/passkey/client";
-import type { AuthType } from "backend/lib/auth-types";
+import type { UserAdditionalFields } from "backend/lib/auth-fields";
 import { adminClient, inferAdditionalFields, lastLoginMethodClient, twoFactorClient } from "better-auth/client/plugins";
 import { createMcpAuthClient } from "better-auth/plugins/mcp/client";
 import { createAuthClient } from "better-auth/react";
 import { env } from "./env";
+
+/**
+ * The server's extra `user` columns, declared explicitly rather than inferred from `typeof auth`.
+ *
+ * `inferAdditionalFields<typeof auth>()` used to do this, which meant instantiating the entire
+ * server auth instance's type here — drizzle adapter, database client and every plugin's generics
+ * — just to learn five field names. The `satisfies` below keeps the safety that bought us: this
+ * literal must still match `apps/backend/src/lib/auth-fields.ts` exactly, or the build fails.
+ */
+const userAdditionalFields = {
+	callsign: {
+		type: "string",
+		default: "",
+		input: true,
+		required: false,
+	},
+	language: {
+		type: "string",
+		default: "bs",
+		input: true,
+		required: false,
+	},
+	font: {
+		type: "string",
+		default: "sans",
+		input: true,
+		required: false,
+	},
+	theme: {
+		type: "string",
+		required: false,
+	},
+	style: {
+		type: "string",
+		default: "relaxed",
+		input: true,
+		required: false,
+	},
+} as const satisfies UserAdditionalFields;
 
 export const authClient = createAuthClient({
 	baseURL: env.NEXT_PUBLIC_BACKEND_URL,
@@ -15,7 +54,7 @@ export const authClient = createAuthClient({
 		adminClient(),
 		twoFactorClient(),
 		lastLoginMethodClient(),
-		inferAdditionalFields<AuthType>(),
+		inferAdditionalFields({ user: userAdditionalFields }),
 	],
 });
 

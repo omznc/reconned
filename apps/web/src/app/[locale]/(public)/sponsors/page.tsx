@@ -1,7 +1,7 @@
 import { ArrowUpRight, MailCheckIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,9 +33,10 @@ const sponsors = [
 
 export const revalidate = 86_400; // 1 day
 
-export default async function SponsorsPage() {
+export default async function SponsorsPage(props: PageProps<"/[locale]/sponsors">) {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	const sponsorPageSchema: WithContext<CollectionPage> = {
 		"@context": "https://schema.org",
@@ -162,9 +163,10 @@ export default async function SponsorsPage() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/sponsors">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("Our Sponsors & Partners - Support RECONNED Airsoft Platform"),

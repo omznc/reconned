@@ -7,10 +7,11 @@ import { Key, MailIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import posthog from "posthog-js";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { AuthFormSkeleton } from "@/app/[locale]/(auth)/_components/auth-form-skeleton";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { Loader } from "@/components/loader";
@@ -25,6 +26,14 @@ import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
+	return (
+		<Suspense fallback={<AuthFormSkeleton />}>
+			<LoginPageContent />
+		</Suspense>
+	);
+}
+
+function LoginPageContent() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
 	const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);

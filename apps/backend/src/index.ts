@@ -10,7 +10,7 @@ import {
 import { eq } from "drizzle-orm";
 import { user as userTable } from "./drizzle/schema";
 import { auth } from "./lib/auth";
-import { redisCacheStore } from "./lib/cache";
+import { RATE_LIMIT_BYPASS_PREFIX, redisCacheStore, redisRateLimitStore } from "./lib/cache";
 import { db } from "./lib/db";
 import { env } from "./lib/env";
 import { loggingMiddleware } from "./lib/middlewares/logging";
@@ -18,7 +18,6 @@ import { wideEventsMiddleware } from "./lib/middlewares/wide-events";
 import { runMigrations } from "./lib/migrate";
 import { handleOpenAPIRoutes } from "./lib/openapi";
 import { logger } from "./lib/posthog";
-import { redis } from "./lib/redis";
 import { adminRouter } from "./routes/admin";
 import { alliancesRouter } from "./routes/alliances";
 import { apiKeysRouter } from "./routes/api-keys";
@@ -38,11 +37,45 @@ const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.t
 if (process.env.NODE_ENV === "production") {
 	await runMigrations();
 }
+/**
+ * Requests carrying the shared internal secret are the SSR layer in apps/web, which fronts every
+ * end user from a handful of container IPs — IP-based limiting would throttle the whole site as
+ * one client. They get a bypass key that the store short-circuits (see lib/cache.ts).
+ */
+function rateLimitKey(request: Request): string {
+	if (request.headers.get("x-internal-api-secret") === env.INTERNAL_API_SECRET) {
+		return RATE_LIMIT_BYPASS_PREFIX;
+	}
+
+	const ip =
+		request.headers.get("cf-connecting-ip") ||
+		request.headers.get("x-real-ip") ||
+		request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+		"unknown";
+
+	return `ratelimit:${ip}`;
+}
+
 const mainRouter = new Router({
+	// Deliberately generous — this is an abuse ceiling, not a quota. Normal page loads fan out to
+	// several API calls, so the limit has to sit well above regular interactive usage.
+	defaultRateLimit: {
+		windowMs: 60_000,
+		maxRequests: 600,
+		// Redis-backed: the router's default store is a per-process Map, which each replica would
+		// enforce independently.
+		store: redisRateLimitStore,
+		keyGenerator: rateLimitKey,
+	},
 	cache: {
 		store: redisCacheStore,
 		keyPrefix: "route:",
 	},
+	// Registering the same method + path shape twice makes the second one unreachable, and the
+	// OpenAPI generator publishes the *last* registration's schema while the *first* serves
+	// traffic. That mismatch has silently broken shipped UI more than once (a blank registrations
+	// chart, and audit-log rows missing their user column). Fail at boot instead of at runtime.
+	onDuplicateRoute: "throw",
 });
 
 mainRouter.middleware(correlationMiddleware());
@@ -110,12 +143,10 @@ async function handleRequest(request: Request): Promise<Response> {
 	let session: { id: string } | undefined;
 	let isAdmin = false;
 
-	// Skip session lookup for anonymous public requests to reduce latency
-	const shouldCheckSession = !(
-		url.pathname.startsWith("/api/public/") ||
-		(url.pathname.startsWith("/api/events") && !request.headers.get("cookie")?.includes("session")) ||
-		(url.pathname.startsWith("/api/clubs") && !request.headers.get("cookie")?.includes("session"))
-	);
+	// Only /api/public/ is genuinely anonymous. Any other route may be authenticated by cookie,
+	// Bearer token or API key, so the session must always be resolved — with session cookie
+	// caching enabled in lib/auth.ts this is a local check, not a Redis round-trip.
+	const shouldCheckSession = !url.pathname.startsWith("/api/public/");
 
 	if (shouldCheckSession) {
 		try {
@@ -123,42 +154,14 @@ async function handleRequest(request: Request): Promise<Response> {
 				headers: request.headers,
 			});
 			if (sessionData?.user) {
-				const userId = sessionData.user.id;
-				const cacheKey = `user:${userId}:role`;
-
-				let role: string | null = null;
-				try {
-					const cachedRole = await redis.get(cacheKey);
-					if (cachedRole) {
-						role = cachedRole;
-					}
-				} catch {
-					// Cache miss or error — fall through to DB
-				}
-
-				if (!role) {
-					const userRecord = await db
-						.select({ role: userTable.role })
-						.from(userTable)
-						.where(eq(userTable.id, userId))
-						.limit(1);
-
-					role = userRecord[0]?.role || null;
-
-					if (role) {
-						try {
-							await redis.setex(cacheKey, 30, role);
-						} catch {
-							// Cache write failure is non-fatal
-						}
-					}
-				}
+				// `role` is populated by the better-auth admin plugin, so no extra cache/DB lookup.
+				const role = sessionData.user.role || undefined;
 
 				user = {
-					id: userId,
+					id: sessionData.user.id,
 					email: sessionData.user.email,
 					name: sessionData.user.name,
-					role: role || undefined,
+					role,
 				};
 
 				isAdmin = role === "admin";
@@ -172,6 +175,38 @@ async function handleRequest(request: Request): Promise<Response> {
 			logger.emit({
 				severityText: "error",
 				body: "Error getting session",
+				attributes: {
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
+		}
+	}
+
+	// The session above comes from a signed cookie snapshot that may be up to `cookieCache.maxAge`
+	// seconds stale (see lib/auth.ts). That is an acceptable trade for ordinary routes, but it
+	// means a just-demoted or just-banned admin would keep privileged access for that window.
+	// Admin traffic is low volume, so re-read the authoritative role by primary key here rather
+	// than trusting the cached claim.
+	if (user && url.pathname.startsWith("/api/admin")) {
+		try {
+			const currentUserData = await db
+				.select({ role: userTable.role, banned: userTable.banned })
+				.from(userTable)
+				.where(eq(userTable.id, user.id))
+				.limit(1);
+
+			const currentUser = currentUserData[0];
+			const currentRole = currentUser?.banned ? undefined : currentUser?.role || undefined;
+
+			user = { ...user, role: currentRole };
+			isAdmin = currentRole === "admin";
+		} catch (error) {
+			// Fail closed: if the role cannot be confirmed, do not grant admin access.
+			user = { ...user, role: undefined };
+			isAdmin = false;
+			logger.emit({
+				severityText: "error",
+				body: "Could not verify admin role, denying access",
 				attributes: {
 					error: error instanceof Error ? error.message : String(error),
 				},
@@ -203,8 +238,8 @@ mainRouter.use(publicRouter, "/api");
 mainRouter.use(alliancesRouter, "/api");
 mainRouter.use(apiKeysRouter, "/api");
 
-Bun.serve({
-	port: 3002,
+export const server = Bun.serve({
+	port: Number(process.env.PORT) || 3002,
 	fetch: handleRequest,
 });
 

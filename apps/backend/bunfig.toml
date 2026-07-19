@@ -1,0 +1,5 @@
+[test]
+preload = ["./tests/helpers/global-setup.ts"]
+timeout = 30000
+coverageSkipTestFiles = true
+coveragePathIgnorePatterns = ["tests/**", "src/drizzle/migrations/**", "src/drizzle/seed.ts"]

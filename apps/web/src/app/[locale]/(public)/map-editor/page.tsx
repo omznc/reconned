@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { getExtracted } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { MapEditor } from "@/components/map-editor/map-editor-wrapper";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/map-editor">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
 	return {
 		title: t("Test Map Editor"),
@@ -10,7 +12,9 @@ export async function generateMetadata(): Promise<Metadata> {
 	};
 }
 
-export default async function MapEditorPage() {
+export default async function MapEditorPage(props: PageProps<"/[locale]/map-editor">) {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	return (
 		<div className="min-h-screen w-full">
 			<MapEditor visible />

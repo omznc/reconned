@@ -1,6 +1,6 @@
 import { ArrowUpRightIcon, BookOpen, Code2, Key, Server, Terminal } from "lucide-react";
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
@@ -17,9 +17,10 @@ function normalizeApiBase(url: string): string {
 	return `${trimmed}/api`;
 }
 
-export default async function DevelopersPage() {
+export default async function DevelopersPage(props: PageProps<"/[locale]/developers">) {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 	const apiBase = normalizeApiBase(env.NEXT_PUBLIC_BACKEND_URL);
 
 	const schema: WithContext<WebPage> = {
@@ -159,9 +160,10 @@ export default async function DevelopersPage() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/developers">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("RECONNED API — Developer Documentation"),

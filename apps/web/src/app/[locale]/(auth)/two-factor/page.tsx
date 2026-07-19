@@ -2,8 +2,9 @@
 
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AuthFormSkeleton } from "@/app/[locale]/(auth)/_components/auth-form-skeleton";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,7 +13,15 @@ import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
-export default function LoginPage() {
+export default function TwoFactorPage() {
+	return (
+		<Suspense fallback={<AuthFormSkeleton />}>
+			<TwoFactorPageContent />
+		</Suspense>
+	);
+}
+
+function TwoFactorPageContent() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();

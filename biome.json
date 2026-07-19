@@ -83,7 +83,11 @@
 			"!**/.unlighthouse",
 			"!**/generated",
 			"!**/*.d.json.ts",
-			"!apps/web/messages"
+			"!apps/web/messages",
+			"!apps/backend/src/drizzle/meta",
+			"!e2e/.auth",
+			"!test-results",
+			"!playwright-report"
 		],
 		"maxSize": 10000000
 	}

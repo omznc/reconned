@@ -13,9 +13,9 @@
  *
  * Server-side usage:
  * ```ts
- * import { getFeatureFlag } from '@/lib/feature-flags';
+ * import { isFeatureEnabled } from '@/lib/feature-flags';
  *
- * const isEnabled = await getFeatureFlag('my-feature');
+ * const isEnabled = await isFeatureEnabled('my-feature');
  * ```
  */
 
@@ -26,4 +26,4 @@ export { FeatureFlagsProvider, useFeatureFlag, useFeatureFlags } from "./client"
 // Flag names and types
 export { createFeatureFlagName, isValidFeatureFlagName } from "./flags";
 // Server-side exports
-export { getFeatureFlag } from "./server";
+export { FEATURE_FLAGS_CACHE_TAG, getFeatureFlags, isFeatureEnabled } from "./server";

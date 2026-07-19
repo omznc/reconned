@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, Pencil, Trash } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { Editor } from "@/components/editor/editor";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +22,15 @@ import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import sanitizeHtml from "sanitize-html";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+
+// The Tiptap editor is a large bundle and is only needed once this form is opened,
+// so load it on demand instead of shipping it with the initial page chunk.
+const Editor = dynamic(() => import("@/components/editor/editor").then((mod) => mod.Editor), {
+	ssr: false,
+	loading: () => <Skeleton className="h-64 w-full rounded-md" />,
+});
 
 interface RulesFormProps {
 	rules: ClubRule[];

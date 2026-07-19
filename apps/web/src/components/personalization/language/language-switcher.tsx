@@ -1,6 +1,5 @@
 "use client";
 import { Globe } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
@@ -25,7 +24,6 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 	const t = useExtracted();
 	const router = useRouter();
 	const path = usePathname();
-	const searchParams = useSearchParams();
 	const locale = useLocale();
 	const { user } = useIsAuthenticated();
 	const [isChanging, setIsChanging] = useState(false);
@@ -128,7 +126,10 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 				document.cookie = `NEXT_LOCALE=${localeOption}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
 			}
 
-			const query = Object.fromEntries(searchParams.entries());
+			// Read the query string here rather than via `useSearchParams()`: the hook is only
+			// needed inside this click handler, but calling it during render forces every page
+			// that shows the header to bail out of static prerendering.
+			const query = Object.fromEntries(new URLSearchParams(window.location.search).entries());
 			const href = Object.keys(query).length > 0 ? { pathname: path, query } : path;
 			router.replace(href, { locale: localeOption });
 			router.refresh();

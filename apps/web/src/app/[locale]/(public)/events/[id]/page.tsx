@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { EventOverview } from "@/components/overviews/event-overview";
@@ -21,6 +21,7 @@ export const revalidate = 300;
 
 export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const params = await props.params;
+	setRequestLocale(params.locale);
 	const t = await getExtracted();
 	const user = await isAuthenticated();
 
@@ -55,7 +56,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		rules: ((eventData as Record<string, unknown>).rules as ClubRule[]) || [],
 	};
 
-	const locale = await getLocale();
+	const { locale } = params;
 	const eventUrl = `${env.NEXT_PUBLIC_WEB_URL}/${locale}/events/${event.slug || event.id}`;
 	const clubUrl = `${env.NEXT_PUBLIC_WEB_URL}/${locale}/clubs/${event.club.slug || event.club.id}`;
 
@@ -215,7 +216,9 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/events/[id]">): Promise<Metadata> {
-	const [params, locale] = await Promise.all([props.params, getLocale()]);
+	const params = await props.params;
+	const { locale } = params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
 
 	const { data, error } = await apiServer.GET("/api/events/{id}", {

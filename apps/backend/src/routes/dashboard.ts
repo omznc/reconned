@@ -1,5 +1,5 @@
 import { apiError, Router } from "@reconned/router";
-import { and, count, eq, inArray, sql } from "drizzle-orm";
+import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubInvite, clubMembership, event, eventRegistration, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
@@ -75,8 +75,10 @@ dashboardRouter.get(
 				.from(review)
 				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
 				.groupBy(review.clubId),
+			// DISTINCT ON returns only the next upcoming event per club, instead of every
+			// future event of every club just to keep the first one in JS.
 			db
-				.select({
+				.selectDistinctOn([event.clubId], {
 					id: event.id,
 					name: event.name,
 					dateStart: event.dateStart,
@@ -84,15 +86,17 @@ dashboardRouter.get(
 				})
 				.from(event)
 				.where(and(inArray(event.clubId, clubIds), sql`${event.dateStart} >= NOW()`))
-				.orderBy(event.dateStart),
+				.orderBy(event.clubId, event.dateStart),
+			// DISTINCT ON returns only the latest review per club, instead of every club
+			// review just to keep the first one in JS.
 			db
-				.select({
+				.selectDistinctOn([review.clubId], {
 					content: review.content,
 					clubId: review.clubId,
 				})
 				.from(review)
 				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
-				.orderBy(sql`${review.createdAt} DESC`),
+				.orderBy(review.clubId, desc(review.createdAt)),
 		]);
 
 		// Group in application code
@@ -337,8 +341,10 @@ dashboardRouter.get(
 				.from(review)
 				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
 				.groupBy(review.clubId),
+			// DISTINCT ON returns only the next upcoming event per club, instead of every
+			// future event of every club just to keep the first one in JS.
 			db
-				.select({
+				.selectDistinctOn([event.clubId], {
 					id: event.id,
 					name: event.name,
 					dateStart: event.dateStart,
@@ -346,15 +352,17 @@ dashboardRouter.get(
 				})
 				.from(event)
 				.where(and(inArray(event.clubId, clubIds), sql`${event.dateStart} >= NOW()`))
-				.orderBy(event.dateStart),
+				.orderBy(event.clubId, event.dateStart),
+			// DISTINCT ON returns only the latest review per club, instead of every club
+			// review just to keep the first one in JS.
 			db
-				.select({
+				.selectDistinctOn([review.clubId], {
 					content: review.content,
 					clubId: review.clubId,
 				})
 				.from(review)
 				.where(and(inArray(review.clubId, clubIds), eq(review.type, "CLUB")))
-				.orderBy(sql`${review.createdAt} DESC`),
+				.orderBy(review.clubId, desc(review.createdAt)),
 		]);
 
 		const memberCountMap = new Map(membersCounts.map((r) => [r.clubId, Number(r.count)]));
