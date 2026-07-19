@@ -31,4 +31,10 @@ WORKDIR /app/apps/backend
 
 EXPOSE 3002
 
+# Fails the deploy if the server isn't actually serving on the port the proxy targets
+# (e.g. a platform-injected PORT env overriding the one above). Uses bun's fetch because
+# the base image doesn't guarantee curl/wget.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD ["bun", "-e", "fetch('http://localhost:3002/api/openapi.json').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+
 CMD ["bun", "--no-orphans", "run", "src/index.ts"]

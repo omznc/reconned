@@ -35,7 +35,11 @@ import { scheduler } from "./tasks/scheduler";
 const corsOrigins = env.CORS_ORIGINS.split(",").map((origin: string) => origin.trim());
 
 if (process.env.NODE_ENV === "production") {
+	// Bracket the migration on stdout: it runs before the server binds, so a hung or failed
+	// migration is otherwise indistinguishable from a container that never started.
+	console.log("Running database migrations...");
 	await runMigrations();
+	console.log("Database migrations complete");
 }
 const mainRouter = new Router({
 	// Deliberately generous — this is an abuse ceiling, not a quota. Normal page loads fan out to
@@ -223,6 +227,10 @@ export const server = Bun.serve({
 	port: Number(process.env.PORT) || 3002,
 	fetch: handleRequest,
 });
+
+// Deliberately stdout, not just PostHog: container logs must show the bound port, because a
+// PORT env injected by the platform can silently diverge from what the proxy forwards to.
+console.log(`Backend listening on http://${server.hostname}:${server.port}`);
 
 logger.emit({
 	severityText: "info",
