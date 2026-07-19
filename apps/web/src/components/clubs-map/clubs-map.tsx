@@ -411,18 +411,26 @@ function OptimizedTileLayerComponent({ url, ...options }: { url: string } & L.Ti
 	return null;
 }
 
+// Pre-translated strings for createClubIcon: it renders outside the React tree (leaflet
+// divIcon), and the next-intl extractor only picks up t() calls made directly in the
+// component that owns useExtracted(), not through a passed-down t.
+interface ClubIconLabels {
+	clubLogo: string;
+	clubLocation: string;
+}
+
 // Helper function to create a custom icon from club logo
 function createClubIcon(
 	logoUrl: string | null | undefined,
 	size: number,
 	clubName: string,
 	isHovered: boolean,
-	t: ReturnType<typeof useExtracted>,
+	labels: ClubIconLabels,
 ) {
 	const iconContent = logoUrl ? (
 		<Image
 			src={logoUrl}
-			alt={t("Club logo")}
+			alt={labels.clubLogo}
 			className="object-contain"
 			width={IMAGE_SIZES.ICON}
 			height={IMAGE_SIZES.ICON}
@@ -438,9 +446,9 @@ function createClubIcon(
 			viewBox="0 0 24 24"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
-			aria-label={clubName || t("Club location")}
+			aria-label={clubName || labels.clubLocation}
 		>
-			<title>{clubName || t("Club location")}</title>
+			<title>{clubName || labels.clubLocation}</title>
 			<path
 				d="M12 21C12 21 19 13.5 19 9C19 5.13401 15.866 2 12 2C8.13401 2 5 5.13401 5 9C5 13.5 12 21 12 21Z"
 				fill="#EF4444"
@@ -480,13 +488,13 @@ interface ClubsMapProps {
 function LocationMarker({
 	position,
 	logo,
-	t,
+	labels,
 }: {
 	position: [number, number];
 	logo?: string | null;
-	t: ReturnType<typeof useExtracted>;
+	labels: ClubIconLabels;
 }) {
-	return position ? <Marker position={position} icon={createClubIcon(logo, 32, "", false, t)} /> : null;
+	return position ? <Marker position={position} icon={createClubIcon(logo, 32, "", false, labels)} /> : null;
 }
 
 function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
@@ -553,6 +561,10 @@ export function ClubsMap({
 	const [clusteringEnabled, setClusteringEnabled] = useState(false); // Default to disabled
 	const [selectedClubForOverview, setSelectedClubForOverview] = useState<MapClub | null>(null);
 	const t = useExtracted();
+	const iconLabels: ClubIconLabels = {
+		clubLogo: t("Club logo"),
+		clubLocation: t("Club location"),
+	};
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
 
@@ -936,7 +948,7 @@ export function ClubsMap({
 				{interactive && <MapEventHandler onLocationSelect={onLocationSelect} />}
 
 				{interactive && selectedLocation && (
-					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} t={t} />
+					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} labels={iconLabels} />
 				)}
 
 				{!interactive &&
@@ -948,7 +960,13 @@ export function ClubsMap({
 							<AnimatedMarker
 								key={club.id}
 								position={position as [number, number]}
-								icon={createClubIcon(club.logo, logoSize, club.name, hoveredClubId === club.id, t)}
+								icon={createClubIcon(
+									club.logo,
+									logoSize,
+									club.name,
+									hoveredClubId === club.id,
+									iconLabels,
+								)}
 								zIndexOffset={hoveredClubId === club.id ? 1000 : 0}
 								eventHandlers={{
 									mouseover: () => setHoveredClubId(club.id),

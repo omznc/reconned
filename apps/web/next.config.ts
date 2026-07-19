@@ -50,8 +50,15 @@ const nextConfig = {
 		loaderFile: "./image-loader.ts",
 		qualities: [50, 75, 100],
 	},
-	// No transpilePackages: the only `backend` import in this app is a type-only
-	// import in src/lib/auth-client.ts, which is erased at compile time.
+	// `backend` is not listed: its only import in this app is a type-only import in
+	// src/lib/auth-client.ts, which is erased at compile time.
+	//
+	// postcss (a sanitize-html dependency used in client components) is on Next's default
+	// server-external list, so its SSR chunks `require()` it at runtime through an alias
+	// symlink turbopack writes lazily under .next. The first request can race that symlink
+	// and crash server rendering (breaks /events/[id]/apply in CI). Bundling it avoids the
+	// runtime resolution entirely.
+	transpilePackages: ["postcss"],
 	async redirects() {
 		return [
 			{

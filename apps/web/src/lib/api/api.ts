@@ -67,11 +67,27 @@ const apiServer = createClient<ApiPaths>({
 			}
 		}
 
-		return fetch(request, {
-			...init,
-			...nextOptions,
-			headers: requestHeaders,
-		});
+		try {
+			return await fetch(request, {
+				...init,
+				...nextOptions,
+				headers: requestHeaders,
+			});
+		} catch (error) {
+			// A connection-level failure (backend down, DNS, timeout) throws instead of
+			// returning `{ error }`, and an unhandled throw during prerendering aborts the
+			// whole `next build`. Surface it as a synthetic 503 so every call site's
+			// existing `{ error }` handling applies. Client aborts stay thrown — they are
+			// control flow, not backend failures.
+			if (error instanceof DOMException && error.name === "AbortError") {
+				throw error;
+			}
+			console.error(`Backend unreachable: ${request.method} ${request.url}`, error);
+			return new Response(JSON.stringify({ message: "Backend unreachable" }), {
+				status: 503,
+				headers: { "content-type": "application/json" },
+			});
+		}
 	}) as (input: Request) => Promise<Response>,
 });
 

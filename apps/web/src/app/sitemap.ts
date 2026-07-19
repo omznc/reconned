@@ -17,10 +17,11 @@ const baseUrl = env.NEXT_PUBLIC_WEB_URL;
 const logger = new Logger({ source: "sitemap" });
 
 /**
- * `apiServer` only returns `{ error }` for HTTP-level failures — a connection error (backend not
- * running, DNS failure) rejects instead. This route is prerendered at build time, so an
- * unreachable backend would otherwise fail the whole build. A sitemap must never be able to
- * break a deploy: on failure we log and fall back to the static routes below.
+ * `apiServer` turns connection-level failures (backend not running, DNS failure) into a
+ * synthetic 503 `{ error }`, so the error branch below is the normal path when the backend is
+ * unreachable. The catch stays as a belt-and-braces guard: this route is prerendered at build
+ * time, and a sitemap must never be able to break a deploy — on any failure we log and fall
+ * back to the static routes below.
  */
 async function fetchSitemapSection<T>(label: string, request: Promise<{ data?: T; error?: unknown }>) {
 	try {
