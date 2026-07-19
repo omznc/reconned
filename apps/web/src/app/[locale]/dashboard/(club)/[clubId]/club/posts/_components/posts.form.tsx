@@ -1,22 +1,30 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dynamic from "next/dynamic";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { Editor } from "@/components/editor/editor";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import { FileUpload, type FileUploadItem } from "@/components/ui/file-upload";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client.ts";
 import type { ApiResponse } from "@/lib/api/api-type-helpers.ts";
+
+// The Tiptap editor is a large bundle and is only needed once this form is opened,
+// so load it on demand instead of shipping it with the initial page chunk.
+const Editor = dynamic(() => import("@/components/editor/editor").then((mod) => mod.Editor), {
+	ssr: false,
+	loading: () => <Skeleton className="h-64 w-full rounded-md" />,
+});
 
 type ClubPost = ApiResponse<"/api/clubs/{id}/posts/{postId}", "get">;
 

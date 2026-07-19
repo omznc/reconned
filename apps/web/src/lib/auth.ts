@@ -1,25 +1,12 @@
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { cache } from "react";
 import { authClient } from "@/lib/auth-client";
 
-type SessionData = NonNullable<Awaited<ReturnType<typeof fetchSession>>>;
+const SESSION_COOKIE_NAMES = ["better-auth.session_token", "__Secure-better-auth.session_token"];
 
-const sessionCache = new Map<string, { data: SessionData; expiry: number }>();
-const CACHE_TTL = 5_000;
-const MAX_CACHE_SIZE = 200;
-let cacheWrites = 0;
-
-function cleanupCache() {
-	const now = Date.now();
-	for (const [key, value] of sessionCache) {
-		if (value.expiry <= now) {
-			sessionCache.delete(key);
-		}
-	}
-}
-
-function getSessionToken(cookie: string): string | null {
-	const match = cookie.match(/(?:__Secure-)?better-auth\.session_token=([^;]+)/);
-	return match?.[1] || null;
+async function hasSessionCookie(): Promise<boolean> {
+	const cookieStore = await cookies();
+	return SESSION_COOKIE_NAMES.some((name) => Boolean(cookieStore.get(name)?.value));
 }
 
 async function fetchSession(requestHeaders: Headers) {
@@ -40,53 +27,35 @@ async function fetchSession(requestHeaders: Headers) {
 	};
 }
 
-export const isAuthenticated = async () => {
-	const headersList = await headers();
-	const cookie = headersList.get("cookie") || "";
-	const sessionToken = getSessionToken(cookie);
-
-	if (sessionToken) {
-		const cached = sessionCache.get(sessionToken);
-		if (cached && cached.expiry > Date.now()) {
-			return cached.data;
-		}
-		sessionCache.delete(sessionToken);
-	}
-
-	if (!sessionToken) {
+/**
+ * Reads the current session.
+ *
+ * Deduplicated per-request via React `cache()` — the layout and the page both
+ * call this within a single render, and this collapses that to one backend call.
+ *
+ * Deliberately NOT cached across requests: a module-level cache would keep a
+ * revoked or banned user authenticated in SSR, and serving a *stale* session
+ * when the backend is unreachable is worse still. On failure we fail closed and
+ * report the request as unauthenticated.
+ */
+export const isAuthenticated = cache(async () => {
+	if (!(await hasSessionCookie())) {
 		return null;
 	}
 
-	for (let attempt = 0; attempt < 3; attempt++) {
+	const headersList = await headers();
+
+	try {
+		return await fetchSession(headersList);
+	} catch {
+		// One quick retry to absorb a single transient blip. The backend keeps a
+		// session cookie cache, so this is cheap — but we must not turn a degraded
+		// backend into seconds of added TTFB on every page.
 		try {
-			const data = await fetchSession(headersList);
-
-			if (data && sessionToken) {
-				cacheWrites++;
-				if (cacheWrites >= 100) {
-					cleanupCache();
-					cacheWrites = 0;
-				}
-				if (sessionCache.size < MAX_CACHE_SIZE) {
-					sessionCache.set(sessionToken, { data, expiry: Date.now() + CACHE_TTL });
-				}
-			}
-
-			return data;
+			return await fetchSession(headersList);
 		} catch {
-			if (attempt < 2) {
-				await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
-			}
+			// Fail closed. Never serve a stale session.
+			return null;
 		}
 	}
-
-	// All retries failed — return stale cache if available, null otherwise
-	if (sessionToken) {
-		const stale = sessionCache.get(sessionToken);
-		if (stale) {
-			return stale.data;
-		}
-	}
-
-	return null;
-};
+});

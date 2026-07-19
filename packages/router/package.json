@@ -1,0 +1,28 @@
+{
+	"name": "@reconned/router",
+	"version": "0.5.1",
+	"description": "Type-safe Bun HTTP router with Zod validation, middleware, and OpenAPI generation",
+	"private": true,
+	"type": "module",
+	"main": "./src/index.ts",
+	"module": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./middlewares": "./src/middlewares/index.ts",
+		"./openapi": "./src/openapi/index.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"test": "bun test",
+		"test:watch": "bun test --watch"
+	},
+	"dependencies": {
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@types/bun": "1.3.13",
+		"typescript": "6.0.3"
+	},
+	"license": "MIT"
+}

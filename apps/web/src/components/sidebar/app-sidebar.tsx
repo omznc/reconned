@@ -4,7 +4,7 @@ import type { User } from "better-auth";
 import { MailPlus, Search } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
-import { useEffect, useState } from "react";
+import { Suspense, use, useEffect, useState } from "react";
 import { useClubs } from "@/components/clubs-provider";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { ClubSwitcher } from "@/components/sidebar/club-switcher";
@@ -23,13 +23,21 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/navigation";
 
+type InviteRequestCount = {
+	id: string;
+	count: number;
+};
+
+/**
+ * The two counts arrive as promises rather than resolved values. They only drive badges and
+ * banners, so making the dashboard layout `await` them meant nothing on the page — sidebar, nav
+ * or `children` — could render until both round-trips came back. Passing them unresolved lets the
+ * shell paint immediately and each consumer stream in under its own Suspense boundary.
+ */
 interface AppSidebarProps {
 	user: User & { role?: string | null | undefined };
-	invitesCount: number;
-	inviteRequestsCount: {
-		id: string;
-		count: number;
-	}[];
+	invitesCountPromise: Promise<number>;
+	inviteRequestsCountPromise: Promise<InviteRequestCount[]>;
 }
 
 // Component properly using the useCommandMenu hook within the provider context
@@ -55,13 +63,89 @@ function SearchButton({ isMac }: { isMac: boolean }) {
 	);
 }
 
+/**
+ * Suspends on the invite count so `NavApp` can show its badge. The fallback renders the same nav
+ * with a zero badge rather than a skeleton — the nav items themselves don't depend on the count,
+ * so this streams the badge in without the list shifting or flashing.
+ */
+function NavAppWithInvites({
+	isAdmin,
+	invitesCountPromise,
+}: {
+	isAdmin: boolean;
+	invitesCountPromise: Promise<number>;
+}) {
+	const invitesCount = use(invitesCountPromise);
+	return <NavApp isAdmin={isAdmin} pendingInvites={invitesCount} />;
+}
+
+/** The footer notification banners. Both are conditional, so `null` is a faithful fallback. */
+function InviteBanners({
+	invitesCountPromise,
+	inviteRequestsCountPromise,
+	clubId,
+	open,
+}: {
+	invitesCountPromise: Promise<number>;
+	inviteRequestsCountPromise: Promise<InviteRequestCount[]>;
+	clubId?: string;
+	open: boolean;
+}) {
+	const t = useExtracted();
+	const invitesCount = use(invitesCountPromise);
+	const inviteRequestsCount = use(inviteRequestsCountPromise);
+
+	const invites = inviteRequestsCount.filter((invite) => invite.id === clubId)[0];
+
+	return (
+		<>
+			{invitesCount > 0 &&
+				(open ? (
+					<Link href="/dashboard/user/invites" className="px-3 py-2 border bg-red-500/10">
+						<p className="text-xs text-muted-foreground">
+							{t("You have {count} pending invitation/s", {
+								count: String(invitesCount),
+							})}
+						</p>
+					</Link>
+				) : (
+					<Link
+						href="/dashboard/user/invites"
+						className="px-1 py-2 border bg-red-500/10 flex flex-col items-center"
+					>
+						<MailPlus size={12} />
+					</Link>
+				))}
+			{(invites?.count || 0) > 0 &&
+				(open ? (
+					<Link
+						href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`}
+						className="px-3 py-2 border bg-red-500/10"
+					>
+						<p className="text-xs text-muted-foreground">
+							{t("Your club has {count} pending join request/s", {
+								count: String(invites?.count || "0"),
+							})}
+						</p>
+					</Link>
+				) : (
+					<Link
+						href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`}
+						className="px-1 py-2 border bg-red-500/10 flex flex-col items-center"
+					>
+						<MailPlus size={12} />
+					</Link>
+				))}
+		</>
+	);
+}
+
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
 	const params = useParams<{ clubId: string }>();
 	const { clubId, setClubId } = useCurrentClub();
 	const { clubs } = useClubs();
 	const path = usePathname();
-	const t = useExtracted();
 	const [isMac, setIsMac] = useState(false);
 
 	useEffect(() => {
@@ -81,7 +165,7 @@ export function AppSidebar(props: AppSidebarProps) {
 		}
 	}, [params.clubId, setClubId]);
 
-	const invites = props.inviteRequestsCount.filter((invite) => invite.id === clubId)[0];
+	const isAdmin = props.user.role === "admin";
 
 	return (
 		<Sidebar collapsible="icon" variant="inset">
@@ -90,47 +174,20 @@ export function AppSidebar(props: AppSidebarProps) {
 				<SearchButton isMac={isMac} />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavApp isAdmin={props.user.role === "admin"} pendingInvites={props.invitesCount} />
+				<Suspense fallback={<NavApp isAdmin={isAdmin} pendingInvites={0} />}>
+					<NavAppWithInvites isAdmin={isAdmin} invitesCountPromise={props.invitesCountPromise} />
+				</Suspense>
 				{clubId && <NavClub clubId={clubId} clubs={clubs} />}
 			</SidebarContent>
 			<SidebarFooter>
-				{props.invitesCount > 0 &&
-					(sidebar.open ? (
-						<Link href="/dashboard/user/invites" className="px-3 py-2 border bg-red-500/10">
-							<p className="text-xs text-muted-foreground">
-								{t("You have {count} pending invitation/s", {
-									count: String(props.invitesCount),
-								})}
-							</p>
-						</Link>
-					) : (
-						<Link
-							href="/dashboard/user/invites"
-							className="px-1 py-2 border bg-red-500/10 flex flex-col items-center"
-						>
-							<MailPlus size={12} />
-						</Link>
-					))}
-				{(invites?.count || 0) > 0 &&
-					(sidebar.open ? (
-						<Link
-							href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`}
-							className="px-3 py-2 border bg-red-500/10"
-						>
-							<p className="text-xs text-muted-foreground">
-								{t("Your club has {count} pending join request/s", {
-									count: String(invites?.count || "0"),
-								})}
-							</p>
-						</Link>
-					) : (
-						<Link
-							href={`/dashboard/${invites?.id}/members/invitations?status=REQUESTED`}
-							className="px-1 py-2 border bg-red-500/10 flex flex-col items-center"
-						>
-							<MailPlus size={12} />
-						</Link>
-					))}
+				<Suspense fallback={null}>
+					<InviteBanners
+						invitesCountPromise={props.invitesCountPromise}
+						inviteRequestsCountPromise={props.inviteRequestsCountPromise}
+						clubId={clubId}
+						open={sidebar.open}
+					/>
+				</Suspense>
 				<UserSwitcher user={props.user} />
 			</SidebarFooter>
 			<SidebarRail />

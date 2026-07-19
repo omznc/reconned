@@ -407,11 +407,34 @@ function getScalarHtml(): string {
 </html>`;
 }
 
+/**
+ * The spec is static after boot — routes and their Zod schemas never change at runtime — but
+ * generating it means walking ~200 routes through Zod→JSON-Schema plus a better-auth schema
+ * build. The endpoint is unauthenticated, so regenerating per request is a free CPU-DoS.
+ *
+ * Memoized per base URL (the URL is derived from the request host, so it is part of the output).
+ * We cache the in-flight promise rather than the result so a burst of concurrent first requests
+ * triggers exactly one generation. The cached object is serialized fresh each time, so the JSON
+ * emitted is byte-identical to before — the build/predev type generation is unaffected.
+ */
+const specCache = new Map<string, Promise<unknown>>();
+
 async function handleOpenAPISpec(request: Request, routers: Router[], corsOrigins: string[]): Promise<Response> {
 	const url = new URL(request.url);
 	const protocol = process.env.NODE_ENV === "production" ? "https:" : url.protocol;
 	const baseUrl = `${protocol}//${url.host}/api`;
-	const spec = await generateOpenAPISpec(baseUrl, routers);
+
+	let pending = specCache.get(baseUrl);
+	if (!pending) {
+		pending = generateOpenAPISpec(baseUrl, routers).catch((error) => {
+			// Never cache a failure — the next request should retry.
+			specCache.delete(baseUrl);
+			throw error;
+		});
+		specCache.set(baseUrl, pending);
+	}
+
+	const spec = await pending;
 	return addCORSHeaders(jsonResponse(spec), request, corsOrigins);
 }
 

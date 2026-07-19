@@ -10,6 +10,18 @@ type SendEmailParams = {
 
 export async function sendEmail({ to, subject, html }: SendEmailParams) {
 	const recipients = Array.isArray(to) ? to : [to];
+
+	// Test environments have no real OneSignal credentials; a thrown send error would fail the
+	// surrounding flow (e.g. sign-up awaits the verification email).
+	if (process.env.EMAIL_DISABLED === "true") {
+		logger.emit({
+			severityText: "info",
+			body: "Email sending disabled, skipping",
+			attributes: { recipient_count: recipients.length, subject },
+		});
+		return { MessageId: "email-disabled" };
+	}
+
 	const url = "https://onesignal.com/api/v1/notifications";
 
 	const startTime = Date.now();

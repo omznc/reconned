@@ -10,6 +10,7 @@ import {
 	reviewEditHistory,
 	user,
 } from "../drizzle/schema";
+import { rateLimitKey, redisRateLimitStore } from "../lib/cache";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
@@ -548,6 +549,11 @@ reviewsRouter.post(
 		rateLimit: {
 			windowMs: 60000,
 			maxRequests: 10,
+			// Redis-backed + real-client-IP keyed, same as the router default — the router's
+			// fallback store is a per-process Map keyed on x-forwarded-for alone, which lumps
+			// all SSR traffic into one shared bucket.
+			store: redisRateLimitStore,
+			keyGenerator: rateLimitKey,
 		},
 		schema: {
 			tags: ["Reviews"],

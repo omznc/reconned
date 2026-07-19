@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { EventsListing } from "@/app/[locale]/(public)/events/_components/events-listing";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
@@ -13,9 +13,9 @@ export const revalidate = 300;
 const ITEMS_PER_PAGE = 12;
 
 export default async function Page(props: PageProps<"/[locale]/events">) {
-	const locale = await getLocale();
+	const [{ locale }, searchParams] = await Promise.all([props.params, props.searchParams]);
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const searchParams = await props.searchParams;
 	const page = Number(searchParams.page) || 1;
 
 	const { data, error } = await apiServer.GET("/api/events", {
@@ -84,9 +84,10 @@ export default async function Page(props: PageProps<"/[locale]/events">) {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/events">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("Airsoft Events & Tournaments - Find & Join Games on RECONNED"),

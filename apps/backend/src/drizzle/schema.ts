@@ -78,14 +78,12 @@ export const club = pgTable(
 		headerImage: text(),
 	},
 	(table) => [
-		index("Club_id_slug_idx").using(
-			"btree",
-			table.id.asc().nullsLast().op("text_ops"),
-			table.slug.asc().nullsLast().op("text_ops"),
-		),
 		uniqueIndex("Club_slug_key").using("btree", table.slug.asc().nullsLast().op("text_ops")),
 		index("Club_isPrivate_idx").using("btree", table.isPrivate.asc().nullsLast()),
 		index("Club_verified_idx").using("btree", table.verified.asc().nullsLast()),
+		index("Club_countryId_idx").using("btree", table.countryId.asc().nullsLast().op("int4_ops")),
+		index("Club_name_trgm_idx").using("gin", table.name.op("gin_trgm_ops")),
+		index("Club_location_trgm_idx").using("gin", table.location.op("gin_trgm_ops")),
 		foreignKey({
 			columns: [table.countryId],
 			foreignColumns: [country.id],
@@ -175,8 +173,6 @@ export const twoFactor = pgTable(
 		userId: text().notNull(),
 	},
 	(table) => [
-		index("TwoFactor_secret_idx").using("btree", table.secret.asc().nullsLast().op("text_ops")),
-		index("TwoFactor_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 		uniqueIndex("TwoFactor_userId_key").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 		foreignKey({
 			columns: [table.userId],
@@ -202,6 +198,11 @@ export const clubPurchase = pgTable(
 	},
 	(table) => [
 		index("ClubPurchase_clubId_idx").using("btree", table.clubId.asc().nullsLast()),
+		index("ClubPurchase_clubId_createdAt_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -431,6 +432,11 @@ export const clubMembership = pgTable(
 			table.clubId.asc().nullsLast().op("text_ops"),
 			table.role.asc().nullsLast(),
 		),
+		index("ClubMembership_clubId_createdAt_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
 		foreignKey({
 			columns: [table.userId],
 			foreignColumns: [user.id],
@@ -464,10 +470,19 @@ export const clubInvite = pgTable(
 	(table) => [
 		index("ClubInvite_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
 		index("ClubInvite_email_idx").using("btree", table.email.asc().nullsLast().op("text_ops")),
-		index("ClubInvite_inviteCode_idx").using("btree", table.inviteCode.asc().nullsLast().op("text_ops")),
 		uniqueIndex("ClubInvite_inviteCode_key").using("btree", table.inviteCode.asc().nullsLast().op("text_ops")),
 		index("ClubInvite_status_idx").using("btree", table.status.asc().nullsLast().op("enum_ops")),
 		index("ClubInvite_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		index("ClubInvite_clubId_createdAt_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
+		index("ClubInvite_clubId_status_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.status.asc().nullsLast().op("enum_ops"),
+		),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -506,6 +521,11 @@ export const clubAuditLog = pgTable(
 			"btree",
 			table.clubId.asc().nullsLast().op("text_ops"),
 			table.actionType.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
+		index("ClubAuditLog_clubId_createdAt_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
 			table.createdAt.asc().nullsLast().op("timestamp_ops"),
 		),
 		foreignKey({
@@ -570,11 +590,6 @@ export const event = pgTable(
 		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
 	},
 	(table) => [
-		index("Event_id_slug_idx").using(
-			"btree",
-			table.id.asc().nullsLast().op("text_ops"),
-			table.slug.asc().nullsLast().op("text_ops"),
-		),
 		uniqueIndex("Event_slug_key").using("btree", table.slug.asc().nullsLast().op("text_ops")),
 		index("Event_clubId_idx").using("btree", table.clubId.asc().nullsLast().op("text_ops")),
 		index("Event_dateStart_idx").using("btree", table.dateStart.asc().nullsLast().op("timestamp_ops")),
@@ -589,6 +604,8 @@ export const event = pgTable(
 			table.clubId.asc().nullsLast().op("text_ops"),
 			table.isPrivate.asc().nullsLast(),
 		),
+		index("Event_name_trgm_idx").using("gin", table.name.op("gin_trgm_ops")),
+		index("Event_location_trgm_idx").using("gin", table.location.op("gin_trgm_ops")),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -651,6 +668,11 @@ export const eventInvite = pgTable(
 	},
 	(table) => [
 		uniqueIndex("EventInvite_token_key").using("btree", table.token.asc().nullsLast().op("text_ops")),
+		index("EventInvite_eventId_idx").using("btree", table.eventId.asc().nullsLast().op("text_ops")),
+		index("EventInvite_eventRegistrationId_idx").using(
+			"btree",
+			table.eventRegistrationId.asc().nullsLast().op("text_ops"),
+		),
 		foreignKey({
 			columns: [table.eventId],
 			foreignColumns: [event.id],
@@ -684,6 +706,7 @@ export const reviewEditHistory = pgTable(
 	},
 	(table) => [
 		index("ReviewEditHistory_reviewId_idx").using("btree", table.reviewId.asc().nullsLast().op("text_ops")),
+		index("ReviewEditHistory_editedBy_idx").using("btree", table.editedBy.asc().nullsLast().op("text_ops")),
 		foreignKey({
 			columns: [table.reviewId],
 			foreignColumns: [review.id],
@@ -735,6 +758,17 @@ export const review = pgTable(
 		index("Review_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 		index("Review_authorId_idx").using("btree", table.authorId.asc().nullsLast().op("text_ops")),
 		index("Review_createdAt_idx").using("btree", table.createdAt.asc().nullsLast().op("timestamp_ops")),
+		index("Review_eventId_idx").using("btree", table.eventId.asc().nullsLast().op("text_ops")),
+		index("Review_clubId_createdAt_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
+		index("Review_userId_createdAt_idx").using(
+			"btree",
+			table.userId.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
 		foreignKey({
 			columns: [table.authorId],
 			foreignColumns: [user.id],
@@ -785,6 +819,11 @@ export const post = pgTable(
 			table.clubId.asc().nullsLast().op("text_ops"),
 			table.isPublic.asc().nullsLast().op("bool_ops"),
 		),
+		index("Post_clubId_createdAt_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.createdAt.asc().nullsLast().op("timestamp_ops"),
+		),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -830,6 +869,7 @@ export const alliance = pgTable(
 		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
 	},
 	(table) => [
+		index("Alliance_countryId_idx").using("btree", table.countryId.asc().nullsLast().op("int4_ops")),
 		foreignKey({
 			columns: [table.countryId],
 			foreignColumns: [country.id],
@@ -849,6 +889,7 @@ export const clubAlliance = pgTable(
 		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	},
 	(table) => [
+		index("ClubAlliance_allianceId_idx").using("btree", table.allianceId.asc().nullsLast().op("int4_ops")),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],
@@ -905,15 +946,10 @@ export const user = pgTable(
 		headerImage: text(),
 	},
 	(table) => [
-		index("User_email_idx").using("btree", table.email.asc().nullsLast().op("text_ops")),
 		uniqueIndex("User_email_key").using("btree", table.email.asc().nullsLast().op("text_ops")),
-		index("User_id_slug_idx").using(
-			"btree",
-			table.id.asc().nullsLast().op("text_ops"),
-			table.slug.asc().nullsLast().op("text_ops"),
-		),
 		uniqueIndex("User_normalizedEmail_key").using("btree", table.normalizedEmail.asc().nullsLast().op("text_ops")),
 		uniqueIndex("User_slug_key").using("btree", table.slug.asc().nullsLast().op("text_ops")),
+		index("User_name_trgm_idx").using("gin", table.name.op("gin_trgm_ops")),
 	],
 );
 

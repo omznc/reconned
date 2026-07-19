@@ -1,8 +1,7 @@
 import { House } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getExtracted, getLocale } from "next-intl/server";
-import type { ReactNode } from "react";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { AnimationWrapper } from "@/app/[locale]/(auth)/_components/animation-wrapper";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
 import { Button } from "@/components/ui/button";
@@ -13,11 +12,9 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import background from "./background-blur.webp";
 import backgroundLight from "./background-blur-light.webp";
 
-export default async function RootLayout({
-	children,
-}: Readonly<{
-	children: ReactNode;
-}>) {
+export default async function RootLayout({ children, params }: LayoutProps<"/[locale]">) {
+	const { locale } = await params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
 
 	return (
@@ -56,9 +53,10 @@ export default async function RootLayout({
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
+	const { locale } = await params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("Sign In & Join RECONNED - Airsoft Community Platform"),

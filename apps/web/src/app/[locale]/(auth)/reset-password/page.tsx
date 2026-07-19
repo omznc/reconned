@@ -2,10 +2,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { AuthFormSkeleton } from "@/app/[locale]/(auth)/_components/auth-form-skeleton";
 import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +17,15 @@ import { Link, redirect, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { env } from "@/lib/env";
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
+	return (
+		<Suspense fallback={<AuthFormSkeleton />}>
+			<ResetPasswordPageContent />
+		</Suspense>
+	);
+}
+
+function ResetPasswordPageContent() {
 	const [token, _] = useQueryState("token");
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);

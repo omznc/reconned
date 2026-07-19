@@ -15,12 +15,12 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"jsx": "react-jsx",
-		"types": ["bun-types"],
+		"types": ["bun"],
 		"paths": {
 			"@/*": ["./src/*"],
 			"@lib/*": ["./src/lib/*"]
 		}
 	},
-	"include": ["src/**/*"],
+	"include": ["src/**/*", "tests/**/*"],
 	"exclude": ["node_modules"]
 }

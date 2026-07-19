@@ -1,5 +1,6 @@
-import { apiError, Router, responseSchema } from "@reconned/router";
-import { and, count, eq, getTableColumns, ilike, ne, or, sql } from "drizzle-orm";
+import { AppError, apiError, Router, responseSchema } from "@reconned/router";
+import { randomUUIDv7 } from "bun";
+import { and, count, eq, getTableColumns, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
@@ -10,9 +11,9 @@ import {
 	clubMembership,
 	event,
 	eventRegistration,
+	review,
 	user,
 } from "../drizzle/schema";
-import { logClubAudit } from "../lib/audit-logger";
 import { auth } from "../lib/auth";
 import { db } from "../lib/db";
 import { posthog } from "../lib/posthog";
@@ -93,6 +94,39 @@ const clubMembershipWithClubSchema = baseClubMembershipSchema.extend({
 				events: z.number(),
 				reviews: z.number(),
 			}),
+		})
+		.nullable(),
+});
+
+// Stats endpoint enriches each membership's club with its next upcoming event and latest review
+const statsClubMembershipSchema = clubMembershipWithClubSchema.extend({
+	club: baseClubSchema
+		.pick({
+			id: true,
+			name: true,
+			slug: true,
+			description: true,
+			logo: true,
+			location: true,
+			website: true,
+			isPrivate: true,
+			verified: true,
+			createdAt: true,
+		})
+		.extend({
+			_count: z.object({
+				members: z.number(),
+				events: z.number(),
+				reviews: z.number(),
+			}),
+			events: z.array(
+				z.object({
+					id: z.string(),
+					name: z.string(),
+					dateStart: z.string(),
+				}),
+			),
+			reviews: z.array(z.object({ content: z.string() })),
 		})
 		.nullable(),
 });
@@ -302,7 +336,9 @@ usersRouter.get(
 		cache: {
 			key: "user:{id}",
 			ttl: 300,
-			varyByUser: false,
+			// Body is personalized: email/phone are sanitized per requester and private users
+			// 404 for everyone except self/admin.
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Users"],
@@ -346,7 +382,10 @@ usersRouter.get(
 			.from(user)
 			.where(eq(user.id, userId))
 			.limit(1);
-		return response.json(profile[0] || null);
+		if (!profile[0]) {
+			throw apiError.notFound("User not found");
+		}
+		return response.json(profile[0]);
 	},
 	{
 		auth: true,
@@ -371,6 +410,7 @@ usersRouter.get(
 					style: true,
 				}),
 				401: z.object({ error: z.string() }),
+				404: z.object({ error: z.string() }),
 			},
 			mcpTool: { name: "get_profile", description: "Get the current user's profile information" },
 		},
@@ -566,6 +606,8 @@ usersRouter.get(
 			key: "users",
 			ttl: 300,
 			varyByQuery: ["page", "perPage", "search", "sort"],
+			// email/phone columns are masked per requesting user / admin flag.
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Users"],
@@ -706,7 +748,8 @@ usersRouter.get(
 		cache: {
 			key: "user:{id}:profile",
 			ttl: 300,
-			varyByUser: false,
+			// getSafeUserSelect masks email/phone based on the requesting user.
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Users"],
@@ -977,6 +1020,11 @@ usersRouter.get(
 			throw apiError.notFound("User not found");
 		}
 
+		// The route resolves the target by id OR slug, so every downstream query must use the
+		// resolved id. Previously the raw path param was interpolated, which made slug-based
+		// lookups miss entirely.
+		const targetUserId = targetUser[0].id;
+
 		// Single optimized query to get all user stats and club memberships with aggregated data
 		const userStats = await db
 			.select({
@@ -984,26 +1032,26 @@ usersRouter.get(
 				eventRegCount: sql<number>`(
 					SELECT COUNT(*)
 					FROM "EventRegistration" er
-					WHERE er."createdById" = ${userId}
+					WHERE er."createdById" = ${targetUserId}
 				)`,
 				membershipCount: sql<number>`(
 					SELECT COUNT(*)
 					FROM "ClubMembership" cm
-					WHERE cm."userId" = ${userId}
+					WHERE cm."userId" = ${targetUserId}
 				)`,
 				reviewsWrittenCount: sql<number>`(
 					SELECT COUNT(*)
 					FROM "Review" r
-					WHERE r."authorId" = ${userId}
+					WHERE r."authorId" = ${targetUserId}
 				)`,
 				reviewsReceivedCount: sql<number>`(
 					SELECT COUNT(*)
 					FROM "Review" r
-					WHERE r."userId" = ${userId}
+					WHERE r."userId" = ${targetUserId}
 				)`,
 			})
 			.from(user)
-			.where(eq(user.id, userId))
+			.where(eq(user.id, targetUserId))
 			.limit(1);
 
 		const stats = userStats[0];
@@ -1011,7 +1059,8 @@ usersRouter.get(
 			throw apiError.notFound("User not found");
 		}
 
-		// Single optimized query for club memberships with all club data and aggregates
+		// Membership + club rows. Aggregates are batched below rather than run as correlated
+		// per-row subqueries.
 		const membershipsWithClubs = await db
 			.select({
 				// Membership fields
@@ -1033,96 +1082,104 @@ usersRouter.get(
 				clubIsPrivate: club.isPrivate,
 				clubVerified: club.verified,
 				clubCreatedAt: club.createdAt,
-				// Aggregated counts using subqueries
-				memberCount: sql<number>`(
-					SELECT COUNT(*)
-					FROM "ClubMembership" cm
-					WHERE cm."clubId" = "ClubMembership"."clubId"
-				)`,
-				eventCount: sql<number>`(
-					SELECT COUNT(*)
-					FROM "Event" e
-					WHERE e."clubId" = "ClubMembership"."clubId"
-				)`,
-				reviewCount: sql<number>`(
-					SELECT COUNT(*)
-					FROM "Review" r
-					WHERE r."clubId" = "ClubMembership"."clubId" AND r."type" = 'CLUB'
-				)`,
-				// Upcoming event data
-				upcomingEventId: sql<string | null>`(
-					SELECT e."id"
-					FROM "Event" e
-					WHERE e."clubId" = "ClubMembership"."clubId" AND e."dateStart" >= NOW()
-					ORDER BY e."dateStart" ASC
-					LIMIT 1
-				)`,
-				upcomingEventName: sql<string | null>`(
-					SELECT e."name"
-					FROM "Event" e
-					WHERE e."clubId" = "ClubMembership"."clubId" AND e."dateStart" >= NOW()
-					ORDER BY e."dateStart" ASC
-					LIMIT 1
-				)`,
-				upcomingEventDateStart: sql<string | null>`(
-					SELECT e."dateStart"
-					FROM "Event" e
-					WHERE e."clubId" = "ClubMembership"."clubId" AND e."dateStart" >= NOW()
-					ORDER BY e."dateStart" ASC
-					LIMIT 1
-				)`,
-				// Latest review content
-				latestReviewContent: sql<string | null>`(
-					SELECT r."content"
-					FROM "Review" r
-					WHERE r."clubId" = "ClubMembership"."clubId" AND r."type" = 'CLUB'
-					ORDER BY r."createdAt" DESC
-					LIMIT 1
-				)`,
 			})
 			.from(clubMembership)
 			.innerJoin(club, eq(clubMembership.clubId, club.id))
-			.where(eq(clubMembership.userId, userId));
+			.where(eq(clubMembership.userId, targetUserId));
+
+		const membershipClubIds = membershipsWithClubs.map((m) => m.clubId);
+
+		// Batched aggregates: 5 queries total regardless of membership count (was 6 correlated
+		// subqueries evaluated per membership row).
+		const [memberCounts, eventCounts, reviewCounts, upcomingEvents, latestReviews] = membershipClubIds.length
+			? await Promise.all([
+					db
+						.select({ clubId: clubMembership.clubId, count: count() })
+						.from(clubMembership)
+						.where(inArray(clubMembership.clubId, membershipClubIds))
+						.groupBy(clubMembership.clubId),
+					db
+						.select({ clubId: event.clubId, count: count() })
+						.from(event)
+						.where(inArray(event.clubId, membershipClubIds))
+						.groupBy(event.clubId),
+					db
+						.select({ clubId: review.clubId, count: count() })
+						.from(review)
+						.where(and(inArray(review.clubId, membershipClubIds), eq(review.type, "CLUB")))
+						.groupBy(review.clubId),
+					db
+						.select({
+							id: event.id,
+							name: event.name,
+							dateStart: event.dateStart,
+							clubId: event.clubId,
+						})
+						.from(event)
+						.where(and(inArray(event.clubId, membershipClubIds), sql`${event.dateStart} >= NOW()`))
+						.orderBy(event.dateStart),
+					db
+						.select({ content: review.content, clubId: review.clubId })
+						.from(review)
+						.where(and(inArray(review.clubId, membershipClubIds), eq(review.type, "CLUB")))
+						.orderBy(sql`${review.createdAt} DESC`),
+				])
+			: [[], [], [], [], []];
+
+		const memberCountMap = new Map(memberCounts.map((r) => [r.clubId, Number(r.count)]));
+		const eventCountMap = new Map(eventCounts.map((r) => [r.clubId, Number(r.count)]));
+		const reviewCountMap = new Map(reviewCounts.map((r) => [r.clubId, Number(r.count)]));
+
+		// Queries are ordered, so the first row seen per club is the one the old LIMIT 1
+		// subqueries would have returned.
+		const upcomingEventMap = new Map<string, { id: string; name: string; dateStart: string }>();
+		for (const e of upcomingEvents) {
+			if (e.clubId && !upcomingEventMap.has(e.clubId)) {
+				upcomingEventMap.set(e.clubId, { id: e.id, name: e.name, dateStart: e.dateStart });
+			}
+		}
+		const latestReviewMap = new Map<string, string>();
+		for (const r of latestReviews) {
+			if (r.clubId && !latestReviewMap.has(r.clubId)) {
+				latestReviewMap.set(r.clubId, r.content);
+			}
+		}
 
 		// Transform flat results into nested structure
-		const formattedMemberships = membershipsWithClubs.map((m) => ({
-			id: m.id,
-			userId: m.userId,
-			clubId: m.clubId,
-			role: m.role,
-			startDate: m.startDate,
-			endDate: m.endDate,
-			createdAt: m.createdAt,
-			updatedAt: m.updatedAt,
-			club: {
-				id: m.clubId,
-				name: m.clubName,
-				slug: m.clubSlug,
-				description: m.clubDescription,
-				logo: m.clubLogo,
-				location: m.clubLocation,
-				website: m.clubWebsite,
-				isPrivate: m.clubIsPrivate,
-				verified: m.clubVerified,
-				createdAt: m.clubCreatedAt,
-				_count: {
-					members: Number(m.memberCount),
-					events: Number(m.eventCount),
-					reviews: Number(m.reviewCount),
+		const formattedMemberships = membershipsWithClubs.map((m) => {
+			const upcomingEvent = upcomingEventMap.get(m.clubId);
+			const latestReview = latestReviewMap.get(m.clubId);
+
+			return {
+				id: m.id,
+				userId: m.userId,
+				clubId: m.clubId,
+				role: m.role,
+				startDate: m.startDate,
+				endDate: m.endDate,
+				createdAt: m.createdAt,
+				updatedAt: m.updatedAt,
+				club: {
+					id: m.clubId,
+					name: m.clubName,
+					slug: m.clubSlug,
+					description: m.clubDescription,
+					logo: m.clubLogo,
+					location: m.clubLocation,
+					website: m.clubWebsite,
+					isPrivate: m.clubIsPrivate,
+					verified: m.clubVerified,
+					createdAt: m.clubCreatedAt,
+					_count: {
+						members: memberCountMap.get(m.clubId) || 0,
+						events: eventCountMap.get(m.clubId) || 0,
+						reviews: reviewCountMap.get(m.clubId) || 0,
+					},
+					events: upcomingEvent ? [upcomingEvent] : [],
+					reviews: latestReview ? [{ content: latestReview }] : [],
 				},
-				events:
-					m.upcomingEventId && m.upcomingEventName && m.upcomingEventDateStart
-						? [
-								{
-									id: m.upcomingEventId,
-									name: m.upcomingEventName,
-									dateStart: m.upcomingEventDateStart,
-								},
-							]
-						: [],
-				reviews: m.latestReviewContent ? [{ content: m.latestReviewContent }] : [],
-			},
-		}));
+			};
+		});
 
 		// Single optimized query for event registrations with event data
 		const registrationsWithEvents = await db
@@ -1143,7 +1200,7 @@ usersRouter.get(
 			})
 			.from(eventRegistration)
 			.leftJoin(event, eq(eventRegistration.eventId, event.id))
-			.where(eq(eventRegistration.createdById, userId))
+			.where(eq(eventRegistration.createdById, targetUserId))
 			.orderBy(eventRegistration.createdAt)
 			.limit(5);
 
@@ -1180,6 +1237,8 @@ usersRouter.get(
 		cache: {
 			key: "user:{id}:stats",
 			ttl: 300,
+			// Gated on isPrivateStats + self/admin, so the response differs per requester.
+			varyByUser: true,
 		},
 		schema: {
 			tags: ["Users"],
@@ -1195,7 +1254,7 @@ usersRouter.get(
 					clubMembership: z.number(),
 					reviewsWritten: z.number(),
 					reviewsReceived: z.number(),
-					clubMembershipDetails: z.array(clubMembershipWithClubSchema),
+					clubMembershipDetails: z.array(statsClubMembershipSchema),
 					eventRegistrationDetails: z.array(eventRegistrationWithEventSchema),
 				}),
 			},
@@ -1577,6 +1636,9 @@ usersRouter.post(
 			const result = await getS3UploadUrl(`user/${userId}/image`, body.type, body.size, userId);
 			return response.json(result);
 		} catch (error) {
+			if (error instanceof AppError) {
+				throw error;
+			}
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},
@@ -1622,6 +1684,9 @@ usersRouter.post(
 			const result = await getS3UploadUrl(`user/${userId}/header`, body.type, body.size, userId);
 			return response.json(result);
 		} catch (error) {
+			if (error instanceof AppError) {
+				throw error;
+			}
 			throw apiError.internal(error instanceof Error ? error.message : "Failed to generate upload URL");
 		}
 	},
@@ -1832,71 +1897,104 @@ usersRouter.post(
 			}
 		}
 
-		const ownedClubs = await db
-			.select({
-				clubId: clubMembership.clubId,
-			})
-			.from(clubMembership)
-			.where(and(eq(clubMembership.userId, userId), eq(clubMembership.role, "CLUB_OWNER")));
+		// Ownership transfer and account deletion must be atomic: a mid-loop failure previously
+		// left clubs without an owner while the user row survived (or vice versa).
+		await db.transaction(async (tx) => {
+			const ownedClubs = await tx
+				.select({
+					clubId: clubMembership.clubId,
+				})
+				.from(clubMembership)
+				.where(and(eq(clubMembership.userId, userId), eq(clubMembership.role, "CLUB_OWNER")));
 
-		for (const ownedClub of ownedClubs) {
-			const managers = await db
+			const ownedClubIds = ownedClubs.map((c) => c.clubId);
+
+			if (ownedClubIds.length === 0) {
+				await tx.delete(user).where(eq(user.id, userId));
+				return;
+			}
+
+			// One query for every candidate manager across all owned clubs (was one per club).
+			const managers = await tx
 				.select({
 					id: clubMembership.id,
+					clubId: clubMembership.clubId,
 					userId: clubMembership.userId,
 					startDate: clubMembership.startDate,
 				})
 				.from(clubMembership)
 				.where(
 					and(
-						eq(clubMembership.clubId, ownedClub.clubId),
+						inArray(clubMembership.clubId, ownedClubIds),
 						eq(clubMembership.role, "MANAGER"),
 						ne(clubMembership.userId, userId),
 					),
 				);
 
-			if (managers.length > 0) {
-				const oldestManager = managers.sort(
-					(a, b) => new Date(a.startDate || "").getTime() - new Date(b.startDate || "").getTime(),
-				)[0];
-				if (oldestManager) {
-					await db
-						.update(clubMembership)
-						.set({
-							role: "CLUB_OWNER",
-							updatedAt: new Date().toISOString(),
-						})
-						.where(eq(clubMembership.id, oldestManager.id));
+			const oldestManagerByClub = new Map<string, (typeof managers)[number]>();
+			for (const m of managers) {
+				const current = oldestManagerByClub.get(m.clubId);
+				if (!current || new Date(m.startDate || "").getTime() < new Date(current.startDate || "").getTime()) {
+					oldestManagerByClub.set(m.clubId, m);
+				}
+			}
 
-					await logClubAudit({
-						clubId: ownedClub.clubId,
+			const now = new Date().toISOString();
+			const auditEntries: Array<typeof clubAuditLog.$inferInsert> = [];
+			const promotedMembershipIds: string[] = [];
+			const abandonedClubIds: string[] = [];
+
+			for (const clubId of ownedClubIds) {
+				const oldestManager = oldestManagerByClub.get(clubId);
+				if (oldestManager) {
+					promotedMembershipIds.push(oldestManager.id);
+					auditEntries.push({
+						id: randomUUIDv7(),
+						clubId,
 						actionType: "CLUB_OWNER_TRANSFERRED",
 						actionData: {
 							fromUserId: userId,
 							toUserId: oldestManager.userId,
 							reason: "User account deletion",
 						},
-						userId: userId,
+						userId,
+						createdAt: now,
+					});
+				} else {
+					abandonedClubIds.push(clubId);
+					auditEntries.push({
+						id: randomUUIDv7(),
+						clubId,
+						actionType: "CLUB_OWNER_REMOVED",
+						actionData: {
+							userId,
+							reason: "User account deletion - no managers available",
+						},
+						userId,
+						createdAt: now,
 					});
 				}
-			} else {
-				await db
-					.delete(clubMembership)
-					.where(and(eq(clubMembership.clubId, ownedClub.clubId), eq(clubMembership.userId, userId)));
-
-				await logClubAudit({
-					clubId: ownedClub.clubId,
-					actionType: "CLUB_OWNER_REMOVED",
-					actionData: {
-						userId: userId,
-						reason: "User account deletion - no managers available",
-					},
-					userId: userId,
-				});
 			}
-		}
 
-		await db.delete(user).where(eq(user.id, userId));
+			if (promotedMembershipIds.length > 0) {
+				await tx
+					.update(clubMembership)
+					.set({ role: "CLUB_OWNER", updatedAt: now })
+					.where(inArray(clubMembership.id, promotedMembershipIds));
+			}
+
+			if (abandonedClubIds.length > 0) {
+				await tx
+					.delete(clubMembership)
+					.where(and(inArray(clubMembership.clubId, abandonedClubIds), eq(clubMembership.userId, userId)));
+			}
+
+			if (auditEntries.length > 0) {
+				await tx.insert(clubAuditLog).values(auditEntries);
+			}
+
+			await tx.delete(user).where(eq(user.id, userId));
+		});
 
 		posthog.capture({
 			distinctId: userId,

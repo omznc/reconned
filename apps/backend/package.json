@@ -8,7 +8,7 @@
 		"@opentelemetry/resources": "^2.7.1",
 		"@opentelemetry/sdk-logs": "^0.218.0",
 		"@react-email/components": "^1.0.12",
-		"@reconned/router": "^0.5.1",
+		"@reconned/router": "workspace:*",
 		"@scalar/api-reference": "^1.59.2",
 		"@t3-oss/env-core": "^0.13.11",
 		"better-auth": "1.6.16",
@@ -43,6 +43,7 @@
 		"dev": "bun run --hot src/index.ts",
 		"start": "bun run dist/index.js",
 		"task": "bun run src/tasks/run-task.ts",
+		"test": "bun test tests/",
 		"task:list": "bun run src/tasks/run-task.ts --list",
 		"typecheck": "bunx tsc --noEmit"
 	},

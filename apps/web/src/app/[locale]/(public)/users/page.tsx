@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { UsersListing } from "@/app/[locale]/(public)/users/_components/users-listing";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
@@ -13,7 +13,8 @@ const ITEMS_PER_PAGE = 12;
 export const revalidate = 300;
 
 export default async function Page(props: PageProps<"/[locale]/users">) {
-	const [searchParams, locale] = await Promise.all([props.searchParams, getLocale()]);
+	const [searchParams, { locale }] = await Promise.all([props.searchParams, props.params]);
+	setRequestLocale(locale);
 	const t = await getExtracted();
 	const page = Number(searchParams.page) || 1;
 
@@ -69,9 +70,10 @@ export default async function Page(props: PageProps<"/[locale]/users">) {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/users">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("Airsoft Players Directory - Find & Connect with Players on RECONNED"),

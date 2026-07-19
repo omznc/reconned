@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
 import { ClubsMapWrapper } from "@/components/clubs-map/clubs-map-wrapper";
 import { ErrorPage } from "@/components/error-page";
@@ -10,7 +10,10 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export const revalidate = 300;
 
-export default async function MapPage() {
+export default async function MapPage(props: PageProps<"/[locale]/map">) {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
+
 	const { data, error } = await apiServer.GET("/api/public/clubs/map", {
 		next: { revalidate: 300 },
 	});
@@ -83,9 +86,10 @@ export default async function MapPage() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/map">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("Airsoft Clubs Map - Find Locations Near You on RECONNED"),

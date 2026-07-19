@@ -23,9 +23,13 @@ async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 5):
 			return await operation();
 		} catch (error) {
 			const isLastAttempt = attempt === maxRetries - 1;
+			// "Idle timeout reached" is the client tearing down a connection it considers stale.
+			// It is recoverable the same way as an outright close — drop the instance and reconnect.
 			const isConnectionError =
 				error instanceof Error &&
-				(error.message.includes("CONNECTION_CLOSED") || error.message.includes("Connection has failed"));
+				(error.message.includes("CONNECTION_CLOSED") ||
+					error.message.includes("Connection has failed") ||
+					error.message.includes("Idle timeout"));
 
 			if (isLastAttempt || !isConnectionError) {
 				throw error;
@@ -54,17 +58,34 @@ export async function checkRedisHealth(): Promise<boolean> {
 	}
 }
 
+// One wrapper per method name, created lazily — not one per call.
+const wrapperCache = new Map<PropertyKey, (...args: unknown[]) => Promise<unknown>>();
+
 export const redis = new Proxy({} as RedisClient, {
 	get(_target, prop) {
-		return (...args: unknown[]) => {
-			const client = getRedis();
-			const method = client[prop as keyof RedisClient];
+		const cached = wrapperCache.get(prop);
+		if (cached) {
+			return cached;
+		}
 
-			if (typeof method === "function") {
-				return executeWithRetry(() => (method as (...args: unknown[]) => Promise<unknown>).apply(client, args));
-			}
+		const value = getRedis()[prop as keyof RedisClient];
 
-			return method;
-		};
+		// Non-function properties (e.g. `connected`) must pass through as values, not be
+		// wrapped into a function that never gets called.
+		if (typeof value !== "function") {
+			return value;
+		}
+
+		const wrapper = (...args: unknown[]) =>
+			executeWithRetry(() => {
+				// Re-resolve the client on every attempt: a retry clears `redisInstance`, so a
+				// captured reference would keep calling the dead connection.
+				const client = getRedis();
+				const method = client[prop as keyof RedisClient] as (...args: unknown[]) => Promise<unknown>;
+				return method.apply(client, args);
+			});
+
+		wrapperCache.set(prop, wrapper);
+		return wrapper;
 	},
 });

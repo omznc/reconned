@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { featureFlag } from "../drizzle/schema";
+import { deleteKeysByPattern } from "./cache";
 import { db } from "./db";
 import { logger } from "./posthog";
 import { redis } from "./redis";
@@ -70,10 +71,7 @@ export async function clearFeatureFlagsCache(flagName?: string): Promise<void> {
 		if (flagName) {
 			await redis.del(`${CACHE_KEY_PREFIX}${flagName}`);
 		} else {
-			const keys = await redis.keys(`${CACHE_KEY_PREFIX}*`);
-			if (keys.length > 0) {
-				await redis.del(...keys);
-			}
+			await deleteKeysByPattern(`${CACHE_KEY_PREFIX}*`);
 		}
 	} catch (error) {
 		logger.emit({

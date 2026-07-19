@@ -1,5 +1,5 @@
 import { ArrowUpRightIcon, Calendar, LayoutDashboard, MapIcon, Search, ShieldQuestion, StarIcon } from "lucide-react";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { BadgeSoon } from "@/components/badge-soon";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
@@ -8,9 +8,7 @@ import { env } from "@/lib/env";
 
 const CURRENT_COMMIT = env.NEXT_PUBLIC_SOURCE_COMMIT;
 
-async function FooterVersion() {
-	const locale = await getLocale();
-
+async function FooterVersion({ locale }: { locale: string }) {
 	const commitDateResponse = await fetch(`https://api.github.com/repos/omznc/reconned/commits/${CURRENT_COMMIT}`, {
 		cache: "force-cache",
 		next: {
@@ -41,7 +39,12 @@ async function FooterVersion() {
 	);
 }
 
-export async function Footer() {
+// The locale arrives as a prop rather than via `getLocale()`. This component renders inside a
+// layout that has no `params` of its own, and without `setRequestLocale()` first, every
+// next-intl server API resolves the locale from a request header — which reads `headers()` and
+// opts the entire public route subtree out of static rendering.
+export async function Footer({ locale }: { locale: string }) {
+	setRequestLocale(locale);
 	const t = await getExtracted();
 
 	return (
@@ -187,7 +190,7 @@ export async function Footer() {
 						{t("Check out our sponsors and partners")}
 					</Link>
 					<Suspense fallback={null}>
-						<FooterVersion />
+						<FooterVersion locale={locale} />
 					</Suspense>
 				</div>
 			</div>

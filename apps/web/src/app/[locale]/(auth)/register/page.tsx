@@ -3,10 +3,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import posthog from "posthog-js";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { AuthFormSkeleton } from "@/app/[locale]/(auth)/_components/auth-form-skeleton";
 import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
 import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
@@ -20,6 +21,14 @@ import { authClient } from "@/lib/auth-client";
 import { env } from "@/lib/env";
 
 export default function RegisterPage() {
+	return (
+		<Suspense fallback={<AuthFormSkeleton />}>
+			<RegisterPageContent />
+		</Suspense>
+	);
+}
+
+function RegisterPageContent() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();

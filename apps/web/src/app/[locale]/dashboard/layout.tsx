@@ -31,7 +31,28 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		return redirect({ href: "/login?redirectTo=/dashboard", locale });
 	}
 
-	const { data: clubsData, error: clubsError } = await apiServer.GET("/api/dashboard/clubs");
+	// All three are independent, so they are started together. Only the clubs response is awaited
+	// here: it gates the error page and feeds every provider below it. The two counts are handed to
+	// the sidebar as promises and awaited inside its Suspense boundaries, so a slow count endpoint
+	// no longer delays the sidebar, the breadcrumbs or `children`.
+	const clubsRequest = apiServer.GET("/api/dashboard/clubs");
+	const invitesCountRequest = apiServer.GET("/api/users/invites/count");
+	const inviteRequestsRequest = apiServer.GET("/api/dashboard/invite-requests-count");
+
+	// Both counts degrade to "nothing to show" on failure, matching the previous behaviour — these
+	// are badges, and an unreachable count endpoint should never take the dashboard down. The
+	// `.catch` also stops a rejection from surfacing as an unhandled promise rejection.
+	const invitesCountPromise = invitesCountRequest
+		.then(({ data, error }) => (error || !data ? 0 : data.count || 0))
+		.catch(() => 0);
+
+	const inviteRequestsCountPromise = inviteRequestsRequest
+		.then(({ data, error }) =>
+			error || !data ? [] : data.clubs.map((item) => ({ id: item.id, count: item.count })),
+		)
+		.catch(() => []);
+
+	const { data: clubsData, error: clubsError } = await clubsRequest;
 
 	if (clubsError || !clubsData) {
 		return <ErrorPage title={t("An error occurred")} />;
@@ -53,21 +74,6 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 		events: club.events,
 	}));
 
-	const { data: invitesCountData, error: invitesCountError } = await apiServer.GET("/api/users/invites/count");
-	const invitesCountForUser = invitesCountError || !invitesCountData ? 0 : invitesCountData.count || 0;
-
-	const { data: inviteRequestsData, error: inviteRequestsError } = await apiServer.GET(
-		"/api/dashboard/invite-requests-count",
-	);
-
-	const inviteRequestsCountByClub =
-		inviteRequestsError || !inviteRequestsData
-			? []
-			: inviteRequestsData.clubs.map((item) => ({
-					id: item.id,
-					count: item.count,
-				}));
-
 	return (
 		<SidebarProvider defaultOpen={true}>
 			<ClubsProvider initialClubs={clubsData.clubs}>
@@ -75,8 +81,8 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
 					<CommandMenuProvider>
 						<AppSidebar
 							user={user}
-							invitesCount={invitesCountForUser}
-							inviteRequestsCount={inviteRequestsCountByClub}
+							invitesCountPromise={invitesCountPromise}
+							inviteRequestsCountPromise={inviteRequestsCountPromise}
 						/>
 						<CommandMenu user={user} />
 						<SidebarInset className="relative flex flex-col items-center p-4">

@@ -16,24 +16,36 @@ const baseUrl = env.NEXT_PUBLIC_WEB_URL;
 
 const logger = new Logger({ source: "sitemap" });
 
+/**
+ * `apiServer` turns connection-level failures (backend not running, DNS failure) into a
+ * synthetic 503 `{ error }`, so the error branch below is the normal path when the backend is
+ * unreachable. The catch stays as a belt-and-braces guard: this route is prerendered at build
+ * time, and a sitemap must never be able to break a deploy — on any failure we log and fall
+ * back to the static routes below.
+ */
+async function fetchSitemapSection<T>(label: string, request: Promise<{ data?: T; error?: unknown }>) {
+	try {
+		const response = await request;
+		if (response.error) {
+			logger.error("Error fetching sitemap data", { section: label, error: response.error });
+		}
+		return response.data;
+	} catch (error) {
+		logger.error("Could not reach the API for sitemap data", { section: label, error });
+		return undefined;
+	}
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const [clubsResponse, eventsResponse, usersResponse] = await Promise.all([
-		apiServer.GET("/api/public/sitemap/clubs", { next: { revalidate: 86400 } }),
-		apiServer.GET("/api/public/sitemap/events", { next: { revalidate: 86400 } }),
-		apiServer.GET("/api/public/sitemap/users", { next: { revalidate: 86400 } }),
+	const [clubsData, eventsData, usersData] = await Promise.all([
+		fetchSitemapSection("clubs", apiServer.GET("/api/public/sitemap/clubs", { next: { revalidate: 86400 } })),
+		fetchSitemapSection("events", apiServer.GET("/api/public/sitemap/events", { next: { revalidate: 86400 } })),
+		fetchSitemapSection("users", apiServer.GET("/api/public/sitemap/users", { next: { revalidate: 86400 } })),
 	]);
 
-	const clubs = clubsResponse?.data?.clubs || [];
-	const events = eventsResponse?.data?.events || [];
-	const users = usersResponse?.data?.users || [];
-
-	if (clubsResponse.error || eventsResponse.error || usersResponse.error) {
-		logger.error("Error fetching sitemap data", {
-			clubsResponse,
-			eventsResponse,
-			usersResponse,
-		});
-	}
+	const clubs = clubsData?.clubs || [];
+	const events = eventsData?.events || [];
+	const users = usersData?.users || [];
 
 	// Static routes with their properties
 	const staticRoutes: MetadataRoute.Sitemap = [

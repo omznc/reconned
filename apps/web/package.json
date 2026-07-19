@@ -104,7 +104,7 @@
 		"lighthouse": "bunx unlighthouse --site https://reconned.com --sitemaps https://reconned.com/sitemap.xml",
 		"predev": "bun run api:generate-types",
 		"start": "next start",
-		"typecheck": "bunx tsc --noEmit"
+		"typecheck": "bunx next typegen && bunx tsc --noEmit"
 	},
 	"version": "0.6.0"
 }

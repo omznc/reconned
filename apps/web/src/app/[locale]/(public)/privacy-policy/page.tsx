@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
@@ -10,9 +10,10 @@ const lastUpdated = new Date("2025-12-21");
 
 export const revalidate = 86_400; // 1 day
 
-export default async function PrivacyPolicyPage() {
+export default async function PrivacyPolicyPage(props: PageProps<"/[locale]/privacy-policy">) {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	const privacyPageSchema: WithContext<WebPage> = {
 		"@context": "https://schema.org",
@@ -306,9 +307,10 @@ export default async function PrivacyPolicyPage() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/privacy-policy">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("Privacy Policy - How RECONNED Protects Your Data"),

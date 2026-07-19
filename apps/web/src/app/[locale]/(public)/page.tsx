@@ -30,7 +30,7 @@ import {
 	Zap,
 } from "lucide-react";
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { HomeCommunityStats } from "@/app/[locale]/(public)/_components/home-community-stats";
 import { MessageHandler } from "@/app/[locale]/(public)/_components/message-handler";
 
@@ -50,6 +50,9 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 export const revalidate = 3600; // 1 hour
 
 export default async function Home(props: PageProps<"/[locale]">) {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
+
 	const [searchParams, user] = await Promise.all([props.searchParams, isAuthenticated()]);
 	const { month } = searchParams;
 
@@ -866,9 +869,10 @@ export default async function Home(props: PageProps<"/[locale]">) {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("RECONNED - Airsoft clubs, events, and players"),

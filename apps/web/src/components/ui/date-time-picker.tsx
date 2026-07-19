@@ -1,10 +1,9 @@
 import { buttonVariants } from '@/components/ui/button';
-import type { CalendarProps } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { add, format } from 'date-fns';
-import { type Locale, bs, enUS, hr } from 'date-fns/locale';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { type Locale, enUS } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Clock } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
@@ -17,6 +16,13 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { DayPicker } from 'react-day-picker';
+
+/**
+ * Previously re-exported from a shadcn `ui/calendar` wrapper. That wrapper was never rendered
+ * anywhere and still carried react-day-picker v8 `classNames` keys that v10 silently ignores, so
+ * it was deleted; this file was its only consumer and only ever needed the prop types.
+ */
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 // ---------- utils start ----------
 /**

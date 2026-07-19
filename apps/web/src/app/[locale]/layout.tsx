@@ -3,17 +3,17 @@ import "./globals.css";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import { AxiomWebVitals } from "next-axiom";
-import { hasLocale } from "next-intl";
-import { getExtracted } from "next-intl/server";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getExtracted, getMessages, setRequestLocale } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
 import { ErrorPage } from "@/components/error-page";
 import { FeatureFlagsWrapper } from "@/components/feature-flags-wrapper";
 import { FontBody } from "@/components/font-body";
-import { ImpersonationAlert } from "@/components/impersonation-alert";
 import JsonLdScript from "@/components/json-ld-script";
 import { FontProvider } from "@/components/personalization/font/font-provider";
+import { SessionPersonalization } from "@/components/personalization/session-personalization";
 import { StyleProvider } from "@/components/personalization/style/style-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import PosthogIdentify from "@/components/posthog-identify";
@@ -21,7 +21,6 @@ import { Providers } from "@/components/providers";
 import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routing } from "@/i18n/routing";
-import { isAuthenticated } from "@/lib/auth";
 import { env } from "@/lib/env";
 
 const geistSans = Geist({
@@ -35,18 +34,32 @@ const geistMono = Geist_Mono({
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const session = await isAuthenticated();
-	const t = await getExtracted();
-
 	const { locale } = await params;
 
 	if (!hasLocale(routing.locales, locale)) {
-		return <ErrorPage title={t("Page not found")} />;
+		const tFallback = await getExtracted();
+		return <ErrorPage title={tFallback("Page not found")} />;
 	}
 
-	const font = (session?.font as "sans" | "mono" | null | undefined) || "mono";
-	const style = (session?.style as "sharp" | "relaxed" | null | undefined) || "relaxed";
-	const theme = (session?.theme as "dark" | "light" | null | undefined) || "dark";
+	// Required for static rendering. Without it every next-intl server API falls
+	// back to reading the locale from a request header, which reads `headers()`
+	// and opts the whole route out of static generation.
+	setRequestLocale(locale);
+
+	// NOTE: `await getExtracted()` must stay in this exact `const x = await ...`
+	// form. The next-intl SWC extractor only rewrites that pattern into
+	// `getTranslations`; wrapping the call in `Promise.all(...)` leaves a bare
+	// `getExtracted` reference in the output and throws at render time.
+	const t = await getExtracted();
+	const messages = await getMessages();
+
+	// Built-in defaults only. The signed-in user's stored preferences are applied
+	// client-side by `<SessionPersonalization />` below — reading the session here
+	// meant an HTTP round-trip to the backend on every render (including anonymous
+	// traffic) and forced the whole route tree to render dynamically.
+	const font = "mono" as const;
+	const style = "relaxed" as const;
+	const theme = "dark" as const;
 
 	const websiteSchema = {
 		"@context": "https://schema.org",
@@ -98,42 +111,49 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 			</head>
 			<PosthogIdentify />
 			<AxiomWebVitals />
-			<FontProvider initial={font}>
-				<StyleProvider initial={style}>
-					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
-						<ThemeProvider
-							attribute="class"
-							defaultTheme={theme}
-							enableSystem={false}
-							disableTransitionOnChange
-						>
-							<Toaster
-								richColors
-								toastOptions={{
-									classNames: {
-										toast: "rounded-none",
-									},
-								}}
-							/>
-							<NuqsAdapter>
-								<Providers>
-									<TooltipProvider>
-										<FeatureFlagsWrapper>
-											{session?.session?.impersonatedBy && <ImpersonationAlert />}
-											<AlertDialogProvider>{children}</AlertDialogProvider>
-										</FeatureFlagsWrapper>
-									</TooltipProvider>
-								</Providers>
-							</NuqsAdapter>
-						</ThemeProvider>
-					</FontBody>
-				</StyleProvider>
-			</FontProvider>
+			<NextIntlClientProvider locale={locale} messages={messages}>
+				<FontProvider initial={font}>
+					<StyleProvider initial={style}>
+						<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
+							<ThemeProvider
+								attribute="class"
+								defaultTheme={theme}
+								enableSystem={false}
+								disableTransitionOnChange
+							>
+								<Toaster
+									richColors
+									toastOptions={{
+										classNames: {
+											toast: "rounded-none",
+										},
+									}}
+								/>
+								<NuqsAdapter>
+									<Providers>
+										<TooltipProvider>
+											<FeatureFlagsWrapper>
+												<SessionPersonalization />
+												<AlertDialogProvider>{children}</AlertDialogProvider>
+											</FeatureFlagsWrapper>
+										</TooltipProvider>
+									</Providers>
+								</NuqsAdapter>
+							</ThemeProvider>
+						</FontBody>
+					</StyleProvider>
+				</FontProvider>
+			</NextIntlClientProvider>
 		</html>
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
+	const { locale } = await params;
+	if (hasLocale(routing.locales, locale)) {
+		setRequestLocale(locale);
+	}
+
 	const t = await getExtracted();
 	return {
 		title: t("RECONNED - Airsoft clubs, events, and players"),

@@ -1,8 +1,8 @@
 "use client";
-import type { User } from "better-auth";
 import { Building2, Calendar, Home, LogOut, MapIcon, Menu, Search, Users, X } from "lucide-react";
 import { useExtracted } from "next-intl";
 import posthog from "posthog-js";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/logos/logo";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
@@ -19,8 +19,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 function isNavActive(pathname: string, href: string) {
@@ -33,7 +34,15 @@ function isNavActive(pathname: string, href: string) {
 	return pathname.startsWith(`${href}/`);
 }
 
-export function Header({ user }: { user: User | null }) {
+export function Header() {
+	// Read the session on the client so the public layout above us stays statically renderable.
+	// A server-side session read there would opt every public/SEO route out of static rendering.
+	const { user } = useIsAuthenticated();
+	// The session store can resolve before React hydrates, so the client's first render would
+	// disagree with the server-rendered logged-out markup. Render a placeholder until mounted
+	// so both sides agree, then swap in the real auth UI.
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
 	const t = useExtracted();
 	const router = useRouter();
 	const pathname = usePathname();
@@ -145,7 +154,9 @@ export function Header({ user }: { user: User | null }) {
 						suppressHydrationWarning={true}
 					>
 						<LanguageSwitcher />
-						{user ? (
+						{!mounted ? (
+							<Skeleton className="h-9 w-24 shrink-0 sm:h-10" />
+						) : user ? (
 							<>
 								<Button asChild={true} size="sm" className="max-sm:px-2.5 max-sm:text-xs">
 									<Link href="/dashboard">{t("Dashboard")}</Link>
@@ -184,7 +195,6 @@ export function Header({ user }: { user: User | null }) {
 														},
 													});
 												}}
-												suppressHydrationWarning
 												className="w-full cursor-pointer items-center justify-start"
 											>
 												<LogOut className="h-4 w-4" />
@@ -195,10 +205,8 @@ export function Header({ user }: { user: User | null }) {
 								</DropdownMenu>
 							</>
 						) : (
-							<Button asChild={true} size="sm" suppressHydrationWarning={true}>
-								<Link suppressHydrationWarning={true} href="/login">
-									{t("Login")}
-								</Link>
+							<Button asChild={true} size="sm">
+								<Link href="/login">{t("Login")}</Link>
 							</Button>
 						)}
 					</div>

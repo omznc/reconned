@@ -9,6 +9,7 @@ import { and, eq, gt } from "drizzle-orm";
 import { clubInvite, clubMembership } from "../drizzle/schema";
 import EmailVerification from "../emails/email-verification";
 import PasswordReset from "../emails/password-reset";
+import { userAdditionalFields } from "./auth-fields";
 import { db } from "./db";
 import { getEmailMessages } from "./email-messages";
 import { env } from "./env";
@@ -41,6 +42,13 @@ export const auth = betterAuth({
 	session: {
 		freshAge: 0,
 		storeSessionInDatabase: true,
+		// Signed session snapshot in the cookie, so a normal request validates locally instead of
+		// paying a Redis round-trip. Tradeoff: a revoked/banned session, or a role change, stays
+		// live for up to `maxAge` seconds — keep this short.
+		cookieCache: {
+			enabled: true,
+			maxAge: 60,
+		},
 	},
 	secondaryStorage: {
 		get: async (key) => {
@@ -218,36 +226,7 @@ export const auth = betterAuth({
 		}),
 	],
 	user: {
-		additionalFields: {
-			callsign: {
-				type: "string",
-				default: "",
-				input: true,
-				required: false,
-			},
-			language: {
-				type: "string",
-				default: "bs",
-				input: true,
-				required: false,
-			},
-			font: {
-				type: "string",
-				default: "sans",
-				input: true,
-				required: false,
-			},
-			theme: {
-				type: "string",
-				required: false,
-			},
-			style: {
-				type: "string",
-				default: "relaxed",
-				input: true,
-				required: false,
-			},
-		},
+		additionalFields: userAdditionalFields,
 	},
 	databaseHooks: {
 		user: {

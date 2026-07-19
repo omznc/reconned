@@ -1,6 +1,6 @@
 import { Button } from "@components/ui/button";
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { ContactPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
@@ -9,9 +9,10 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
 export const revalidate = 86_400; // 1 day
 
-export default async function Page() {
+export default async function Page(props: PageProps<"/[locale]/support-us">) {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	const supportPageSchema: WithContext<ContactPage> = {
 		"@context": "https://schema.org",
@@ -51,9 +52,10 @@ export default async function Page() {
 	);
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[locale]/support-us">): Promise<Metadata> {
+	const { locale } = await props.params;
+	setRequestLocale(locale);
 	const t = await getExtracted();
-	const locale = await getLocale();
 
 	return {
 		title: t("Support RECONNED - Help Build the Airsoft Community"),

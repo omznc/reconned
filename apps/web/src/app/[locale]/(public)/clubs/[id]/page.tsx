@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getExtracted, getLocale } from "next-intl/server";
+import { getExtracted, setRequestLocale } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
 import { ClubOverview } from "@/components/overviews/club-overview";
@@ -22,8 +22,10 @@ import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } f
 export const revalidate = 3600;
 
 export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
-	const params = await props.params;
-	const user = await isAuthenticated();
+	const [params, user] = await Promise.all([props.params, isAuthenticated()]);
+	setRequestLocale(params.locale);
+	// `await getExtracted()` must stay in this exact `const x = await ...` form — the next-intl SWC
+	// plugin only rewrites that shape, and leaves a bare `getExtracted` identifier anywhere else.
 	const t = await getExtracted();
 
 	const { data: clubData, error: clubError } = await apiServer.GET("/api/clubs/{id}", {
@@ -39,6 +41,8 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		return <ErrorPage title={t("Club not found.")} />;
 	}
 
+	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
+
 	const [
 		{ data: membershipData },
 		{ data: hasOwnerData },
@@ -47,6 +51,9 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		alliancesData,
 		instagramMediaData,
 		invitesData,
+		reviewsEnabled,
+		reviewsResponse,
+		isFaqEnabled,
 	] = await Promise.all([
 		user
 			? apiServer.GET("/api/clubs/{id}/membership", {
@@ -93,11 +100,32 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 					},
 				})
 			: Promise.resolve({ data: null, error: null }),
+		// Per-user data: must never enter Next's shared data cache, since the API
+		// client forwards the caller's auth cookie.
 		user
 			? apiServer.GET("/api/users/invites", {
-					next: { revalidate: 60 },
+					cache: "no-store",
 				})
 			: Promise.resolve({ data: null, error: null }),
+		isFeatureEnabled("REVIEWS"),
+		// The flag check runs in parallel with the batch above; the reviews fetch
+		// depends on it, so it is chained rather than awaited separately later.
+		isFeatureEnabled("REVIEWS").then(async (enabled): Promise<ReviewsDataType | undefined> => {
+			if (!enabled) {
+				return undefined;
+			}
+			const response = await apiServer.GET("/api/reviews/{type}/{id}", {
+				params: {
+					path: {
+						type: "club",
+						id: clubData.id,
+					},
+				},
+				next: { revalidate: 3600 },
+			});
+			return response.data;
+		}),
+		isFeatureEnabled("FAQ_SCHEMA"),
 	]);
 
 	const club = clubData;
@@ -124,28 +152,13 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	const clubUrl = `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs/${club.slug || club.id}`;
 
 	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
-	type ReviewsDataType = ApiResponse<"/api/reviews/{type}/{id}", "get">;
-	let reviewsResponse: ReviewsDataType | undefined;
-	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
-	if (reviewsEnabled) {
-		const response = await apiServer.GET("/api/reviews/{type}/{id}", {
-			params: {
-				path: {
-					type: "club",
-					id: club.id,
-				},
-			},
-			next: { revalidate: 3600 },
+	if (reviewsResponse && reviewsResponse.reviews.length > 0) {
+		const reviews = reviewsResponse.reviews;
+		const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+		aggregateRating = createAggregateRating({
+			ratingValue: averageRating,
+			ratingCount: reviews.length,
 		});
-		reviewsResponse = response.data;
-		if (response.data && response.data.reviews.length > 0) {
-			const reviews = response.data.reviews;
-			const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
-			aggregateRating = createAggregateRating({
-				ratingValue: averageRating,
-				ratingCount: reviews.length,
-			});
-		}
 	}
 
 	const sportsOrganizationSchema = removeUndefined({
@@ -194,8 +207,6 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		{ name: t("Clubs"), url: `${env.NEXT_PUBLIC_WEB_URL}/${params.locale}/clubs` },
 		{ name: club.name, url: clubUrl },
 	]);
-
-	const isFaqEnabled = await isFeatureEnabled("FAQ_SCHEMA");
 
 	// Generate FAQ schema for club
 	let faqSchema: ReturnType<typeof createFAQPage> | undefined;
@@ -276,7 +287,8 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 }
 
 export async function generateMetadata(props: PageProps<"/[locale]/clubs/[id]">): Promise<Metadata> {
-	const [params, locale] = await Promise.all([props.params, getLocale()]);
+	const params = await props.params;
+	const { locale } = params;
 
 	const { data: club, error } = await apiServer.GET("/api/clubs/{id}", {
 		params: {
