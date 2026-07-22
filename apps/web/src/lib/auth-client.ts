@@ -1,6 +1,12 @@
 import { passkeyClient } from "@better-auth/passkey/client";
 import type { UserAdditionalFields } from "backend/lib/auth-fields";
-import { adminClient, inferAdditionalFields, lastLoginMethodClient, twoFactorClient } from "better-auth/client/plugins";
+import {
+	adminClient,
+	inferAdditionalFields,
+	lastLoginMethodClient,
+	oneTapClient,
+	twoFactorClient,
+} from "better-auth/client/plugins";
 import { createMcpAuthClient } from "better-auth/plugins/mcp/client";
 import { createAuthClient } from "better-auth/react";
 import { env } from "./env";
@@ -54,6 +60,11 @@ export const authClient = createAuthClient({
 		adminClient(),
 		twoFactorClient(),
 		lastLoginMethodClient(),
+		oneTapClient({
+			clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+			context: "signin",
+			cancelOnTapOutside: true,
+		}),
 		inferAdditionalFields({ user: userAdditionalFields }),
 	],
 });

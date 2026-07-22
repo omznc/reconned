@@ -3,7 +3,7 @@ import { passkey } from "@better-auth/passkey";
 import { render } from "@react-email/components";
 import { betterAuth, logger } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, captcha, lastLoginMethod, mcp, openAPI, twoFactor } from "better-auth/plugins";
+import { admin, captcha, lastLoginMethod, mcp, oneTap, openAPI, twoFactor } from "better-auth/plugins";
 import { emailHarmony } from "better-auth-harmony";
 import { and, eq, gt } from "drizzle-orm";
 import { clubInvite, clubMembership } from "../drizzle/schema";
@@ -27,6 +27,33 @@ interface UserWithLanguage {
 }
 
 const appUrl = new URL(env.FRONTEND_URL);
+
+/**
+ * Maps the better-auth endpoint that triggered a database hook to an analytics
+ * method label. Paths are better-auth route patterns, e.g. "/sign-in/email",
+ * "/one-tap/callback", "/callback/:id" (social OAuth, provider in params).
+ */
+function authMethodFromPath(path: string | undefined, params: Record<string, string | undefined> | undefined) {
+	if (!path) {
+		return "unknown";
+	}
+	if (path.includes("one-tap")) {
+		return "google-one-tap";
+	}
+	if (path.startsWith("/callback") || path.startsWith("/oauth2/callback")) {
+		return params?.id ?? "oauth";
+	}
+	if (path.includes("passkey")) {
+		return "passkey";
+	}
+	if (path.includes("two-factor")) {
+		return "two-factor";
+	}
+	if (path.startsWith("/sign-up") || path.startsWith("/sign-in/email")) {
+		return "email";
+	}
+	return path;
+}
 
 export const auth = betterAuth({
 	telemetry: { enabled: false },
@@ -215,6 +242,7 @@ export const auth = betterAuth({
 			endpoints: ["/sign-up/email", "/sign-in/email"],
 		}),
 		lastLoginMethod(),
+		oneTap(),
 		openAPI(),
 		apiKey({
 			defaultPrefix: "rec_",
@@ -230,6 +258,18 @@ export const auth = betterAuth({
 	},
 	databaseHooks: {
 		user: {
+			create: {
+				after: async (user, ctx) => {
+					posthog.capture({
+						distinctId: user.id,
+						event: "user_signed_up",
+						properties: {
+							email: user.email,
+							method: authMethodFromPath(ctx?.path, ctx?.params),
+						},
+					});
+				},
+			},
 			update: {
 				after: async (user) => {
 					if (user.emailVerified) {
@@ -287,6 +327,22 @@ export const auth = betterAuth({
 							}
 						}
 					}
+				},
+			},
+		},
+		session: {
+			create: {
+				after: async (session, ctx) => {
+					// Session creation covers every login flow (email, social, one tap,
+					// passkey); sign-ups also land here via autoSignIn, which is fine —
+					// a first sign-in is still a sign-in.
+					posthog.capture({
+						distinctId: session.userId,
+						event: "user_signed_in",
+						properties: {
+							method: authMethodFromPath(ctx?.path, ctx?.params),
+						},
+					});
 				},
 			},
 		},

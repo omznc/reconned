@@ -1,4 +1,5 @@
 import { Footer } from "@/components/footer";
+import { GoogleOneTap } from "@/components/google-one-tap";
 import { Header } from "@/components/header";
 import { PublicTopBanners } from "@/components/public-top-banners";
 
@@ -8,6 +9,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
 	return (
 		<>
 			<div className="w-full min-h-screen flex flex-col items-center">
+				<GoogleOneTap />
 				<PublicTopBanners />
 				<Header />
 				<main className="grow size-full flex flex-col items-center">
