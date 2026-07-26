@@ -43,6 +43,13 @@
       "when": 1784377532390,
       "tag": "0005_add_performance_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785067899404,
+      "tag": "0006_magenta_big_bertha",
+      "breakpoints": true
     }
   ]
 }

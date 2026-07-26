@@ -77,18 +77,40 @@ export default async function authProxy(request: NextRequest) {
 		return NextResponse.next();
 	}
 
-	// Markdown for agents: `Accept: text/markdown` (or a `.md` path suffix, e.g.
-	// `/clubs.md`) rewrites public pages to a route that renders them as markdown.
-	const wantsMarkdown = (request.headers.get("accept") ?? "").includes("text/markdown");
+	// The markdown renderer itself. Reached by internal rewrite (which does not
+	// re-enter this proxy), so this only guards a direct request — without it the
+	// locale rewriter would send `/markdown` to `/bs/markdown` and 404.
+	if (pathname === "/markdown") {
+		return NextResponse.next();
+	}
+
+	// Markdown for agents. The `.md` path suffix (e.g. `/clubs.md`) is the real
+	// mechanism; `Accept: text/markdown` is honoured by *redirecting* to that path
+	// rather than rewriting in place.
+	//
+	// Rewriting on the header cannot work behind our CDN: HTML pages are cached
+	// under a key that ignores `Accept` (Cloudflare only varies on
+	// `Accept-Encoding`, whatever `Vary` the origin sets), so a header-negotiated
+	// request lands on a cached HTML entry and never reaches this proxy at all.
+	// A distinct URL is a distinct cache key, which makes the negotiation actually
+	// observable. 307 keeps it non-permanent — the HTML URL stays canonical.
 	const isMarkdownPath = pathname.endsWith(".md");
-	if (
-		(wantsMarkdown || isMarkdownPath) &&
-		!pathname.startsWith("/dashboard") &&
-		!pathname.startsWith("/api") &&
-		!pathname.startsWith("/_next")
-	) {
-		const markdownUrl = new URL("/api/public-markdown", request.url);
-		const normalizedPath = isMarkdownPath ? pathname.slice(0, -3) : pathname;
+	const wantsMarkdown = (request.headers.get("accept") ?? "").includes("text/markdown");
+	const isMarkdownEligible =
+		!isDashboardPath(pathname) && !pathname.startsWith("/api") && !pathname.startsWith("/_next");
+
+	if (wantsMarkdown && !isMarkdownPath && isMarkdownEligible) {
+		const redirectUrl = request.nextUrl.clone();
+		redirectUrl.pathname = `${pathname === "/" ? "/index" : pathname}.md`;
+		return NextResponse.redirect(redirectUrl, 307);
+	}
+
+	if (isMarkdownPath && isMarkdownEligible) {
+		const markdownUrl = new URL("/markdown", request.url);
+		// `/index.md` is the redirect target for the root page, which has no path to
+		// strip back to beyond "/".
+		const stripped = pathname.slice(0, -3);
+		const normalizedPath = stripped === "/index" ? "/" : stripped;
 		const source = `${normalizedPath}${request.nextUrl.search}`;
 		markdownUrl.searchParams.set("source", source);
 		const headers = new Headers(request.headers);

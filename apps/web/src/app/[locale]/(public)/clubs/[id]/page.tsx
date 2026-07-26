@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getExtracted, setRequestLocale } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
@@ -15,6 +16,7 @@ import {
 	createGeoCoordinates,
 	createPostalAddress,
 	createReviewSchema,
+	createWebPageSchema,
 	removeUndefined,
 } from "@/lib/json-ld";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
@@ -28,7 +30,11 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 	// plugin only rewrites that shape, and leaves a bare `getExtracted` identifier anywhere else.
 	const t = await getExtracted();
 
-	const { data: clubData, error: clubError } = await apiServer.GET("/api/clubs/{id}", {
+	const {
+		data: clubData,
+		error: clubError,
+		response: clubResponse,
+	} = await apiServer.GET("/api/clubs/{id}", {
 		params: {
 			path: {
 				id: params.id,
@@ -37,6 +43,13 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		next: { revalidate: 3600 },
 	});
 
+	// A missing club must answer 404, not a 200 page that says "not found" — a soft
+	// 404 keeps deleted and mistyped club URLs in the index as duplicate thin
+	// content. A backend failure is a different thing entirely and stays a rendered
+	// error, so an outage never tells crawlers that real clubs are gone.
+	if (clubResponse.status === 404) {
+		notFound();
+	}
 	if (clubError || !clubData) {
 		return <ErrorPage title={t("Club not found.")} />;
 	}
@@ -262,9 +275,17 @@ export default async function Page(props: PageProps<"/[locale]/clubs/[id]">) {
 		}
 	}
 
+	const webPageSchema = createWebPageSchema({
+		pageUrl: clubUrl,
+		name: club.name,
+		dateModified: club.updatedAt,
+		datePublished: club.createdAt,
+	});
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
 			<JsonLdScript data={sportsOrganizationSchema} />
+			<JsonLdScript data={webPageSchema} />
 			<JsonLdScript data={breadcrumbSchema} />
 			{faqSchema && <JsonLdScript data={faqSchema} />}
 			{reviewSchema && <JsonLdScript data={reviewSchema} />}

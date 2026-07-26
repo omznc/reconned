@@ -5,6 +5,7 @@ import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { club, clubMembership, post } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { normalizeCityName, slugifyCity } from "../../lib/city";
 import { db } from "../../lib/db";
 import { isFeatureEnabled } from "../../lib/feature-flags";
 import { logger } from "../../lib/posthog";
@@ -27,6 +28,13 @@ const createClubBodySchema = z.object({
 	name: z.string().min(1).max(50),
 	countryId: z.number().describe("Country ID. Use the list_countries tool to find the correct ID."),
 	location: z.string().min(1).max(50),
+	city: z
+		.string()
+		.max(50)
+		.optional()
+		.describe(
+			"City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side.",
+		),
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
 	description: z.string().max(5000).optional(),
@@ -47,6 +55,13 @@ const updateClubBodySchema = z.object({
 	name: z.string().min(1).max(50).optional(),
 	countryId: z.number().optional().describe("Country ID. Use the list_countries tool to find the correct ID."),
 	location: z.string().min(1).max(50).optional(),
+	city: z
+		.string()
+		.max(50)
+		.optional()
+		.describe(
+			"City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side.",
+		),
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
 	description: z.string().max(5000).optional(),
@@ -155,6 +170,8 @@ clubsCoreRouter.get(
 				id: club.id,
 				name: club.name,
 				location: club.location,
+				city: club.city,
+				citySlug: club.citySlug,
 				latitude: club.latitude,
 				longitude: club.longitude,
 				description: club.description,
@@ -196,6 +213,8 @@ clubsCoreRouter.get(
 				id: c.id,
 				name: c.name,
 				location: c.location,
+				city: c.city,
+				citySlug: c.citySlug,
 				latitude: c.latitude,
 				longitude: c.longitude,
 				description: c.description,
@@ -435,6 +454,12 @@ clubsCoreRouter.post(
 		const clubId = randomUUIDv7();
 		const now = new Date().toISOString();
 
+		// Both city columns are derived, never taken from the client verbatim, so every
+		// club that names the same city lands on the same page. A name with nothing
+		// sluggable in it would produce an unroutable empty slug and is dropped.
+		const normalizedCity = body.city ? normalizeCityName(body.city) : "";
+		const citySlug = normalizedCity ? slugifyCity(normalizedCity) : "";
+
 		const newClub = await db
 			.insert(club)
 			.values({
@@ -442,6 +467,8 @@ clubsCoreRouter.post(
 				name: body.name,
 				countryId: body.countryId,
 				location: body.location,
+				city: citySlug ? normalizedCity : null,
+				citySlug: citySlug || null,
 				latitude: body.latitude || null,
 				longitude: body.longitude || null,
 				description: body.description || null,
@@ -567,6 +594,19 @@ clubsCoreRouter.put(
 						: value,
 				]),
 		);
+
+		// `city` arrives as free text; both the stored display name and the slug that
+		// keys the city landing pages are derived here rather than trusted from the
+		// client, so "Sarajevo" and "Grad Sarajevo" cannot end up on two different
+		// pages. An empty string clears both columns.
+		if (body.city !== undefined) {
+			const normalizedCity = body.city ? normalizeCityName(body.city) : "";
+			// A name with nothing sluggable left in it (punctuation only) would produce
+			// an unroutable empty slug, so it clears the columns instead.
+			const normalizedSlug = normalizedCity ? slugifyCity(normalizedCity) : "";
+			updateData.city = normalizedSlug ? normalizedCity : null;
+			updateData.citySlug = normalizedSlug || null;
+		}
 
 		// Always update timestamp
 		updateData.updatedAt = new Date().toISOString();

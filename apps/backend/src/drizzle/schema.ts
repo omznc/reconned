@@ -47,6 +47,12 @@ export const club = pgTable(
 		id: text().primaryKey().notNull(),
 		name: text().notNull(),
 		location: text(),
+		// `location` is free-form ("Matuzići Doboj Jug", "Sarajevo, BiH") and cannot be
+		// grouped on. `city` is the normalised display name and `citySlug` its URL form,
+		// which together key the per-city landing pages. Backfilled from lat/lng by the
+		// `backfill-club-cities` task; set from the club settings form thereafter.
+		city: text(),
+		citySlug: text(),
 		latitude: doublePrecision(),
 		longitude: doublePrecision(),
 		description: text(),
@@ -82,6 +88,7 @@ export const club = pgTable(
 		index("Club_isPrivate_idx").using("btree", table.isPrivate.asc().nullsLast()),
 		index("Club_verified_idx").using("btree", table.verified.asc().nullsLast()),
 		index("Club_countryId_idx").using("btree", table.countryId.asc().nullsLast().op("int4_ops")),
+		index("Club_citySlug_idx").using("btree", table.citySlug.asc().nullsLast().op("text_ops")),
 		index("Club_name_trgm_idx").using("gin", table.name.op("gin_trgm_ops")),
 		index("Club_location_trgm_idx").using("gin", table.location.op("gin_trgm_ops")),
 		foreignKey({

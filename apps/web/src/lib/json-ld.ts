@@ -10,6 +10,7 @@ import type {
 	Review,
 	SportsEvent,
 	SportsOrganization,
+	WebPage,
 	WithContext,
 } from "schema-dts";
 import { env } from "./env";
@@ -21,6 +22,38 @@ if (!env.NEXT_PUBLIC_WEB_URL) {
 
 export function removeUndefined<T extends Record<string, unknown>>(obj: T): T {
 	return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined)) as T;
+}
+
+/**
+ * Freshness signal for an entity detail page.
+ *
+ * `dateModified` is a `CreativeWork` property, so it cannot hang off the
+ * `SportsOrganization` / `SportsEvent` node describing the entity itself — those are
+ * an Organization and an Event. It belongs on the *page*, which is what consumers
+ * read for recency anyway. `mainEntity` points back at the entity node by `@id`
+ * rather than repeating it, so the two nodes stay linked without duplication.
+ */
+export function createWebPageSchema({
+	pageUrl,
+	name,
+	dateModified,
+	datePublished,
+}: {
+	pageUrl: string;
+	name: string;
+	dateModified?: string | null;
+	datePublished?: string | null;
+}): WithContext<WebPage> {
+	return removeUndefined({
+		"@context": "https://schema.org" as const,
+		"@type": "WebPage" as const,
+		"@id": `${pageUrl}#webpage`,
+		url: pageUrl,
+		name,
+		...(dateModified && { dateModified: new Date(dateModified).toISOString() }),
+		...(datePublished && { datePublished: new Date(datePublished).toISOString() }),
+		mainEntity: { "@id": pageUrl },
+	}) satisfies WithContext<WebPage>;
 }
 
 export interface BreadcrumbItem {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getExtracted, setRequestLocale } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
 import JsonLdScript from "@/components/json-ld-script";
@@ -13,6 +14,7 @@ import {
 	createBreadcrumbList,
 	createFAQPage,
 	createReviewSchema,
+	createWebPageSchema,
 	removeUndefined,
 } from "@/lib/json-ld";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
@@ -25,7 +27,11 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 	const t = await getExtracted();
 	const user = await isAuthenticated();
 
-	const { data: eventData, error: eventError } = await apiServer.GET("/api/events/{id}", {
+	const {
+		data: eventData,
+		error: eventError,
+		response: eventResponse,
+	} = await apiServer.GET("/api/events/{id}", {
 		params: {
 			path: {
 				id: params.id,
@@ -34,6 +40,11 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		next: { revalidate: 300 },
 	});
 
+	// See the club page: a deleted or mistyped event has to answer 404 so it leaves
+	// the index, while a backend failure keeps rendering an error page instead.
+	if (eventResponse.status === 404) {
+		notFound();
+	}
 	if (eventError || !eventData || !eventData.club) {
 		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
@@ -204,9 +215,17 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 		}
 	}
 
+	const webPageSchema = createWebPageSchema({
+		pageUrl: eventUrl,
+		name: event.name,
+		dateModified: event.updatedAt,
+		datePublished: event.createdAt,
+	});
+
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8  px-4">
 			<JsonLdScript data={sportsEventSchema} />
+			<JsonLdScript data={webPageSchema} />
 			<JsonLdScript data={breadcrumbSchema} />
 			{faqSchema && <JsonLdScript data={faqSchema} />}
 			{reviewSchema && <JsonLdScript data={reviewSchema} />}

@@ -4,9 +4,10 @@ import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { PRIVACY_POLICY_LAST_UPDATED } from "@/lib/legal-dates";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
-const lastUpdated = new Date("2025-12-21");
+const lastUpdated = PRIVACY_POLICY_LAST_UPDATED;
 
 export const revalidate = 86_400; // 1 day
 

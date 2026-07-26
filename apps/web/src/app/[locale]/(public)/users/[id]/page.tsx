@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { Person, ProfilePage, WithContext } from "schema-dts";
 import { ErrorPage } from "@/components/error-page";
@@ -23,7 +24,11 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 	setRequestLocale(params.locale);
 	const t = await getExtracted();
 
-	const { data: user, error } = await apiServer.GET("/api/users/{id}/profile", {
+	const {
+		data: user,
+		error,
+		response,
+	} = await apiServer.GET("/api/users/{id}/profile", {
 		params: {
 			path: {
 				id: params.id,
@@ -32,6 +37,11 @@ export default async function Page(props: PageProps<"/[locale]/users/[id]">) {
 		next: { revalidate: 3600 },
 	});
 
+	// See the club page: a missing profile has to answer 404 so it leaves the index,
+	// while a backend failure keeps rendering an error page instead.
+	if (response.status === 404) {
+		notFound();
+	}
 	if (error || !user) {
 		return <ErrorPage title={t("User not found.")} />;
 	}

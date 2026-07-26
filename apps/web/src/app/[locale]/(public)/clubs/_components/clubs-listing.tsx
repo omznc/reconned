@@ -9,6 +9,7 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { ListingCard } from "@/components/listing-card";
 import { ListingCardSkeleton } from "@/components/listing-card-skeleton";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
@@ -57,7 +58,12 @@ export function ClubsListing({ initialData }: ClubsListingProps) {
 	return (
 		<div className="container max-w-7xl py-8 px-4">
 			<div className="space-y-6">
-				<h1 className="text-2xl font-bold tracking-tight">{t("Clubs")}</h1>
+				<div className="flex flex-wrap items-baseline justify-between gap-2">
+					<h1 className="text-2xl font-bold tracking-tight">{t("Clubs")}</h1>
+					<Link href="/clubs/city" className="text-sm underline underline-offset-4">
+						{t("Browse by city")}
+					</Link>
+				</div>
 
 				{isLoading && clubs.length === 0 ? (
 					<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">

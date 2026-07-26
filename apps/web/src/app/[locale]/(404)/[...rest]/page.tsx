@@ -1,7 +1,11 @@
-import { getExtracted } from "next-intl/server";
-import { ErrorPage } from "@/components/error-page";
+import { notFound } from "next/navigation";
 
-export default async function CatchAllPage() {
-	const t = await getExtracted();
-	return <ErrorPage title={t("Page not found")} />;
+/**
+ * `notFound()` rather than rendering the error page inline: rendering it here
+ * answers 200, so every mistyped or dead URL looked like a real page to crawlers
+ * and got indexed as duplicate thin content. Throwing hands off to
+ * `[locale]/not-found.tsx` with an actual 404 status.
+ */
+export default function CatchAllPage() {
+	notFound();
 }

@@ -1022,6 +1022,23 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/auth/one-tap/callback": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Use this endpoint to authenticate with Google One Tap */
+		post: operations["authoneTapcallbackPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/auth/api-key/create": {
 		parameters: {
 			query?: never;
@@ -1231,7 +1248,7 @@ export interface paths {
 		};
 		/**
 		 * Get all enabled countries
-		 * @description Returns a list of all enabled countries with their translations
+		 * @description Returns a list of all enabled countries with their translations. Use this to look up a country's ID before passing it as countryId to other tools (e.g. creating or updating a club).
 		 */
 		get: operations["countriesGet"];
 		put?: never;
@@ -3660,6 +3677,66 @@ export interface paths {
 		 * @description Get all public users for sitemap generation
 		 */
 		get: operations["publicsitemapusersGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/public/llms": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get clubs and events for llms-full.txt
+		 * @description Public clubs and events with names and summaries, for LLM-facing site indexes
+		 */
+		get: operations["publicllmsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/public/cities": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List cities with clubs
+		 * @description Cities that have at least 2 public clubs, with their club counts
+		 */
+		get: operations["publiccitiesGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/public/cities/{citySlug}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get a city's clubs and events
+		 * @description Public clubs based in a city, plus the events those clubs are running
+		 */
+		get: operations["publiccitiescitySlugGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -10113,6 +10190,98 @@ export interface operations {
 			};
 		};
 	};
+	authoneTapcallbackPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description Google ID token, which the client obtains from the One Tap API */
+					idToken: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Successful response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						session?: components["schemas"]["Session"];
+						user?: components["schemas"]["User"];
+					};
+				};
+			};
+			/** @description Invalid token */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Unauthorized. Due to missing or invalid authentication. */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message: string;
+					};
+				};
+			};
+			/** @description Forbidden. You do not have permission to access this resource or to perform this action. */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Not Found. The requested resource was not found. */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Too Many Requests. You have exceeded the rate limit. Try again later. */
+			429: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+			/** @description Internal Server Error. This is a problem with the server that you cannot fix. */
+			500: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						message?: string;
+					};
+				};
+			};
+		};
+	};
 	authapiKeycreatePost: {
 		parameters: {
 			query?: never;
@@ -12290,6 +12459,8 @@ export interface operations {
 								id: string;
 								name: string;
 								location: string | null;
+								city: string | null;
+								citySlug: string | null;
 								latitude: number | null;
 								longitude: number | null;
 								description: string | null;
@@ -12537,6 +12708,8 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -12679,6 +12852,8 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -12729,8 +12904,11 @@ export interface operations {
 			content: {
 				"application/json": {
 					name: string;
+					/** @description Country ID. Use the list_countries tool to find the correct ID. */
 					countryId: number;
 					location: string;
+					/** @description City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side. */
+					city?: string;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
@@ -12762,6 +12940,8 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -12835,6 +13015,8 @@ export interface operations {
 						id: string;
 						name: string;
 						location: string | null;
+						city: string | null;
+						citySlug: string | null;
 						latitude: number | null;
 						longitude: number | null;
 						description: string | null;
@@ -12903,8 +13085,11 @@ export interface operations {
 			content: {
 				"application/json": {
 					name?: string;
+					/** @description Country ID. Use the list_countries tool to find the correct ID. */
 					countryId?: number;
 					location?: string;
+					/** @description City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side. */
+					city?: string;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
@@ -12936,6 +13121,8 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -13099,6 +13286,8 @@ export interface operations {
 						id: string;
 						name: string;
 						location: string | null;
+						city: string | null;
+						citySlug: string | null;
 						latitude: number | null;
 						longitude: number | null;
 						description: string | null;
@@ -21637,6 +21826,117 @@ export interface operations {
 							id: string;
 							slug: string | null;
 							updatedAt: string;
+						}[];
+					};
+				};
+			};
+		};
+	};
+	publicllmsGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						clubs: {
+							id: string;
+							slug: string | null;
+							name: string;
+							description: string | null;
+							location: string | null;
+							verified: boolean;
+						}[];
+						events: {
+							id: string;
+							slug: string | null;
+							name: string;
+							description: string | null;
+							location: string | null;
+							dateStart: string;
+							dateEnd: string | null;
+						}[];
+					};
+				};
+			};
+		};
+	};
+	publiccitiesGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						cities: {
+							city: string;
+							citySlug: string;
+							clubCount: number;
+						}[];
+					};
+				};
+			};
+		};
+	};
+	publiccitiescitySlugGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				citySlug: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						city: string | null;
+						citySlug: string;
+						clubs: {
+							id: string;
+							slug: string | null;
+							name: string;
+							description: string | null;
+							location: string | null;
+							logo: string | null;
+							latitude: number | null;
+							longitude: number | null;
+							verified: boolean;
+							updatedAt: string;
+						}[];
+						events: {
+							id: string;
+							slug: string | null;
+							name: string;
+							description: string | null;
+							location: string | null;
+							dateStart: string;
+							dateEnd: string | null;
+							clubName: string;
 						}[];
 					};
 				};

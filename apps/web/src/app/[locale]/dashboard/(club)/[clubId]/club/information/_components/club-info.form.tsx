@@ -117,6 +117,12 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			.max(50, {
 				message: t("Club location must be shorter than 50 characters"),
 			}),
+		city: z
+			.string()
+			.max(50, {
+				message: t("City must be shorter than 50 characters"),
+			})
+			.optional(),
 		latitude: z.number().optional(),
 		longitude: z.number().optional(),
 		description: z.string().max(5000, {
@@ -326,6 +332,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			clubId: props.club?.id || "",
 			name: props.club?.name || "",
 			location: props.club?.location || "",
+			city: props.club?.city || "",
 			description: props.club?.description || "",
 			dateFounded: props.club?.dateFounded ? new Date(props.club.dateFounded) : undefined,
 
@@ -528,7 +535,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				geocodeAbortRef.current = new AbortController();
 				const query = encodeURIComponent(`${locationValue}, ${selectedCountry.name}`);
 				const response = await fetch(
-					`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`,
+					`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&addressdetails=1`,
 					{
 						signal: geocodeAbortRef.current.signal,
 						headers: {
@@ -548,6 +555,22 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						form.setValue("longitude", lng, { shouldDirty: true });
 						setMapCenter([lat, lng]);
 						setMapZoom(12);
+					}
+
+					// The city field is only ever filled in, never corrected: whatever the
+					// club typed there wins over what the geocoder guessed. Which of these
+					// address fields is present varies by country, so fall through them the
+					// same way the `backfill-club-cities` task does.
+					const address = result.address ?? {};
+					const geocodedCity: string | undefined =
+						address.city || address.town || address.village || address.municipality || address.county;
+					if (geocodedCity && !form.getValues("city")) {
+						// Nominatim answers with the administrative unit ("Grad Sarajevo",
+						// "Općina Doboj Jug"). The server strips those prefixes before
+						// storing either way; doing it here too means the field shows the
+						// value that will actually be saved.
+						const displayCity = geocodedCity.replace(/^(Grad|Град|Općina|Opština|Opcina|Општина)\s+/i, "");
+						form.setValue("city", displayCity, { shouldDirty: true });
 					}
 				}
 			} catch (error) {
@@ -930,6 +953,25 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 									<Input placeholder="Livno" type="text" maxLength={50} {...field} />
 								</FormControl>
 								<FormDescription>{t("The city where the club is located")}</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="city"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>{t("City listing")}</FormLabel>
+								<FormControl>
+									<Input placeholder="Livno" type="text" maxLength={50} {...field} />
+								</FormControl>
+								<FormDescription>
+									{t(
+										"The city page your club is listed on. Filled in automatically from the location above — only change it if it is wrong.",
+									)}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
