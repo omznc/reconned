@@ -1,7 +1,7 @@
 import { Router } from "@reconned/router";
 import { and, count, eq, ilike, or, type SQL, sql } from "drizzle-orm";
 import * as z from "zod";
-import { city, club, event, featureFlag, user } from "../drizzle/schema";
+import { city, club, clubAlliance, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
@@ -322,6 +322,14 @@ publicRouter.get(
 const MIN_CLUBS_PER_CITY = 2;
 
 /**
+ * The other way in: a club that is verified, or that an alliance has taken on,
+ * is substantial enough to be worth a page on its own — so one of those lets a
+ * city through even when it is the only club there. The unqualified single-club
+ * city is still the case `MIN_CLUBS_PER_CITY` keeps out.
+ */
+const notableClub = sql`(${club.verified} = true or exists (select 1 from ${clubAlliance} where ${clubAlliance.clubId} = ${club.id}))`;
+
+/**
  * Visibility filters for the city endpoints. Duplicated from `/public/llms`
  * above for the same reason: these are served unauthenticated and cached
  * publicly, so what they may expose has to be readable without following a
@@ -354,7 +362,7 @@ publicRouter.get(
 			// count across two rows the moment two clubs disagreed about the spelling,
 			// and drop a city that really does clear the bar.
 			.groupBy(club.citySlug)
-			.having(sql`count(${club.id}) >= ${MIN_CLUBS_PER_CITY}`)
+			.having(sql`count(${club.id}) >= ${MIN_CLUBS_PER_CITY} or count(case when ${notableClub} then 1 end) >= 1`)
 			.orderBy(sql`min(${club.city})`);
 
 		return cachedJson(
@@ -374,7 +382,7 @@ publicRouter.get(
 		schema: {
 			tags: ["Public"],
 			summary: "List cities with clubs",
-			description: `Cities that have at least ${MIN_CLUBS_PER_CITY} public clubs, with their club counts`,
+			description: `Cities that have at least ${MIN_CLUBS_PER_CITY} public clubs, or at least one verified or allied club, with their club counts`,
 			response: {
 				200: z.object({
 					cities: z.array(
