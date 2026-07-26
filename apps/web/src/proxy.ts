@@ -2,16 +2,18 @@ import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
-import { getDefaultLocaleFromCountry } from "@/i18n/country-locale";
+import { matchAcceptLanguage } from "@/i18n/accept-language";
+import { getLocaleFromCountry } from "@/i18n/country-locale";
 import { routing } from "@/i18n/routing";
 
 /**
- * next-intl middlewares, memoized per resolved default locale.
- *
- * `defaultLocale` varies by `CF-IPCountry`, so we can't build a single instance,
- * but there is one instance per locale rather than one per request.
+ * Single instance with a fixed `defaultLocale` — unprefixed URLs always mean
+ * `bs`, regardless of who is asking. Geo only influences the redirect target
+ * for first-time visitors (see below), never what an unprefixed URL serves:
+ * varying the default per request made the same URL geo-dependent, which broke
+ * CDN caching and left crawlers indexing whatever their exit IP negotiated.
  */
-const i18nMiddlewares = new Map<string, ReturnType<typeof createMiddleware>>();
+const i18nMiddleware = createMiddleware(routing);
 
 /** The only `/.well-known/` paths better-auth serves, and so the only ones worth proxying. */
 const OAUTH_DISCOVERY_PREFIXES = ["/.well-known/oauth-authorization-server", "/.well-known/oauth-protected-resource"];
@@ -26,15 +28,6 @@ const SERVED_WELL_KNOWN = new Set([
 
 /** Routes that serve markdown themselves, exempt from the `.md` → HTML-page rewrite. */
 const MARKDOWN_ROUTES = new Set(["/auth.md", "/AGENTS.md", "/sitemap.md"]);
-
-function getI18nMiddleware(defaultLocale: (typeof routing.locales)[number]) {
-	let middleware = i18nMiddlewares.get(defaultLocale);
-	if (!middleware) {
-		middleware = createMiddleware({ ...routing, defaultLocale });
-		i18nMiddlewares.set(defaultLocale, middleware);
-	}
-	return middleware;
-}
 
 function isDashboardPath(pathname: string): boolean {
 	// Segment match, not a substring match: `/dashboard`, `/dashboard/...`,
@@ -103,15 +96,13 @@ export default async function authProxy(request: NextRequest) {
 		return NextResponse.rewrite(markdownUrl, { request: { headers } });
 	}
 
-	const country = request.headers.get("CF-IPCountry");
-	const defaultLocale = getDefaultLocaleFromCountry(country);
 	const hasLocalePrefix = routing.locales.some(
 		(locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
 	);
 	if (pathname.includes("opengraph-image")) {
 		if (!hasLocalePrefix) {
 			const rewriteUrl = request.nextUrl.clone();
-			rewriteUrl.pathname = `/${defaultLocale}${pathname}`;
+			rewriteUrl.pathname = `/${routing.defaultLocale}${pathname}`;
 			return NextResponse.rewrite(rewriteUrl);
 		}
 		return NextResponse.next();
@@ -129,9 +120,33 @@ export default async function authProxy(request: NextRequest) {
 		}
 	}
 
-	// Handles locale negotiation: `NEXT_LOCALE` cookie first, then
-	// `Accept-Language`, then the country-derived `defaultLocale` above.
-	return getI18nMiddleware(defaultLocale)(request);
+	// Geo hint for first-time visitors only: no cookie, no locale prefix, and
+	// nothing usable in `Accept-Language` (next-intl handles cookie and
+	// `Accept-Language` negotiation itself). Sets the cookie so the choice
+	// sticks and this branch never fires again for the same visitor. 307, not
+	// 308 — geo redirects must stay temporary for crawlers.
+	if (
+		!hasLocalePrefix &&
+		!request.cookies.has("NEXT_LOCALE") &&
+		!matchAcceptLanguage(request.headers.get("accept-language"))
+	) {
+		const geoLocale = getLocaleFromCountry(request.headers.get("CF-IPCountry"));
+		if (geoLocale !== routing.defaultLocale) {
+			const redirectUrl = request.nextUrl.clone();
+			redirectUrl.pathname = `/${geoLocale}${pathname === "/" ? "" : pathname}`;
+			const response = NextResponse.redirect(redirectUrl);
+			response.cookies.set("NEXT_LOCALE", geoLocale, {
+				path: "/",
+				maxAge: 60 * 60 * 24 * 365,
+				sameSite: "lax",
+			});
+			return response;
+		}
+	}
+
+	// Handles the rest of locale negotiation: `NEXT_LOCALE` cookie first, then
+	// `Accept-Language`, then the fixed `defaultLocale` (`bs`).
+	return i18nMiddleware(request);
 }
 
 export const config = {
