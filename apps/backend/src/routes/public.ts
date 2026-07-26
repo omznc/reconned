@@ -1,7 +1,7 @@
 import { Router } from "@reconned/router";
-import { and, count, eq, or, sql } from "drizzle-orm";
+import { and, count, eq, ilike, or, type SQL, sql } from "drizzle-orm";
 import * as z from "zod";
-import { club, event, featureFlag, user } from "../drizzle/schema";
+import { city, club, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
@@ -340,15 +340,22 @@ publicRouter.get(
 	async () => {
 		const cities = await db
 			.select({
-				city: club.city,
+				// `min` picks one spelling deterministically now that the group is the slug;
+				// post-migration both columns are copies of one `City` row, so there is only
+				// ever one spelling to pick.
+				city: sql<string | null>`min(${club.city})`,
 				citySlug: club.citySlug,
 				clubCount: count(club.id),
 			})
 			.from(club)
 			.where(and(sql`${club.citySlug} IS NOT NULL`, ...(await publicClubConditions())))
-			.groupBy(club.city, club.citySlug)
+			// Grouped by slug alone, because the slug is what the detail route and the
+			// sitemap key off. Grouping by the display name too would split one page's
+			// count across two rows the moment two clubs disagreed about the spelling,
+			// and drop a city that really does clear the bar.
+			.groupBy(club.citySlug)
 			.having(sql`count(${club.id}) >= ${MIN_CLUBS_PER_CITY}`)
-			.orderBy(club.city);
+			.orderBy(sql`min(${club.city})`);
 
 		return cachedJson(
 			{
@@ -572,6 +579,82 @@ publicRouter.get(
 						z.object({
 							name: z.string(),
 							enabled: z.boolean(),
+						}),
+					),
+				}),
+			},
+		},
+	},
+);
+
+/** The picker shows a short list; a longer one is noise, not choice. */
+const CITY_SEARCH_LIMIT = 20;
+
+publicRouter.get(
+	"/public/city-search",
+	async ({ query }) => {
+		// Not "/public/cities/search": that path would be shadowed by, or shadow,
+		// "/public/cities/:citySlug" depending on match order.
+		const term = (query.q ?? "").trim();
+		if (term.length === 0) {
+			return cachedJson({ cities: [] }, "public, max-age=60");
+		}
+
+		// The term goes into an ILIKE pattern, so its wildcards have to stop being
+		// wildcards — otherwise a user typing "%" matches every city in the country.
+		const escaped = term.replace(/[\\%_]/g, (char) => `\\${char}`);
+		const prefix = `${escaped}%`;
+
+		const conditions = [eq(city.enabled, true)];
+		if (query.countryId !== undefined) {
+			conditions.push(eq(city.countryId, query.countryId));
+		}
+		// Prefix match finds what someone is part-way through typing; trigram
+		// similarity covers the diacritics and typos ("zivinice", "sarajevu") that a
+		// prefix never will. Both are served by "City_name_trgm_idx" — a plain
+		// sequential scan over 148k rows per keystroke is not an option.
+		conditions.push(or(ilike(city.name, prefix), sql`${city.name} % ${term}`) as SQL);
+
+		const cities = await db
+			.select({
+				id: city.id,
+				name: city.name,
+				slug: city.slug,
+				stateCode: city.stateCode,
+				countryId: city.countryId,
+			})
+			.from(city)
+			.where(and(...conditions))
+			// What someone is typing the start of should outrank a fuzzy match, and
+			// between two equally similar names the shorter one is the one they meant.
+			.orderBy(
+				sql`(${city.name} ILIKE ${prefix}) DESC`,
+				sql`similarity(${city.name}, ${term}) DESC`,
+				sql`length(${city.name}) ASC`,
+			)
+			.limit(CITY_SEARCH_LIMIT);
+
+		return cachedJson({ cities }, "public, max-age=3600, stale-while-revalidate=86400");
+	},
+	{
+		schema: {
+			tags: ["Public"],
+			summary: "Search cities",
+			description:
+				"Search the seeded city reference data by name, optionally within one country. Returns the city IDs the club settings form writes.",
+			query: z.object({
+				q: z.string().max(100).optional().describe("Name to search for. An empty term returns nothing."),
+				countryId: z.coerce.number().optional().describe("Restrict the search to one country."),
+			}),
+			response: {
+				200: z.object({
+					cities: z.array(
+						z.object({
+							id: z.number(),
+							name: z.string(),
+							slug: z.string(),
+							stateCode: z.string().nullable(),
+							countryId: z.number(),
 						}),
 					),
 				}),

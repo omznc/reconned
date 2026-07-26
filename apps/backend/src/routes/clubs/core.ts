@@ -5,7 +5,7 @@ import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { club, clubMembership, post } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
-import { normalizeCityName, slugifyCity } from "../../lib/city";
+import { NO_CITY, resolveClubCity } from "../../lib/city";
 import { db } from "../../lib/db";
 import { isFeatureEnabled } from "../../lib/feature-flags";
 import { logger } from "../../lib/posthog";
@@ -28,12 +28,12 @@ const createClubBodySchema = z.object({
 	name: z.string().min(1).max(50),
 	countryId: z.number().describe("Country ID. Use the list_countries tool to find the correct ID."),
 	location: z.string().min(1).max(50),
-	city: z
-		.string()
-		.max(50)
+	cityId: z
+		.number()
+		.nullable()
 		.optional()
 		.describe(
-			"City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side.",
+			"City ID from the seeded city reference table. Groups the club onto that city's landing page; the display name and URL slug are copied server-side.",
 		),
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
@@ -55,12 +55,12 @@ const updateClubBodySchema = z.object({
 	name: z.string().min(1).max(50).optional(),
 	countryId: z.number().optional().describe("Country ID. Use the list_countries tool to find the correct ID."),
 	location: z.string().min(1).max(50).optional(),
-	city: z
-		.string()
-		.max(50)
+	cityId: z
+		.number()
+		.nullable()
 		.optional()
 		.describe(
-			"City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side.",
+			"City ID from the seeded city reference table, or null to clear it. Groups the club onto that city's landing page; the display name and URL slug are copied server-side.",
 		),
 	latitude: z.number().optional(),
 	longitude: z.number().optional(),
@@ -170,6 +170,7 @@ clubsCoreRouter.get(
 				id: club.id,
 				name: club.name,
 				location: club.location,
+				cityId: club.cityId,
 				city: club.city,
 				citySlug: club.citySlug,
 				latitude: club.latitude,
@@ -213,6 +214,7 @@ clubsCoreRouter.get(
 				id: c.id,
 				name: c.name,
 				location: c.location,
+				cityId: c.cityId,
 				city: c.city,
 				citySlug: c.citySlug,
 				latitude: c.latitude,
@@ -454,11 +456,14 @@ clubsCoreRouter.post(
 		const clubId = randomUUIDv7();
 		const now = new Date().toISOString();
 
-		// Both city columns are derived, never taken from the client verbatim, so every
-		// club that names the same city lands on the same page. A name with nothing
-		// sluggable in it would produce an unroutable empty slug and is dropped.
-		const normalizedCity = body.city ? normalizeCityName(body.city) : "";
-		const citySlug = normalizedCity ? slugifyCity(normalizedCity) : "";
+		// The city is a reference-table row, not text: the client picks an id and the
+		// display name and slug are copied from it. That is what stops two clubs in
+		// the same city from spelling it differently and splitting the landing page.
+		const cityColumns =
+			body.cityId === undefined || body.cityId === null ? NO_CITY : await resolveClubCity(body.cityId);
+		if (!cityColumns) {
+			throw apiError.validation("Unknown city");
+		}
 
 		const newClub = await db
 			.insert(club)
@@ -467,8 +472,7 @@ clubsCoreRouter.post(
 				name: body.name,
 				countryId: body.countryId,
 				location: body.location,
-				city: citySlug ? normalizedCity : null,
-				citySlug: citySlug || null,
+				...cityColumns,
 				latitude: body.latitude || null,
 				longitude: body.longitude || null,
 				description: body.description || null,
@@ -595,17 +599,15 @@ clubsCoreRouter.put(
 				]),
 		);
 
-		// `city` arrives as free text; both the stored display name and the slug that
-		// keys the city landing pages are derived here rather than trusted from the
-		// client, so "Sarajevo" and "Grad Sarajevo" cannot end up on two different
-		// pages. An empty string clears both columns.
-		if (body.city !== undefined) {
-			const normalizedCity = body.city ? normalizeCityName(body.city) : "";
-			// A name with nothing sluggable left in it (punctuation only) would produce
-			// an unroutable empty slug, so it clears the columns instead.
-			const normalizedSlug = normalizedCity ? slugifyCity(normalizedCity) : "";
-			updateData.city = normalizedSlug ? normalizedCity : null;
-			updateData.citySlug = normalizedSlug || null;
+		// The display name and slug that key the city landing pages are copied from the
+		// chosen `City` row rather than trusted from the client, so "Sarajevo" and
+		// "Grad Sarajevo" cannot end up on two different pages. `null` clears all three.
+		if (body.cityId !== undefined) {
+			const cityColumns = body.cityId === null ? NO_CITY : await resolveClubCity(body.cityId);
+			if (!cityColumns) {
+				throw apiError.validation("Unknown city");
+			}
+			Object.assign(updateData, cityColumns);
 		}
 
 		// Always update timestamp

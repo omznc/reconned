@@ -1,3 +1,7 @@
+import { eq } from "drizzle-orm";
+import { city } from "../drizzle/schema";
+import { db } from "./db";
+
 /**
  * Administrative prefixes that geocoders attach to the unit rather than the
  * place: Nominatim answers "Sarajevo" with `city: "Grad Sarajevo"` and
@@ -102,8 +106,8 @@ export function normalizeCityName(city: string): string {
  * Returns the empty string for a name with nothing sluggable in it; callers
  * treat that as "no city" rather than writing a slug that cannot be routed.
  *
- * Shared by the club write routes and the `backfill-club-cities` task so a club
- * edited by hand lands on the same slug the backfill would have given it.
+ * Shared by the city seed and the `link-club-cities` task, so the slug a city is
+ * seeded with is the same one an existing club's free-text name resolves to.
  */
 export function slugifyCity(city: string): string {
 	return city
@@ -115,4 +119,33 @@ export function slugifyCity(city: string): string {
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
+}
+
+/** The `Club` columns that describe a city, as they are stored. */
+export type ClubCityColumns = {
+	cityId: number | null;
+	city: string | null;
+	citySlug: string | null;
+};
+
+/** Cleared city columns, for a club that names no city. */
+export const NO_CITY: ClubCityColumns = { cityId: null, city: null, citySlug: null };
+
+/**
+ * Turns a chosen `City` row into the three columns stored on the club.
+ *
+ * `city` and `citySlug` are copies rather than joins so the landing-page queries
+ * stay single-table; because they are copied from one row, two clubs in the same
+ * city cannot disagree about how it is spelled. Returns `null` for an id that is
+ * not a real city, which callers surface as a validation error rather than
+ * silently storing a club with no city.
+ */
+export async function resolveClubCity(cityId: number): Promise<ClubCityColumns | null> {
+	const [row] = await db
+		.select({ id: city.id, name: city.name, slug: city.slug })
+		.from(city)
+		.where(eq(city.id, cityId))
+		.limit(1);
+
+	return row ? { cityId: row.id, city: row.name, citySlug: row.slug } : null;
 }

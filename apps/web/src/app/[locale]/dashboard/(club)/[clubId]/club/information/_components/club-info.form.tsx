@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { BannerCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/banner-crop-dialog";
+import { CityCombobox } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/city-combobox";
 import { useClubs } from "@/components/clubs-provider";
 import { InstagramIcon } from "@/components/icons";
 import { Loader } from "@/components/loader";
@@ -117,12 +118,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			.max(50, {
 				message: t("Club location must be shorter than 50 characters"),
 			}),
-		city: z
-			.string()
-			.max(50, {
-				message: t("City must be shorter than 50 characters"),
-			})
-			.optional(),
+		// The city is picked from the seeded reference table, so what travels is an
+		// id. Nullable rather than merely optional: clearing an already-set city has
+		// to be distinguishable from not touching the field.
+		cityId: z.number().nullable().optional(),
 		latitude: z.number().optional(),
 		longitude: z.number().optional(),
 		description: z.string().max(5000, {
@@ -332,7 +331,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			clubId: props.club?.id || "",
 			name: props.club?.name || "",
 			location: props.club?.location || "",
-			city: props.club?.city || "",
+			cityId: props.club?.cityId ?? null,
 			description: props.club?.description || "",
 			dateFounded: props.club?.dateFounded ? new Date(props.club.dateFounded) : undefined,
 
@@ -557,21 +556,11 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 						setMapZoom(12);
 					}
 
-					// The city field is only ever filled in, never corrected: whatever the
-					// club typed there wins over what the geocoder guessed. Which of these
-					// address fields is present varies by country, so fall through them the
-					// same way the `backfill-club-cities` task does.
-					const address = result.address ?? {};
-					const geocodedCity: string | undefined =
-						address.city || address.town || address.village || address.municipality || address.county;
-					if (geocodedCity && !form.getValues("city")) {
-						// Nominatim answers with the administrative unit ("Grad Sarajevo",
-						// "Općina Doboj Jug"). The server strips those prefixes before
-						// storing either way; doing it here too means the field shows the
-						// value that will actually be saved.
-						const displayCity = geocodedCity.replace(/^(Grad|Град|Općina|Opština|Opcina|Општина)\s+/i, "");
-						form.setValue("city", displayCity, { shouldDirty: true });
-					}
+					// The geocoder used to guess the city listing too. It no longer does:
+					// its answers are administrative units, not places ("Mjesna zajednica
+					// Trg oslobođenja-Centar" for a pin in central Sarajevo), and there is
+					// no reliable way to turn one into a city from here. The picker below
+					// is a list of real cities, so the guess is not worth the wrong ones.
 				}
 			} catch (error) {
 				if (error instanceof Error && error.name !== "AbortError") {
@@ -960,17 +949,22 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 
 					<FormField
 						control={form.control}
-						name="city"
+						name="cityId"
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>{t("City listing")}</FormLabel>
 								<FormControl>
-									<Input placeholder="Livno" type="text" maxLength={50} {...field} />
+									<CityCombobox
+										value={field.value ?? null}
+										initialLabel={props.club?.city}
+										countryId={selectedCountryId ?? null}
+										onChange={(city) =>
+											form.setValue("cityId", city?.id ?? null, { shouldDirty: true })
+										}
+									/>
 								</FormControl>
 								<FormDescription>
-									{t(
-										"The city page your club is listed on. Filled in automatically from the location above — only change it if it is wrong.",
-									)}
+									{t("The city page your club is listed on. Pick the nearest city to you.")}
 								</FormDescription>
 								<FormMessage />
 							</FormItem>

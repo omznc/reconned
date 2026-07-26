@@ -48,9 +48,15 @@ export const club = pgTable(
 		name: text().notNull(),
 		location: text(),
 		// `location` is free-form ("Matuzići Doboj Jug", "Sarajevo, BiH") and cannot be
-		// grouped on. `city` is the normalised display name and `citySlug` its URL form,
-		// which together key the per-city landing pages. Backfilled from lat/lng by the
-		// `backfill-club-cities` task; set from the club settings form thereafter.
+		// grouped on, so the per-city landing pages key off a real city instead.
+		//
+		// `cityId` is the source of truth — a row in the seeded `City` table, chosen in
+		// the club settings form. `city` and `citySlug` are denormalised copies of that
+		// row's name and slug, written server-side whenever `cityId` changes. They exist
+		// so the landing-page queries stay single-table, and because they are copies of
+		// one row rather than user text, two clubs in the same city can no longer
+		// disagree about how it is spelled.
+		cityId: integer(),
 		city: text(),
 		citySlug: text(),
 		latitude: doublePrecision(),
@@ -95,6 +101,16 @@ export const club = pgTable(
 			columns: [table.countryId],
 			foreignColumns: [country.id],
 			name: "Club_countryId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("set null"),
+		// `set null` rather than `cascade`: a city disappearing from the reference data
+		// must never delete somebody's club. The denormalised copies are cleared
+		// alongside it by the same code that writes them.
+		foreignKey({
+			columns: [table.cityId],
+			foreignColumns: [city.id],
+			name: "Club_cityId_fkey",
 		})
 			.onUpdate("cascade")
 			.onDelete("set null"),
@@ -861,6 +877,48 @@ export const country = pgTable(
 	(table) => [
 		uniqueIndex("Country_iso2_key").using("btree", table.iso2.asc().nullsLast().op("bpchar_ops")),
 		uniqueIndex("Country_iso3_key").using("btree", table.iso3.asc().nullsLast().op("bpchar_ops")),
+	],
+);
+
+/**
+ * Reference data, seeded from `country-state-city` — never written to by the app.
+ * Exists so a club's city is a foreign key rather than free text: typos, spelling
+ * variants ("Banja Luka" vs "Banjaluka") and outright junk can no longer split or
+ * invent a city landing page.
+ *
+ * `slug` is globally unique and is the routing key for `/clubs/city/[citySlug]`.
+ * City names are not unique — not worldwide, and not even within one country
+ * (BiH has a Živinice in both entities) — so the seed disambiguates collisions
+ * deterministically. See `seed-cities.ts`.
+ */
+export const city = pgTable(
+	"City",
+	{
+		id: serial().primaryKey().notNull(),
+		countryId: integer().notNull(),
+		name: text().notNull(),
+		slug: text().notNull(),
+		/** Subdivision code from the source dataset, kept to disambiguate same-named cities. */
+		stateCode: text(),
+		latitude: numeric({ precision: 10, scale: 8 }),
+		longitude: numeric({ precision: 11, scale: 8 }),
+		enabled: boolean().default(true).notNull(),
+		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+		updatedAt: timestamp({ precision: 3, mode: "string" }).notNull(),
+	},
+	(table) => [
+		uniqueIndex("City_slug_key").using("btree", table.slug.asc().nullsLast().op("text_ops")),
+		index("City_countryId_idx").using("btree", table.countryId.asc().nullsLast().op("int4_ops")),
+		// The picker searches by name within a country; trigram matching is what makes
+		// "sarajev" find "Sarajevo" across 148k rows without a sequential scan.
+		index("City_name_trgm_idx").using("gin", table.name.op("gin_trgm_ops")),
+		foreignKey({
+			columns: [table.countryId],
+			foreignColumns: [country.id],
+			name: "City_countryId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
 	],
 );
 

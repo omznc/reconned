@@ -3785,6 +3785,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/public/city-search": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Search cities
+		 * @description Search the seeded city reference data by name, optionally within one country. Returns the city IDs the club settings form writes.
+		 */
+		get: operations["publiccitySearchGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/alliances/{countryId}": {
 		parameters: {
 			query?: never;
@@ -12459,6 +12479,7 @@ export interface operations {
 								id: string;
 								name: string;
 								location: string | null;
+								cityId: number | null;
 								city: string | null;
 								citySlug: string | null;
 								latitude: number | null;
@@ -12708,6 +12729,7 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
 							city: string | null;
 							citySlug: string | null;
 							latitude: number | null;
@@ -12852,6 +12874,7 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
 							city: string | null;
 							citySlug: string | null;
 							latitude: number | null;
@@ -12907,8 +12930,8 @@ export interface operations {
 					/** @description Country ID. Use the list_countries tool to find the correct ID. */
 					countryId: number;
 					location: string;
-					/** @description City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side. */
-					city?: string;
+					/** @description City ID from the seeded city reference table. Groups the club onto that city's landing page; the display name and URL slug are copied server-side. */
+					cityId?: number | null;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
@@ -12940,6 +12963,7 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
 							city: string | null;
 							citySlug: string | null;
 							latitude: number | null;
@@ -13015,6 +13039,7 @@ export interface operations {
 						id: string;
 						name: string;
 						location: string | null;
+						cityId: number | null;
 						city: string | null;
 						citySlug: string | null;
 						latitude: number | null;
@@ -13088,8 +13113,8 @@ export interface operations {
 					/** @description Country ID. Use the list_countries tool to find the correct ID. */
 					countryId?: number;
 					location?: string;
-					/** @description City the club is based in. Groups the club onto that city's landing page; its URL slug is derived server-side. */
-					city?: string;
+					/** @description City ID from the seeded city reference table, or null to clear it. Groups the club onto that city's landing page; the display name and URL slug are copied server-side. */
+					cityId?: number | null;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
@@ -13121,6 +13146,7 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
 							city: string | null;
 							citySlug: string | null;
 							latitude: number | null;
@@ -13286,6 +13312,7 @@ export interface operations {
 						id: string;
 						name: string;
 						location: string | null;
+						cityId: number | null;
 						city: string | null;
 						citySlug: string | null;
 						latitude: number | null;
@@ -21988,6 +22015,37 @@ export interface operations {
 						featureFlags: {
 							name: string;
 							enabled: boolean;
+						}[];
+					};
+				};
+			};
+		};
+	};
+	publiccitySearchGet: {
+		parameters: {
+			query?: {
+				q?: string;
+				countryId?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						cities: {
+							id: number;
+							name: string;
+							slug: string;
+							stateCode: string | null;
+							countryId: number;
 						}[];
 					};
 				};

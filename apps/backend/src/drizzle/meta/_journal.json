@@ -50,6 +50,13 @@
       "when": 1785067899404,
       "tag": "0006_magenta_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785073558763,
+      "tag": "0007_demonic_scarlet_spider",
+      "breakpoints": true
     }
   ]
 }
