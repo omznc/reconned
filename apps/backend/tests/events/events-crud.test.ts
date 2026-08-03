@@ -336,11 +336,23 @@ describe("event listing endpoints", () => {
 	test("upcoming events only include events starting in the future", async () => {
 		const owner = await createUser();
 		const club = await createClub(owner);
-		const upcoming = await createEvent(owner, club.id);
+		// The endpoint sorts by start date and the suite shares a database, so this event starts
+		// sooner than the seven-day default the other tests use — otherwise it sits behind a
+		// page's worth of them and never appears.
+		const soon = Date.now();
+		const upcoming = await createEvent(owner, club.id, {
+			dateStart: new Date(soon + 60 * 60 * 1000).toISOString(),
+			dateEnd: new Date(soon + 2 * 60 * 60 * 1000).toISOString(),
+			dateRegistrationsOpen: new Date(soon - DAY_MS).toISOString(),
+			dateRegistrationsClose: new Date(soon + 30 * 60 * 1000).toISOString(),
+		});
 
 		const response = await api(owner.cookie).get("/api/events/upcoming?limit=50");
 		expect(response.status).toBe(200);
 		expect(response.body.events.map((e: { id: string }) => e.id)).toContain(upcoming.id);
+		for (const listed of response.body.events as { dateStart: string }[]) {
+			expect(new Date(listed.dateStart).getTime()).toBeGreaterThanOrEqual(soon);
+		}
 	});
 
 	test("calendar view requires a start and end date", async () => {
