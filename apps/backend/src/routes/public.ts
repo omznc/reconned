@@ -6,6 +6,7 @@ import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
+import { logoTileResponseSchema } from "../lib/schemas";
 
 const STATS_CACHE_KEY = "public:stats";
 const STATS_CACHE_TTL = 86400;
@@ -44,6 +45,7 @@ publicRouter.get(
 				name: club.name,
 				slug: club.slug,
 				logo: club.logo,
+				logoTile: club.logoTile,
 				latitude: club.latitude,
 				longitude: club.longitude,
 				location: club.location,
@@ -76,6 +78,7 @@ publicRouter.get(
 							name: z.string(),
 							slug: z.string().nullable(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
 							latitude: z.number().nullable(),
 							longitude: z.number().nullable(),
 							location: z.string().nullable(),
@@ -394,6 +397,11 @@ publicRouter.get(
 					),
 				}),
 			},
+			mcpTool: {
+				name: "list_cities",
+				description:
+					"List cities that have an airsoft scene on the platform, with club counts. Pass a returned citySlug to get_city for that city's clubs and events. For the seeded city reference data used when setting a club's location, use search_cities instead.",
+			},
 		},
 	},
 );
@@ -414,6 +422,7 @@ publicRouter.get(
 				location: club.location,
 				city: club.city,
 				logo: club.logo,
+				logoTile: club.logoTile,
 				latitude: club.latitude,
 				longitude: club.longitude,
 				verified: club.verified,
@@ -471,6 +480,7 @@ publicRouter.get(
 							description: z.string().nullable(),
 							location: z.string().nullable(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
 							latitude: z.number().nullable(),
 							longitude: z.number().nullable(),
 							verified: z.boolean(),
@@ -490,6 +500,11 @@ publicRouter.get(
 						}),
 					),
 				}),
+			},
+			mcpTool: {
+				name: "get_city",
+				description:
+					"Get the public clubs based in a city and the events those clubs are running. Takes a citySlug from list_cities.",
 			},
 		},
 	},
@@ -548,6 +563,10 @@ publicRouter.get(
 						players: z.number(),
 					}),
 				}),
+			},
+			mcpTool: {
+				name: "get_platform_stats",
+				description: "Total number of clubs, events, and player profiles on the platform.",
 			},
 		},
 	},
@@ -666,6 +685,11 @@ publicRouter.get(
 						}),
 					),
 				}),
+			},
+			mcpTool: {
+				name: "search_cities",
+				description:
+					"Search the seeded city reference data by name, optionally within one country. Use this to resolve the cityId a club's location is set to. For cities that actually have clubs on the platform, use list_cities.",
 			},
 		},
 	},

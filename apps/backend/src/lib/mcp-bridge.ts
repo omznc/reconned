@@ -151,6 +151,17 @@ function buildMcpToolCache(router: Router): { tools: Tool[]; routeMap: McpRouteM
 
 		const inputSchema = buildMcpInputSchema(route.schema);
 
+		// Generated names drop path params, so a list route and its by-ID sibling produce
+		// the same name. Left unchecked the second registration overwrites the first and
+		// one of the two routes becomes unreachable over MCP — fail loudly instead, so the
+		// colliding route gets an explicit `mcpTool: { name }`.
+		const existing = routeMap.get(name);
+		if (existing) {
+			throw new Error(
+				`Duplicate MCP tool name "${name}": ${existing.method} ${existing.route.path} and ${route.method} ${route.path}. Give one of them an explicit mcpTool.name.`,
+			);
+		}
+
 		tools.push({ name, description, inputSchema });
 		routeMap.set(name, { route, method: route.method });
 	}

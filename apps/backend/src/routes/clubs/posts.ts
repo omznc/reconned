@@ -84,7 +84,12 @@ clubsPostsRouter.get(
 				400: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
 			},
-			mcpTool: true,
+			// Named explicitly: the generated name would collide with the by-ID route below,
+			// and a collision silently drops one of the two tools.
+			mcpTool: {
+				name: "list_club_posts",
+				description: "List all posts for a club (private clubs: members only, public clubs: published posts)",
+			},
 		},
 	},
 );

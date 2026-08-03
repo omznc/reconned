@@ -4,6 +4,7 @@ import * as z from "zod";
 import { club, clubInvite, clubMembership, event, eventRegistration, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { logger } from "../lib/posthog";
+import { logoTileOf, logoTileResponseSchema } from "../lib/schemas";
 
 const dashboardRouter = new Router();
 
@@ -118,6 +119,7 @@ dashboardRouter.get(
 				id: clubData.id,
 				name: clubData.name,
 				logo: clubData.logo,
+				logoTile: logoTileOf(clubData.logoTile),
 				membershipRole: membership?.role || "USER",
 				memberCount: memberCountMap.get(clubData.id) || 0,
 				eventCount: eventCountMap.get(clubData.id) || 0,
@@ -132,6 +134,7 @@ dashboardRouter.get(
 			id: c.id,
 			name: c.name,
 			logo: c.logo,
+			logoTile: c.logoTile,
 			membershipRole: c.membershipRole,
 			events: c.upcomingEvent
 				? [
@@ -165,6 +168,7 @@ dashboardRouter.get(
 							id: z.string(),
 							name: z.string(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
 							membershipRole: z.enum(["USER", "MANAGER", "CLUB_OWNER"]),
 							events: z.array(
 								z.object({
@@ -320,7 +324,7 @@ dashboardRouter.get(
 
 		// Batch fetch all clubs
 		const clubsData = await db
-			.select({ id: club.id, name: club.name, logo: club.logo })
+			.select({ id: club.id, name: club.name, logo: club.logo, logoTile: club.logoTile })
 			.from(club)
 			.where(inArray(club.id, clubIds));
 

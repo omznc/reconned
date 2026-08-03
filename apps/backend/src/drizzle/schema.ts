@@ -85,6 +85,11 @@ export const club = pgTable(
 		isPrivate: boolean().default(false).notNull(),
 		isPrivateStats: boolean().default(false).notNull(),
 		logo: text(),
+		// Which tile a logo sits on: "paper" (the default) or "ink", for light marks
+		// that would vanish on paper. Written at upload time from the logo's own
+		// pixels, and overridable by the club — null means "decide automatically",
+		// which is also what every club uploaded before this existed says.
+		logoTile: text(),
 		contactPhone: text(),
 		contactEmail: text(),
 		verified: boolean().default(false).notNull(),

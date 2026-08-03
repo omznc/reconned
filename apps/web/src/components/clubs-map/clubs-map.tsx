@@ -2,7 +2,7 @@
 
 import { MapContainer, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Marker } from "@adamscybot/react-leaflet-component-marker";
+import { Marker, type MarkerProps } from "@adamscybot/react-leaflet-component-marker";
 import L from "leaflet";
 import {
 	ArrowUpRightIcon,
@@ -12,20 +12,18 @@ import {
 	Globe,
 	Handshake,
 	MailOpenIcon,
-	MapPin,
 	Phone,
 	Search,
 	X,
 } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useCallback, useEffect, useState } from "react";
 import { InstagramIcon, VerifiedClubIcon } from "@/components/icons";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +35,7 @@ interface MapClub {
 	longitude: number | null;
 	location: string | null;
 	logo: string | null;
+	logoTile?: "paper" | "ink" | null;
 	slug?: string | null;
 	verified?: boolean;
 	description?: string | null;
@@ -48,9 +47,6 @@ interface MapClub {
 	contactEmail?: string | null;
 	contactPhone?: string | null;
 }
-
-import { IMAGE_SIZES } from "@/lib/image-sizes";
-import { Label } from "../ui/label";
 
 // Custom TileLayer with LCP optimization
 class OptimizedTileLayer extends L.TileLayer {
@@ -80,319 +76,96 @@ const createOptimizedTileLayer = (url: string, options?: L.TileLayerOptions) => 
 	return new OptimizedTileLayer(url, options);
 };
 
-// Clustering utilities
-const MARKER_SIZE = 32; // Base marker size in pixels
-const MIN_SPACING = 40; // Minimum spacing between markers in pixels
+// Grouping — pins that would collide collapse into one pin carrying a count.
+//
+// The old behaviour spread overlapping clubs out into a grid, which invented
+// locations that don't exist. Grouping instead admits the overlap: one pin,
+// one number, and a zoom that resolves it.
+const PIN_SIZE = 44; // Default plate, in pixels
+const PIN_FAR_SIZE = 28; // Zoomed out, no inner frame
+const PIN_SELECTED_SIZE = 56;
+const PIN_GAP = 8; // Breathing room between two pins before they merge
+const FAR_ZOOM = 9; // At or below this, pins drop to their small form
 
-interface ClusterGroup {
+/**
+ * Every pin is drawn once at PIN_SIZE and then scaled, so a size change is a
+ * transform the browser can animate rather than a relayout that snaps. The
+ * collision threshold still needs the on-screen size, which is what this gives.
+ */
+function pinSizeForZoom(zoom: number): number {
+	return zoom <= FAR_ZOOM ? PIN_FAR_SIZE : PIN_SIZE;
+}
+
+interface ClubGroup {
+	/** Stable across renders for the same membership, so markers aren't recreated. */
+	key: string;
 	clubs: MapClub[];
 	center: [number, number];
 }
 
-// Calculate pixel distance between two lat/lng points at given zoom
-function calculatePixelDistance(map: L.Map, pos1: [number, number], pos2: [number, number]): number {
-	const p1 = map.latLngToContainerPoint(pos1);
-	const p2 = map.latLngToContainerPoint(pos2);
-	return p1.distanceTo(p2);
+interface PlacedClub {
+	club: MapClub;
+	point: L.Point;
 }
 
-// Check if two markers should be clustered at current zoom (more aggressive clustering)
-function shouldClusterMarkers(
-	map: L.Map,
-	pos1: [number, number],
-	pos2: [number, number],
-	markerSize: number = MARKER_SIZE,
-): boolean {
-	const pixelDistance = calculatePixelDistance(map, pos1, pos2);
+/**
+ * Groups by projected pixel distance at the current zoom. Projection is used
+ * rather than container points so panning never reshuffles the groups — only
+ * zooming does, which is what a viewer expects.
+ */
+function groupClubs(clubs: MapClub[], map: L.Map): ClubGroup[] {
 	const zoom = map.getZoom();
+	const threshold = pinSizeForZoom(zoom) + PIN_GAP;
 
-	// More aggressive clustering at lower zoom levels
-	// At zoom 8: cluster if within 3x marker size
-	// At zoom 12: cluster if within 2x marker size
-	// At zoom 16+: cluster if within 1x marker size (normal overlap)
-	const aggressionMultiplier = Math.max(1, (18 - zoom) / 4);
-	const threshold = markerSize * aggressionMultiplier;
-
-	return pixelDistance < threshold;
-}
-
-// Check if two clusters should be merged (more aggressive merging)
-function shouldMergeClusters(cluster1: ClusterGroup, cluster2: ClusterGroup, map: L.Map, markerSize: number): boolean {
-	const gridSize1 = Math.ceil(Math.sqrt(cluster1.clubs.length));
-	const gridSize2 = Math.ceil(Math.sqrt(cluster2.clubs.length));
-	const spacing1 = Math.max(MIN_SPACING, markerSize * 0.8);
-	const spacing2 = Math.max(MIN_SPACING, markerSize * 0.8);
-
-	// Calculate the effective radius of each cluster's grid
-	const radius1 = ((gridSize1 - 1) / 2) * spacing1;
-	const radius2 = ((gridSize2 - 1) / 2) * spacing2;
-
-	const zoom = map.getZoom();
-	// More aggressive merging at lower zoom levels
-	const mergeMultiplier = Math.max(0.5, (18 - zoom) / 8);
-	const totalRadius = (radius1 + radius2) * mergeMultiplier;
-
-	return calculatePixelDistance(map, cluster1.center, cluster2.center) < totalRadius;
-}
-
-// Merge overlapping clusters hierarchically
-function mergeOverlappingClusters(clusters: ClusterGroup[], map: L.Map, markerSize: number): ClusterGroup[] {
-	let mergedClusters = [...clusters];
-
-	while (mergedClusters.length > 1) {
-		let merged = false;
-
-		for (let i = 0; i < mergedClusters.length && !merged; i++) {
-			const cluster1 = mergedClusters[i];
-			if (!cluster1) continue;
-
-			for (let j = i + 1; j < mergedClusters.length && !merged; j++) {
-				const cluster2 = mergedClusters[j];
-				if (!cluster2) continue;
-
-				if (shouldMergeClusters(cluster1, cluster2, map, markerSize)) {
-					// Merge clusters
-					const mergedClubs = [...cluster1.clubs, ...cluster2.clubs];
-
-					// Calculate new center
-					let totalLat = 0;
-					let totalLng = 0;
-					let validClubs = 0;
-
-					for (const club of mergedClubs) {
-						if (club.latitude && club.longitude) {
-							totalLat += club.latitude;
-							totalLng += club.longitude;
-							validClubs++;
-						}
-					}
-
-					const newCenter: [number, number] = [totalLat / validClubs, totalLng / validClubs];
-
-					const newCluster: ClusterGroup = {
-						clubs: mergedClubs,
-						center: newCenter,
-					};
-
-					// Replace the two clusters with the merged one
-					const newClusters = mergedClusters.filter((_, index) => index !== i && index !== j);
-					newClusters.push(newCluster);
-
-					mergedClusters = newClusters;
-					merged = true;
-				}
-			}
-		}
-
-		if (!merged) break; // No more merges possible
-	}
-
-	return mergedClusters;
-}
-
-// Group clubs that would overlap into clusters (aggressive clustering)
-function createClusters(clubs: MapClub[], map: L.Map, markerSize: number): ClusterGroup[] {
-	const clusters: ClusterGroup[] = [];
-	const processed = new Set<string>();
-	const zoom = map.getZoom();
-
-	// First pass: create initial clusters of directly overlapping clubs
+	const placed: PlacedClub[] = [];
 	for (const club of clubs) {
-		if (!club.latitude || !club.longitude || processed.has(club.id)) continue;
-
-		const currentPos: [number, number] = [club.latitude, club.longitude];
-		const cluster: MapClub[] = [club];
-		processed.add(club.id);
-
-		// Find all clubs that would overlap with this one
-		for (const otherClub of clubs) {
-			if (!otherClub.latitude || !otherClub.longitude || processed.has(otherClub.id) || otherClub.id === club.id)
-				continue;
-
-			const otherPos: [number, number] = [otherClub.latitude, otherClub.longitude];
-
-			if (shouldClusterMarkers(map, currentPos, otherPos, markerSize)) {
-				cluster.push(otherClub);
-				processed.add(otherClub.id);
-			}
-		}
-
-		// At very low zoom levels, force clustering even for single clubs
-		// This ensures we get larger clusters when zoomed way out
-		const shouldForceCluster = cluster.length === 1 && zoom < 10;
-
-		if (cluster.length > 1 || shouldForceCluster) {
-			// Calculate center of cluster (all clubs in cluster should have valid coordinates)
-			let totalLat = 0;
-			let totalLng = 0;
-			let validClubs = 0;
-
-			for (const c of cluster) {
-				if (c.latitude && c.longitude) {
-					totalLat += c.latitude;
-					totalLng += c.longitude;
-					validClubs++;
-				}
-			}
-
-			if (validClubs > 0) {
-				const avgLat = totalLat / validClubs;
-				const avgLng = totalLng / validClubs;
-				clusters.push({ clubs: cluster, center: [avgLat, avgLng] });
-			}
-		}
+		if (typeof club.latitude !== "number" || typeof club.longitude !== "number") continue;
+		placed.push({ club, point: map.project([club.latitude, club.longitude], zoom) });
 	}
 
-	// Second pass: merge clusters that would still overlap after grid arrangement
-	return mergeOverlappingClusters(clusters, map, markerSize);
-}
+	const taken = new Set<number>();
+	const groups: ClubGroup[] = [];
 
-// Arrange clubs in a cluster in a grid pattern
-function arrangeClusterInGrid(cluster: ClusterGroup, map: L.Map, markerSize: number): Map<string, [number, number]> {
-	const { clubs, center } = cluster;
-	const positions = new Map<string, [number, number]>();
+	for (let i = 0; i < placed.length; i++) {
+		const seed = placed[i];
+		if (!seed || taken.has(i)) continue;
 
-	if (clubs.length === 1) {
-		const club = clubs[0];
-		if (club?.latitude && club?.longitude) {
-			positions.set(club.id, [club.latitude, club.longitude]);
-		}
-		return positions;
-	}
+		taken.add(i);
+		const members: PlacedClub[] = [seed];
+		let centroid = seed.point;
 
-	// Calculate grid dimensions
-	const gridSize = Math.ceil(Math.sqrt(clubs.length));
-	const spacing = Math.max(MIN_SPACING, markerSize * 0.8);
+		// Re-sweep after every absorption: the centroid moves, which can bring
+		// clubs that were just out of range into it.
+		let grew = true;
+		while (grew) {
+			grew = false;
+			for (let j = 0; j < placed.length; j++) {
+				const candidate = placed[j];
+				if (!candidate || taken.has(j)) continue;
+				if (centroid.distanceTo(candidate.point) >= threshold) continue;
 
-	// Convert center to pixel coordinates
-	const centerPixel = map.latLngToContainerPoint(center);
-
-	clubs.forEach((club, index) => {
-		if (!club?.latitude || !club.longitude) return;
-
-		const row = Math.floor(index / gridSize);
-		const col = index % gridSize;
-
-		// Calculate offset from center
-		const offsetX = (col - (gridSize - 1) / 2) * spacing;
-		const offsetY = (row - (gridSize - 1) / 2) * spacing;
-
-		// Convert back to lat/lng
-		const markerPixel = centerPixel.add([offsetX, offsetY]);
-		const markerLatLng = map.containerPointToLatLng(markerPixel);
-
-		positions.set(club.id, [markerLatLng.lat, markerLatLng.lng]);
-	});
-
-	return positions;
-}
-
-// Get clustered positions for all clubs
-function getClusteredPositions(clubs: MapClub[], map: L.Map, markerSize: number): Map<string, [number, number]> {
-	const positions = new Map<string, [number, number]>();
-	const clusters = createClusters(clubs, map, markerSize);
-
-	// Add non-clustered clubs first
-	const clusteredClubIds = new Set<string>();
-	for (const cluster of clusters) {
-		for (const club of cluster.clubs) {
-			clusteredClubIds.add(club.id);
-		}
-	}
-
-	// Position non-clustered clubs at exact locations
-	for (const club of clubs) {
-		if (!clusteredClubIds.has(club.id) && club.latitude && club.longitude) {
-			positions.set(club.id, [club.latitude, club.longitude]);
-		}
-	}
-
-	// Position clustered clubs in grid
-	for (const cluster of clusters) {
-		const clusterPositions = arrangeClusterInGrid(cluster, map, markerSize);
-		for (const [clubId, pos] of clusterPositions) {
-			positions.set(clubId, pos);
-		}
-	}
-
-	return positions;
-}
-
-// Animated marker component with smooth transitions
-function AnimatedMarker({
-	position,
-	icon,
-	eventHandlers,
-	zIndexOffset,
-}: {
-	position: [number, number];
-	icon: React.ReactElement;
-	eventHandlers?: L.LeafletEventHandlerFnMap;
-	zIndexOffset?: number;
-}) {
-	const markerRef = useRef<L.Marker | null>(null);
-	const animationRef = useRef<number | null>(null);
-	const [currentPosition, setCurrentPosition] = useState(position);
-
-	// Smooth animation between positions
-	useEffect(() => {
-		const [newLat, newLng] = position;
-		const [currentLat, currentLng] = currentPosition;
-
-		// If positions are the same, no animation needed
-		if (Math.abs(newLat - currentLat) < 0.000001 && Math.abs(newLng - currentLng) < 0.000001) {
-			return;
-		}
-
-		// Cancel any existing animation
-		if (animationRef.current) {
-			cancelAnimationFrame(animationRef.current);
-		}
-
-		const startTime = Date.now();
-		const duration = 300; // 300ms animation
-
-		const animate = () => {
-			const elapsed = Date.now() - startTime;
-			const progress = Math.min(elapsed / duration, 1);
-
-			// Easing function (ease-out cubic)
-			const easeProgress = 1 - (1 - progress) ** 3;
-
-			const lat = currentLat + (newLat - currentLat) * easeProgress;
-			const lng = currentLng + (newLng - currentLng) * easeProgress;
-
-			if (markerRef.current) {
-				markerRef.current.setLatLng([lat, lng]);
+				taken.add(j);
+				members.push(candidate);
+				centroid = centroid
+					.multiplyBy(members.length - 1)
+					.add(candidate.point)
+					.divideBy(members.length);
+				grew = true;
 			}
+		}
 
-			if (progress < 1) {
-				animationRef.current = requestAnimationFrame(animate);
-			} else {
-				setCurrentPosition(position);
-				animationRef.current = null;
-			}
-		};
+		const center = map.unproject(centroid, zoom);
+		groups.push({
+			key: members
+				.map((m) => m.club.id)
+				.sort()
+				.join("|"),
+			clubs: members.map((m) => m.club),
+			center: [center.lat, center.lng],
+		});
+	}
 
-		setCurrentPosition([newLat, newLng]);
-		animationRef.current = requestAnimationFrame(animate);
-
-		return () => {
-			if (animationRef.current) {
-				cancelAnimationFrame(animationRef.current);
-			}
-		};
-	}, [position, currentPosition]);
-
-	return (
-		<Marker
-			ref={markerRef}
-			position={currentPosition}
-			icon={icon}
-			eventHandlers={eventHandlers}
-			zIndexOffset={zIndexOffset}
-		/>
-	);
+	return groups;
 }
 
 // React component for optimized tile layer
@@ -411,65 +184,226 @@ function OptimizedTileLayerComponent({ url, ...options }: { url: string } & L.Ti
 	return null;
 }
 
-// Pre-translated strings for createClubIcon: it renders outside the React tree (leaflet
+// Pre-translated strings for the pins: they render outside the React tree (leaflet
 // divIcon), and the next-intl extractor only picks up t() calls made directly in the
 // component that owns useExtracted(), not through a passed-down t.
 interface ClubIconLabels {
-	clubLogo: string;
 	clubLocation: string;
+	group: string;
 }
 
-// Helper function to create a custom icon from club logo
-function createClubIcon(
-	logoUrl: string | null | undefined,
-	size: number,
-	clubName: string,
-	isHovered: boolean,
-	labels: ClubIconLabels,
-) {
-	const iconContent = logoUrl ? (
-		<Image
-			src={logoUrl}
-			alt={labels.clubLogo}
-			className="object-contain"
-			width={IMAGE_SIZES.ICON}
-			height={IMAGE_SIZES.ICON}
-			style={{
-				width: `${size}px`,
-				height: `${size}px`,
-			}}
-		/>
-	) : (
-		<svg
-			width={size}
-			height={size}
-			viewBox="0 0 24 24"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-			aria-label={clubName || labels.clubLocation}
-		>
-			<title>{clubName || labels.clubLocation}</title>
-			<path
-				d="M12 21C12 21 19 13.5 19 9C19 5.13401 15.866 2 12 2C8.13401 2 5 5.13401 5 9C5 13.5 12 21 12 21Z"
-				fill="#EF4444"
-			/>
-			<circle cx="12" cy="9" r="3" fill="white" />
-		</svg>
-	);
+const PIN_SHADOW = "drop-shadow(0 3px 6px rgba(27,26,24,0.22)) drop-shadow(0 1px 1px rgba(27,26,24,0.14))";
+const PIN_SHADOW_RAISED = "drop-shadow(0 8px 14px rgba(27,26,24,0.26)) drop-shadow(0 2px 3px rgba(27,26,24,0.16))";
+const PLATE = "#ffffff";
+const PLATE_SELECTED = "#b6221f";
+const PLATE_STACK = "#faf8f4";
+const PLATE_STACK_BORDER = "#e4e0d8";
+const GROUP_PLATE = "#1b1a18";
+const GROUP_INK = "#f4f2ee";
+
+// Fixed geometry, drawn once. State only ever changes `transform`, so a pin can
+// grow, shrink or be grabbed mid-flight without the browser re-laying anything out.
+const PLATE_PAD = 3;
+const PLATE_RADIUS = 12;
+const TIP = 12;
+/** How far the rotated tip square reaches below the plate: (TIP·√2 − TIP)/2 + TIP/3. */
+const TIP_OVERHANG = Math.round((TIP * Math.SQRT2 - TIP) / 2 + TIP / 3);
+const PIN_BOX_H = PIN_SIZE + TIP_OVERHANG;
+
+const SCALE_FAR = PIN_FAR_SIZE / PIN_SIZE;
+const SCALE_HOVER = 1.08;
+const SCALE_SELECTED = PIN_SELECTED_SIZE / PIN_SIZE;
+
+type IconOpts = NonNullable<MarkerProps["componentIconOpts"]>;
+
+/**
+ * A club pin's anchor is the point of its tip, not the middle of its plate, so
+ * growing on select or on zoom lifts the plate off a fixed spot instead of
+ * sliding the whole pin down the map.
+ */
+const CLUB_ICON_OPTS: IconOpts = {
+	layoutMode: "fit-parent",
+	rootDivOpts: { iconSize: [PIN_SIZE, PIN_BOX_H], iconAnchor: [PIN_SIZE / 2, PIN_BOX_H], className: "map-marker" },
+};
+
+/** A group has no tip, so it stays centred on its centroid. */
+const GROUP_ICON_OPTS: IconOpts = {
+	layoutMode: "fit-parent",
+	rootDivOpts: { iconSize: [PIN_SIZE, PIN_SIZE], iconAnchor: [PIN_SIZE / 2, PIN_SIZE / 2], className: "map-marker" },
+};
+
+type PinState = "default" | "hovered" | "selected";
+
+function pinScale(state: PinState, far: boolean): number {
+	if (state === "selected") {
+		return SCALE_SELECTED;
+	}
+	if (state === "hovered") {
+		return far ? SCALE_FAR * 1.18 : SCALE_HOVER;
+	}
+	return far ? SCALE_FAR : 1;
+}
+
+function plateBody(background: string): CSSProperties {
+	return {
+		position: "absolute",
+		left: 0,
+		top: 0,
+		width: PIN_SIZE,
+		height: PIN_SIZE,
+		borderRadius: PLATE_RADIUS,
+		background,
+		boxSizing: "border-box",
+	};
+}
+
+/**
+ * The plate is what makes a logo legible on a busy basemap: a club's mark never
+ * touches the map itself, it sits on paper. Zoomed out the inner frame closes —
+ * at 28px a 3px border is just mud — and it reopens on the way back in.
+ */
+function ClubPin({
+	club,
+	state,
+	far,
+	labels,
+}: {
+	club: Pick<MapClub, "name" | "logo" | "logoTile">;
+	state: PinState;
+	far: boolean;
+	labels: ClubIconLabels;
+}) {
+	const selected = state === "selected";
+	const raised = selected || state === "hovered";
+	const plate = selected ? PLATE_SELECTED : PLATE;
+	const pad = far && !selected ? 0 : PLATE_PAD;
 
 	return (
-		<div className="relative flex flex-col items-center">
-			<div className="transition-transform hover:scale-125">{iconContent}</div>
-			{isHovered && (
-				<div className="absolute top-full mt-1 bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
-					{clubName}
+		<div className="map-marker-in" style={{ position: "relative", width: "100%", height: "100%" }}>
+			<div
+				className={cn("map-pin", selected && "map-pin-settling")}
+				style={{
+					position: "absolute",
+					left: 0,
+					bottom: TIP_OVERHANG,
+					width: PIN_SIZE,
+					height: PIN_SIZE,
+					// The origin is the tip's point, so every scale grows out of the
+					// exact coordinate the pin marks.
+					transformOrigin: `50% ${PIN_SIZE + TIP_OVERHANG}px`,
+					transform: `scale(${pinScale(state, far)})`,
+					filter: raised ? PIN_SHADOW_RAISED : PIN_SHADOW,
+				}}
+			>
+				{/* A rotated square rather than a triangle, so the tip keeps the plate's corner radius. */}
+				<div
+					className="map-pin-plate"
+					style={{
+						position: "absolute",
+						left: "50%",
+						bottom: -Math.round(TIP / 3),
+						marginLeft: -TIP / 2,
+						width: TIP,
+						height: TIP,
+						background: plate,
+						borderRadius: 2,
+						transform: "rotate(45deg)",
+					}}
+				/>
+				<div
+					className="map-pin-plate"
+					style={{ ...plateBody(plate), position: "relative", padding: pad }}
+					title={club.name || labels.clubLocation}
+				>
+					<ClubAvatar
+						name={club.name}
+						logo={club.logo}
+						tile={club.logoTile}
+						size={PIN_SIZE - PLATE_PAD * 2}
+						fill
+					/>
+				</div>
+			</div>
+			{state === "hovered" && club.name && (
+				<div
+					className="map-pin-label"
+					style={{
+						position: "absolute",
+						top: "100%",
+						marginTop: 6,
+						left: "50%",
+						padding: "4px 8px",
+						borderRadius: 6,
+						background: GROUP_PLATE,
+						color: GROUP_INK,
+						fontSize: 12,
+						lineHeight: 1.2,
+						whiteSpace: "nowrap",
+						zIndex: 50,
+					}}
+				>
+					{club.name}
 				</div>
 			)}
 		</div>
 	);
 }
 
-// Club type imported from API
+/**
+ * Stacked plates say "more than one" before the number is even read — the count
+ * confirms it rather than carrying the whole message on its own.
+ */
+function GroupPin({
+	count,
+	far,
+	hovered,
+	labels,
+}: {
+	count: number;
+	far: boolean;
+	hovered: boolean;
+	labels: ClubIconLabels;
+}) {
+	const stack: CSSProperties = {
+		...plateBody(PLATE_STACK),
+		border: `1px solid ${PLATE_STACK_BORDER}`,
+	};
+
+	return (
+		<div className="map-marker-in" style={{ position: "relative", width: "100%", height: "100%" }}>
+			<div
+				className="map-pin"
+				style={{
+					position: "absolute",
+					inset: 0,
+					transformOrigin: "50% 50%",
+					transform: `scale(${pinScale(hovered ? "hovered" : "default", far)})`,
+					filter: hovered ? PIN_SHADOW_RAISED : PIN_SHADOW,
+				}}
+				title={labels.group}
+			>
+				<div style={{ ...stack, left: PIN_SIZE * 0.114, top: PIN_SIZE * -0.114, opacity: 0.55 }} />
+				<div style={{ ...stack, left: PIN_SIZE * 0.057, top: PIN_SIZE * -0.057, opacity: 0.8 }} />
+				<div
+					style={{
+						...plateBody(GROUP_PLATE),
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						color: GROUP_INK,
+						fontFamily: "var(--font-club-mark)",
+						fontWeight: 700,
+						fontSize: Math.round(PIN_SIZE * 0.4),
+						lineHeight: 1,
+						userSelect: "none",
+					}}
+				>
+					{count}
+				</div>
+			</div>
+		</div>
+	);
+}
 
 interface MapFocusPoint {
 	lat: number;
@@ -487,14 +421,31 @@ interface ClubsMapProps {
 
 function LocationMarker({
 	position,
+	name,
 	logo,
+	tile,
 	labels,
 }: {
 	position: [number, number];
+	name?: string;
 	logo?: string | null;
+	tile?: MapClub["logoTile"];
 	labels: ClubIconLabels;
 }) {
-	return position ? <Marker position={position} icon={createClubIcon(logo, 32, "", false, labels)} /> : null;
+	return position ? (
+		<Marker
+			position={position}
+			componentIconOpts={CLUB_ICON_OPTS}
+			icon={
+				<ClubPin
+					club={{ name: name ?? "", logo: logo ?? null, logoTile: tile ?? null }}
+					state="default"
+					far={false}
+					labels={labels}
+				/>
+			}
+		/>
+	) : null;
 }
 
 function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
@@ -506,6 +457,15 @@ function MapEventHandler({ onLocationSelect }: { onLocationSelect?: (lat: number
 			}
 		},
 	});
+	return null;
+}
+
+/**
+ * Clicking the basemap clears the selection. Leaflet only fires `click` on the
+ * map when nothing interactive was hit, so a pin click never reaches this.
+ */
+function MapBackgroundDeselect({ onDeselect }: { onDeselect: () => void }) {
+	useMapEvents({ click: onDeselect });
 	return null;
 }
 
@@ -551,19 +511,18 @@ export function ClubsMap({
 	controlsBelowHeader = false,
 }: ClubsMapProps) {
 	const [mounted, setMounted] = useState(false);
-	const [logoSize, setLogoSize] = useState(32); // Default size
 	const [clubId] = useQueryState("clubId");
-	const [hoveredClubId, setHoveredClubId] = useState<string | null>(null);
+	const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [targetClub, setTargetClub] = useState<MapClub | null>(null);
-	const [clusteredPositions, setClusteredPositions] = useState<Map<string, [number, number]>>(new Map());
+	const [groups, setGroups] = useState<ClubGroup[]>([]);
+	const [far, setFar] = useState(false);
 	const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
-	const [clusteringEnabled, setClusteringEnabled] = useState(false); // Default to disabled
 	const [selectedClubForOverview, setSelectedClubForOverview] = useState<MapClub | null>(null);
 	const t = useExtracted();
 	const iconLabels: ClubIconLabels = {
-		clubLogo: t("Club logo"),
 		clubLocation: t("Club location"),
+		group: t("Several clubs here — click to zoom in"),
 	};
 
 	const prefilledClub = clubs.find((club) => club.id === clubId || club.slug === clubId);
@@ -584,38 +543,61 @@ export function ClubsMap({
 		setMounted(true);
 	}, []);
 
-	// Update marker positions when map, clubs, clustering settings, or marker size changes
+	// Regroup on zoom. Panning is deliberately not a trigger: groups are computed
+	// in projected space, so they're identical wherever the viewport sits.
 	useEffect(() => {
 		if (!mapInstance || !clubs.length) return;
 
-		const updatePositions = () => {
-			let positions: Map<string, [number, number]>;
-
-			if (clusteringEnabled) {
-				positions = getClusteredPositions(clubs, mapInstance, logoSize);
-			} else {
-				// Use exact positions when clustering is disabled
-				positions = new Map();
-				for (const club of clubs) {
-					if (club.latitude && club.longitude) {
-						positions.set(club.id, [club.latitude, club.longitude]);
-					}
-				}
-			}
-
-			setClusteredPositions(positions);
+		const regroup = () => {
+			setGroups(groupClubs(clubs, mapInstance));
+			setFar(mapInstance.getZoom() <= FAR_ZOOM);
 		};
 
-		updatePositions();
-
-		// Listen for zoom changes to recalculate clustering
-		const handleZoom = () => updatePositions();
-		mapInstance.on("zoomend", handleZoom);
+		regroup();
+		mapInstance.on("zoomend", regroup);
 
 		return () => {
-			mapInstance.off("zoomend", handleZoom);
+			mapInstance.off("zoomend", regroup);
 		};
-	}, [mapInstance, clubs, logoSize, clusteringEnabled]);
+	}, [mapInstance, clubs]);
+
+	// A group opens by zooming to fit its members rather than by listing them —
+	// the map itself answers "which ones", and the pins separate on the way in.
+	const focusGroup = useCallback(
+		(group: ClubGroup) => {
+			if (!mapInstance) return;
+
+			const points: [number, number][] = [];
+			for (const club of group.clubs) {
+				if (typeof club.latitude === "number" && typeof club.longitude === "number") {
+					points.push([club.latitude, club.longitude]);
+				}
+			}
+			if (points.length === 0) return;
+
+			mapInstance.flyToBounds(L.latLngBounds(points), {
+				padding: [80, 80],
+				maxZoom: 17,
+				duration: 1,
+			});
+		},
+		[mapInstance],
+	);
+
+	const deselect = useCallback(() => setSelectedClubForOverview(null), []);
+
+	// Escape is the other way out of a selection, so the overview never feels
+	// like something you're stuck inside.
+	useEffect(() => {
+		if (!selectedClubForOverview) return;
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") deselect();
+		};
+		window.addEventListener("keydown", onKeyDown);
+
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [selectedClubForOverview, deselect]);
 
 	if (!mounted) {
 		return null;
@@ -640,29 +622,7 @@ export function ClubsMap({
 				<>
 					<div className={cn("hidden md:flex absolute left-4 z-10", controlsTopInset)}>
 						<div className="bg-white dark:bg-[#0d0d0d] border rounded-md p-3 w-80 flex flex-col gap-4">
-							<label className="flex items-center gap-2 cursor-pointer">
-								<input
-									type="checkbox"
-									checked={clusteringEnabled}
-									onChange={(e) => setClusteringEnabled(e.target.checked)}
-									className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-								/>
-								<span className="text-sm font-medium text-foreground">{t("Clustering")}</span>
-							</label>
-
-							<div className="flex flex-col gap-2">
-								<Label className="text-sm font-medium text-foreground">{t("Logo size")}</Label>
-								<Slider
-									value={[logoSize]}
-									onValueChange={([value]) => setLogoSize(value || 32)}
-									min={16}
-									max={64}
-									step={16}
-									className="w-full"
-								/>
-							</div>
-
-							<div className="flex flex-col gap-3 border-t pt-3">
+							<div className="flex flex-col gap-3">
 								<div className="relative">
 									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 									<Input
@@ -694,17 +654,13 @@ export function ClubsMap({
 														setSearchQuery("");
 													}}
 												>
-													{club.logo ? (
-														<Image
-															src={club.logo}
-															alt=""
-															width={24}
-															height={24}
-															className="w-6 h-6 object-contain rounded flex-shrink-0"
-														/>
-													) : (
-														<MapPin className="w-6 h-6 text-red-500 flex-shrink-0" />
-													)}
+													<ClubAvatar
+														name={club.name}
+														logo={club.logo}
+														tile={club.logoTile}
+														size={28}
+														className="shrink-0"
+													/>
 													<div className="flex-1 min-w-0">
 														<div className="font-medium truncate">{club.name}</div>
 														{club.location && (
@@ -733,23 +689,19 @@ export function ClubsMap({
 									variant="ghost"
 									size="sm"
 									className="absolute top-2 right-2 h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-									onClick={() => setSelectedClubForOverview(null)}
+									onClick={deselect}
 								>
 									<X className="h-4 w-4" />
 								</Button>
 
 								<div className="flex items-start gap-3">
-									{selectedClubForOverview.logo ? (
-										<Image
-											src={selectedClubForOverview.logo}
-											alt=""
-											width={48}
-											height={48}
-											className="w-12 h-12 object-contain rounded flex-shrink-0"
-										/>
-									) : (
-										<MapPin className="w-12 h-12 text-red-500 flex-shrink-0" />
-									)}
+									<ClubAvatar
+										name={selectedClubForOverview.name}
+										logo={selectedClubForOverview.logo}
+										tile={selectedClubForOverview.logoTile}
+										size={48}
+										className="shrink-0"
+									/>
 									<div className="flex-1 min-w-0">
 										<div className="flex items-center gap-2">
 											<h3 className="font-semibold text-lg truncate">
@@ -877,17 +829,13 @@ export function ClubsMap({
 											setSearchQuery("");
 										}}
 									>
-										{club.logo ? (
-											<Image
-												src={club.logo}
-												alt=""
-												width={24}
-												height={24}
-												className="w-6 h-6 object-contain rounded flex-shrink-0"
-											/>
-										) : (
-											<MapPin className="w-6 h-6 text-red-500 flex-shrink-0" />
-										)}
+										<ClubAvatar
+											name={club.name}
+											logo={club.logo}
+											tile={club.logoTile}
+											size={28}
+											className="shrink-0"
+										/>
 										<div className="flex-1 min-w-0">
 											<div className="font-medium truncate">{club.name}</div>
 											{club.location && (
@@ -941,36 +889,74 @@ export function ClubsMap({
 				<MapInstanceCapturer onMapReady={setMapInstance} />
 				<MapController targetClub={targetClub} focusPoint={focusPoint} />
 
-				{interactive && <MapEventHandler onLocationSelect={onLocationSelect} />}
+				{interactive ? (
+					<MapEventHandler onLocationSelect={onLocationSelect} />
+				) : (
+					<MapBackgroundDeselect onDeselect={deselect} />
+				)}
 
 				{interactive && selectedLocation && (
-					<LocationMarker position={selectedLocation} logo={clubs?.[0]?.logo} labels={iconLabels} />
+					<LocationMarker
+						position={selectedLocation}
+						name={clubs?.[0]?.name}
+						logo={clubs?.[0]?.logo}
+						tile={clubs?.[0]?.logoTile}
+						labels={iconLabels}
+					/>
 				)}
 
 				{!interactive &&
-					clubs?.map((club) => {
-						const position =
-							clusteredPositions.get(club.id) ||
-							(club.latitude && club.longitude ? [club.latitude, club.longitude] : null);
-						return position ? (
-							<AnimatedMarker
-								key={club.id}
-								position={position as [number, number]}
-								icon={createClubIcon(
-									club.logo,
-									logoSize,
-									club.name,
-									hoveredClubId === club.id,
-									iconLabels,
-								)}
-								zIndexOffset={hoveredClubId === club.id ? 1000 : 0}
+					groups.map((group) => {
+						const hovered = hoveredKey === group.key;
+						const first = group.clubs[0];
+						if (!first) return null;
+
+						if (group.clubs.length > 1) {
+							return (
+								<Marker
+									key={group.key}
+									position={group.center}
+									componentIconOpts={GROUP_ICON_OPTS}
+									icon={
+										<GroupPin
+											count={group.clubs.length}
+											far={far}
+											hovered={hovered}
+											labels={iconLabels}
+										/>
+									}
+									zIndexOffset={hovered ? 1000 : 0}
+									eventHandlers={{
+										mouseover: () => setHoveredKey(group.key),
+										mouseout: () => setHoveredKey(null),
+										click: () => focusGroup(group),
+									}}
+								/>
+							);
+						}
+
+						const selected = selectedClubForOverview?.id === first.id;
+						return (
+							<Marker
+								key={group.key}
+								position={group.center}
+								componentIconOpts={CLUB_ICON_OPTS}
+								icon={
+									<ClubPin
+										club={first}
+										far={far}
+										state={selected ? "selected" : hovered ? "hovered" : "default"}
+										labels={iconLabels}
+									/>
+								}
+								zIndexOffset={selected ? 2000 : hovered ? 1000 : 0}
 								eventHandlers={{
-									mouseover: () => setHoveredClubId(club.id),
-									mouseout: () => setHoveredClubId(null),
-									click: () => setSelectedClubForOverview(club),
+									mouseover: () => setHoveredKey(group.key),
+									mouseout: () => setHoveredKey(null),
+									click: () => setSelectedClubForOverview(first),
 								}}
 							/>
-						) : null;
+						);
 					})}
 
 				<ZoomControl position="bottomright" />

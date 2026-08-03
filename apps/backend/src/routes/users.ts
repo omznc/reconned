@@ -18,7 +18,13 @@ import {
 import { auth } from "../lib/auth";
 import { db } from "../lib/db";
 import { posthog } from "../lib/posthog";
-import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
+import {
+	httpsUrl,
+	logoTileOf,
+	logoTileResponseSchema,
+	paginationQuerySchema,
+	paginationResponseSchema,
+} from "../lib/schemas";
 import { getS3UploadUrl } from "../lib/storage";
 import { Sanitize } from "../lib/user-sanitization";
 
@@ -30,7 +36,7 @@ const baseEventSchema = createSelectSchema(event);
 const baseEventRegistrationSchema = createSelectSchema(eventRegistration);
 const baseClubInviteSchema = createSelectSchema(clubInvite);
 
-const publicClubSchema = baseClubSchema.omit({
+const publicClubSchema = baseClubSchema.extend({ logoTile: logoTileResponseSchema }).omit({
 	instagramAccessToken: true,
 	instagramRefreshToken: true,
 	instagramTokenExpiry: true,
@@ -231,6 +237,7 @@ usersRouter.get(
 				clubSlug: club.slug,
 				clubDescription: club.description,
 				clubLogo: club.logo,
+				clubLogoTile: club.logoTile,
 				clubLocation: club.location,
 				clubWebsite: club.website,
 				clubIsPrivate: club.isPrivate,
@@ -671,6 +678,7 @@ usersRouter.get(
 				clubName: club.name,
 				clubSlug: club.slug,
 				clubLogo: club.logo,
+				clubLogoTile: club.logoTile,
 				clubIsPrivate: club.isPrivate,
 			})
 			.from(clubMembership)
@@ -1078,6 +1086,7 @@ usersRouter.get(
 				clubSlug: club.slug,
 				clubDescription: club.description,
 				clubLogo: club.logo,
+				clubLogoTile: club.logoTile,
 				clubLocation: club.location,
 				clubWebsite: club.website,
 				clubIsPrivate: club.isPrivate,
@@ -1499,6 +1508,7 @@ usersRouter.get(
 				clubSlug: club.slug,
 				clubDescription: club.description,
 				clubLogo: club.logo,
+				clubLogoTile: club.logoTile,
 				clubLocation: club.location,
 				clubCityId: club.cityId,
 				clubCity: club.city,
@@ -1539,6 +1549,7 @@ usersRouter.get(
 				slug: invite.clubSlug,
 				description: invite.clubDescription,
 				logo: invite.clubLogo,
+				logoTile: logoTileOf(invite.clubLogoTile),
 				location: invite.clubLocation,
 				cityId: invite.clubCityId,
 				city: invite.clubCity,
@@ -1817,6 +1828,7 @@ usersRouter.get(
 				slug: club.slug,
 				description: club.description,
 				logo: club.logo,
+				logoTile: club.logoTile,
 				location: club.location,
 				cityId: club.cityId,
 				city: club.city,
@@ -1849,7 +1861,7 @@ usersRouter.get(
 			.where(eq(clubMembership.userId, context.user.id));
 
 		return response.json({
-			clubs: userClubRows,
+			clubs: userClubRows.map((c) => ({ ...c, logoTile: logoTileOf(c.logoTile) })),
 		});
 	},
 	{

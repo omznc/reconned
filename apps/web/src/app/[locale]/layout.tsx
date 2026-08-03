@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Archivo_Narrow, Geist, Geist_Mono } from "next/font/google";
 import { AxiomWebVitals } from "next-axiom";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getExtracted, getMessages, setRequestLocale } from "next-intl/server";
@@ -32,6 +32,26 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
 	fallback: ["monospace"],
 	subsets: ["latin"],
+});
+
+// Identity marks only — club and person initials. Exposed as CSS variables on
+// <html> rather than applied to <body>, so they survive the user's Sans/Mono
+// body-font preference: an avatar's initials are part of the mark, not the copy.
+// latin-ext carries the diacritics in Bosnian, Croatian and Serbian names.
+const archivo = Archivo({
+	fallback: ["sans-serif"],
+	subsets: ["latin", "latin-ext"],
+	weight: ["600"],
+	variable: "--font-archivo",
+	display: "swap",
+});
+
+const archivoNarrow = Archivo_Narrow({
+	fallback: ["sans-serif"],
+	subsets: ["latin", "latin-ext"],
+	weight: ["700"],
+	variable: "--font-archivo-narrow",
+	display: "swap",
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
@@ -104,7 +124,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	};
 
 	return (
-		<html lang={locale} suppressHydrationWarning>
+		<html lang={locale} className={`${archivo.variable} ${archivoNarrow.variable}`} suppressHydrationWarning>
 			<head>
 				<meta name="darkreader-lock" />
 				<JsonLdScript data={websiteSchema} />

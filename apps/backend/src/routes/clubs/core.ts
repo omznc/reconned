@@ -9,20 +9,42 @@ import { NO_CITY, resolveClubCity } from "../../lib/city";
 import { db } from "../../lib/db";
 import { isFeatureEnabled } from "../../lib/feature-flags";
 import { logger } from "../../lib/posthog";
-import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
+import {
+	httpsUrl,
+	logoTileOf,
+	logoTileResponseSchema,
+	logoTileSchema,
+	paginationQuerySchema,
+	paginationResponseSchema,
+} from "../../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../../lib/storage";
 
 const clubsCoreRouter = new Router();
 
+/** A club someone actually runs: it has an owner. Directory entries do not. */
+const CLAIMED = sql`EXISTS (
+	SELECT 1 FROM "ClubMembership" cm
+	WHERE cm."clubId" = ${club.id} AND cm."role" = 'CLUB_OWNER'
+)`;
+
+/** In at least one alliance, by the join table or the legacy flag. */
+const ALLIED = sql`(${club.isAllied} OR EXISTS (
+	SELECT 1 FROM "ClubAlliance" ca WHERE ca."clubId" = ${club.id}
+))`;
+
 const baseClubSchema = createSelectSchema(club);
 
-const publicClubSchema = baseClubSchema.omit({
-	instagramAccessToken: true,
-	instagramRefreshToken: true,
-	instagramTokenExpiry: true,
-	facebookPageId: true,
-	instagramTokenType: true,
-});
+const publicClubSchema = baseClubSchema
+	.omit({
+		instagramAccessToken: true,
+		instagramRefreshToken: true,
+		instagramTokenExpiry: true,
+		facebookPageId: true,
+		instagramTokenType: true,
+	})
+	// The column is plain text, but only ever holds the two tile names, and
+	// clients switch on it — so it goes out as the union rather than as `string`.
+	.extend({ logoTile: logoTileResponseSchema });
 
 const createClubBodySchema = z.object({
 	name: z.string().min(1).max(50),
@@ -44,6 +66,7 @@ const createClubBodySchema = z.object({
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().optional(),
+	logoTile: logoTileSchema,
 	headerImage: z.string().optional(),
 	contactPhone: z.string().max(20).optional(),
 	contactEmail: z.string().max(255).optional(),
@@ -71,6 +94,7 @@ const updateClubBodySchema = z.object({
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().nullable().optional(),
+	logoTile: logoTileSchema,
 	headerImage: z.string().nullable().optional(),
 	contactPhone: z.string().max(20).optional(),
 	contactEmail: z.string().max(255).optional(),
@@ -161,6 +185,22 @@ clubsCoreRouter.get(
 			.groupBy(clubMembership.clubId)
 			.as("member_counts");
 
+		// Standing: the browse page leads with the clubs a visitor is most likely
+		// looking for. Verified first, then clubs someone actually runs — an
+		// alliance ahead of none at each level — and the unclaimed directory
+		// entries last, since nobody is behind them yet.
+		if (!sortBy) {
+			orderBy.push(sql`
+				CASE
+					WHEN ${club.verified} THEN 0
+					WHEN ${CLAIMED} AND ${ALLIED} THEN 1
+					WHEN ${CLAIMED} THEN 2
+					WHEN ${ALLIED} THEN 3
+					ELSE 4
+				END
+			`);
+		}
+
 		if (sortBy !== "name") orderBy.push(asc(club.name));
 		orderBy.push(desc(club.verified));
 		orderBy.push(desc(memberCountSubquery.count));
@@ -178,6 +218,7 @@ clubsCoreRouter.get(
 				description: club.description,
 				dateFounded: club.dateFounded,
 				logo: club.logo,
+				logoTile: club.logoTile,
 				headerImage: club.headerImage,
 				isPrivate: club.isPrivate,
 				isPrivateStats: club.isPrivateStats,
@@ -222,6 +263,7 @@ clubsCoreRouter.get(
 				description: c.description,
 				dateFounded: c.dateFounded,
 				logo: c.logo,
+				logoTile: logoTileOf(c.logoTile),
 				headerImage: c.headerImage,
 				isPrivate: c.isPrivate,
 				isPrivateStats: c.isPrivateStats,
@@ -341,6 +383,7 @@ clubsCoreRouter.get(
 
 		return response.json({
 			...clubData[0],
+			logoTile: logoTileOf(clubData[0].logoTile),
 			_count: {
 				members: membersCount[0]?.count || 0,
 				posts: postsCount[0]?.count || 0,
@@ -407,6 +450,7 @@ clubsCoreRouter.get(
 
 		return response.json({
 			...clubData[0],
+			logoTile: logoTileOf(clubData[0].logoTile),
 			isCurrentUserOwner: membership.role === "CLUB_OWNER",
 		});
 	},
@@ -422,6 +466,7 @@ clubsCoreRouter.get(
 			mcpTool: true,
 			response: {
 				200: baseClubSchema.extend({
+					logoTile: logoTileResponseSchema,
 					isCurrentUserOwner: z.boolean(),
 				}),
 				400: z.object({ error: z.string() }),
@@ -482,6 +527,7 @@ clubsCoreRouter.post(
 				isPrivate: body.isPrivate || false,
 				isPrivateStats: body.isPrivateStats || false,
 				logo: body.logo || null,
+				logoTile: body.logoTile ?? null,
 				headerImage: body.headerImage || null,
 				contactPhone: body.contactPhone || null,
 				contactEmail: body.contactEmail || null,
@@ -518,7 +564,7 @@ clubsCoreRouter.post(
 			userId: context.user.id,
 		});
 
-		return response.json({ id: newClub[0].id, club: newClub[0] });
+		return response.json({ id: newClub[0].id, club: { ...newClub[0], logoTile: logoTileOf(newClub[0].logoTile) } });
 	},
 	{
 		auth: true,
@@ -628,7 +674,10 @@ clubsCoreRouter.put(
 			userId: context.user.id,
 		});
 
-		return response.json({ success: true, club: updatedClub[0] });
+		return response.json({
+			success: true,
+			club: { ...updatedClub[0], logoTile: logoTileOf(updatedClub[0].logoTile) },
+		});
 	},
 	{
 		auth: true,
@@ -972,6 +1021,7 @@ clubsCoreRouter.get(
 				clubId: clubMembership.clubId,
 				name: club.name,
 				logo: club.logo,
+				logoTile: club.logoTile,
 			})
 			.from(clubMembership)
 			.leftJoin(club, eq(clubMembership.clubId, club.id))
@@ -987,6 +1037,7 @@ clubsCoreRouter.get(
 				id: m.clubId,
 				name: m.name,
 				logo: m.logo,
+				logoTile: logoTileOf(m.logoTile),
 			})),
 		});
 	},
@@ -1004,6 +1055,7 @@ clubsCoreRouter.get(
 							id: z.string(),
 							name: z.string().nullable(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
 						}),
 					),
 				}),

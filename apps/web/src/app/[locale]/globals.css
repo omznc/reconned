@@ -47,6 +47,11 @@
 	--color-sidebar-border: hsl(var(--sidebar-border));
 	--color-sidebar-ring: hsl(var(--sidebar-ring));
 
+	/* Identity marks. `font-club-mark` is the condensed 700 reserved for clubs;
+	   `font-person-mark` is the quieter 600 used for people. */
+	--font-club-mark: var(--font-archivo-narrow), "Archivo Narrow", sans-serif;
+	--font-person-mark: var(--font-archivo), Archivo, sans-serif;
+
 	--radius-lg: var(--radius);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-sm: calc(var(--radius) - 4px);
@@ -92,6 +97,103 @@
 
 @utility text-balance {
 	text-wrap: balance;
+}
+
+/*
+  Person avatars scale their initials off the avatar box rather than a passed-in
+  pixel size, so every existing call site keeps sizing with plain h-/w- classes.
+  0.37 x size is the ratio from the identity sheet. Below 24px the initials are
+  dropped and the tint stands alone, where letters would only turn to mush.
+*/
+@layer components {
+	.identity-avatar {
+		container-type: size;
+	}
+
+	.identity-initials {
+		font-size: 37cqw;
+		line-height: 1;
+		/* Initials are a mark, not text — dragging across a list shouldn't select them. */
+		user-select: none;
+		-webkit-user-select: none;
+	}
+
+	@container (max-width: 23.9px) {
+		.identity-initials {
+			display: none;
+		}
+	}
+}
+
+/*
+  Map pins. Every state — zoomed out, hovered, selected — is the same pin at a
+  different scale about its tip, so the browser only ever interpolates a
+  transform and the pin's point never leaves the coordinate it marks.
+*/
+@layer components {
+	.map-marker {
+		background: none;
+		border: 0;
+	}
+
+	.map-pin {
+		transition:
+			transform 280ms cubic-bezier(0.32, 0.72, 0, 1),
+			filter 280ms cubic-bezier(0.32, 0.72, 0, 1);
+		will-change: transform;
+	}
+
+	/* Selecting is a commit, so it lands with a touch of overshoot. */
+	.map-pin-settling {
+		transition-timing-function: cubic-bezier(0.34, 1.32, 0.64, 1);
+	}
+
+	.map-pin-plate {
+		transition:
+			background-color 200ms cubic-bezier(0.32, 0.72, 0, 1),
+			padding 280ms cubic-bezier(0.32, 0.72, 0, 1);
+	}
+
+	.map-pin-label {
+		transform: translateX(-50%);
+		animation: map-pin-label-in 140ms cubic-bezier(0.32, 0.72, 0, 1) both;
+	}
+
+	.map-marker-in {
+		animation: map-marker-in 220ms cubic-bezier(0.32, 0.72, 0, 1) both;
+	}
+
+	@keyframes map-pin-label-in {
+		from {
+			opacity: 0;
+			transform: translateX(-50%) translateY(-3px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(-50%) translateY(0);
+		}
+	}
+
+	@keyframes map-marker-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.map-pin,
+		.map-pin-plate {
+			transition-duration: 1ms;
+		}
+
+		.map-pin-label,
+		.map-marker-in {
+			animation-duration: 1ms;
+		}
+	}
 }
 
 @utility grid-span-last-odd {

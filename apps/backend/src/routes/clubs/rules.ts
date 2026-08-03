@@ -58,7 +58,12 @@ clubsRulesRouter.get(
 				401: z.object({ error: z.string() }),
 				403: z.object({ error: z.string() }),
 			},
-			mcpTool: true,
+			// Named explicitly: the generated name would collide with the by-ID route below,
+			// and a collision silently drops one of the two tools.
+			mcpTool: {
+				name: "list_club_rules",
+				description: "List all rules for a club",
+			},
 		},
 	},
 );

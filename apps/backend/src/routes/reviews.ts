@@ -219,7 +219,8 @@ reviewsRouter.get(
 		schema: {
 			tags: ["Reviews"],
 			summary: "Get reviews",
-			description: "Get reviews for a user, club, or event with pagination and optional rating filtering",
+			description:
+				"Get reviews for a user, club, or event with pagination and optional rating filtering. `id` is the club/event/user ID (a slug also works for clubs and events).",
 			params: z.object({
 				type: z.enum(["user", "club", "event"]),
 				id: z.string(),
@@ -235,6 +236,7 @@ reviewsRouter.get(
 					pagination: paginationResponseSchema,
 				}),
 			},
+			mcpTool: true,
 		},
 	},
 );

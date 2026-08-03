@@ -89,6 +89,7 @@ export function ClubsListing({ initialData }: ClubsListingProps) {
 								key={club.id}
 								type="club"
 								image={club.logo}
+								tile={club.logoTile}
 								title={club.name}
 								description={club.description}
 								href={`/clubs/${club.slug || club.id}`}

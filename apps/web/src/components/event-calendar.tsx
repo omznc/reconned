@@ -17,7 +17,7 @@ import {
 	startOfWeek,
 	subMonths,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus, Square } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
@@ -26,6 +26,7 @@ import { Fragment, type KeyboardEvent, useEffect, useMemo, useState } from "reac
 import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 import { VerifiedClubIcon } from "@/components/icons";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import {
 	Credenza,
 	CredenzaBody,
@@ -646,19 +647,7 @@ export function EventCalendar(props: EventCalendarProps) {
 												className="justify-start h-auto py-3 px-4"
 											>
 												<div className="flex items-center gap-3 w-full">
-													<div className="flex aspect-square size-10 items-center justify-center rounded-lgshrink-0">
-														{club.logo ? (
-															<Image
-																width={40}
-																height={40}
-																src={club.logo}
-																alt={club.name || ""}
-																className="rounded-lg object-cover"
-															/>
-														) : (
-															<Square className="size-5 text-muted-foreground" />
-														)}
-													</div>
+													<ClubAvatar name={club.name || ""} logo={club.logo} size={40} />
 													<span className="text-left font-medium truncate flex-1">
 														{club.name}
 													</span>

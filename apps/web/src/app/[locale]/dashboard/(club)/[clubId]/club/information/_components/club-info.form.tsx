@@ -22,6 +22,7 @@ import { BannerCropDialog } from "@/app/[locale]/dashboard/(club)/[clubId]/club/
 import { CityCombobox } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/city-combobox";
 import { useClubs } from "@/components/clubs-provider";
 import { InstagramIcon } from "@/components/icons";
+import { LogoTilePicker } from "@/components/identity/logo-tile-picker";
 import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
@@ -44,6 +45,8 @@ import { Link, useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse, Club } from "@/lib/api/api-type-helpers";
 import { getDateFnsLocale } from "@/lib/date-locale";
+import type { LogoTile } from "@/lib/identity";
+import { analyzeLogo, MAX_ASPECT_RATIO } from "@/lib/logo-analysis";
 import { cn } from "@/lib/utils";
 import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 
@@ -145,6 +148,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		isPrivate: z.boolean().optional(),
 		isPrivateStats: z.boolean().optional(),
 		logo: z.string().optional(),
+		logoTile: z.enum(["paper", "ink"]).nullable().optional(),
 		headerImage: z.string().optional(),
 		contactPhone: z.string().optional(),
 		contactEmail: z.string().optional(),
@@ -240,6 +244,53 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		maxFiles: 1,
 		initialFiles,
 	});
+
+	// The tile a logo is framed on. Read out of the file's own pixels when one is
+	// dropped, and overridable below — the analysis is right most of the time, not
+	// all of it.
+	const [logoTile, setLogoTile] = useState<LogoTile>(props.club?.logoTile ?? "paper");
+	const [tileWasSuggested, setTileWasSuggested] = useState(false);
+
+	async function handleLogoChange(files: FileUploadItem[]) {
+		const incoming = files[0];
+
+		if (!incoming?.file) {
+			logoUpload.setFiles(files);
+			if (files.length === 0) {
+				setLogoTile("paper");
+				setTileWasSuggested(false);
+			}
+			return;
+		}
+
+		try {
+			const analysis = await analyzeLogo(incoming.file);
+
+			// A banner or a wordmark cannot be framed by a square without either
+			// shrinking to nothing or being cropped, so it is turned away here
+			// rather than looking broken everywhere it appears.
+			if (!analysis.withinAspectRatio) {
+				toast.error(
+					t(
+						"That logo is too wide for a square mark. Crop it closer to {ratio}:1 or squarer and try again.",
+						{
+							ratio: String(MAX_ASPECT_RATIO),
+						},
+					),
+				);
+				return;
+			}
+
+			setLogoTile(analysis.tile);
+			setTileWasSuggested(true);
+		} catch {
+			// An unreadable file still uploads; the tile just falls back to paper.
+			setLogoTile("paper");
+			setTileWasSuggested(false);
+		}
+
+		logoUpload.setFiles(files);
+	}
 
 	// Initialize file upload system for header image
 	const initialHeaderFiles: FileUploadItem[] = props.club?.headerImage
@@ -338,6 +389,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 			isPrivate: props.club?.isPrivate,
 			isPrivateStats: props.club?.isPrivateStats,
 			logo: props.club?.logo || undefined,
+			logoTile: props.club?.logoTile ?? null,
 			headerImage: props.club?.headerImage || undefined,
 			contactPhone: props.club?.contactPhone || undefined,
 			contactEmail: props.club?.contactEmail || undefined,
@@ -637,6 +689,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				values.logo = existingUrls.length > 0 ? existingUrls[0] : undefined;
 			}
 
+			// The tile only means anything alongside a logo; clearing one clears both.
+			values.logoTile = values.logo ? logoTile : null;
+
 			if (headerFilesToUpload.length > 0 && clubId) {
 				const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
 				const headerUrl = uploadedHeaderUrls[0];
@@ -788,17 +843,30 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 							<FormItem>
 								<FormLabel>{t("Logo")}</FormLabel>
 								<FormControl>
-									<SingleImageUpload
-										variant="logo"
-										value={logoUpload.files}
-										onChange={logoUpload.setFiles}
-										maxFileSize={4 * 1024 * 1024}
-										accept={{
-											"image/jpeg": [".jpg", ".jpeg"],
-											"image/png": [".png"],
-											"image/webp": [".webp"],
-										}}
-									/>
+									<div className="space-y-3">
+										<SingleImageUpload
+											variant="logo"
+											value={logoUpload.files}
+											onChange={handleLogoChange}
+											maxFileSize={4 * 1024 * 1024}
+											accept={{
+												"image/jpeg": [".jpg", ".jpeg"],
+												"image/png": [".png"],
+												"image/webp": [".webp"],
+											}}
+										/>
+										<LogoTilePicker
+											name={form.watch("name") || props.club?.name || ""}
+											file={logoUpload.files[0]?.file}
+											url={logoUpload.files[0]?.url}
+											value={logoTile}
+											onChange={(tile) => {
+												setLogoTile(tile);
+												setTileWasSuggested(false);
+											}}
+											suggested={tileWasSuggested}
+										/>
+									</div>
 								</FormControl>
 								<FormDescription>{t("Add a club logo (600x600).")}</FormDescription>
 								<FormMessage />

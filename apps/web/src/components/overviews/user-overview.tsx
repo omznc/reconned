@@ -1,7 +1,8 @@
 import { format } from "date-fns";
 import { Globe, MapPin } from "lucide-react";
-import Image from "next/image";
 import { getExtracted } from "next-intl/server";
+import { ClubAvatar } from "@/components/identity/club-avatar";
+import { ProfileBanner } from "@/components/identity/profile-banner";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
 import { ReviewsOverview } from "@/components/overviews/reviews/reviews-overview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
-import { cn } from "@/lib/utils";
 
 type UserResponse = ApiResponse<"/api/users/{id}", "get">;
 type UserProfileResponse = ApiResponse<"/api/users/{id}/profile", "get">;
@@ -48,48 +48,25 @@ export async function UserOverview({ user }: UserOverviewProps) {
 
 	return (
 		<div className="space-y-6">
-			{user.headerImage ? (
-				<div className="relative">
-					<div className="w-full h-full max-h-[300px] overflow-hidden relative">
-						<Image
-							suppressHydrationWarning={true}
-							src={user.headerImage}
-							alt={`${user.name} header`}
-							width={1200}
-							height={300}
-							className="object-cover rounded-md"
-							draggable={false}
-						/>
-					</div>
+			<ProfileBanner name={user.name} kind="person" image={user.headerImage} />
 
-					<div className="absolute bottom-0 left-4 transform translate-y-1/2">
-						<Avatar className="h-24 w-24 md:h-32 md:w-32 shadow-lg rounded-md border-4 border-background">
-							<AvatarImage src={user.image || undefined} alt={user.name} />
-							<AvatarFallback name={user.name} />
-						</Avatar>
-					</div>
-				</div>
-			) : (
-				<div className="flex justify-start mb-4">
-					<Avatar className="h-32 w-32 rounded-md">
+			<div className="px-4 sm:px-6">
+				{/* Circle, overhanging the banner by half its height — the one shape that says "person". */}
+				<div className="relative z-1 -mt-14 w-28 h-28 rounded-full bg-background p-[5px] shadow-lg">
+					<Avatar className="h-full w-full">
 						<AvatarImage src={user.image || undefined} alt={user.name} />
 						<AvatarFallback name={user.name} />
 					</Avatar>
 				</div>
-			)}
 
-			<div
-				className={cn(
-					"flex flex-col gap-1",
-					user.headerImage ? "md:ml-40 md:pl-4 pt-[40px] md:pt-0" : undefined,
-				)}
-			>
-				<div className="flex items-center gap-2">
-					<h1 className="text-3xl font-semibold">
-						{user.name} {user.callsign && `(${user.callsign})`}
-					</h1>
+				<div className="flex flex-col gap-1 mt-4">
+					<div className="flex items-center gap-2">
+						<h1 className="text-3xl font-semibold">
+							{user.name} {user.callsign && `(${user.callsign})`}
+						</h1>
+					</div>
+					<ExpandableDescription description={user.bio || ""} />
 				</div>
-				<ExpandableDescription description={user.bio || ""} />
 			</div>
 			{/* New Additional User Information Card */}
 			{/* <Card>
@@ -153,21 +130,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 									const clubLogo = "logo" in membership.club ? membership.club.logo : null;
 									return (
 										<li key={membership.club.id} className="flex items-center gap-3">
-											{clubLogo ? (
-												<Image
-													src={clubLogo}
-													alt={membership.club.name}
-													width={32}
-													height={32}
-													className="h-auto w-10"
-												/>
-											) : (
-												<div className="size-10 rounded-md bg-muted flex items-center justify-center">
-													<span className="text-xs text-muted-foreground">
-														{membership.club.name.charAt(0)}
-													</span>
-												</div>
-											)}
+											<ClubAvatar name={membership.club.name} logo={clubLogo} size={40} />
 											<Link
 												href={`/clubs/${membership.club.slug || membership.club.id}`}
 												className="hover:underline"

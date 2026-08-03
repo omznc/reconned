@@ -2934,7 +2934,7 @@ export interface paths {
 		};
 		/**
 		 * Get reviews
-		 * @description Get reviews for a user, club, or event with pagination and optional rating filtering
+		 * @description Get reviews for a user, club, or event with pagination and optional rating filtering. `id` is the club/event/user ID (a slug also works for clubs and events).
 		 */
 		get: operations["reviewstypeidGet"];
 		put?: never;
@@ -3897,6 +3897,26 @@ export interface paths {
 		 * @description Search the seeded city reference data by name, optionally within one country. Returns the city IDs the club settings form writes.
 		 */
 		get: operations["publiccitySearchGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/alliances": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List alliances
+		 * @description List alliances with pagination, optionally filtered by country. Use list_countries to look up a country's ID first.
+		 */
+		get: operations["alliancesGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -12591,6 +12611,8 @@ export interface operations {
 								isPrivate: boolean;
 								isPrivateStats: boolean;
 								logo: string | null;
+								/** @enum {string|null} */
+								logoTile: "paper" | "ink" | null;
 								contactPhone: string | null;
 								contactEmail: string | null;
 								verified: boolean;
@@ -12841,6 +12863,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -12986,6 +13010,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -13042,6 +13068,8 @@ export interface operations {
 					isPrivate?: boolean;
 					isPrivateStats?: boolean;
 					logo?: string;
+					/** @enum {string|null} */
+					logoTile?: "paper" | "ink" | null;
 					headerImage?: string;
 					contactPhone?: string;
 					contactEmail?: string;
@@ -13075,6 +13103,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -13151,6 +13181,8 @@ export interface operations {
 						isPrivate: boolean;
 						isPrivateStats: boolean;
 						logo: string | null;
+						/** @enum {string|null} */
+						logoTile: "paper" | "ink" | null;
 						contactPhone: string | null;
 						contactEmail: string | null;
 						verified: boolean;
@@ -13225,6 +13257,8 @@ export interface operations {
 					isPrivate?: boolean;
 					isPrivateStats?: boolean;
 					logo?: string | null;
+					/** @enum {string|null} */
+					logoTile?: "paper" | "ink" | null;
 					headerImage?: string | null;
 					contactPhone?: string;
 					contactEmail?: string;
@@ -13258,6 +13292,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -13424,6 +13460,8 @@ export interface operations {
 						isPrivate: boolean;
 						isPrivateStats: boolean;
 						logo: string | null;
+						/** @enum {string|null} */
+						logoTile: "paper" | "ink" | null;
 						contactPhone: string | null;
 						contactEmail: string | null;
 						verified: boolean;
@@ -13764,6 +13802,8 @@ export interface operations {
 							id: string;
 							name: string | null;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 						}[];
 					};
 				};
@@ -19224,6 +19264,8 @@ export interface operations {
 							id: string;
 							name: string;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							/** @enum {string} */
 							membershipRole: "USER" | "MANAGER" | "CLUB_OWNER";
 							events: {
@@ -19448,6 +19490,8 @@ export interface operations {
 										name: string;
 										slug: string | null;
 										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
 										location: string | null;
 										verified: boolean;
 										_count: {
@@ -22260,6 +22304,8 @@ export interface operations {
 							name: string;
 							slug: string | null;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							latitude: number | null;
 							longitude: number | null;
 							location: string | null;
@@ -22438,6 +22484,8 @@ export interface operations {
 							description: string | null;
 							location: string | null;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							latitude: number | null;
 							longitude: number | null;
 							verified: boolean;
@@ -22535,6 +22583,53 @@ export interface operations {
 							stateCode: string | null;
 							countryId: number;
 						}[];
+					};
+				};
+			};
+		};
+	};
+	alliancesGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				countryId?: number;
+				search?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliances: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							link: string | null;
+							country: {
+								id: number;
+								name: string;
+								iso2: string;
+							};
+							_count: {
+								clubs: number;
+							};
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
 					};
 				};
 			};

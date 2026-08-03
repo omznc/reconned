@@ -5,6 +5,27 @@ import { clubRule, event } from "../drizzle/schema";
 // Json type for JSONB fields - use unknown for simplicity since jsonb can be anything
 const jsonSchema = z.unknown();
 
+/**
+ * Which tile a club logo is framed on. Written at upload time from the logo's
+ * own pixels and overridable by the club; `null` means "decide automatically",
+ * which is what every club uploaded before the analysis existed says.
+ */
+export const logoTileSchema = z.enum(["paper", "ink"]).nullable().optional();
+
+/** The same value on the way out, where it is always present but may be null. */
+export const logoTileResponseSchema = z.enum(["paper", "ink"]).nullable();
+
+export type LogoTile = z.infer<typeof logoTileResponseSchema>;
+
+/**
+ * Narrows the raw text column to the two values the response schema allows.
+ * Anything else — including the null every pre-analysis club carries — means
+ * "no stored preference", which the client reads as paper.
+ */
+export function logoTileOf(value: string | null | undefined): LogoTile {
+	return value === "paper" || value === "ink" ? value : null;
+}
+
 export const paginationQuerySchema = z.object({
 	page: z
 		.string()

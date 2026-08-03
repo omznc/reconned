@@ -62,9 +62,9 @@ export function UserSwitcher(props: { user: User }) {
 								href="/dashboard/user"
 								className="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
 							>
-								<Avatar className="h-8 w-8 rounded-lg">
+								<Avatar className="h-8 w-8">
 									<AvatarImage src={user?.image || ""} alt={user?.name} />
-									<AvatarFallback name={user?.name} className="rounded-lg" />
+									<AvatarFallback name={user?.name} />
 								</Avatar>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-semibold">{user?.name}</span>

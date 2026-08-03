@@ -42,6 +42,7 @@
 		"db:seed": "bun run src/drizzle/seed.ts",
 		"db:seed:cities": "bun run src/drizzle/seed-cities.ts",
 		"db:studio": "drizzle-kit studio",
+		"assign-alliances": "bun run scripts/assign-alliances/assign-alliances.ts",
 		"dev": "bun run --hot src/index.ts",
 		"start": "bun run dist/index.js",
 		"task": "bun run src/tasks/run-task.ts",

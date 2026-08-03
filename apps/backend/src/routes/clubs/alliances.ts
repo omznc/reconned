@@ -150,6 +150,11 @@ clubsAlliancesRouter.get(
 				}),
 				...responseSchema([400, 404], z.object({ error: z.string() })),
 			},
+			mcpTool: {
+				name: "list_club_alliances",
+				description:
+					"List the alliances a club belongs to. Use list_alliances to go the other way and find alliances by country.",
+			},
 		},
 	},
 );

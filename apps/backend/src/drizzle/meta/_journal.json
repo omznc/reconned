@@ -78,6 +78,13 @@
       "when": 1785778990193,
       "tag": "0010_gifted_famine",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1785798492270,
+      "tag": "0011_bouncy_tarantula",
+      "breakpoints": true
     }
   ]
 }

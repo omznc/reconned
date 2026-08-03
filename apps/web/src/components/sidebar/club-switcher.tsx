@@ -1,11 +1,11 @@
 "use client";
 
 import { ChevronsUpDown, Plus, Square } from "lucide-react";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useEffect } from "react";
 import { useCurrentClub } from "@/components/current-club-provider";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -102,19 +102,12 @@ export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 						>
 							{clubId ? (
 								<>
-									<div className="flex aspect-square size-8 items-center justify-center rounded-lg ">
-										{selectedClub?.logo ? (
-											<Image
-												suppressHydrationWarning={true}
-												width={32}
-												height={32}
-												src={selectedClub.logo}
-												alt={selectedClub.name}
-											/>
-										) : (
-											<Square className="size-4" />
-										)}
-									</div>
+									<ClubAvatar
+										name={selectedClub?.name ?? ""}
+										logo={selectedClub?.logo}
+										tile={selectedClub?.logoTile}
+										size={32}
+									/>
 									<div className="grid flex-1 text-left text-sm leading-tight">
 										<span className="truncate font-semibold">{selectedClub?.name}</span>
 										<span className="truncate text-xs fade-in">
@@ -156,19 +149,7 @@ export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 								data-active={club.id === clubId}
 								className="gap-2 p-2 data-[active=true]:bg-accent"
 							>
-								<div className="flex size-6 items-center justify-center rounded-sm">
-									{club.logo ? (
-										<Image
-											suppressHydrationWarning={true}
-											width={32}
-											height={32}
-											src={club.logo}
-											alt={club.name}
-										/>
-									) : (
-										<Square className="size-4 text-black" />
-									)}
-								</div>
+								<ClubAvatar name={club.name} logo={club.logo} tile={club.logoTile} size={24} />
 								{club.name}
 							</DropdownMenuItem>
 						))}
