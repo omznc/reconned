@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { CityCombobox } from "@/app/[locale]/dashboard/(club)/[clubId]/club/information/_components/city-combobox";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { SlugInput } from "@/components/slug/slug-input";
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,9 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			.max(50, {
 				message: t("Club location must be shorter than 50 characters"),
 			}),
+		// Nullable rather than merely optional: clearing an already-set city has to be
+		// distinguishable from not touching the field.
+		cityId: z.number().nullable().optional(),
 		latitude: z.number().optional(),
 		longitude: z.number().optional(),
 		description: z.string().max(5000, {
@@ -232,6 +236,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 			clubId: club?.id || "",
 			name: club?.name || "",
 			location: club?.location || "",
+			cityId: club?.cityId ?? null,
 			description: club?.description || "",
 			dateFounded: club?.dateFounded ? new Date(club.dateFounded) : undefined,
 			isAllied: club?.isAllied,
@@ -366,6 +371,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 				body: {
 					name: values.name,
 					location: values.location,
+					cityId: values.cityId,
 					description: values.description,
 					dateFounded: values.dateFounded?.toISOString() || undefined,
 					isAllied: values.isAllied,
@@ -499,6 +505,30 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 								<Input placeholder="Livno" type="text" {...field} />
 							</FormControl>
 							<FormDescription>{t("The city where the club is located")}</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="cityId"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{t("City listing")}</FormLabel>
+							<FormControl>
+								<CityCombobox
+									value={field.value ?? null}
+									initialLabel={club?.city}
+									countryId={selectedCountryId ?? null}
+									onChange={(city) =>
+										form.setValue("cityId", city?.id ?? null, { shouldDirty: true })
+									}
+								/>
+							</FormControl>
+							<FormDescription>
+								{t("The city page your club is listed on. Pick the nearest city to you.")}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}

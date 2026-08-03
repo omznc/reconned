@@ -20374,6 +20374,9 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -20449,6 +20452,8 @@ export interface operations {
 					name: string;
 					countryId?: number;
 					location?: string;
+					/** @description City ID from the seeded city reference table. Groups the club onto that city's landing page; the display name and URL slug are copied server-side. */
+					cityId?: number | null;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
@@ -20477,6 +20482,9 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -20573,6 +20581,9 @@ export interface operations {
 						id: string;
 						name: string;
 						location: string | null;
+						cityId: number | null;
+						city: string | null;
+						citySlug: string | null;
 						latitude: number | null;
 						longitude: number | null;
 						description: string | null;
@@ -20665,6 +20676,8 @@ export interface operations {
 					name?: string;
 					countryId?: number;
 					location?: string;
+					/** @description City ID from the seeded city reference table. Groups the club onto that city's landing page; the display name and URL slug are copied server-side. */
+					cityId?: number | null;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
