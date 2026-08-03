@@ -29,6 +29,23 @@ export const inviteStatus = pgEnum("InviteStatus", [
 export const reviewType = pgEnum("ReviewType", ["USER", "CLUB", "EVENT"]);
 export const role = pgEnum("Role", ["USER", "MANAGER", "CLUB_OWNER"]);
 
+/** Where a single person stands with a single event. See `eventAttendee`. */
+export const attendeeStatus = pgEnum("AttendeeStatus", [
+	// Invited onto someone's team, has not answered yet. Holds no place.
+	"PENDING",
+	// Coming. The only status that occupies a place and counts towards the headcount.
+	"CONFIRMED",
+	// Was invited onto a team and said no.
+	"DECLINED",
+	// Was confirmed and pulled out, or their booking was cancelled.
+	"CANCELLED",
+	// Wanted a place at a full event. Promoted to CONFIRMED when one frees up.
+	"WAITLISTED",
+]);
+
+/** Whether this person made the booking or was brought along on it. */
+export const attendeeRole = pgEnum("AttendeeRole", ["LEADER", "MEMBER"]);
+
 export const achievement = pgTable(
 	"Achievement",
 	{
@@ -598,6 +615,9 @@ export const event = pgTable(
 		dateRegistrationsOpen: timestamp({ precision: 3, mode: "string" }).notNull(),
 		isPrivate: boolean().default(false).notNull(),
 		allowFreelancers: boolean().default(false).notNull(),
+		// null means unlimited. Counted against the full headcount of an event:
+		// every registration plus its accepted team members plus its external invites.
+		maxAttendees: integer(),
 		location: text().notNull(),
 		googleMapsLink: text(),
 		costPerPerson: doublePrecision().default(0).notNull(),
@@ -676,40 +696,90 @@ export const eventRegistration = pgTable(
 	],
 );
 
-export const eventInvite = pgTable(
-	"EventInvite",
+/**
+ * One row per person per event — the single answer to "who is coming".
+ *
+ * An attendee used to be three different things depending on how they joined: the booking's
+ * `createdById`, a `_EventRegistrationToUser` row, or an `EventInvite` row. Every question worth
+ * asking (headcount, capacity, attendance, who may review) had to union all three, which is how
+ * a five-person team came to read as one registration and how attendance ended up being a single
+ * boolean for a whole squad. This table replaces all three.
+ *
+ * `eventRegistration` survives as the *booking*: the group-level facts (who organised it, how they
+ * intend to pay). Every attendee belongs to one, and a solo entry is simply a booking of one.
+ */
+export const eventAttendee = pgTable(
+	"EventAttendee",
 	{
 		id: text().primaryKey().notNull(),
 		eventId: text().notNull(),
-		name: text().notNull(),
-		email: text().notNull(),
-		token: text().notNull(),
-		expiresAt: timestamp({ precision: 3, mode: "string" }).notNull(),
-		eventRegistrationId: text(),
+		bookingId: text().notNull(),
+		// Exactly one of userId / guestEmail is set: a member of the site, or somebody the leader
+		// is vouching for who has no account yet.
+		userId: text(),
+		guestName: text(),
+		guestEmail: text(),
+		role: attendeeRole().default("MEMBER").notNull(),
+		status: attendeeStatus().default("PENDING").notNull(),
+		// Deliberately nullable. `false` means "marked, did not show up"; null means nobody has
+		// marked the roster yet, which is a different fact and used to be indistinguishable.
+		attended: boolean(),
+		// Lets a guest claim their own place by signing up, turning guestEmail into a userId.
+		inviteToken: text(),
+		inviteExpiresAt: timestamp({ precision: 3, mode: "string" }),
+		invitedAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+		respondedAt: timestamp({ precision: 3, mode: "string" }),
+		paidAt: timestamp({ precision: 3, mode: "string" }),
 		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 		updatedAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	},
 	(table) => [
-		uniqueIndex("EventInvite_token_key").using("btree", table.token.asc().nullsLast().op("text_ops")),
-		index("EventInvite_eventId_idx").using("btree", table.eventId.asc().nullsLast().op("text_ops")),
-		index("EventInvite_eventRegistrationId_idx").using(
+		index("EventAttendee_eventId_status_idx").using(
 			"btree",
-			table.eventRegistrationId.asc().nullsLast().op("text_ops"),
+			table.eventId.asc().nullsLast().op("text_ops"),
+			table.status.asc().nullsLast().op("enum_ops"),
 		),
+		index("EventAttendee_bookingId_idx").using("btree", table.bookingId.asc().nullsLast().op("text_ops")),
+		index("EventAttendee_userId_status_idx").using(
+			"btree",
+			table.userId.asc().nullsLast().op("text_ops"),
+			table.status.asc().nullsLast().op("enum_ops"),
+		),
+		uniqueIndex("EventAttendee_inviteToken_key").using("btree", table.inviteToken.asc().nullsLast().op("text_ops")),
+		// The database, not a check somewhere in a route, is what guarantees a person cannot hold
+		// two places at the same event. Partial so that declining one team and joining another,
+		// or being invited by two teams at once, stays legal.
+		uniqueIndex("EventAttendee_event_user_confirmed_key")
+			.using(
+				"btree",
+				table.eventId.asc().nullsLast().op("text_ops"),
+				table.userId.asc().nullsLast().op("text_ops"),
+			)
+			.where(sql`"status" = 'CONFIRMED' AND "userId" IS NOT NULL`),
+		uniqueIndex("EventAttendee_event_guest_confirmed_key")
+			.using("btree", table.eventId.asc().nullsLast().op("text_ops"), sql`lower("guestEmail")`)
+			.where(sql`"status" = 'CONFIRMED' AND "guestEmail" IS NOT NULL`),
 		foreignKey({
 			columns: [table.eventId],
 			foreignColumns: [event.id],
-			name: "EventInvite_eventId_fkey",
+			name: "EventAttendee_eventId_fkey",
 		})
 			.onUpdate("cascade")
-			.onDelete("restrict"),
+			.onDelete("cascade"),
 		foreignKey({
-			columns: [table.eventRegistrationId],
+			columns: [table.bookingId],
 			foreignColumns: [eventRegistration.id],
-			name: "EventInvite_eventRegistrationId_fkey",
+			name: "EventAttendee_bookingId_fkey",
 		})
 			.onUpdate("cascade")
-			.onDelete("set null"),
+			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "EventAttendee_userId_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("cascade"),
 	],
 );
 
@@ -1041,33 +1111,6 @@ export const achievementToUser = pgTable(
 			.onUpdate("cascade")
 			.onDelete("cascade"),
 		primaryKey({ columns: [table.a, table.b], name: "_AchievementToUser_AB_pkey" }),
-	],
-);
-
-export const eventRegistrationToUser = pgTable(
-	"_EventRegistrationToUser",
-	{
-		a: text("A").notNull(),
-		b: text("B").notNull(),
-	},
-	(table) => [
-		index().using("btree", table.b.asc().nullsLast().op("text_ops")),
-		index("EventRegistrationToUser_a_idx").using("btree", table.a.asc().nullsLast().op("text_ops")),
-		foreignKey({
-			columns: [table.a],
-			foreignColumns: [eventRegistration.id],
-			name: "_EventRegistrationToUser_A_fkey",
-		})
-			.onUpdate("cascade")
-			.onDelete("cascade"),
-		foreignKey({
-			columns: [table.b],
-			foreignColumns: [user.id],
-			name: "_EventRegistrationToUser_B_fkey",
-		})
-			.onUpdate("cascade")
-			.onDelete("cascade"),
-		primaryKey({ columns: [table.a, table.b], name: "_EventRegistrationToUser_AB_pkey" }),
 	],
 );
 

@@ -69,15 +69,9 @@ export default async function Page(props: PageProps<"/[locale]/dashboard/[clubId
 		);
 	}
 
-	if (new Date() > new Date(event.dateEnd)) {
-		return (
-			<ErrorPage
-				title={t("The event is over")}
-				link={`/dashboard/${params.clubId}/events/${params.id}`}
-				linkText={t("Back to the event")}
-			/>
-		);
-	}
+	// Attendance stays reachable after the event ends. Organisers routinely finish marking the
+	// roster once everyone has gone home, and the API allows it, so closing the page at dateEnd
+	// only meant the record could never be corrected.
 
 	// Combine event with registrations for the attendance tracker
 	const eventWithRegistrations = {

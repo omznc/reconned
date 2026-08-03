@@ -34,7 +34,7 @@ async function FooterVersion({ locale }: { locale: string }) {
 		<Link
 			href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
 			target="_blank"
-			className="font-mono mt-4 w-fit opacity-30 hover:opacity-60 flex items-center gap-1 transition-opacity"
+			className="font-mono mt-4 w-fit opacity-60 hover:opacity-100 flex items-center gap-1 transition-opacity"
 		>
 			Version {CURRENT_COMMIT.slice(0, 7)} (
 			{new Date(body.commit.committer.date).toLocaleDateString(locale, {
@@ -57,7 +57,7 @@ export async function Footer({ locale }: { locale: string }) {
 	const t = await getExtracted();
 
 	return (
-		<footer className="relative w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-all md:flex-row flex items-center justify-evenly bg-sidebar border-t">
+		<footer className="relative w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-opacity md:flex-row flex items-center justify-evenly bg-sidebar border-t">
 			<div className="container z-10 mx-auto px-4 py-8">
 				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 					<div>
@@ -72,37 +72,46 @@ export async function Footer({ locale }: { locale: string }) {
 						<h3 className="font-bold mb-4">{t("Quick links")}</h3>
 						<ul className="space-y-2 text-sm">
 							<li>
-								<Link href="#about-us" className="flex items-center hover:text-red-500 transition-all">
+								<Link
+									href="/#about-us"
+									className="flex items-center hover:text-red-500 transition-colors"
+								>
 									<ShieldQuestion className="w-5 h-5 mr-2" />
 									{t("About us")}
 								</Link>
 							</li>
 							<li>
-								<Link href="/events" className="flex items-center hover:text-red-500 transition-all">
+								<Link href="/events" className="flex items-center hover:text-red-500 transition-colors">
 									<Calendar className="w-5 h-5 mr-2" />
 									{t("Events")}
 								</Link>
 							</li>
 							<li>
-								<Link href="/dashboard" className="flex items-center hover:text-red-500 transition-all">
+								<Link
+									href="/dashboard"
+									className="flex items-center hover:text-red-500 transition-colors"
+								>
 									<LayoutDashboard className="w-5 h-5 mr-2" />
 									{t("Dashboard")}
 								</Link>
 							</li>
 							<li>
-								<Link href="/map" className="flex items-center hover:text-red-500 transition-all">
+								<Link href="/map" className="flex items-center hover:text-red-500 transition-colors">
 									<MapIcon className="w-5 h-5 mr-2" />
 									{t("Map")}
 								</Link>
 							</li>
 							<li>
-								<Link href="/search" className="flex items-center hover:text-red-500 transition-all">
+								<Link href="/search" className="flex items-center hover:text-red-500 transition-colors">
 									<Search className="w-5 h-5 mr-2" />
 									{t("Search")}
 								</Link>
 							</li>{" "}
 							<li>
-								<Link href="/sponsors" className="flex items-center hover:text-red-500 transition-all">
+								<Link
+									href="/sponsors"
+									className="flex items-center hover:text-red-500 transition-colors"
+								>
 									<StarIcon className="w-5 h-5 mr-2" />
 									{t("Sponsors")}
 								</Link>
@@ -110,7 +119,7 @@ export async function Footer({ locale }: { locale: string }) {
 							<li>
 								<Link
 									href="/developers"
-									className="flex items-center hover:text-red-500 transition-all"
+									className="flex items-center hover:text-red-500 transition-colors"
 								>
 									<Code2 className="w-5 h-5 mr-2" />
 									{t("For developers")}
@@ -120,7 +129,7 @@ export async function Footer({ locale }: { locale: string }) {
 								<Link
 									href="/stats"
 									target="_blank"
-									className="flex items-center hover:text-red-500 transition-all"
+									className="flex items-center hover:text-red-500 transition-colors"
 								>
 									<BarChart2 className="w-5 h-5 mr-2" />
 									{t("Statistics")}
@@ -135,7 +144,7 @@ export async function Footer({ locale }: { locale: string }) {
 								<Link
 									target="_blank"
 									href="https://discord.gg/fANDrYmFSy"
-									className="hover:text-red-500 transition-all flex items-center gap-2"
+									className="hover:text-red-500 transition-colors flex items-center gap-2"
 								>
 									{/*<Discord className="size-4" />*/}
 									<span>Discord</span>
@@ -145,7 +154,7 @@ export async function Footer({ locale }: { locale: string }) {
 								<Link
 									target="_blank"
 									href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
-									className="hover:text-red-500 transition-all flex items-center gap-2"
+									className="hover:text-red-500 transition-colors flex items-center gap-2"
 								>
 									<span>Instagram</span>
 								</Link>
@@ -154,7 +163,7 @@ export async function Footer({ locale }: { locale: string }) {
 								<Link
 									target="_blank"
 									href="https://github.com/omznc/reconned?utm_source=reconned.com"
-									className="hover:text-red-500 transition-all flex items-center gap-2"
+									className="hover:text-red-500 transition-colors flex items-center gap-2"
 								>
 									<span>Github</span>
 								</Link>
@@ -162,7 +171,7 @@ export async function Footer({ locale }: { locale: string }) {
 							<li>
 								<Link
 									href="https://www.facebook.com/profile.php?id=61572533350106"
-									className="hover:text-red-500 transition-all flex items-center gap-2"
+									className="hover:text-red-500 transition-colors flex items-center gap-2"
 								>
 									<span>Facebook</span>
 								</Link>
@@ -172,12 +181,14 @@ export async function Footer({ locale }: { locale: string }) {
 					<div>
 						<h3 className="font-bold mb-4">{t("Support")}</h3>
 						<ul className="space-y-2 text-sm ">
+							{/* Not links yet: a href="#" reads as navigation to assistive tech and goes nowhere.
+							    The "soon" badge already carries the meaning; make them links when the pages exist. */}
 							<li>
-								<Link href="#">{t("Contact")}</Link>
+								<span className="text-muted-foreground">{t("Contact")}</span>
 								<BadgeSoon className="ml-2" />
 							</li>
 							<li>
-								<Link href="#">{t("FAQ")}</Link>
+								<span className="text-muted-foreground">{t("FAQ")}</span>
 								<BadgeSoon className="ml-2" />
 							</li>
 							<li>
@@ -191,7 +202,7 @@ export async function Footer({ locale }: { locale: string }) {
 									href="/sitemap.xml"
 									target="_blank"
 									rel="noopener noreferrer"
-									className="flex items-center hover:text-red-500 transition-all"
+									className="flex items-center hover:text-red-500 transition-colors"
 								>
 									{t("Sitemap")}
 								</a>
@@ -209,7 +220,7 @@ export async function Footer({ locale }: { locale: string }) {
 					</Suspense>
 				</div>
 			</div>
-			<FooterDrawing className="transition-all opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none" />
+			<FooterDrawing className="opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none" />
 		</footer>
 	);
 }

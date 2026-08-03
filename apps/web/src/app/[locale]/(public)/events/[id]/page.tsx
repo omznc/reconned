@@ -229,7 +229,7 @@ export default async function Page(props: PageProps<"/[locale]/events/[id]">) {
 			<JsonLdScript data={breadcrumbSchema} />
 			{faqSchema && <JsonLdScript data={faqSchema} />}
 			{reviewSchema && <JsonLdScript data={reviewSchema} />}
-			<EventOverview event={event} clubId={eventData.club.id} user={user} />
+			<EventOverview event={event} clubId={eventData.club.id} user={user} placesLeft={eventData.placesLeft} />
 		</div>
 	);
 }

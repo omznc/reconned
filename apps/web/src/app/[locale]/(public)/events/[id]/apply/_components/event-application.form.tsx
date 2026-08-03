@@ -37,11 +37,18 @@ interface EventApplicationProps {
 	event: Event & { rules: ClubRule[] };
 	user: User;
 	currentUserClubs: Omit<Club, "_count">[];
+	capacity: ApiResponse<"/api/events/{id}/apply-data", "get">["capacity"];
 }
 
 type SearchUser = ApiResponse<"/api/users", "get">["users"][number];
 
-export function EventApplicationForm({ existingApplication, event, user, currentUserClubs }: EventApplicationProps) {
+export function EventApplicationForm({
+	existingApplication,
+	event,
+	user,
+	currentUserClubs,
+	capacity,
+}: EventApplicationProps) {
 	const [step, setStep] = useState(1);
 	const router = useRouter();
 	const t = useExtracted();
@@ -74,6 +81,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 		rulesAccepted: z.boolean().refine((val) => val === true, {
 			message: t("You must accept the event rules"),
 		}),
+		joinWaitlist: z.boolean(),
 	});
 
 	type EventApplicationSchemaType = z.infer<typeof eventApplicationSchema>;
@@ -118,6 +126,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 					],
 			invitedUsersNotOnApp: existingApplication?.invitedUsersNotOnApp || [],
 			rulesAccepted: false,
+			joinWaitlist: false,
 			paymentMethod:
 				(existingApplication?.paymentMethod as EventApplicationSchemaType["paymentMethod"]) || "cash",
 		},
@@ -147,10 +156,26 @@ export function EventApplicationForm({ existingApplication, event, user, current
 		name: "invitedUsersNotOnApp",
 	});
 
+	// The list always leads with the current user, who is the leader rather than an invitee.
+	const invitedMemberIds = form
+		.watch("invitedUsers")
+		.map((member) => member.id)
+		.filter((id): id is string => Boolean(id) && id !== user.id);
+	const placesRequested = 1 + invitedMemberIds.length + form.watch("invitedUsersNotOnApp").length;
+
+	/**
+	 * Whether this booking wants more places than the event has left. An existing booking is never
+	 * short of its own places — the backend excludes them from the count — so it can only get here
+	 * by growing, and growing past a full event has to be refused rather than queued: demoting a
+	 * booking that already holds places would take them from people who are counting on them.
+	 */
+	const short = capacity.placesLeft !== null && placesRequested > capacity.placesLeft;
+	const canJoinWaitlist = short && !existingApplication;
+
 	const onSubmit = async (data: EventApplicationSchemaType) => {
 		toast.promise(
 			(async () => {
-				const { error } = await apiClient.POST("/api/events/{id}/registrations", {
+				const { data: result, error } = await apiClient.POST("/api/events/{id}/registrations", {
 					params: {
 						path: {
 							id: event.id,
@@ -159,23 +184,26 @@ export function EventApplicationForm({ existingApplication, event, user, current
 					body: {
 						type: data.type,
 						paymentMethod: data.paymentMethod,
-						invitedUsers: data.invitedUsers.map((user) => ({
-							id: user.id,
+						invitedUserIds: data.invitedUsers
+							.map((member) => member.id)
+							.filter((id): id is string => Boolean(id) && id !== user.id),
+						invitedUsersNotOnApp: data.invitedUsersNotOnApp.map((member) => ({
+							name: member.name,
+							email: member.email,
 						})),
-						invitedUsersNotOnApp: data.invitedUsersNotOnApp.map((user) => ({
-							name: user.name,
-							email: user.email,
-						})),
+						joinWaitlist: data.joinWaitlist,
 					},
 				});
 
-				if (error) {
-					throw new Error(error.error || t("An error occurred while applying"));
+				if (error || !result) {
+					throw new Error(error?.error || t("An error occurred while applying"));
 				}
+
+				return result.waitlisted;
 			})(),
 			{
 				loading: t("Submitting application..."),
-				success: () => {
+				success: (waitlisted) => {
 					// Track event application
 					posthog.capture("event_application_submitted", {
 						user_id: user.id,
@@ -186,10 +214,13 @@ export function EventApplicationForm({ existingApplication, event, user, current
 						team_members_count: data.invitedUsers.length + data.invitedUsersNotOnApp.length,
 						invited_users_count: data.invitedUsers.length,
 						external_invites_count: data.invitedUsersNotOnApp.length,
+						waitlisted,
 					});
 
 					router.push(`/events/${event.id}`);
-					return t("Successfully applied to event!");
+					return waitlisted
+						? t("You're on the waiting list. We'll email you if a place frees up.")
+						: t("Successfully applied to event!");
 				},
 				error: (e) => e?.message || t("An error occurred while applying"),
 			},
@@ -354,7 +385,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 						<CirclePlus />
 						{t("Apply solo")}
 					</Button>
-					<span className="text-gray-500 text-sm">
+					<span className="text-muted-foreground text-sm">
 						{!event.allowFreelancers && currentUserClubs.length === 0
 							? t(
 									"You cannot apply solo because you are not a member of any club and this event does not allow freelancer applications.",
@@ -379,7 +410,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 
 				<div className="flex gap-1 items-center">
 					<hr className="flex-1 border-t-2 border-gray-300" />
-					<span className="text-gray-500">{t("or")}</span>
+					<span className="text-muted-foreground">{t("or")}</span>
 					<hr className="flex-1 border-t-2 border-gray-300" />
 				</div>
 
@@ -388,7 +419,7 @@ export function EventApplicationForm({ existingApplication, event, user, current
 						<Users />
 						{t("Apply team")}
 					</Button>
-					<span className="text-gray-500 text-sm">
+					<span className="text-muted-foreground text-sm">
 						{t("Choose this option if you're coming with multiple players")}
 					</span>
 					{existingApplication && form.watch("type") === "team" && (
@@ -485,7 +516,9 @@ export function EventApplicationForm({ existingApplication, event, user, current
 				)}
 
 				{step === 4 && (
-					<Button type="submit">{existingApplication ? t("Save changes") : t("Submit application")}</Button>
+					<Button type="submit" disabled={canJoinWaitlist && !form.watch("joinWaitlist")}>
+						{existingApplication ? t("Save changes") : t("Submit application")}
+					</Button>
 				)}
 			</div>
 		</div>
@@ -871,6 +904,47 @@ export function EventApplicationForm({ existingApplication, event, user, current
 								})}
 							</TabsContent>
 						</Tabs>
+						{canJoinWaitlist && (
+							<Alert>
+								<AlertCircle className="h-4 w-4" />
+								<AlertDescription className="space-y-3">
+									<p>
+										{capacity.placesLeft === 0
+											? t("This event is full.")
+											: t(
+													"This event only has {placesLeft} place(s) left, and you need {placesRequested}.",
+													{
+														placesLeft: String(capacity.placesLeft ?? 0),
+														placesRequested: String(placesRequested),
+													},
+												)}{" "}
+										{t(
+											"You can join the waiting list instead — if someone cancels, the first in line gets their place and we email you.",
+										)}
+									</p>
+									<div className="flex items-center gap-2">
+										<Checkbox
+											id="joinWaitlist"
+											checked={form.watch("joinWaitlist")}
+											onCheckedChange={(checked) =>
+												form.setValue("joinWaitlist", checked as boolean)
+											}
+										/>
+										<Label htmlFor="joinWaitlist">{t("Put me on the waiting list")}</Label>
+									</div>
+								</AlertDescription>
+							</Alert>
+						)}
+						{short && existingApplication && (
+							<Alert variant="destructive">
+								<AlertCircle className="h-4 w-4" />
+								<AlertDescription>
+									{t(
+										"There isn't room for everyone you've added. Remove someone, or leave the booking as it is.",
+									)}
+								</AlertDescription>
+							</Alert>
+						)}
 						{Object.keys(form.formState.errors).length > 0 && (
 							<Alert variant="destructive" className="mt-4">
 								<AlertDescription>

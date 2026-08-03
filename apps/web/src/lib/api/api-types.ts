@@ -1529,7 +1529,7 @@ export interface paths {
 		};
 		/**
 		 * Get pending invites count
-		 * @description Returns the count of pending club invites for the current user
+		 * @description Returns the count of pending club and event team invites for the current user
 		 */
 		get: operations["usersinvitescountGet"];
 		put?: never;
@@ -2745,6 +2745,66 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/events/team-invites": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List pending team invites
+		 * @description List the current user's pending invitations to join someone else's team registration
+		 */
+		get: operations["eventsteamInvitesGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/events/{id}/registrations/{registrationId}/invite": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Respond to a team invite
+		 * @description Accept or reject an invitation to join someone else's team registration
+		 */
+		put: operations["eventsidregistrationsregistrationIdinvitePut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/events/attendees/claim": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Claim a guest place
+		 * @description Binds a place that was booked for an off-platform guest to the signed-in account, using the token from the invitation email
+		 */
+		post: operations["eventsattendeesclaimPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/events/{id}/registrations/{registrationId}/attendance": {
 		parameters: {
 			query?: never;
@@ -2755,9 +2815,49 @@ export interface paths {
 		get?: never;
 		/**
 		 * Toggle attendance
-		 * @description Toggle attendance for event registration
+		 * @description Toggle attendance for every confirmed person on an event registration
 		 */
 		put: operations["eventsidregistrationsregistrationIdattendancePut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/events/{id}/attendees/{attendeeId}/attendance": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Mark one person present or absent
+		 * @description Attendance is per person, not per booking: a team can turn up without one of its members. Pass null to clear the mark.
+		 */
+		put: operations["eventsidattendeesattendeeIdattendancePut"];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/events/{id}/attendees/{attendeeId}/payment": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		/**
+		 * Mark one person paid or unpaid
+		 * @description Records that a person on a booking has settled up. Payment is per person because a captain can pay for some of their team and not others.
+		 */
+		put: operations["eventsidattendeesattendeeIdpaymentPut"];
 		post?: never;
 		delete?: never;
 		options?: never;
@@ -3714,7 +3814,7 @@ export interface paths {
 		};
 		/**
 		 * List cities with clubs
-		 * @description Cities that have at least 2 public clubs, with their club counts
+		 * @description Cities that have at least 2 public clubs, or at least one verified or allied club, with their club counts
 		 */
 		get: operations["publiccitiesGet"];
 		put?: never;
@@ -16856,6 +16956,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -17292,6 +17393,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -17347,6 +17449,7 @@ export interface operations {
 					image?: string;
 					isPrivate?: boolean;
 					allowFreelancers?: boolean;
+					maxAttendees?: number | null;
 					hasBreakfast?: boolean;
 					hasLunch?: boolean;
 					hasDinner?: boolean;
@@ -17380,6 +17483,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -17463,6 +17567,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -17518,6 +17623,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -17586,6 +17692,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -17609,6 +17716,8 @@ export interface operations {
 							description: string | null;
 						} | null;
 						registrationCount: number;
+						attendeeCount: number;
+						placesLeft: number | null;
 						rules: {
 							id: string;
 							name: string;
@@ -17672,6 +17781,7 @@ export interface operations {
 					image?: string;
 					isPrivate?: boolean;
 					allowFreelancers?: boolean;
+					maxAttendees?: number | null;
 					hasBreakfast?: boolean;
 					hasLunch?: boolean;
 					hasDinner?: boolean;
@@ -17705,6 +17815,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -18011,30 +18122,40 @@ export interface operations {
 							createdAt: string;
 							updatedAt: string;
 							createdBy: {
+								attendeeId: string;
 								id: string;
 								name: string;
 								email: string | null;
 								phone: string | null;
 								callsign: string | null;
 								image: string | null;
+								/** @enum {string} */
+								status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
+								attended: boolean | null;
+								paidAt: string | null;
 							} | null;
 							invitedUsers: {
+								attendeeId: string;
 								id: string;
 								name: string;
 								email: string | null;
 								phone: string | null;
 								callsign: string | null;
 								image: string | null;
+								/** @enum {string} */
+								status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
+								attended: boolean | null;
+								paidAt: string | null;
 							}[];
 							invitedUsersNotOnApp: {
+								attendeeId: string;
 								id: string;
-								eventId: string;
-								eventRegistrationId: string | null;
-								email: string;
 								name: string;
-								createdAt: string;
-								updatedAt: string;
-								expiresAt: string;
+								email: string;
+								/** @enum {string} */
+								status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
+								attended: boolean | null;
+								paidAt: string | null;
 							}[];
 						}[];
 					};
@@ -18108,6 +18229,7 @@ export interface operations {
 						/** Format: email */
 						email: string;
 					}[];
+					joinWaitlist?: boolean;
 				};
 			};
 		};
@@ -18130,6 +18252,7 @@ export interface operations {
 							createdAt: string;
 							updatedAt: string;
 						};
+						waitlisted: boolean;
 					};
 				};
 			};
@@ -18187,6 +18310,185 @@ export interface operations {
 				content: {
 					"application/json": {
 						success: boolean;
+						promoted: number;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	eventsteamInvitesGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						invites: {
+							registrationId: string;
+							/** @enum {string} */
+							status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
+							invitedAt: string;
+							eventId: string;
+							eventName: string;
+							eventSlug: string | null;
+							eventDateStart: string;
+							eventLocation: string;
+							invitedById: string;
+							invitedByName: string;
+						}[];
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	eventsidregistrationsregistrationIdinvitePut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+				registrationId: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @enum {string} */
+					status: "CONFIRMED" | "DECLINED";
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						/** @enum {string} */
+						status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	eventsattendeesclaimPost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					token: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						eventId: string;
+						eventSlug: string | null;
+						eventName: string;
+						/** @enum {string} */
+						status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
 					};
 				};
 			};
@@ -18260,6 +18562,164 @@ export interface operations {
 							attended: boolean;
 							createdAt: string;
 							updatedAt: string;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	eventsidattendeesattendeeIdattendancePut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+				attendeeId: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					attended: boolean | null;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						attendee: {
+							id: string;
+							attended: boolean | null;
+						};
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	eventsidattendeesattendeeIdpaymentPut: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+				attendeeId: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					paid: boolean;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+						attendee: {
+							id: string;
+							paidAt: string | null;
 						};
 					};
 				};
@@ -18420,6 +18880,7 @@ export interface operations {
 							dateRegistrationsOpen: string;
 							isPrivate: boolean;
 							allowFreelancers: boolean;
+							maxAttendees: number | null;
 							location: string;
 							googleMapsLink: string | null;
 							costPerPerson: number;
@@ -18454,21 +18915,34 @@ export interface operations {
 							/** @enum {string} */
 							paymentMethod: "cash" | "bank";
 							invitedUsers: {
+								attendeeId: string;
 								id: string;
 								name: string;
 								email: string | null;
 								phone: string | null;
 								callsign: string | null;
 								image: string | null;
+								/** @enum {string} */
+								status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
+								attended: boolean | null;
+								paidAt: string | null;
 							}[];
 							invitedUsersNotOnApp: {
+								attendeeId: string;
 								id: string;
-								eventId: string;
-								eventRegistrationId: string | null;
-								email: string;
 								name: string;
+								email: string;
+								/** @enum {string} */
+								status: "PENDING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "WAITLISTED";
+								attended: boolean | null;
+								paidAt: string | null;
 							}[];
 						} | null;
+						capacity: {
+							maxAttendees: number | null;
+							takenByOthers: number;
+							placesLeft: number | null;
+						};
 					};
 				};
 			};
@@ -19046,6 +19520,7 @@ export interface operations {
 										dateRegistrationsOpen?: string;
 										isPrivate?: boolean;
 										allowFreelancers?: boolean;
+										maxAttendees?: number | null;
 										location?: string;
 										googleMapsLink?: string | null;
 										costPerPerson?: number;

@@ -35,9 +35,11 @@ interface EventOverviewProps {
 	};
 	clubId?: string;
 	user?: import("better-auth").User | null;
+	/** Remaining places, or null when the event has no attendee limit. */
+	placesLeft?: number | null;
 }
 
-export async function EventOverview({ event, clubId, user }: EventOverviewProps) {
+export async function EventOverview({ event, clubId, user, placesLeft = null }: EventOverviewProps) {
 	const t = await getExtracted();
 	const membershipPromise =
 		user && clubId
@@ -66,6 +68,7 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 	};
 
 	const eventRegistrationEnabled = await isFeatureEnabled("EVENT_REGISTRATION");
+	const isFull = placesLeft === 0;
 
 	return (
 		<div className="relative flex flex-col gap-4">
@@ -108,7 +111,7 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 									<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
 										{eventRegistrationEnabled && (
 											<>
-												{user && canApplyToEvent(event) ? (
+												{user && canApplyToEvent(event) && !isFull ? (
 													<Link
 														href={`/events/${event.id}/apply`}
 														className="w-full md:w-auto"
@@ -122,7 +125,9 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 														</Button>
 													</Link>
 												) : user ? (
-													<p className="text-sm text-white/80">{t("Applications closed")}</p>
+													<p className="text-sm text-white/80">
+														{isFull ? t("This event is full") : t("Applications closed")}
+													</p>
 												) : null}
 												<AddEventToCalendarButton event={event} />
 											</>
@@ -137,6 +142,14 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 										{t("{count} registered", {
 											count: String(event._count?.eventRegistration),
 										})}
+									</Badge>
+								)}
+								{placesLeft !== null && (
+									<Badge className="flex h-fit items-center gap-1 bg-white/90 text-black hover:bg-white">
+										<UserIcon className="size-4" />
+										{placesLeft === 0
+											? t("This event is full")
+											: t("{count} places left", { count: String(placesLeft) })}
 									</Badge>
 								)}
 								<Badge className="flex h-fit items-center gap-1 bg-white/90 text-black hover:bg-white">
@@ -183,7 +196,7 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 								<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
 									{eventRegistrationEnabled && (
 										<>
-											{user && canApplyToEvent(event) ? (
+											{user && canApplyToEvent(event) && !isFull ? (
 												<Link href={`/events/${event.id}/apply`} className="w-full md:w-auto">
 													<Button variant="outline" size="sm" className="w-full">
 														{t("Login")} <BadgeSoon className="ml-2" />
@@ -191,7 +204,7 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 												</Link>
 											) : user ? (
 												<p className="text-sm text-muted-foreground">
-													{t("Applications closed")}
+													{isFull ? t("This event is full") : t("Applications closed")}
 												</p>
 											) : null}
 											<AddEventToCalendarButton event={event} />
@@ -207,6 +220,14 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 									{t("{count} registered", {
 										count: String(event._count?.eventRegistration),
 									})}
+								</Badge>
+							)}
+							{placesLeft !== null && (
+								<Badge className="flex h-fit items-center gap-1">
+									<UserIcon className="size-4" />
+									{placesLeft === 0
+										? t("This event is full")
+										: t("{count} places left", { count: String(placesLeft) })}
 								</Badge>
 							)}
 							<Badge className="flex h-fit items-center gap-1">

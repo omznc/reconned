@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { ArrowUpRight, Calendar, Globe, MapPin, Users } from "lucide-react";
 import { getExtracted, getLocale } from "next-intl/server";
 import { InviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/invite-actions";
+import { TeamInviteActions } from "@/app/[locale]/dashboard/(user)/user/invites/_components/team-invite-actions";
 import { ErrorPage } from "@/components/error-page";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -20,16 +21,83 @@ export default async function InvitesPage() {
 
 	const t = await getExtracted();
 
-	const { data, error } = await apiServer.GET("/api/users/invites");
+	const [{ data, error }, { data: teamInviteData }] = await Promise.all([
+		apiServer.GET("/api/users/invites"),
+		apiServer.GET("/api/events/team-invites"),
+	]);
 
 	if (error || !data) {
 		return <ErrorPage title={t("Error loading invitations")} />;
 	}
 
 	const invites = data.invites;
+	// A failed team-invite fetch should not take the club invites down with it.
+	const teamInvites = teamInviteData?.invites ?? [];
 
 	return (
 		<div className="container py-6 space-y-6">
+			{teamInvites.length > 0 && (
+				<div className="space-y-4">
+					<h1 className="text-2xl font-bold">{t("Event team invitations")}</h1>
+					<p className="text-muted-foreground text-sm">
+						{t("Someone added you to their team. You only count towards the event once you accept.")}
+					</p>
+					<div className="grid gap-4">
+						{teamInvites.map((invite) => (
+							<Card key={invite.registrationId}>
+								<CardHeader>
+									<div className="flex items-start justify-between gap-4">
+										<div className="flex-1">
+											<div className="flex items-center gap-2">
+												<h3 className="text-lg font-semibold">{invite.eventName}</h3>
+												{invite.status === "WAITLISTED" && (
+													<Badge variant="secondary">{t("Waiting list")}</Badge>
+												)}
+												<Link
+													href={`/events/${invite.eventSlug || invite.eventId}`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="text-muted-foreground hover:text-foreground transition-colors"
+													title={t("View public page")}
+												>
+													<ArrowUpRight className="h-4 w-4" />
+												</Link>
+											</div>
+											<p className="text-sm text-muted-foreground mt-1">
+												{invite.status === "WAITLISTED"
+													? t(
+															"This event was full when you accepted. You take the next place that frees up.",
+														)
+													: t("Invited by {name}", { name: invite.invitedByName })}
+											</p>
+										</div>
+										<TeamInviteActions
+											eventId={invite.eventId}
+											registrationId={invite.registrationId}
+											isWaitlisted={invite.status === "WAITLISTED"}
+										/>
+									</div>
+								</CardHeader>
+								<CardContent>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+										<div className="flex items-center gap-2">
+											<Calendar className="h-4 w-4 text-muted-foreground" />
+											<span>{format(new Date(invite.eventDateStart), "dd.MM.yyyy. HH:mm")}</span>
+										</div>
+										{invite.eventLocation && (
+											<div className="flex items-center gap-2">
+												<MapPin className="h-4 w-4 text-muted-foreground" />
+												<span>{invite.eventLocation}</span>
+											</div>
+										)}
+									</div>
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</div>
+			)}
+
 			<h1 className="text-2xl font-bold">{t("Invitations")}</h1>
 
 			{invites.length === 0 ? (

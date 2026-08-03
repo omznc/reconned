@@ -647,15 +647,11 @@ export function ClubsMap({
 									onChange={(e) => setClusteringEnabled(e.target.checked)}
 									className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 								/>
-								<span className="text-sm font-medium text-gray-900 dark:text-gray-300">
-									{t("Clustering")}
-								</span>
+								<span className="text-sm font-medium text-foreground">{t("Clustering")}</span>
 							</label>
 
 							<div className="flex flex-col gap-2">
-								<Label className="text-sm font-medium text-gray-900 dark:text-gray-300">
-									{t("Logo size")}
-								</Label>
+								<Label className="text-sm font-medium text-foreground">{t("Logo size")}</Label>
 								<Slider
 									value={[logoSize]}
 									onValueChange={([value]) => setLogoSize(value || 32)}
@@ -668,7 +664,7 @@ export function ClubsMap({
 
 							<div className="flex flex-col gap-3 border-t pt-3">
 								<div className="relative">
-									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 									<Input
 										placeholder={t("Search clubs...")}
 										value={searchQuery}
@@ -712,7 +708,7 @@ export function ClubsMap({
 													<div className="flex-1 min-w-0">
 														<div className="font-medium truncate">{club.name}</div>
 														{club.location && (
-															<div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+															<div className="text-sm text-muted-foreground truncate">
 																{club.location}
 															</div>
 														)}
@@ -720,7 +716,7 @@ export function ClubsMap({
 												</button>
 											))
 										) : (
-											<div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
+											<div className="px-3 py-2 text-sm text-muted-foreground text-center">
 												{t("No clubs found")}
 											</div>
 										)}
@@ -762,7 +758,7 @@ export function ClubsMap({
 											{selectedClubForOverview.verified && <VerifiedClubIcon />}
 										</div>
 										{selectedClubForOverview.location && (
-											<p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+											<p className="text-sm text-muted-foreground truncate">
 												{selectedClubForOverview.location}
 											</p>
 										)}
@@ -770,7 +766,7 @@ export function ClubsMap({
 								</div>
 
 								{selectedClubForOverview.description && (
-									<p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+									<p className="text-sm text-foreground line-clamp-3">
 										{selectedClubForOverview.description}
 									</p>
 								)}
@@ -895,7 +891,7 @@ export function ClubsMap({
 										<div className="flex-1 min-w-0">
 											<div className="font-medium truncate">{club.name}</div>
 											{club.location && (
-												<div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+												<div className="text-sm text-muted-foreground truncate">
 													{club.location}
 												</div>
 											)}
@@ -907,7 +903,7 @@ export function ClubsMap({
 
 						<div className="rounded-md border bg-white p-3 shadow-md dark:bg-[#0d0d0d]">
 							<div className="relative">
-								<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+								<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
 								<Input
 									placeholder={t("Search clubs...")}
 									value={searchQuery}

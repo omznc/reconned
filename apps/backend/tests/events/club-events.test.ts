@@ -28,6 +28,8 @@ async function createEvent(owner: TestUser, clubId: string, overrides: Record<st
 		dateEnd: new Date(now + 8 * DAY_MS).toISOString(),
 		dateRegistrationsOpen: new Date(now - DAY_MS).toISOString(),
 		dateRegistrationsClose: new Date(now + 6 * DAY_MS).toISOString(),
+		// The suite's attendees belong to no club; without this they hit the freelancer gate.
+		allowFreelancers: true,
 		...overrides,
 	});
 	expect(response.status).toBe(200);

@@ -3,6 +3,7 @@
 import NoResults from "@public/errors/no-results.png";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import { useExtracted } from "next-intl";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useEffect, useMemo, useRef } from "react";
 import { ListingCard } from "@/components/listing-card";
@@ -17,6 +18,7 @@ type SearchResponse = ApiResponse<"/api/search", "get">;
 type SearchItem = NonNullable<SearchResponse["items"]>[number];
 
 export function SearchResults() {
+	const t = useExtracted();
 	const [query] = useQueryState("q", { defaultValue: "" });
 	const [filterClubs] = useQueryState("filterClubs", parseAsBoolean.withDefault(true));
 	const [filterUsers] = useQueryState("filterUsers", parseAsBoolean.withDefault(true));
@@ -109,16 +111,16 @@ export function SearchResults() {
 						))}
 					</div>
 				) : error ? (
-					<div className="text-center text-destructive py-16">Error loading search results</div>
+					<div className="text-center text-destructive py-16" role="alert">
+						{t("Unable to load search results. Check your connection and try again.")}
+					</div>
 				) : allItems.length === 0 ? (
 					<div className="text-center py-16 flex flex-col items-center justify-center">
-						<Image
-							src={NoResults}
-							alt="No results"
-							draggable={false}
-							className="w-full max-w-[250px] dark:invert"
-						/>
-						<p className="mt-4 text-muted-foreground">Nothing was found matching that search</p>
+						<Image src={NoResults} alt="" draggable={false} className="w-full max-w-[250px] dark:invert" />
+						<p className="mt-4 font-medium">{t("No results for “{query}”", { query })}</p>
+						<p className="mt-1 text-sm text-muted-foreground">
+							{t("Try a shorter term, or turn on more filters to widen the search.")}
+						</p>
 					</div>
 				) : (
 					<>

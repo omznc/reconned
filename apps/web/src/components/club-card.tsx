@@ -21,7 +21,7 @@ interface ClubCardProps {
 export async function ClubCard({ club, showDescription = false }: ClubCardProps) {
 	return (
 		<Link href={`/clubs/${club.slug || club.id}`} className="block group max-w-md">
-			<Card className="relative overflow-hidden transition-all hover:border-red-500 border bg-sidebar flex">
+			<Card className="relative overflow-hidden transition-colors hover:border-red-500 border bg-sidebar flex">
 				<div className="flex gap-4 flex-1">
 					<div className="relative shrink-0 w-[150px] h-full border-r bg-muted p-2 flex items-center justify-center">
 						{club.logo ? (
@@ -56,7 +56,7 @@ export async function ClubCard({ club, showDescription = false }: ClubCardProps)
 						)}
 					</div>
 
-					<ArrowUpRight className="absolute top-4 right-4 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+					<ArrowUpRight className="absolute top-4 right-4 w-5 h-5 text-red-500 opacity-0 group-hover:opacity-100 transition-[opacity,translate] transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 				</div>
 			</Card>
 		</Link>

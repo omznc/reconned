@@ -66,23 +66,24 @@ export function ClubsListing({ initialData }: ClubsListingProps) {
 				</div>
 
 				{isLoading && clubs.length === 0 ? (
-					<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
 						{Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
 							<ListingCardSkeleton key={i} type="club" />
 						))}
 					</div>
 				) : clubs.length === 0 ? (
 					<div className="text-center py-16 flex flex-col items-center justify-center">
-						<Image
-							src={NoResults}
-							alt="No results"
-							draggable={false}
-							className="w-full max-w-[250px] dark:invert"
-						/>
-						<p className="mt-4 text-muted-foreground">{t("No clubs found")}</p>
+						<Image src={NoResults} alt="" draggable={false} className="w-full max-w-[250px] dark:invert" />
+						<p className="mt-4 font-medium">{t("No clubs yet")}</p>
+						<p className="mt-1 text-sm text-muted-foreground max-w-sm">
+							{t("Clubs are the teams that organize events and take in players.")}
+						</p>
+						<Link href="/clubs/city" className="mt-4 text-sm underline underline-offset-4">
+							{t("Browse by city")}
+						</Link>
 					</div>
 				) : (
-					<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
 						{clubs.map((club) => (
 							<ListingCard
 								key={club.id}
@@ -101,15 +102,16 @@ export function ClubsListing({ initialData }: ClubsListingProps) {
 			</div>
 			<div className="min-h-[60px] flex items-center justify-center mt-8">
 				{totalPages > 1 && (
-					<div className="flex items-center justify-center gap-2">
+					<nav className="flex items-center justify-center gap-2" aria-label={t("Pagination")}>
 						<Button
 							variant="outline"
 							size="icon"
 							onClick={() => setPage(page - 1)}
 							disabled={page <= 1 || isLoading}
-							className="transition-all duration-200 hover:scale-110 active:scale-95"
+							aria-label={t("Previous page")}
+							className="transition-transform active:scale-[0.96]"
 						>
-							<ChevronLeft className="h-4 w-4" />
+							<ChevronLeft className="h-4 w-4" aria-hidden />
 						</Button>
 						<div className="flex items-center gap-1">
 							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -130,7 +132,9 @@ export function ClubsListing({ initialData }: ClubsListingProps) {
 										size="icon"
 										onClick={() => setPage(pageNum)}
 										disabled={isLoading}
-										className="transition-all duration-200 hover:scale-110 active:scale-95"
+										aria-label={t("Page {page}", { page: String(pageNum) })}
+										aria-current={page === pageNum ? "page" : undefined}
+										className="tabular-nums transition-transform active:scale-[0.96]"
 									>
 										{pageNum}
 									</Button>
@@ -142,11 +146,12 @@ export function ClubsListing({ initialData }: ClubsListingProps) {
 							size="icon"
 							onClick={() => setPage(page + 1)}
 							disabled={page >= totalPages || isLoading}
-							className="transition-all duration-200 hover:scale-110 active:scale-95"
+							aria-label={t("Next page")}
+							className="transition-transform active:scale-[0.96]"
 						>
-							<ChevronRight className="h-4 w-4" />
+							<ChevronRight className="h-4 w-4" aria-hidden />
 						</Button>
-					</div>
+					</nav>
 				)}
 			</div>
 		</div>

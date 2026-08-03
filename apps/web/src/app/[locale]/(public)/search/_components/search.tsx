@@ -51,9 +51,11 @@ export function Search() {
 						handleSearch(value);
 					}}
 					className={cn(
-						"dark:bg-white bg-black placeholder:text-white dark:placeholder:text-black text-white dark:text-black pl-10 pr-10",
+						// The field is inverted, so the placeholder has to be a muted version of the
+						// text color on it — at full strength it is indistinguishable from a typed query.
+						"dark:bg-white bg-black placeholder:text-white/60 dark:placeholder:text-black/60 text-white dark:text-black pl-10 pr-10",
 					)}
-					placeholder={t("Something...")}
+					placeholder={t("Clubs, events, players…")}
 					maxLength={100}
 				/>
 				<Popover open={open} onOpenChange={setOpen}>
@@ -63,7 +65,7 @@ export function Search() {
 							size="icon"
 							aria-label={t("Toggle search filters")}
 							className={cn(
-								"absolute right-1 top-1/2 -translate-y-1/2 size-8 bg-black dark:bg-white text-white dark:text-black transition-all",
+								"absolute right-1 top-1/2 -translate-y-1/2 size-8 bg-black dark:bg-white text-white dark:text-black transition-colors",
 							)}
 						>
 							<Filter className="size-4" />

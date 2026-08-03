@@ -61,6 +61,8 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 		EVENT_CREATE: t("Event creation"),
 		EVENT_UPDATE: t("Event update"),
 		EVENT_DELETE: t("Event deletion"),
+		EVENT_ATTENDANCE_UPDATE: t("Attendance update"),
+		EVENT_PAYMENT_UPDATE: t("Payment update"),
 		CLUB_RULE_UPDATE: t("Club rule update"),
 		CLUB_RULE_CREATE: t("Club rule creation"),
 		CLUB_RULE_DELETE: t("Club rule deletion"),

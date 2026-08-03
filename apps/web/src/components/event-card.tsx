@@ -52,7 +52,7 @@ export function EventCard({ event }: EventCardProps) {
 
 	return (
 		<Link href={`/events/${event.slug || event.id}`} className="block group">
-			<Card className="overflow-hidden transition-all duration-150 hover:border-red-500 border-border/50 h-full relative">
+			<Card className="overflow-hidden transition-colors duration-150 hover:border-red-500 border-border/50 h-full relative">
 				<div className="absolute inset-0 bg-gradient-to-t from-red-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
 				<div className="flex flex-col h-full relative">
 					<div className="relative aspect-video overflow-hidden bg-muted">

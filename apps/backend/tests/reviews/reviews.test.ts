@@ -49,26 +49,25 @@ async function createEvent(owner: TestUser, clubId: string, overrides: Record<st
 		dateEnd: new Date(now + 2 * DAY_MS).toISOString(),
 		dateRegistrationsOpen: new Date(now - DAY_MS).toISOString(),
 		dateRegistrationsClose: new Date(now + DAY_MS).toISOString(),
+		// The suite's attendees belong to no club; without this they hit the freelancer gate.
+		allowFreelancers: true,
 		...overrides,
 	});
 	expect(response.status).toBe(200);
 	return response.body.event as { id: string; name: string };
 }
 
-/** Registers `attendee` for `eventId`, then backdates the event and marks the registration as
- * attended state so the review eligibility check (must have attended a finished event) passes.
- * A plain "solo" registration never adds the creator to the attendee join table, so that row is
- * inserted directly. */
+/** Registers `attendee` for `eventId`, then backdates the event so the review eligibility check
+ * (must have attended a finished event) passes. Registering is enough on its own now: a booking
+ * puts its creator on the roster as a confirmed attendee. */
 async function makeEventReviewable(attendee: TestUser, eventId: string) {
 	const registration = await api(attendee.cookie).post(`/api/events/${eventId}/registrations`, {
 		type: "solo",
 		paymentMethod: "cash",
 	});
 	expect(registration.status).toBe(200);
-	const registrationId = registration.body.registration.id as string;
 
 	await testDb`UPDATE "Event" SET "dateStart" = NOW() - INTERVAL '2 days', "dateEnd" = NOW() - INTERVAL '1 day' WHERE id = ${eventId}`;
-	await testDb`INSERT INTO "_EventRegistrationToUser" ("A", "B") VALUES (${registrationId}, ${attendee.id})`;
 }
 
 describe("reviews", () => {
@@ -247,6 +246,37 @@ describe("reviews", () => {
 		expect(created.status).toBe(201);
 		expect(created.body.review.eventId).toBe(event.id);
 		expect(created.body.review.authorId).toBe(attendee.id);
+	});
+
+	test("someone who declined a team invite cannot review the event", async () => {
+		const owner = await createUser();
+		const captain = await createUser();
+		const invitee = await createUser();
+		const club = await createClub(owner);
+		const event = await createEvent(owner, club.id);
+
+		const registration = await api(captain.cookie).post(`/api/events/${event.id}/registrations`, {
+			type: "team",
+			paymentMethod: "cash",
+			invitedUserIds: [invitee.id],
+		});
+		expect(registration.status).toBe(200);
+
+		const declined = await api(invitee.cookie).put(
+			`/api/events/${event.id}/registrations/${registration.body.registration.id}/invite`,
+			{ status: "DECLINED" },
+		);
+		expect(declined.status).toBe(200);
+
+		await testDb`UPDATE "Event" SET "dateStart" = NOW() - INTERVAL '2 days', "dateEnd" = NOW() - INTERVAL '1 day' WHERE id = ${event.id}`;
+
+		const response = await postReview(invitee.cookie, {
+			type: "EVENT",
+			rating: 1,
+			content: "I never actually went to this one",
+			eventId: event.id,
+		});
+		expect(response.status).toBe(403);
 	});
 
 	test("PATCH /reviews/:id lets the author edit their review and records edit history", async () => {

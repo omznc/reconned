@@ -41,6 +41,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { Link, useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
+import { getApiErrorMessage } from "@/lib/api/api-error";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { useIsAuthenticated } from "@/lib/auth-client";
 import { getDateFnsLocale } from "@/lib/date-locale";
@@ -114,6 +115,14 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 			image: z.string().optional().optional(),
 			isPrivate: z.boolean().optional(),
 			allowFreelancers: z.boolean().optional(),
+			// An empty field means unlimited, which is why this is nullable rather than
+			// defaulted - the API treats null as "no cap" and a number as a hard limit.
+			maxAttendees: z
+				.number()
+				.int(t("The attendee limit must be a whole number"))
+				.gte(1, t("The attendee limit must be at least 1"))
+				.nullable()
+				.optional(),
 			hasBreakfast: z.boolean().optional(),
 			hasLunch: z.boolean().optional(),
 			hasDinner: z.boolean().optional(),
@@ -329,6 +338,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 		image: props.event?.image || "",
 		isPrivate: props.event?.isPrivate,
 		allowFreelancers: props.event?.allowFreelancers,
+		maxAttendees: props.event?.maxAttendees ?? null,
 		hasBreakfast: props.event?.hasBreakfast,
 		hasLunch: props.event?.hasLunch,
 		hasDinner: props.event?.hasDinner,
@@ -430,6 +440,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 				image: values.image || undefined,
 				isPrivate: values.isPrivate,
 				allowFreelancers: values.allowFreelancers,
+				maxAttendees: values.maxAttendees ?? null,
 				hasBreakfast: values.hasBreakfast,
 				hasLunch: values.hasLunch,
 				hasDinner: values.hasDinner,
@@ -454,7 +465,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					});
 
 			if (createError || !createdOrUpdated?.event.id) {
-				throw new Error(createError?.error || t("An error occurred while saving data"));
+				throw new Error(getApiErrorMessage(createError, t("An error occurred while saving data")));
 			}
 
 			const eventId = createdOrUpdated.event.id;
@@ -481,7 +492,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 					});
 
 					if (updateError) {
-						throw new Error(updateError.error || t("An error occurred while saving data"));
+						throw new Error(getApiErrorMessage(updateError, t("An error occurred while saving data")));
 					}
 				}
 			}
@@ -557,7 +568,10 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 
 												if (error) {
 													throw new Error(
-														error.error || t("An error occurred while deleting event"),
+														getApiErrorMessage(
+															error,
+															t("An error occurred while deleting event"),
+														),
 													);
 												}
 
@@ -1076,6 +1090,39 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															onCheckedChange={field.onChange}
 														/>
 													</FormControl>
+												</FormItem>
+											)}
+										/>
+
+										<FormField
+											control={form.control}
+											name="maxAttendees"
+											render={({ field }) => (
+												<FormItem className="rounded-lg border p-4">
+													<FormLabel>{t("Attendee limit")}</FormLabel>
+													<FormControl>
+														<Input
+															placeholder={t("Unlimited")}
+															type="number"
+															min={1}
+															step={1}
+															name={field.name}
+															ref={field.ref}
+															onBlur={field.onBlur}
+															value={field.value ?? ""}
+															onChange={(e) => {
+																// An empty input is "no limit", not zero.
+																const parsed = e.target.valueAsNumber;
+																field.onChange(Number.isNaN(parsed) ? null : parsed);
+															}}
+														/>
+													</FormControl>
+													<FormDescription>
+														{t(
+															"The most people who can attend, counting team members. Leave empty for no limit.",
+														)}
+													</FormDescription>
+													<FormMessage />
 												</FormItem>
 											)}
 										/>

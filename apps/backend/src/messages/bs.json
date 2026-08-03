@@ -20,6 +20,41 @@
 			"codeNote": "Ili koristite ovaj kod pozivnice:",
 			"footer": "Ako niste očekivali ovu pozivnicu, molimo vas da ignorišete ovaj email."
 		},
+		"eventInvitation": {
+			"subject": "{leaderName} vas je dodao/la u svoj tim za {eventName}",
+			"preview": "Imate pozivnicu za tim na susretu {eventName}.",
+			"heading": "Imate pozivnicu za tim",
+			"guestHeading": "Imate mjesto na ovom susretu",
+			"greeting": "Zdravo {name}",
+			"greetingGeneric": "Zdravo",
+			"description": "{leaderName} vas je dodao/la u svoj tim za {eventName}, koji se održava {eventDate} na lokaciji {eventLocation}.",
+			"memberNote": "Vaše mjesto nije rezervisano dok ne prihvatite pozivnicu.",
+			"guestNote": "Vaše mjesto je već rezervisano. Napravite nalog da vidite detalje susreta i upravljate svojom prijavom.",
+			"button": "Pogledaj pozivnicu",
+			"guestButton": "Pogledaj susret",
+			"footer": "Ako niste očekivali ovu pozivnicu, slobodno ignorišite ovaj email."
+		},
+		"eventWaitlistPromoted": {
+			"subject": "Oslobodilo se mjesto na susretu {eventName}",
+			"preview": "Više niste na listi čekanja za {eventName}.",
+			"heading": "Mjesto je vaše",
+			"greeting": "Zdravo {name}",
+			"greetingGeneric": "Zdravo",
+			"description": "Oslobodilo se mjesto na susretu {eventName}, koji se održava {eventDate} na lokaciji {eventLocation}, i ono je vaše. Ne morate više ništa raditi da ga zadržite.",
+			"button": "Pogledaj susret",
+			"footer": "Ako ipak ne možete doći, molimo vas da otkažete kako bi mjesto pripalo nekom drugom."
+		},
+		"eventPlaceReleased": {
+			"subject": "Više niste na spisku učesnika za {eventName}",
+			"preview": "Vaše mjesto na susretu {eventName} je oslobođeno.",
+			"heading": "Vaše mjesto je oslobođeno",
+			"greeting": "Zdravo {name}",
+			"greetingGeneric": "Zdravo",
+			"description": "{leaderName} vas je uklonio sa svog tima za susret {eventName}, koji se održava {eventDate} na lokaciji {eventLocation}. Više niste na spisku učesnika.",
+			"note": "Ako se ovo desilo greškom, javite se osobi koja je prijavila tim. Možete se prijaviti i samostalno.",
+			"button": "Pogledaj susret",
+			"footer": "Ovu poruku primate jer je neko prijavio mjesto za vas."
+		},
 		"rateEvent": {
 			"preview": "Ocijenite vaše iskustvo na {eventName}!",
 			"heading": "Kako je bio vaš događaj?",
