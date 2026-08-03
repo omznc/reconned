@@ -111,7 +111,7 @@ export async function EventOverview({ event, clubId, user, placesLeft = null }: 
 									<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
 										{eventRegistrationEnabled && (
 											<>
-												{user && canApplyToEvent(event) && !isFull ? (
+												{user && canApplyToEvent(event) ? (
 													<Link
 														href={`/events/${event.id}/apply`}
 														className="w-full md:w-auto"
@@ -121,13 +121,14 @@ export async function EventOverview({ event, clubId, user, placesLeft = null }: 
 															size="sm"
 															className="w-full shadow-lg"
 														>
-															{t("Login")} <BadgeSoon className="ml-2" />
+															{isFull
+																? t("Put me on the waiting list")
+																: t("Apply to event")}{" "}
+															<BadgeSoon className="ml-2" />
 														</Button>
 													</Link>
 												) : user ? (
-													<p className="text-sm text-white/80">
-														{isFull ? t("This event is full") : t("Applications closed")}
-													</p>
+													<p className="text-sm text-white/80">{t("Applications closed")}</p>
 												) : null}
 												<AddEventToCalendarButton event={event} />
 											</>
@@ -196,15 +197,16 @@ export async function EventOverview({ event, clubId, user, placesLeft = null }: 
 								<div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto md:shrink-0">
 									{eventRegistrationEnabled && (
 										<>
-											{user && canApplyToEvent(event) && !isFull ? (
+											{user && canApplyToEvent(event) ? (
 												<Link href={`/events/${event.id}/apply`} className="w-full md:w-auto">
 													<Button variant="outline" size="sm" className="w-full">
-														{t("Login")} <BadgeSoon className="ml-2" />
+														{isFull ? t("Put me on the waiting list") : t("Apply to event")}{" "}
+														<BadgeSoon className="ml-2" />
 													</Button>
 												</Link>
 											) : user ? (
 												<p className="text-sm text-muted-foreground">
-													{isFull ? t("This event is full") : t("Applications closed")}
+													{t("Applications closed")}
 												</p>
 											) : null}
 											<AddEventToCalendarButton event={event} />

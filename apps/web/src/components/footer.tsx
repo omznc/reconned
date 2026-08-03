@@ -165,7 +165,7 @@ export async function Footer({ locale }: { locale: string }) {
 									href="https://github.com/omznc/reconned?utm_source=reconned.com"
 									className="hover:text-red-500 transition-colors flex items-center gap-2"
 								>
-									<span>Github</span>
+									<span>GitHub</span>
 								</Link>
 							</li>
 							<li>

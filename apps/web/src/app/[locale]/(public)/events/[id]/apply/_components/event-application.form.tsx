@@ -29,6 +29,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
+import { getApiErrorMessage } from "@/lib/api/api-error";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { cn, isValidEmail } from "@/lib/utils";
 
@@ -196,7 +197,7 @@ export function EventApplicationForm({
 				});
 
 				if (error || !result) {
-					throw new Error(error?.error || t("An error occurred while applying"));
+					throw new Error(getApiErrorMessage(error, t("An error occurred while applying")));
 				}
 
 				return result.waitlisted;
@@ -354,7 +355,7 @@ export function EventApplicationForm({
 					});
 
 					if (error) {
-						throw new Error(error.error || t("An error occurred while deleting application"));
+						throw new Error(getApiErrorMessage(error, t("An error occurred while deleting application")));
 					}
 				})(),
 				{
