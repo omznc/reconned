@@ -36,57 +36,6 @@ const SERVED_WELL_KNOWN_PREFIXES = ["/.well-known/agent-skills/"];
 /** Routes that serve markdown themselves, exempt from the `.md` → HTML-page rewrite. */
 const MARKDOWN_ROUTES = new Set(["/auth.md", "/AGENTS.md", "/sitemap.md"]);
 
-/**
- * Adds the auth.md `agent_auth` block to RFC 8414 authorization server metadata
- * (https://github.com/workos/auth.md).
- *
- * Only mechanisms RECONNED actually implements are advertised: registration is
- * OAuth 2.0 Dynamic Client Registration (RFC 7591) and the resulting credential
- * is a bearer access token obtained by a human user consenting in the browser.
- * There is deliberately no `claim_uri` or ID-JAG assertion support here — those
- * describe flows RECONNED does not serve, and pointing agents at endpoints that
- * do not exist is worse for discovery than omitting them.
- *
- * Returns the body unchanged if it is not the JSON object we expect, so a
- * change upstream degrades to plain proxying instead of a broken document.
- */
-function withAgentAuth(body: string, webUrl: string): string {
-	let metadata: unknown;
-	try {
-		metadata = JSON.parse(body);
-	} catch {
-		return body;
-	}
-
-	if (typeof metadata !== "object" || metadata === null || Array.isArray(metadata)) {
-		return body;
-	}
-
-	const record = metadata as Record<string, unknown>;
-	const registerUri =
-		typeof record.registration_endpoint === "string"
-			? record.registration_endpoint
-			: `${webUrl}/api/auth/mcp/register`;
-
-	return JSON.stringify({
-		...record,
-		agent_auth: {
-			skill: `${webUrl}/auth.md`,
-			register_uri: registerUri,
-			identity_types_supported: ["end_user"],
-			credential_types_supported: ["oauth2_access_token"],
-			registration_methods_supported: ["oauth_dynamic_client_registration"],
-			oauth_dynamic_client_registration: {
-				register_uri: registerUri,
-				grant_types_supported: ["authorization_code", "refresh_token"],
-				code_challenge_methods_supported: ["S256"],
-				token_endpoint: record.token_endpoint,
-				authorization_endpoint: record.authorization_endpoint,
-			},
-		},
-	});
-}
-
 function isDashboardPath(pathname: string): boolean {
 	// Segment match, not a substring match: `/dashboard`, `/dashboard/...`,
 	// `/en/dashboard`, `/en/dashboard/...` — but not `/clubs/my-dashboard`.
@@ -114,24 +63,18 @@ export default async function authProxy(request: NextRequest) {
 			process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
 		const target = new URL(`/api/auth${pathname}`, backendUrl);
 		const proxy = await fetch(target);
-		const text = await proxy.text();
 
-		// better-auth generates RFC 8414 metadata but knows nothing about auth.md,
-		// so the `agent_auth` block is merged in here rather than upstream.
-		const augmented =
-			proxy.ok && pathname.startsWith("/.well-known/oauth-authorization-server")
-				? // The configured web URL, not the request origin — `agent_auth` links must
-					// sit on the same host as the `issuer` better-auth already advertises.
-					withAgentAuth(text, (process.env.NEXT_PUBLIC_WEB_URL || request.nextUrl.origin).replace(/\/$/, ""))
-				: text;
-
+		// Forwarded verbatim, including the auth.md `agent_auth` block: the backend merges
+		// that in itself (see its lib/agent-auth.ts) precisely so this layer does not have
+		// to — in production the edge often routes these paths past Next.js entirely, and an
+		// injection that only happened here would be missing from the served document.
 		const headers = new Headers(proxy.headers);
-		// The body length changed, and the upstream encoding was already undone by
-		// `fetch` — forwarding either header would describe a body we are not sending.
+		// `fetch` already undid the upstream encoding, so forwarding either header would
+		// describe a body we are not sending.
 		headers.delete("content-length");
 		headers.delete("content-encoding");
 
-		return new Response(augmented, { status: proxy.status, headers });
+		return new Response(await proxy.text(), { status: proxy.status, headers });
 	}
 
 	// Other `/.well-known/` paths we actually serve — locale negotiation below
