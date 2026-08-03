@@ -29,10 +29,12 @@ async function createEvent(owner: TestUser, clubId: string, overrides: Record<st
 		dateEnd: new Date(now + 8 * DAY_MS).toISOString(),
 		dateRegistrationsOpen: new Date(now - DAY_MS).toISOString(),
 		dateRegistrationsClose: new Date(now + 6 * DAY_MS).toISOString(),
+		// The suite's attendees belong to no club; without this they hit the freelancer gate.
+		allowFreelancers: true,
 		...overrides,
 	});
 	expect(response.status).toBe(200);
-	return response.body.event as { id: string; clubId: string };
+	return response.body.event as { id: string; clubId: string; name: string };
 }
 
 describe("GET /events visibility branches", () => {
@@ -52,7 +54,11 @@ describe("GET /events visibility branches", () => {
 		const event = await createEvent(owner, club.id);
 		const outsider = await createUser();
 
-		const response = await api(outsider.cookie).get("/api/events?perPage=50");
+		// Searched by name rather than paged through: the suite shares a database, so a plain
+		// listing fills its first page with other tests' events long before it reaches this one.
+		const response = await api(outsider.cookie).get(
+			`/api/events?perPage=50&search=${encodeURIComponent(event.name)}`,
+		);
 		expect(response.status).toBe(200);
 		const found = response.body.events.find((e: { id: string }) => e.id === event.id);
 		expect(found).toBeDefined();
@@ -63,7 +69,9 @@ describe("GET /events visibility branches", () => {
 		const club = await createClub(owner);
 		const privateEvent = await createEvent(owner, club.id, { isPrivate: true });
 
-		const response = await api(owner.cookie).get("/api/events?perPage=50");
+		const response = await api(owner.cookie).get(
+			`/api/events?perPage=50&search=${encodeURIComponent(privateEvent.name)}`,
+		);
 		expect(response.status).toBe(200);
 		const found = response.body.events.find((e: { id: string }) => e.id === privateEvent.id);
 		expect(found).toBeDefined();

@@ -139,7 +139,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 							</Link>
 							<HomeCommunityStats stats={publicStats} />
 						</div>
-						<p className="text-xl text-text/80 mb-8 mt-4">
+						<p className="text-xl text-foreground/80 mb-8 mt-4">
 							{t(
 								"Join the most advanced airsoft community. Find matches, connect with players and improve your game.",
 							)}
@@ -242,7 +242,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 				<div className="flex flex-col gap-4">
 					<div>
 						<h2 className="text-2xl font-bold">{t("Upcoming events")}</h2>
-						<p className="text-gray-400">{t("See you on the field")}</p>
+						<p className="text-muted-foreground">{t("See you on the field")}</p>
 					</div>
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{upcomingEvents.length === 0 && (
@@ -357,7 +357,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Instagram Auto-Sync")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Instagram Auto-Sync")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Automatically sync posts from your club's Instagram account")}
 									</p>
@@ -375,7 +375,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Financial Management")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Financial Management")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Track expenses, receipts, and budgets with full transparency")}
 									</p>
@@ -393,7 +393,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Comprehensive Audit Logs")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Comprehensive Audit Logs")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Every action tracked and logged for complete accountability")}
 									</p>
@@ -411,7 +411,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Permission System")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Permission System")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t(
 											"Multi-level roles: Members, Managers, and Club Owners with custom permissions",
@@ -431,7 +431,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Attendance Tracking")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Attendance Tracking")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Track member attendance at events and matches automatically")}
 									</p>
@@ -449,7 +449,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Private Events & Clubs")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Private Events & Clubs")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Create private, invite-only events and exclusive club spaces")}
 									</p>
@@ -467,7 +467,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Smart Invite System")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Smart Invite System")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Invite members with unique codes and automated email reminders")}
 									</p>
@@ -485,7 +485,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Custom Event Rules")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Custom Event Rules")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Create and enforce specific rules for each event")}
 									</p>
@@ -503,7 +503,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Advanced Statistics")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Advanced Statistics")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Track member growth, event participation, and engagement metrics")}
 									</p>
@@ -521,7 +521,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Verified Club Badges")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Verified Club Badges")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Official verification system for legitimate clubs and organizations")}
 									</p>
@@ -539,7 +539,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Moderation Tools")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Moderation Tools")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Ban management, reporting system, and content moderation")}
 									</p>
@@ -557,7 +557,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Event Map Drawing")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Event Map Drawing")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Create detailed maps for events with custom zones, paths, and spawn areas")}
 									</p>
@@ -574,7 +574,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</Badge>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Alliance Management")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Alliance Management")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t(
 											"Alliances managed by elected officials with dedicated tools and permissions",
@@ -600,7 +600,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Customizable Profile")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Customizable Profile")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Personalize your profile with bio, photos, gear, and social links")}
 									</p>
@@ -618,7 +618,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("360° Review System")}</h3>
+									<h4 className="font-semibold leading-tight">{t("360° Review System")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Rate and review players, clubs, and events to build trust")}
 									</p>
@@ -636,7 +636,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Team Registration System")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Team Registration System")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Advanced team-based registration with squad management for events")}
 									</p>
@@ -654,7 +654,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Play History")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Play History")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Track where you've played, events attended, and clubs represented")}
 									</p>
@@ -672,7 +672,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Club Representation")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Club Representation")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Show off your club affiliation and represent your team proudly")}
 									</p>
@@ -690,7 +690,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Social Links")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Social Links")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Connect your Instagram, YouTube, and other social media to your profile")}
 									</p>
@@ -707,7 +707,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</Badge>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Gear Showcase")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Gear Showcase")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Show off your loadout, replicas, and equipment to the community")}
 									</p>
@@ -724,7 +724,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</Badge>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Realtime Event Map")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Realtime Event Map")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Live map with player locations, drawing tools, and squad-like tracking")}
 									</p>
@@ -748,7 +748,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Club Map")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Club Map")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Find clubs and events near you on our interactive map")}
 									</p>
@@ -766,7 +766,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Passkey Authentication")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Passkey Authentication")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Secure, passwordless login with modern passkey technology")}
 									</p>
@@ -780,7 +780,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</div>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("SEO Friendly")}</h3>
+									<h4 className="font-semibold leading-tight">{t("SEO Friendly")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Fully indexed and discoverable by search engines and AI assistants")}
 									</p>
@@ -794,7 +794,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</div>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Open Source")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Open Source")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("100% open source, transparent, and community-driven development")}
 									</p>
@@ -808,7 +808,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</div>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Free Forever")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Free Forever")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Core features are and always will be completely free to use")}
 									</p>
@@ -822,7 +822,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</div>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Centralized Information")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Centralized Information")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Everything about airsoft in one place - clubs, events, players, and more")}
 									</p>
@@ -839,7 +839,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									</Badge>
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("Data Export")}</h3>
+									<h4 className="font-semibold leading-tight">{t("Data Export")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Download all your data anytime in portable formats")}
 									</p>
@@ -857,7 +857,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("API Access")}</h3>
+									<h4 className="font-semibold leading-tight">{t("API Access")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Personal API tokens for developers and integrations")}
 									</p>
@@ -875,7 +875,7 @@ export default async function Home(props: PageProps<"/[locale]">) {
 									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
-									<h3 className="font-semibold leading-tight">{t("MCP Server")}</h3>
+									<h4 className="font-semibold leading-tight">{t("MCP Server")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
 										{t("Connect AI assistants like Claude or ChatGPT to RECONNED with one click")}
 									</p>

@@ -58,7 +58,7 @@ export function Header() {
 	const drawerLinks = [{ href: "/" as const, icon: Home, label: t("Home") }, ...mainLinks];
 
 	return (
-		<header className="sticky top-0 z-50 w-full select-none bg-background/20 backdrop-blur-xl">
+		<header className="sticky top-0 z-50 w-full bg-background/20 backdrop-blur-xl">
 			<div className="container mx-auto flex flex-col gap-2 px-3 py-2 sm:gap-3 sm:px-4 lg:min-h-16 lg:flex-row lg:items-center lg:gap-3">
 				<Link href="/" className="flex shrink-0 justify-center py-1 lg:justify-start">
 					<Logo className="h-8 w-auto max-w-[200px] sm:h-9 md:h-10" />
@@ -76,6 +76,7 @@ export function Header() {
 								<li key={item.href} className="shrink-0">
 									<Link
 										href={item.href}
+										aria-current={active ? "page" : undefined}
 										className={cn(
 											"flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-[color,background-color,border-color,box-shadow] sm:gap-2 sm:px-3 sm:text-sm",
 											active
@@ -127,6 +128,7 @@ export function Header() {
 										<DrawerClose asChild={true} key={item.href}>
 											<Link
 												href={item.href}
+												aria-current={active ? "page" : undefined}
 												className={cn(
 													"flex items-center gap-3 rounded-lg border px-3 py-3 text-sm font-medium transition-[color,background-color,border-color]",
 													active

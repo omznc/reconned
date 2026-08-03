@@ -1,15 +1,7 @@
 import { apiError, Router } from "@reconned/router";
 import { and, count, desc, eq, gte, lte } from "drizzle-orm";
 import * as z from "zod";
-import {
-	club,
-	event,
-	eventRegistration,
-	eventRegistrationToUser,
-	review,
-	reviewEditHistory,
-	user,
-} from "../drizzle/schema";
+import { club, event, eventAttendee, review, reviewEditHistory, user } from "../drizzle/schema";
 import { rateLimitKey, redisRateLimitStore } from "../lib/cache";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
@@ -425,15 +417,20 @@ reviewsRouter.post(
 				throw apiError.validation("You can only review events that have finished");
 			}
 
-			// Check if user was registered (attended or not)
+			// Only someone who actually held a place may review. The single attendee table covers
+			// solo registrants and team members alike; the old query only looked at the team join
+			// table, so anyone who registered on their own was refused. Being *named* on a team is
+			// still not attendance, which is why the status has to be CONFIRMED.
 			const registration = await db
-				.select({
-					registrationId: eventRegistrationToUser.a,
-					eventId: eventRegistration.eventId,
-				})
-				.from(eventRegistrationToUser)
-				.innerJoin(eventRegistration, eq(eventRegistrationToUser.a, eventRegistration.id))
-				.where(and(eq(eventRegistrationToUser.b, authorId), eq(eventRegistration.eventId, eventId as string)))
+				.select({ id: eventAttendee.id })
+				.from(eventAttendee)
+				.where(
+					and(
+						eq(eventAttendee.eventId, eventId as string),
+						eq(eventAttendee.userId, authorId),
+						eq(eventAttendee.status, "CONFIRMED"),
+					),
+				)
 				.limit(1);
 
 			if (!registration.length) {

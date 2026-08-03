@@ -9,16 +9,13 @@ export function LoadChildOnClick(props: HTMLAttributes<HTMLDivElement>) {
 	if (isLoaded) {
 		return props.children;
 	}
+	// One control, not two: the wrapper used to be a role="button" div with a real Button inside it,
+	// which produced two tab stops where only the inner one was keyboard-operable.
 	return (
-		// biome-ignore lint/a11y/useSemanticElements: Style stuff
-		<div
-			role="button"
-			tabIndex={0}
-			className="w-full h-[200px] flex items-center rounded-md justify-center border bg-sidebar"
-			onClick={() => setIsLoaded(true)}
-			{...props}
-		>
-			<Button>{props.title}</Button>
+		<div className="w-full h-[200px] flex items-center rounded-md justify-center border bg-sidebar" {...props}>
+			<Button type="button" onClick={() => setIsLoaded(true)}>
+				{props.title}
+			</Button>
 		</div>
 	);
 }

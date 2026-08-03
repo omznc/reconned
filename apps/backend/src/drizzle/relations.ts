@@ -13,9 +13,7 @@ import {
 	clubRule,
 	country,
 	event,
-	eventInvite,
 	eventRegistration,
-	eventRegistrationToUser,
 	passkey,
 	post,
 	review,
@@ -69,7 +67,6 @@ export const userRelations = relations(user, ({ many }) => ({
 		relationName: "review_userId_user_id",
 	}),
 	achievementToUsers: many(achievementToUser),
-	eventRegistrationToUsers: many(eventRegistrationToUser),
 }));
 
 export const passkeyRelations = relations(passkey, ({ one }) => ({
@@ -118,7 +115,6 @@ export const eventRelations = relations(event, ({ one, many }) => ({
 		references: [club.id],
 	}),
 	eventRegistrations: many(eventRegistration),
-	eventInvites: many(eventInvite),
 	reviews: many(review),
 }));
 
@@ -155,7 +151,7 @@ export const clubAuditLogRelations = relations(clubAuditLog, ({ one }) => ({
 	}),
 }));
 
-export const eventRegistrationRelations = relations(eventRegistration, ({ one, many }) => ({
+export const eventRegistrationRelations = relations(eventRegistration, ({ one }) => ({
 	event: one(event, {
 		fields: [eventRegistration.eventId],
 		references: [event.id],
@@ -163,19 +159,6 @@ export const eventRegistrationRelations = relations(eventRegistration, ({ one, m
 	user: one(user, {
 		fields: [eventRegistration.createdById],
 		references: [user.id],
-	}),
-	eventInvites: many(eventInvite),
-	eventRegistrationToUsers: many(eventRegistrationToUser),
-}));
-
-export const eventInviteRelations = relations(eventInvite, ({ one }) => ({
-	event: one(event, {
-		fields: [eventInvite.eventId],
-		references: [event.id],
-	}),
-	eventRegistration: one(eventRegistration, {
-		fields: [eventInvite.eventRegistrationId],
-		references: [eventRegistration.id],
 	}),
 }));
 
@@ -232,17 +215,6 @@ export const achievementToUserRelations = relations(achievementToUser, ({ one })
 
 export const achievementRelations = relations(achievement, ({ many }) => ({
 	achievementToUsers: many(achievementToUser),
-}));
-
-export const eventRegistrationToUserRelations = relations(eventRegistrationToUser, ({ one }) => ({
-	eventRegistration: one(eventRegistration, {
-		fields: [eventRegistrationToUser.a],
-		references: [eventRegistration.id],
-	}),
-	user: one(user, {
-		fields: [eventRegistrationToUser.b],
-		references: [user.id],
-	}),
 }));
 
 export const allianceRelations = relations(alliance, ({ one, many }) => ({

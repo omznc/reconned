@@ -1,6 +1,6 @@
 import { AppError, apiError, Router, responseSchema } from "@reconned/router";
 import { randomUUIDv7 } from "bun";
-import { and, count, eq, getTableColumns, ilike, inArray, ne, or, sql } from "drizzle-orm";
+import { and, count, eq, getTableColumns, gte, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
@@ -10,6 +10,7 @@ import {
 	clubInvite,
 	clubMembership,
 	event,
+	eventAttendee,
 	eventRegistration,
 	review,
 	user,
@@ -1603,19 +1604,34 @@ usersRouter.get(
 		if (!context.user) {
 			throw apiError.unauthorized("Authentication required");
 		}
-		const result = await db
-			.select({ count: count() })
-			.from(clubInvite)
-			.where(and(eq(clubInvite.email, context.user.email), eq(clubInvite.status, "PENDING")));
+		// The badge covers the invites page, and that page lists both kinds. Counting only club
+		// invites left team invites sitting there with nothing to say they had arrived.
+		const [clubResult, teamResult] = await Promise.all([
+			db
+				.select({ count: count() })
+				.from(clubInvite)
+				.where(and(eq(clubInvite.email, context.user.email), eq(clubInvite.status, "PENDING"))),
+			db
+				.select({ count: count() })
+				.from(eventAttendee)
+				.innerJoin(event, eq(event.id, eventAttendee.eventId))
+				.where(
+					and(
+						eq(eventAttendee.userId, context.user.id),
+						eq(eventAttendee.status, "PENDING"),
+						gte(event.dateEnd, new Date().toISOString()),
+					),
+				),
+		]);
 
-		return response.json({ count: result[0]?.count || 0 });
+		return response.json({ count: (clubResult[0]?.count || 0) + (teamResult[0]?.count || 0) });
 	},
 	{
 		auth: true,
 		schema: {
 			tags: ["Users"],
 			summary: "Get pending invites count",
-			description: "Returns the count of pending club invites for the current user",
+			description: "Returns the count of pending club and event team invites for the current user",
 			mcpTool: true,
 			response: {
 				200: z.object({

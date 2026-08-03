@@ -100,12 +100,6 @@
 	}
 }
 
-@layer utilities {
-	body {
-		font-family: Arial, Helvetica, sans-serif;
-	}
-}
-
 @layer base {
 	:root {
 		--background: 0 0% 100%;
@@ -211,14 +205,18 @@
 	* {
 		@apply border-border;
 	}
-	html *,
-	html *::before,
-	html *::after {
-		transition-property:
-			border-radius, border-top-left-radius, border-top-right-radius, border-bottom-left-radius,
-			border-bottom-right-radius;
-		transition-duration: 0.3s;
-		transition-timing-function: ease-in-out;
+	/* The radius transition only exists to animate the sharp/relaxed style switch. It is opt-in:
+	   under reduced motion the new radius applies instantly instead of easing on every element. */
+	@media (prefers-reduced-motion: no-preference) {
+		html *,
+		html *::before,
+		html *::after {
+			transition-property:
+				border-radius, border-top-left-radius, border-top-right-radius, border-bottom-left-radius,
+				border-bottom-right-radius;
+			transition-duration: 0.3s;
+			transition-timing-function: ease-in-out;
+		}
 	}
 	body {
 		@apply bg-background text-foreground;
@@ -238,6 +236,13 @@
 
 .fade-in-up {
 	animation: fade-in-up 0.3s ease-out;
+}
+
+/* Keep the entrance, drop the movement: a crossfade still communicates "this is new". */
+@media (prefers-reduced-motion: reduce) {
+	.fade-in-up {
+		animation-name: fade-in;
+	}
 }
 
 @keyframes fade-in {

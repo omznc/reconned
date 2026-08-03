@@ -8,7 +8,64 @@ type SendEmailParams = {
 	from?: string;
 };
 
-export async function sendEmail({ to, subject, html }: SendEmailParams) {
+/**
+ * How many times a send is attempted before it is given up on. A OneSignal blip or a dropped
+ * connection used to lose the mail outright, which for something like a waitlist promotion means
+ * the person never learns they have a place.
+ */
+const SEND_ATTEMPTS = 3;
+
+/** Only worth retrying what might succeed next time. A rejected payload will be rejected again. */
+function isRetryable(error: unknown) {
+	if (error instanceof MailApiError) {
+		return error.status >= 500 || error.status === 429;
+	}
+
+	// Anything that never reached OneSignal: DNS, connection reset, timeout.
+	return true;
+}
+
+class MailApiError extends Error {
+	constructor(
+		message: string,
+		readonly status: number,
+	) {
+		super(message);
+		this.name = "MailApiError";
+	}
+}
+
+export async function sendEmail(params: SendEmailParams) {
+	let lastError: unknown;
+
+	for (let attempt = 1; attempt <= SEND_ATTEMPTS; attempt++) {
+		try {
+			return await attemptSend(params);
+		} catch (error) {
+			lastError = error;
+
+			if (attempt === SEND_ATTEMPTS || !isRetryable(error)) {
+				throw error;
+			}
+
+			logger.emit({
+				severityText: "warn",
+				body: "Retrying email send",
+				attributes: {
+					attempt,
+					subject: params.subject,
+					error: error instanceof Error ? error.message : String(error),
+				},
+			});
+
+			await Bun.sleep(250 * 2 ** (attempt - 1));
+		}
+	}
+
+	throw lastError;
+}
+
+async function attemptSend({ to, subject, html }: SendEmailParams) {
 	const recipients = Array.isArray(to) ? to : [to];
 
 	// Test environments have no real OneSignal credentials; a thrown send error would fail the
@@ -69,5 +126,25 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 			recipient_count: recipients.length,
 		},
 	});
-	throw new Error(`OneSignal API error: ${response.statusText}`);
+	throw new MailApiError(`OneSignal API error: ${response.statusText}`, response.status);
+}
+
+/**
+ * Runs work that the caller's response does not depend on, without holding the response open for
+ * it. Mail is the case this exists for: whoever just registered should not wait on OneSignal, and
+ * a bounce must not read as a failed registration.
+ *
+ * Errors are logged rather than thrown, since there is nobody left to throw to by then.
+ */
+export function detach(label: string, work: () => Promise<void>) {
+	void work().catch((error) => {
+		logger.emit({
+			severityText: "error",
+			body: "Detached work failed",
+			attributes: {
+				label,
+				error: error instanceof Error ? error.message : String(error),
+			},
+		});
+	});
 }

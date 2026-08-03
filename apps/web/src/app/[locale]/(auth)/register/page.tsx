@@ -200,19 +200,17 @@ function RegisterPageContent() {
 										/>
 									</FormControl>
 									{!!email && (
-										<p className="text-sm text-gray-500">
+										<p className="text-sm text-muted-foreground">
 											{t("The email has been filled in automatically")}{" "}
-											{/* biome-ignore lint/a11y/useSemanticElements: Style stuff */}
-											<span
-												role="button"
-												tabIndex={0}
-												className="text-foreground cursor-pointer inline"
+											<button
+												type="button"
+												className="text-foreground cursor-pointer inline underline underline-offset-4 rounded-xs focus-visible:outline-hidden focus-visible:ring-[3px] focus-visible:ring-ring/50"
 												onClick={() => {
 													setEmail("");
 												}}
 											>
 												{t("Remove")}
-											</span>
+											</button>
 										</p>
 									)}
 									<FormMessage />

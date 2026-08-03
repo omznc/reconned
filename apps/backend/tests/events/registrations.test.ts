@@ -28,10 +28,32 @@ async function createEvent(owner: TestUser, clubId: string, overrides: Record<st
 		dateEnd: new Date(now + 8 * DAY_MS).toISOString(),
 		dateRegistrationsOpen: new Date(now - DAY_MS).toISOString(),
 		dateRegistrationsClose: new Date(now + 6 * DAY_MS).toISOString(),
+		// The suite's attendees belong to no club; without this they hit the freelancer gate.
+		allowFreelancers: true,
 		...overrides,
 	});
 	expect(response.status).toBe(200);
 	return response.body.event as { id: string };
+}
+
+/**
+ * Attendance only opens once registrations have closed, so a test that wants to mark the roster
+ * has to move the event into that window first — same edit an organiser makes on the day.
+ */
+async function closeRegistrations(owner: TestUser, clubId: string, eventId: string) {
+	const now = Date.now();
+	const response = await api(owner.cookie).put(`/api/events/${eventId}`, {
+		clubId,
+		name: `Registration Event ${crypto.randomUUID().slice(0, 8)}`,
+		description: "An event created by the integration test suite",
+		costPerPerson: 10,
+		location: "Sarajevo",
+		dateStart: new Date(now + 7 * DAY_MS).toISOString(),
+		dateEnd: new Date(now + 8 * DAY_MS).toISOString(),
+		dateRegistrationsOpen: new Date(now - DAY_MS).toISOString(),
+		dateRegistrationsClose: new Date(now - 1000).toISOString(),
+	});
+	expect(response.status).toBe(200);
 }
 
 describe("creating and cancelling a registration", () => {
@@ -231,6 +253,8 @@ describe("attendance toggling", () => {
 		});
 		const registrationId = registration.body.registration.id as string;
 
+		await closeRegistrations(owner, club.id, event.id);
+
 		const markAttended = await api(owner.cookie).put(
 			`/api/events/${event.id}/registrations/${registrationId}/attendance`,
 			{ attended: true },
@@ -288,6 +312,7 @@ describe("attendance toggling", () => {
 		const owner = await createUser();
 		const club = await createClub(owner);
 		const event = await createEvent(owner, club.id);
+		await closeRegistrations(owner, club.id, event.id);
 
 		const response = await api(owner.cookie).put(
 			`/api/events/${event.id}/registrations/${crypto.randomUUID()}/attendance`,

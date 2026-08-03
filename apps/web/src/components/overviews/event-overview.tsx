@@ -35,9 +35,11 @@ interface EventOverviewProps {
 	};
 	clubId?: string;
 	user?: import("better-auth").User | null;
+	/** Remaining places, or null when the event has no attendee limit. */
+	placesLeft?: number | null;
 }
 
-export async function EventOverview({ event, clubId, user }: EventOverviewProps) {
+export async function EventOverview({ event, clubId, user, placesLeft = null }: EventOverviewProps) {
 	const t = await getExtracted();
 	const membershipPromise =
 		user && clubId
@@ -66,6 +68,7 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 	};
 
 	const eventRegistrationEnabled = await isFeatureEnabled("EVENT_REGISTRATION");
+	const isFull = placesLeft === 0;
 
 	return (
 		<div className="relative flex flex-col gap-4">
@@ -118,7 +121,10 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 															size="sm"
 															className="w-full shadow-lg"
 														>
-															{t("Login")} <BadgeSoon className="ml-2" />
+															{isFull
+																? t("Put me on the waiting list")
+																: t("Apply to event")}{" "}
+															<BadgeSoon className="ml-2" />
 														</Button>
 													</Link>
 												) : user ? (
@@ -137,6 +143,14 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 										{t("{count} registered", {
 											count: String(event._count?.eventRegistration),
 										})}
+									</Badge>
+								)}
+								{placesLeft !== null && (
+									<Badge className="flex h-fit items-center gap-1 bg-white/90 text-black hover:bg-white">
+										<UserIcon className="size-4" />
+										{placesLeft === 0
+											? t("This event is full")
+											: t("{count} places left", { count: String(placesLeft) })}
 									</Badge>
 								)}
 								<Badge className="flex h-fit items-center gap-1 bg-white/90 text-black hover:bg-white">
@@ -186,7 +200,8 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 											{user && canApplyToEvent(event) ? (
 												<Link href={`/events/${event.id}/apply`} className="w-full md:w-auto">
 													<Button variant="outline" size="sm" className="w-full">
-														{t("Login")} <BadgeSoon className="ml-2" />
+														{isFull ? t("Put me on the waiting list") : t("Apply to event")}{" "}
+														<BadgeSoon className="ml-2" />
 													</Button>
 												</Link>
 											) : user ? (
@@ -207,6 +222,14 @@ export async function EventOverview({ event, clubId, user }: EventOverviewProps)
 									{t("{count} registered", {
 										count: String(event._count?.eventRegistration),
 									})}
+								</Badge>
+							)}
+							{placesLeft !== null && (
+								<Badge className="flex h-fit items-center gap-1">
+									<UserIcon className="size-4" />
+									{placesLeft === 0
+										? t("This event is full")
+										: t("{count} places left", { count: String(placesLeft) })}
 								</Badge>
 							)}
 							<Badge className="flex h-fit items-center gap-1">

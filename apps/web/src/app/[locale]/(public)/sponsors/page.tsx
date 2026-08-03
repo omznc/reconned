@@ -73,7 +73,7 @@ export default async function SponsorsPage(props: PageProps<"/[locale]/sponsors"
 						<h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
 							{t("Sponsors and partners")}
 						</h1>
-						<p className="text-xl text-text/80 mb-8">
+						<p className="text-xl text-foreground/80 mb-8">
 							{t(
 								"It is realistic to say that this site would not exist without the engagement and support of everyone you can find below. Thank you.",
 							)}

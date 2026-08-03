@@ -20,6 +20,41 @@
 			"codeNote": "Or use this invitation code:",
 			"footer": "If you did not expect this invitation, please ignore this email."
 		},
+		"eventInvitation": {
+			"subject": "{leaderName} added you to their team for {eventName}",
+			"preview": "You have a team invitation for {eventName}.",
+			"heading": "You have a team invitation",
+			"guestHeading": "You have a place at this event",
+			"greeting": "Hi {name}",
+			"greetingGeneric": "Hello",
+			"description": "{leaderName} added you to their team for {eventName}, held on {eventDate} at {eventLocation}.",
+			"memberNote": "Your place is not held until you accept the invitation.",
+			"guestNote": "Your place is already held. Create an account to see the event details and manage your registration.",
+			"button": "View the invitation",
+			"guestButton": "View the event",
+			"footer": "If you were not expecting this invitation, you can safely ignore this email."
+		},
+		"eventWaitlistPromoted": {
+			"subject": "A place has opened up at {eventName}",
+			"preview": "You are off the waiting list for {eventName}.",
+			"heading": "You are in",
+			"greeting": "Hi {name}",
+			"greetingGeneric": "Hello",
+			"description": "A place opened up at {eventName}, held on {eventDate} at {eventLocation}, and it is yours. You no longer need to do anything to keep it.",
+			"button": "View the event",
+			"footer": "If you can no longer make it, please cancel so the place can go to somebody else."
+		},
+		"eventPlaceReleased": {
+			"subject": "You are no longer on the roster for {eventName}",
+			"preview": "Your place at {eventName} has been given up.",
+			"heading": "Your place has been released",
+			"greeting": "Hi {name}",
+			"greetingGeneric": "Hello",
+			"description": "{leaderName} has taken you off their team for {eventName}, held on {eventDate} at {eventLocation}. You are no longer on the roster.",
+			"note": "If this was not meant to happen, speak to whoever booked the team. You can also register on your own.",
+			"button": "View the event",
+			"footer": "You are receiving this because somebody had booked a place for you."
+		},
 		"rateEvent": {
 			"preview": "Rate your experience at {eventName}!",
 			"heading": "How was your event?",

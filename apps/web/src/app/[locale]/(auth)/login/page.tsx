@@ -189,19 +189,17 @@ function LoginPageContent() {
 										/>
 									</FormControl>
 									{!!email && (
-										<p className="text-sm text-gray-500">
+										<p className="text-sm text-muted-foreground">
 											{t("The email has been filled in automatically")}{" "}
-											{/* biome-ignore lint/a11y/useSemanticElements: Style stuff */}
-											<span
-												role="button"
-												tabIndex={0}
-												className="text-foreground cursor-pointer inline"
+											<button
+												type="button"
+												className="text-foreground cursor-pointer inline underline underline-offset-4 rounded-xs focus-visible:outline-hidden focus-visible:ring-[3px] focus-visible:ring-ring/50"
 												onClick={() => {
 													setEmail("");
 												}}
 											>
 												{t("Remove")}
-											</span>
+											</button>
 										</p>
 									)}
 									<FormMessage />
@@ -267,7 +265,11 @@ function LoginPageContent() {
 							)}
 						/>
 
-						{isError && <p className="text-red-500 -mb-2">{t("The data entered is incorrect.")}</p>}
+						{isError && (
+							<p className="text-destructive -mb-2" role="alert">
+								{t("That email and password combination didn't match. Check both and try again.")}
+							</p>
+						)}
 
 						<TurnstileWidget
 							ref={turnstileRef}
@@ -279,9 +281,12 @@ function LoginPageContent() {
 							}}
 						/>
 
+						{/* Gated on the Turnstile token only — that is the one prerequisite the user cannot
+						    act on. Gating on full form validity hid which field still needed fixing; email
+						    and password now validate on submit and surface their own inline messages. */}
 						<LoaderSubmitButton
 							isLoading={isLoading}
-							disabled={isForgotPasswordLoading || !form.formState.isValid}
+							disabled={isForgotPasswordLoading || !form.watch("turnstileToken")}
 							className={cn("relative w-full", {
 								"mb-4": lastMethod === "email",
 							})}

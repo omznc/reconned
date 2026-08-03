@@ -39,7 +39,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 		return <ErrorPage title={t("Event Not Found - RECONNED")} />;
 	}
 
-	const { event, existingRegistration } = applyData;
+	const { event, existingRegistration, capacity } = applyData;
 
 	// Fetch user's clubs from backend
 	const { data: clubsData, error: clubsError } = await apiServer.GET("/api/users/me/clubs", {});
@@ -122,6 +122,7 @@ export default async function EventApplicationPage(props: PageProps<"/[locale]/e
 				event={event}
 				user={user}
 				currentUserClubs={currentUserClubs}
+				capacity={capacity}
 			/>
 		</div>
 	);
