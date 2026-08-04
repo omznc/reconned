@@ -11,6 +11,7 @@ import {
 import { getExtracted, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { BadgeSoon } from "@/components/badge-soon";
+import { CookieSettingsButton } from "@/components/cookie-settings-button";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
@@ -196,6 +197,9 @@ export async function Footer({ locale }: { locale: string }) {
 							</li>
 							<li>
 								<Link href="/terms-of-use">{t("Terms of Use")}</Link>
+							</li>
+							<li>
+								<CookieSettingsButton label={t("Cookie settings")} />
 							</li>
 							<li>
 								<a

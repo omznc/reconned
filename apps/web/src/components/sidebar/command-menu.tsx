@@ -317,7 +317,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 								</div>
 								<div className="flex flex-col">
 									<span className="font-medium">{user?.name}</span>
-									<span className="text-xs text-muted-foreground">{user?.email}</span>
+									<span className="ph-mask text-xs text-muted-foreground">{user?.email}</span>
 								</div>
 							</CommandItem>
 							<CommandItem

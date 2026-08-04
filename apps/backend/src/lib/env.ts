@@ -130,6 +130,32 @@ export const env = createEnv({
 			.min(1, "POSTHOG_PUBLIC_KEY is required for PostHog logging")
 			.describe("PostHog public API key"),
 
+		// The public key above cannot delete anything; erasing a person needs a personal key scoped
+		// to person:write. Optional so the app still boots, but erasure is then incomplete.
+		POSTHOG_PERSONAL_API_KEY: z
+			.string()
+			.min(1)
+			.optional()
+			.describe(
+				"PostHog personal API key (person:write) — required to erase person profiles on account deletion",
+			),
+
+		// Plural, and it matters: analytics is split across two projects ("backend" and "web", the
+		// latter holding session recordings) and a person exists separately in each.
+		POSTHOG_PROJECT_IDS: z
+			.string()
+			.min(1)
+			.optional()
+			.transform((val) =>
+				val
+					?.split(",")
+					.map((id) => id.trim())
+					.filter(Boolean),
+			)
+			.describe(
+				"Comma-separated PostHog project IDs to erase people from — required alongside POSTHOG_PERSONAL_API_KEY",
+			),
+
 		CI: z.string().optional().describe("CI environment indicator"),
 	},
 	runtimeEnv: process.env,

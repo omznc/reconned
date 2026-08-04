@@ -28,7 +28,9 @@ export function UserSheet({ user, onClose }: Props) {
 			<CredenzaContent>
 				<CredenzaHeader>
 					<CredenzaTitle>{user?.name || t("Does not exist")}</CredenzaTitle>
-					<CredenzaDescription>{user?.email || t("User does not exist")}</CredenzaDescription>
+					<CredenzaDescription className="ph-mask">
+						{user?.email || t("User does not exist")}
+					</CredenzaDescription>
 				</CredenzaHeader>
 				<CredenzaBody>
 					{!user && <p>{t("User not found.")}</p>}

@@ -1,10 +1,13 @@
-import { AppError, apiError, Router, responseSchema } from "@reconned/router";
+import { AppError, apiError, Router, responseSchema, setHeaders } from "@reconned/router";
 import { randomUUIDv7 } from "bun";
 import { and, count, eq, getTableColumns, gte, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
 	account,
+	achievement,
+	achievementToUser,
+	apikey,
 	club,
 	clubAuditLog,
 	clubInvite,
@@ -12,11 +15,18 @@ import {
 	event,
 	eventAttendee,
 	eventRegistration,
+	oauthConsent,
+	passkey,
 	review,
+	reviewEditHistory,
+	session,
+	twoFactor,
 	user,
 } from "../drizzle/schema";
 import { auth } from "../lib/auth";
+import { rateLimitKey, redisRateLimitStore } from "../lib/cache";
 import { db } from "../lib/db";
+import { deleteOnesignalUser, deletePosthogPerson } from "../lib/erasure";
 import { posthog } from "../lib/posthog";
 import {
 	httpsUrl,
@@ -25,7 +35,7 @@ import {
 	paginationQuerySchema,
 	paginationResponseSchema,
 } from "../lib/schemas";
-import { getS3UploadUrl } from "../lib/storage";
+import { deleteS3Files, getS3UploadUrl, keyFromCdnUrl } from "../lib/storage";
 import { Sanitize } from "../lib/user-sanitization";
 
 // Base schemas generated from Drizzle tables
@@ -1835,6 +1845,548 @@ usersRouter.get(
 	},
 );
 
+/**
+ * Everything we hold about one person, in one JSON file. Art. 17 (access) and Art. 22
+ * (portability) both land here; Art. 22 is why it is JSON rather than a rendered page.
+ *
+ * Credentials are *described*, not included: a password hash, TOTP secret, passkey key or OAuth
+ * token is not a fact about the person, it is the key to the account, and this file ends up in a
+ * downloads folder. Which sign-in methods exist is the part they actually need.
+ */
+/**
+ * Audit-log `actionData` is free-form jsonb, and what a club manager does is mostly done *to other
+ * members*, so it routinely holds somebody else's email and name. Art. 22(4): portability "shall
+ * not adversely affect the rights and freedoms of others". `inviteCode` goes too — it is a live
+ * credential granting club access.
+ *
+ * A denylist rather than a whitelist, so a new action type logging an unlisted field fails towards
+ * including the subject's own data. Matched by name *and* shape, since the cost of that choice is
+ * missing a new key.
+ */
+const REDACTED_ACTION_DATA_KEYS = new Set([
+	"email",
+	"useremail",
+	"recipientemail",
+	"guestemail",
+	"owneremail",
+	"name",
+	"username",
+	"membername",
+	"guestname",
+	"phone",
+	"invitecode",
+	"token",
+	"invitetoken",
+	"ipaddress",
+	"useragent",
+]);
+
+const EMAIL_SHAPED = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function redactActionData(value: unknown): unknown {
+	if (Array.isArray(value)) {
+		return value.map(redactActionData);
+	}
+	if (value && typeof value === "object") {
+		return Object.fromEntries(
+			Object.entries(value).map(([key, v]) => [
+				key,
+				REDACTED_ACTION_DATA_KEYS.has(key.toLowerCase()) ? "[redacted]" : redactActionData(v),
+			]),
+		);
+	}
+	if (typeof value === "string" && EMAIL_SHAPED.test(value)) {
+		return "[redacted]";
+	}
+	return value;
+}
+
+const exportSectionSchema = {
+	profile: z.object({
+		id: z.string(),
+		email: z.string(),
+		normalizedEmail: z.string().nullable(),
+		name: z.string(),
+		emailVerified: z.boolean(),
+		slug: z.string().nullable(),
+		image: z.string().nullable(),
+		headerImage: z.string().nullable(),
+		bio: z.string().nullable(),
+		location: z.string().nullable(),
+		website: z.string().nullable(),
+		phone: z.string().nullable(),
+		callsign: z.string().nullable(),
+		gear: z.array(z.unknown()).nullable(),
+		font: z.string(),
+		theme: z.string(),
+		language: z.string(),
+		isPrivate: z.boolean(),
+		isPrivateEmail: z.boolean(),
+		isPrivatePhone: z.boolean(),
+		isPrivateStats: z.boolean(),
+		role: z.string().nullable(),
+		banned: z.boolean().nullable(),
+		banReason: z.string().nullable(),
+		banExpires: z.string().nullable(),
+		twoFactorEnabled: z.boolean().nullable(),
+		createdAt: z.string(),
+		updatedAt: z.string(),
+	}),
+	signInMethods: z.array(
+		z.object({
+			type: z.string(),
+			provider: z.string().nullable(),
+			name: z.string().nullable(),
+			createdAt: z.string().nullable(),
+		}),
+	),
+	sessions: z.array(
+		z.object({
+			id: z.string(),
+			ipAddress: z.string().nullable(),
+			userAgent: z.string().nullable(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+			expiresAt: z.string(),
+		}),
+	),
+	clubMemberships: z.array(
+		z.object({
+			id: z.string(),
+			clubId: z.string(),
+			clubName: z.string().nullable(),
+			role: z.string(),
+			startDate: z.string().nullable(),
+			endDate: z.string().nullable(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+		}),
+	),
+	clubInvites: z.array(
+		z.object({
+			id: z.string(),
+			clubId: z.string(),
+			clubName: z.string().nullable(),
+			email: z.string(),
+			status: z.string(),
+			expiresAt: z.string(),
+			createdAt: z.string(),
+		}),
+	),
+	eventBookings: z.array(
+		z.object({
+			id: z.string(),
+			eventId: z.string(),
+			eventName: z.string().nullable(),
+			type: z.string(),
+			paymentMethod: z.string(),
+			attended: z.boolean(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+		}),
+	),
+	eventAttendance: z.array(
+		z.object({
+			id: z.string(),
+			eventId: z.string(),
+			eventName: z.string().nullable(),
+			bookingId: z.string(),
+			matchedBy: z.string(),
+			guestName: z.string().nullable(),
+			guestEmail: z.string().nullable(),
+			role: z.string(),
+			status: z.string(),
+			attended: z.boolean().nullable(),
+			invitedAt: z.string(),
+			respondedAt: z.string().nullable(),
+			paidAt: z.string().nullable(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+		}),
+	),
+	reviewsWritten: z.array(
+		z.object({
+			id: z.string(),
+			type: z.string(),
+			rating: z.number(),
+			content: z.string(),
+			aboutUserId: z.string().nullable(),
+			aboutClubId: z.string().nullable(),
+			aboutEventId: z.string().nullable(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+		}),
+	),
+	reviewsReceived: z.array(
+		z.object({
+			id: z.string(),
+			rating: z.number(),
+			content: z.string(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+		}),
+	),
+	reviewEdits: z.array(
+		z.object({
+			id: z.string(),
+			reviewId: z.string(),
+			previousRating: z.number(),
+			previousContent: z.string(),
+			createdAt: z.string(),
+		}),
+	),
+	achievements: z.array(
+		z.object({
+			slug: z.string(),
+			description: z.string().nullable(),
+		}),
+	),
+	clubAuditLogs: z.array(
+		z.object({
+			id: z.string(),
+			clubId: z.string(),
+			actionType: z.string(),
+			actionData: z.unknown(),
+			ipAddress: z.string().nullable(),
+			userAgent: z.string().nullable(),
+			createdAt: z.string(),
+		}),
+	),
+	apiKeys: z.array(
+		z.object({
+			id: z.string(),
+			name: z.string().nullable(),
+			prefix: z.string().nullable(),
+			start: z.string().nullable(),
+			enabled: z.boolean(),
+			requestCount: z.number(),
+			lastRequest: z.string().nullable(),
+			expiresAt: z.string().nullable(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+		}),
+	),
+	oauthConsents: z.array(
+		z.object({
+			id: z.string(),
+			clientId: z.string(),
+			scopes: z.string(),
+			consentGiven: z.boolean(),
+			createdAt: z.string(),
+			updatedAt: z.string(),
+		}),
+	),
+};
+
+usersRouter.get(
+	"/users/:id/export",
+	async ({ params, response, context }) => {
+		const userId = params.id;
+
+		if (!userId) {
+			throw apiError.validation("User ID is required");
+		}
+
+		// Self-only, deliberately narrower than the rest of this file: an admin bulk-pulling
+		// somebody's entire record is not the access right and has no operational need.
+		if (!context.user || context.user.id !== userId) {
+			throw apiError.unauthorized("Unauthorized");
+		}
+
+		const [subject] = await db.select().from(user).where(eq(user.id, userId)).limit(1);
+
+		if (!subject) {
+			throw apiError.notFound("User not found");
+		}
+
+		// lower() rather than ilike: `_` and `%` are LIKE wildcards and legal in a local-part, so
+		// `a_b@x.com` would otherwise pull in `axb@x.com`'s rows.
+		const subjectEmail = subject.email.toLowerCase();
+
+		const [
+			accounts,
+			passkeys,
+			twoFactorRows,
+			sessions,
+			memberships,
+			invites,
+			bookings,
+			attendance,
+			written,
+			received,
+			edits,
+			achievements,
+			auditLogs,
+			apiKeys,
+			oauthConsents,
+		] = await Promise.all([
+			db
+				.select({ providerId: account.providerId, createdAt: account.createdAt, password: account.password })
+				.from(account)
+				.where(eq(account.userId, userId)),
+			db
+				.select({ name: passkey.name, createdAt: passkey.createdAt })
+				.from(passkey)
+				.where(eq(passkey.userId, userId)),
+			db.select({ id: twoFactor.id }).from(twoFactor).where(eq(twoFactor.userId, userId)),
+			db
+				.select({
+					id: session.id,
+					ipAddress: session.ipAddress,
+					userAgent: session.userAgent,
+					createdAt: session.createdAt,
+					updatedAt: session.updatedAt,
+					expiresAt: session.expiresAt,
+				})
+				.from(session)
+				.where(eq(session.userId, userId)),
+			db
+				.select({
+					id: clubMembership.id,
+					clubId: clubMembership.clubId,
+					clubName: club.name,
+					role: clubMembership.role,
+					startDate: clubMembership.startDate,
+					endDate: clubMembership.endDate,
+					createdAt: clubMembership.createdAt,
+					updatedAt: clubMembership.updatedAt,
+				})
+				.from(clubMembership)
+				.leftJoin(club, eq(club.id, clubMembership.clubId))
+				.where(eq(clubMembership.userId, userId)),
+			// By address as well as id: an invite sent before they signed up never got a userId.
+			db
+				.select({
+					id: clubInvite.id,
+					clubId: clubInvite.clubId,
+					clubName: club.name,
+					email: clubInvite.email,
+					status: clubInvite.status,
+					expiresAt: clubInvite.expiresAt,
+					createdAt: clubInvite.createdAt,
+				})
+				.from(clubInvite)
+				.leftJoin(club, eq(club.id, clubInvite.clubId))
+				.where(or(eq(clubInvite.userId, userId), eq(sql`lower(${clubInvite.email})`, subjectEmail))),
+			db
+				.select({
+					id: eventRegistration.id,
+					eventId: eventRegistration.eventId,
+					eventName: event.name,
+					type: eventRegistration.type,
+					paymentMethod: eventRegistration.paymentMethod,
+					attended: eventRegistration.attended,
+					createdAt: eventRegistration.createdAt,
+					updatedAt: eventRegistration.updatedAt,
+				})
+				.from(eventRegistration)
+				.leftJoin(event, eq(event.id, eventRegistration.eventId))
+				.where(eq(eventRegistration.createdById, userId)),
+			// Same as invites: a place booked for them as a guest before the account existed.
+			db
+				.select({
+					id: eventAttendee.id,
+					eventId: eventAttendee.eventId,
+					eventName: event.name,
+					bookingId: eventAttendee.bookingId,
+					attendeeUserId: eventAttendee.userId,
+					guestName: eventAttendee.guestName,
+					guestEmail: eventAttendee.guestEmail,
+					role: eventAttendee.role,
+					status: eventAttendee.status,
+					attended: eventAttendee.attended,
+					invitedAt: eventAttendee.invitedAt,
+					respondedAt: eventAttendee.respondedAt,
+					paidAt: eventAttendee.paidAt,
+					createdAt: eventAttendee.createdAt,
+					updatedAt: eventAttendee.updatedAt,
+				})
+				.from(eventAttendee)
+				.leftJoin(event, eq(event.id, eventAttendee.eventId))
+				.where(or(eq(eventAttendee.userId, userId), eq(sql`lower(${eventAttendee.guestEmail})`, subjectEmail))),
+			db
+				.select({
+					id: review.id,
+					type: review.type,
+					rating: review.rating,
+					content: review.content,
+					aboutUserId: review.userId,
+					aboutClubId: review.clubId,
+					aboutEventId: review.eventId,
+					createdAt: review.createdAt,
+					updatedAt: review.updatedAt,
+				})
+				.from(review)
+				.where(eq(review.authorId, userId)),
+			// Reviews *about* them are their data; the author's identity is somebody else's, so it
+			// stays out — Art. 17(4). The platform already shows them who wrote it.
+			db
+				.select({
+					id: review.id,
+					rating: review.rating,
+					content: review.content,
+					createdAt: review.createdAt,
+					updatedAt: review.updatedAt,
+				})
+				.from(review)
+				.where(eq(review.userId, userId)),
+			db
+				.select({
+					id: reviewEditHistory.id,
+					reviewId: reviewEditHistory.reviewId,
+					previousRating: reviewEditHistory.previousRating,
+					previousContent: reviewEditHistory.previousContent,
+					createdAt: reviewEditHistory.createdAt,
+				})
+				.from(reviewEditHistory)
+				.where(eq(reviewEditHistory.editedBy, userId)),
+			db
+				.select({ slug: achievement.slug, description: achievement.description })
+				.from(achievementToUser)
+				.innerJoin(achievement, eq(achievement.id, achievementToUser.a))
+				.where(eq(achievementToUser.b, userId)),
+			db
+				.select({
+					id: clubAuditLog.id,
+					clubId: clubAuditLog.clubId,
+					actionType: clubAuditLog.actionType,
+					actionData: clubAuditLog.actionData,
+					ipAddress: clubAuditLog.ipAddress,
+					userAgent: clubAuditLog.userAgent,
+					createdAt: clubAuditLog.createdAt,
+				})
+				.from(clubAuditLog)
+				.where(eq(clubAuditLog.userId, userId)),
+			// Plugin defaults mean `referenceId` is the user id. `key` stays out — it is the secret.
+			db
+				.select({
+					id: apikey.id,
+					name: apikey.name,
+					prefix: apikey.prefix,
+					start: apikey.start,
+					enabled: apikey.enabled,
+					requestCount: apikey.requestCount,
+					lastRequest: apikey.lastRequest,
+					expiresAt: apikey.expiresAt,
+					createdAt: apikey.createdAt,
+					updatedAt: apikey.updatedAt,
+				})
+				.from(apikey)
+				.where(eq(apikey.referenceId, userId)),
+			db
+				.select({
+					id: oauthConsent.id,
+					clientId: oauthConsent.clientId,
+					scopes: oauthConsent.scopes,
+					consentGiven: oauthConsent.consentGiven,
+					createdAt: oauthConsent.createdAt,
+					updatedAt: oauthConsent.updatedAt,
+				})
+				.from(oauthConsent)
+				.where(eq(oauthConsent.userId, userId)),
+		]);
+
+		const signInMethods = [
+			...accounts.map((a) => ({
+				type: a.password === null ? "oauth" : "password",
+				provider: a.providerId,
+				name: null,
+				createdAt: a.createdAt,
+			})),
+			...passkeys.map((p) => ({
+				type: "passkey",
+				provider: null,
+				name: p.name,
+				createdAt: p.createdAt,
+			})),
+			...twoFactorRows.map(() => ({
+				type: "two-factor",
+				provider: null,
+				name: null,
+				createdAt: null,
+			})),
+		];
+
+		const payload = {
+			meta: {
+				generatedAt: new Date().toISOString(),
+				subjectId: subject.id,
+				format: "application/json",
+				excluded: [
+					"Password hashes, two-factor secrets and backup codes, passkey public keys and credential IDs, OAuth access and refresh tokens, and session tokens. These are account credentials rather than information about you, and including them in a downloadable file would weaken the security of your account. The sign-in methods that exist on your account are listed under signInMethods.",
+					"The identity of people who wrote reviews about you, which is their personal data and not yours. The reviews themselves are included, and the platform shows you their authors.",
+					"Other people's names and email addresses appearing in your club audit log entries, shown as [redacted]. Those records describe things you did, but the other person's details belong to them. Invite codes are removed on the same basis that they grant access to a club.",
+				],
+			},
+			profile: {
+				...subject,
+				gear: subject.gear ?? null,
+			},
+			signInMethods,
+			sessions,
+			clubMemberships: memberships,
+			clubInvites: invites,
+			eventBookings: bookings,
+			eventAttendance: attendance.map(({ attendeeUserId, ...rest }) => ({
+				...rest,
+				matchedBy: attendeeUserId === userId ? "account" : "guestEmail",
+			})),
+			reviewsWritten: written,
+			reviewsReceived: received,
+			reviewEdits: edits,
+			achievements,
+			clubAuditLogs: auditLogs.map((log) => ({
+				...log,
+				actionData: redactActionData(log.actionData),
+			})),
+			apiKeys,
+			oauthConsents,
+		};
+
+		posthog?.capture({
+			distinctId: userId,
+			event: "user_data_exported",
+		});
+
+		return setHeaders(response.json(payload), [
+			["Content-Disposition", `attachment; filename="reconned-data-export-${userId}.json"`],
+			["Cache-Control", "no-store"],
+		]);
+	},
+	{
+		auth: true,
+		// Expensive and rarely legitimate in bulk. A person exercising a right does it once.
+		rateLimit: {
+			windowMs: 3_600_000,
+			maxRequests: 5,
+			store: redisRateLimitStore,
+			keyGenerator: rateLimitKey,
+		},
+		schema: {
+			tags: ["Users"],
+			summary: "Export all personal data",
+			description:
+				"Returns every piece of personal data held about the authenticated user as a single JSON document, for the rights of access and data portability. Self-only. Account credentials are described rather than included.",
+			params: z.object({
+				id: z.string(),
+			}),
+			response: {
+				200: z.object({
+					meta: z.object({
+						generatedAt: z.string(),
+						subjectId: z.string(),
+						format: z.string(),
+						excluded: z.array(z.string()),
+					}),
+					...exportSectionSchema,
+				}),
+				401: z.object({ error: z.string() }),
+				404: z.object({ error: z.string() }),
+			},
+		},
+	},
+);
+
 usersRouter.post(
 	"/users/:id/delete",
 	async ({ params, response, context, body, request }) => {
@@ -1851,8 +2403,8 @@ usersRouter.post(
 		const userData = await db
 			.select({
 				id: user.id,
-				email: user.email,
-				twoFactorEnabled: user.twoFactorEnabled,
+				image: user.image,
+				headerImage: user.headerImage,
 			})
 			.from(user)
 			.where(eq(user.id, userId))
@@ -1861,6 +2413,12 @@ usersRouter.post(
 		if (!userData[0]) {
 			throw apiError.notFound("User not found");
 		}
+
+		// Read before the transaction: once the row is gone nothing points at these objects, and an
+		// orphaned avatar is still a picture of someone who asked to be forgotten.
+		const orphanedS3Keys = [keyFromCdnUrl(userData[0].image), keyFromCdnUrl(userData[0].headerImage)].filter(
+			(key): key is string => key !== null,
+		);
 
 		const accountData = await db
 			.select({
@@ -1892,6 +2450,15 @@ usersRouter.post(
 		// Ownership transfer and account deletion must be atomic: a mid-loop failure previously
 		// left clubs without an owner while the user row survived (or vice versa).
 		await db.transaction(async (tx) => {
+			// `userId` is ON DELETE SET NULL, so these rows outlive the account — but only the FK is
+			// nulled, and an IP is personal data regardless. Keeping the action record is defensible
+			// for club governance; keeping their IP is not. Must run first, or there is no userId
+			// left to find the rows by.
+			await tx
+				.update(clubAuditLog)
+				.set({ ipAddress: null, userAgent: null })
+				.where(eq(clubAuditLog.userId, userId));
+
 			const ownedClubs = await tx
 				.select({
 					clubId: clubMembership.clubId,
@@ -1988,13 +2555,25 @@ usersRouter.post(
 			await tx.delete(user).where(eq(user.id, userId));
 		});
 
+		// Not keyed to the deleted user, deliberately: `posthog-node` batches, so an event captured
+		// against their distinctId could flush *after* the erasure below and re-create the person
+		// we just deleted. Keeps the product signal, drops the identifier.
 		posthog.capture({
-			distinctId: userId,
+			distinctId: "system",
 			event: "user_account_deleted",
-			properties: {
-				email: userData[0].email,
-			},
+			properties: { $process_person_profile: false },
 		});
+
+		// Outside the transaction and best-effort by design: the account is already gone and a
+		// failing processor must not resurrect it. Failures are logged for manual retry rather than
+		// surfaced — a 500 would only invite pressing the button again on an account that is gone.
+		await Promise.allSettled([
+			deletePosthogPerson(userId),
+			deleteOnesignalUser(userId),
+			// No userId: `deleteS3Files` captures a `files_deleted` event when given one, which
+			// would re-create the person being erased alongside it.
+			orphanedS3Keys.length > 0 ? deleteS3Files(orphanedS3Keys) : Promise.resolve(),
+		]);
 
 		return response.json({ success: true });
 	},

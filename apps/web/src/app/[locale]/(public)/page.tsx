@@ -6,6 +6,7 @@ import {
 	ClipboardList,
 	Code2,
 	DollarSign,
+	Download,
 	FileCheck,
 	Globe,
 	LayoutDashboard,
@@ -18,11 +19,11 @@ import {
 	Pencil,
 	Search,
 	Server,
-	Settings,
 	Shield,
 	ShieldCheck,
 	ShieldQuestion,
 	Star,
+	Trash2,
 	TrendingUp,
 	Trophy,
 	User,
@@ -829,22 +830,41 @@ export default async function Home(props: PageProps<"/[locale]">) {
 								</div>
 							</div>
 
-							<div className="group relative overflow-hidden rounded-lg border bg-card p-6 hover:border-red-500 transition-all duration-200 flex flex-col gap-4 opacity-80">
+							<Link
+								href="/dashboard/user/security"
+								className="group relative overflow-hidden rounded-lg border bg-card p-6 hover:border-red-500 transition-all duration-200 flex flex-col gap-4"
+							>
 								<div className="flex items-start justify-between">
 									<div className="rounded-md bg-red-500/10 p-2">
-										<Settings className="h-5 w-5 text-red-500" />
+										<Download className="h-5 w-5 text-red-500" />
 									</div>
-									<Badge variant="outline" className="text-xs">
-										{t("Planned")}
-									</Badge>
+									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
 								</div>
 								<div className="space-y-2">
 									<h4 className="font-semibold leading-tight">{t("Data Export")}</h4>
 									<p className="text-sm text-muted-foreground leading-snug">
-										{t("Download all your data anytime in portable formats")}
+										{t("Download everything we hold about you as a single JSON file, anytime")}
 									</p>
 								</div>
-							</div>
+							</Link>
+
+							<Link
+								href="/dashboard/user/security"
+								className="group relative overflow-hidden rounded-lg border bg-card p-6 hover:border-red-500 transition-all duration-200 flex flex-col gap-4"
+							>
+								<div className="flex items-start justify-between">
+									<div className="rounded-md bg-red-500/10 p-2">
+										<Trash2 className="h-5 w-5 text-red-500" />
+									</div>
+									<Zap className="h-4 w-4 text-red-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+								</div>
+								<div className="space-y-2">
+									<h4 className="font-semibold leading-tight">{t("Account Deletion")}</h4>
+									<p className="text-sm text-muted-foreground leading-snug">
+										{t("Delete your account yourself - no email, no waiting, no dark patterns")}
+									</p>
+								</div>
+							</Link>
 
 							<Link
 								href="/developers"

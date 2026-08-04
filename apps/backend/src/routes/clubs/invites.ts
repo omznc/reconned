@@ -267,10 +267,8 @@ clubsInvitesRouter.post(
 				distinctId: context.user.id,
 				event: "club_invitation_email_sent",
 				properties: {
-					recipient_email: target.email,
 					club_id: clubId,
 					club_name: clubData[0].name,
-					invitation_code: newInvite[0].inviteCode,
 					language,
 					is_existing_user: Boolean(existingUser[0]),
 				},

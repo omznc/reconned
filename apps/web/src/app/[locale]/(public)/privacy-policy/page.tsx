@@ -215,7 +215,31 @@ export default async function PrivacyPolicyPage(props: PageProps<"/[locale]/priv
 					</ul>
 					<p className="mt-4">
 						{t(
-							"All tracking data is anonymized where possible and used solely for improving our platform and understanding user behavior patterns.",
+							"Analytics is optional and runs only if you agree to it. Nothing is loaded and no analytics cookie is set until you do, and you can change your mind at any time through Cookie settings in the footer. This data is not anonymous: it is linked to an identifier for your account, though we do not send your name or email address to our analytics provider. We use it solely to improve the platform.",
+						)}
+					</p>
+				</section>
+
+				{/*
+				 * Its own section, not a clause in the analytics paragraph: the banner says only
+				 * "analytics", so this is the only place a person learns their screen is recorded.
+				 * It has to be findable by someone skimming headings.
+				 */}
+				<section className="mb-8">
+					<h2 className="text-2xl font-semibold mb-4">{t("Session Recordings")}</h2>
+					<p>
+						{t(
+							"If you accept analytics, we also record your sessions. A session recording reconstructs what your screen showed: the pages you visited, how you moved through them, and where you clicked. It is closer to a video of your visit than to a list of statistics, which is why we describe it separately here instead of leaving it under the general heading of analytics.",
+						)}
+					</p>
+					<p className="mt-4">
+						{t(
+							"We do not record what you type. Every form input is masked, including your password, and the contents of your requests and of your browser console are never captured. Where our own pages display an email address, phone number or IP address, those are masked in the recording as well, so that other people's details do not end up in a recording of your visit.",
+						)}
+					</p>
+					<p className="mt-4">
+						{t(
+							"Recording happens only if you accept analytics. If you decline, or later withdraw your consent through Cookie settings in the footer, no recording is made. Recordings are held by PostHog on servers in the European Union, and when you delete your account we instruct them to erase your data, recordings included.",
 						)}
 					</p>
 				</section>

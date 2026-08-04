@@ -337,7 +337,6 @@ clubsMembersRouter.put(
 			properties: {
 				club_id: clubId,
 				member_id: membershipWithUser.user.id,
-				member_name: membershipWithUser.user.name,
 				extended_months: durationMonths,
 				previous_end_date: membershipWithUser.endDate,
 				new_end_date: newEndDate.toISOString(),
