@@ -189,7 +189,12 @@ export async function executeMcpTool(
 	router: Router,
 ): Promise<{ content: Array<{ type: "text"; text: string }>; isError?: boolean }> {
 	if (!cachedRouteMap) {
-		buildMcpToolCache(router);
+		// Must assign, not just build: a tools/call that lands before any tools/list
+		// (MCP clients cache the tool list across our restarts) would otherwise leave
+		// the map null forever and every tool would answer "Unknown tool".
+		const result = buildMcpToolCache(router);
+		cachedTools = result.tools;
+		cachedRouteMap = result.routeMap;
 	}
 
 	const entry = cachedRouteMap?.get(toolName);

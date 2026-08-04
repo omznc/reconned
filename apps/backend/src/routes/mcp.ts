@@ -137,10 +137,6 @@ export async function handleMCPRequest(request: Request, router: Router): Promis
 
 		const server = new Server({ name: "reconned-mcp", version: "1.0.0" }, { capabilities: { tools: {} } });
 
-		instrument(server, mcpPosthog, {
-			identify: async () => ({ distinctId: userId }),
-		});
-
 		server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: extractMcpTools(router) }));
 
 		server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -159,6 +155,14 @@ export async function handleMCPRequest(request: Request, router: Router): Promis
 				};
 			}
 			return executeMcpTool(name, args ?? {}, authUser, router);
+		});
+
+		// Must come after the handlers are registered: instrument() wraps whatever
+		// tools/call handler exists at call time, and a later setRequestHandler for
+		// tools/call replaces its wrapper outright — so instrumenting first silently
+		// drops every tool-call event.
+		instrument(server, mcpPosthog, {
+			identify: async () => ({ distinctId: userId }),
 		});
 
 		const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined });
