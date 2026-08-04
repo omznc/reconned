@@ -119,6 +119,12 @@ export const env = createEnv({
 			.optional()
 			.describe("Facebook application secret"),
 
+		FACEBOOK_GRAPH_API_VERSION: z
+			.string()
+			.regex(/^v\d+\.\d+$/, "FACEBOOK_GRAPH_API_VERSION must look like v23.0")
+			.optional()
+			.describe("Graph API version to call. Meta retires versions ~2 years after release"),
+
 		POSTHOG_PUBLIC_KEY: z
 			.string()
 			.min(1, "POSTHOG_PUBLIC_KEY is required for PostHog logging")

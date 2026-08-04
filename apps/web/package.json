@@ -48,7 +48,7 @@
 		"lodash": "^4.18.1",
 		"lucide-react": "^1.17.0",
 		"maplibre-gl": "^5.24.0",
-		"next": "^16.2.9",
+		"next": "^16.3.0",
 		"next-axiom": "^1.10.0",
 		"next-intl": "^4.13.0",
 		"next-intl-swc-plugin-extractor": "^4.13.0",
@@ -91,7 +91,8 @@
 		"@types/sanitize-html": "^2.16.1",
 		"@types/turndown": "^5.0.6",
 		"babel-plugin-react-compiler": "19.1.0-rc.3",
-		"openapi-typescript": "^7.13.0"
+		"openapi-typescript": "^7.13.0",
+		"typescript": "^7"
 	},
 	"name": "web",
 	"overrides": {

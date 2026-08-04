@@ -38,6 +38,9 @@ describe("club instagram", () => {
 			expect(response.body.authUrl).toBeString();
 			expect(response.body.authUrl).toContain("facebook.com");
 			expect(response.body.authUrl).toContain(`state=${club.id}`);
+			expect(response.body.authUrl).toContain("pages_show_list");
+			// Without this a previously-declined permission is never asked for again.
+			expect(response.body.authUrl).toContain("auth_type=rerequest");
 		});
 
 		test("requires authentication", async () => {

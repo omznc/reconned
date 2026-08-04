@@ -10,6 +10,7 @@ import {
 	debugToken,
 	exchangeCodeForToken,
 	exchangeForLongLivedToken,
+	GRAPH_API_VERSION,
 	getInstagramBusinessAccount,
 	getNonExpiringPageAccessToken,
 	getUserPages,
@@ -19,12 +20,21 @@ import { logger } from "../../lib/posthog";
 const clubsInstagramRouter = new Router();
 
 /**
+ * Permissions asked for in the Facebook login dialog. `pages_show_list` is the
+ * one that makes `/me/accounts` return anything — without it the Graph API
+ * answers `{ data: [] }` rather than an error, which is indistinguishable from
+ * "this person has no Pages" unless the granted scopes are inspected.
+ */
+const INSTAGRAM_SCOPES = ["pages_show_list", "instagram_basic", "pages_read_engagement"] as const;
+
+/**
  * Error codes understood by the club information form
  * (`getInstagramErrorMessage` in club-info.form.tsx). Anything else falls back
  * to its generic message.
  */
 const INSTAGRAM_ERROR_CODES = {
 	NO_FACEBOOK_PAGES: "no_facebook_pages",
+	PAGES_PERMISSION_DENIED: "pages_permission_denied",
 	NO_INSTAGRAM_BUSINESS_ACCOUNT: "no_instagram_business_account",
 	NOT_CONNECTED_TO_PAGE: "not_connected_to_instagram",
 	MISSING_PARAMS: "missing_params",
@@ -158,11 +168,17 @@ clubsInstagramRouter.get(
 
 		let pages: Awaited<ReturnType<typeof getUserPages>>["data"];
 		let userAccessToken: string;
+		let grantedScopes: string[] = [];
 
 		try {
 			const shortLivedToken = await exchangeCodeForToken(code);
 			const longLivedToken = await exchangeForLongLivedToken(shortLivedToken.access_token);
 			userAccessToken = longLivedToken.access_token;
+
+			// What the visitor actually agreed to, which is not necessarily what we asked
+			// for: declining a permission in the dialog still yields a valid token.
+			grantedScopes = (await debugToken(userAccessToken)).data.scopes ?? [];
+
 			pages = (await getUserPages(userAccessToken)).data;
 		} catch (error) {
 			logger.emit({
@@ -182,8 +198,31 @@ clubsInstagramRouter.get(
 		}
 
 		if (!pages || pages.length === 0) {
+			const missingScopes = INSTAGRAM_SCOPES.filter((scope) => !grantedScopes.includes(scope));
+
+			logger.emit({
+				severityText: "warn",
+				body: "Instagram OAuth returned no Facebook Pages",
+				attributes: {
+					club_id: clubId,
+					granted_scopes: grantedScopes.join(",") || "none",
+					missing_scopes: missingScopes.join(",") || "none",
+					business: {
+						operation: "instagram_oauth_callback",
+						domain: "instagram_integration",
+						error_type: missingScopes.length > 0 ? "missing_scopes" : "no_pages",
+					},
+				},
+			});
+
+			// An ungranted `pages_show_list` and an account with genuinely no Pages both
+			// come back as an empty list, but only one of them is the visitor's to fix.
 			return response.redirect(
-				clubInformationUrl(clubId, { instagramError: INSTAGRAM_ERROR_CODES.NO_FACEBOOK_PAGES }),
+				clubInformationUrl(clubId, {
+					instagramError: missingScopes.includes("pages_show_list")
+						? INSTAGRAM_ERROR_CODES.PAGES_PERMISSION_DENIED
+						: INSTAGRAM_ERROR_CODES.NO_FACEBOOK_PAGES,
+				}),
 			);
 		}
 
@@ -287,11 +326,16 @@ clubsInstagramRouter.get(
 		}
 
 		const redirectUri = `${env.BETTER_AUTH_URL}/api/club/instagram/callback`;
-		const authUrl = new URL("https://www.facebook.com/v19.0/dialog/oauth");
+		const authUrl = new URL(`https://www.facebook.com/${GRAPH_API_VERSION}/dialog/oauth`);
 		authUrl.searchParams.set("client_id", env.FACEBOOK_APP_ID);
 		authUrl.searchParams.set("redirect_uri", redirectUri);
-		authUrl.searchParams.set("scope", "pages_show_list,instagram_basic,pages_read_engagement");
+		authUrl.searchParams.set("scope", INSTAGRAM_SCOPES.join(","));
 		authUrl.searchParams.set("state", clubId);
+		// Facebook silently omits permissions the user declined on a previous run and
+		// hands back a token that simply sees no Pages. `rerequest` makes the dialog
+		// ask again instead, which is the difference between a fixable prompt and a
+		// dead end the visitor cannot get out of.
+		authUrl.searchParams.set("auth_type", "rerequest");
 
 		return response.json({ authUrl: authUrl.toString() });
 	},
@@ -434,7 +478,7 @@ clubsInstagramRouter.get(
 
 			if (clubRecord.instagramTokenType === "PERMANENT") {
 				const debugResponse = await fetch(
-					`https://graph.facebook.com/v19.0/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
+					`https://graph.facebook.com/${GRAPH_API_VERSION}/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
 				);
 
 				if (!debugResponse.ok) {
@@ -473,7 +517,7 @@ clubsInstagramRouter.get(
 
 			if (shouldRefreshToken && clubRecord.facebookPageId) {
 				const pageTokenResponse = await fetch(
-					`https://graph.facebook.com/v19.0/${clubRecord.facebookPageId}?fields=access_token&access_token=${clubRecord.instagramAccessToken}`,
+					`https://graph.facebook.com/${GRAPH_API_VERSION}/${clubRecord.facebookPageId}?fields=access_token&access_token=${clubRecord.instagramAccessToken}`,
 				);
 
 				if (pageTokenResponse.ok) {
@@ -504,7 +548,7 @@ clubsInstagramRouter.get(
 			}
 
 			const debugResponse = await fetch(
-				`https://graph.facebook.com/v19.0/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
+				`https://graph.facebook.com/${GRAPH_API_VERSION}/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
 			);
 
 			if (!debugResponse.ok) {
@@ -914,7 +958,7 @@ clubsInstagramRouter.get(
 
 			// Fetch Instagram media
 			const mediaResponse = await fetch(
-				`https://graph.facebook.com/v19.0/${clubRecord.instagramBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${clubRecord.instagramAccessToken}`,
+				`https://graph.facebook.com/${GRAPH_API_VERSION}/${clubRecord.instagramBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${clubRecord.instagramAccessToken}`,
 			);
 
 			if (!mediaResponse.ok) {

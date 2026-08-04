@@ -2,6 +2,16 @@ import { apiError } from "@reconned/router";
 import { env } from "../lib/env";
 import { logger } from "./posthog";
 
+/**
+ * Meta retires a Graph API version roughly two years after release, and calls to
+ * a retired one are silently served by whatever version Meta picks instead —
+ * which is how behaviour changes without any code changing. Pinned here so the
+ * whole integration moves in one step, and overridable so a version bump is a
+ * deploy rather than a release.
+ */
+export const GRAPH_API_VERSION = env.FACEBOOK_GRAPH_API_VERSION ?? "v26.0";
+const GRAPH_API_BASE = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
+
 async function logExternalApiCall(
 	operation: string,
 	url: string,
@@ -86,7 +96,7 @@ interface FacebookDebugTokenResponse {
 export async function exchangeCodeForToken(code: string): Promise<FacebookAuthResponse> {
 	// The redirect_uri must match exactly what was used in the auth dialog
 	const redirectUri = `${env.BETTER_AUTH_URL}/api/club/instagram/callback`;
-	const url = "https://graph.facebook.com/v19.0/oauth/access_token";
+	const url = `${GRAPH_API_BASE}/oauth/access_token`;
 
 	const startTime = Date.now();
 	const response = await fetch(
@@ -111,7 +121,7 @@ export async function exchangeCodeForToken(code: string): Promise<FacebookAuthRe
  * Exchange a short-lived user token for a long-lived user token
  */
 export async function exchangeForLongLivedToken(shortLivedToken: string): Promise<FacebookLongLivedTokenResponse> {
-	const url = "https://graph.facebook.com/v19.0/oauth/access_token";
+	const url = `${GRAPH_API_BASE}/oauth/access_token`;
 
 	const startTime = Date.now();
 	const response = await fetch(
@@ -135,7 +145,7 @@ export async function exchangeForLongLivedToken(shortLivedToken: string): Promis
  */
 export async function debugToken(accessToken: string): Promise<FacebookDebugTokenResponse> {
 	const appAccessToken = `${env.FACEBOOK_APP_ID}|${env.FACEBOOK_APP_SECRET}`;
-	const url = "https://graph.facebook.com/v19.0/debug_token";
+	const url = `${GRAPH_API_BASE}/debug_token`;
 
 	const startTime = Date.now();
 	const response = await fetch(`${url}?input_token=${accessToken}&access_token=${appAccessToken}`, {
@@ -159,7 +169,7 @@ export async function debugToken(accessToken: string): Promise<FacebookDebugToke
  * Get Facebook pages associated with a user
  */
 export async function getUserPages(accessToken: string): Promise<FacebookPageResponse> {
-	const url = "https://graph.facebook.com/v19.0/me/accounts";
+	const url = `${GRAPH_API_BASE}/me/accounts`;
 
 	const startTime = Date.now();
 	const response = await fetch(`${url}?access_token=${accessToken}`);
@@ -173,7 +183,29 @@ export async function getUserPages(accessToken: string): Promise<FacebookPageRes
 		throw apiError.internal(`Failed to get user pages: ${await response.text()}`);
 	}
 
-	return (await response.json()) as FacebookPageResponse;
+	const body = (await response.json()) as FacebookPageResponse;
+
+	// An empty list is a 200, so it is invisible in the call log above — and it is
+	// the single most common way this integration fails. Record enough to tell
+	// "no Pages" apart from "Pages withheld" without ever logging a token.
+	if (!body.data || body.data.length === 0) {
+		logger.emit({
+			severityText: "warn",
+			body: "Facebook returned no Pages for this user",
+			attributes: {
+				graph_api_version: GRAPH_API_VERSION,
+				response_keys: Object.keys(body).join(",") || "none",
+				business: {
+					operation: "get_user_pages",
+					domain: "instagram_integration",
+					error_type: "empty_page_list",
+					provider: "facebook_graph_api",
+				},
+			},
+		});
+	}
+
+	return body;
 }
 
 interface InstagramBusinessAccountResponse {
@@ -193,7 +225,7 @@ export async function getInstagramBusinessAccount(
 	pageId: string,
 	pageAccessToken: string,
 ): Promise<InstagramBusinessAccountResponse | undefined> {
-	const url = `https://graph.facebook.com/v19.0/${pageId}`;
+	const url = `${GRAPH_API_BASE}/${pageId}`;
 
 	const startTime = Date.now();
 	const response = await fetch(`${url}?fields=instagram_business_account&access_token=${pageAccessToken}`);
@@ -208,7 +240,7 @@ export async function getInstagramBusinessAccount(
 		const data = (await response.json()) as { instagram_business_account?: { id: string } };
 		if (data.instagram_business_account?.id) {
 			// Get Instagram details using the business account ID
-			const igUrl = `https://graph.facebook.com/v19.0/${data.instagram_business_account.id}`;
+			const igUrl = `${GRAPH_API_BASE}/${data.instagram_business_account.id}`;
 			const igStartTime = Date.now();
 			const igDetailsResponse = await fetch(
 				`${igUrl}?fields=id,username,profile_picture_url&access_token=${pageAccessToken}`,
@@ -248,7 +280,7 @@ export async function getInstagramMedia(
 	accessToken: string,
 	limit = 12,
 ): Promise<InstagramMediaResponse> {
-	const url = `https://graph.facebook.com/v19.0/${igBusinessId}/media`;
+	const url = `${GRAPH_API_BASE}/${igBusinessId}/media`;
 
 	const startTime = Date.now();
 	const response = await fetch(

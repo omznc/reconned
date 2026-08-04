@@ -635,6 +635,10 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 		switch (errorCode) {
 			case "no_facebook_pages":
 				return t("We couldn't find any Facebook Pages connected to your account.");
+			case "pages_permission_denied":
+				return t(
+					"Facebook didn't give us permission to see your Pages. Try again and allow access to the Page your Instagram account is linked to.",
+				);
 			case "no_instagram_business_account":
 				return t("We couldn't find an Instagram Business account connected to the selected Facebook page.");
 			case "not_connected_to_instagram":

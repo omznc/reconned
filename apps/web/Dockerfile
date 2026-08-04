@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.14 AS base
+FROM oven/bun:canary AS base
 WORKDIR /app
 
 FROM base AS builder
@@ -46,7 +46,7 @@ WORKDIR /app/apps/web
 RUN --mount=type=cache,target=/app/apps/web/.next/cache \
     bun node_modules/next/dist/bin/next build --turbo
 
-FROM oven/bun:1.3.14 AS runner
+FROM oven/bun:canary AS runner
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
