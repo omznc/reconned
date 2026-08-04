@@ -47,7 +47,7 @@ import type { ApiResponse, Club } from "@/lib/api/api-type-helpers";
 import { getDateFnsLocale } from "@/lib/date-locale";
 import type { LogoTile } from "@/lib/identity";
 import { analyzeLogo, MAX_ASPECT_RATIO } from "@/lib/logo-analysis";
-import { cn } from "@/lib/utils";
+import { addImageVersion, cn } from "@/lib/utils";
 import { useHttpsUrlSchema } from "@/lib/validations/schemas";
 
 type Country = ApiResponse<"/api/countries", "get">[number];
@@ -679,7 +679,9 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				const uploadedUrls = await logoUpload.uploadAllFiles();
 				const logoUrl = uploadedUrls[0];
 				if (logoUrl) {
-					values.logo = logoUrl;
+					// The S3 key is fixed per club, so a replacement can land on a URL a
+					// browser or CDN already has cached. The version pins it to this save.
+					values.logo = addImageVersion(logoUrl);
 				}
 			} else {
 				const existingUrls = logoUpload.files
@@ -696,7 +698,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				const uploadedHeaderUrls = await headerUpload.uploadAllFiles();
 				const headerUrl = uploadedHeaderUrls[0];
 				if (headerUrl) {
-					values.headerImage = headerUrl;
+					values.headerImage = addImageVersion(headerUrl);
 				}
 			} else {
 				const existingHeaderUrls = headerUpload.files
@@ -706,11 +708,29 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 				values.headerImage = existingHeaderUrls.length > 0 ? existingHeaderUrls[0] : undefined;
 			}
 
+			// `undefined` cannot clear a column: the client serialises the body as JSON,
+			// which drops undefined keys, so the update never mentions the image at all.
+			// Removal goes through the dedicated endpoints, which also drop the S3 object.
+			const shouldDeleteLogo = !isCreating && !values.logo;
+			const shouldDeleteHeaderImage = !isCreating && !values.headerImage;
+
 			if (!isCreating || filesToUpload.length > 0 || headerFilesToUpload.length > 0) {
 				if (!clubId) {
 					throw new Error("Club ID is missing");
 				}
 				await saveClubInformation(values, clubId);
+			}
+
+			if (clubId && shouldDeleteLogo) {
+				await apiClient.DELETE("/api/clubs/{id}/logo", {
+					params: { path: { id: clubId } },
+				});
+			}
+
+			if (clubId && shouldDeleteHeaderImage) {
+				await apiClient.DELETE("/api/clubs/{id}/header-image", {
+					params: { path: { id: clubId } },
+				});
 			}
 
 			// Update club alliances
@@ -819,7 +839,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 												headerUpload.setFiles(files);
 											}
 										}}
-										maxFileSize={8 * 1024 * 1024}
+										maxFileSize={5 * 1024 * 1024}
 										accept={{
 											"image/jpeg": [".jpg", ".jpeg"],
 											"image/png": [".png"],
@@ -848,7 +868,7 @@ export function ClubInfoForm(props: ClubInfoFormProps) {
 											variant="logo"
 											value={logoUpload.files}
 											onChange={handleLogoChange}
-											maxFileSize={4 * 1024 * 1024}
+											maxFileSize={5 * 1024 * 1024}
 											accept={{
 												"image/jpeg": [".jpg", ".jpeg"],
 												"image/png": [".png"],

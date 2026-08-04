@@ -708,7 +708,7 @@ export default function CreateEventForm(props: CreateEventFormProps) {
 															eventImageUpload.setFiles(files);
 														}
 													}}
-													maxFileSize={8 * 1024 * 1024}
+													maxFileSize={5 * 1024 * 1024}
 													accept={{
 														"image/jpeg": [".jpg", ".jpeg"],
 														"image/png": [".png"],

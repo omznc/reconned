@@ -3,12 +3,13 @@ import { CalendarDays, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getExtracted, setRequestLocale } from "next-intl/server";
-import { ClubCard } from "@/components/club-card";
 import JsonLdScript from "@/components/json-ld-script";
+import { ListingCard } from "@/components/listing-card";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import { getDateFnsLocale } from "@/lib/date-locale";
 import { env } from "@/lib/env";
+import type { LogoTile } from "@/lib/identity";
 import { createBreadcrumbList, createItemListWithClubs, createWebPageSchema } from "@/lib/json-ld";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 
@@ -24,10 +25,12 @@ type CityData = {
 		description: string | null;
 		location: string | null;
 		logo: string | null;
+		logoTile: LogoTile;
 		latitude: number | null;
 		longitude: number | null;
 		verified: boolean;
 		updatedAt: string;
+		_count: { members: number };
 	}>;
 	events: Array<{
 		id: string;
@@ -145,9 +148,20 @@ export default async function Page(props: PageProps<"/[locale]/clubs/city/[cityS
 
 					<section className="space-y-4">
 						<h2 className="text-xl font-semibold tracking-tight">{t("Clubs")}</h2>
-						<div className="grid gap-4 md:grid-cols-2">
+						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
 							{data.clubs.map((club) => (
-								<ClubCard key={club.id} club={club} showDescription />
+								<ListingCard
+									key={club.id}
+									type="club"
+									image={club.logo}
+									tile={club.logoTile}
+									title={club.name}
+									description={club.description}
+									href={`/clubs/${club.slug || club.id}`}
+									verified={club.verified}
+									memberCount={club._count.members}
+									meta={club.location || undefined}
+								/>
 							))}
 						</div>
 					</section>

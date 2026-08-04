@@ -22306,9 +22306,18 @@ export interface operations {
 							logo: string | null;
 							/** @enum {string|null} */
 							logoTile: "paper" | "ink" | null;
+							headerImage: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							location: string | null;
+							description: string | null;
+							verified: boolean;
+							dateFounded: string | null;
+							website: string | null;
+							instagramUsername: string | null;
+							contactEmail: string | null;
+							contactPhone: string | null;
+							isAllied: boolean;
 						}[];
 					};
 				};
@@ -22490,6 +22499,9 @@ export interface operations {
 							longitude: number | null;
 							verified: boolean;
 							updatedAt: string;
+							_count: {
+								members: number;
+							};
 						}[];
 						events: {
 							id: string;

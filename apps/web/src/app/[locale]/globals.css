@@ -183,6 +183,111 @@
 		}
 	}
 
+	/*
+	  Regrouping, seen rather than inferred. A pin that arrives starts at the pin it
+	  came out of and is thrown to its own spot, overshooting slightly the way a
+	  released thing does; a pin that leaves travels to whatever absorbed it and
+	  shrinks out. Both are the same journey, so a fan opening and the same fan
+	  closing trace one path in two directions.
+	*/
+	.map-marker-emerge {
+		animation: map-marker-emerge 400ms cubic-bezier(0.34, 1.26, 0.64, 1) both;
+	}
+
+	.map-marker-vanish {
+		animation: map-marker-vanish 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
+		pointer-events: none;
+	}
+
+	@keyframes map-marker-emerge {
+		from {
+			opacity: 0;
+			transform: translate3d(var(--map-dx, 0px), var(--map-dy, 0px), 0) scale(0.62);
+		}
+		45% {
+			opacity: 1;
+		}
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+	}
+
+	@keyframes map-marker-vanish {
+		from {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+		to {
+			opacity: 0;
+			transform: translate3d(var(--map-dx, 0px), var(--map-dy, 0px), 0) scale(0.58);
+		}
+	}
+
+	/*
+	  The fan's leader lines and the dot they converge on. The lines only mean
+	  anything once the pins they explain have arrived, so they come up under them
+	  rather than with them.
+	*/
+	.map-leader {
+		animation: map-leader-in 320ms cubic-bezier(0.32, 0.72, 0, 1) 80ms both;
+	}
+
+	.map-anchor {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: map-anchor-in 340ms cubic-bezier(0.34, 1.26, 0.64, 1) both;
+	}
+
+	@keyframes map-leader-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes map-anchor-in {
+		from {
+			opacity: 0;
+			transform: scale(0.2);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	/*
+	  The phone's club card. It rises from the edge it's attached to, which is the
+	  only motion that explains where it came from and where dismissing sends it.
+	*/
+	.map-sheet {
+		animation: map-sheet-in 260ms cubic-bezier(0.32, 0.72, 0, 1) both;
+	}
+
+	@keyframes map-sheet-in {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/*
+	  Zoom buttons are a desktop affordance — a phone pinches, and the sheet lands
+	  exactly where they sit.
+	*/
+	@media (max-width: 767px) {
+		.leaflet-control-zoom {
+			display: none;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.map-pin,
 		.map-pin-plate {
@@ -190,8 +295,36 @@
 		}
 
 		.map-pin-label,
-		.map-marker-in {
+		.map-marker-in,
+		.map-sheet {
 			animation-duration: 1ms;
+		}
+
+		/*
+		  Regrouping still needs to read as a change rather than a jump cut, so the
+		  travel goes and a plain cross-fade stays.
+		*/
+		.map-marker-emerge,
+		.map-marker-vanish,
+		.map-leader,
+		.map-anchor {
+			animation-name: map-marker-fade;
+			animation-duration: 160ms;
+			animation-delay: 0ms;
+			animation-timing-function: ease;
+		}
+
+		.map-marker-vanish {
+			animation-direction: reverse;
+		}
+
+		@keyframes map-marker-fade {
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
 		}
 	}
 }

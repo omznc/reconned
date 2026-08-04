@@ -489,7 +489,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 									variant="banner"
 									value={headerUpload.files}
 									onChange={headerUpload.setFiles}
-									maxFileSize={8 * 1024 * 1024}
+									maxFileSize={5 * 1024 * 1024}
 									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],
@@ -516,7 +516,7 @@ export function CreateUnclaimedClubForm({ countries }: CreateUnclaimedClubFormPr
 									variant="logo"
 									value={logoUpload.files}
 									onChange={logoUpload.setFiles}
-									maxFileSize={4 * 1024 * 1024}
+									maxFileSize={5 * 1024 * 1024}
 									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],

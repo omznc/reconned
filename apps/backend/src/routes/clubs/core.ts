@@ -17,7 +17,7 @@ import {
 	paginationQuerySchema,
 	paginationResponseSchema,
 } from "../../lib/schemas";
-import { deleteS3Files, getS3UploadUrl } from "../../lib/storage";
+import { deleteS3Files, getS3UploadUrl, keyFromCdnUrl, MAX_UPLOAD_FILE_SIZE } from "../../lib/storage";
 
 const clubsCoreRouter = new Router();
 
@@ -105,7 +105,7 @@ const updateClubBodySchema = z.object({
 const clubLogoUploadBodySchema = z.object({
 	file: z.object({
 		type: z.string().regex(/^image\//),
-		size: z.number().max(1024 * 1024 * 4),
+		size: z.number().max(MAX_UPLOAD_FILE_SIZE),
 	}),
 });
 
@@ -736,13 +736,9 @@ clubsCoreRouter.delete(
 			throw apiError.notFound("Club not found");
 		}
 
-		const filesToDelete: string[] = [];
-		if (clubData[0].logo) {
-			filesToDelete.push(`club/${clubId}/logo`);
-		}
-		if (clubData[0].headerImage) {
-			filesToDelete.push(`club/${clubId}/header`);
-		}
+		const filesToDelete = [keyFromCdnUrl(clubData[0].logo), keyFromCdnUrl(clubData[0].headerImage)].filter(
+			(key): key is string => key !== null,
+		);
 
 		if (filesToDelete.length > 0) {
 			await deleteS3Files(filesToDelete, context.user.id);
@@ -874,7 +870,7 @@ clubsCoreRouter.post(
 			body: z.object({
 				file: z.object({
 					type: z.string().regex(/^image\//),
-					size: z.number().max(1024 * 1024 * 8),
+					size: z.number().max(MAX_UPLOAD_FILE_SIZE),
 				}),
 			}),
 			response: {
@@ -912,15 +908,21 @@ clubsCoreRouter.delete(
 			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
+		const [existingLogoClub] = await db.select({ logo: club.logo }).from(club).where(eq(club.id, clubId)).limit(1);
+
 		await db
 			.update(club)
 			.set({
 				logo: null,
+				logoTile: null,
 				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(club.id, clubId));
 
-		await deleteS3Files([`club/${clubId}/logo`], context.user.id);
+		const logoKey = keyFromCdnUrl(existingLogoClub?.logo);
+		if (logoKey) {
+			await deleteS3Files([logoKey], context.user.id);
+		}
 
 		await logClubAudit({
 			clubId,
@@ -935,6 +937,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club logo",
@@ -973,6 +976,12 @@ clubsCoreRouter.delete(
 			throw apiError.forbidden("Unauthorized - must be manager or owner");
 		}
 
+		const [existingHeaderClub] = await db
+			.select({ headerImage: club.headerImage })
+			.from(club)
+			.where(eq(club.id, clubId))
+			.limit(1);
+
 		await db
 			.update(club)
 			.set({
@@ -981,7 +990,10 @@ clubsCoreRouter.delete(
 			})
 			.where(eq(club.id, clubId));
 
-		await deleteS3Files([`club/${clubId}/header`], context.user.id);
+		const headerKey = keyFromCdnUrl(existingHeaderClub?.headerImage);
+		if (headerKey) {
+			await deleteS3Files([headerKey], context.user.id);
+		}
 
 		await logClubAudit({
 			clubId,
@@ -996,6 +1008,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club header image",

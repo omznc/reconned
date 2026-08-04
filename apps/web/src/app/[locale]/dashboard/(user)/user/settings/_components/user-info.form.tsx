@@ -307,7 +307,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 										variant="banner"
 										value={headerUpload.files}
 										onChange={headerUpload.setFiles}
-										maxFileSize={8 * 1024 * 1024}
+										maxFileSize={5 * 1024 * 1024}
 										accept={{
 											"image/jpeg": [".jpg", ".jpeg"],
 											"image/png": [".png"],
@@ -340,7 +340,7 @@ export function UserInfoForm(props: UserInfoFormProps) {
 												avatarUpload.setFiles(files);
 											}
 										}}
-										maxFileSize={4 * 1024 * 1024}
+										maxFileSize={5 * 1024 * 1024}
 										accept={{
 											"image/jpeg": [".jpg", ".jpeg"],
 											"image/png": [".png"],

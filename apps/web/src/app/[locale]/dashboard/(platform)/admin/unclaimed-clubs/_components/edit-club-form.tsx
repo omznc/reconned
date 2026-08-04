@@ -741,7 +741,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 									variant="banner"
 									value={headerUpload.files}
 									onChange={headerUpload.setFiles}
-									maxFileSize={8 * 1024 * 1024}
+									maxFileSize={5 * 1024 * 1024}
 									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],
@@ -768,7 +768,7 @@ export function EditClubForm({ club, countries }: EditClubFormProps) {
 									variant="logo"
 									value={logoUpload.files}
 									onChange={logoUpload.setFiles}
-									maxFileSize={4 * 1024 * 1024}
+									maxFileSize={5 * 1024 * 1024}
 									accept={{
 										"image/jpeg": [".jpg", ".jpeg"],
 										"image/png": [".png"],

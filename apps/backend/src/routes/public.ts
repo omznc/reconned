@@ -1,7 +1,7 @@
 import { Router } from "@reconned/router";
-import { and, count, eq, ilike, or, type SQL, sql } from "drizzle-orm";
+import { and, count, eq, exists, ilike, or, type SQL, sql } from "drizzle-orm";
 import * as z from "zod";
-import { city, club, clubAlliance, event, featureFlag, user } from "../drizzle/schema";
+import { city, club, clubAlliance, clubMembership, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
@@ -10,6 +10,9 @@ import { logoTileResponseSchema } from "../lib/schemas";
 
 const STATS_CACHE_KEY = "public:stats";
 const STATS_CACHE_TTL = 86400;
+
+/** Enough for the three clamped lines the map panel shows, and no more. */
+const MAP_DESCRIPTION_CHARS = 240;
 
 const publicRouter = new Router();
 
@@ -46,9 +49,26 @@ publicRouter.get(
 				slug: club.slug,
 				logo: club.logo,
 				logoTile: club.logoTile,
+				headerImage: club.headerImage,
 				latitude: club.latitude,
 				longitude: club.longitude,
 				location: club.location,
+				// The map panel only ever shows three clamped lines, and this payload is
+				// every public club at once — a full description per club would multiply
+				// the response for text nobody reads here.
+				description: sql<string | null>`left(${club.description}, ${sql.raw(String(MAP_DESCRIPTION_CHARS))})`,
+				verified: club.verified,
+				dateFounded: club.dateFounded,
+				website: club.website,
+				instagramUsername: club.instagramUsername,
+				contactEmail: club.contactEmail,
+				contactPhone: club.contactPhone,
+				// In at least one alliance, by the join table or the legacy flag. Built
+				// with `exists()` rather than a raw subquery so drizzle qualifies the
+				// correlated `Club.id` — unqualified, it binds to ClubAlliance's own id.
+				isAllied: sql<boolean>`(${club.isAllied} OR ${exists(
+					db.select({ n: sql`1` }).from(clubAlliance).where(eq(clubAlliance.clubId, club.id)),
+				)})`,
 			})
 			.from(club)
 			.where(and(...whereConditions));
@@ -79,9 +99,18 @@ publicRouter.get(
 							slug: z.string().nullable(),
 							logo: z.string().nullable(),
 							logoTile: logoTileResponseSchema,
+							headerImage: z.string().nullable(),
 							latitude: z.number().nullable(),
 							longitude: z.number().nullable(),
 							location: z.string().nullable(),
+							description: z.string().nullable(),
+							verified: z.boolean(),
+							dateFounded: z.string().nullable(),
+							website: z.string().nullable(),
+							instagramUsername: z.string().nullable(),
+							contactEmail: z.string().nullable(),
+							contactPhone: z.string().nullable(),
+							isAllied: z.boolean(),
 						}),
 					),
 				}),
@@ -413,6 +442,16 @@ publicRouter.get(
 		// which carry every path param as optional.
 		const citySlug = params.citySlug ?? "";
 		const clubConditions = await publicClubConditions();
+
+		const memberCountSubquery = db
+			.select({
+				clubId: clubMembership.clubId,
+				count: count().as("member_count"),
+			})
+			.from(clubMembership)
+			.groupBy(clubMembership.clubId)
+			.as("member_counts");
+
 		const clubs = await db
 			.select({
 				id: club.id,
@@ -427,8 +466,10 @@ publicRouter.get(
 				longitude: club.longitude,
 				verified: club.verified,
 				updatedAt: club.updatedAt,
+				memberCount: sql<number>`COALESCE(${memberCountSubquery.count}, 0)`,
 			})
 			.from(club)
+			.leftJoin(memberCountSubquery, eq(club.id, memberCountSubquery.clubId))
 			.where(and(eq(club.citySlug, citySlug), ...clubConditions))
 			.orderBy(club.name);
 
@@ -454,7 +495,10 @@ publicRouter.get(
 			{
 				city: clubs[0]?.city ?? null,
 				citySlug,
-				clubs: clubs.map(({ city: _city, ...rest }) => rest),
+				clubs: clubs.map(({ city: _city, memberCount, ...rest }) => ({
+					...rest,
+					_count: { members: Number(memberCount) },
+				})),
 				events,
 			},
 			"public, max-age=3600, stale-while-revalidate=86400",
@@ -485,6 +529,9 @@ publicRouter.get(
 							longitude: z.number().nullable(),
 							verified: z.boolean(),
 							updatedAt: z.string(),
+							_count: z.object({
+								members: z.number(),
+							}),
 						}),
 					),
 					events: z.array(
