@@ -1,6 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import { createUser, type TestUser } from "../helpers/auth";
 import { api } from "../helpers/client";
+import { BASE_URL } from "../helpers/env";
+
+/** Direct fetch bypassing the harness's auto-follow-redirect `api()` client, since the OAuth
+ * callback redirects to FRONTEND_URL which isn't running in the test environment. */
+async function rawGet(path: string, cookie?: string) {
+	return await fetch(`${BASE_URL}${path}`, {
+		redirect: "manual",
+		headers: cookie ? { cookie } : undefined,
+	});
+}
 
 // The real Instagram/Facebook Graph API is not reachable from tests, so only the
 // auth/authorization/not-connected/validation branches that don't need it are covered here.
@@ -193,6 +203,61 @@ describe("club instagram", () => {
 				pageId: "page-123",
 			});
 			expect(response.status).toBe(403);
+		});
+	});
+
+	describe("GET /club/instagram/callback", () => {
+		test("an OAuth error from Facebook is passed back to the club information page", async () => {
+			const owner = await createUser();
+			const club = await createClub(owner);
+
+			const response = await rawGet(
+				`/api/club/instagram/callback?state=${club.id}&error=access_denied`,
+				owner.cookie,
+			);
+			expect(response.status).toBe(302);
+			const location = response.headers.get("location") ?? "";
+			expect(location).toContain(`/dashboard/${club.id}/club/information`);
+			expect(location).toContain("instagramError=access_denied");
+		});
+
+		test("a missing code redirects back with missing_params", async () => {
+			const owner = await createUser();
+			const club = await createClub(owner);
+
+			const response = await rawGet(`/api/club/instagram/callback?state=${club.id}`, owner.cookie);
+			expect(response.status).toBe(302);
+			expect(response.headers.get("location") ?? "").toContain("instagramError=missing_params");
+		});
+
+		test("an unauthenticated visitor is sent to login", async () => {
+			const owner = await createUser();
+			const club = await createClub(owner);
+
+			const response = await rawGet(`/api/club/instagram/callback?state=${club.id}&code=whatever`);
+			expect(response.status).toBe(302);
+			expect(response.headers.get("location") ?? "").toContain("/login");
+		});
+
+		test("a non-manager is refused", async () => {
+			const owner = await createUser();
+			const outsider = await createUser();
+			const club = await createClub(owner);
+
+			const response = await rawGet(
+				`/api/club/instagram/callback?state=${club.id}&code=whatever`,
+				outsider.cookie,
+			);
+			expect(response.status).toBe(302);
+			expect(response.headers.get("location") ?? "").toContain("instagramError=auth_failed");
+		});
+
+		test("no club in the state lands on the dashboard", async () => {
+			const owner = await createUser();
+
+			const response = await rawGet("/api/club/instagram/callback?code=whatever", owner.cookie);
+			expect(response.status).toBe(302);
+			expect(response.headers.get("location") ?? "").toContain("/dashboard");
 		});
 	});
 

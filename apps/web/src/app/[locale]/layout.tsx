@@ -14,7 +14,6 @@ import { FontBody } from "@/components/font-body";
 import JsonLdScript from "@/components/json-ld-script";
 import { FontProvider } from "@/components/personalization/font/font-provider";
 import { SessionPersonalization } from "@/components/personalization/session-personalization";
-import { StyleProvider } from "@/components/personalization/style/style-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import PosthogIdentify from "@/components/posthog-identify";
 import { Providers } from "@/components/providers";
@@ -79,7 +78,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	// meant an HTTP round-trip to the backend on every render (including anonymous
 	// traffic) and forced the whole route tree to render dynamically.
 	const font = "mono" as const;
-	const style = "relaxed" as const;
 	const theme = "dark" as const;
 
 	const websiteSchema = {
@@ -135,35 +133,33 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 			<WebMCP />
 			<NextIntlClientProvider locale={locale} messages={messages}>
 				<FontProvider initial={font}>
-					<StyleProvider initial={style}>
-						<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
-							<ThemeProvider
-								attribute="class"
-								defaultTheme={theme}
-								enableSystem={false}
-								disableTransitionOnChange
-							>
-								<Toaster
-									richColors
-									toastOptions={{
-										classNames: {
-											toast: "rounded-none",
-										},
-									}}
-								/>
-								<NuqsAdapter>
-									<Providers>
-										<TooltipProvider>
-											<FeatureFlagsWrapper>
-												<SessionPersonalization />
-												<AlertDialogProvider>{children}</AlertDialogProvider>
-											</FeatureFlagsWrapper>
-										</TooltipProvider>
-									</Providers>
-								</NuqsAdapter>
-							</ThemeProvider>
-						</FontBody>
-					</StyleProvider>
+					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme={theme}
+							enableSystem={false}
+							disableTransitionOnChange
+						>
+							<Toaster
+								richColors
+								toastOptions={{
+									classNames: {
+										toast: "rounded-none",
+									},
+								}}
+							/>
+							<NuqsAdapter>
+								<Providers>
+									<TooltipProvider>
+										<FeatureFlagsWrapper>
+											<SessionPersonalization />
+											<AlertDialogProvider>{children}</AlertDialogProvider>
+										</FeatureFlagsWrapper>
+									</TooltipProvider>
+								</Providers>
+							</NuqsAdapter>
+						</ThemeProvider>
+					</FontBody>
 				</FontProvider>
 			</NextIntlClientProvider>
 		</html>

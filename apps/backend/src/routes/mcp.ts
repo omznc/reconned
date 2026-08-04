@@ -1,13 +1,20 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { instrument } from "@posthog/mcp";
 import type { Router } from "@reconned/router";
 import { eq } from "drizzle-orm";
+import { PostHog } from "posthog-node";
 import { user as userTable } from "../drizzle/schema";
 import { auth } from "../lib/auth";
 import { db } from "../lib/db";
 import { env } from "../lib/env";
 import { executeMcpTool, extractMcpTools, isWriteTool } from "../lib/mcp-bridge";
+
+export const mcpPosthog = new PostHog(env.POSTHOG_PUBLIC_KEY, {
+	host: process.env.POSTHOG_HOST ?? "https://eu.i.posthog.com",
+	enableExceptionAutocapture: true,
+});
 
 type McpUser = { id: string; email: string; name: string; role?: string };
 
@@ -130,6 +137,10 @@ export async function handleMCPRequest(request: Request, router: Router): Promis
 
 		const server = new Server({ name: "reconned-mcp", version: "1.0.0" }, { capabilities: { tools: {} } });
 
+		instrument(server, mcpPosthog, {
+			identify: async () => ({ distinctId: userId }),
+		});
+
 		server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: extractMcpTools(router) }));
 
 		server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -152,7 +163,9 @@ export async function handleMCPRequest(request: Request, router: Router): Promis
 
 		const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined });
 		await server.connect(transport);
-		return transport.handleRequest(request);
+		const response = await transport.handleRequest(request);
+		mcpPosthog.flush().catch(() => {});
+		return response;
 	} catch (error) {
 		console.error("[MCP] Internal error:", error);
 		const message = error instanceof Error ? error.message : String(error);

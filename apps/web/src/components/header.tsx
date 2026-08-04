@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { Logo } from "@/components/logos/logo";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
-import { StyleSwitcher } from "@/components/personalization/style/style-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -178,9 +177,6 @@ export function Header() {
 
 										<DropdownMenuItem asChild={true}>
 											<FontSwitcher />
-										</DropdownMenuItem>
-										<DropdownMenuItem asChild={true}>
-											<StyleSwitcher />
 										</DropdownMenuItem>
 										<DropdownMenuSeparator />
 

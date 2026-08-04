@@ -58,34 +58,6 @@ describe("PUT /users/:id/font", () => {
 	});
 });
 
-describe("PUT /users/:id/style", () => {
-	test("updates the user's style preference", async () => {
-		const user = await createUser();
-
-		const response = await api(user.cookie).put(`/api/users/${user.id}/style`, { style: "compact" });
-		expect(response.status).toBe(200);
-		expect(response.body.success).toBeTrue();
-
-		const fetched = await api(user.cookie).get("/api/users/me");
-		expect(fetched.body.style).toBe("compact");
-	});
-
-	test("requires authentication", async () => {
-		const user = await createUser();
-
-		const response = await api().put(`/api/users/${user.id}/style`, { style: "compact" });
-		expect(response.status).toBe(401);
-	});
-
-	test("cannot update another user's style", async () => {
-		const user = await createUser();
-		const outsider = await createUser();
-
-		const response = await api(outsider.cookie).put(`/api/users/${user.id}/style`, { style: "compact" });
-		expect(response.status).toBe(401);
-	});
-});
-
 describe("PUT /users/:id/language", () => {
 	test("updates the user's language preference", async () => {
 		const user = await createUser();

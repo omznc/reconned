@@ -1460,26 +1460,6 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	"/users/{id}/style": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update user style
-		 * @description Update the user's style preference
-		 */
-		put: operations["usersidstylePut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
 	"/users/{id}/language": {
 		parameters: {
 			query?: never;
@@ -2171,6 +2151,26 @@ export interface paths {
 		 * @description Get a presigned S3 URL for uploading a post image
 		 */
 		post: operations["clubsidpostsimagesuploadUrlPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/club/instagram/callback": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Instagram OAuth callback
+		 * @description Facebook OAuth redirect target for connecting a club's Instagram account
+		 */
+		get: operations["clubinstagramcallbackGet"];
+		put?: never;
+		post?: never;
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -4023,7 +4023,6 @@ export interface components {
 			language?: string;
 			font?: string;
 			theme?: string;
-			style?: string;
 		};
 		Session: {
 			id?: string;
@@ -12054,7 +12053,6 @@ export interface operations {
 						language: string;
 						theme: string;
 						font: string;
-						style: string;
 					};
 				};
 			};
@@ -12457,47 +12455,6 @@ export interface operations {
 			content: {
 				"application/json": {
 					font: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
-	usersidstylePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					style: string;
 				};
 			};
 		};
@@ -15517,6 +15474,31 @@ export interface operations {
 					"application/json": {
 						error: string;
 					};
+				};
+			};
+		};
+	};
+	clubinstagramcallbackGet: {
+		parameters: {
+			query?: {
+				code?: string;
+				state?: string;
+				clubId?: string;
+				error?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Response */
+			302: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": Record<string, never>;
 				};
 			};
 		};
@@ -19529,7 +19511,6 @@ export interface operations {
 											| null;
 										font?: string;
 										theme?: string;
-										style?: string;
 										language?: string;
 										isPrivate?: boolean;
 										isPrivateEmail?: boolean;

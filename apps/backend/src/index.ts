@@ -26,7 +26,7 @@ import { clubsRouter } from "./routes/clubs";
 import { countriesRouter } from "./routes/countries";
 import { dashboardRouter } from "./routes/dashboard";
 import { eventsRouter } from "./routes/events";
-import { handleMCPRequest } from "./routes/mcp";
+import { handleMCPRequest, mcpPosthog } from "./routes/mcp";
 import { publicRouter } from "./routes/public";
 import { reviewsRouter } from "./routes/reviews";
 import { usersRouter } from "./routes/users";
@@ -265,20 +265,22 @@ logger.emit({
 
 scheduler.start();
 
-process.on("SIGTERM", () => {
+process.on("SIGTERM", async () => {
 	logger.emit({
 		severityText: "info",
 		body: "SIGTERM received, shutting down gracefully",
 	});
 	scheduler.stop();
+	await mcpPosthog.shutdown();
 	process.exit(0);
 });
 
-process.on("SIGINT", () => {
+process.on("SIGINT", async () => {
 	logger.emit({
 		severityText: "info",
 		body: "SIGINT received, shutting down gracefully",
 	});
 	scheduler.stop();
+	await mcpPosthog.shutdown();
 	process.exit(0);
 });

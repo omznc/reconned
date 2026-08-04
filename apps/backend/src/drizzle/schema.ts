@@ -1070,7 +1070,6 @@ export const user = pgTable(
 		gear: jsonb().array(),
 		font: text().default("mono").notNull(),
 		theme: text().default("dark").notNull(),
-		style: text().default("relaxed").notNull(),
 		language: text().default("bs").notNull(),
 		isPrivate: boolean().default(false).notNull(),
 		isPrivateEmail: boolean().default(true).notNull(),

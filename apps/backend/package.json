@@ -3,6 +3,7 @@
 		"@better-auth/api-key": "1.6.16",
 		"@better-auth/passkey": "1.6.16",
 		"@modelcontextprotocol/sdk": "1.29.0",
+		"@posthog/mcp": "0.10.3",
 		"@opentelemetry/api-logs": "^0.218.0",
 		"@opentelemetry/exporter-logs-otlp-http": "^0.218.0",
 		"@opentelemetry/resources": "^2.7.1",

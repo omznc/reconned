@@ -440,19 +440,6 @@
 	* {
 		@apply border-border;
 	}
-	/* The radius transition only exists to animate the sharp/relaxed style switch. It is opt-in:
-	   under reduced motion the new radius applies instantly instead of easing on every element. */
-	@media (prefers-reduced-motion: no-preference) {
-		html *,
-		html *::before,
-		html *::after {
-			transition-property:
-				border-radius, border-top-left-radius, border-top-right-radius, border-bottom-left-radius,
-				border-bottom-right-radius;
-			transition-duration: 0.3s;
-			transition-timing-function: ease-in-out;
-		}
-	}
 	body {
 		@apply bg-background text-foreground;
 	}

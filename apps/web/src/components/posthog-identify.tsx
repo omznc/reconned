@@ -23,7 +23,6 @@ export default function PosthogIdentify() {
 					name: user.name,
 					language: user.language || "bs",
 					theme: user.theme || "dark",
-					style: user.style || "relaxed",
 					font: user.font || "mono",
 				});
 				posthog.alias(user.id, alreadyIdentifiedId);
@@ -34,7 +33,6 @@ export default function PosthogIdentify() {
 					name: user.name,
 					language: user.language || "bs",
 					theme: user.theme || "dark",
-					style: user.style || "relaxed",
 					font: user.font || "mono",
 				});
 

@@ -385,7 +385,6 @@ usersRouter.get(
 				language: user.language,
 				theme: user.theme,
 				font: user.font,
-				style: user.style,
 			})
 			.from(user)
 			.where(eq(user.id, userId))
@@ -415,7 +414,6 @@ usersRouter.get(
 					language: true,
 					theme: true,
 					font: true,
-					style: true,
 				}),
 				401: z.object({ error: z.string() }),
 				404: z.object({ error: z.string() }),
@@ -1386,49 +1384,6 @@ usersRouter.put(
 			}),
 			body: z.object({
 				font: z.string(),
-			}),
-			response: {
-				200: z.object({ success: z.boolean() }),
-				401: z.object({ error: z.string() }),
-			},
-		},
-	},
-);
-
-usersRouter.put(
-	"/users/:id/style",
-	async ({ params, response, context, body }) => {
-		const userId = params.id;
-		if (!userId) {
-			throw apiError.validation("User ID is required");
-		}
-
-		if (!context.user || context.user.id !== userId) {
-			throw apiError.unauthorized("Unauthorized");
-		}
-
-		await db
-			.update(user)
-			.set({
-				style: body.style,
-				updatedAt: new Date().toISOString(),
-			})
-			.where(eq(user.id, userId));
-
-		return response.json({ success: true });
-	},
-	{
-		auth: true,
-		schema: {
-			tags: ["Users"],
-			summary: "Update user style",
-			description: "Update the user's style preference",
-			mcpTool: true,
-			params: z.object({
-				id: z.string(),
-			}),
-			body: z.object({
-				style: z.string(),
 			}),
 			response: {
 				200: z.object({ success: z.boolean() }),

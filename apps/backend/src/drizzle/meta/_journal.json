@@ -85,6 +85,13 @@
       "when": 1785798492270,
       "tag": "0011_bouncy_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1785833921710,
+      "tag": "0012_dusty_nighthawk",
+      "breakpoints": true
     }
   ]
 }
