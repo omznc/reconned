@@ -163,9 +163,30 @@ export async function handleMCPRequest(request: Request, router: Router): Promis
 		// drops every tool-call event.
 		instrument(server, mcpPosthog, {
 			identify: async () => ({ distinctId: userId }),
+			// The identify hook only runs on initialize and tools/call, so tools/list events
+			// fall back to the session id as their distinct_id and land on a separate,
+			// anonymous person. We've already authenticated the caller for this entire
+			// request, so pin every event to them rather than letting attribution split.
+			beforeSend: (event) => {
+				event.distinct_id = userId;
+				return event;
+			},
+			// @posthog/mcp's logger is a no-op until one is supplied, so without this every
+			// warning it raises — including "failed to instrument server" — is dropped and
+			// analytics go silently dark.
+			logger: (message) => console.error("[MCP analytics]", message),
 		});
 
-		const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+		// enableJsonResponse is what makes analytics sessions hold together. We're stateless
+		// (sessionIdGenerator: undefined), so @posthog/mcp recovers session continuity by
+		// minting a token into the Mcp-Session-Id response header that clients replay on every
+		// request. That header only reaches the wire when response headers are built after the
+		// handler runs — in SSE mode they're flushed first, the mint is a no-op, and every tool
+		// call looks like a brand-new session.
+		const transport = new WebStandardStreamableHTTPServerTransport({
+			sessionIdGenerator: undefined,
+			enableJsonResponse: true,
+		});
 		await server.connect(transport);
 		const response = await transport.handleRequest(request);
 		mcpPosthog.flush().catch(() => {});
