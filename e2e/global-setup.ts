@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { authDir, BACKEND_URL, type Fixtures } from "./fixtures";
+import { authDir, BACKEND_URL, consentOrigin, type Fixtures } from "./fixtures";
 
 // Runs after Playwright's webServer entries are up (backend on 3202, web on 3100), so it
 // only creates the API-level fixtures the specs need: a pre-authenticated storage state,
@@ -72,11 +72,18 @@ function storageStateFromCookie(cookie: string) {
 		secure: false,
 		sameSite: "Lax" as const,
 	});
-	return { cookies, origins: [] };
+	return { cookies, origins: [consentOrigin()] };
 }
 
 export default async function globalSetup(): Promise<void> {
 	mkdirSync(authDir, { recursive: true });
+
+	// The "public" project signs in for itself, so it gets no cookies — but it
+	// still needs the consent decision, or the banner covers the sign-up form.
+	writeFileSync(
+		path.join(authDir, "anonymous.json"),
+		JSON.stringify({ cookies: [], origins: [consentOrigin()] }, null, "\t"),
+	);
 
 	const DAY_MS = 24 * 60 * 60 * 1000;
 	const now = Date.now();

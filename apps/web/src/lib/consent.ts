@@ -1,5 +1,3 @@
-import posthog from "posthog-js";
-
 /**
  * Analytics consent.
  *
@@ -10,29 +8,20 @@ import posthog from "posthog-js";
  *
  * The stored decision is deliberately a record rather than a bare boolean — we
  * have to be able to show *when* consent was given and *what* it was given
- * against, not just that it exists.
+ * against, not just that it exists. Its shape lives in `consent-storage.ts` and
+ * is re-exported here, so callers only need this module.
  */
 
-export const CONSENT_STORAGE_KEY = "reconned.consent";
+import posthog from "posthog-js";
+import { CONSENT_POLICY_VERSION, CONSENT_STORAGE_KEY, type ConsentRecord } from "./consent-storage";
 
-/**
- * Bump this whenever the privacy policy changes what analytics consent actually
- * covers. A decision recorded against an older version is treated as absent, so
- * the banner asks again rather than silently carrying the old answer forward.
- */
-export const CONSENT_POLICY_VERSION = "2026-08-04";
+export { CONSENT_POLICY_VERSION, CONSENT_STORAGE_KEY, type ConsentRecord };
 
 /** Fired after a decision is stored, so any open UI can re-read it. */
 export const CONSENT_CHANGED_EVENT = "reconned:consent-changed";
 
 /** Fired to reopen the banner — this is what the footer's "Cookie settings" does. */
 export const CONSENT_OPEN_EVENT = "reconned:consent-open";
-
-export interface ConsentRecord {
-	analytics: boolean;
-	timestamp: string;
-	policyVersion: string;
-}
 
 const POSTHOG_PUBLIC_KEY =
 	process.env.NODE_ENV === "development" ? "" : "phc_Til0zz9j32sG49ojKjcns9mPsrj03jR0yQCX38uOeb1";
@@ -51,13 +40,21 @@ export function readConsent(): ConsentRecord | null {
 		}
 
 		const parsed = JSON.parse(raw) as Partial<ConsentRecord>;
-		if (typeof parsed.analytics !== "boolean" || parsed.policyVersion !== CONSENT_POLICY_VERSION) {
+		// Every field has to be present and current. A record without a usable
+		// timestamp is not evidence of anything — substituting "now" would date the
+		// consent to the moment we happened to read it, so it counts as no decision
+		// and the banner asks again.
+		if (
+			typeof parsed.analytics !== "boolean" ||
+			typeof parsed.timestamp !== "string" ||
+			parsed.policyVersion !== CONSENT_POLICY_VERSION
+		) {
 			return null;
 		}
 
 		return {
 			analytics: parsed.analytics,
-			timestamp: typeof parsed.timestamp === "string" ? parsed.timestamp : new Date().toISOString(),
+			timestamp: parsed.timestamp,
 			policyVersion: CONSENT_POLICY_VERSION,
 		};
 	} catch {

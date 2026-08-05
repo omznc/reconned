@@ -1,17 +1,30 @@
 "use client";
 
 import posthog from "posthog-js";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIsAuthenticated } from "@/lib/auth-client";
-import { isAnalyticsEnabled } from "@/lib/consent";
+import { CONSENT_CHANGED_EVENT, isAnalyticsEnabled } from "@/lib/consent";
 
 export default function PosthogIdentify() {
 	const { user, loading } = useIsAuthenticated();
 	const previousUserIdRef = useRef<string | null>(null);
+	const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+
+	// Consent can be given after this component has mounted — the banner and the
+	// footer's cookie settings both act in the same tab. Tracking it as state is
+	// what makes the identify effect below re-run when it flips, instead of
+	// leaving a signed-in user anonymous until their next navigation.
+	useEffect(() => {
+		const sync = () => setAnalyticsEnabled(isAnalyticsEnabled());
+
+		sync();
+		window.addEventListener(CONSENT_CHANGED_EVENT, sync);
+		return () => window.removeEventListener(CONSENT_CHANGED_EVENT, sync);
+	}, []);
 
 	useEffect(() => {
 		// Without consent PostHog was never initialised, so there is nobody to identify to.
-		if (loading || !isAnalyticsEnabled()) {
+		if (loading || !analyticsEnabled) {
 			return;
 		}
 
@@ -50,7 +63,7 @@ export default function PosthogIdentify() {
 		}
 
 		posthog.identify();
-	}, [user, loading]);
+	}, [user, loading, analyticsEnabled]);
 
 	return null;
 }

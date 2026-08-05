@@ -590,7 +590,10 @@ export function SecuritySettings({
 							link.href = url;
 							link.download = "reconned-data-export.json";
 							link.click();
-							URL.revokeObjectURL(url);
+							// Revoking synchronously can pull the blob out from under a
+							// download the browser hasn't started yet, which lands as an
+							// empty file. Hold it until the download is safely underway.
+							setTimeout(() => URL.revokeObjectURL(url), 1_000);
 						} catch {
 							toast.error(t("Failed to prepare your data export"));
 						} finally {
