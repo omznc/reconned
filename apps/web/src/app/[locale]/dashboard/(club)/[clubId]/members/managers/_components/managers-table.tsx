@@ -99,6 +99,10 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 					key: "user.email",
 					header: t("Email"),
 					sortable: true,
+					cellConfig: {
+						variant: "custom",
+						component: (_, row) => <span className="ph-mask">{row.user.email}</span>,
+					},
 				},
 				{
 					key: "createdAt",

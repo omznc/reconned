@@ -206,7 +206,11 @@ export const verification = pgTable(
 		createdAt: timestamp({ precision: 3, mode: "string" }),
 		updatedAt: timestamp({ precision: 3, mode: "string" }),
 	},
-	(table) => [index("Verification_identifier_idx").using("btree", table.identifier.asc().nullsLast().op("text_ops"))],
+	(table) => [
+		index("Verification_identifier_idx").using("btree", table.identifier.asc().nullsLast().op("text_ops")),
+		// Retention purge (`tasks/retention`) scans on expiry daily; without this it is a seq scan.
+		index("Verification_expiresAt_idx").using("btree", table.expiresAt.asc().nullsLast().op("timestamp_ops")),
+	],
 );
 
 export const twoFactor = pgTable(
@@ -274,6 +278,9 @@ export const session = pgTable(
 	(table) => [
 		uniqueIndex("Session_token_key").using("btree", table.token.asc().nullsLast().op("text_ops")),
 		index("Session_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+		// Retention purge (`tasks/retention`) scans on expiry daily; without this it is a seq scan
+		// over the largest table in the schema.
+		index("Session_expiresAt_idx").using("btree", table.expiresAt.asc().nullsLast().op("timestamp_ops")),
 		foreignKey({
 			columns: [table.userId],
 			foreignColumns: [user.id],

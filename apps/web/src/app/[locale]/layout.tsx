@@ -8,6 +8,7 @@ import { getExtracted, getMessages, setRequestLocale } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
+import { ConsentBanner } from "@/components/consent-banner";
 import { ErrorPage } from "@/components/error-page";
 import { FeatureFlagsWrapper } from "@/components/feature-flags-wrapper";
 import { FontBody } from "@/components/font-body";
@@ -153,6 +154,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 									<TooltipProvider>
 										<FeatureFlagsWrapper>
 											<SessionPersonalization />
+											<ConsentBanner />
 											<AlertDialogProvider>{children}</AlertDialogProvider>
 										</FeatureFlagsWrapper>
 									</TooltipProvider>

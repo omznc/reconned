@@ -124,9 +124,9 @@ function LoginPageContent() {
 		const headers = new Headers();
 		headers.append("x-captcha-response", data.turnstileToken);
 
-		// Track login attempt
+		// Never include the email — this fires on failed logins too, which would export typo'd and
+		// non-user addresses to a third party.
 		posthog.capture("user_login_attempt", {
-			email: data.email,
 			method: "email",
 		});
 

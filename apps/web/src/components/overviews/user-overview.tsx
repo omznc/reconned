@@ -75,7 +75,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-2">
-                        <li>{t("Email")}: {user.email}</li>
+                        <li>{t("Email")}: <span className="ph-mask">{user.email}</span></li>
                         {user.location && (
                             <li>{t("Location")}: {user.location}</li>
                         )}
@@ -104,10 +104,10 @@ export async function UserOverview({ user }: UserOverviewProps) {
 					</Badge>
 				)}
 				{user.phone && !user.isPrivatePhone && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">{user.phone}</Badge>
+					<Badge className="ph-mask md:grow-0 grow flex items-center gap-1">{user.phone}</Badge>
 				)}
 				{user.email && !user.isPrivateEmail && (
-					<Badge className="md:grow-0 grow flex items-center gap-1">{user.email}</Badge>
+					<Badge className="ph-mask md:grow-0 grow flex items-center gap-1">{user.email}</Badge>
 				)}
 			</div>
 			<div className="grid gap-4 md:grid-cols-2">

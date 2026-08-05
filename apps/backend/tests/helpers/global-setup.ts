@@ -47,6 +47,14 @@ beforeAll(async () => {
 	// actual backend source. Bun auto-loads .env from the cwd before tests run, so the test
 	// values must be forced over it before src/lib/env validates process.env at import.
 	Object.assign(process.env, testEnv);
+
+	// Deleted rather than overridden: these are optional in the env schema but `.min(1)`, so an
+	// empty string in .env.test fails validation. Without this the real key from .env survives the
+	// merge and every deletion test fires live erasure calls at production PostHog — slow enough to
+	// blow the per-test timeout, and not something a test run should be doing at all.
+	delete process.env.POSTHOG_PERSONAL_API_KEY;
+	delete process.env.POSTHOG_PROJECT_IDS;
+
 	await import("../../src/index");
 
 	const response = await fetch(`${BASE_URL}/api/openapi.json`, { signal: AbortSignal.timeout(5_000) });

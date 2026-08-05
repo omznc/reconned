@@ -80,9 +80,8 @@ function RegisterPageContent() {
 
 		setIsLoading(true);
 
-		// Track registration attempt
+		// Track registration attempt. No email — see login/page.tsx.
 		posthog.capture("user_registration_attempt", {
-			email: data.email,
 			method: "email",
 		});
 
@@ -104,7 +103,6 @@ function RegisterPageContent() {
 				},
 				onSuccess: () => {
 					posthog.capture("user_registration_success", {
-						email: data.email,
 						method: "email",
 					});
 					toast.success(t("You have successfully registered. Check your email to verify it."));

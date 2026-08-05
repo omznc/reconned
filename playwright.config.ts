@@ -42,7 +42,12 @@ export default defineConfig({
 		{
 			name: "public",
 			testMatch: ["smoke.spec.ts", "auth.spec.ts"],
-			use: { ...devices["Desktop Chrome"] },
+			// No cookies — signed out is the point — but the seeded consent decision
+			// keeps the banner from covering the bottom of the viewport.
+			use: {
+				...devices["Desktop Chrome"],
+				storageState: "e2e/.auth/anonymous.json",
+			},
 		},
 		{
 			name: "authed",

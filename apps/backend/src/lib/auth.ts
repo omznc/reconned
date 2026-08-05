@@ -152,7 +152,6 @@ export const auth = betterAuth({
 				distinctId: user.id,
 				event: "password_reset_email_sent",
 				properties: {
-					email: user.email,
 					language,
 				},
 			});
@@ -198,7 +197,6 @@ export const auth = betterAuth({
 				distinctId: user.id,
 				event: "email_verification_sent",
 				properties: {
-					email: user.email,
 					language,
 				},
 			});
@@ -264,7 +262,6 @@ export const auth = betterAuth({
 						distinctId: user.id,
 						event: "user_signed_up",
 						properties: {
-							email: user.email,
 							method: authMethodFromPath(ctx?.path, ctx?.params),
 						},
 					});
