@@ -1,7 +1,7 @@
 "use client";
 
 import { useExtracted } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { CONSENT_OPEN_EVENT, readConsent, setConsent } from "@/lib/consent";
@@ -18,6 +18,11 @@ export function ConsentBanner() {
 	const t = useExtracted();
 	const [open, setOpen] = useState(false);
 	const [current, setCurrent] = useState<boolean | null>(null);
+	// Only set when the footer reopened the banner: moving focus on first paint
+	// would yank it away from someone already reading the page, but a person who
+	// pressed "Cookie settings" is asking to be taken here.
+	const reopenedRef = useRef(false);
+	const firstButtonRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
 		const stored = readConsent();
@@ -31,12 +36,37 @@ export function ConsentBanner() {
 
 		const onOpen = () => {
 			setCurrent(readConsent()?.analytics ?? null);
+			reopenedRef.current = true;
 			setOpen(true);
 		};
 
 		window.addEventListener(CONSENT_OPEN_EVENT, onOpen);
 		return () => window.removeEventListener(CONSENT_OPEN_EVENT, onOpen);
 	}, []);
+
+	useEffect(() => {
+		if (open && reopenedRef.current) {
+			firstButtonRef.current?.focus();
+		}
+	}, [open]);
+
+	// Escape dismisses without recording anything. Closing is not a decision, so
+	// the stored record is left exactly as it was — which for a first visit means
+	// no consent, and nothing is collected either way.
+	useEffect(() => {
+		if (!open) {
+			return;
+		}
+
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape") {
+				setOpen(false);
+			}
+		};
+
+		window.addEventListener("keydown", onKeyDown);
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [open]);
 
 	if (!open) {
 		return null;
@@ -64,7 +94,7 @@ export function ConsentBanner() {
 					</Link>
 				</p>
 				<div className="flex shrink-0 gap-2">
-					<Button type="button" variant="outline" onClick={() => decide(false)}>
+					<Button ref={firstButtonRef} type="button" variant="outline" onClick={() => decide(false)}>
 						{current === false ? t("Keep analytics off") : t("Reject")}
 					</Button>
 					<Button type="button" variant="outline" onClick={() => decide(true)}>

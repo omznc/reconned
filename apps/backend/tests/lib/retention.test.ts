@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
+import { describeRetention, RETENTION, retentionDays } from "../../src/lib/retention-periods";
 import {
 	purgeExpiredSessions,
 	purgeExpiredVerifications,
-	RETENTION,
 	stripAgedAuditLogIdentifiers,
 } from "../../src/tasks/retention";
 import { createUser, testDb } from "../helpers/auth";
@@ -152,5 +152,45 @@ describe("retention: audit log network identifiers", () => {
 		await stripAgedAuditLogIdentifiers();
 		const second = await stripAgedAuditLogIdentifiers();
 		expect(second.updated).toBe(0);
+	});
+});
+
+/**
+ * The privacy policy (Art. 15(2)(a)) and the ROPA both state these periods, and both render them
+ * from `RETENTION` rather than restating them — a published number the code does not enforce is a
+ * false statement to data subjects. These assertions guard the properties that rendering relies on.
+ */
+describe("retention: published periods", () => {
+	test("every enforced period is a whole number of days, which is how they are published", () => {
+		for (const [name, period] of Object.entries(RETENTION)) {
+			expect(period % DAY, `${name} is not a whole number of days`).toBe(0);
+		}
+	});
+
+	test("describeRetention() reports the periods the tasks actually enforce", () => {
+		const described = new Map(describeRetention().map((row) => [row.data, row.period]));
+
+		expect(described.get("Expired sessions (including IP address and user agent)")).toBe(
+			`${retentionDays(RETENTION.EXPIRED_SESSION)} days`,
+		);
+		expect(described.get("Expired verification tokens")).toBe(
+			`${retentionDays(RETENTION.EXPIRED_VERIFICATION)} days`,
+		);
+		expect(described.get("IP address and user agent on club audit entries")).toBe(
+			`${retentionDays(RETENTION.AUDIT_LOG_NETWORK_IDENTIFIERS)} days`,
+		);
+	});
+
+	// The absence of an account expiry is a decision, not an oversight (see §6.1 of docs/PLAN.md), so it
+	// is stated as a period rather than omitted from the table.
+	test("states a period for account data rather than leaving the row out", () => {
+		const account = describeRetention().find((row) => row.data === "Account and profile data");
+
+		expect(account?.period).toBe("For as long as the account exists");
+	});
+
+	test("covers every enforced period, so a new one cannot go unpublished", () => {
+		// One row per RETENTION key, plus the account row that has no scheduled expiry.
+		expect(describeRetention()).toHaveLength(Object.keys(RETENTION).length + 1);
 	});
 });

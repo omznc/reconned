@@ -1,95 +1,117 @@
-import { and, isNotNull, lt, or } from "drizzle-orm";
+import { and, inArray, isNotNull, lt, or } from "drizzle-orm";
 import { clubAuditLog, session, verification } from "../drizzle/schema";
 import { db } from "../lib/db";
-
-// Not `TimeIntervals` from `./scheduler`: that module imports this one, and `RETENTION` is
-// evaluated at import time, so borrowing a const across the cycle would hit the TDZ.
-const DAY = 24 * 60 * 60 * 1000;
-const days = (n: number) => n * DAY;
+import { RETENTION } from "../lib/retention-periods";
 
 /**
- * Storage limitation — Art. 7(1)(e) ZZLP / Art. 5(1)(e) GDPR.
- *
- * These numbers are quoted verbatim by the privacy policy (Art. 15(2)(a)) and the ROPA
- * (Art. 32(1)(f)). Changing one here means changing those in the same commit — a policy promising
- * 30 days over code that keeps forever is a false statement to data subjects.
- *
- * **Accounts have no scheduled expiry, by decision.** An account someone can still log into is
- * still serving its purpose, so "for as long as the account exists" is the stated period and
- * deletion stays user-triggered. No dormancy reaper: auto-deleting an idle account would destroy
- * club rosters, attendance history and reviews written about *other* people. See §6.1 of
- * `PLAN.md`.
+ * Enforcement of the periods in `lib/retention-periods` — Art. 7(1)(e). The periods themselves
+ * live there because the privacy policy has to state them and cannot import a database client;
+ * this module only acts on them, and `scheduler.ts` only decides how often.
  */
-export const RETENTION = {
-	/** A `Session` row holds an IP and user agent, and once expired it authenticates nothing. The
-	 * tail leaves "was this really me?" answerable for a month. */
-	EXPIRED_SESSION: days(30),
 
-	/** Password resets and email confirmations: a live credential until expiry, dead weight after. */
-	EXPIRED_VERIFICATION: days(7),
-
-	/**
-	 * The action record itself is kept indefinitely for club governance; the network identifiers
-	 * only serve abuse investigation, which is a question asked within weeks. Nothing writes these
-	 * columns today, so this holds the line rather than remediating anything — see T2.2.
-	 */
-	AUDIT_LOG_NETWORK_IDENTIFIERS: days(90),
-} as const;
+// Re-exported so callers that enforce retention do not need both modules. The numbers are defined
+// in `lib/retention-periods` — the privacy policy renders from that same object.
+export { RETENTION };
 
 function cutoff(ageMs: number): string {
 	return new Date(Date.now() - ageMs).toISOString();
+}
+
+/**
+ * These tasks first run against however much history already exists, which on `Session` is the
+ * larger part of the table. Working in bounded batches keeps that first pass off a single
+ * long-held lock, and keeps `returning()` from materialising every affected id at once — the count
+ * is wanted for the log line, the rows themselves are not.
+ */
+const BATCH_SIZE = 5_000;
+
+async function inBatches(runBatch: () => Promise<number>): Promise<number> {
+	let total = 0;
+
+	for (;;) {
+		const affected = await runBatch();
+		total += affected;
+
+		if (affected < BATCH_SIZE) {
+			return total;
+		}
+	}
 }
 
 /** Keyed on `expiresAt`, not `createdAt` — a still-valid long-lived session is still doing its job. */
 export async function purgeExpiredSessions(): Promise<{ deleted: number; cutoffDate: string }> {
 	const cutoffDate = cutoff(RETENTION.EXPIRED_SESSION);
 
-	const deleted = await db.delete(session).where(lt(session.expiresAt, cutoffDate)).returning({ id: session.id });
+	const deleted = await inBatches(async () => {
+		const rows = await db
+			.delete(session)
+			.where(
+				inArray(
+					session.id,
+					db
+						.select({ id: session.id })
+						.from(session)
+						.where(lt(session.expiresAt, cutoffDate))
+						.limit(BATCH_SIZE),
+				),
+			)
+			.returning({ id: session.id });
 
-	return { deleted: deleted.length, cutoffDate };
+		return rows.length;
+	});
+
+	return { deleted, cutoffDate };
 }
 
 export async function purgeExpiredVerifications(): Promise<{ deleted: number; cutoffDate: string }> {
 	const cutoffDate = cutoff(RETENTION.EXPIRED_VERIFICATION);
 
-	const deleted = await db
-		.delete(verification)
-		.where(lt(verification.expiresAt, cutoffDate))
-		.returning({ id: verification.id });
+	const deleted = await inBatches(async () => {
+		const rows = await db
+			.delete(verification)
+			.where(
+				inArray(
+					verification.id,
+					db
+						.select({ id: verification.id })
+						.from(verification)
+						.where(lt(verification.expiresAt, cutoffDate))
+						.limit(BATCH_SIZE),
+				),
+			)
+			.returning({ id: verification.id });
 
-	return { deleted: deleted.length, cutoffDate };
+		return rows.length;
+	});
+
+	return { deleted, cutoffDate };
 }
 
 /** Nulls the identifiers, leaving the audit entry itself in place. */
 export async function stripAgedAuditLogIdentifiers(): Promise<{ updated: number; cutoffDate: string }> {
 	const cutoffDate = cutoff(RETENTION.AUDIT_LOG_NETWORK_IDENTIFIERS);
 
-	const updated = await db
-		.update(clubAuditLog)
-		.set({ ipAddress: null, userAgent: null })
-		.where(
-			and(
-				lt(clubAuditLog.createdAt, cutoffDate),
-				// Makes the task converge — without it every aged row is rewritten on every run.
-				or(isNotNull(clubAuditLog.ipAddress), isNotNull(clubAuditLog.userAgent)),
-			),
-		)
-		.returning({ id: clubAuditLog.id });
+	const aged = and(
+		lt(clubAuditLog.createdAt, cutoffDate),
+		// Makes the task converge — without it every aged row is rewritten on every run, and the
+		// batch loop below would never see a short batch.
+		or(isNotNull(clubAuditLog.ipAddress), isNotNull(clubAuditLog.userAgent)),
+	);
 
-	return { updated: updated.length, cutoffDate };
-}
+	const updated = await inBatches(async () => {
+		const rows = await db
+			.update(clubAuditLog)
+			.set({ ipAddress: null, userAgent: null })
+			.where(
+				inArray(
+					clubAuditLog.id,
+					db.select({ id: clubAuditLog.id }).from(clubAuditLog).where(aged).limit(BATCH_SIZE),
+				),
+			)
+			.returning({ id: clubAuditLog.id });
 
-/** Periods in the shape the privacy policy and ROPA need, so those can be checked against code. */
-export function describeRetention(): Array<{ data: string; period: string }> {
-	const inDays = (ms: number) => `${Math.round(ms / DAY)} days`;
+		return rows.length;
+	});
 
-	return [
-		{ data: "Account and profile data", period: "For as long as the account exists" },
-		{ data: "Expired sessions (including IP address and user agent)", period: inDays(RETENTION.EXPIRED_SESSION) },
-		{ data: "Expired verification tokens", period: inDays(RETENTION.EXPIRED_VERIFICATION) },
-		{
-			data: "IP address and user agent on club audit entries",
-			period: inDays(RETENTION.AUDIT_LOG_NETWORK_IDENTIFIERS),
-		},
-	];
+	return { updated, cutoffDate };
 }

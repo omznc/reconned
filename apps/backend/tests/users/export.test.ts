@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { getTableColumns } from "drizzle-orm";
+import { user as userTable } from "../../src/drizzle/schema";
 import { createUser, makeAdmin, type TestUser } from "../helpers/auth";
 import { api } from "../helpers/client";
 
@@ -67,6 +69,25 @@ describe("GET /users/:id/export", () => {
 
 		expect(response.body.meta.subjectId).toBe(user.id);
 		expect(response.body.meta.excluded).toBeArray();
+	});
+
+	/**
+	 * The response schema is applied with zod, which *strips* undeclared keys rather than
+	 * complaining about them. So a column added to `User` without a matching entry in
+	 * `exportSectionSchema.profile` vanishes from the export silently — the endpoint keeps
+	 * returning 200 and every other test keeps passing, while the person exercising their right of
+	 * access quietly stops receiving that field. This is the assertion that notices.
+	 */
+	test("carries every column of the User table, so a new one cannot be silently dropped", async () => {
+		const subject = await createUser();
+
+		const response = await api(subject.cookie).get(`/api/users/${subject.id}/export`);
+		expect(response.status).toBe(200);
+
+		const exported = new Set(Object.keys(response.body.profile));
+		const missing = Object.keys(getTableColumns(userTable)).filter((column) => !exported.has(column));
+
+		expect(missing).toEqual([]);
 	});
 
 	test("is served as a downloadable file and never cached", async () => {

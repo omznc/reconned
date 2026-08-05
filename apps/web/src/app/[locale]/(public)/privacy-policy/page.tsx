@@ -1,3 +1,4 @@
+import { RETENTION, retentionDays } from "backend/lib/retention-periods";
 import type { Metadata } from "next";
 import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { WebPage, WithContext } from "schema-dts";
@@ -240,6 +241,53 @@ export default async function PrivacyPolicyPage(props: PageProps<"/[locale]/priv
 					<p className="mt-4">
 						{t(
 							"Recording happens only if you accept analytics. If you decline, or later withdraw your consent through Cookie settings in the footer, no recording is made. Recordings are held by PostHog on servers in the European Union, and when you delete your account we instruct them to erase your data, recordings included.",
+						)}
+					</p>
+				</section>
+
+				{/*
+				 * Art. 15(2)(a) requires the periods to be stated, and stating a number that the
+				 * code does not enforce is worse than stating none. The figures below are rendered
+				 * from the same constants the retention tasks run on
+				 * (`backend/lib/retention-periods`), so the policy cannot drift from the behaviour
+				 * it describes — changing a period changes this page in the same commit.
+				 */}
+				<section className="mb-8">
+					<h2 className="text-2xl font-semibold mb-4">{t("How Long We Keep Your Data")}</h2>
+					<p>
+						{t(
+							"We keep your account and profile data for as long as your account exists. There is no automatic expiry and we will not delete an inactive account on your behalf: your club memberships, attendance history and the reviews other people have written are tied to it, and removing them is your decision to make rather than ours. You can delete your account yourself at any time from your security settings, and it takes effect immediately.",
+						)}
+					</p>
+					<p className="mt-4">
+						{t("Everything else is kept for a set period and then removed automatically:")}
+					</p>
+					<ul className="list-disc pl-6 mt-4 space-y-2">
+						<li>
+							{t(
+								"Expired sign-in sessions, including the IP address and browser they recorded: {days} days after the session expires.",
+								{
+									days: String(retentionDays(RETENTION.EXPIRED_SESSION)),
+								},
+							)}
+						</li>
+						<li>
+							{t("Expired password reset and email confirmation links: {days} days after they expire.", {
+								days: String(retentionDays(RETENTION.EXPIRED_VERIFICATION)),
+							})}
+						</li>
+						<li>
+							{t(
+								"The IP address and browser recorded against club administration records: {days} days.",
+								{
+									days: String(retentionDays(RETENTION.AUDIT_LOG_NETWORK_IDENTIFIERS)),
+								},
+							)}
+						</li>
+					</ul>
+					<p className="mt-4">
+						{t(
+							"Clubs keep a record of administrative actions taken within them, such as a member being added or removed, because a club needs to be able to account for its own decisions. Those records outlast an individual account, but when you delete yours we remove the link to you along with the IP address and browser attached to them.",
 						)}
 					</p>
 				</section>

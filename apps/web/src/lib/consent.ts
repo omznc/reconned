@@ -153,10 +153,26 @@ function initPosthog(): void {
  * collecting" and "we stopped collecting and forgot who you were".
  */
 function clearPosthogStorage(): void {
+	// posthog-js defaults `cross_subdomain_cookie` to true for any ordinary
+	// hostname, so its cookie is written against the registrable domain
+	// (`.reconned.com`) rather than the exact host. A deletion only matches a
+	// cookie whose `domain` attribute it repeats, so clearing without one leaves
+	// the real cookie untouched — the identifier survives the withdrawal. Both
+	// scopes are attempted because `document.cookie` exposes names only, never
+	// the domain a given cookie was set against.
+	const domains = [undefined, `.${window.location.hostname.split(".").slice(-2).join(".")}`];
+
 	for (const entry of document.cookie.split(";")) {
 		const name = entry.split("=")[0]?.trim();
-		if (name?.startsWith("ph_")) {
-			document.cookie = `${name}=; path=/; max-age=0`;
+		if (!name?.startsWith("ph_")) {
+			continue;
+		}
+
+		for (const domain of domains) {
+			// biome-ignore lint/suspicious/noDocumentCookie: the suggested Cookie Store API is not
+			// available in Safari, and this has to work everywhere a tracking cookie can be set —
+			// a withdrawal that silently fails on one browser is the failure that matters.
+			document.cookie = `${name}=; path=/; max-age=0${domain ? `; domain=${domain}` : ""}`;
 		}
 	}
 
@@ -172,12 +188,14 @@ function clearPosthogStorage(): void {
 }
 
 /**
- * Whether PostHog is actually running. Capture calls made before `init()` are
- * harmless no-ops, but callers that would otherwise do work to build an event
- * payload can skip it.
+ * Whether analytics is both consented to and actually running. `initialised`
+ * alone is not that answer: `posthog.init()` cannot be undone, so it stays true
+ * across a withdrawal and would report analytics as live on an opted-out client.
+ * Capture calls in that state are harmless no-ops, but a caller gating on this
+ * is asking whether to collect at all, and the honest answer is no.
  */
 export function isAnalyticsEnabled(): boolean {
-	return initialised;
+	return initialised && readConsent()?.analytics === true;
 }
 
 export function openConsentSettings(): void {

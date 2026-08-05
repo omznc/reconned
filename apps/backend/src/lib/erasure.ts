@@ -50,7 +50,7 @@ async function deleteFromProject(apiKey: string, projectId: string, userId: stri
 		// By distinct id, which is what we capture against; the per-person endpoint wants PostHog's
 		// own UUID and a lookup round-trip.
 		const response = await fetch(
-			`https://eu.posthog.com/api/projects/${projectId}/persons/bulk_delete/?delete_events=true`,
+			`${env.POSTHOG_API_HOST}/api/projects/${projectId}/persons/bulk_delete/?delete_events=true`,
 			{
 				method: "POST",
 				headers: {
@@ -113,6 +113,14 @@ async function deleteFromProject(apiKey: string, projectId: string, userId: stri
  * the moment `mail.ts` starts identifying users at send time.
  */
 export async function deleteOnesignalUser(userId: string): Promise<boolean> {
+	// Same signal `mail.ts` sends on: an environment that never sends email has no OneSignal user
+	// to erase, and the credentials it does hold are placeholders. Without this the test suite
+	// makes a live call to OneSignal on every account deletion, which is both a 10s timeout per
+	// test on an offline runner and a request no test run should be making.
+	if (process.env.EMAIL_DISABLED === "true") {
+		return true;
+	}
+
 	try {
 		const response = await fetch(
 			`https://api.onesignal.com/apps/${env.ONESIGNAL_APP_ID}/users/by/external_id/${encodeURIComponent(userId)}`,

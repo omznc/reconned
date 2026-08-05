@@ -580,6 +580,14 @@ export function SecuritySettings({
 								credentials: "include",
 							});
 
+							// The export is rate limited to a handful an hour. Without singling 429
+							// out, someone who clicked twice gets a generic failure and no reason
+							// to believe waiting would help.
+							if (res.status === 429) {
+								toast.error(t("You've requested this too many times. Please try again later."));
+								return;
+							}
+
 							if (!res.ok) {
 								toast.error(t("Failed to prepare your data export"));
 								return;

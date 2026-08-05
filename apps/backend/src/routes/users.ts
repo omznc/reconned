@@ -1901,6 +1901,15 @@ function redactActionData(value: unknown): unknown {
 	return value;
 }
 
+/**
+ * The router `parse()`s handler output against these (see `response.json`), and zod objects strip
+ * keys they do not declare. That makes this schema a whitelist over an access export, which is the
+ * one place a silent omission is a compliance failure rather than a bug: add a column to `user` and
+ * it disappears from the file with no error.
+ *
+ * `tests/users/export.test.ts` asserts every `user` column survives the round trip, so the drift is
+ * caught at the point it is introduced. Sections below it are covered by the shape assertions there.
+ */
 const exportSectionSchema = {
 	profile: z.object({
 		id: z.string(),
@@ -2567,7 +2576,12 @@ usersRouter.post(
 		// Outside the transaction and best-effort by design: the account is already gone and a
 		// failing processor must not resurrect it. Failures are logged for manual retry rather than
 		// surfaced — a 500 would only invite pressing the button again on an account that is gone.
-		await Promise.allSettled([
+		//
+		// Not awaited, for the same reason. Nothing about the response depends on the outcome, and
+		// each call carries a 10s timeout, so awaiting only makes the person who just deleted their
+		// account wait on two third parties that cannot change the answer. This is a long-lived
+		// server, not a request-scoped runtime, so the work continues after the response is sent.
+		void Promise.allSettled([
 			deletePosthogPerson(userId),
 			deleteOnesignalUser(userId),
 			// No userId: `deleteS3Files` captures a `files_deleted` event when given one, which
