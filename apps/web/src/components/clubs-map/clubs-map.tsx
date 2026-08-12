@@ -318,6 +318,20 @@ function getClusteredPositions(clubs: MapClub[], map: L.Map, markerSize: number)
 	return positions;
 }
 
+// A map is alive only while its container stays in the document. After
+// react-leaflet unmounts and calls map.remove(), the container is gone, so any
+// queued camera or marker animation must not touch the map.
+function isMapAlive(map?: L.Map | null): boolean {
+	if (!map) {
+		return false;
+	}
+	try {
+		return Boolean(map.getContainer()?.isConnected);
+	} catch {
+		return false;
+	}
+}
+
 // Animated marker component with smooth transitions
 function AnimatedMarker({
 	position,
@@ -362,9 +376,14 @@ function AnimatedMarker({
 			const lat = currentLat + (newLat - currentLat) * easeProgress;
 			const lng = currentLng + (newLng - currentLng) * easeProgress;
 
-			if (markerRef.current) {
-				markerRef.current.setLatLng([lat, lng]);
+			const marker = markerRef.current;
+			// biome-ignore lint/suspicious/noExplicitAny: Leaflet does not type the marker's internal map ref
+			const markerMap = (marker as any)?._map as L.Map | undefined;
+			if (!marker || !isMapAlive(markerMap)) {
+				animationRef.current = null;
+				return;
 			}
+			marker.setLatLng([lat, lng]);
 
 			if (progress < 1) {
 				animationRef.current = requestAnimationFrame(animate);
@@ -516,28 +535,43 @@ function MapController({ targetClub, focusPoint }: { targetClub: MapClub | null;
 	const focusZoom = focusPoint?.zoom;
 
 	useEffect(() => {
+		if (!isMapAlive(map)) {
+			return;
+		}
+
 		if (targetClub?.latitude && targetClub?.longitude) {
 			map.flyTo([targetClub.latitude, targetClub.longitude], 16, {
 				duration: 1.5,
 			});
-			return;
-		}
-
-		if (typeof focusLat === "number" && typeof focusLng === "number") {
+		} else if (typeof focusLat === "number" && typeof focusLng === "number") {
 			map.flyTo([focusLat, focusLng], focusZoom || 12, {
 				duration: 1.5,
 			});
 		}
+
+		// Stop a running fly animation before the map is torn down, so no queued
+		// pan runs on a dead map.
+		return () => {
+			if (isMapAlive(map)) {
+				map.stop();
+			}
+		};
 	}, [targetClub, focusLat, focusLng, focusZoom, map]);
 
 	return null;
 }
 
-function MapInstanceCapturer({ onMapReady }: { onMapReady: (map: L.Map) => void }) {
+function MapInstanceCapturer({ onMapReady }: { onMapReady: (map: L.Map | null) => void }) {
 	const map = useMap();
 
 	useEffect(() => {
 		onMapReady(map);
+
+		// Drop the reference when the map goes away, so no effect keeps the
+		// destroyed map object alive.
+		return () => {
+			onMapReady(null);
+		};
 	}, [map, onMapReady]);
 
 	return null;
