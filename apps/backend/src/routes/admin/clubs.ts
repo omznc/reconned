@@ -186,7 +186,13 @@ adminClubsRouter.get(
 		const ownerMembership = await db
 			.select()
 			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.role, "CLUB_OWNER")))
+			.where(
+				and(
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.role, "CLUB_OWNER"),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		if (!ownerMembership[0]) {

@@ -72,6 +72,7 @@ utilsRouter.get(
 					count: count().as("member_count"),
 				})
 				.from(clubMembership)
+				.where(eq(clubMembership.status, "ACTIVE"))
 				.groupBy(clubMembership.clubId)
 				.as("club_member_counts");
 
@@ -203,7 +204,7 @@ utilsRouter.get(
 				const userClubMemberships = await db
 					.select({ clubId: clubMembership.clubId })
 					.from(clubMembership)
-					.where(eq(clubMembership.userId, requestingUserId));
+					.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 				const userClubIds = userClubMemberships.map((m) => m.clubId);
 

@@ -449,6 +449,7 @@ publicRouter.get(
 				count: count().as("member_count"),
 			})
 			.from(clubMembership)
+			.where(eq(clubMembership.status, "ACTIVE"))
 			.groupBy(clubMembership.clubId)
 			.as("member_counts");
 

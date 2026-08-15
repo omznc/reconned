@@ -7,6 +7,12 @@ import * as z from "zod";
 import { club, clubInvite, clubMembership, user } from "../../drizzle/schema";
 import ClubInvitationEmail from "../../emails/airsoft-invitation";
 import { logClubAudit } from "../../lib/audit-logger";
+import {
+	CLEAR_ARCHIVE,
+	getActiveMembership,
+	getMembershipIncludingArchived,
+	requireClubManager,
+} from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { getEmailMessages, interpolateMessage } from "../../lib/email-messages";
 import { env } from "../../lib/env";
@@ -28,17 +34,7 @@ clubsInvitesRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
@@ -148,17 +144,7 @@ clubsInvitesRouter.post(
 			name: body?.userName || context.user.name,
 		};
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
@@ -190,13 +176,9 @@ clubsInvitesRouter.post(
 			.limit(1);
 
 		if (existingUser[0]) {
-			const existingMembership = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, existingUser[0].id)))
-				.limit(1);
+			const existingMembership = await getActiveMembership(clubId, existingUser[0].id);
 
-			if (existingMembership[0]) {
+			if (existingMembership) {
 				throw apiError.validation("User is already a member of this club");
 			}
 		}
@@ -332,17 +314,7 @@ clubsInvitesRouter.put(
 			throw apiError.validation("Club ID and Invite ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const inviteData = await db
 			.select()
@@ -410,17 +382,7 @@ clubsInvitesRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const status = query?.status;
 		const whereConditions = [eq(clubInvite.clubId, clubId)];
@@ -474,17 +436,7 @@ clubsInvitesRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const requestsData = await db
 			.select({ count: count() })
@@ -645,25 +597,33 @@ clubsInvitesRouter.post(
 		}
 
 		// Check if user already has a membership in this club
-		const existingMembership = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, invite.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
+		const existingMembership = await getMembershipIncludingArchived(invite.clubId, context.user.id);
 
-		if (existingMembership[0]) {
+		if (existingMembership?.status === "ACTIVE") {
 			throw apiError.validation("You are already a member of this club");
 		}
 
 		if (action === "approve") {
-			// Create membership
-			await db.insert(clubMembership).values({
-				id: randomUUIDv7(),
-				userId: context.user.id,
-				clubId: invite.clubId,
-				role: "USER",
-				startDate: new Date().toISOString(),
-			});
+			// An archived membership is revived rather than re-inserted: (userId, clubId) is unique.
+			if (existingMembership) {
+				await db
+					.update(clubMembership)
+					.set({
+						...CLEAR_ARCHIVE,
+						role: "USER",
+						startDate: new Date().toISOString(),
+						updatedAt: new Date().toISOString(),
+					})
+					.where(eq(clubMembership.id, existingMembership.id));
+			} else {
+				await db.insert(clubMembership).values({
+					id: randomUUIDv7(),
+					userId: context.user.id,
+					clubId: invite.clubId,
+					role: "USER",
+					startDate: new Date().toISOString(),
+				});
+			}
 
 			// Update invite status
 			await db

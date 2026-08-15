@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, instagramPageSelection } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { env } from "../../lib/env";
 import {
@@ -309,17 +310,7 @@ clubsInstagramRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		if (!env.FACEBOOK_APP_ID) {
 			throw apiError.internal("Facebook App ID not configured");
@@ -366,17 +357,7 @@ clubsInstagramRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		await db
 			.update(club)
@@ -430,17 +411,7 @@ clubsInstagramRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const clubData = await db
 			.select({
@@ -629,17 +600,7 @@ clubsInstagramRouter.post(
 		}
 
 		// Check if user is manager or owner
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { code } = body;
 
@@ -749,17 +710,7 @@ clubsInstagramRouter.get(
 		}
 
 		// Check if user is manager or owner
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		// Get session data
 		const session = await db
@@ -844,17 +795,7 @@ clubsInstagramRouter.post(
 		}
 
 		// Check if user is manager or owner
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { pageId, accessToken, sessionId } = body;
 

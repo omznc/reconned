@@ -25,11 +25,16 @@ import {
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import apiClient from "@/lib/api/api.client";
-import type { ClubMembership } from "@/lib/api/api-type-helpers";
+
+interface ExtendableMembership {
+	id: string;
+	startDate: string | null;
+	endDate: string | null;
+}
 
 interface MembershipExtensionFormProps {
 	clubId: string;
-	membership: ClubMembership & {
+	membership: ExtendableMembership & {
 		user: {
 			name: string;
 			image?: string | null;
@@ -117,7 +122,7 @@ export function MembershipExtensionForm({
 		}
 	}
 
-	const getMembershipStatus = (membership: ClubMembership) => {
+	const getMembershipStatus = (membership: ExtendableMembership) => {
 		const today = new Date();
 
 		if (!(membership.startDate || membership.endDate)) {

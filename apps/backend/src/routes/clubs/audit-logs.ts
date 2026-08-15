@@ -1,7 +1,8 @@
 import { apiError, Router, responseSchema } from "@reconned/router";
 import { and, count, desc, eq, ilike } from "drizzle-orm";
 import * as z from "zod";
-import { clubAuditLog, clubMembership, user } from "../../drizzle/schema";
+import { clubAuditLog, user } from "../../drizzle/schema";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 
@@ -16,17 +17,7 @@ clubsAuditLogsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;

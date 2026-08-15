@@ -41,6 +41,18 @@ import { Sanitize } from "../lib/user-sanitization";
 // Base schemas generated from Drizzle tables
 const baseUserSchema = createSelectSchema(user);
 const baseClubMembershipSchema = createSelectSchema(clubMembership);
+
+/**
+ * Profile and dashboard club lists only ever carry active memberships, so the
+ * archive bookkeeping is stripped rather than returned as a column of nulls.
+ */
+const activeClubMembershipSchema = baseClubMembershipSchema.omit({
+	status: true,
+	archivedAt: true,
+	archivedById: true,
+	archiveReason: true,
+	archiveNote: true,
+});
 const baseClubSchema = createSelectSchema(club);
 const baseEventSchema = createSelectSchema(event);
 const baseEventRegistrationSchema = createSelectSchema(eventRegistration);
@@ -91,7 +103,7 @@ const userSchema = baseUserSchema
 	});
 
 // Club membership with club details (for dashboard)
-const clubMembershipWithClubSchema = baseClubMembershipSchema.extend({
+const clubMembershipWithClubSchema = activeClubMembershipSchema.extend({
 	club: baseClubSchema
 		.pick({
 			id: true,
@@ -257,7 +269,7 @@ usersRouter.get(
 				memberCount: sql<number>`(
 					SELECT COUNT(*)
 					FROM "ClubMembership" cm
-					WHERE cm."clubId" = "ClubMembership"."clubId"
+					WHERE cm."clubId" = "ClubMembership"."clubId" AND cm."status" = 'ACTIVE'
 				)`,
 				eventCount: sql<number>`(
 					SELECT COUNT(*)
@@ -272,7 +284,7 @@ usersRouter.get(
 			})
 			.from(clubMembership)
 			.innerJoin(club, eq(clubMembership.clubId, club.id))
-			.where(eq(clubMembership.userId, u.id));
+			.where(and(eq(clubMembership.userId, u.id), eq(clubMembership.status, "ACTIVE")));
 
 		// Transform flat results into nested structure
 		const formattedMemberships = membershipsWithClubs.map((m) => ({
@@ -691,7 +703,9 @@ usersRouter.get(
 			})
 			.from(clubMembership)
 			.innerJoin(club, eq(clubMembership.clubId, club.id))
-			.where(and(eq(clubMembership.userId, u.id), eq(club.isPrivate, false)));
+			.where(
+				and(eq(clubMembership.userId, u.id), eq(clubMembership.status, "ACTIVE"), eq(club.isPrivate, false)),
+			);
 
 		const filteredMemberships = membershipRows.map((m) => ({
 			id: m.id,
@@ -778,7 +792,7 @@ usersRouter.get(
 			response: {
 				200: userSchema.extend({
 					clubMembership: z.array(
-						baseClubMembershipSchema.extend({
+						activeClubMembershipSchema.extend({
 							club: baseClubSchema.pick({
 								id: true,
 								name: true,
@@ -1054,7 +1068,7 @@ usersRouter.get(
 				membershipCount: sql<number>`(
 					SELECT COUNT(*)
 					FROM "ClubMembership" cm
-					WHERE cm."userId" = ${targetUserId}
+					WHERE cm."userId" = ${targetUserId} AND cm."status" = 'ACTIVE'
 				)`,
 				reviewsWrittenCount: sql<number>`(
 					SELECT COUNT(*)
@@ -1103,7 +1117,7 @@ usersRouter.get(
 			})
 			.from(clubMembership)
 			.innerJoin(club, eq(clubMembership.clubId, club.id))
-			.where(eq(clubMembership.userId, targetUserId));
+			.where(and(eq(clubMembership.userId, targetUserId), eq(clubMembership.status, "ACTIVE")));
 
 		const membershipClubIds = membershipsWithClubs.map((m) => m.clubId);
 
@@ -1114,7 +1128,9 @@ usersRouter.get(
 					db
 						.select({ clubId: clubMembership.clubId, count: count() })
 						.from(clubMembership)
-						.where(inArray(clubMembership.clubId, membershipClubIds))
+						.where(
+							and(inArray(clubMembership.clubId, membershipClubIds), eq(clubMembership.status, "ACTIVE")),
+						)
 						.groupBy(clubMembership.clubId),
 					db
 						.select({ clubId: event.clubId, count: count() })
@@ -1455,7 +1471,7 @@ usersRouter.get(
 		const memberCountSubquery = db
 			.select({ count: count() })
 			.from(clubMembership)
-			.where(eq(clubMembership.clubId, club.id));
+			.where(and(eq(clubMembership.clubId, club.id), eq(clubMembership.status, "ACTIVE")));
 
 		const invites = await db
 			.select({
@@ -1823,7 +1839,7 @@ usersRouter.get(
 			})
 			.from(clubMembership)
 			.innerJoin(club, eq(clubMembership.clubId, club.id))
-			.where(eq(clubMembership.userId, context.user.id));
+			.where(and(eq(clubMembership.userId, context.user.id), eq(clubMembership.status, "ACTIVE")));
 
 		return response.json({
 			clubs: userClubRows.map((c) => ({ ...c, logoTile: logoTileOf(c.logoTile) })),
@@ -2495,6 +2511,7 @@ usersRouter.post(
 					and(
 						inArray(clubMembership.clubId, ownedClubIds),
 						eq(clubMembership.role, "MANAGER"),
+						eq(clubMembership.status, "ACTIVE"),
 						ne(clubMembership.userId, userId),
 					),
 				);

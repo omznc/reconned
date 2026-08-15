@@ -6,6 +6,7 @@ import * as z from "zod";
 import { club, clubMembership, post } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
 import { NO_CITY, resolveClubCity } from "../../lib/city";
+import { getActiveMembership, requireClubManager, requireClubOwner } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { isFeatureEnabled } from "../../lib/feature-flags";
 import { logger } from "../../lib/posthog";
@@ -24,7 +25,7 @@ const clubsCoreRouter = new Router();
 /** A club someone actually runs: it has an owner. Directory entries do not. */
 const CLAIMED = sql`EXISTS (
 	SELECT 1 FROM "ClubMembership" cm
-	WHERE cm."clubId" = ${club.id} AND cm."role" = 'CLUB_OWNER'
+	WHERE cm."clubId" = ${club.id} AND cm."role" = 'CLUB_OWNER' AND cm."status" = 'ACTIVE'
 )`;
 
 /** In at least one alliance, by the join table or the legacy flag. */
@@ -148,7 +149,7 @@ clubsCoreRouter.get(
 				const userMemberships = await db
 					.select({ clubId: clubMembership.clubId })
 					.from(clubMembership)
-					.where(eq(clubMembership.userId, requestingUserId));
+					.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 				const memberClubIds = userMemberships.map((m) => m.clubId);
 
@@ -182,6 +183,7 @@ clubsCoreRouter.get(
 				count: count().as("member_count"),
 			})
 			.from(clubMembership)
+			.where(eq(clubMembership.status, "ACTIVE"))
 			.groupBy(clubMembership.clubId)
 			.as("member_counts");
 
@@ -353,13 +355,9 @@ clubsCoreRouter.get(
 		let hasAccess = !clubData[0].isPrivate;
 		let isMember = false;
 		if (clubData[0].isPrivate && context.user) {
-			const membership = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, clubData[0].id), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
-			hasAccess = !!membership[0];
-			isMember = !!membership[0];
+			const membership = await getActiveMembership(clubData[0].id, context.user.id);
+			hasAccess = !!membership;
+			isMember = !!membership;
 		}
 
 		if (!hasAccess) {
@@ -377,7 +375,7 @@ clubsCoreRouter.get(
 		const membersCount = await db
 			.select({ count: count() })
 			.from(clubMembership)
-			.where(eq(clubMembership.clubId, clubData[0].id));
+			.where(and(eq(clubMembership.clubId, clubData[0].id), eq(clubMembership.status, "ACTIVE")));
 
 		const postsCount = await db.select({ count: count() }).from(post).where(eq(post.clubId, clubData[0].id));
 
@@ -436,17 +434,7 @@ clubsCoreRouter.get(
 			throw apiError.notFound("Club not found");
 		}
 
-		const membershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const membership = membershipData[0];
-
-		if (!membership || (membership.role !== "MANAGER" && membership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		const membership = await requireClubManager(clubId, context.user.id);
 
 		return response.json({
 			...clubData[0],
@@ -596,17 +584,7 @@ clubsCoreRouter.put(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		// Fetch existing club data for validation checks
 		const existingClubData = await db.select({ slug: club.slug }).from(club).where(eq(club.id, clubId)).limit(1);
@@ -714,21 +692,7 @@ clubsCoreRouter.delete(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const ownerMembershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(
-				and(
-					eq(clubMembership.clubId, clubId),
-					eq(clubMembership.userId, context.user.id),
-					eq(clubMembership.role, "CLUB_OWNER"),
-				),
-			)
-			.limit(1);
-
-		if (!ownerMembershipData[0]) {
-			throw apiError.forbidden("Unauthorized - must be club owner");
-		}
+		await requireClubOwner(clubId, context.user.id);
 
 		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
@@ -791,17 +755,7 @@ clubsCoreRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const key = `club/${clubId}/logo`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size);
@@ -841,17 +795,7 @@ clubsCoreRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const key = `club/${clubId}/header`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size);
@@ -896,17 +840,7 @@ clubsCoreRouter.delete(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const [existingLogoClub] = await db.select({ logo: club.logo }).from(club).where(eq(club.id, clubId)).limit(1);
 
@@ -964,17 +898,7 @@ clubsCoreRouter.delete(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const [existingHeaderClub] = await db
 			.select({ headerImage: club.headerImage })
@@ -1041,6 +965,7 @@ clubsCoreRouter.get(
 			.where(
 				and(
 					eq(clubMembership.userId, context.user.id),
+					eq(clubMembership.status, "ACTIVE"),
 					or(eq(clubMembership.role, "MANAGER"), eq(clubMembership.role, "CLUB_OWNER")),
 				),
 			);
@@ -1090,7 +1015,13 @@ clubsCoreRouter.get(
 		const ownerData = await db
 			.select()
 			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.role, "CLUB_OWNER")))
+			.where(
+				and(
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.role, "CLUB_OWNER"),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		return response.json({ hasOwner: !!ownerData[0] });

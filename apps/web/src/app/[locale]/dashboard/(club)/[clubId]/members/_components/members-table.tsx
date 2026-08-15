@@ -1,10 +1,11 @@
 "use client";
 
-import { Calendar, LogOut, UserCircle, UserMinus } from "lucide-react";
+import { Archive, ArchiveRestore, Calendar, LogOut, UserCircle, UserMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
+import { MemberArchiveForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/member-archive.form";
 import { MembershipExtensionForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.form";
 import { GenericDataTable } from "@/components/generic-data-table";
 import { LeaveClubButton } from "@/components/leave-club-button";
@@ -14,15 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
-import type { ClubMembership } from "@/lib/api/api-type-helpers";
+import type { ApiResponse } from "@/lib/api/api-type-helpers";
+
+type ClubMember = ApiResponse<"/api/clubs/{id}/members", "get">["members"][number];
 
 interface MembersTableProps {
-	members: (ClubMembership & {
-		userName: string;
-		userCallsign: string | null;
-		userAvatar: string | null;
-		userSlug: string | null;
-	})[];
+	members: ClubMember[];
 	totalMembers: number;
 	pageSize: number;
 	currentUserId?: string;
@@ -34,15 +32,48 @@ export function MembersTable(props: MembersTableProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 	const router = useRouter();
-	const [membershipToExtend, setMembershipToExtend] = useState<
-		| (ClubMembership & {
-				userName: string;
-				userAvatar: string | null;
-		  })
-		| null
-	>(null);
+	const [membershipToExtend, setMembershipToExtend] = useState<ClubMember | null>(null);
+	const [membershipToArchive, setMembershipToArchive] = useState<{
+		id: string;
+		clubId: string;
+		userName: string;
+	} | null>(null);
 
-	const handleRemove = async (member: ClubMembership & { userName: string }, clubId: string) => {
+	const handleUnarchive = async (member: ClubMember, clubId: string) => {
+		const confirmed = await confirm({
+			title: t("Bring {name} back?", { name: member.userName }),
+			body: t("Their membership becomes active again, with the Member role."),
+			cancelButton: t("Cancel"),
+			actionButton: t("Confirm"),
+		});
+
+		if (!confirmed) {
+			return;
+		}
+
+		try {
+			const { error } = await apiClient.POST("/api/clubs/{id}/members/{memberId}/unarchive", {
+				params: {
+					path: {
+						id: clubId,
+						memberId: member.id,
+					},
+				},
+			});
+
+			if (error) {
+				toast.error(error.error || t("An error occurred while restoring the member"));
+				return;
+			}
+
+			toast.success(t("Member successfully restored"));
+			router.refresh();
+		} catch {
+			toast.error(t("An error occurred while restoring the member"));
+		}
+	};
+
+	const handleRemove = async (member: ClubMember, clubId: string) => {
 		if (member.role === "CLUB_OWNER") {
 			return;
 		}
@@ -81,8 +112,14 @@ export function MembersTable(props: MembersTableProps) {
 		}
 	};
 
-	const getMembershipStatus = (membership: ClubMembership) => {
+	const getMembershipStatus = (membership: ClubMember) => {
 		const today = new Date();
+
+		if (membership.status === "ARCHIVED") {
+			return membership.archiveReason === "DECEASED"
+				? ({ label: t("In memoriam"), variant: "secondary" } as const)
+				: ({ label: t("Archived"), variant: "outline" } as const);
+		}
 
 		if (!membership.startDate && !membership.endDate) {
 			return {
@@ -232,6 +269,9 @@ export function MembersTable(props: MembersTableProps) {
 							components: (row) => {
 								const isSelf = props.currentUserId === row.userId;
 								const isClubOwner = row.role === "CLUB_OWNER";
+								const isArchived = row.status === "ARCHIVED";
+								const isManager =
+									props.currentUserRole === "CLUB_OWNER" || props.currentUserRole === "MANAGER";
 
 								const items = [];
 
@@ -246,7 +286,7 @@ export function MembersTable(props: MembersTableProps) {
 								);
 
 								// Leave club action - only for current user who isn't owner
-								if (isSelf && !isClubOwner) {
+								if (isSelf && !isClubOwner && !isArchived) {
 									items.push(
 										<DropdownMenuItem key="leave">
 											<LeaveClubButton
@@ -255,6 +295,37 @@ export function MembersTable(props: MembersTableProps) {
 												renderAsMenuItem
 												icon={<LogOut className="size-4 mr-2" />}
 											/>
+										</DropdownMenuItem>,
+									);
+								}
+
+								// Archive keeps the person in the club's history; removing erases them from it.
+								if (isManager && !isClubOwner && !isSelf && !isArchived) {
+									items.push(
+										<DropdownMenuItem
+											key="archive"
+											onClick={() =>
+												setMembershipToArchive({
+													id: row.id,
+													clubId: row.clubId,
+													userName: row.userName,
+												})
+											}
+										>
+											<Archive className="size-4 mr-2" />
+											{t("Archive")}
+										</DropdownMenuItem>,
+									);
+								}
+
+								if (isManager && isArchived) {
+									items.push(
+										<DropdownMenuItem
+											key="unarchive"
+											onClick={() => handleUnarchive(row, row.clubId)}
+										>
+											<ArchiveRestore className="size-4 mr-2" />
+											{t("Restore")}
 										</DropdownMenuItem>,
 									);
 								}
@@ -274,16 +345,12 @@ export function MembersTable(props: MembersTableProps) {
 								}
 
 								// Extend membership - only managers and owners
-								if (props.currentUserRole === "CLUB_OWNER" || props.currentUserRole === "MANAGER") {
+								if (isManager && !isArchived) {
 									items.push(
 										<DropdownMenuItem
 											key="extend"
 											onClick={() => {
-												setMembershipToExtend({
-													...row,
-													userName: row.userName,
-													userAvatar: row.userAvatar,
-												});
+												setMembershipToExtend(row);
 											}}
 										>
 											<Calendar className="size-4 mr-2" />
@@ -308,8 +375,30 @@ export function MembersTable(props: MembersTableProps) {
 							{ label: t("Member"), value: "USER" },
 						],
 					},
+					{
+						key: "status",
+						label: t("Filter by status"),
+						options: [
+							{ label: t("Active"), value: "ACTIVE" },
+							{ label: t("Archived"), value: "ARCHIVED" },
+							{ label: t("All"), value: "ALL" },
+						],
+					},
 				]}
 			/>
+
+			{membershipToArchive && (
+				<MemberArchiveForm
+					clubId={membershipToArchive.clubId}
+					member={membershipToArchive}
+					open={Boolean(membershipToArchive)}
+					onOpenChange={(isOpen) => {
+						if (!isOpen) {
+							setMembershipToArchive(null);
+						}
+					}}
+				/>
+			)}
 
 			{membershipToExtend && (
 				<MembershipExtensionForm
