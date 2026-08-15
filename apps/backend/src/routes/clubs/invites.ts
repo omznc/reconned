@@ -7,6 +7,7 @@ import * as z from "zod";
 import { club, clubInvite, clubMembership, user } from "../../drizzle/schema";
 import ClubInvitationEmail from "../../emails/airsoft-invitation";
 import { logClubAudit } from "../../lib/audit-logger";
+import { bustRouteCache, clubMembershipCacheKeys } from "../../lib/cache-bust";
 import {
 	CLEAR_ARCHIVE,
 	getActiveMembership,
@@ -641,6 +642,10 @@ clubsInvitesRouter.post(
 				actionType: "MEMBER_JOINED_VIA_INVITE",
 				actionData: { inviteId: invite.id },
 			});
+
+			// This route is keyed by invite code, so `bustCache` can't reach the club it just
+			// added a member to — the roster and member counts have to be dropped by hand.
+			await bustRouteCache(clubMembershipCacheKeys(invite.clubId));
 		} else {
 			// Update invite status to rejected
 			await db

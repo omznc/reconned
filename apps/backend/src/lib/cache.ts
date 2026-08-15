@@ -3,7 +3,10 @@ import { env } from "./env";
 import { logger } from "./posthog";
 import { redis } from "./redis";
 
-const SCAN_BATCH = 100;
+// Sized for the invalidation path, which is awaited: fewer cursor round trips between the
+// handler finishing and the client getting its response. Still small enough that a single
+// SCAN never blocks the server for long.
+const SCAN_BATCH = 1000;
 
 /**
  * Delete every key matching a glob pattern using a non-blocking SCAN cursor loop.
@@ -71,12 +74,20 @@ export const redisCacheStore: CacheStore = {
 	},
 
 	/**
-	 * Cache invalidation is intentionally fire-and-forget: the router awaits this call in the
-	 * response path of every mutation, and a multi-round-trip SCAN must not sit between the
-	 * handler finishing and the client getting its response. Failures are logged, never swallowed.
+	 * Invalidation is awaited, and has to be.
+	 *
+	 * This used to run detached so the SCAN round trips wouldn't sit between the handler
+	 * finishing and the client getting its response. But the mutation's response is what tells
+	 * the UI to refetch, so racing it against the delete means the refetch routinely lands
+	 * first and reads the entry that was about to be dropped — a demoted manager still showing
+	 * as a manager until the TTL runs out. Correct invalidation is worth the round trips.
+	 *
+	 * Failures are logged and swallowed: a mutation must not fail because Redis did.
 	 */
 	async delByPattern(pattern: string): Promise<void> {
-		void deleteKeysByPattern(pattern).catch((error) => {
+		try {
+			await deleteKeysByPattern(pattern);
+		} catch (error) {
 			logger.emit({
 				severityText: "error",
 				body: "Cache invalidation failed",
@@ -85,7 +96,7 @@ export const redisCacheStore: CacheStore = {
 					error: error instanceof Error ? error.message : String(error),
 				},
 			});
-		});
+		}
 	},
 };
 

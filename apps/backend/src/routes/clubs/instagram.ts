@@ -388,6 +388,7 @@ clubsInstagramRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Disconnect Instagram account",
@@ -671,6 +672,7 @@ clubsInstagramRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Exchange Instagram auth code",
@@ -838,6 +840,7 @@ clubsInstagramRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Select Facebook Page for Instagram",

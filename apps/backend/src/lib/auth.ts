@@ -10,6 +10,7 @@ import { clubInvite, clubMembership } from "../drizzle/schema";
 import EmailVerification from "../emails/email-verification";
 import PasswordReset from "../emails/password-reset";
 import { userAdditionalFields } from "./auth-fields";
+import { bustRouteCache, clubMembershipCacheKeys } from "./cache-bust";
 import { CLEAR_ARCHIVE } from "./club-access";
 import { db } from "./db";
 import { getEmailMessages } from "./email-messages";
@@ -332,6 +333,10 @@ export const auth = betterAuth({
 											.where(eq(clubMembership.id, priorMembership.id));
 									}
 								});
+
+								// The club just gained a member, but this runs from an auth hook rather
+								// than a club route, so nothing busts the roster cache for us.
+								await bustRouteCache(clubMembershipCacheKeys(invite.clubId));
 							} catch (error) {
 								logger.error(`Failed to process invite ${invite.id}:`, { error });
 							}

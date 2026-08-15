@@ -970,6 +970,7 @@ usersRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["users", "user:{id}"],
 		schema: {
 			tags: ["Users"],
 			summary: "Delete user image",
@@ -1009,6 +1010,7 @@ usersRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["users", "user:{id}"],
 		schema: {
 			tags: ["Users"],
 			summary: "Delete user header image",
@@ -1357,6 +1359,7 @@ usersRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["user:{id}"],
 		schema: {
 			tags: ["Users"],
 			summary: "Update user theme",
@@ -1400,6 +1403,7 @@ usersRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["user:{id}"],
 		schema: {
 			tags: ["Users"],
 			summary: "Update user font",
@@ -1443,6 +1447,7 @@ usersRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["user:{id}"],
 		schema: {
 			tags: ["Users"],
 			summary: "Update user language",

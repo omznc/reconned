@@ -257,6 +257,61 @@ describe("club members", () => {
 		});
 	});
 
+	describe("member list cache invalidation", () => {
+		test("demoting a manager is reflected in the member list immediately", async () => {
+			const owner = await createUser();
+			const manager = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, manager, "MANAGER");
+
+			// Warm the cache — without a bust, this response is what the next read returns.
+			const before = await api(owner.cookie).get(`/api/clubs/${club.id}/members?role=MANAGER`);
+			expect(before.status).toBe(200);
+			expect(before.body.members.map((m: { userId: string }) => m.userId)).toContain(manager.id);
+
+			const demote = await api(owner.cookie).put(`/api/clubs/${club.id}/members/${membershipId}`, {
+				role: "USER",
+			});
+			expect(demote.status).toBe(200);
+
+			const after = await api(owner.cookie).get(`/api/clubs/${club.id}/members?role=MANAGER`);
+			expect(after.status).toBe(200);
+			expect(after.body.members.map((m: { userId: string }) => m.userId)).not.toContain(manager.id);
+		});
+
+		test("archiving is reflected in the member list immediately", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			const before = await api(owner.cookie).get(`/api/clubs/${club.id}/members`);
+			expect(before.body.members.map((m: { userId: string }) => m.userId)).toContain(target.id);
+
+			await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+			});
+
+			const after = await api(owner.cookie).get(`/api/clubs/${club.id}/members`);
+			expect(after.body.members.map((m: { userId: string }) => m.userId)).not.toContain(target.id);
+		});
+
+		test("removing a member updates the club's cached member count", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			const before = await api(owner.cookie).get(`/api/clubs/${club.id}`);
+			expect(before.body._count.members).toBe(2);
+
+			await api(owner.cookie).delete(`/api/clubs/${club.id}/members/${membershipId}`);
+
+			const after = await api(owner.cookie).get(`/api/clubs/${club.id}`);
+			expect(after.body._count.members).toBe(1);
+		});
+	});
+
 	describe("POST /api/clubs/:id/members/:memberId/archive", () => {
 		test("unauthenticated request is rejected", async () => {
 			const owner = await createUser();
