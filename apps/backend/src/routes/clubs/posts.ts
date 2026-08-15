@@ -241,6 +241,7 @@ clubsPostsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Create club post",
@@ -334,6 +335,7 @@ clubsPostsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club post",
@@ -403,6 +405,7 @@ clubsPostsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club post",

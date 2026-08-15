@@ -51,6 +51,12 @@ interface Filter {
 	key: string;
 	label: string;
 	options: { label: string; value: string }[];
+	/**
+	 * Shown as selected when the URL carries no value for this filter. Use it when the server
+	 * applies a default of its own, so the control reflects what is actually being listed
+	 * instead of falling back to the "all" placeholder.
+	 */
+	defaultValue?: string;
 }
 
 interface GenericTableProps<T> {
@@ -402,7 +408,7 @@ export function GenericDataTable<T>({
 				{filters?.map((filter) => (
 					<Select
 						key={filter.key}
-						value={filterValues[filter.key] || "all"}
+						value={filterValues[filter.key] || filter.defaultValue || "all"}
 						onValueChange={(value) => handleFilterChange(filter.key, value)}
 					>
 						<SelectTrigger className="w-full md:w-[180px] !h-10">

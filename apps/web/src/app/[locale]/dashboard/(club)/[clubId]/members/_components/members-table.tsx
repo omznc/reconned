@@ -1,5 +1,6 @@
 "use client";
 
+import { format } from "date-fns";
 import { Archive, ArchiveRestore, Calendar, LogOut, UserCircle, UserMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
@@ -16,6 +17,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { getDateFnsLocale } from "@/lib/date-locale";
 
 type ClubMember = ApiResponse<"/api/clubs/{id}/members", "get">["members"][number];
 
@@ -32,6 +34,11 @@ export function MembersTable(props: MembersTableProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 	const router = useRouter();
+	// date-fns rather than toLocaleDateString: it ships its own locale data, so the output
+	// doesn't depend on how much ICU the runtime happens to carry.
+	const dateFnsLocale = getDateFnsLocale(locale);
+	const formatDate = (value: string) => format(new Date(value), "PPP", { locale: dateFnsLocale });
+
 	const [membershipToExtend, setMembershipToExtend] = useState<ClubMember | null>(null);
 	const [membershipToArchive, setMembershipToArchive] = useState<{
 		id: string;
@@ -230,15 +237,7 @@ export function MembersTable(props: MembersTableProps) {
 						cellConfig: {
 							variant: "custom",
 							component: (_, row) => (
-								<span>
-									{row.startDate
-										? new Date(row.startDate).toLocaleDateString(locale, {
-												day: "2-digit",
-												month: "long",
-												year: "numeric",
-											})
-										: t("Not set")}
-								</span>
+								<span>{row.startDate ? formatDate(row.startDate) : t("Not set")}</span>
 							),
 						},
 					},
@@ -249,15 +248,7 @@ export function MembersTable(props: MembersTableProps) {
 						cellConfig: {
 							variant: "custom",
 							component: (_, row) => (
-								<span>
-									{row.endDate
-										? new Date(row.endDate).toLocaleDateString(locale, {
-												day: "2-digit",
-												month: "long",
-												year: "numeric",
-											})
-										: t("Unlimited")}
-								</span>
+								<span>{row.endDate ? formatDate(row.endDate) : t("Unlimited")}</span>
 							),
 						},
 					},
@@ -378,6 +369,8 @@ export function MembersTable(props: MembersTableProps) {
 					{
 						key: "status",
 						label: t("Filter by status"),
+						// Matches the server's own default, so the control shows what is on screen.
+						defaultValue: "ACTIVE",
 						options: [
 							{ label: t("Active"), value: "ACTIVE" },
 							{ label: t("Archived"), value: "ARCHIVED" },

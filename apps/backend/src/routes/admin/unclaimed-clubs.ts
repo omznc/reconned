@@ -288,6 +288,7 @@ adminUnclaimedClubsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Create unclaimed club",
@@ -397,6 +398,7 @@ adminUnclaimedClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Update unclaimed club",
@@ -458,6 +460,7 @@ adminUnclaimedClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Update unclaimed club logo",
@@ -542,6 +545,7 @@ adminUnclaimedClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Update unclaimed club header image",
@@ -717,6 +721,9 @@ adminUnclaimedClubsRouter.post(
 	},
 	{
 		auth: true,
+		// The club stops being unclaimed and gains a member, so both the listing and the
+		// club's own cached reads are now wrong.
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Assign club owner",

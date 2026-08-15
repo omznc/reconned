@@ -84,6 +84,7 @@ clubsAlliancesRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}", "alliances"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club alliances",

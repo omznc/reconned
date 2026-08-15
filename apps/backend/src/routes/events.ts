@@ -9,6 +9,7 @@ import EventInvitationEmail from "../emails/event-invitation";
 import EventPlaceReleasedEmail from "../emails/event-place-released";
 import EventWaitlistPromotedEmail from "../emails/event-waitlist-promoted";
 import { logClubAudit } from "../lib/audit-logger";
+import { bustRouteCache } from "../lib/cache-bust";
 import { getActiveMembership, requireClubManager } from "../lib/club-access";
 import { db } from "../lib/db";
 import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
@@ -1139,7 +1140,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming"],
+		bustCache: ["events", "events:upcoming", "events:calendar"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create event",
@@ -1319,7 +1320,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Update event",
@@ -1427,7 +1428,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event",
@@ -1542,6 +1543,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event image",
@@ -2256,6 +2258,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create or update event registration",
@@ -2328,6 +2331,7 @@ eventsRouter.delete(
 		});
 	},
 	{
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event registration",
@@ -2509,6 +2513,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Respond to a team invite",
@@ -2606,6 +2611,10 @@ eventsRouter.post(
 		if (!claimed[0]) {
 			throw apiError.validation("This invitation has already been claimed");
 		}
+
+		// The attendee list changed hands, but this route is keyed by invite token — the event
+		// it belongs to only becomes known inside the handler.
+		await bustRouteCache([`event:${attendee.eventId}`]);
 
 		posthog.capture({
 			distinctId: context.user.id,
@@ -2709,6 +2718,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Toggle attendance",
@@ -2779,6 +2789,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Mark one person present or absent",
@@ -2854,6 +2865,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Mark one person paid or unpaid",

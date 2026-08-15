@@ -185,6 +185,7 @@ clubsPurchasesRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Create club purchase",
@@ -267,6 +268,7 @@ clubsPurchasesRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club purchase",
@@ -335,6 +337,7 @@ clubsPurchasesRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club purchase",

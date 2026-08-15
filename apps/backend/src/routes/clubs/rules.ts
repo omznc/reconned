@@ -4,6 +4,7 @@ import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { clubRule } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { bustRouteCache } from "../../lib/cache-bust";
 import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 
@@ -211,6 +212,12 @@ clubsRulesRouter.put(
 			throw apiError.validation("Failed to update rule");
 		}
 
+		// A rule attached to an event is served from `event:{id}:rules`, which this route's
+		// params can't name — it only knows the club and the rule.
+		if (updatedRule[0].eventId) {
+			await bustRouteCache([`event:${updatedRule[0].eventId}`]);
+		}
+
 		await logClubAudit({
 			clubId,
 			actionType: "CLUB_RULE_UPDATE",
@@ -273,6 +280,11 @@ clubsRulesRouter.delete(
 		}
 
 		await db.delete(clubRule).where(eq(clubRule.id, ruleId));
+
+		// See the update route: an event-attached rule is cached under the event, not the club.
+		if (ruleData[0].eventId) {
+			await bustRouteCache([`event:${ruleData[0].eventId}`]);
+		}
 
 		await logClubAudit({
 			clubId,

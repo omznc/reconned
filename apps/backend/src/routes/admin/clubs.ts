@@ -261,6 +261,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Ban club",
@@ -315,6 +316,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Unban club",
@@ -366,6 +368,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Verify club",
@@ -417,6 +420,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Unverify club",
@@ -452,6 +456,7 @@ adminClubsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Delete club",
