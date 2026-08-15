@@ -46,6 +46,21 @@ export const attendeeStatus = pgEnum("AttendeeStatus", [
 /** Whether this person made the booking or was brought along on it. */
 export const attendeeRole = pgEnum("AttendeeRole", ["LEADER", "MEMBER"]);
 
+/**
+ * Whether a `clubMembership` still grants access. Archived rows are kept so event history,
+ * stats and audit trails stay intact, but they grant no membership and no permissions.
+ */
+export const membershipStatus = pgEnum("MembershipStatus", ["ACTIVE", "ARCHIVED"]);
+
+/** Why a membership was archived. `DECEASED` members are memorialised rather than hidden. */
+export const membershipArchiveReason = pgEnum("MembershipArchiveReason", [
+	"DECEASED",
+	"INACTIVE",
+	"MOVED_AWAY",
+	"RETIRED",
+	"OTHER",
+]);
+
 export const achievement = pgTable(
 	"Achievement",
 	{
@@ -468,6 +483,11 @@ export const clubMembership = pgTable(
 		role: role().default("USER").notNull(),
 		startDate: timestamp({ precision: 3, mode: "string" }),
 		endDate: timestamp({ precision: 3, mode: "string" }),
+		status: membershipStatus().default("ACTIVE").notNull(),
+		archivedAt: timestamp({ precision: 3, mode: "string" }),
+		archivedById: text(),
+		archiveReason: membershipArchiveReason(),
+		archiveNote: text(),
 		createdAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 		updatedAt: timestamp({ precision: 3, mode: "string" }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	},
@@ -489,6 +509,11 @@ export const clubMembership = pgTable(
 			table.clubId.asc().nullsLast().op("text_ops"),
 			table.createdAt.asc().nullsLast().op("timestamp_ops"),
 		),
+		index("ClubMembership_clubId_status_idx").using(
+			"btree",
+			table.clubId.asc().nullsLast().op("text_ops"),
+			table.status.asc().nullsLast(),
+		),
 		foreignKey({
 			columns: [table.userId],
 			foreignColumns: [user.id],
@@ -496,6 +521,13 @@ export const clubMembership = pgTable(
 		})
 			.onUpdate("cascade")
 			.onDelete("cascade"),
+		foreignKey({
+			columns: [table.archivedById],
+			foreignColumns: [user.id],
+			name: "ClubMembership_archivedById_fkey",
+		})
+			.onUpdate("cascade")
+			.onDelete("set null"),
 		foreignKey({
 			columns: [table.clubId],
 			foreignColumns: [club.id],

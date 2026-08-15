@@ -9,6 +9,7 @@ import EventInvitationEmail from "../emails/event-invitation";
 import EventPlaceReleasedEmail from "../emails/event-place-released";
 import EventWaitlistPromotedEmail from "../emails/event-waitlist-promoted";
 import { logClubAudit } from "../lib/audit-logger";
+import { getActiveMembership, requireClubManager } from "../lib/club-access";
 import { db } from "../lib/db";
 import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
@@ -88,7 +89,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			userClubIds = userClubMemberships.map((m) => m.clubId);
 		}
@@ -335,7 +336,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
@@ -488,7 +489,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
@@ -678,16 +679,11 @@ eventsRouter.get(
 				throw apiError.notFound("Event not found");
 			}
 
-			await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, requestingUserId)))
-				.limit(1)
-				.then((rows) => {
-					if (!rows[0]) {
-						throw apiError.notFound("Event not found");
-					}
-				});
+			const membership = await getActiveMembership(eventRecord.clubId, requestingUserId);
+
+			if (!membership) {
+				throw apiError.notFound("Event not found");
+			}
 		}
 
 		return response.json({
@@ -833,7 +829,10 @@ function validateEventDates(dates: EventDates) {
 async function assertCanRegisterForEvent(eventRecord: typeof event.$inferSelect, userId: string, isAdmin: boolean) {
 	const [clubData, membershipData] = await Promise.all([
 		db.select({ isPrivate: club.isPrivate }).from(club).where(eq(club.id, eventRecord.clubId)).limit(1),
-		db.select({ clubId: clubMembership.clubId }).from(clubMembership).where(eq(clubMembership.userId, userId)),
+		db
+			.select({ clubId: clubMembership.clubId })
+			.from(clubMembership)
+			.where(and(eq(clubMembership.userId, userId), eq(clubMembership.status, "ACTIVE"))),
 	]);
 
 	if (isAdmin) {
@@ -1043,17 +1042,7 @@ async function loadBookingAttendees(bookingIds: string[], viewerId: string | und
 eventsRouter.post(
 	"/events",
 	async ({ context, body, response }) => {
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, body.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(body.clubId, context.user.id);
 
 		validateEventDates(body);
 
@@ -1213,17 +1202,7 @@ eventsRouter.put(
 
 		validateEventDates(body);
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		// Only validate slug if it's provided and different from existing
 		// Normalize empty strings to null for comparison
@@ -1400,17 +1379,7 @@ eventsRouter.delete(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		// EventRegistration references the event with ON DELETE RESTRICT, so the bookings have to
 		// go before the event does. Attendees cascade off the booking, and club rules fall back
@@ -1499,17 +1468,7 @@ eventsRouter.post(
 
 		const existingEvent = existingEventData[0];
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		const key = `event/${eventId}/image`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size, context.user.id);
@@ -1558,17 +1517,7 @@ eventsRouter.delete(
 
 		const existingEvent = existingEventData[0];
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		if (existingEvent.image) {
 			const imageKey = existingEvent.image.split("/").pop() || "";
@@ -2712,17 +2661,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		assertAttendanceWindow(eventRecord);
 
@@ -2809,17 +2748,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		assertAttendanceWindow(eventRecord);
 
@@ -2894,17 +2823,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		// The booking records how somebody intends to pay; this records that they did. Marking
 		// clears back to null rather than storing `false`, so "not paid yet" and "was never
@@ -2978,17 +2897,7 @@ eventsRouter.get(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		const registrations = await db
 			.select()
@@ -3197,13 +3106,9 @@ eventsRouter.get(
 
 		// Check if user has access to private event
 		if (eventRecord.isPrivate) {
-			const userMembership = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
+			const userMembership = await getActiveMembership(eventRecord.clubId, context.user.id);
 
-			if (!userMembership[0]) {
+			if (!userMembership) {
 				throw apiError.notFound("Event");
 			}
 		}

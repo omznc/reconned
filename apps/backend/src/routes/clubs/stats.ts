@@ -2,6 +2,7 @@ import { apiError, Router, responseSchema } from "@reconned/router";
 import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, clubPurchase, event, eventRegistration, post } from "../../drizzle/schema";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { extractSizeFromKey } from "../../lib/storage";
 
@@ -16,17 +17,7 @@ clubsStatsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const clubData = await db.select({ createdAt: club.createdAt }).from(club).where(eq(club.id, clubId)).limit(1);
 
@@ -65,7 +56,7 @@ clubsStatsRouter.get(
 					count: count(),
 				})
 				.from(clubMembership)
-				.where(eq(clubMembership.clubId, clubId))
+				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.status, "ACTIVE")))
 				.groupBy(clubMembership.role),
 			// Events per month for the last 12 months. The range predicate on "dateStart" is
 			// sargable, so this can use Event_clubId_dateStart_idx - unlike the previous
@@ -203,17 +194,7 @@ clubsStatsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const [postsUsage, receiptsUsage] = await Promise.all([
 			db.select({ images: post.images }).from(post).where(eq(post.clubId, clubId)),

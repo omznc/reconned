@@ -85,6 +85,7 @@ adminUnclaimedClubsRouter.get(
 				FROM "ClubMembership" cm
 				WHERE cm."clubId" = ${club.id}
 				AND cm."role" = 'CLUB_OWNER'
+				AND cm."status" = 'ACTIVE'
 			)`,
 		);
 
@@ -111,7 +112,7 @@ adminUnclaimedClubsRouter.get(
 			? await db
 					.select({ clubId: clubMembership.clubId, count: count() })
 					.from(clubMembership)
-					.where(inArray(clubMembership.clubId, clubIds))
+					.where(and(inArray(clubMembership.clubId, clubIds), eq(clubMembership.status, "ACTIVE")))
 					.groupBy(clubMembership.clubId)
 			: [];
 
@@ -179,7 +180,7 @@ adminUnclaimedClubsRouter.get(
 		const memberCount = await db
 			.select({ count: count() })
 			.from(clubMembership)
-			.where(eq(clubMembership.clubId, clubId));
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.status, "ACTIVE")));
 
 		return response.json({
 			...clubData[0],
@@ -621,7 +622,13 @@ adminUnclaimedClubsRouter.post(
 		const existingOwner = await db
 			.select()
 			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.role, "CLUB_OWNER")))
+			.where(
+				and(
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.role, "CLUB_OWNER"),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		if (existingOwner[0]) {

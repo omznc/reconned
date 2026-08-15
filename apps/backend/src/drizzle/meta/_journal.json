@@ -99,6 +99,13 @@
       "when": 1785931701513,
       "tag": "0013_smooth_william_stryker",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1786811081900,
+      "tag": "0014_rare_mentallo",
+      "breakpoints": true
     }
   ]
 }

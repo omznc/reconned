@@ -2,7 +2,8 @@ import { apiError, Router, responseSchema } from "@reconned/router";
 import { and, count, desc, eq, ilike, inArray } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { clubMembership, event, eventRegistration } from "../../drizzle/schema";
+import { event, eventRegistration } from "../../drizzle/schema";
+import { isClubManagerUser } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 
@@ -22,20 +23,7 @@ clubsEventsRouter.get(
 		// A club's event list is public: anyone, signed in or not, may browse it. Managers and
 		// owners additionally see the club's private events, so the only thing the membership
 		// lookup decides is whether `isPrivate` rows are included — it is not an access gate.
-		const isManager = await (async () => {
-			if (!context.user) {
-				return false;
-			}
-
-			const membershipData = await db
-				.select({ role: clubMembership.role })
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
-
-			const role = membershipData[0]?.role;
-			return role === "MANAGER" || role === "CLUB_OWNER";
-		})();
+		const isManager = await isClubManagerUser(clubId, context.user?.id);
 
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
@@ -156,20 +144,7 @@ clubsEventsRouter.get(
 		// Mirrors the visibility rule in `GET /clubs/:clubId/events` above — the count has to be
 		// taken over exactly the same row set the list returns, or pagination breaks for anyone
 		// who cannot see the club's private events.
-		const isManager = await (async () => {
-			if (!context.user) {
-				return false;
-			}
-
-			const membershipData = await db
-				.select({ role: clubMembership.role })
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
-
-			const role = membershipData[0]?.role;
-			return role === "MANAGER" || role === "CLUB_OWNER";
-		})();
+		const isManager = await isClubManagerUser(clubId, context.user?.id);
 
 		const search = query?.search || "";
 

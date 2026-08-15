@@ -1,8 +1,9 @@
 import { apiError, Router, responseSchema } from "@reconned/router";
-import { and, eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import * as z from "zod";
-import { alliance, club, clubAlliance, clubMembership } from "../../drizzle/schema";
+import { alliance, club, clubAlliance } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 
 const clubsAlliancesRouter = new Router();
@@ -26,17 +27,7 @@ clubsAlliancesRouter.put(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		// Get club's country to validate alliances
 		const clubData = await db.select({ countryId: club.countryId }).from(club).where(eq(club.id, clubId)).limit(1);

@@ -2,8 +2,9 @@ import { AppError, apiError, Router, responseSchema } from "@reconned/router";
 import { and, count, desc, eq } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { club, clubMembership, post } from "../../drizzle/schema";
+import { club, post } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { getActiveMembership, isClubManager, requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../../lib/storage";
@@ -39,15 +40,9 @@ clubsPostsRouter.get(
 		let isManager = false;
 
 		if (context.user?.id) {
-			const membershipData = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
-
-			const membership = membershipData[0];
+			const membership = await getActiveMembership(clubId, context.user.id);
 			isMember = !!membership;
-			isManager = membership?.role === "MANAGER" || membership?.role === "CLUB_OWNER";
+			isManager = isClubManager(membership);
 		}
 
 		if (clubInfo.isPrivate && !isMember) {
@@ -104,17 +99,7 @@ clubsPostsRouter.get(
 			throw apiError.validation("Club ID and Post ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const postData = await db
 			.select()
@@ -161,17 +146,7 @@ clubsPostsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
@@ -227,17 +202,7 @@ clubsPostsRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const postId = crypto.randomUUID();
 
@@ -308,17 +273,7 @@ clubsPostsRouter.put(
 			throw apiError.validation("Club ID and Post ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const existingPostData = await db
 			.select()
@@ -413,17 +368,7 @@ clubsPostsRouter.delete(
 			throw apiError.validation("Club ID and Post ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const postData = await db
 			.select()
@@ -487,17 +432,7 @@ clubsPostsRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const secureFilename = `${Date.now()}_${body.file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
 		const key = `post-images/${clubId}/${secureFilename}`;

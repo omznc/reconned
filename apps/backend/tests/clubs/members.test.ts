@@ -257,6 +257,194 @@ describe("club members", () => {
 		});
 	});
 
+	describe("POST /api/clubs/:id/members/:memberId/archive", () => {
+		test("unauthenticated request is rejected", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			const response = await api().post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+			});
+			expect(response.status).toBe(401);
+		});
+
+		test("non-manager cannot archive a member", async () => {
+			const owner = await createUser();
+			const outsider = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			const response = await api(outsider.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+			});
+			expect(response.status).toBe(403);
+		});
+
+		test("archiving keeps the row but ends the membership", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			const response = await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "DECEASED",
+				note: "Passed away in March",
+			});
+			expect(response.status).toBe(200);
+			expect(response.body.success).toBeTrue();
+
+			const rows = await testDb.unsafe(
+				`SELECT status, "archiveReason", "archiveNote", "archivedById" FROM "ClubMembership" WHERE id = '${membershipId}'`,
+			);
+			expect(rows[0].status).toBe("ARCHIVED");
+			expect(rows[0].archiveReason).toBe("DECEASED");
+			expect(rows[0].archiveNote).toBe("Passed away in March");
+			expect(rows[0].archivedById).toBe(owner.id);
+
+			const membership = await api(target.cookie).get(`/api/clubs/${club.id}/membership`);
+			expect(membership.body.isMember).toBeFalse();
+		});
+
+		test("an archived member is hidden from the default member list", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+			});
+
+			const active = await api(owner.cookie).get(`/api/clubs/${club.id}/members`);
+			expect(active.body.members.map((m: { userId: string }) => m.userId)).not.toContain(target.id);
+
+			const archived = await api(owner.cookie).get(`/api/clubs/${club.id}/members?status=ARCHIVED`);
+			expect(archived.body.members.map((m: { userId: string }) => m.userId)).toContain(target.id);
+		});
+
+		test("an archived manager loses manager access", async () => {
+			const owner = await createUser();
+			const manager = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, manager, "MANAGER");
+
+			const beforeArchive = await api(manager.cookie).get(`/api/clubs/${club.id}/invites`);
+			expect(beforeArchive.status).toBe(200);
+
+			const archive = await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+			});
+			expect(archive.status).toBe(200);
+
+			const afterArchive = await api(manager.cookie).get(`/api/clubs/${club.id}/invites`);
+			expect(afterArchive.status).toBe(403);
+
+			// Demoted on the way out, so a later restore doesn't hand the role back silently.
+			const rows = await testDb.unsafe(`SELECT role FROM "ClubMembership" WHERE id = '${membershipId}'`);
+			expect(rows[0].role).toBe("USER");
+		});
+
+		test("the club owner cannot be archived", async () => {
+			const owner = await createUser();
+			const club = await createClub(owner);
+
+			const memberships = await testDb.unsafe(
+				`SELECT id FROM "ClubMembership" WHERE "clubId" = '${club.id}' AND "userId" = '${owner.id}'`,
+			);
+
+			const response = await api(owner.cookie).post(
+				`/api/clubs/${club.id}/members/${memberships[0].id}/archive`,
+				{ reason: "INACTIVE" },
+			);
+			expect(response.status).toBe(400);
+		});
+
+		test("archiving twice is rejected", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+			});
+			const second = await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+			});
+			expect(second.status).toBe(400);
+		});
+
+		test("an unknown member returns 404", async () => {
+			const owner = await createUser();
+			const club = await createClub(owner);
+
+			const response = await api(owner.cookie).post(
+				`/api/clubs/${club.id}/members/${crypto.randomUUID()}/archive`,
+				{ reason: "INACTIVE" },
+			);
+			expect(response.status).toBe(404);
+		});
+	});
+
+	describe("POST /api/clubs/:id/members/:memberId/unarchive", () => {
+		test("restoring brings the membership back as a plain member", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "INACTIVE",
+				note: "Stopped showing up",
+			});
+
+			const response = await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/unarchive`);
+			expect(response.status).toBe(200);
+
+			const membership = await api(target.cookie).get(`/api/clubs/${club.id}/membership`);
+			expect(membership.body.isMember).toBeTrue();
+			expect(membership.body.membership.status).toBe("ACTIVE");
+			expect(membership.body.membership.archiveReason).toBeNull();
+			expect(membership.body.membership.archiveNote).toBeNull();
+		});
+
+		test("restoring an active member is rejected", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			const response = await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/unarchive`);
+			expect(response.status).toBe(400);
+		});
+
+		test("re-adding an archived member revives the existing membership", async () => {
+			const owner = await createUser();
+			const target = await createUser();
+			const club = await createClub(owner);
+			const membershipId = await addMember(club.id, target);
+
+			await api(owner.cookie).post(`/api/clubs/${club.id}/members/${membershipId}/archive`, {
+				reason: "MOVED_AWAY",
+			});
+
+			const response = await api(owner.cookie).post(`/api/clubs/${club.id}/members`, {
+				userId: target.id,
+			});
+			expect(response.status).toBe(200);
+			expect(response.body.membership.id).toBe(membershipId);
+			expect(response.body.membership.status).toBe("ACTIVE");
+
+			const rows = await testDb.unsafe(
+				`SELECT count(*)::int AS count FROM "ClubMembership" WHERE "clubId" = '${club.id}' AND "userId" = '${target.id}'`,
+			);
+			expect(rows[0].count).toBe(1);
+		});
+	});
+
 	describe("PUT /api/clubs/:id/members/:memberId", () => {
 		test("unauthenticated request is rejected", async () => {
 			const owner = await createUser();

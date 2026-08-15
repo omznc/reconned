@@ -18,7 +18,7 @@ dashboardRouter.get(
 				role: clubMembership.role,
 			})
 			.from(clubMembership)
-			.where(eq(clubMembership.userId, context.user.id));
+			.where(and(eq(clubMembership.userId, context.user.id), eq(clubMembership.status, "ACTIVE")));
 
 		logger.emit({
 			severityText: "debug",
@@ -64,7 +64,7 @@ dashboardRouter.get(
 			db
 				.select({ clubId: clubMembership.clubId, count: count() })
 				.from(clubMembership)
-				.where(inArray(clubMembership.clubId, clubIds))
+				.where(and(inArray(clubMembership.clubId, clubIds), eq(clubMembership.status, "ACTIVE")))
 				.groupBy(clubMembership.clubId),
 			db
 				.select({ clubId: event.clubId, count: count() })
@@ -234,6 +234,7 @@ dashboardRouter.get(
 			.where(
 				and(
 					eq(clubMembership.userId, context.user.id),
+					eq(clubMembership.status, "ACTIVE"),
 					inArray(clubMembership.role, ["MANAGER", "CLUB_OWNER"]),
 				),
 			);
@@ -306,7 +307,10 @@ dashboardRouter.get(
 					.select({ count: count() })
 					.from(eventRegistration)
 					.where(eq(eventRegistration.createdById, context.user.id)),
-				db.select({ count: count() }).from(clubMembership).where(eq(clubMembership.userId, context.user.id)),
+				db
+					.select({ count: count() })
+					.from(clubMembership)
+					.where(and(eq(clubMembership.userId, context.user.id), eq(clubMembership.status, "ACTIVE"))),
 				db.select({ count: count() }).from(review).where(eq(review.authorId, context.user.id)),
 				db.select({ count: count() }).from(review).where(eq(review.userId, context.user.id)),
 			]);
@@ -318,7 +322,7 @@ dashboardRouter.get(
 				clubId: clubMembership.clubId,
 			})
 			.from(clubMembership)
-			.where(eq(clubMembership.userId, context.user.id));
+			.where(and(eq(clubMembership.userId, context.user.id), eq(clubMembership.status, "ACTIVE")));
 
 		const clubIds = memberships.map((m) => m.clubId);
 
@@ -333,7 +337,7 @@ dashboardRouter.get(
 			db
 				.select({ clubId: clubMembership.clubId, count: count() })
 				.from(clubMembership)
-				.where(inArray(clubMembership.clubId, clubIds))
+				.where(and(inArray(clubMembership.clubId, clubIds), eq(clubMembership.status, "ACTIVE")))
 				.groupBy(clubMembership.clubId),
 			db
 				.select({ clubId: event.clubId, count: count() })

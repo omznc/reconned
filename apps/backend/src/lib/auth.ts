@@ -10,6 +10,7 @@ import { clubInvite, clubMembership } from "../drizzle/schema";
 import EmailVerification from "../emails/email-verification";
 import PasswordReset from "../emails/password-reset";
 import { userAdditionalFields } from "./auth-fields";
+import { CLEAR_ARCHIVE } from "./club-access";
 import { db } from "./db";
 import { getEmailMessages } from "./email-messages";
 import { env } from "./env";
@@ -308,7 +309,9 @@ export const auth = betterAuth({
 										)
 										.limit(1);
 
-									if (existingMembership.length === 0) {
+									const priorMembership = existingMembership[0];
+
+									if (!priorMembership) {
 										await tx.insert(clubMembership).values({
 											id: crypto.randomUUID(),
 											userId: user.id,
@@ -317,6 +320,16 @@ export const auth = betterAuth({
 											createdAt: new Date().toISOString(),
 											updatedAt: new Date().toISOString(),
 										});
+									} else if (priorMembership.status === "ARCHIVED") {
+										// Accepting a fresh invite brings an archived membership back.
+										await tx
+											.update(clubMembership)
+											.set({
+												...CLEAR_ARCHIVE,
+												role: "USER",
+												updatedAt: new Date().toISOString(),
+											})
+											.where(eq(clubMembership.id, priorMembership.id));
 									}
 								});
 							} catch (error) {

@@ -104,7 +104,7 @@ adminUsersRouter.get(
 						role: clubMembership.role,
 					})
 					.from(clubMembership)
-					.where(eq(clubMembership.userId, u.id));
+					.where(and(eq(clubMembership.userId, u.id), eq(clubMembership.status, "ACTIVE")));
 
 				const clubIds = userMemberships.map((m) => m.clubId);
 				const clubsData = await clubLoader.loadMany(clubIds);
@@ -218,7 +218,7 @@ adminUsersRouter.get(
 				role: clubMembership.role,
 			})
 			.from(clubMembership)
-			.where(eq(clubMembership.userId, userId));
+			.where(and(eq(clubMembership.userId, userId), eq(clubMembership.status, "ACTIVE")));
 
 		const clubLoader = createClubDataLoader();
 		const clubIds = memberships.map((m) => m.clubId);
