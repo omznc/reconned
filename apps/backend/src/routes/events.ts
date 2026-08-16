@@ -9,6 +9,8 @@ import EventInvitationEmail from "../emails/event-invitation";
 import EventPlaceReleasedEmail from "../emails/event-place-released";
 import EventWaitlistPromotedEmail from "../emails/event-waitlist-promoted";
 import { logClubAudit } from "../lib/audit-logger";
+import { bustRouteCache } from "../lib/cache-bust";
+import { getActiveMembership, requireClubManager } from "../lib/club-access";
 import { db } from "../lib/db";
 import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
@@ -88,7 +90,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			userClubIds = userClubMemberships.map((m) => m.clubId);
 		}
@@ -335,7 +337,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
@@ -488,7 +490,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
@@ -678,16 +680,11 @@ eventsRouter.get(
 				throw apiError.notFound("Event not found");
 			}
 
-			await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, requestingUserId)))
-				.limit(1)
-				.then((rows) => {
-					if (!rows[0]) {
-						throw apiError.notFound("Event not found");
-					}
-				});
+			const membership = await getActiveMembership(eventRecord.clubId, requestingUserId);
+
+			if (!membership) {
+				throw apiError.notFound("Event not found");
+			}
 		}
 
 		return response.json({
@@ -833,7 +830,10 @@ function validateEventDates(dates: EventDates) {
 async function assertCanRegisterForEvent(eventRecord: typeof event.$inferSelect, userId: string, isAdmin: boolean) {
 	const [clubData, membershipData] = await Promise.all([
 		db.select({ isPrivate: club.isPrivate }).from(club).where(eq(club.id, eventRecord.clubId)).limit(1),
-		db.select({ clubId: clubMembership.clubId }).from(clubMembership).where(eq(clubMembership.userId, userId)),
+		db
+			.select({ clubId: clubMembership.clubId })
+			.from(clubMembership)
+			.where(and(eq(clubMembership.userId, userId), eq(clubMembership.status, "ACTIVE"))),
 	]);
 
 	if (isAdmin) {
@@ -1043,17 +1043,7 @@ async function loadBookingAttendees(bookingIds: string[], viewerId: string | und
 eventsRouter.post(
 	"/events",
 	async ({ context, body, response }) => {
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, body.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(body.clubId, context.user.id);
 
 		validateEventDates(body);
 
@@ -1150,7 +1140,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming"],
+		bustCache: ["events", "events:upcoming", "events:calendar"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create event",
@@ -1213,17 +1203,7 @@ eventsRouter.put(
 
 		validateEventDates(body);
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		// Only validate slug if it's provided and different from existing
 		// Normalize empty strings to null for comparison
@@ -1340,7 +1320,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Update event",
@@ -1400,17 +1380,7 @@ eventsRouter.delete(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		// EventRegistration references the event with ON DELETE RESTRICT, so the bookings have to
 		// go before the event does. Attendees cascade off the booking, and club rules fall back
@@ -1458,7 +1428,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event",
@@ -1499,17 +1469,7 @@ eventsRouter.post(
 
 		const existingEvent = existingEventData[0];
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		const key = `event/${eventId}/image`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size, context.user.id);
@@ -1558,17 +1518,7 @@ eventsRouter.delete(
 
 		const existingEvent = existingEventData[0];
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		if (existingEvent.image) {
 			const imageKey = existingEvent.image.split("/").pop() || "";
@@ -1593,6 +1543,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event image",
@@ -2307,6 +2258,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create or update event registration",
@@ -2379,6 +2331,7 @@ eventsRouter.delete(
 		});
 	},
 	{
+		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event registration",
@@ -2560,6 +2513,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Respond to a team invite",
@@ -2658,6 +2612,10 @@ eventsRouter.post(
 			throw apiError.validation("This invitation has already been claimed");
 		}
 
+		// The attendee list changed hands, but this route is keyed by invite token — the event
+		// it belongs to only becomes known inside the handler.
+		await bustRouteCache([`event:${attendee.eventId}`]);
+
 		posthog.capture({
 			distinctId: context.user.id,
 			event: "event_guest_place_claimed",
@@ -2712,17 +2670,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		assertAttendanceWindow(eventRecord);
 
@@ -2770,6 +2718,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Toggle attendance",
@@ -2809,17 +2758,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		assertAttendanceWindow(eventRecord);
 
@@ -2850,6 +2789,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Mark one person present or absent",
@@ -2894,17 +2834,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		// The booking records how somebody intends to pay; this records that they did. Marking
 		// clears back to null rather than storing `false`, so "not paid yet" and "was never
@@ -2935,6 +2865,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Mark one person paid or unpaid",
@@ -2978,17 +2909,7 @@ eventsRouter.get(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		const registrations = await db
 			.select()
@@ -3197,13 +3118,9 @@ eventsRouter.get(
 
 		// Check if user has access to private event
 		if (eventRecord.isPrivate) {
-			const userMembership = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
+			const userMembership = await getActiveMembership(eventRecord.clubId, context.user.id);
 
-			if (!userMembership[0]) {
+			if (!userMembership) {
 				throw apiError.notFound("Event");
 			}
 		}

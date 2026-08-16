@@ -6,6 +6,7 @@ import * as z from "zod";
 import { club, clubMembership, user } from "../../drizzle/schema";
 import ClubOwnerAssignedEmail from "../../emails/club-owner-assigned";
 import { logClubAudit } from "../../lib/audit-logger";
+import { NO_CITY, resolveClubCity } from "../../lib/city";
 import { db } from "../../lib/db";
 import { getEmailMessages, interpolateMessage } from "../../lib/email-messages";
 import { env } from "../../lib/env";
@@ -21,6 +22,9 @@ const baseClubSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	location: z.string().nullable(),
+	cityId: z.number().nullable(),
+	city: z.string().nullable(),
+	citySlug: z.string().nullable(),
 	latitude: z.number().nullable(),
 	longitude: z.number().nullable(),
 	description: z.string().nullable(),
@@ -46,6 +50,14 @@ const baseClubSchema = z.object({
 	updatedAt: z.string(),
 	headerImage: z.string().nullable(),
 });
+
+const cityIdSchema = z
+	.number()
+	.nullable()
+	.optional()
+	.describe(
+		"City ID from the seeded city reference table. Groups the club onto that city's landing page; the display name and URL slug are copied server-side.",
+	);
 
 const uploadFileSchema = z.object({
 	file: z.object({
@@ -73,6 +85,7 @@ adminUnclaimedClubsRouter.get(
 				FROM "ClubMembership" cm
 				WHERE cm."clubId" = ${club.id}
 				AND cm."role" = 'CLUB_OWNER'
+				AND cm."status" = 'ACTIVE'
 			)`,
 		);
 
@@ -99,7 +112,7 @@ adminUnclaimedClubsRouter.get(
 			? await db
 					.select({ clubId: clubMembership.clubId, count: count() })
 					.from(clubMembership)
-					.where(inArray(clubMembership.clubId, clubIds))
+					.where(and(inArray(clubMembership.clubId, clubIds), eq(clubMembership.status, "ACTIVE")))
 					.groupBy(clubMembership.clubId)
 			: [];
 
@@ -167,7 +180,7 @@ adminUnclaimedClubsRouter.get(
 		const memberCount = await db
 			.select({ count: count() })
 			.from(clubMembership)
-			.where(eq(clubMembership.clubId, clubId));
+			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.status, "ACTIVE")));
 
 		return response.json({
 			...clubData[0],
@@ -203,6 +216,15 @@ adminUnclaimedClubsRouter.post(
 		const clubId = randomUUIDv7();
 		const now = new Date().toISOString();
 
+		// Same reference-table resolution as the owner-facing create in `clubs/core.ts`:
+		// a seeded club with no `cityId` never reaches its city landing page, which is
+		// the whole reason for seeding it.
+		const cityColumns =
+			body.cityId === undefined || body.cityId === null ? NO_CITY : await resolveClubCity(body.cityId);
+		if (!cityColumns) {
+			throw apiError.validation("Unknown city");
+		}
+
 		const newClub = await db
 			.insert(club)
 			.values({
@@ -210,6 +232,7 @@ adminUnclaimedClubsRouter.post(
 				name: body.name,
 				countryId: body.countryId || null,
 				location: body.location || null,
+				...cityColumns,
 				latitude: body.latitude || null,
 				longitude: body.longitude || null,
 				description: body.description || null,
@@ -265,6 +288,7 @@ adminUnclaimedClubsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Create unclaimed club",
@@ -273,6 +297,7 @@ adminUnclaimedClubsRouter.post(
 				name: z.string().min(1),
 				countryId: z.number().optional(),
 				location: z.string().optional(),
+				cityId: cityIdSchema,
 				latitude: z.number().optional(),
 				longitude: z.number().optional(),
 				description: z.string().optional(),
@@ -342,6 +367,17 @@ adminUnclaimedClubsRouter.put(
 			}
 		}
 
+		// `cityId` is deliberately outside `updatableFields`: it is not copied through
+		// verbatim but expanded into the three stored columns, and `null` clears all
+		// three rather than leaving a stale name and slug behind.
+		if (body.cityId !== undefined) {
+			const cityColumns = body.cityId === null ? NO_CITY : await resolveClubCity(body.cityId);
+			if (!cityColumns) {
+				throw apiError.validation("Unknown city");
+			}
+			Object.assign(updateData, cityColumns);
+		}
+
 		const updatedClub = await db.update(club).set(updateData).where(eq(club.id, clubId)).returning();
 
 		if (!updatedClub[0]) {
@@ -362,6 +398,7 @@ adminUnclaimedClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Update unclaimed club",
@@ -373,6 +410,7 @@ adminUnclaimedClubsRouter.put(
 				name: z.string().min(1).optional(),
 				countryId: z.number().optional(),
 				location: z.string().optional(),
+				cityId: cityIdSchema,
 				latitude: z.number().optional(),
 				longitude: z.number().optional(),
 				description: z.string().optional(),
@@ -422,6 +460,7 @@ adminUnclaimedClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Update unclaimed club logo",
@@ -506,6 +545,7 @@ adminUnclaimedClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Update unclaimed club header image",
@@ -586,7 +626,13 @@ adminUnclaimedClubsRouter.post(
 		const existingOwner = await db
 			.select()
 			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.role, "CLUB_OWNER")))
+			.where(
+				and(
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.role, "CLUB_OWNER"),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		if (existingOwner[0]) {
@@ -649,7 +695,6 @@ adminUnclaimedClubsRouter.post(
 					distinctId: context.user.id,
 					event: "club_owner_assigned_email_sent",
 					properties: {
-						recipient_email: newOwner[0].email,
 						club_id: clubId,
 						club_name: clubData[0].name,
 						assigned_to_user_id: body.userId,
@@ -676,6 +721,9 @@ adminUnclaimedClubsRouter.post(
 	},
 	{
 		auth: true,
+		// The club stops being unclaimed and gains a member, so both the listing and the
+		// club's own cached reads are now wrong.
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Assign club owner",

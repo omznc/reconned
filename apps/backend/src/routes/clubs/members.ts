@@ -5,6 +5,15 @@ import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { club, clubMembership, user } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import {
+	CLEAR_ARCHIVE,
+	getActiveMembership,
+	getMembershipIncludingArchived,
+	isClubManager,
+	requireClubManager,
+	requireClubMember,
+	requireClubOwner,
+} from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { posthog } from "../../lib/posthog";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
@@ -14,15 +23,26 @@ const clubsMembersRouter = new Router();
 
 const baseClubMembershipSchema = createSelectSchema(clubMembership);
 
+/** Endpoints that only ever deal in active memberships don't carry the archive bookkeeping. */
+const activeMembershipSchema = baseClubMembershipSchema.omit({
+	status: true,
+	archivedAt: true,
+	archivedById: true,
+	archiveReason: true,
+	archiveNote: true,
+});
+
 const baseUserSchema = createSelectSchema(user);
 
-const membershipWithUserSchema = baseClubMembershipSchema.extend({
+const membershipWithUserSchema = activeMembershipSchema.extend({
 	user: baseUserSchema.pick({
 		id: true,
 		name: true,
 		email: true,
 	}),
 });
+
+const ARCHIVE_REASONS = ["DECEASED", "INACTIVE", "MOVED_AWAY", "RETIRED", "OTHER"] as const;
 
 clubsMembersRouter.delete(
 	"/clubs/:id/members/:memberId",
@@ -33,6 +53,8 @@ clubsMembersRouter.delete(
 		if (!clubId || !memberId) {
 			throw apiError.validation("Club ID and Member ID are required");
 		}
+
+		await requireClubManager(clubId, context.user.id);
 
 		const membershipData = await db
 			.select({
@@ -80,18 +102,6 @@ clubsMembersRouter.delete(
 			user: userData[0],
 		};
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
-
 		await db.delete(clubMembership).where(eq(clubMembership.id, memberId));
 
 		await logClubAudit({
@@ -111,6 +121,7 @@ clubsMembersRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Remove member from club",
@@ -140,29 +151,15 @@ clubsMembersRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		if (!body.userId) {
 			throw apiError.validation("User ID is required");
 		}
 
-		const existingMembership = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, body.userId)))
-			.limit(1);
+		const existingMembership = await getMembershipIncludingArchived(clubId, body.userId);
 
-		if (existingMembership[0]) {
+		if (existingMembership?.status === "ACTIVE") {
 			throw apiError.validation("User is already a member of this club");
 		}
 
@@ -176,18 +173,29 @@ clubsMembersRouter.post(
 			throw apiError.notFound("User not found");
 		}
 
-		const newMembership = await db
-			.insert(clubMembership)
-			.values({
-				id: randomUUIDv7(),
-				clubId,
-				userId: body.userId,
-				role: body.role || "USER",
-				startDate: new Date().toISOString(),
-				createdAt: new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
-			})
-			.returning();
+		// (userId, clubId) is unique, so an archived row has to be revived rather than re-inserted.
+		const newMembership = existingMembership
+			? await db
+					.update(clubMembership)
+					.set({
+						role: body.role || "USER",
+						...CLEAR_ARCHIVE,
+						updatedAt: new Date().toISOString(),
+					})
+					.where(eq(clubMembership.id, existingMembership.id))
+					.returning()
+			: await db
+					.insert(clubMembership)
+					.values({
+						id: randomUUIDv7(),
+						clubId,
+						userId: body.userId,
+						role: body.role || "USER",
+						startDate: new Date().toISOString(),
+						createdAt: new Date().toISOString(),
+						updatedAt: new Date().toISOString(),
+					})
+					.returning();
 
 		await logClubAudit({
 			clubId,
@@ -197,6 +205,7 @@ clubsMembersRouter.post(
 				userEmail: userData[0].email,
 				userName: userData[0].name,
 				role: body.role || "USER",
+				revivedFromArchive: Boolean(existingMembership),
 			},
 			userId: context.user.id,
 		});
@@ -209,6 +218,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Add member to club",
@@ -246,22 +256,18 @@ clubsMembersRouter.put(
 			throw apiError.validation("Duration is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const membershipData = await db
 			.select()
 			.from(clubMembership)
-			.where(and(eq(clubMembership.id, memberId), eq(clubMembership.clubId, clubId)))
+			.where(
+				and(
+					eq(clubMembership.id, memberId),
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		if (!membershipData[0]) {
@@ -337,7 +343,6 @@ clubsMembersRouter.put(
 			properties: {
 				club_id: clubId,
 				member_id: membershipWithUser.user.id,
-				member_name: membershipWithUser.user.name,
 				extended_months: durationMonths,
 				previous_end_date: membershipWithUser.endDate,
 				new_end_date: newEndDate.toISOString(),
@@ -356,6 +361,7 @@ clubsMembersRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Extend membership duration",
@@ -392,13 +398,7 @@ clubsMembersRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const membershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const membership = membershipData[0];
+		const membership = await getActiveMembership(clubId, context.user.id);
 
 		if (!membership) {
 			throw apiError.notFound("You are not a member of this club");
@@ -427,6 +427,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Leave club",
@@ -455,21 +456,7 @@ clubsMembersRouter.put(
 			throw apiError.validation("Club ID and Member ID are required");
 		}
 
-		const ownerMembershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(
-				and(
-					eq(clubMembership.clubId, clubId),
-					eq(clubMembership.userId, context.user.id),
-					eq(clubMembership.role, "CLUB_OWNER"),
-				),
-			)
-			.limit(1);
-
-		if (!ownerMembershipData[0]) {
-			throw apiError.forbidden("Unauthorized - must be club owner");
-		}
+		await requireClubOwner(clubId, context.user.id);
 
 		const targetMembershipData = await db
 			.select({
@@ -484,7 +471,13 @@ clubsMembersRouter.put(
 			})
 			.from(clubMembership)
 			.leftJoin(user, eq(clubMembership.userId, user.id))
-			.where(and(eq(clubMembership.id, memberId), eq(clubMembership.clubId, clubId)))
+			.where(
+				and(
+					eq(clubMembership.id, memberId),
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		if (!targetMembershipData[0]) {
@@ -529,6 +522,7 @@ clubsMembersRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update member role",
@@ -561,17 +555,7 @@ clubsMembersRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
@@ -580,6 +564,7 @@ clubsMembersRouter.get(
 
 		const whereConditions = [
 			eq(clubMembership.clubId, clubId),
+			eq(clubMembership.status, "ACTIVE"),
 			or(eq(clubMembership.role, "MANAGER"), eq(clubMembership.role, "CLUB_OWNER")),
 		];
 
@@ -674,18 +659,10 @@ clubsMembersRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const membershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		if (!membershipData[0]) {
-			throw apiError.forbidden("Unauthorized - must be club member");
-		}
+		await requireClubMember(clubId, context.user.id);
 
 		const role = query?.role;
-		const whereConditions = [eq(clubMembership.clubId, clubId)];
+		const whereConditions = [eq(clubMembership.clubId, clubId), eq(clubMembership.status, "ACTIVE")];
 
 		if (role && ["USER", "MANAGER", "CLUB_OWNER"].includes(role)) {
 			whereConditions.push(eq(clubMembership.role, role as "USER" | "MANAGER" | "CLUB_OWNER"));
@@ -735,15 +712,11 @@ clubsMembersRouter.get(
 			return response.json({ isMember: false, membership: null });
 		}
 
-		const membershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
+		const membership = await getActiveMembership(clubId, context.user.id);
 
 		return response.json({
-			isMember: !!membershipData[0],
-			membership: membershipData[0] || null,
+			isMember: !!membership,
+			membership,
 		});
 	},
 	{
@@ -794,28 +767,38 @@ clubsMembersRouter.get(
 		// Check if user has access to view members
 		// For public clubs, anyone can view members
 		// For private clubs, only members can view
-		let membershipData: Array<typeof clubMembership.$inferSelect> = [];
-		if (clubData[0].isPrivate) {
-			if (!context.user) {
-				throw apiError.forbidden("You must be a member to view private club members");
-			}
-
-			membershipData = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
-
-			if (!membershipData[0]) {
-				throw apiError.forbidden("You must be a member to view private club members");
-			}
+		const requesterMembership = await getActiveMembership(clubId, context.user?.id);
+		if (clubData[0].isPrivate && !requesterMembership) {
+			throw apiError.forbidden("You must be a member to view private club members");
 		}
 
+		const isManager = context.isAdmin || isClubManager(requesterMembership);
+
 		const { page, perPage, search, role, sortBy, sortOrder } = query;
+		const status = query.status ?? "ACTIVE";
 		const offset = (page - 1) * perPage;
 
 		// Build where conditions
 		const whereConditions = [eq(clubMembership.clubId, clubId)];
+
+		if (status === "ACTIVE") {
+			whereConditions.push(eq(clubMembership.status, "ACTIVE"));
+		} else if (status === "ARCHIVED") {
+			whereConditions.push(eq(clubMembership.status, "ARCHIVED"));
+		}
+
+		// Archived members are club bookkeeping, not public information — the one exception is
+		// the memorial: a member who died stays visible to everyone, reason and all.
+		if (status !== "ACTIVE" && !isManager) {
+			const memorialised = and(
+				eq(clubMembership.status, "ARCHIVED"),
+				eq(clubMembership.archiveReason, "DECEASED"),
+			);
+			const visible = status === "ALL" ? or(eq(clubMembership.status, "ACTIVE"), memorialised) : memorialised;
+			if (visible) {
+				whereConditions.push(visible);
+			}
+		}
 
 		if (role && role !== "all") {
 			whereConditions.push(eq(clubMembership.role, role as "USER" | "MANAGER" | "CLUB_OWNER"));
@@ -854,6 +837,10 @@ clubsMembersRouter.get(
 				role: clubMembership.role,
 				startDate: clubMembership.startDate,
 				endDate: clubMembership.endDate,
+				status: clubMembership.status,
+				archivedAt: clubMembership.archivedAt,
+				archiveReason: clubMembership.archiveReason,
+				archiveNote: clubMembership.archiveNote,
 				createdAt: clubMembership.createdAt,
 				updatedAt: clubMembership.updatedAt,
 				userName: user.name,
@@ -911,6 +898,11 @@ clubsMembersRouter.get(
 			role: member.role,
 			startDate: member.startDate,
 			endDate: member.endDate,
+			status: member.status,
+			archivedAt: member.archivedAt,
+			archiveReason: member.archiveReason,
+			// The note is the manager's own record of why — never public.
+			archiveNote: isManager ? member.archiveNote : null,
 			createdAt: member.createdAt,
 			updatedAt: member.updatedAt,
 			userName: member.userName,
@@ -947,7 +939,7 @@ clubsMembersRouter.get(
 			key: "club:{id}:members",
 			ttl: 300,
 			swr: 1800,
-			varyByQuery: ["page", "perPage", "search", "role", "sortBy", "sortOrder"],
+			varyByQuery: ["page", "perPage", "search", "role", "status", "sortBy", "sortOrder"],
 			// NOT public-safe despite auth: false - member contact details are redacted per
 			// requesting user via Sanitize, and private clubs are membership-gated.
 			varyByUser: true,
@@ -962,13 +954,18 @@ clubsMembersRouter.get(
 			query: paginationQuerySchema.extend({
 				search: z.string().max(100).optional(),
 				role: z.enum(["all", "USER", "MANAGER", "CLUB_OWNER"]).optional(),
+				status: z.enum(["ACTIVE", "ARCHIVED", "ALL"]).optional(),
 				sortBy: z.enum(["userName", "userCallsign", "role", "createdAt"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
 			}),
 			response: {
 				200: paginationResponseSchema.extend({
 					members: z.array(
-						baseClubMembershipSchema.extend({
+						activeMembershipSchema.extend({
+							status: z.enum(["ACTIVE", "ARCHIVED"]),
+							archivedAt: z.string().nullable(),
+							archiveReason: z.enum(ARCHIVE_REASONS).nullable(),
+							archiveNote: z.string().nullable(),
 							userName: z.string(),
 							userCallsign: z.string().nullable(),
 							userAvatar: z.string().nullable(),
@@ -991,6 +988,195 @@ clubsMembersRouter.get(
 					privateCount: z.number(),
 				}),
 				...responseSchema([400, 401, 403], z.object({ error: z.string() })),
+			},
+			mcpTool: true,
+		},
+	},
+);
+
+clubsMembersRouter.post(
+	"/clubs/:id/members/:memberId/archive",
+	async ({ params, response, context, body }) => {
+		const clubId = params.id;
+		const memberId = params.memberId;
+
+		if (!clubId || !memberId) {
+			throw apiError.validation("Club ID and Member ID are required");
+		}
+
+		await requireClubManager(clubId, context.user.id);
+
+		const membershipData = await db
+			.select({
+				id: clubMembership.id,
+				userId: clubMembership.userId,
+				role: clubMembership.role,
+				status: clubMembership.status,
+				user: {
+					id: user.id,
+					name: user.name,
+				},
+			})
+			.from(clubMembership)
+			.leftJoin(user, eq(clubMembership.userId, user.id))
+			.where(and(eq(clubMembership.id, memberId), eq(clubMembership.clubId, clubId)))
+			.limit(1);
+
+		const membership = membershipData[0];
+
+		if (!membership) {
+			throw apiError.notFound("Member not found");
+		}
+
+		// The club would be left without anyone able to run it.
+		if (membership.role === "CLUB_OWNER") {
+			throw apiError.validation("Cannot archive the club owner. Transfer ownership first.");
+		}
+
+		if (membership.status === "ARCHIVED") {
+			throw apiError.validation("Member is already archived");
+		}
+
+		const now = new Date().toISOString();
+
+		// Managers are demoted on the way out, so reviving the membership years later
+		// doesn't silently hand back the permissions that came with the old role.
+		await db
+			.update(clubMembership)
+			.set({
+				status: "ARCHIVED",
+				archivedAt: now,
+				archivedById: context.user.id,
+				archiveReason: body.reason,
+				archiveNote: body.note ?? null,
+				role: membership.role === "MANAGER" ? "USER" : membership.role,
+				updatedAt: now,
+			})
+			.where(eq(clubMembership.id, memberId));
+
+		await logClubAudit({
+			clubId,
+			actionType: "MEMBER_ARCHIVE",
+			actionData: {
+				memberId,
+				memberName: membership.user?.name,
+				userId: membership.userId,
+				previousRole: membership.role,
+				reason: body.reason,
+				note: body.note ?? null,
+			},
+			userId: context.user.id,
+		});
+
+		posthog.capture({
+			distinctId: context.user.id,
+			event: "club_member_archived",
+			properties: {
+				club_id: clubId,
+				member_id: membership.userId,
+				reason: body.reason,
+				previous_role: membership.role,
+			},
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		bustCache: ["clubs", "club:{id}"],
+		schema: {
+			tags: ["Clubs"],
+			summary: "Archive club member",
+			description:
+				"Archive a member without removing them: the membership and all its history are kept, but it grants no access. Cannot archive the club owner.",
+			params: z.object({
+				id: z.string(),
+				memberId: z.string(),
+			}),
+			body: z.object({
+				reason: z.enum(ARCHIVE_REASONS),
+				note: z.string().max(500).optional(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
+			},
+			mcpTool: true,
+		},
+	},
+);
+
+clubsMembersRouter.post(
+	"/clubs/:id/members/:memberId/unarchive",
+	async ({ params, response, context }) => {
+		const clubId = params.id;
+		const memberId = params.memberId;
+
+		if (!clubId || !memberId) {
+			throw apiError.validation("Club ID and Member ID are required");
+		}
+
+		await requireClubManager(clubId, context.user.id);
+
+		const membershipData = await db
+			.select({
+				id: clubMembership.id,
+				userId: clubMembership.userId,
+				status: clubMembership.status,
+				archiveReason: clubMembership.archiveReason,
+				user: {
+					id: user.id,
+					name: user.name,
+				},
+			})
+			.from(clubMembership)
+			.leftJoin(user, eq(clubMembership.userId, user.id))
+			.where(and(eq(clubMembership.id, memberId), eq(clubMembership.clubId, clubId)))
+			.limit(1);
+
+		const membership = membershipData[0];
+
+		if (!membership) {
+			throw apiError.notFound("Member not found");
+		}
+
+		if (membership.status !== "ARCHIVED") {
+			throw apiError.validation("Member is not archived");
+		}
+
+		await db
+			.update(clubMembership)
+			.set({ ...CLEAR_ARCHIVE, updatedAt: new Date().toISOString() })
+			.where(eq(clubMembership.id, memberId));
+
+		await logClubAudit({
+			clubId,
+			actionType: "MEMBER_UNARCHIVE",
+			actionData: {
+				memberId,
+				memberName: membership.user?.name,
+				userId: membership.userId,
+				previousReason: membership.archiveReason,
+			},
+			userId: context.user.id,
+		});
+
+		return response.json({ success: true });
+	},
+	{
+		auth: true,
+		bustCache: ["clubs", "club:{id}"],
+		schema: {
+			tags: ["Clubs"],
+			summary: "Unarchive club member",
+			description: "Restore an archived membership to active. The member returns with the USER role.",
+			params: z.object({
+				id: z.string(),
+				memberId: z.string(),
+			}),
+			response: {
+				200: z.object({ success: z.boolean() }),
+				...responseSchema([400, 401, 403, 404], z.object({ error: z.string() })),
 			},
 			mcpTool: true,
 		},

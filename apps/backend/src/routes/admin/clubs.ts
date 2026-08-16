@@ -186,7 +186,13 @@ adminClubsRouter.get(
 		const ownerMembership = await db
 			.select()
 			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.role, "CLUB_OWNER")))
+			.where(
+				and(
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.role, "CLUB_OWNER"),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		if (!ownerMembership[0]) {
@@ -255,6 +261,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Ban club",
@@ -309,6 +316,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Unban club",
@@ -360,6 +368,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Verify club",
@@ -411,6 +420,7 @@ adminClubsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Unverify club",
@@ -446,6 +456,7 @@ adminClubsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Delete club",

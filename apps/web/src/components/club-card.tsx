@@ -1,9 +1,9 @@
-import { ArrowUpRight, Building2, MapPin } from "lucide-react";
-import Image from "next/image";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { VerifiedClubIcon } from "@/components/icons";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import { IMAGE_SIZES } from "@/lib/image-sizes";
+import type { LogoTile } from "@/lib/identity";
 
 interface ClubCardProps {
 	club: {
@@ -11,6 +11,7 @@ interface ClubCardProps {
 		name: string;
 		slug: string | null;
 		logo: string | null;
+		logoTile?: LogoTile | null;
 		verified: boolean;
 		location?: string | null;
 		description?: string | null;
@@ -24,18 +25,7 @@ export async function ClubCard({ club, showDescription = false }: ClubCardProps)
 			<Card className="relative overflow-hidden transition-colors hover:border-red-500 border bg-sidebar flex">
 				<div className="flex gap-4 flex-1">
 					<div className="relative shrink-0 w-[150px] h-full border-r bg-muted p-2 flex items-center justify-center">
-						{club.logo ? (
-							<Image
-								src={club.logo}
-								alt={club.name}
-								width={IMAGE_SIZES.THUMBNAIL}
-								height={IMAGE_SIZES.THUMBNAIL}
-								sizes="150px"
-								className="object-contain h-full w-full"
-							/>
-						) : (
-							<Building2 className="w-12 h-12 text-muted-foreground" />
-						)}
+						<ClubAvatar name={club.name} logo={club.logo} tile={club.logoTile} size={130} fill />
 					</div>
 
 					<div className="flex-1 p-4 pr-12 flex flex-col min-w-0 overflow-hidden">

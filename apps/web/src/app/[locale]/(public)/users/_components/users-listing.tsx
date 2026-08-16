@@ -61,7 +61,7 @@ export function UsersListing({ initialData }: UsersListingProps) {
 				<h1 className="text-2xl font-bold tracking-tight">{t("Players")}</h1>
 
 				{isLoading && users.length === 0 ? (
-					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
 						{Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
 							<ListingCardSkeleton key={i} type="user" />
 						))}
@@ -75,7 +75,7 @@ export function UsersListing({ initialData }: UsersListingProps) {
 						</p>
 					</div>
 				) : (
-					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
 						{users.map((user) => (
 							<ListingCard
 								key={user.id}

@@ -5,7 +5,9 @@ export function GET() {
 	const backendUrl = env.NEXT_PUBLIC_BACKEND_URL.replace(/\/$/, "");
 
 	const body = [
-		"# Agent Authentication — RECONNED",
+		// The H1 must contain "auth.md" — scanners key off it to confirm the
+		// document is an auth.md rather than an arbitrary page at this path.
+		"# auth.md — RECONNED",
 		"",
 		"RECONNED supports programmatic access for AI agents via OAuth 2.0 and MCP.",
 		"",
@@ -15,11 +17,17 @@ export function GET() {
 		`- Protected resource metadata: ${webUrl}/.well-known/oauth-protected-resource`,
 		`- MCP server card: ${webUrl}/.well-known/mcp/server-card.json`,
 		`- API catalog: ${webUrl}/.well-known/api-catalog`,
+		`- Agent skills index: ${webUrl}/.well-known/agent-skills/index.json`,
 		"",
 		"## Registration",
 		"",
 		"Clients register via OAuth 2.0 Dynamic Client Registration (RFC 7591).",
-		"The `registration_endpoint` is advertised in the authorization server metadata above.",
+		"The `registration_endpoint` is advertised in the authorization server metadata above,",
+		"and repeated in its `agent_auth` block as `register_uri`.",
+		"",
+		"Registration is the only supported entry point. RECONNED does not implement ID-JAG",
+		"identity assertions, verified-email claims, or anonymous agent identities, so there is",
+		"no `/agent/identity` or claim endpoint to call.",
 		"",
 		"## Connecting over MCP",
 		"",

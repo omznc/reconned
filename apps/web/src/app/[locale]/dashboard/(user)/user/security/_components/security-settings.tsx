@@ -32,6 +32,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import { getDateFnsLocale } from "@/lib/date-locale";
+import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
 
 interface SecuritySettingsProps {
@@ -55,6 +56,7 @@ export function SecuritySettings({
 	const [isLoading, setIsLoading] = useState(false);
 	const [regeneratedBackupCodes, setRegeneratedBackupCodes] = useState<string[] | null>(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [isExporting, setIsExporting] = useState(false);
 	const [showQrDialog, setShowQrDialog] = useState(false);
 	const [qrData, setQrData] = useState<{ totpURI: string; password: string } | null>(null);
 	const router = useRouter();
@@ -557,6 +559,61 @@ export function SecuritySettings({
 					})}
 				</div>
 			</ScrollArea>
+			<div className="flex flex-col gap-1">
+				<h3 className="text-lg font-semibold">{t("Download your data")}</h3>
+				<p className="text-sm text-muted-foreground">
+					{t(
+						"Get a copy of everything we hold about you as a single JSON file. Passwords, two-factor secrets and other sign-in credentials are described but not included, so the file is safe to keep.",
+					)}
+				</p>
+			</div>
+			<div>
+				<Button
+					type="button"
+					variant="outline"
+					disabled={isExporting}
+					onClick={async () => {
+						setIsExporting(true);
+						try {
+							// Plain fetch: this streams a file to disk, so there is nothing to type.
+							const res = await fetch(`${env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}/export`, {
+								credentials: "include",
+							});
+
+							// The export is rate limited to a handful an hour. Without singling 429
+							// out, someone who clicked twice gets a generic failure and no reason
+							// to believe waiting would help.
+							if (res.status === 429) {
+								toast.error(t("You've requested this too many times. Please try again later."));
+								return;
+							}
+
+							if (!res.ok) {
+								toast.error(t("Failed to prepare your data export"));
+								return;
+							}
+
+							const url = URL.createObjectURL(await res.blob());
+							const link = document.createElement("a");
+							link.href = url;
+							link.download = "reconned-data-export.json";
+							link.click();
+							// Revoking synchronously can pull the blob out from under a
+							// download the browser hasn't started yet, which lands as an
+							// empty file. Hold it until the download is safely underway.
+							setTimeout(() => URL.revokeObjectURL(url), 1_000);
+						} catch {
+							toast.error(t("Failed to prepare your data export"));
+						} finally {
+							setIsExporting(false);
+						}
+					}}
+				>
+					<Download className="w-4 h-4" />
+					{isExporting ? t("Preparing your data...") : t("Download my data")}
+				</Button>
+			</div>
+
 			<div className="flex flex-col gap-1">
 				<h3 className="text-lg font-semibold">{t("Delete account")}</h3>
 				<p className="text-sm text-muted-foreground">

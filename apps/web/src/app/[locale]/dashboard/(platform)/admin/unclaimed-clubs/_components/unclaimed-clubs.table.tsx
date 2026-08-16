@@ -1,15 +1,14 @@
 "use client";
 
 import { ArrowUpRight, Pencil, Settings } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { UnclaimedClubsSheet } from "@/app/[locale]/dashboard/(platform)/admin/unclaimed-clubs/_components/unclaimed-clubs.sheet";
 import { GenericDataTable } from "@/components/generic-data-table";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
-import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 type AdminUnclaimedList = ApiResponse<"/api/admin/unclaimed-clubs", "get">;
 type AdminUnclaimed = AdminUnclaimedList["clubs"][number];
@@ -36,18 +35,7 @@ export function UnclaimedClubsTable({ clubs, totalClubs, pageSize }: UnclaimedCl
 						header: "Logo",
 						cellConfig: {
 							variant: "custom",
-							component: (_, club) =>
-								club.logo ? (
-									<Image
-										src={club.logo}
-										alt="Logo"
-										width={IMAGE_SIZES.THUMBNAIL}
-										height={IMAGE_SIZES.THUMBNAIL}
-										className="object-contain max-h-12"
-									/>
-								) : (
-									<div className="w-8 h-8 bg-gray-200" />
-								),
+							component: (_, club) => <ClubAvatar name={club.name} logo={club.logo} size={40} />,
 						},
 					},
 					{

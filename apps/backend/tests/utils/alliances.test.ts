@@ -32,4 +32,35 @@ describe("alliances", () => {
 		const response = await api().get("/api/alliances/0");
 		expect(response.status).toBe(400);
 	});
+
+	test("lists alliances across countries, anonymously", async () => {
+		const response = await api().get("/api/alliances");
+		expect(response.status).toBe(200);
+		expect(Array.isArray(response.body.alliances)).toBeTrue();
+		expect(response.body.pagination.page).toBe(1);
+		expect(response.body.pagination.total).toBeNumber();
+		for (const alliance of response.body.alliances) {
+			expect(alliance.country.id).toBe(alliance.countryId);
+			expect(alliance._count.clubs).toBeNumber();
+		}
+	});
+
+	test("filters the list by countryId", async () => {
+		const countries = await api().get("/api/countries");
+		const countryId = countries.body[0]?.id;
+		expect(countryId).toBeNumber();
+
+		const response = await api().get(`/api/alliances?countryId=${countryId}`);
+		expect(response.status).toBe(200);
+		for (const alliance of response.body.alliances) {
+			expect(alliance.countryId).toBe(countryId);
+		}
+	});
+
+	test("returns an empty list when filtering by a country with no alliances", async () => {
+		const response = await api().get("/api/alliances?countryId=999999");
+		expect(response.status).toBe(200);
+		expect(response.body.alliances).toEqual([]);
+		expect(response.body.pagination.total).toBe(0);
+	});
 });

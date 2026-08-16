@@ -5,7 +5,6 @@ import { useExtracted } from "next-intl";
 import posthog from "posthog-js";
 import { FontSwitcher } from "@/components/personalization/font/font-switcher";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
-import { StyleSwitcher } from "@/components/personalization/style/style-switcher";
 import { ThemeSwitcher } from "@/components/personalization/theme/theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -46,7 +45,7 @@ export function UserSwitcher(props: { user: User }) {
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-semibold">{user?.name}</span>
-								<span className="truncate text-xs">{user?.email}</span>
+								<span className="ph-mask truncate text-xs">{user?.email}</span>
 							</div>
 							<ChevronsUpDown className="ml-auto size-4" />
 						</SidebarMenuButton>
@@ -62,13 +61,13 @@ export function UserSwitcher(props: { user: User }) {
 								href="/dashboard/user"
 								className="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
 							>
-								<Avatar className="h-8 w-8 rounded-lg">
+								<Avatar className="h-8 w-8">
 									<AvatarImage src={user?.image || ""} alt={user?.name} />
-									<AvatarFallback name={user?.name} className="rounded-lg" />
+									<AvatarFallback name={user?.name} />
 								</Avatar>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-semibold">{user?.name}</span>
-									<span className="truncate text-xs">{user?.email}</span>
+									<span className="ph-mask truncate text-xs">{user?.email}</span>
 								</div>
 							</Link>
 						</DropdownMenuLabel>
@@ -92,9 +91,6 @@ export function UserSwitcher(props: { user: User }) {
 
 						<DropdownMenuItem asChild={true}>
 							<FontSwitcher />
-						</DropdownMenuItem>
-						<DropdownMenuItem asChild={true}>
-							<StyleSwitcher />
 						</DropdownMenuItem>
 						<LanguageSwitcher className="justify-start" withinMenu={true} />
 						<DropdownMenuSeparator />

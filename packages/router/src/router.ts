@@ -1026,7 +1026,12 @@ export class Router {
 		try {
 			const result = await pending;
 			if (result.status < 400) {
-				this.writeCache(cacheKey, route, swr, result.body, result.headers);
+				// Awaited, not fire-and-forget. A write still in flight when a mutation's
+				// `bustCache` runs lands *after* the delete and resurrects the entry it was
+				// supposed to remove — the read then stays stale for a full TTL. That race is
+				// easy to hit in practice: a list view and the mutation acting on it are
+				// consecutive requests. One SET on the miss path is the cheaper problem.
+				await this.writeCache(cacheKey, route, swr, result.body, result.headers);
 			}
 			return rebuildResponse(result);
 		} finally {
@@ -1052,8 +1057,14 @@ export class Router {
 		}
 	}
 
-	/** Fire-and-forget cache write. Failures are logged, never swallowed silently. */
-	private writeCache(cacheKey: string, route: Route, swr: number, bodyText: string, headers: Headers): void {
+	/** Writes a cache entry. Failures are logged, never swallowed silently. */
+	private async writeCache(
+		cacheKey: string,
+		route: Route,
+		swr: number,
+		bodyText: string,
+		headers: Headers,
+	): Promise<void> {
 		if (!this.cacheStore || !route.cache) {
 			return;
 		}
@@ -1072,9 +1083,11 @@ export class Router {
 			}
 		}
 
-		void this.cacheStore.set(cacheKey, payload, { ttl: route.cache.ttl + swr })?.catch?.((error: unknown) => {
+		try {
+			await this.cacheStore.set(cacheKey, payload, { ttl: route.cache.ttl + swr });
+		} catch (error) {
 			console.error(`[router] cache write failed for ${cacheKey}:`, error);
-		});
+		}
 	}
 
 	/** Refreshes a stale entry in the background (serve-stale-while-revalidate). */

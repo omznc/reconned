@@ -10,13 +10,13 @@ import {
 	MapPin,
 	Pencil,
 	Phone,
-	ShieldBan,
 } from "lucide-react";
-import Image from "next/image";
 import { getExtracted } from "next-intl/server";
 import { ClaimClubForm } from "@/components/claim-club-form";
 import { ClubInviteAcceptance } from "@/components/club-invite-acceptance";
 import { ClubManagerIcon, ClubOwnerIcon, InstagramIcon, VerifiedClubIcon } from "@/components/icons";
+import { ClubAvatar } from "@/components/identity/club-avatar";
+import { ProfileBanner } from "@/components/identity/profile-banner";
 import { LeaveClubButton } from "@/components/leave-club-button";
 import { ClubInstagram } from "@/components/overviews/club-instagram";
 import { ClubPost } from "@/components/overviews/club-post";
@@ -67,63 +67,42 @@ export async function ClubOverview({
 	return (
 		<div>
 			<ClubInviteAcceptance invites={invites} />
-			{/* Unified Banner Section - Always Present */}
-			<div className="relative w-full mb-6">
-				<div className="w-full h-full max-h-75 bg-sidebar rounded-md">
-					{club.headerImage ? (
-						<Image
-							suppressHydrationWarning={true}
-							src={club.headerImage}
-							alt={`${club.name} header`}
-							className="object-contain w-full h-full rounded-md"
-							draggable={false}
-							height={300}
-							width={1200}
-						/>
-					) : (
-						<div className="w-full h-full bg-linear-to-br from-sidebar to-muted rounded-md" />
-					)}
-				</div>
 
-				{/* Edit Button - Always Top Right */}
-				{isManager && (
-					<div className="absolute top-4 right-4">
+			<ProfileBanner
+				name={club.name}
+				kind="club"
+				image={club.headerImage}
+				action={
+					isManager && (
 						<Button asChild size="sm">
 							<Link href={`/dashboard/${club.id}/club/information`}>
 								<Cog className="h-4 w-4 mr-2" />
 								{t("Edit club")}
 							</Link>
 						</Button>
-					</div>
-				)}
-			</div>
+					)
+				}
+			/>
 
 			<div className="flex flex-col gap-6">
-				<div className="flex gap-4 items-start">
-					<div className="shrink-0 w-32 h-32 flex items-center justify-center">
-						{club.logo ? (
-							<Image
-								suppressHydrationWarning={true}
-								src={club.logo}
-								alt={club.name}
-								width={128}
-								height={128}
-								className="w-full h-full object-contain"
-								draggable={false}
-							/>
-						) : (
-							<div className="w-full h-full border-4 border-background rounded-md bg-sidebar shadow-lg flex items-center justify-center">
-								<ShieldBan className="size-16 text-muted-foreground" />
-							</div>
-						)}
+				<div className="px-4 sm:px-6">
+					{/* Square mark, overhanging the banner by half its height. */}
+					<div className="relative z-1 -mt-14 w-28 h-28 rounded-[29px] bg-background p-[5px] shadow-lg">
+						<ClubAvatar
+							name={club.name}
+							logo={club.logo}
+							tile={club.logoTile}
+							size={112}
+							radius={24}
+							fill
+							priority
+						/>
 					</div>
 
-					<div className="flex-1 min-w-0 pt-2">
-						<h1 className="text-3xl flex gap-2 items-center font-semibold mb-2">
-							{club.name} {club.verified && <VerifiedClubIcon />}
-						</h1>
-						<ExpandableDescription description={club.description || ""} />
-					</div>
+					<h1 className="text-3xl flex gap-2 items-center font-semibold mt-4 mb-2">
+						{club.name} {club.verified && <VerifiedClubIcon />}
+					</h1>
+					<ExpandableDescription description={club.description || ""} />
 				</div>
 
 				{/* Action Buttons Row */}

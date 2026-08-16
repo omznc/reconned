@@ -24,7 +24,14 @@ const SERVED_WELL_KNOWN = new Set([
 	"/.well-known/mcp/server-card.json",
 	"/.well-known/mcp.json",
 	"/.well-known/agent-card.json",
+	"/.well-known/agent-skills/index.json",
 ]);
+
+/**
+ * `/.well-known/` prefixes served by dynamic route handlers. The skill name is a
+ * route param, so the paths cannot be enumerated in the set above.
+ */
+const SERVED_WELL_KNOWN_PREFIXES = ["/.well-known/agent-skills/"];
 
 /** Routes that serve markdown themselves, exempt from the `.md` → HTML-page rewrite. */
 const MARKDOWN_ROUTES = new Set(["/auth.md", "/AGENTS.md", "/sitemap.md"]);
@@ -56,10 +63,18 @@ export default async function authProxy(request: NextRequest) {
 			process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
 		const target = new URL(`/api/auth${pathname}`, backendUrl);
 		const proxy = await fetch(target);
-		return new Response(await proxy.text(), {
-			status: proxy.status,
-			headers: proxy.headers,
-		});
+
+		// Forwarded verbatim, including the auth.md `agent_auth` block: the backend merges
+		// that in itself (see its lib/agent-auth.ts) precisely so this layer does not have
+		// to — in production the edge often routes these paths past Next.js entirely, and an
+		// injection that only happened here would be missing from the served document.
+		const headers = new Headers(proxy.headers);
+		// `fetch` already undid the upstream encoding, so forwarding either header would
+		// describe a body we are not sending.
+		headers.delete("content-length");
+		headers.delete("content-encoding");
+
+		return new Response(await proxy.text(), { status: proxy.status, headers });
 	}
 
 	// Other `/.well-known/` paths we actually serve — locale negotiation below
@@ -68,7 +83,9 @@ export default async function authProxy(request: NextRequest) {
 	// route, Next renders the root not-found outside the locale tree and 500s,
 	// and agent scanners read HTML error pages as malformed discovery documents.
 	if (pathname.startsWith("/.well-known/")) {
-		return SERVED_WELL_KNOWN.has(pathname) ? NextResponse.next() : new Response("Not Found", { status: 404 });
+		const isServed =
+			SERVED_WELL_KNOWN.has(pathname) || SERVED_WELL_KNOWN_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+		return isServed ? NextResponse.next() : new Response("Not Found", { status: 404 });
 	}
 
 	// Real routes that already serve markdown — the `.md` matcher pulls them in

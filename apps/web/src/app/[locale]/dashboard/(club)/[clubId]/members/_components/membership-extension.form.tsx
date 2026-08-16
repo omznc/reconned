@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, formatDistanceToNow } from "date-fns";
-import { bs, enUS } from "date-fns/locale";
 import { CalendarClock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
@@ -25,11 +24,17 @@ import {
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import apiClient from "@/lib/api/api.client";
-import type { ClubMembership } from "@/lib/api/api-type-helpers";
+import { getDateFnsLocale } from "@/lib/date-locale";
+
+interface ExtendableMembership {
+	id: string;
+	startDate: string | null;
+	endDate: string | null;
+}
 
 interface MembershipExtensionFormProps {
 	clubId: string;
-	membership: ClubMembership & {
+	membership: ExtendableMembership & {
 		user: {
 			name: string;
 			image?: string | null;
@@ -75,7 +80,7 @@ export function MembershipExtensionForm({
 		}
 	};
 
-	const dateFnsLocale = locale === "en" ? enUS : bs;
+	const dateFnsLocale = getDateFnsLocale(locale);
 
 	const form = useForm<MembershipExtensionFormValues>({
 		resolver: zodResolver(membershipExtensionSchema),
@@ -117,7 +122,7 @@ export function MembershipExtensionForm({
 		}
 	}
 
-	const getMembershipStatus = (membership: ClubMembership) => {
+	const getMembershipStatus = (membership: ExtendableMembership) => {
 		const today = new Date();
 
 		if (!(membership.startDate || membership.endDate)) {

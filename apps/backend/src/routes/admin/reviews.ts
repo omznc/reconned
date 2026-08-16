@@ -2,6 +2,7 @@ import { apiError, Router, responseSchema } from "@reconned/router";
 import { and, count, desc, eq } from "drizzle-orm";
 import * as z from "zod";
 import { club, event, review, reviewEditHistory, user } from "../../drizzle/schema";
+import { bustReviewCache } from "../../lib/cache-bust";
 import { db } from "../../lib/db";
 import { posthog } from "../../lib/posthog";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
@@ -158,6 +159,13 @@ adminReviewsRouter.delete(
 			})();
 
 		await db.delete(review).where(eq(review.id, reviewId));
+
+		// Same invalidation the owner-facing delete does — the review list and the reviewed
+		// entity's rating both go stale, and the route only names the review.
+		const bustEntityId = existingReview.userId || existingReview.clubId || existingReview.eventId;
+		if (bustEntityId) {
+			await bustReviewCache(existingReview.type.toLowerCase(), bustEntityId);
+		}
 
 		posthog.capture({
 			distinctId: context.user.id,

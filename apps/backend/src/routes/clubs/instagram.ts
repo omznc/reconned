@@ -4,12 +4,14 @@ import { and, eq } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, instagramPageSelection } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { env } from "../../lib/env";
 import {
 	debugToken,
 	exchangeCodeForToken,
 	exchangeForLongLivedToken,
+	GRAPH_API_VERSION,
 	getInstagramBusinessAccount,
 	getNonExpiringPageAccessToken,
 	getUserPages,
@@ -17,6 +19,288 @@ import {
 import { logger } from "../../lib/posthog";
 
 const clubsInstagramRouter = new Router();
+
+/**
+ * Permissions asked for in the Facebook login dialog. `pages_show_list` is the
+ * one that makes `/me/accounts` return anything — without it the Graph API
+ * answers `{ data: [] }` rather than an error, which is indistinguishable from
+ * "this person has no Pages" unless the granted scopes are inspected.
+ */
+const INSTAGRAM_SCOPES = ["pages_show_list", "instagram_basic", "pages_read_engagement"] as const;
+
+/**
+ * Error codes understood by the club information form
+ * (`getInstagramErrorMessage` in club-info.form.tsx). Anything else falls back
+ * to its generic message.
+ */
+const INSTAGRAM_ERROR_CODES = {
+	NO_FACEBOOK_PAGES: "no_facebook_pages",
+	PAGES_PERMISSION_DENIED: "pages_permission_denied",
+	NO_INSTAGRAM_BUSINESS_ACCOUNT: "no_instagram_business_account",
+	NOT_CONNECTED_TO_PAGE: "not_connected_to_instagram",
+	MISSING_PARAMS: "missing_params",
+	AUTH_FAILED: "auth_failed",
+	CONNECTION_FAILED: "connection_failed",
+	PAGE_NOT_FOUND: "page_not_found",
+	PERSONAL_ACCOUNT: "personal_account",
+} as const;
+
+/**
+ * Back to the club information page. No locale prefix — the web app's middleware
+ * negotiates one (`localePrefix: "as-needed"`), so hardcoding one here would
+ * override the visitor's own choice.
+ */
+function clubInformationUrl(clubId: string, params: Record<string, string>): string {
+	const search = new URLSearchParams(params).toString();
+	return `${env.FRONTEND_URL}/dashboard/${clubId}/club/information${search ? `?${search}` : ""}#instagram`;
+}
+
+async function isClubManager(clubId: string, userId: string): Promise<boolean> {
+	const membership = await db
+		.select({ role: clubMembership.role })
+		.from(clubMembership)
+		.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, userId)))
+		.limit(1);
+
+	const role = membership[0]?.role;
+	return role === "MANAGER" || role === "CLUB_OWNER";
+}
+
+/**
+ * Resolve a Facebook page to its Instagram Business Account and store the
+ * connection on the club. Shared by the OAuth callback (single-page case) and
+ * the explicit page-selection endpoint.
+ */
+async function connectPageToClub({
+	clubId,
+	pageId,
+	accessToken,
+	userId,
+}: {
+	clubId: string;
+	pageId: string;
+	accessToken: string;
+	userId: string;
+}): Promise<{ instagramUsername: string }> {
+	const nonExpiringToken = await getNonExpiringPageAccessToken(accessToken, pageId);
+
+	const igBusinessResponse = await getInstagramBusinessAccount(pageId, nonExpiringToken);
+
+	if (!igBusinessResponse?.instagram_business_account?.id) {
+		// Covers both "personal account" and "no business account" — the Graph API
+		// does not distinguish them on this endpoint.
+		throw apiError.validation("No Instagram Business Account found connected to this Facebook Page.");
+	}
+
+	const tokenInfo = await debugToken(nonExpiringToken);
+	const isPermanentToken = !tokenInfo.data.expires_at || tokenInfo.data.expires_at === 0;
+
+	await db
+		.update(club)
+		.set({
+			instagramUsername: igBusinessResponse.instagram_business_account.username,
+			instagramProfilePictureUrl: igBusinessResponse.instagram_business_account.profile_picture_url,
+			instagramAccessToken: nonExpiringToken,
+			instagramConnected: true,
+			instagramTokenExpiry: isPermanentToken
+				? null
+				: new Date((tokenInfo.data.expires_at || 0) * 1000).toISOString(),
+			instagramBusinessId: igBusinessResponse.instagram_business_account.id,
+			facebookPageId: pageId,
+			instagramTokenType: isPermanentToken ? "PERMANENT" : "TEMPORARY",
+			updatedAt: new Date().toISOString(),
+		})
+		.where(eq(club.id, clubId));
+
+	await logClubAudit({
+		clubId,
+		actionType: "INSTAGRAM_CONNECT",
+		actionData: {
+			instagramUsername: igBusinessResponse.instagram_business_account.username,
+			pageId,
+		},
+		userId,
+	});
+
+	return { instagramUsername: igBusinessResponse.instagram_business_account.username };
+}
+
+/**
+ * Facebook OAuth redirect target. The URL is baked into the Facebook app
+ * configuration and into `exchangeCodeForToken`'s `redirect_uri`, so the path
+ * (`/api/club/instagram/callback`, singular `club`) must not change.
+ *
+ * `auth: false` because this is a top-level browser navigation coming from
+ * facebook.com; the session cookie still rides along (SameSite=Lax on a GET
+ * navigation), and `context.user` is checked by hand below. Every failure is a
+ * redirect rather than a JSON error — the visitor is a browser, not a client.
+ */
+clubsInstagramRouter.get(
+	"/club/instagram/callback",
+	async ({ query, response, context }) => {
+		const clubId = query.clubId || query.state;
+		const oauthError = query.error;
+
+		if (!clubId) {
+			// Without a club there is nowhere sensible to go back to.
+			return response.redirect(`${env.FRONTEND_URL}/dashboard`);
+		}
+
+		if (oauthError) {
+			return response.redirect(clubInformationUrl(clubId, { instagramError: oauthError }));
+		}
+
+		if (!context.user) {
+			return response.redirect(
+				`${env.FRONTEND_URL}/login?redirectTo=${encodeURIComponent(`/dashboard/${clubId}/club/information`)}`,
+			);
+		}
+
+		if (!(await isClubManager(clubId, context.user.id))) {
+			return response.redirect(clubInformationUrl(clubId, { instagramError: INSTAGRAM_ERROR_CODES.AUTH_FAILED }));
+		}
+
+		const code = query.code;
+		if (!code) {
+			return response.redirect(
+				clubInformationUrl(clubId, { instagramError: INSTAGRAM_ERROR_CODES.MISSING_PARAMS }),
+			);
+		}
+
+		let pages: Awaited<ReturnType<typeof getUserPages>>["data"];
+		let userAccessToken: string;
+		let grantedScopes: string[] = [];
+
+		try {
+			const shortLivedToken = await exchangeCodeForToken(code);
+			const longLivedToken = await exchangeForLongLivedToken(shortLivedToken.access_token);
+			userAccessToken = longLivedToken.access_token;
+
+			// What the visitor actually agreed to, which is not necessarily what we asked
+			// for: declining a permission in the dialog still yields a valid token.
+			grantedScopes = (await debugToken(userAccessToken)).data.scopes ?? [];
+
+			pages = (await getUserPages(userAccessToken)).data;
+		} catch (error) {
+			logger.emit({
+				severityText: "error",
+				body: "Instagram OAuth callback failed",
+				attributes: {
+					club_id: clubId,
+					error: error instanceof Error ? error.message : String(error),
+					business: {
+						operation: "instagram_oauth_callback",
+						domain: "instagram_integration",
+						error_type: "token_exchange_failed",
+					},
+				},
+			});
+			return response.redirect(clubInformationUrl(clubId, { instagramError: INSTAGRAM_ERROR_CODES.AUTH_FAILED }));
+		}
+
+		if (!pages || pages.length === 0) {
+			const missingScopes = INSTAGRAM_SCOPES.filter((scope) => !grantedScopes.includes(scope));
+
+			logger.emit({
+				severityText: "warn",
+				body: "Instagram OAuth returned no Facebook Pages",
+				attributes: {
+					club_id: clubId,
+					granted_scopes: grantedScopes.join(",") || "none",
+					missing_scopes: missingScopes.join(",") || "none",
+					business: {
+						operation: "instagram_oauth_callback",
+						domain: "instagram_integration",
+						error_type: missingScopes.length > 0 ? "missing_scopes" : "no_pages",
+					},
+				},
+			});
+
+			// An ungranted `pages_show_list` and an account with genuinely no Pages both
+			// come back as an empty list, but only one of them is the visitor's to fix.
+			return response.redirect(
+				clubInformationUrl(clubId, {
+					instagramError: missingScopes.includes("pages_show_list")
+						? INSTAGRAM_ERROR_CODES.PAGES_PERMISSION_DENIED
+						: INSTAGRAM_ERROR_CODES.NO_FACEBOOK_PAGES,
+				}),
+			);
+		}
+
+		const onlyPage = pages.length === 1 ? pages[0] : undefined;
+
+		if (onlyPage) {
+			try {
+				await connectPageToClub({
+					clubId,
+					pageId: onlyPage.id,
+					accessToken: userAccessToken,
+					userId: context.user.id,
+				});
+
+				return response.redirect(clubInformationUrl(clubId, { instagramSuccess: "true" }));
+			} catch (error) {
+				const message = error instanceof Error ? error.message : String(error);
+				let errorCode: string = INSTAGRAM_ERROR_CODES.CONNECTION_FAILED;
+
+				if (message.includes("No Instagram Business Account")) {
+					errorCode = INSTAGRAM_ERROR_CODES.NO_INSTAGRAM_BUSINESS_ACCOUNT;
+				} else if (message.includes("not found")) {
+					errorCode = INSTAGRAM_ERROR_CODES.PAGE_NOT_FOUND;
+				}
+
+				logger.emit({
+					severityText: "error",
+					body: "Instagram OAuth callback failed",
+					attributes: {
+						club_id: clubId,
+						page_id: onlyPage.id,
+						error: message,
+						business: {
+							operation: "instagram_oauth_callback",
+							domain: "instagram_integration",
+							error_type: "connect_failed",
+						},
+					},
+				});
+
+				return response.redirect(clubInformationUrl(clubId, { instagramError: errorCode }));
+			}
+		}
+
+		// Multiple pages: park the token server-side and let the visitor pick one.
+		const sessionId = randomUUIDv7();
+		await db.insert(instagramPageSelection).values({
+			id: sessionId,
+			clubId,
+			accessToken: userAccessToken,
+			pages: JSON.stringify(pages),
+			expiresAt: new Date(Date.now() + 1000 * 60 * 15).toISOString(), // 15 minutes
+			createdAt: new Date().toISOString(),
+		});
+
+		return response.redirect(
+			`${env.FRONTEND_URL}/dashboard/${clubId}/club/information/instagram?sessionId=${sessionId}`,
+		);
+	},
+	{
+		auth: false,
+		schema: {
+			tags: ["Clubs"],
+			summary: "Instagram OAuth callback",
+			description: "Facebook OAuth redirect target for connecting a club's Instagram account",
+			query: z.object({
+				code: z.string().optional(),
+				state: z.string().optional(),
+				clubId: z.string().optional(),
+				error: z.string().optional(),
+			}),
+			response: {
+				302: z.object({}),
+			},
+		},
+	},
+);
 
 clubsInstagramRouter.get(
 	"/clubs/:id/instagram/auth-url",
@@ -26,28 +310,23 @@ clubsInstagramRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		if (!env.FACEBOOK_APP_ID) {
 			throw apiError.internal("Facebook App ID not configured");
 		}
 
 		const redirectUri = `${env.BETTER_AUTH_URL}/api/club/instagram/callback`;
-		const authUrl = new URL("https://www.facebook.com/v19.0/dialog/oauth");
+		const authUrl = new URL(`https://www.facebook.com/${GRAPH_API_VERSION}/dialog/oauth`);
 		authUrl.searchParams.set("client_id", env.FACEBOOK_APP_ID);
 		authUrl.searchParams.set("redirect_uri", redirectUri);
-		authUrl.searchParams.set("scope", "pages_show_list,instagram_basic,pages_read_engagement");
+		authUrl.searchParams.set("scope", INSTAGRAM_SCOPES.join(","));
 		authUrl.searchParams.set("state", clubId);
+		// Facebook silently omits permissions the user declined on a previous run and
+		// hands back a token that simply sees no Pages. `rerequest` makes the dialog
+		// ask again instead, which is the difference between a fixable prompt and a
+		// dead end the visitor cannot get out of.
+		authUrl.searchParams.set("auth_type", "rerequest");
 
 		return response.json({ authUrl: authUrl.toString() });
 	},
@@ -78,17 +357,7 @@ clubsInstagramRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		await db
 			.update(club)
@@ -119,6 +388,7 @@ clubsInstagramRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Disconnect Instagram account",
@@ -142,17 +412,7 @@ clubsInstagramRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const clubData = await db
 			.select({
@@ -190,7 +450,7 @@ clubsInstagramRouter.get(
 
 			if (clubRecord.instagramTokenType === "PERMANENT") {
 				const debugResponse = await fetch(
-					`https://graph.facebook.com/v19.0/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
+					`https://graph.facebook.com/${GRAPH_API_VERSION}/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
 				);
 
 				if (!debugResponse.ok) {
@@ -229,7 +489,7 @@ clubsInstagramRouter.get(
 
 			if (shouldRefreshToken && clubRecord.facebookPageId) {
 				const pageTokenResponse = await fetch(
-					`https://graph.facebook.com/v19.0/${clubRecord.facebookPageId}?fields=access_token&access_token=${clubRecord.instagramAccessToken}`,
+					`https://graph.facebook.com/${GRAPH_API_VERSION}/${clubRecord.facebookPageId}?fields=access_token&access_token=${clubRecord.instagramAccessToken}`,
 				);
 
 				if (pageTokenResponse.ok) {
@@ -260,7 +520,7 @@ clubsInstagramRouter.get(
 			}
 
 			const debugResponse = await fetch(
-				`https://graph.facebook.com/v19.0/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
+				`https://graph.facebook.com/${GRAPH_API_VERSION}/debug_token?input_token=${clubRecord.instagramAccessToken}&access_token=${appAccessToken}`,
 			);
 
 			if (!debugResponse.ok) {
@@ -341,17 +601,7 @@ clubsInstagramRouter.post(
 		}
 
 		// Check if user is manager or owner
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { code } = body;
 
@@ -422,6 +672,7 @@ clubsInstagramRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Exchange Instagram auth code",
@@ -461,17 +712,7 @@ clubsInstagramRouter.get(
 		}
 
 		// Check if user is manager or owner
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		// Get session data
 		const session = await db
@@ -556,17 +797,7 @@ clubsInstagramRouter.post(
 		}
 
 		// Check if user is manager or owner
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { pageId, accessToken, sessionId } = body;
 
@@ -583,6 +814,9 @@ clubsInstagramRouter.post(
 			if (!session[0]) {
 				throw apiError.validation("Invalid or expired session");
 			}
+			if (session[0].clubId !== clubId) {
+				throw apiError.forbidden("Session does not match club");
+			}
 			validAccessToken = session[0].accessToken;
 		}
 
@@ -590,56 +824,23 @@ clubsInstagramRouter.post(
 			throw apiError.validation("Access token or session ID required");
 		}
 
-		const nonExpiringToken = await getNonExpiringPageAccessToken(validAccessToken, pageId);
-
-		// First check if the Instagram business account exists on the page
-		const igBusinessResponse = await getInstagramBusinessAccount(pageId, nonExpiringToken);
-
-		if (!igBusinessResponse?.instagram_business_account?.id) {
-			// This covers both personal account and no business account cases reasonably well for the API
-			// Frontend can differentiate error messages if needed based on additional info, but strict check here
-			throw apiError.validation("No Instagram Business Account found connected to this Facebook Page.");
-		}
-
-		const tokenInfo = await debugToken(nonExpiringToken);
-		const isPermanentToken = !tokenInfo.data.expires_at || tokenInfo.data.expires_at === 0;
-
-		await db
-			.update(club)
-			.set({
-				instagramUsername: igBusinessResponse.instagram_business_account.username,
-				instagramProfilePictureUrl: igBusinessResponse.instagram_business_account.profile_picture_url,
-				instagramAccessToken: nonExpiringToken,
-				instagramConnected: true,
-				instagramTokenExpiry: isPermanentToken
-					? null
-					: new Date((tokenInfo.data.expires_at || 0) * 1000).toISOString(),
-				instagramBusinessId: igBusinessResponse.instagram_business_account.id,
-				facebookPageId: pageId,
-				instagramTokenType: isPermanentToken ? "PERMANENT" : "TEMPORARY",
-				updatedAt: new Date().toISOString(),
-			})
-			.where(eq(club.id, clubId));
+		await connectPageToClub({
+			clubId,
+			pageId,
+			accessToken: validAccessToken,
+			userId: context.user.id,
+		});
 
 		// Cleanup session if it was used
 		if (sessionId) {
 			await db.delete(instagramPageSelection).where(eq(instagramPageSelection.id, sessionId));
 		}
 
-		await logClubAudit({
-			clubId,
-			actionType: "INSTAGRAM_CONNECT",
-			actionData: {
-				instagramUsername: igBusinessResponse.instagram_business_account.username,
-				pageId,
-			},
-			userId: context.user.id,
-		});
-
 		return response.json({ success: true });
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Select Facebook Page for Instagram",
@@ -701,7 +902,7 @@ clubsInstagramRouter.get(
 
 			// Fetch Instagram media
 			const mediaResponse = await fetch(
-				`https://graph.facebook.com/v19.0/${clubRecord.instagramBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${clubRecord.instagramAccessToken}`,
+				`https://graph.facebook.com/${GRAPH_API_VERSION}/${clubRecord.instagramBusinessId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username&limit=${limit}&access_token=${clubRecord.instagramAccessToken}`,
 			);
 
 			if (!mediaResponse.ok) {

@@ -1,6 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import { createUser, makeAdmin, type TestUser } from "../helpers/auth";
+import { createUser, makeAdmin, type TestUser, testDb } from "../helpers/auth";
 import { api } from "../helpers/client";
+
+/**
+ * The city reference table is not part of the test seed (only countries are), so a
+ * test that needs a real `cityId` inserts the one row it depends on.
+ */
+async function createCity(name: string, slug: string) {
+	const [row] = await testDb`
+		INSERT INTO "City" ("countryId", name, slug, "updatedAt")
+		VALUES ((SELECT id FROM "Country" LIMIT 1), ${name}, ${slug}, NOW())
+		RETURNING id`;
+	return row.id as number;
+}
 
 async function createUnclaimedClub(admin: TestUser, overrides: Record<string, unknown> = {}) {
 	const response = await api(admin.cookie).post("/api/admin/unclaimed-clubs", {
@@ -57,6 +69,68 @@ describe("admin unclaimed clubs", () => {
 		const admin = await makeAdmin(await createUser());
 		const response = await api(admin.cookie).post("/api/admin/unclaimed-clubs", {});
 		expect(response.status).toBe(400);
+	});
+
+	test("creating an unclaimed club with a cityId copies the city name and slug", async () => {
+		const admin = await makeAdmin(await createUser());
+		const slug = `zenica-${crypto.randomUUID().slice(0, 8)}`;
+		const cityId = await createCity("Zenica", slug);
+
+		const created = await createUnclaimedClub(admin, { cityId });
+
+		const get = await api(admin.cookie).get(`/api/admin/unclaimed-clubs/${created.id}`);
+		expect(get.status).toBe(200);
+		expect(get.body.cityId).toBe(cityId);
+		expect(get.body.city).toBe("Zenica");
+		expect(get.body.citySlug).toBe(slug);
+	});
+
+	test("an unclaimed club created without a cityId has no city columns", async () => {
+		const admin = await makeAdmin(await createUser());
+		const created = await createUnclaimedClub(admin);
+
+		const get = await api(admin.cookie).get(`/api/admin/unclaimed-clubs/${created.id}`);
+		expect(get.body.cityId).toBeNull();
+		expect(get.body.city).toBeNull();
+		expect(get.body.citySlug).toBeNull();
+	});
+
+	test("updating cityId rewrites the city columns, and null clears all three", async () => {
+		const admin = await makeAdmin(await createUser());
+		const slug = `tuzla-${crypto.randomUUID().slice(0, 8)}`;
+		const cityId = await createCity("Tuzla", slug);
+		const created = await createUnclaimedClub(admin);
+
+		const assigned = await api(admin.cookie).put(`/api/admin/unclaimed-clubs/${created.id}`, { cityId });
+		expect(assigned.status).toBe(200);
+
+		const afterAssign = await api(admin.cookie).get(`/api/admin/unclaimed-clubs/${created.id}`);
+		expect(afterAssign.body.city).toBe("Tuzla");
+		expect(afterAssign.body.citySlug).toBe(slug);
+
+		const cleared = await api(admin.cookie).put(`/api/admin/unclaimed-clubs/${created.id}`, { cityId: null });
+		expect(cleared.status).toBe(200);
+
+		const afterClear = await api(admin.cookie).get(`/api/admin/unclaimed-clubs/${created.id}`);
+		expect(afterClear.body.cityId).toBeNull();
+		expect(afterClear.body.city).toBeNull();
+		expect(afterClear.body.citySlug).toBeNull();
+	});
+
+	test("an unknown cityId is rejected rather than stored", async () => {
+		const admin = await makeAdmin(await createUser());
+
+		const created = await api(admin.cookie).post("/api/admin/unclaimed-clubs", {
+			name: "Ghost City Club",
+			cityId: 2_147_483_600,
+		});
+		expect(created.status).toBe(400);
+
+		const existing = await createUnclaimedClub(admin);
+		const updated = await api(admin.cookie).put(`/api/admin/unclaimed-clubs/${existing.id}`, {
+			cityId: 2_147_483_600,
+		});
+		expect(updated.status).toBe(400);
 	});
 
 	test("getting a non-existent unclaimed club returns 404", async () => {

@@ -2,14 +2,14 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Minus, Plus, Search, ShieldBan, X } from "lucide-react";
-import Image from "next/image";
+import { Minus, Plus, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -177,20 +177,7 @@ export function AllianceSheet({ selectedAlliance }: AllianceSheetProps) {
 													key={club.id}
 													className="flex items-center gap-3 p-2 rounded-md hover:bg-muted"
 												>
-													{club.logo ? (
-														<Image
-															src={club.logo}
-															alt={club.name}
-															width={40}
-															height={40}
-															className="w-10 h-10 object-contain rounded-md"
-															draggable={false}
-														/>
-													) : (
-														<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center">
-															<ShieldBan className="h-5 w-5 text-muted-foreground" />
-														</div>
-													)}
+													<ClubAvatar name={club.name} logo={club.logo} size={40} />
 													<div className="flex-1 min-w-0">
 														<p className="font-medium truncate">{club.name}</p>
 														{club.location && (
@@ -218,20 +205,11 @@ export function AllianceSheet({ selectedAlliance }: AllianceSheetProps) {
 													key={clubAlliance.club.id}
 													className="flex items-center gap-3 p-2 rounded-md border"
 												>
-													{clubAlliance.club.logo ? (
-														<Image
-															src={clubAlliance.club.logo}
-															alt={clubAlliance.club.name}
-															width={40}
-															height={40}
-															className="w-10 h-10 object-contain rounded-md"
-															draggable={false}
-														/>
-													) : (
-														<div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center">
-															<ShieldBan className="h-5 w-5 text-muted-foreground" />
-														</div>
-													)}
+													<ClubAvatar
+														name={clubAlliance.club.name}
+														logo={clubAlliance.club.logo}
+														size={40}
+													/>
 													<div className="flex-1 min-w-0">
 														<p className="font-medium truncate">{clubAlliance.club.name}</p>
 														{clubAlliance.club.location && (

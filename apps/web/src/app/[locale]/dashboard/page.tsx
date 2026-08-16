@@ -1,11 +1,9 @@
-import { Square } from "lucide-react";
-import Image from "next/image";
 import { getExtracted, getLocale } from "next-intl/server";
 import { ErrorPage } from "@/components/error-page";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import { Link, redirect } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import { isAuthenticated } from "@/lib/auth";
-import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -85,23 +83,11 @@ export default async function DashboardPage() {
 												{ROLE_MAPPING[membership.role]}
 											</p>
 										</div>
-										<div className="h-12 w-12">
-											{membership.club?.logo ? (
-												<Image
-													suppressHydrationWarning
-													width={IMAGE_SIZES.THUMBNAIL}
-													height={IMAGE_SIZES.THUMBNAIL}
-													sizes="48px"
-													src={membership.club.logo}
-													alt={membership.club.name}
-													className="h-full w-full object-contain"
-												/>
-											) : (
-												<div className="flex h-full w-full items-center justify-center">
-													<Square className="h-6 w-6 text-muted-foreground" />
-												</div>
-											)}
-										</div>
+										<ClubAvatar
+											name={membership.club?.name ?? ""}
+											logo={membership.club?.logo}
+											size={48}
+										/>
 									</div>
 
 									{/* Club Stats */}

@@ -91,19 +91,26 @@ export default function InstagramPageSelection() {
 	};
 
 	// Complete the connection with selected page
-	const handleConnect = () => {
-		if (!selectedPageId) return;
+	const handleConnect = async () => {
+		if (!(selectedPageId && sessionId)) return;
 
 		setIsConnecting(true);
 
 		try {
-			const selectedPage = pages.find((page) => page.id === selectedPageId);
-			if (!selectedPage) {
-				throw new Error(t("Selected page not found"));
+			// The access token stays server-side: the backend looks it up from the
+			// session rather than taking it back off the URL.
+			const { error } = await apiClient.POST("/api/clubs/{id}/instagram/select-page", {
+				params: { path: { id: params.clubId } },
+				body: { pageId: selectedPageId, sessionId },
+			});
+
+			if (error) {
+				setError(error.error || t("Failed to connect Instagram account"));
+				setIsConnecting(false);
+				return;
 			}
 
-			// Redirect to the callback route with the selected page ID and its page-specific access token
-			window.location.href = `/api/club/instagram/callback?pageId=${selectedPageId}&accessToken=${encodeURIComponent(selectedPage.access_token)}&state=${params.clubId}`;
+			window.location.href = `/dashboard/${params.clubId}/club/information?instagramSuccess=true#instagram`;
 		} catch (err) {
 			setError(err instanceof Error ? err.message : t("Failed to connect Instagram account"));
 			setIsConnecting(false);

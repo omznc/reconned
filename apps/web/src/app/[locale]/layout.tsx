@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Archivo_Narrow, Geist, Geist_Mono } from "next/font/google";
 import { AxiomWebVitals } from "next-axiom";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getExtracted, getMessages, setRequestLocale } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { SportsOrganization, WebSite, WithContext } from "schema-dts";
 import { Toaster } from "sonner";
+import { ConsentBanner } from "@/components/consent-banner";
 import { ErrorPage } from "@/components/error-page";
 import { FeatureFlagsWrapper } from "@/components/feature-flags-wrapper";
 import { FontBody } from "@/components/font-body";
 import JsonLdScript from "@/components/json-ld-script";
 import { FontProvider } from "@/components/personalization/font/font-provider";
 import { SessionPersonalization } from "@/components/personalization/session-personalization";
-import { StyleProvider } from "@/components/personalization/style/style-provider";
 import { ThemeProvider } from "@/components/personalization/theme/theme-provider";
 import PosthogIdentify from "@/components/posthog-identify";
 import { Providers } from "@/components/providers";
@@ -32,6 +32,26 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
 	fallback: ["monospace"],
 	subsets: ["latin"],
+});
+
+// Identity marks only — club and person initials. Exposed as CSS variables on
+// <html> rather than applied to <body>, so they survive the user's Sans/Mono
+// body-font preference: an avatar's initials are part of the mark, not the copy.
+// latin-ext carries the diacritics in Bosnian, Croatian and Serbian names.
+const archivo = Archivo({
+	fallback: ["sans-serif"],
+	subsets: ["latin", "latin-ext"],
+	weight: ["600"],
+	variable: "--font-archivo",
+	display: "swap",
+});
+
+const archivoNarrow = Archivo_Narrow({
+	fallback: ["sans-serif"],
+	subsets: ["latin", "latin-ext"],
+	weight: ["700"],
+	variable: "--font-archivo-narrow",
+	display: "swap",
 });
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
@@ -59,7 +79,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	// meant an HTTP round-trip to the backend on every render (including anonymous
 	// traffic) and forced the whole route tree to render dynamically.
 	const font = "mono" as const;
-	const style = "relaxed" as const;
 	const theme = "dark" as const;
 
 	const websiteSchema = {
@@ -104,7 +123,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 	};
 
 	return (
-		<html lang={locale} suppressHydrationWarning>
+		<html lang={locale} className={`${archivo.variable} ${archivoNarrow.variable}`} suppressHydrationWarning>
 			<head>
 				<meta name="darkreader-lock" />
 				<JsonLdScript data={websiteSchema} />
@@ -115,35 +134,34 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 			<WebMCP />
 			<NextIntlClientProvider locale={locale} messages={messages}>
 				<FontProvider initial={font}>
-					<StyleProvider initial={style}>
-						<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
-							<ThemeProvider
-								attribute="class"
-								defaultTheme={theme}
-								enableSystem={false}
-								disableTransitionOnChange
-							>
-								<Toaster
-									richColors
-									toastOptions={{
-										classNames: {
-											toast: "rounded-none",
-										},
-									}}
-								/>
-								<NuqsAdapter>
-									<Providers>
-										<TooltipProvider>
-											<FeatureFlagsWrapper>
-												<SessionPersonalization />
-												<AlertDialogProvider>{children}</AlertDialogProvider>
-											</FeatureFlagsWrapper>
-										</TooltipProvider>
-									</Providers>
-								</NuqsAdapter>
-							</ThemeProvider>
-						</FontBody>
-					</StyleProvider>
+					<FontBody geistMonoVariable={geistMono.className} geistSansVariable={geistSans.className}>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme={theme}
+							enableSystem={false}
+							disableTransitionOnChange
+						>
+							<Toaster
+								richColors
+								toastOptions={{
+									classNames: {
+										toast: "rounded-none",
+									},
+								}}
+							/>
+							<NuqsAdapter>
+								<Providers>
+									<TooltipProvider>
+										<FeatureFlagsWrapper>
+											<SessionPersonalization />
+											<ConsentBanner />
+											<AlertDialogProvider>{children}</AlertDialogProvider>
+										</FeatureFlagsWrapper>
+									</TooltipProvider>
+								</Providers>
+							</NuqsAdapter>
+						</ThemeProvider>
+					</FontBody>
 				</FontProvider>
 			</NextIntlClientProvider>
 		</html>

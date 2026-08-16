@@ -25,24 +25,13 @@ const localesString = routing.locales.map((locale) => `${locale}`).join("|");
 const nextConfig = {
 	output: "standalone",
 	reactStrictMode: true,
-	// `typescript.ignoreBuildErrors` used to be set here. The only thing it was still hiding was a
-	// dead shadcn `ui/calendar` wrapper written against react-day-picker v8; that component was
-	// never rendered and has been removed, so the build type-checks cleanly and the gate is back on.
-	// typedRoutes: true, // Disabled - causes build errors with missing AppRouteHandlerRoutes
 	reactCompiler: true,
 	experimental: {
+		// turbopackRustReactCompiler: true,
 		staleTimes: {
-			// Client Router Cache. `dynamic` was 30s, which meant navigating back to a
-			// page replayed a up-to-30s-old RSC payload without hitting the server —
-			// the classic "I edited something, went back, and saw the old data" bug.
-			// React Query already owns freshness for client-fetched data, so the router
-			// cache was only ever masking updates to server-rendered content. 0 (the
-			// Next default) refetches the RSC payload on navigation; prefetching still
-			// keeps this cheap.
 			dynamic: 0,
 			static: 180,
 		},
-		viewTransition: true,
 		serverComponentsHmrCache: true,
 	},
 	images: {

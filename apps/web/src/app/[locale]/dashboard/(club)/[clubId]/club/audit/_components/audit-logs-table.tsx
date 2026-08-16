@@ -204,7 +204,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 
 					<div>
 						<h3 className="text-sm font-medium">{t("User")}</h3>
-						<p className="mt-1 text-sm">
+						<p className="ph-mask mt-1 text-sm">
 							{log.user?.name || "-"} ({log.user?.email || "-"})
 						</p>
 					</div>
@@ -212,7 +212,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 					{log.ipAddress && (
 						<div>
 							<h3 className="text-sm font-medium">{t("IP address")}</h3>
-							<p className="mt-1 font-mono text-sm">{log.ipAddress}</p>
+							<p className="ph-mask mt-1 font-mono text-sm">{log.ipAddress}</p>
 						</div>
 					)}
 

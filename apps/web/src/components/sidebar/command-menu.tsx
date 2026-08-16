@@ -2,8 +2,7 @@
 
 import type { User } from "better-auth";
 import Fuse from "fuse.js";
-import { Building2, Settings, Square } from "lucide-react";
-import Image from "next/image";
+import { Building2, Settings } from "lucide-react";
 import { useExtracted } from "next-intl";
 import {
 	createContext,
@@ -19,6 +18,7 @@ import {
 } from "react";
 import { type DashboardClubs, useClubs } from "@/components/clubs-provider";
 import { useCurrentClub } from "@/components/current-club-provider";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import {
 	flattenNavigationItems,
 	useAppNavigationItems,
@@ -288,20 +288,12 @@ export function CommandMenu({ user }: CommandMenuProps) {
 													<span className="text-xs text-muted-foreground">
 														{item.club.name}
 													</span>
-													<div className="flex h-5 w-5 items-center justify-center">
-														{item.club.logo ? (
-															<Image
-																suppressHydrationWarning={true}
-																width={20}
-																height={20}
-																src={item.club.logo}
-																alt={item.club.name}
-																className="rounded-sm"
-															/>
-														) : (
-															<Square className="h-4 w-4" />
-														)}
-													</div>
+													<ClubAvatar
+														name={item.club.name}
+														logo={item.club.logo}
+														tile={item.club.logoTile}
+														size={20}
+													/>
 												</div>
 											)}
 										</CommandItem>
@@ -325,7 +317,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 								</div>
 								<div className="flex flex-col">
 									<span className="font-medium">{user?.name}</span>
-									<span className="text-xs text-muted-foreground">{user?.email}</span>
+									<span className="ph-mask text-xs text-muted-foreground">{user?.email}</span>
 								</div>
 							</CommandItem>
 							<CommandItem

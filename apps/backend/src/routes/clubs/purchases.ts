@@ -2,8 +2,9 @@ import { AppError, apiError, Router } from "@reconned/router";
 import { and, count, desc, eq } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { clubMembership, clubPurchase } from "../../drizzle/schema";
+import { clubPurchase } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 import { deleteS3Files, getS3UploadUrl } from "../../lib/storage";
@@ -35,17 +36,7 @@ clubsPurchasesRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const { page, perPage } = query;
 		const offset = (page - 1) * perPage;
@@ -106,17 +97,7 @@ clubsPurchasesRouter.get(
 			throw apiError.validation("Club ID and Purchase ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const purchaseData = await db
 			.select()
@@ -166,17 +147,7 @@ clubsPurchasesRouter.post(
 			throw apiError.validation("Maximum 3 receipts per item");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const purchaseId = crypto.randomUUID();
 
@@ -214,6 +185,7 @@ clubsPurchasesRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Create club purchase",
@@ -251,17 +223,7 @@ clubsPurchasesRouter.put(
 			throw apiError.validation("Maximum 3 receipts per item");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const purchaseData = await db
 			.select()
@@ -306,6 +268,7 @@ clubsPurchasesRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club purchase",
@@ -339,17 +302,7 @@ clubsPurchasesRouter.delete(
 			throw apiError.validation("Club ID and Purchase ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const purchaseData = await db
 			.select()
@@ -384,6 +337,7 @@ clubsPurchasesRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["club:{id}"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club purchase",
@@ -412,17 +366,7 @@ clubsPurchasesRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const secureFilename = `${Date.now()}_${body.file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
 		const key = `receipt/${clubId}/${secureFilename}`;

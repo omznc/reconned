@@ -2,8 +2,10 @@ import { apiError, Router } from "@reconned/router";
 import { and, eq } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { clubMembership, clubRule } from "../../drizzle/schema";
+import { clubRule } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { bustRouteCache } from "../../lib/cache-bust";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 
 const clubsRulesRouter = new Router();
@@ -25,17 +27,7 @@ clubsRulesRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const rules = await db.select().from(clubRule).where(eq(clubRule.clubId, clubId));
 
@@ -58,7 +50,12 @@ clubsRulesRouter.get(
 				401: z.object({ error: z.string() }),
 				403: z.object({ error: z.string() }),
 			},
-			mcpTool: true,
+			// Named explicitly: the generated name would collide with the by-ID route below,
+			// and a collision silently drops one of the two tools.
+			mcpTool: {
+				name: "list_club_rules",
+				description: "List all rules for a club",
+			},
 		},
 	},
 );
@@ -73,17 +70,7 @@ clubsRulesRouter.get(
 			throw apiError.validation("Club ID and Rule ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const ruleData = await db
 			.select()
@@ -130,17 +117,7 @@ clubsRulesRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const ruleId = crypto.randomUUID();
 
@@ -208,17 +185,7 @@ clubsRulesRouter.put(
 			throw apiError.validation("Club ID and Rule ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const ruleData = await db
 			.select()
@@ -243,6 +210,12 @@ clubsRulesRouter.put(
 
 		if (!updatedRule[0]) {
 			throw apiError.validation("Failed to update rule");
+		}
+
+		// A rule attached to an event is served from `event:{id}:rules`, which this route's
+		// params can't name — it only knows the club and the rule.
+		if (updatedRule[0].eventId) {
+			await bustRouteCache([`event:${updatedRule[0].eventId}`]);
 		}
 
 		await logClubAudit({
@@ -294,17 +267,7 @@ clubsRulesRouter.delete(
 			throw apiError.validation("Club ID and Rule ID are required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const ruleData = await db
 			.select()
@@ -317,6 +280,11 @@ clubsRulesRouter.delete(
 		}
 
 		await db.delete(clubRule).where(eq(clubRule.id, ruleId));
+
+		// See the update route: an event-attached rule is cached under the event, not the club.
+		if (ruleData[0].eventId) {
+			await bustRouteCache([`event:${ruleData[0].eventId}`]);
+		}
 
 		await logClubAudit({
 			clubId,

@@ -1,13 +1,20 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { instrument } from "@posthog/mcp";
 import type { Router } from "@reconned/router";
 import { eq } from "drizzle-orm";
+import { PostHog } from "posthog-node";
 import { user as userTable } from "../drizzle/schema";
 import { auth } from "../lib/auth";
 import { db } from "../lib/db";
 import { env } from "../lib/env";
 import { executeMcpTool, extractMcpTools, isWriteTool } from "../lib/mcp-bridge";
+
+export const mcpPosthog = new PostHog(env.POSTHOG_PUBLIC_KEY, {
+	host: process.env.POSTHOG_HOST ?? "https://eu.i.posthog.com",
+	enableExceptionAutocapture: true,
+});
 
 type McpUser = { id: string; email: string; name: string; role?: string };
 
@@ -150,9 +157,40 @@ export async function handleMCPRequest(request: Request, router: Router): Promis
 			return executeMcpTool(name, args ?? {}, authUser, router);
 		});
 
-		const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+		// Must come after the handlers are registered: instrument() wraps whatever
+		// tools/call handler exists at call time, and a later setRequestHandler for
+		// tools/call replaces its wrapper outright — so instrumenting first silently
+		// drops every tool-call event.
+		instrument(server, mcpPosthog, {
+			identify: async () => ({ distinctId: userId }),
+			// The identify hook only runs on initialize and tools/call, so tools/list events
+			// fall back to the session id as their distinct_id and land on a separate,
+			// anonymous person. We've already authenticated the caller for this entire
+			// request, so pin every event to them rather than letting attribution split.
+			beforeSend: (event) => {
+				event.distinct_id = userId;
+				return event;
+			},
+			// @posthog/mcp's logger is a no-op until one is supplied, so without this every
+			// warning it raises — including "failed to instrument server" — is dropped and
+			// analytics go silently dark.
+			logger: (message) => console.error("[MCP analytics]", message),
+		});
+
+		// enableJsonResponse is what makes analytics sessions hold together. We're stateless
+		// (sessionIdGenerator: undefined), so @posthog/mcp recovers session continuity by
+		// minting a token into the Mcp-Session-Id response header that clients replay on every
+		// request. That header only reaches the wire when response headers are built after the
+		// handler runs — in SSE mode they're flushed first, the mint is a no-op, and every tool
+		// call looks like a brand-new session.
+		const transport = new WebStandardStreamableHTTPServerTransport({
+			sessionIdGenerator: undefined,
+			enableJsonResponse: true,
+		});
 		await server.connect(transport);
-		return transport.handleRequest(request);
+		const response = await transport.handleRequest(request);
+		mcpPosthog.flush().catch(() => {});
+		return response;
 	} catch (error) {
 		console.error("[MCP] Internal error:", error);
 		const message = error instanceof Error ? error.message : String(error);

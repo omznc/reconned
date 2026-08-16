@@ -10,6 +10,8 @@ import { clubInvite, clubMembership } from "../drizzle/schema";
 import EmailVerification from "../emails/email-verification";
 import PasswordReset from "../emails/password-reset";
 import { userAdditionalFields } from "./auth-fields";
+import { bustRouteCache, clubMembershipCacheKeys } from "./cache-bust";
+import { CLEAR_ARCHIVE } from "./club-access";
 import { db } from "./db";
 import { getEmailMessages } from "./email-messages";
 import { env } from "./env";
@@ -152,7 +154,6 @@ export const auth = betterAuth({
 				distinctId: user.id,
 				event: "password_reset_email_sent",
 				properties: {
-					email: user.email,
 					language,
 				},
 			});
@@ -198,7 +199,6 @@ export const auth = betterAuth({
 				distinctId: user.id,
 				event: "email_verification_sent",
 				properties: {
-					email: user.email,
 					language,
 				},
 			});
@@ -264,7 +264,6 @@ export const auth = betterAuth({
 						distinctId: user.id,
 						event: "user_signed_up",
 						properties: {
-							email: user.email,
 							method: authMethodFromPath(ctx?.path, ctx?.params),
 						},
 					});
@@ -311,7 +310,9 @@ export const auth = betterAuth({
 										)
 										.limit(1);
 
-									if (existingMembership.length === 0) {
+									const priorMembership = existingMembership[0];
+
+									if (!priorMembership) {
 										await tx.insert(clubMembership).values({
 											id: crypto.randomUUID(),
 											userId: user.id,
@@ -320,8 +321,22 @@ export const auth = betterAuth({
 											createdAt: new Date().toISOString(),
 											updatedAt: new Date().toISOString(),
 										});
+									} else if (priorMembership.status === "ARCHIVED") {
+										// Accepting a fresh invite brings an archived membership back.
+										await tx
+											.update(clubMembership)
+											.set({
+												...CLEAR_ARCHIVE,
+												role: "USER",
+												updatedAt: new Date().toISOString(),
+											})
+											.where(eq(clubMembership.id, priorMembership.id));
 									}
 								});
+
+								// The club just gained a member, but this runs from an auth hook rather
+								// than a club route, so nothing busts the roster cache for us.
+								await bustRouteCache(clubMembershipCacheKeys(invite.clubId));
 							} catch (error) {
 								logger.error(`Failed to process invite ${invite.id}:`, { error });
 							}

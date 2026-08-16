@@ -1,15 +1,14 @@
 "use client";
 
 import { ArrowUpRight, Settings } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { ClubsSheet } from "@/app/[locale]/dashboard/(platform)/admin/clubs/_components/clubs.sheet";
 import { GenericDataTable } from "@/components/generic-data-table";
+import { ClubAvatar } from "@/components/identity/club-avatar";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
-import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 type AdminClub = ApiResponse<"/api/admin/clubs", "get">["clubs"][number];
 
@@ -35,18 +34,7 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 						header: "Logo",
 						cellConfig: {
 							variant: "custom",
-							component: (_, club) =>
-								club.logo ? (
-									<Image
-										src={club.logo}
-										alt="Logo"
-										width={IMAGE_SIZES.THUMBNAIL}
-										height={IMAGE_SIZES.THUMBNAIL}
-										className="object-contain max-h-12"
-									/>
-								) : (
-									<div className="w-8 h-8 bg-gray-200" />
-								),
+							component: (_, club) => <ClubAvatar name={club.name} logo={club.logo} size={40} />,
 						},
 					},
 					{

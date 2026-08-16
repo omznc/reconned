@@ -231,7 +231,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 				<div className="flex items-center gap-3 min-w-0">
 					<Avatar className="h-8 w-8">
 						<AvatarImage src={person.image || ""} />
-						<AvatarFallback name={person.name} className="text-xs" />
+						<AvatarFallback name={person.name} />
 					</Avatar>
 					<div className="flex flex-col min-w-0">
 						<span className="text-sm truncate">{person.name}</span>

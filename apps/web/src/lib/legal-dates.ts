@@ -4,5 +4,5 @@
  *
  * Bump these when the corresponding document actually changes.
  */
-export const PRIVACY_POLICY_LAST_UPDATED = new Date("2025-12-21");
+export const PRIVACY_POLICY_LAST_UPDATED = new Date("2026-08-04");
 export const TERMS_OF_USE_LAST_UPDATED = new Date("2025-04-13");

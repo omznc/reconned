@@ -6,7 +6,7 @@ import { club, clubMembership, event, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
-import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
+import { logoTileOf, logoTileResponseSchema, paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
 
 const utilsRouter = new Router();
 
@@ -72,6 +72,7 @@ utilsRouter.get(
 					count: count().as("member_count"),
 				})
 				.from(clubMembership)
+				.where(eq(clubMembership.status, "ACTIVE"))
 				.groupBy(clubMembership.clubId)
 				.as("club_member_counts");
 
@@ -82,6 +83,7 @@ utilsRouter.get(
 						name: club.name,
 						slug: club.slug,
 						logo: club.logo,
+						logoTile: club.logoTile,
 						location: club.location,
 						verified: club.verified,
 						memberCount: sql<number>`COALESCE(${clubMemberCounts.count}, 0)`,
@@ -108,6 +110,7 @@ utilsRouter.get(
 						name: c.name,
 						slug: c.slug,
 						logo: c.logo,
+						logoTile: logoTileOf(c.logoTile),
 						location: c.location,
 						verified: c.verified,
 						_count: { members: Number(c.memberCount) },
@@ -201,7 +204,7 @@ utilsRouter.get(
 				const userClubMemberships = await db
 					.select({ clubId: clubMembership.clubId })
 					.from(clubMembership)
-					.where(eq(clubMembership.userId, requestingUserId));
+					.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 				const userClubIds = userClubMemberships.map((m) => m.clubId);
 
@@ -324,6 +327,7 @@ utilsRouter.get(
 					name: z.string(),
 					slug: z.string().nullable(),
 					logo: z.string().nullable(),
+					logoTile: logoTileResponseSchema,
 					location: z.string().nullable(),
 					verified: z.boolean(),
 					_count: z.object({ members: z.number() }),
@@ -361,8 +365,13 @@ utilsRouter.get(
 			summary: "Search clubs, users, and events",
 			description: "Unified search across clubs, users, and events with pagination and type filtering",
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
-				filter: z.string().optional(),
+				search: z.string().optional().describe("Free-text query matched against club, user, and event names"),
+				filter: z
+					.string()
+					.optional()
+					.describe(
+						'Comma-separated result types to include: "club", "user", "event". Defaults to all three.',
+					),
 			}),
 			response: {
 				200: z.object({
@@ -378,6 +387,7 @@ utilsRouter.get(
 									name: z.string(),
 									slug: z.string().nullable(),
 									logo: z.string().nullable(),
+									logoTile: logoTileResponseSchema,
 									location: z.string().nullable(),
 									verified: z.boolean(),
 									_count: z.object({ members: z.number() }),
@@ -401,6 +411,11 @@ utilsRouter.get(
 					),
 					pagination: paginationResponseSchema,
 				}),
+			},
+			mcpTool: {
+				name: "search",
+				description:
+					"Search clubs, users, and events by name in one call. Prefer this over paging list_clubs/list_users/list_events when looking something up by name.",
 			},
 		},
 	},

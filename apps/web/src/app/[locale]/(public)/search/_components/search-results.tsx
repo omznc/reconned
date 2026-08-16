@@ -14,6 +14,14 @@ import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 const ITEMS_PER_PAGE = 20;
 
+/*
+ * Search mixes clubs, people and events, and their card shapes have wildly
+ * different natural heights — a grid of them left ragged holes wherever a
+ * person landed next to a club. Rows give every result the same height and let
+ * each type keep its own leading mark, which is the part that tells them apart.
+ */
+const RESULT_GRID = "grid grid-cols-1 gap-3 lg:grid-cols-2";
+
 type SearchResponse = ApiResponse<"/api/search", "get">;
 type SearchItem = NonNullable<SearchResponse["items"]>[number];
 
@@ -105,9 +113,13 @@ export function SearchResults() {
 		<TooltipProvider>
 			<div className="space-y-4">
 				{isLoading && allItems.length === 0 ? (
-					<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+					<div className={RESULT_GRID}>
 						{Array.from({ length: 12 }).map((_, i) => (
-							<ListingCardSkeleton key={i} type={i % 3 === 0 ? "event" : i % 3 === 1 ? "club" : "user"} />
+							<ListingCardSkeleton
+								key={i}
+								variant="row"
+								type={i % 3 === 0 ? "event" : i % 3 === 1 ? "club" : "user"}
+							/>
 						))}
 					</div>
 				) : error ? (
@@ -124,15 +136,17 @@ export function SearchResults() {
 					</div>
 				) : (
 					<>
-						<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+						<div className={RESULT_GRID}>
 							{allItems.map((item) => {
 								if (item.type === "club") {
 									const club = item.data as Extract<SearchItem, { type: "club" }>["data"];
 									return (
 										<ListingCard
 											key={`club-${item.id}`}
+											variant="row"
 											type="club"
 											image={club.logo}
+											tile={club.logoTile}
 											title={club.name}
 											href={`/clubs/${club.slug || club.id}`}
 											verified={club.verified}
@@ -148,6 +162,7 @@ export function SearchResults() {
 									return (
 										<ListingCard
 											key={`user-${item.id}`}
+											variant="row"
 											type="user"
 											image={user.image}
 											name={user.name}
@@ -173,6 +188,7 @@ export function SearchResults() {
 									return (
 										<ListingCard
 											key={`event-${item.id}`}
+											variant="row"
 											type="event"
 											image={event.image || undefined}
 											title={event.name}
@@ -191,9 +207,9 @@ export function SearchResults() {
 						</div>
 
 						{isFetchingNextPage && (
-							<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+							<div className={RESULT_GRID}>
 								{Array.from({ length: 4 }).map((_, i) => (
-									<ListingCardSkeleton key={`loading-${i}`} type="club" />
+									<ListingCardSkeleton key={`loading-${i}`} variant="row" type="club" />
 								))}
 							</div>
 						)}
