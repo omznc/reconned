@@ -92,9 +92,7 @@ export function UserSwitcher(props: { user: User }) {
 						<DropdownMenuItem asChild={true}>
 							<FontSwitcher />
 						</DropdownMenuItem>
-						<DropdownMenuItem asChild={true}>
-							<LanguageSwitcher className="w-full justify-start" />
-						</DropdownMenuItem>
+						<LanguageSwitcher className="justify-start" withinMenu={true} />
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild={true}>
 							<Button
