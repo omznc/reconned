@@ -8,6 +8,17 @@ import { redis } from "./redis";
 const CACHE_KEY_PREFIX = "feature_flag:";
 const CACHE_TTL = 300;
 
+function logFlagError(body: string, flagName: string, error: unknown) {
+	logger.emit({
+		severityText: "error",
+		body,
+		attributes: {
+			flagName,
+			error: error instanceof Error ? error.message : String(error),
+		},
+	});
+}
+
 export async function isFeatureEnabled(flagName: string): Promise<boolean> {
 	const cacheKey = `${CACHE_KEY_PREFIX}${flagName}`;
 
@@ -16,29 +27,31 @@ export async function isFeatureEnabled(flagName: string): Promise<boolean> {
 		if (cached !== null) {
 			return cached === "1" || cached === "true";
 		}
+	} catch (error) {
+		logFlagError("Error reading feature flag cache", flagName, error);
+	}
 
+	let enabled: boolean;
+	try {
 		const flag = await db
 			.select({ enabled: featureFlag.enabled })
 			.from(featureFlag)
 			.where(eq(featureFlag.name, flagName))
 			.limit(1);
 
-		const enabled = flag[0]?.enabled ?? false;
-
-		await redis.setex(cacheKey, CACHE_TTL, enabled ? "1" : "0");
-
-		return enabled;
+		enabled = flag[0]?.enabled ?? false;
 	} catch (error) {
-		logger.emit({
-			severityText: "error",
-			body: "Error checking feature flag",
-			attributes: {
-				flagName,
-				error: error instanceof Error ? error.message : String(error),
-			},
-		});
+		logFlagError("Error checking feature flag", flagName, error);
 		return false;
 	}
+
+	try {
+		await redis.setex(cacheKey, CACHE_TTL, enabled ? "1" : "0");
+	} catch (error) {
+		logFlagError("Error writing feature flag cache", flagName, error);
+	}
+
+	return enabled;
 }
 
 export async function getEnabledFlags(): Promise<Record<string, boolean>> {

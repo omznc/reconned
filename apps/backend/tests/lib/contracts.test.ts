@@ -1,4 +1,5 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
+import { RedisClient } from "bun";
 // `validation-contracts.ts` imports nothing but zod, so it is safe to import statically.
 import { createHttpsUrlSchema, isHttpsUrl, normalizeWebsiteUrl } from "../../src/lib/validation-contracts";
 import { createUser, makeAdmin, testDb } from "../helpers/auth";
@@ -249,6 +250,34 @@ describe("feature-flags direct unit coverage", () => {
 		const flagName = `TEST_FLAG_UNKNOWN_${crypto.randomUUID().slice(0, 8)}`;
 		const enabled = await isFeatureEnabled(flagName);
 		expect(enabled).toBeFalse();
+	});
+
+	test("isFeatureEnabled() falls back to the DB when the Redis read fails", async () => {
+		const { isFeatureEnabled } = await loadFeatureFlagsModule();
+		const flagName = `TEST_FLAG_${crypto.randomUUID().slice(0, 8)}`;
+		await testDb`INSERT INTO "FeatureFlag" (id, name, enabled) VALUES (${crypto.randomUUID()}, ${flagName}, true)`;
+
+		const getSpy = spyOn(RedisClient.prototype, "get").mockRejectedValue(new Error("redis read failed"));
+		try {
+			expect(await isFeatureEnabled(flagName)).toBeTrue();
+		} finally {
+			getSpy.mockRestore();
+		}
+	});
+
+	test("isFeatureEnabled() returns the DB value when the Redis write fails", async () => {
+		const { isFeatureEnabled } = await loadFeatureFlagsModule();
+		const redis = await loadRedis();
+		const flagName = `TEST_FLAG_${crypto.randomUUID().slice(0, 8)}`;
+		await redis.del(`feature_flag:${flagName}`);
+		await testDb`INSERT INTO "FeatureFlag" (id, name, enabled) VALUES (${crypto.randomUUID()}, ${flagName}, true)`;
+
+		const setexSpy = spyOn(RedisClient.prototype, "setex").mockRejectedValue(new Error("redis write failed"));
+		try {
+			expect(await isFeatureEnabled(flagName)).toBeTrue();
+		} finally {
+			setexSpy.mockRestore();
+		}
 	});
 });
 
