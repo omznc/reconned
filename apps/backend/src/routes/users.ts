@@ -1884,7 +1884,6 @@ usersRouter.post(
 		const userData = await db
 			.select({
 				id: user.id,
-				email: user.email,
 				twoFactorEnabled: user.twoFactorEnabled,
 			})
 			.from(user)
@@ -2024,9 +2023,6 @@ usersRouter.post(
 		posthog.capture({
 			distinctId: userId,
 			event: "user_account_deleted",
-			properties: {
-				email: userData[0].email,
-			},
 		});
 
 		return response.json({ success: true });

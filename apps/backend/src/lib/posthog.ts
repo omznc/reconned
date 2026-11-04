@@ -23,10 +23,13 @@ const POSTHOG_HOST = "https://eu.i.posthog.com";
 
 export const posthog = new PostHog(POSTHOG_PUBLIC_KEY, {
 	host: POSTHOG_HOST,
-	// POSTHOG_LOGS_ENABLED doubles as the telemetry kill-switch for tests: with it off, neither
-	// the OTLP exporter below nor analytics capture may hit the network.
-	disabled: !env.POSTHOG_LOGS_ENABLED,
+	disabled: !env.POSTHOG_ANALYTICS_ENABLED,
 });
+
+// Stdout, so a wrong key or a disabled toggle shows in the container logs even when PostHog gets nothing.
+console.log(
+	`PostHog: analytics ${env.POSTHOG_ANALYTICS_ENABLED ? "on" : "off"}, logs ${env.POSTHOG_LOGS_ENABLED ? "on" : "off"}, key ${POSTHOG_PUBLIC_KEY.slice(0, 8)}…, host ${POSTHOG_HOST}`,
+);
 
 // Set up OpenTelemetry logging
 const logExporter = new OTLPLogExporter({
