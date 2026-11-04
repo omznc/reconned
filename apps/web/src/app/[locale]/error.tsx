@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLogger } from "next-axiom";
 import { useExtracted } from "next-intl";
+import posthog from "posthog-js";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +15,8 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
 	const t = useExtracted();
 
 	useEffect(() => {
+		posthog.captureException(error, { digest: error.digest });
+
 		if (!logger) return;
 
 		logger.error("Global error", {
