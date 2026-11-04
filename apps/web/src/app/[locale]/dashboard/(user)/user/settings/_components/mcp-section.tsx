@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import apiClient from "@/lib/api/api.client";
 
 interface ApiKey {
 	id: string;
@@ -37,14 +38,13 @@ export function McpSection() {
 	const fetchKeys = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const res = await fetch("/api/api-keys", { credentials: "include" });
-			if (!res.ok) {
+			const { data, error } = await apiClient.GET("/api/api-keys");
+			if (error) {
 				toast.error(t("An error occurred"));
 				return;
 			}
-			const data = await res.json();
 			// Map apiKeys array to our expected shape
-			const apiKeys = (data.apiKeys || []).map((k: Record<string, unknown>) => ({
+			const apiKeys = data.apiKeys.map((k) => ({
 				id: String(k.id),
 				name: String(k.name || ""),
 				prefix: String(k.prefix || k.start || ""),
@@ -69,17 +69,12 @@ export function McpSection() {
 
 		setIsLoading(true);
 		try {
-			const res = await fetch("/api/api-keys", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ name: newKeyName.trim() }),
-				credentials: "include",
+			const { data, error } = await apiClient.POST("/api/api-keys", {
+				body: { name: newKeyName.trim() },
 			});
 
-			const data = await res.json();
-
-			if (!res.ok) {
-				toast.error(data.error || t("An error occurred"));
+			if (error) {
+				toast.error(error.error || t("An error occurred"));
 				return;
 			}
 
@@ -97,15 +92,12 @@ export function McpSection() {
 	async function handleRevokeKey(keyId: string) {
 		setIsLoading(true);
 		try {
-			const res = await fetch(`/api/api-keys/${keyId}/revoke`, {
-				method: "POST",
-				credentials: "include",
+			const { error } = await apiClient.POST("/api/api-keys/{id}/revoke", {
+				params: { path: { id: keyId } },
 			});
 
-			const data = await res.json();
-
-			if (!res.ok) {
-				toast.error(data.error || t("An error occurred"));
+			if (error) {
+				toast.error(error.error || t("An error occurred"));
 				return;
 			}
 
