@@ -107,6 +107,12 @@ export const env = createEnv({
 			.transform((val) => val === "true")
 			.describe("Enable or disable PostHog logging"),
 
+		POSTHOG_ANALYTICS_ENABLED: z
+			.enum(["true", "false"])
+			.default("true")
+			.transform((val) => val === "true")
+			.describe("Enable or disable PostHog analytics capture"),
+
 		FACEBOOK_APP_ID: z
 			.string()
 			.min(1, "FACEBOOK_APP_ID is required for Facebook OAuth")
@@ -121,7 +127,7 @@ export const env = createEnv({
 
 		POSTHOG_PUBLIC_KEY: z
 			.string()
-			.min(1, "POSTHOG_PUBLIC_KEY is required for PostHog logging")
+			.min(1, "POSTHOG_PUBLIC_KEY is required for PostHog analytics and logging")
 			.describe("PostHog public API key"),
 
 		CI: z.string().optional().describe("CI environment indicator"),
