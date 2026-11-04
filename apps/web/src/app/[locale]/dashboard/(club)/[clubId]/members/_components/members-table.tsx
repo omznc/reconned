@@ -3,7 +3,7 @@
 import { Calendar, LogOut, UserCircle, UserMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { MembershipExtensionForm } from "@/app/[locale]/dashboard/(club)/[clubId]/members/_components/membership-extension.form";
 import { GenericDataTable } from "@/components/generic-data-table";
@@ -15,6 +15,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import type { ClubMembership } from "@/lib/api/api-type-helpers";
+import { formatDate } from "@/lib/date-locale";
 
 interface MembersTableProps {
 	members: (ClubMembership & {
@@ -34,6 +35,10 @@ export function MembersTable(props: MembersTableProps) {
 	const t = useExtracted();
 	const locale = useLocale();
 	const router = useRouter();
+	// `now` stays null on the server and on the first client render, so the
+	// time-based status matches during hydration. The effect then sets the real
+	// time on the client only.
+	const [now, setNow] = useState<Date | null>(null);
 	const [membershipToExtend, setMembershipToExtend] = useState<
 		| (ClubMembership & {
 				userName: string;
@@ -41,6 +46,10 @@ export function MembersTable(props: MembersTableProps) {
 		  })
 		| null
 	>(null);
+
+	useEffect(() => {
+		setNow(new Date());
+	}, []);
 
 	const handleRemove = async (member: ClubMembership & { userName: string }, clubId: string) => {
 		if (member.role === "CLUB_OWNER") {
@@ -82,8 +91,6 @@ export function MembersTable(props: MembersTableProps) {
 	};
 
 	const getMembershipStatus = (membership: ClubMembership) => {
-		const today = new Date();
-
 		if (!membership.startDate && !membership.endDate) {
 			return {
 				label: t("Unlimited"),
@@ -91,7 +98,16 @@ export function MembersTable(props: MembersTableProps) {
 			} as const;
 		}
 
-		if (membership.endDate && new Date(membership.endDate) < today) {
+		// Before mount the client clock is not available yet. Show "Active" so
+		// the server and the first client render agree.
+		if (!now) {
+			return {
+				label: t("Active"),
+				variant: "default",
+			} as const;
+		}
+
+		if (membership.endDate && new Date(membership.endDate) < now) {
 			return {
 				label: t("Expired"),
 				variant: "outline",
@@ -100,8 +116,8 @@ export function MembersTable(props: MembersTableProps) {
 
 		if (membership.endDate) {
 			// Check if membership expires within 7 days
-			const sevenDaysFromNow = new Date();
-			sevenDaysFromNow.setDate(today.getDate() + 7);
+			const sevenDaysFromNow = new Date(now);
+			sevenDaysFromNow.setDate(now.getDate() + 7);
 
 			if (new Date(membership.endDate) < sevenDaysFromNow) {
 				return {
@@ -195,7 +211,7 @@ export function MembersTable(props: MembersTableProps) {
 							component: (_, row) => (
 								<span>
 									{row.startDate
-										? new Date(row.startDate).toLocaleDateString(locale, {
+										? formatDate(row.startDate, locale, {
 												day: "2-digit",
 												month: "long",
 												year: "numeric",
@@ -214,7 +230,7 @@ export function MembersTable(props: MembersTableProps) {
 							component: (_, row) => (
 								<span>
 									{row.endDate
-										? new Date(row.endDate).toLocaleDateString(locale, {
+										? formatDate(row.endDate, locale, {
 												day: "2-digit",
 												month: "long",
 												year: "numeric",
