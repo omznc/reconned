@@ -1,7 +1,8 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { routing } from "@/i18n/routing";
 import { env } from "@/lib/env";
 
-export function GET() {
+function GET() {
 	const baseUrl = env.NEXT_PUBLIC_WEB_URL.replace(/\/$/, "");
 	const localeInfo = routing.locales.join(", ");
 	const defaultLocale = routing.defaultLocale;
@@ -51,3 +52,7 @@ export function GET() {
 		},
 	});
 }
+
+export const Route = createFileRoute("/llms.txt")({
+	server: { handlers: { GET } },
+});

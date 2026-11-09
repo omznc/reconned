@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@components/ui/button";
+import { useParams } from "@tanstack/react-router";
 import {
 	addMonths,
 	eachDayOfInterval,
@@ -18,7 +19,6 @@ import {
 	subMonths,
 } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Fragment, type KeyboardEvent, useEffect, useMemo, useState } from "react";
@@ -56,7 +56,7 @@ type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "s
 
 export function EventCalendar(props: EventCalendarProps) {
 	const t = useExtracted();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams({ strict: false }) as { clubId?: string };
 	const router = useRouter();
 	const locale = useLocale();
 	const dateLocale = getDateFnsLocale(locale);

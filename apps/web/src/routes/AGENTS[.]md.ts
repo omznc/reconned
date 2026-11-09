@@ -1,6 +1,7 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { env } from "@/lib/env";
 
-export function GET() {
+function GET() {
 	const webUrl = env.NEXT_PUBLIC_WEB_URL.replace(/\/$/, "");
 	const backendUrl = env.NEXT_PUBLIC_BACKEND_URL.replace(/\/$/, "");
 
@@ -38,3 +39,7 @@ export function GET() {
 		},
 	});
 }
+
+export const Route = createFileRoute("/AGENTS.md")({
+	server: { handlers: { GET } },
+});

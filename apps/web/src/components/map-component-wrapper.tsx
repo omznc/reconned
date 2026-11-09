@@ -1,7 +1,3 @@
-"use client";
+import { lazyClientOnly } from "@/components/client-only";
 
-import dynamic from "next/dynamic";
-
-export const MapComponent = dynamic(() => import("@/components/map-component"), {
-	ssr: false,
-});
+export const MapComponent = lazyClientOnly(() => import("@/components/map-component"));

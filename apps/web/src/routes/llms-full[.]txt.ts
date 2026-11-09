@@ -1,11 +1,8 @@
-import { Logger } from "next-axiom";
+import { createFileRoute } from "@tanstack/react-router";
 import { routing } from "@/i18n/routing";
 import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
-
-export const revalidate = 3600;
-
-const logger = new Logger({ source: "llms-full.txt" });
+import { logger } from "@/lib/logger";
 
 /**
  * The expanded companion to `llms.txt`: the same orientation, plus an actual
@@ -17,27 +14,27 @@ const logger = new Logger({ source: "llms-full.txt" });
  * building a publicly-cached file from it could bake private clubs into a shared
  * response. The public endpoint applies visibility filters with no session at all.
  */
-export async function GET() {
+async function GET() {
 	const baseUrl = env.NEXT_PUBLIC_WEB_URL.replace(/\/$/, "");
 
 	// Mirrors sitemap.ts: connection-level failures must degrade to a smaller file,
 	// never a 500 — this is a prerendered route and an agent-facing index is not
 	// worth failing a deploy over.
 	const onUnreachable = (label: string) => (cause: unknown) => {
-		logger.error("Could not reach the API for llms-full data", { error: cause, section: label });
+		logger.error("llms-full.txt: could not reach the API for llms-full data", { error: cause, section: label });
 		return { data: undefined, error: cause };
 	};
 
 	const [inventory, cityIndex] = await Promise.all([
-		apiServer.GET("/api/public/llms", { next: { revalidate: 3600 } }).catch(onUnreachable("llms")),
-		apiServer.GET("/api/public/cities", { next: { revalidate: 3600 } }).catch(onUnreachable("cities")),
+		apiServer.GET("/api/public/llms").catch(onUnreachable("llms")),
+		apiServer.GET("/api/public/cities").catch(onUnreachable("cities")),
 	]);
 
 	if (inventory.error) {
-		logger.error("Error fetching llms-full data", { error: inventory.error });
+		logger.error("llms-full.txt: error fetching llms-full data", { error: inventory.error });
 	}
 	if (cityIndex.error) {
-		logger.error("Error fetching llms-full city data", { error: cityIndex.error });
+		logger.error("llms-full.txt: error fetching llms-full city data", { error: cityIndex.error });
 	}
 
 	const clubs = inventory.data?.clubs ?? [];
@@ -151,3 +148,7 @@ export async function GET() {
 		},
 	});
 }
+
+export const Route = createFileRoute("/llms-full.txt")({
+	server: { handlers: { GET } },
+});

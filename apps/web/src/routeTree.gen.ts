@@ -9,21 +9,94 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AGENTSDotmdRouteImport } from './routes/AGENTS[.]md'
+import { Route as AuthDotmdRouteImport } from './routes/auth[.]md'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as MarkdownRouteImport } from './routes/markdown'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotmdRouteImport } from './routes/sitemap[.]md'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
+import { Route as DotwellKnownAgentCardDotjsonRouteImport } from './routes/[.]well-known/agent-card[.]json'
+import { Route as DotwellKnownApiCatalogRouteImport } from './routes/[.]well-known/api-catalog'
+import { Route as DotwellKnownMcpDotjsonRouteImport } from './routes/[.]well-known/mcp[.]json'
 import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$locale}/$'
 import { Route as Char123LocaleChar125AuthRouteImport } from './routes/{-$locale}/_auth'
 import { Route as Char123LocaleChar125PublicRouteImport } from './routes/{-$locale}/_public'
 import { Route as Char123LocaleChar125LogoutRouteImport } from './routes/{-$locale}/logout'
+import { Route as DotwellKnownAgentSkillsIndexDotjsonRouteImport } from './routes/[.]well-known/agent-skills/index[.]json'
+import { Route as DotwellKnownMcpServerCardDotjsonRouteImport } from './routes/[.]well-known/mcp/server-card[.]json'
 import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$locale}/_auth/login'
+import { Route as Char123LocaleChar125AuthRegisterRouteImport } from './routes/{-$locale}/_auth/register'
+import { Route as Char123LocaleChar125AuthResetPasswordRouteImport } from './routes/{-$locale}/_auth/reset-password'
+import { Route as Char123LocaleChar125AuthTwoFactorRouteImport } from './routes/{-$locale}/_auth/two-factor'
 import { Route as Char123LocaleChar125WarmindSplatRouteImport } from './routes/{-$locale}/warmind/$'
+import { Route as DotwellKnownAgentSkillsSkillSKILLDotmdRouteImport } from './routes/[.]well-known/agent-skills/$skill/SKILL[.]md'
 import { Route as Char123LocaleChar125PublicClubsIdRouteImport } from './routes/{-$locale}/_public/clubs/$id'
 
+const AGENTSDotmdRoute = AGENTSDotmdRouteImport.update({
+  id: '/AGENTS.md',
+  path: '/AGENTS.md',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthDotmdRoute = AuthDotmdRouteImport.update({
+  id: '/auth.md',
+  path: '/auth.md',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarkdownRoute = MarkdownRouteImport.update({
+  id: '/markdown',
+  path: '/markdown',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotmdRoute = SitemapDotmdRouteImport.update({
+  id: '/sitemap.md',
+  path: '/sitemap.md',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
     id: '/{-$locale}',
     path: '/{-$locale}',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotwellKnownAgentCardDotjsonRoute =
+  DotwellKnownAgentCardDotjsonRouteImport.update({
+    id: '/.well-known/agent-card.json',
+    path: '/.well-known/agent-card.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotwellKnownApiCatalogRoute = DotwellKnownApiCatalogRouteImport.update({
+  id: '/.well-known/api-catalog',
+  path: '/.well-known/api-catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotwellKnownMcpDotjsonRoute = DotwellKnownMcpDotjsonRouteImport.update({
+  id: '/.well-known/mcp.json',
+  path: '/.well-known/mcp.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char123LocaleChar125SplatRoute =
   Char123LocaleChar125SplatRouteImport.update({
     id: '/$',
@@ -46,10 +119,40 @@ const Char123LocaleChar125LogoutRoute =
     path: '/logout',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const DotwellKnownAgentSkillsIndexDotjsonRoute =
+  DotwellKnownAgentSkillsIndexDotjsonRouteImport.update({
+    id: '/.well-known/agent-skills/index.json',
+    path: '/.well-known/agent-skills/index.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotwellKnownMcpServerCardDotjsonRoute =
+  DotwellKnownMcpServerCardDotjsonRouteImport.update({
+    id: '/.well-known/mcp/server-card.json',
+    path: '/.well-known/mcp/server-card.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const Char123LocaleChar125AuthLoginRoute =
   Char123LocaleChar125AuthLoginRouteImport.update({
     id: '/login',
     path: '/login',
+    getParentRoute: () => Char123LocaleChar125AuthRoute,
+  } as any)
+const Char123LocaleChar125AuthRegisterRoute =
+  Char123LocaleChar125AuthRegisterRouteImport.update({
+    id: '/register',
+    path: '/register',
+    getParentRoute: () => Char123LocaleChar125AuthRoute,
+  } as any)
+const Char123LocaleChar125AuthResetPasswordRoute =
+  Char123LocaleChar125AuthResetPasswordRouteImport.update({
+    id: '/reset-password',
+    path: '/reset-password',
+    getParentRoute: () => Char123LocaleChar125AuthRoute,
+  } as any)
+const Char123LocaleChar125AuthTwoFactorRoute =
+  Char123LocaleChar125AuthTwoFactorRouteImport.update({
+    id: '/two-factor',
+    path: '/two-factor',
     getParentRoute: () => Char123LocaleChar125AuthRoute,
   } as any)
 const Char123LocaleChar125WarmindSplatRoute =
@@ -57,6 +160,12 @@ const Char123LocaleChar125WarmindSplatRoute =
     id: '/warmind/$',
     path: '/warmind/$',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const DotwellKnownAgentSkillsSkillSKILLDotmdRoute =
+  DotwellKnownAgentSkillsSkillSKILLDotmdRouteImport.update({
+    id: '/.well-known/agent-skills/$skill/SKILL.md',
+    path: '/.well-known/agent-skills/$skill/SKILL.md',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const Char123LocaleChar125PublicClubsIdRoute =
   Char123LocaleChar125PublicClubsIdRouteImport.update({
@@ -67,71 +176,264 @@ const Char123LocaleChar125PublicClubsIdRoute =
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/AGENTS.md': typeof AGENTSDotmdRoute
+  '/auth.md': typeof AuthDotmdRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/markdown': typeof MarkdownRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.md': typeof SitemapDotmdRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
+  '/.well-known/api-catalog': typeof DotwellKnownApiCatalogRoute
+  '/.well-known/mcp.json': typeof DotwellKnownMcpDotjsonRoute
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
+  '/.well-known/agent-skills/index.json': typeof DotwellKnownAgentSkillsIndexDotjsonRoute
+  '/.well-known/mcp/server-card.json': typeof DotwellKnownMcpServerCardDotjsonRoute
   '/{-$locale}/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/register': typeof Char123LocaleChar125AuthRegisterRoute
+  '/{-$locale}/reset-password': typeof Char123LocaleChar125AuthResetPasswordRoute
+  '/{-$locale}/two-factor': typeof Char123LocaleChar125AuthTwoFactorRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/.well-known/agent-skills/$skill/SKILL.md': typeof DotwellKnownAgentSkillsSkillSKILLDotmdRoute
   '/{-$locale}/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
 }
 export interface FileRoutesByTo {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/AGENTS.md': typeof AGENTSDotmdRoute
+  '/auth.md': typeof AuthDotmdRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/markdown': typeof MarkdownRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.md': typeof SitemapDotmdRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
+  '/.well-known/api-catalog': typeof DotwellKnownApiCatalogRoute
+  '/.well-known/mcp.json': typeof DotwellKnownMcpDotjsonRoute
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
+  '/.well-known/agent-skills/index.json': typeof DotwellKnownAgentSkillsIndexDotjsonRoute
+  '/.well-known/mcp/server-card.json': typeof DotwellKnownMcpServerCardDotjsonRoute
   '/{-$locale}/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/register': typeof Char123LocaleChar125AuthRegisterRoute
+  '/{-$locale}/reset-password': typeof Char123LocaleChar125AuthResetPasswordRoute
+  '/{-$locale}/two-factor': typeof Char123LocaleChar125AuthTwoFactorRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/.well-known/agent-skills/$skill/SKILL.md': typeof DotwellKnownAgentSkillsSkillSKILLDotmdRoute
   '/{-$locale}/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/AGENTS.md': typeof AGENTSDotmdRoute
+  '/auth.md': typeof AuthDotmdRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/markdown': typeof MarkdownRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.md': typeof SitemapDotmdRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
+  '/.well-known/api-catalog': typeof DotwellKnownApiCatalogRoute
+  '/.well-known/mcp.json': typeof DotwellKnownMcpDotjsonRoute
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/_auth': typeof Char123LocaleChar125AuthRouteWithChildren
   '/{-$locale}/_public': typeof Char123LocaleChar125PublicRouteWithChildren
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
+  '/.well-known/agent-skills/index.json': typeof DotwellKnownAgentSkillsIndexDotjsonRoute
+  '/.well-known/mcp/server-card.json': typeof DotwellKnownMcpServerCardDotjsonRoute
   '/{-$locale}/_auth/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/_auth/register': typeof Char123LocaleChar125AuthRegisterRoute
+  '/{-$locale}/_auth/reset-password': typeof Char123LocaleChar125AuthResetPasswordRoute
+  '/{-$locale}/_auth/two-factor': typeof Char123LocaleChar125AuthTwoFactorRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/.well-known/agent-skills/$skill/SKILL.md': typeof DotwellKnownAgentSkillsSkillSKILLDotmdRoute
   '/{-$locale}/_public/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/{-$locale}'
+    | '/AGENTS.md'
+    | '/auth.md'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/markdown'
+    | '/robots.txt'
+    | '/sitemap.md'
+    | '/sitemap.xml'
+    | '/.well-known/agent-card.json'
+    | '/.well-known/api-catalog'
+    | '/.well-known/mcp.json'
     | '/{-$locale}/$'
     | '/{-$locale}/logout'
+    | '/.well-known/agent-skills/index.json'
+    | '/.well-known/mcp/server-card.json'
     | '/{-$locale}/login'
+    | '/{-$locale}/register'
+    | '/{-$locale}/reset-password'
+    | '/{-$locale}/two-factor'
     | '/{-$locale}/warmind/$'
+    | '/.well-known/agent-skills/$skill/SKILL.md'
     | '/{-$locale}/clubs/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}'
+    | '/AGENTS.md'
+    | '/auth.md'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/markdown'
+    | '/robots.txt'
+    | '/sitemap.md'
+    | '/sitemap.xml'
+    | '/.well-known/agent-card.json'
+    | '/.well-known/api-catalog'
+    | '/.well-known/mcp.json'
     | '/{-$locale}/$'
     | '/{-$locale}/logout'
+    | '/.well-known/agent-skills/index.json'
+    | '/.well-known/mcp/server-card.json'
     | '/{-$locale}/login'
+    | '/{-$locale}/register'
+    | '/{-$locale}/reset-password'
+    | '/{-$locale}/two-factor'
     | '/{-$locale}/warmind/$'
+    | '/.well-known/agent-skills/$skill/SKILL.md'
     | '/{-$locale}/clubs/$id'
   id:
     | '__root__'
     | '/{-$locale}'
+    | '/AGENTS.md'
+    | '/auth.md'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/markdown'
+    | '/robots.txt'
+    | '/sitemap.md'
+    | '/sitemap.xml'
+    | '/.well-known/agent-card.json'
+    | '/.well-known/api-catalog'
+    | '/.well-known/mcp.json'
     | '/{-$locale}/$'
     | '/{-$locale}/_auth'
     | '/{-$locale}/_public'
     | '/{-$locale}/logout'
+    | '/.well-known/agent-skills/index.json'
+    | '/.well-known/mcp/server-card.json'
     | '/{-$locale}/_auth/login'
+    | '/{-$locale}/_auth/register'
+    | '/{-$locale}/_auth/reset-password'
+    | '/{-$locale}/_auth/two-factor'
     | '/{-$locale}/warmind/$'
+    | '/.well-known/agent-skills/$skill/SKILL.md'
     | '/{-$locale}/_public/clubs/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
+  AGENTSDotmdRoute: typeof AGENTSDotmdRoute
+  AuthDotmdRoute: typeof AuthDotmdRoute
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
+  MarkdownRoute: typeof MarkdownRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotmdRoute: typeof SitemapDotmdRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
+  DotwellKnownApiCatalogRoute: typeof DotwellKnownApiCatalogRoute
+  DotwellKnownMcpDotjsonRoute: typeof DotwellKnownMcpDotjsonRoute
+  DotwellKnownAgentSkillsIndexDotjsonRoute: typeof DotwellKnownAgentSkillsIndexDotjsonRoute
+  DotwellKnownMcpServerCardDotjsonRoute: typeof DotwellKnownMcpServerCardDotjsonRoute
+  DotwellKnownAgentSkillsSkillSKILLDotmdRoute: typeof DotwellKnownAgentSkillsSkillSKILLDotmdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/AGENTS.md': {
+      id: '/AGENTS.md'
+      path: '/AGENTS.md'
+      fullPath: '/AGENTS.md'
+      preLoaderRoute: typeof AGENTSDotmdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth.md': {
+      id: '/auth.md'
+      path: '/auth.md'
+      fullPath: '/auth.md'
+      preLoaderRoute: typeof AuthDotmdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/markdown': {
+      id: '/markdown'
+      path: '/markdown'
+      fullPath: '/markdown'
+      preLoaderRoute: typeof MarkdownRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.md': {
+      id: '/sitemap.md'
+      path: '/sitemap.md'
+      fullPath: '/sitemap.md'
+      preLoaderRoute: typeof SitemapDotmdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/{-$locale}': {
       id: '/{-$locale}'
       path: '/{-$locale}'
       fullPath: '/{-$locale}'
       preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/agent-card.json': {
+      id: '/.well-known/agent-card.json'
+      path: '/.well-known/agent-card.json'
+      fullPath: '/.well-known/agent-card.json'
+      preLoaderRoute: typeof DotwellKnownAgentCardDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/api-catalog': {
+      id: '/.well-known/api-catalog'
+      path: '/.well-known/api-catalog'
+      fullPath: '/.well-known/api-catalog'
+      preLoaderRoute: typeof DotwellKnownApiCatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/mcp.json': {
+      id: '/.well-known/mcp.json'
+      path: '/.well-known/mcp.json'
+      fullPath: '/.well-known/mcp.json'
+      preLoaderRoute: typeof DotwellKnownMcpDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/{-$locale}/$': {
@@ -162,11 +464,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125LogoutRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/.well-known/agent-skills/index.json': {
+      id: '/.well-known/agent-skills/index.json'
+      path: '/.well-known/agent-skills/index.json'
+      fullPath: '/.well-known/agent-skills/index.json'
+      preLoaderRoute: typeof DotwellKnownAgentSkillsIndexDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/mcp/server-card.json': {
+      id: '/.well-known/mcp/server-card.json'
+      path: '/.well-known/mcp/server-card.json'
+      fullPath: '/.well-known/mcp/server-card.json'
+      preLoaderRoute: typeof DotwellKnownMcpServerCardDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/{-$locale}/_auth/login': {
       id: '/{-$locale}/_auth/login'
       path: '/login'
       fullPath: '/{-$locale}/login'
       preLoaderRoute: typeof Char123LocaleChar125AuthLoginRouteImport
+      parentRoute: typeof Char123LocaleChar125AuthRoute
+    }
+    '/{-$locale}/_auth/register': {
+      id: '/{-$locale}/_auth/register'
+      path: '/register'
+      fullPath: '/{-$locale}/register'
+      preLoaderRoute: typeof Char123LocaleChar125AuthRegisterRouteImport
+      parentRoute: typeof Char123LocaleChar125AuthRoute
+    }
+    '/{-$locale}/_auth/reset-password': {
+      id: '/{-$locale}/_auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/{-$locale}/reset-password'
+      preLoaderRoute: typeof Char123LocaleChar125AuthResetPasswordRouteImport
+      parentRoute: typeof Char123LocaleChar125AuthRoute
+    }
+    '/{-$locale}/_auth/two-factor': {
+      id: '/{-$locale}/_auth/two-factor'
+      path: '/two-factor'
+      fullPath: '/{-$locale}/two-factor'
+      preLoaderRoute: typeof Char123LocaleChar125AuthTwoFactorRouteImport
       parentRoute: typeof Char123LocaleChar125AuthRoute
     }
     '/{-$locale}/warmind/$': {
@@ -175,6 +512,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/{-$locale}/warmind/$'
       preLoaderRoute: typeof Char123LocaleChar125WarmindSplatRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/.well-known/agent-skills/$skill/SKILL.md': {
+      id: '/.well-known/agent-skills/$skill/SKILL.md'
+      path: '/.well-known/agent-skills/$skill/SKILL.md'
+      fullPath: '/.well-known/agent-skills/$skill/SKILL.md'
+      preLoaderRoute: typeof DotwellKnownAgentSkillsSkillSKILLDotmdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/{-$locale}/_public/clubs/$id': {
       id: '/{-$locale}/_public/clubs/$id'
@@ -188,11 +532,20 @@ declare module '@tanstack/react-router' {
 
 interface Char123LocaleChar125AuthRouteChildren {
   Char123LocaleChar125AuthLoginRoute: typeof Char123LocaleChar125AuthLoginRoute
+  Char123LocaleChar125AuthRegisterRoute: typeof Char123LocaleChar125AuthRegisterRoute
+  Char123LocaleChar125AuthResetPasswordRoute: typeof Char123LocaleChar125AuthResetPasswordRoute
+  Char123LocaleChar125AuthTwoFactorRoute: typeof Char123LocaleChar125AuthTwoFactorRoute
 }
 
 const Char123LocaleChar125AuthRouteChildren: Char123LocaleChar125AuthRouteChildren =
   {
     Char123LocaleChar125AuthLoginRoute: Char123LocaleChar125AuthLoginRoute,
+    Char123LocaleChar125AuthRegisterRoute:
+      Char123LocaleChar125AuthRegisterRoute,
+    Char123LocaleChar125AuthResetPasswordRoute:
+      Char123LocaleChar125AuthResetPasswordRoute,
+    Char123LocaleChar125AuthTwoFactorRoute:
+      Char123LocaleChar125AuthTwoFactorRoute,
   }
 
 const Char123LocaleChar125AuthRouteWithChildren =
@@ -241,6 +594,22 @@ const Char123LocaleChar125RouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
+  AGENTSDotmdRoute: AGENTSDotmdRoute,
+  AuthDotmdRoute: AuthDotmdRoute,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
+  MarkdownRoute: MarkdownRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotmdRoute: SitemapDotmdRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
+  DotwellKnownApiCatalogRoute: DotwellKnownApiCatalogRoute,
+  DotwellKnownMcpDotjsonRoute: DotwellKnownMcpDotjsonRoute,
+  DotwellKnownAgentSkillsIndexDotjsonRoute:
+    DotwellKnownAgentSkillsIndexDotjsonRoute,
+  DotwellKnownMcpServerCardDotjsonRoute: DotwellKnownMcpServerCardDotjsonRoute,
+  DotwellKnownAgentSkillsSkillSKILLDotmdRoute:
+    DotwellKnownAgentSkillsSkillSKILLDotmdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

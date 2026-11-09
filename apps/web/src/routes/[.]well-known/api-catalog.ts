@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { env } from "@/lib/env";
 
 function normalizeApiBase(url: string): string {
@@ -8,7 +9,7 @@ function normalizeApiBase(url: string): string {
 	return `${trimmed}/api`;
 }
 
-export function GET() {
+function GET() {
 	const apiBase = normalizeApiBase(env.NEXT_PUBLIC_BACKEND_URL);
 	const body = {
 		linkset: [
@@ -43,3 +44,7 @@ export function GET() {
 		},
 	});
 }
+
+export const Route = createFileRoute("/.well-known/api-catalog")({
+	server: { handlers: { GET } },
+});

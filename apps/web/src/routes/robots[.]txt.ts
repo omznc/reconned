@@ -1,6 +1,7 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { env } from "@/lib/env";
 
-export function GET() {
+function GET() {
 	const baseUrl = env.NEXT_PUBLIC_WEB_URL?.replace(/\/$/, "") ?? "";
 
 	const body = [
@@ -27,3 +28,7 @@ export function GET() {
 		},
 	});
 }
+
+export const Route = createFileRoute("/robots.txt")({
+	server: { handlers: { GET } },
+});
