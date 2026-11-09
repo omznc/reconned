@@ -13,10 +13,28 @@ import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$local
 import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$locale}/$'
 import { Route as Char123LocaleChar125AuthRouteImport } from './routes/{-$locale}/_auth'
 import { Route as Char123LocaleChar125PublicRouteImport } from './routes/{-$locale}/_public'
+import { Route as Char123LocaleChar125DashboardRouteRouteImport } from './routes/{-$locale}/dashboard/route'
 import { Route as Char123LocaleChar125LogoutRouteImport } from './routes/{-$locale}/logout'
 import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$locale}/_auth/login'
+import { Route as Char123LocaleChar125DashboardIndexRouteImport } from './routes/{-$locale}/dashboard/index'
+import { Route as Char123LocaleChar125DashboardAdminRouteRouteImport } from './routes/{-$locale}/dashboard/admin/route'
+import { Route as Char123LocaleChar125DashboardHelpRouteImport } from './routes/{-$locale}/dashboard/help'
 import { Route as Char123LocaleChar125WarmindSplatRouteImport } from './routes/{-$locale}/warmind/$'
 import { Route as Char123LocaleChar125PublicClubsIdRouteImport } from './routes/{-$locale}/_public/clubs/$id'
+import { Route as Char123LocaleChar125DashboardEventsIndexRouteImport } from './routes/{-$locale}/dashboard/events/index'
+import { Route as Char123LocaleChar125DashboardUserIndexRouteImport } from './routes/{-$locale}/dashboard/user/index'
+import { Route as Char123LocaleChar125DashboardAdminAlliancesIndexRouteImport } from './routes/{-$locale}/dashboard/admin/alliances/index'
+import { Route as Char123LocaleChar125DashboardAdminClubsIndexRouteImport } from './routes/{-$locale}/dashboard/admin/clubs/index'
+import { Route as Char123LocaleChar125DashboardAdminFeatureFlagsIndexRouteImport } from './routes/{-$locale}/dashboard/admin/feature-flags/index'
+import { Route as Char123LocaleChar125DashboardAdminReviewsIndexRouteImport } from './routes/{-$locale}/dashboard/admin/reviews/index'
+import { Route as Char123LocaleChar125DashboardAdminTasksIndexRouteImport } from './routes/{-$locale}/dashboard/admin/tasks/index'
+import { Route as Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRouteImport } from './routes/{-$locale}/dashboard/admin/unclaimed-clubs/index'
+import { Route as Char123LocaleChar125DashboardAdminUsersIndexRouteImport } from './routes/{-$locale}/dashboard/admin/users/index'
+import { Route as Char123LocaleChar125DashboardUserInvitesIndexRouteImport } from './routes/{-$locale}/dashboard/user/invites/index'
+import { Route as Char123LocaleChar125DashboardUserSecurityIndexRouteImport } from './routes/{-$locale}/dashboard/user/security/index'
+import { Route as Char123LocaleChar125DashboardUserSettingsIndexRouteImport } from './routes/{-$locale}/dashboard/user/settings/index'
+import { Route as Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRouteImport } from './routes/{-$locale}/dashboard/admin/unclaimed-clubs/create/index'
+import { Route as Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRouteImport } from './routes/{-$locale}/dashboard/admin/unclaimed-clubs/edit/index'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -40,6 +58,12 @@ const Char123LocaleChar125PublicRoute =
     id: '/_public',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125DashboardRouteRoute =
+  Char123LocaleChar125DashboardRouteRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 const Char123LocaleChar125LogoutRoute =
   Char123LocaleChar125LogoutRouteImport.update({
     id: '/logout',
@@ -51,6 +75,24 @@ const Char123LocaleChar125AuthLoginRoute =
     id: '/login',
     path: '/login',
     getParentRoute: () => Char123LocaleChar125AuthRoute,
+  } as any)
+const Char123LocaleChar125DashboardIndexRoute =
+  Char123LocaleChar125DashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminRouteRoute =
+  Char123LocaleChar125DashboardAdminRouteRouteImport.update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardHelpRoute =
+  Char123LocaleChar125DashboardHelpRouteImport.update({
+    id: '/help',
+    path: '/help',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
   } as any)
 const Char123LocaleChar125WarmindSplatRoute =
   Char123LocaleChar125WarmindSplatRouteImport.update({
@@ -64,61 +106,253 @@ const Char123LocaleChar125PublicClubsIdRoute =
     path: '/clubs/$id',
     getParentRoute: () => Char123LocaleChar125PublicRoute,
   } as any)
+const Char123LocaleChar125DashboardEventsIndexRoute =
+  Char123LocaleChar125DashboardEventsIndexRouteImport.update({
+    id: '/events/',
+    path: '/events/',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardUserIndexRoute =
+  Char123LocaleChar125DashboardUserIndexRouteImport.update({
+    id: '/user/',
+    path: '/user/',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminAlliancesIndexRoute =
+  Char123LocaleChar125DashboardAdminAlliancesIndexRouteImport.update({
+    id: '/alliances/',
+    path: '/alliances/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminClubsIndexRoute =
+  Char123LocaleChar125DashboardAdminClubsIndexRouteImport.update({
+    id: '/clubs/',
+    path: '/clubs/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute =
+  Char123LocaleChar125DashboardAdminFeatureFlagsIndexRouteImport.update({
+    id: '/feature-flags/',
+    path: '/feature-flags/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminReviewsIndexRoute =
+  Char123LocaleChar125DashboardAdminReviewsIndexRouteImport.update({
+    id: '/reviews/',
+    path: '/reviews/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminTasksIndexRoute =
+  Char123LocaleChar125DashboardAdminTasksIndexRouteImport.update({
+    id: '/tasks/',
+    path: '/tasks/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute =
+  Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRouteImport.update({
+    id: '/unclaimed-clubs/',
+    path: '/unclaimed-clubs/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminUsersIndexRoute =
+  Char123LocaleChar125DashboardAdminUsersIndexRouteImport.update({
+    id: '/users/',
+    path: '/users/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardUserInvitesIndexRoute =
+  Char123LocaleChar125DashboardUserInvitesIndexRouteImport.update({
+    id: '/user/invites/',
+    path: '/user/invites/',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardUserSecurityIndexRoute =
+  Char123LocaleChar125DashboardUserSecurityIndexRouteImport.update({
+    id: '/user/security/',
+    path: '/user/security/',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardUserSettingsIndexRoute =
+  Char123LocaleChar125DashboardUserSettingsIndexRouteImport.update({
+    id: '/user/settings/',
+    path: '/user/settings/',
+    getParentRoute: () => Char123LocaleChar125DashboardRouteRoute,
+  } as any)
+const Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute =
+  Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRouteImport.update(
+    {
+      id: '/unclaimed-clubs/create/',
+      path: '/unclaimed-clubs/create/',
+      getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+    } as any,
+  )
+const Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute =
+  Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRouteImport.update({
+    id: '/unclaimed-clubs/edit/',
+    path: '/unclaimed-clubs/edit/',
+    getParentRoute: () => Char123LocaleChar125DashboardAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardRouteRouteWithChildren
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
+  '/{-$locale}/dashboard/admin': typeof Char123LocaleChar125DashboardAdminRouteRouteWithChildren
   '/{-$locale}/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/dashboard/help': typeof Char123LocaleChar125DashboardHelpRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/{-$locale}/dashboard/': typeof Char123LocaleChar125DashboardIndexRoute
   '/{-$locale}/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
+  '/{-$locale}/dashboard/events/': typeof Char123LocaleChar125DashboardEventsIndexRoute
+  '/{-$locale}/dashboard/user/': typeof Char123LocaleChar125DashboardUserIndexRoute
+  '/{-$locale}/dashboard/admin/alliances/': typeof Char123LocaleChar125DashboardAdminAlliancesIndexRoute
+  '/{-$locale}/dashboard/admin/clubs/': typeof Char123LocaleChar125DashboardAdminClubsIndexRoute
+  '/{-$locale}/dashboard/admin/feature-flags/': typeof Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute
+  '/{-$locale}/dashboard/admin/reviews/': typeof Char123LocaleChar125DashboardAdminReviewsIndexRoute
+  '/{-$locale}/dashboard/admin/tasks/': typeof Char123LocaleChar125DashboardAdminTasksIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute
+  '/{-$locale}/dashboard/admin/users/': typeof Char123LocaleChar125DashboardAdminUsersIndexRoute
+  '/{-$locale}/dashboard/user/invites/': typeof Char123LocaleChar125DashboardUserInvitesIndexRoute
+  '/{-$locale}/dashboard/user/security/': typeof Char123LocaleChar125DashboardUserSecurityIndexRoute
+  '/{-$locale}/dashboard/user/settings/': typeof Char123LocaleChar125DashboardUserSettingsIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/create/': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/edit/': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute
 }
 export interface FileRoutesByTo {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
+  '/{-$locale}/dashboard/admin': typeof Char123LocaleChar125DashboardAdminRouteRouteWithChildren
   '/{-$locale}/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/dashboard/help': typeof Char123LocaleChar125DashboardHelpRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardIndexRoute
   '/{-$locale}/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
+  '/{-$locale}/dashboard/events': typeof Char123LocaleChar125DashboardEventsIndexRoute
+  '/{-$locale}/dashboard/user': typeof Char123LocaleChar125DashboardUserIndexRoute
+  '/{-$locale}/dashboard/admin/alliances': typeof Char123LocaleChar125DashboardAdminAlliancesIndexRoute
+  '/{-$locale}/dashboard/admin/clubs': typeof Char123LocaleChar125DashboardAdminClubsIndexRoute
+  '/{-$locale}/dashboard/admin/feature-flags': typeof Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute
+  '/{-$locale}/dashboard/admin/reviews': typeof Char123LocaleChar125DashboardAdminReviewsIndexRoute
+  '/{-$locale}/dashboard/admin/tasks': typeof Char123LocaleChar125DashboardAdminTasksIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute
+  '/{-$locale}/dashboard/admin/users': typeof Char123LocaleChar125DashboardAdminUsersIndexRoute
+  '/{-$locale}/dashboard/user/invites': typeof Char123LocaleChar125DashboardUserInvitesIndexRoute
+  '/{-$locale}/dashboard/user/security': typeof Char123LocaleChar125DashboardUserSecurityIndexRoute
+  '/{-$locale}/dashboard/user/settings': typeof Char123LocaleChar125DashboardUserSettingsIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/create': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/edit': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/{-$locale}/dashboard': typeof Char123LocaleChar125DashboardRouteRouteWithChildren
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/_auth': typeof Char123LocaleChar125AuthRouteWithChildren
   '/{-$locale}/_public': typeof Char123LocaleChar125PublicRouteWithChildren
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
+  '/{-$locale}/dashboard/admin': typeof Char123LocaleChar125DashboardAdminRouteRouteWithChildren
   '/{-$locale}/_auth/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/dashboard/help': typeof Char123LocaleChar125DashboardHelpRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/{-$locale}/dashboard/': typeof Char123LocaleChar125DashboardIndexRoute
   '/{-$locale}/_public/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
+  '/{-$locale}/dashboard/events/': typeof Char123LocaleChar125DashboardEventsIndexRoute
+  '/{-$locale}/dashboard/user/': typeof Char123LocaleChar125DashboardUserIndexRoute
+  '/{-$locale}/dashboard/admin/alliances/': typeof Char123LocaleChar125DashboardAdminAlliancesIndexRoute
+  '/{-$locale}/dashboard/admin/clubs/': typeof Char123LocaleChar125DashboardAdminClubsIndexRoute
+  '/{-$locale}/dashboard/admin/feature-flags/': typeof Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute
+  '/{-$locale}/dashboard/admin/reviews/': typeof Char123LocaleChar125DashboardAdminReviewsIndexRoute
+  '/{-$locale}/dashboard/admin/tasks/': typeof Char123LocaleChar125DashboardAdminTasksIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute
+  '/{-$locale}/dashboard/admin/users/': typeof Char123LocaleChar125DashboardAdminUsersIndexRoute
+  '/{-$locale}/dashboard/user/invites/': typeof Char123LocaleChar125DashboardUserInvitesIndexRoute
+  '/{-$locale}/dashboard/user/security/': typeof Char123LocaleChar125DashboardUserSecurityIndexRoute
+  '/{-$locale}/dashboard/user/settings/': typeof Char123LocaleChar125DashboardUserSettingsIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/create/': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute
+  '/{-$locale}/dashboard/admin/unclaimed-clubs/edit/': typeof Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/{-$locale}'
+    | '/{-$locale}/dashboard'
     | '/{-$locale}/$'
     | '/{-$locale}/logout'
+    | '/{-$locale}/dashboard/admin'
     | '/{-$locale}/login'
+    | '/{-$locale}/dashboard/help'
     | '/{-$locale}/warmind/$'
+    | '/{-$locale}/dashboard/'
     | '/{-$locale}/clubs/$id'
+    | '/{-$locale}/dashboard/events/'
+    | '/{-$locale}/dashboard/user/'
+    | '/{-$locale}/dashboard/admin/alliances/'
+    | '/{-$locale}/dashboard/admin/clubs/'
+    | '/{-$locale}/dashboard/admin/feature-flags/'
+    | '/{-$locale}/dashboard/admin/reviews/'
+    | '/{-$locale}/dashboard/admin/tasks/'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/'
+    | '/{-$locale}/dashboard/admin/users/'
+    | '/{-$locale}/dashboard/user/invites/'
+    | '/{-$locale}/dashboard/user/security/'
+    | '/{-$locale}/dashboard/user/settings/'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/create/'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/edit/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}'
     | '/{-$locale}/$'
     | '/{-$locale}/logout'
+    | '/{-$locale}/dashboard/admin'
     | '/{-$locale}/login'
+    | '/{-$locale}/dashboard/help'
     | '/{-$locale}/warmind/$'
+    | '/{-$locale}/dashboard'
     | '/{-$locale}/clubs/$id'
+    | '/{-$locale}/dashboard/events'
+    | '/{-$locale}/dashboard/user'
+    | '/{-$locale}/dashboard/admin/alliances'
+    | '/{-$locale}/dashboard/admin/clubs'
+    | '/{-$locale}/dashboard/admin/feature-flags'
+    | '/{-$locale}/dashboard/admin/reviews'
+    | '/{-$locale}/dashboard/admin/tasks'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs'
+    | '/{-$locale}/dashboard/admin/users'
+    | '/{-$locale}/dashboard/user/invites'
+    | '/{-$locale}/dashboard/user/security'
+    | '/{-$locale}/dashboard/user/settings'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/create'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/edit'
   id:
     | '__root__'
     | '/{-$locale}'
+    | '/{-$locale}/dashboard'
     | '/{-$locale}/$'
     | '/{-$locale}/_auth'
     | '/{-$locale}/_public'
     | '/{-$locale}/logout'
+    | '/{-$locale}/dashboard/admin'
     | '/{-$locale}/_auth/login'
+    | '/{-$locale}/dashboard/help'
     | '/{-$locale}/warmind/$'
+    | '/{-$locale}/dashboard/'
     | '/{-$locale}/_public/clubs/$id'
+    | '/{-$locale}/dashboard/events/'
+    | '/{-$locale}/dashboard/user/'
+    | '/{-$locale}/dashboard/admin/alliances/'
+    | '/{-$locale}/dashboard/admin/clubs/'
+    | '/{-$locale}/dashboard/admin/feature-flags/'
+    | '/{-$locale}/dashboard/admin/reviews/'
+    | '/{-$locale}/dashboard/admin/tasks/'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/'
+    | '/{-$locale}/dashboard/admin/users/'
+    | '/{-$locale}/dashboard/user/invites/'
+    | '/{-$locale}/dashboard/user/security/'
+    | '/{-$locale}/dashboard/user/settings/'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/create/'
+    | '/{-$locale}/dashboard/admin/unclaimed-clubs/edit/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -155,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125PublicRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/dashboard': {
+      id: '/{-$locale}/dashboard'
+      path: '/dashboard'
+      fullPath: '/{-$locale}/dashboard'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardRouteRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
     '/{-$locale}/logout': {
       id: '/{-$locale}/logout'
       path: '/logout'
@@ -168,6 +409,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/{-$locale}/login'
       preLoaderRoute: typeof Char123LocaleChar125AuthLoginRouteImport
       parentRoute: typeof Char123LocaleChar125AuthRoute
+    }
+    '/{-$locale}/dashboard/': {
+      id: '/{-$locale}/dashboard/'
+      path: '/'
+      fullPath: '/{-$locale}/dashboard/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
+    }
+    '/{-$locale}/dashboard/admin': {
+      id: '/{-$locale}/dashboard/admin'
+      path: '/admin'
+      fullPath: '/{-$locale}/dashboard/admin'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminRouteRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
+    }
+    '/{-$locale}/dashboard/help': {
+      id: '/{-$locale}/dashboard/help'
+      path: '/help'
+      fullPath: '/{-$locale}/dashboard/help'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardHelpRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
     }
     '/{-$locale}/warmind/$': {
       id: '/{-$locale}/warmind/$'
@@ -183,8 +445,181 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125PublicClubsIdRouteImport
       parentRoute: typeof Char123LocaleChar125PublicRoute
     }
+    '/{-$locale}/dashboard/events/': {
+      id: '/{-$locale}/dashboard/events/'
+      path: '/events'
+      fullPath: '/{-$locale}/dashboard/events/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardEventsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
+    }
+    '/{-$locale}/dashboard/user/': {
+      id: '/{-$locale}/dashboard/user/'
+      path: '/user'
+      fullPath: '/{-$locale}/dashboard/user/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardUserIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/alliances/': {
+      id: '/{-$locale}/dashboard/admin/alliances/'
+      path: '/alliances'
+      fullPath: '/{-$locale}/dashboard/admin/alliances/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminAlliancesIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/clubs/': {
+      id: '/{-$locale}/dashboard/admin/clubs/'
+      path: '/clubs'
+      fullPath: '/{-$locale}/dashboard/admin/clubs/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminClubsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/feature-flags/': {
+      id: '/{-$locale}/dashboard/admin/feature-flags/'
+      path: '/feature-flags'
+      fullPath: '/{-$locale}/dashboard/admin/feature-flags/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminFeatureFlagsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/reviews/': {
+      id: '/{-$locale}/dashboard/admin/reviews/'
+      path: '/reviews'
+      fullPath: '/{-$locale}/dashboard/admin/reviews/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminReviewsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/tasks/': {
+      id: '/{-$locale}/dashboard/admin/tasks/'
+      path: '/tasks'
+      fullPath: '/{-$locale}/dashboard/admin/tasks/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminTasksIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/unclaimed-clubs/': {
+      id: '/{-$locale}/dashboard/admin/unclaimed-clubs/'
+      path: '/unclaimed-clubs'
+      fullPath: '/{-$locale}/dashboard/admin/unclaimed-clubs/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/users/': {
+      id: '/{-$locale}/dashboard/admin/users/'
+      path: '/users'
+      fullPath: '/{-$locale}/dashboard/admin/users/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminUsersIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/user/invites/': {
+      id: '/{-$locale}/dashboard/user/invites/'
+      path: '/user/invites'
+      fullPath: '/{-$locale}/dashboard/user/invites/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardUserInvitesIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
+    }
+    '/{-$locale}/dashboard/user/security/': {
+      id: '/{-$locale}/dashboard/user/security/'
+      path: '/user/security'
+      fullPath: '/{-$locale}/dashboard/user/security/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardUserSecurityIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
+    }
+    '/{-$locale}/dashboard/user/settings/': {
+      id: '/{-$locale}/dashboard/user/settings/'
+      path: '/user/settings'
+      fullPath: '/{-$locale}/dashboard/user/settings/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardUserSettingsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/unclaimed-clubs/create/': {
+      id: '/{-$locale}/dashboard/admin/unclaimed-clubs/create/'
+      path: '/unclaimed-clubs/create'
+      fullPath: '/{-$locale}/dashboard/admin/unclaimed-clubs/create/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
+    '/{-$locale}/dashboard/admin/unclaimed-clubs/edit/': {
+      id: '/{-$locale}/dashboard/admin/unclaimed-clubs/edit/'
+      path: '/unclaimed-clubs/edit'
+      fullPath: '/{-$locale}/dashboard/admin/unclaimed-clubs/edit/'
+      preLoaderRoute: typeof Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125DashboardAdminRouteRoute
+    }
   }
 }
+
+interface Char123LocaleChar125DashboardAdminRouteRouteChildren {
+  Char123LocaleChar125DashboardAdminAlliancesIndexRoute: typeof Char123LocaleChar125DashboardAdminAlliancesIndexRoute
+  Char123LocaleChar125DashboardAdminClubsIndexRoute: typeof Char123LocaleChar125DashboardAdminClubsIndexRoute
+  Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute: typeof Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute
+  Char123LocaleChar125DashboardAdminReviewsIndexRoute: typeof Char123LocaleChar125DashboardAdminReviewsIndexRoute
+  Char123LocaleChar125DashboardAdminTasksIndexRoute: typeof Char123LocaleChar125DashboardAdminTasksIndexRoute
+  Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute: typeof Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute
+  Char123LocaleChar125DashboardAdminUsersIndexRoute: typeof Char123LocaleChar125DashboardAdminUsersIndexRoute
+  Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute: typeof Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute
+  Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute: typeof Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute
+}
+
+const Char123LocaleChar125DashboardAdminRouteRouteChildren: Char123LocaleChar125DashboardAdminRouteRouteChildren =
+  {
+    Char123LocaleChar125DashboardAdminAlliancesIndexRoute:
+      Char123LocaleChar125DashboardAdminAlliancesIndexRoute,
+    Char123LocaleChar125DashboardAdminClubsIndexRoute:
+      Char123LocaleChar125DashboardAdminClubsIndexRoute,
+    Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute:
+      Char123LocaleChar125DashboardAdminFeatureFlagsIndexRoute,
+    Char123LocaleChar125DashboardAdminReviewsIndexRoute:
+      Char123LocaleChar125DashboardAdminReviewsIndexRoute,
+    Char123LocaleChar125DashboardAdminTasksIndexRoute:
+      Char123LocaleChar125DashboardAdminTasksIndexRoute,
+    Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute:
+      Char123LocaleChar125DashboardAdminUnclaimedClubsIndexRoute,
+    Char123LocaleChar125DashboardAdminUsersIndexRoute:
+      Char123LocaleChar125DashboardAdminUsersIndexRoute,
+    Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute:
+      Char123LocaleChar125DashboardAdminUnclaimedClubsCreateIndexRoute,
+    Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute:
+      Char123LocaleChar125DashboardAdminUnclaimedClubsEditIndexRoute,
+  }
+
+const Char123LocaleChar125DashboardAdminRouteRouteWithChildren =
+  Char123LocaleChar125DashboardAdminRouteRoute._addFileChildren(
+    Char123LocaleChar125DashboardAdminRouteRouteChildren,
+  )
+
+interface Char123LocaleChar125DashboardRouteRouteChildren {
+  Char123LocaleChar125DashboardAdminRouteRoute: typeof Char123LocaleChar125DashboardAdminRouteRouteWithChildren
+  Char123LocaleChar125DashboardHelpRoute: typeof Char123LocaleChar125DashboardHelpRoute
+  Char123LocaleChar125DashboardIndexRoute: typeof Char123LocaleChar125DashboardIndexRoute
+  Char123LocaleChar125DashboardEventsIndexRoute: typeof Char123LocaleChar125DashboardEventsIndexRoute
+  Char123LocaleChar125DashboardUserIndexRoute: typeof Char123LocaleChar125DashboardUserIndexRoute
+  Char123LocaleChar125DashboardUserInvitesIndexRoute: typeof Char123LocaleChar125DashboardUserInvitesIndexRoute
+  Char123LocaleChar125DashboardUserSecurityIndexRoute: typeof Char123LocaleChar125DashboardUserSecurityIndexRoute
+  Char123LocaleChar125DashboardUserSettingsIndexRoute: typeof Char123LocaleChar125DashboardUserSettingsIndexRoute
+}
+
+const Char123LocaleChar125DashboardRouteRouteChildren: Char123LocaleChar125DashboardRouteRouteChildren =
+  {
+    Char123LocaleChar125DashboardAdminRouteRoute:
+      Char123LocaleChar125DashboardAdminRouteRouteWithChildren,
+    Char123LocaleChar125DashboardHelpRoute:
+      Char123LocaleChar125DashboardHelpRoute,
+    Char123LocaleChar125DashboardIndexRoute:
+      Char123LocaleChar125DashboardIndexRoute,
+    Char123LocaleChar125DashboardEventsIndexRoute:
+      Char123LocaleChar125DashboardEventsIndexRoute,
+    Char123LocaleChar125DashboardUserIndexRoute:
+      Char123LocaleChar125DashboardUserIndexRoute,
+    Char123LocaleChar125DashboardUserInvitesIndexRoute:
+      Char123LocaleChar125DashboardUserInvitesIndexRoute,
+    Char123LocaleChar125DashboardUserSecurityIndexRoute:
+      Char123LocaleChar125DashboardUserSecurityIndexRoute,
+    Char123LocaleChar125DashboardUserSettingsIndexRoute:
+      Char123LocaleChar125DashboardUserSettingsIndexRoute,
+  }
+
+const Char123LocaleChar125DashboardRouteRouteWithChildren =
+  Char123LocaleChar125DashboardRouteRoute._addFileChildren(
+    Char123LocaleChar125DashboardRouteRouteChildren,
+  )
 
 interface Char123LocaleChar125AuthRouteChildren {
   Char123LocaleChar125AuthLoginRoute: typeof Char123LocaleChar125AuthLoginRoute
@@ -216,6 +651,7 @@ const Char123LocaleChar125PublicRouteWithChildren =
   )
 
 interface Char123LocaleChar125RouteRouteChildren {
+  Char123LocaleChar125DashboardRouteRoute: typeof Char123LocaleChar125DashboardRouteRouteWithChildren
   Char123LocaleChar125SplatRoute: typeof Char123LocaleChar125SplatRoute
   Char123LocaleChar125AuthRoute: typeof Char123LocaleChar125AuthRouteWithChildren
   Char123LocaleChar125PublicRoute: typeof Char123LocaleChar125PublicRouteWithChildren
@@ -225,6 +661,8 @@ interface Char123LocaleChar125RouteRouteChildren {
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
+    Char123LocaleChar125DashboardRouteRoute:
+      Char123LocaleChar125DashboardRouteRouteWithChildren,
     Char123LocaleChar125SplatRoute: Char123LocaleChar125SplatRoute,
     Char123LocaleChar125AuthRoute: Char123LocaleChar125AuthRouteWithChildren,
     Char123LocaleChar125PublicRoute:
