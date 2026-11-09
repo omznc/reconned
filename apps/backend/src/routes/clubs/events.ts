@@ -2,9 +2,10 @@ import { apiError, Router, responseSchema } from "@reconned/router";
 import { and, count, desc, eq, ilike, inArray } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { event, eventRegistration } from "../../drizzle/schema";
+import { club, country, event, eventRegistration } from "../../drizzle/schema";
 import { isClubManagerUser } from "../../lib/club-access";
 import { db } from "../../lib/db";
+import { eventListExtrasSchema, getAttendeeCounts, listItemExtras } from "../../lib/event-listing";
 import { paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
 
 const clubsEventsRouter = new Router();
@@ -61,7 +62,14 @@ clubsEventsRouter.get(
 		// Batch the registration counts into a single grouped query instead of one
 		// count() per event.
 		const pageEventIds = eventsData.map((e) => e.id);
-		const [registrationCounts, totalData] = await Promise.all([
+		const [attendeeCounts, currencyRows, registrationCounts, totalData] = await Promise.all([
+			getAttendeeCounts(pageEventIds),
+			db
+				.select({ currencyCode: country.currencyCode })
+				.from(club)
+				.leftJoin(country, eq(club.countryId, country.id))
+				.where(eq(club.id, clubId))
+				.limit(1),
 			pageEventIds.length
 				? db
 						.select({
@@ -77,8 +85,12 @@ clubsEventsRouter.get(
 
 		const registrationCountByEventId = new Map(registrationCounts.map((rc) => [rc.eventId, Number(rc.count)]));
 
+		const now = new Date();
+		const currencyCode = currencyRows[0]?.currencyCode ?? null;
+
 		const events = eventsData.map((e) => ({
 			...e,
+			...listItemExtras(e, attendeeCounts.get(e.id) ?? 0, currencyCode, now),
 			gearRequirements: e.gearRequirements as z.infer<typeof baseEventSchema>["gearRequirements"],
 			mapData: e.mapData as z.infer<typeof baseEventSchema>["mapData"],
 			_count: {
@@ -116,7 +128,7 @@ clubsEventsRouter.get(
 			response: {
 				200: z.object({
 					events: z.array(
-						baseEventSchema.extend({
+						baseEventSchema.extend(eventListExtrasSchema.shape).extend({
 							_count: z.object({
 								eventRegistration: z.number(),
 							}),
