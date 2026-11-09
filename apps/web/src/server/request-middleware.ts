@@ -114,10 +114,7 @@ function gateWellKnown(pathname: string): { handled: boolean; response?: Respons
  */
 async function markdownResponse(request: Request, url: URL): Promise<Response | undefined> {
 	const { pathname } = url;
-	if (MARKDOWN_ROUTES.has(pathname) || pathname === "/markdown") {
-		return undefined;
-	}
-	if (isDashboardPath(pathname)) {
+	if (MARKDOWN_ROUTES.has(pathname) || pathname === "/markdown" || isDashboardPath(pathname)) {
 		return undefined;
 	}
 	const isMarkdownPath = pathname.endsWith(".md");
@@ -128,10 +125,11 @@ async function markdownResponse(request: Request, url: URL): Promise<Response | 
 		target.pathname = `${pathname === "/" ? "/index" : pathname}.md`;
 		return redirectTo(target, 307);
 	}
-	if (!isMarkdownPath) {
-		return undefined;
-	}
-	const stripped = pathname.slice(0, -3);
+	return isMarkdownPath ? await fetchMarkdown(request, url) : undefined;
+}
+
+async function fetchMarkdown(request: Request, url: URL): Promise<Response> {
+	const stripped = url.pathname.slice(0, -3);
 	const source = `${stripped === "/index" ? "/" : stripped}${url.search}`;
 	const markdownUrl = new URL("/markdown", `http://localhost:${process.env.PORT || url.port || "3000"}`);
 	markdownUrl.searchParams.set("source", source);
