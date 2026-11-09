@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { addMonths, endOfMonth, parse as parseDateFns, startOfMonth, subMonths } from "date-fns";
 import {
 	Ban,
 	Building2,
@@ -36,8 +35,6 @@ import {
 import { useExtracted } from "next-intl";
 import { getExtracted } from "next-intl/server";
 import * as z from "zod";
-import { EventCalendar } from "@/components/event-calendar";
-import { EventCard } from "@/components/event-card";
 import { InstagramIcon } from "@/components/icons";
 import { LoadingPage } from "@/components/loading-page";
 import { HomeDrawing } from "@/components/logos/drawings/home-drawing";
@@ -52,35 +49,32 @@ import { buildSeoHead, type SeoInput } from "@/lib/seo";
 import { asJson } from "@/lib/server/json";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import { HomeCommunityStats } from "@/routes/{-$locale}/_public/-components/home-community-stats";
+import { HomeFeed, type NextGame, NextGames } from "@/routes/{-$locale}/_public/-components/home-feed";
 import { MessageHandler } from "@/routes/{-$locale}/_public/-components/message-handler";
 
-function withClub<T extends { club?: unknown }>(events: T[] | undefined) {
-	return (events ?? []).map((event) => ({ ...event, club: event.club || null }));
-}
-
-async function fetchHomeData(month: string | undefined, signedIn: boolean) {
-	const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
-	const startDate = startOfMonth(subMonths(currentDate, 1));
-	const endDate = endOfMonth(addMonths(currentDate, 1));
-
-	const [dashboardClubsResult, calendarEventsResult, upcomingEventsResult, publicStatsResult] = await Promise.all([
-		signedIn ? apiServer.GET("/api/dashboard/clubs") : Promise.resolve({ data: null, error: null }),
-		apiServer.GET("/api/events/calendar", {
-			params: { query: { startDate: startDate.toISOString(), endDate: endDate.toISOString() } },
-		}),
-		apiServer.GET("/api/events/upcoming", { params: { query: { limit: 3 } } }),
+async function fetchHomeData() {
+	const [feedResult, upcomingEventsResult, publicStatsResult] = await Promise.all([
+		apiServer.GET("/api/public/feed", { params: { query: { type: "all", limit: 10 } } }),
+		apiServer.GET("/api/events/upcoming", { params: { query: { limit: 5 } } }),
 		apiServer.GET("/api/public/stats"),
 	]);
 
-	const managedClubs = (dashboardClubsResult.data?.clubs ?? []).filter(
-		(club) => club.membershipRole === "MANAGER" || club.membershipRole === "CLUB_OWNER",
-	);
-
 	return {
 		publicStats: publicStatsResult.data?.stats ?? { clubs: 0, events: 0, players: 0 },
-		events: withClub(calendarEventsResult.data?.events),
-		upcomingEvents: withClub(upcomingEventsResult.data?.events),
-		managedClubs,
+		feed: asJson(feedResult.data ?? { items: [], nextCursor: null }),
+		nextGames: (upcomingEventsResult.data?.events ?? []).map(
+			(event): NextGame => ({
+				id: event.id,
+				slug: event.slug,
+				name: event.name,
+				city: event.city,
+				location: event.location,
+				dateStart: event.dateStart,
+				placesLeft: event.placesLeft,
+				maxAttendees: event.maxAttendees,
+				registrationState: event.registrationState,
+			}),
+		),
 	};
 }
 
@@ -102,17 +96,15 @@ async function buildHomeSeo(locale: string): Promise<SeoInput> {
 }
 
 const getHomeFn = createServerFn({ method: "GET" })
-	.validator(z.object({ month: z.string().optional(), locale: z.string(), signedIn: z.boolean() }))
-	.handler(async ({ data: { month, locale, signedIn } }) => {
-		const [home, seo] = await Promise.all([fetchHomeData(month, signedIn), buildHomeSeo(locale)]);
-		return { ...home, events: asJson(home.events), upcomingEvents: asJson(home.upcomingEvents), seo };
+	.validator(z.object({ locale: z.string() }))
+	.handler(async ({ data: { locale } }) => {
+		const [home, seo] = await Promise.all([fetchHomeData(), buildHomeSeo(locale)]);
+		return { ...home, seo };
 	});
 
 export const Route = createFileRoute("/{-$locale}/_public/")({
-	validateSearch: z.looseObject({ month: z.string().optional() }),
-	loaderDeps: ({ search }) => ({ month: search.month }),
-	loader: ({ deps, context }) =>
-		getHomeFn({ data: { month: deps.month, locale: context.locale, signedIn: Boolean(context.user) } }),
+	validateSearch: z.looseObject({}),
+	loader: ({ context }) => getHomeFn({ data: { locale: context.locale } }),
 	head: ({ loaderData }) => (loaderData ? buildSeoHead(loaderData.seo) : {}),
 	pendingComponent: LoadingPage,
 	notFoundComponent: NotFoundPage,
@@ -121,7 +113,7 @@ export const Route = createFileRoute("/{-$locale}/_public/")({
 
 function Home() {
 	const t = useExtracted();
-	const { publicStats, events, upcomingEvents, managedClubs } = Route.useLoaderData();
+	const { publicStats, feed, nextGames } = Route.useLoaderData();
 
 	return (
 		<>
@@ -243,35 +235,12 @@ function Home() {
 			</div>
 
 			<div className="flex flex-col size-full gap-8 max-w-[1200px] px-4 py-8">
-				<div className="flex flex-col gap-4">
-					<div>
-						<h2 className="text-2xl font-bold">{t("Upcoming events")}</h2>
-						<p className="text-muted-foreground">{t("See you on the field")}</p>
-					</div>
-					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-						{upcomingEvents.length === 0 && (
-							<div className="text-muted-foreground">{t("There are no upcoming matches")}</div>
-						)}
-
-						{upcomingEvents.map((event) => (
-							<EventCard key={event.id} event={event} />
-						))}
-					</div>
+				<div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+					<HomeFeed initial={feed} />
+					<aside className="flex flex-col gap-4 lg:sticky lg:top-20">
+						<NextGames games={nextGames} />
+					</aside>
 				</div>
-				<EventCalendar
-					events={events}
-					managedClubs={
-						managedClubs.length > 0
-							? managedClubs.map((club) => ({
-									id: club.id,
-									name: club.name,
-									verified: (club as { verified?: boolean }).verified || false,
-									logo: (club as { logo?: string | null }).logo || null,
-									slug: (club as { slug?: string | null }).slug || null,
-								}))
-							: undefined
-					}
-				/>
 
 				<section id="about-us" className="w-full py-12 scroll-mt-20">
 					<div className="flex flex-col gap-8">
