@@ -31,6 +31,11 @@ export function clubMembershipCacheKeys(clubId: string): string[] {
 	return ["clubs", `club:${clubId}`];
 }
 
+/** The public club pages that an event or a rule change reaches. Their routes are keyed by club, not event. */
+export async function bustClubPublicCaches(clubId: string): Promise<void> {
+	await bustRouteCache([`club:${clubId}:public-stats`, `club:${clubId}:public-rules`]);
+}
+
 /** The route-cache key whose reads carry a review target's rating. */
 const REVIEW_TARGET_CACHE_KEY: Record<string, (entityId: string) => string> = {
 	user: (id) => `user:${id}`,
