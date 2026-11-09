@@ -26,6 +26,8 @@ interface IdentityPanelProps {
 	/** A club is a square. A person is a circle. */
 	kind: "club" | "person";
 	name: string;
+	/** A line under the name, for example the real name of a player. */
+	subtitle?: string | null;
 	image?: string | null;
 	logoTile?: LogoTile | null;
 	verified?: boolean;
@@ -34,7 +36,7 @@ interface IdentityPanelProps {
 	location?: string | null;
 	badges?: IdentityBadge[];
 	description?: string | null;
-	primaryAction?: { label: string; href: Href; icon?: IconComponent };
+	primaryAction?: { label: string; href?: Href; onClick?: () => void; icon?: IconComponent };
 	actions?: IdentityAction[];
 	/** The name is the page h1 by default. Search uses 2. */
 	headingLevel?: 1 | 2;
@@ -94,12 +96,19 @@ function IdentityActions({ primaryAction, actions }: Pick<IdentityPanelProps, "p
 	return (
 		<div className="flex flex-wrap gap-2">
 			{primaryAction ? (
-				<Button asChild={true} className="min-w-32 flex-1">
-					<Link href={primaryAction.href}>
+				primaryAction.href ? (
+					<Button asChild={true} className="min-w-32 flex-1">
+						<Link href={primaryAction.href}>
+							{PrimaryIcon ? <PrimaryIcon aria-hidden={true} /> : null}
+							{primaryAction.label}
+						</Link>
+					</Button>
+				) : (
+					<Button type="button" className="min-w-32 flex-1" onClick={primaryAction.onClick}>
 						{PrimaryIcon ? <PrimaryIcon aria-hidden={true} /> : null}
 						{primaryAction.label}
-					</Link>
-				</Button>
+					</Button>
+				)
 			) : null}
 			{actions?.map((action) => (
 				<IconAction key={action.label} action={action} />
@@ -112,6 +121,7 @@ function IdentityActions({ primaryAction, actions }: Pick<IdentityPanelProps, "p
 export function IdentityPanel({
 	kind,
 	name,
+	subtitle,
 	image,
 	logoTile,
 	verified,
@@ -148,6 +158,7 @@ export function IdentityPanel({
 								</>
 							) : null}
 						</Heading>
+						{subtitle ? <p className="text-[13px] leading-5 text-muted-foreground">{subtitle}</p> : null}
 						{location ? (
 							<p className="flex items-center gap-1.5 text-[13px] leading-5 text-muted-foreground">
 								<MapPin className="size-3.5 shrink-0" aria-hidden={true} />
