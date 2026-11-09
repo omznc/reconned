@@ -14,8 +14,8 @@ import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
-import { getFeatureFlagsFn } from "@/lib/server-fns";
 import { asJson } from "@/lib/server/json";
+import { getFeatureFlagsFn } from "@/lib/server-fns";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 import { EventApplicationForm } from "@/routes/{-$locale}/_public/events/$id/-components/event-application.form";
 
