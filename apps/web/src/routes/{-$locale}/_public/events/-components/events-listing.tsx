@@ -1,158 +1,238 @@
-"use client";
-
-import NoResults from "@public/errors/no-results.png";
-import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, List } from "lucide-react";
 import { useExtracted } from "next-intl";
-import { parseAsInteger, useQueryState } from "nuqs";
-import { EventCard } from "@/components/event-card";
-import { Image } from "@/components/image";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/navigation";
-import apiClient from "@/lib/api/api.client";
-import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { useQueryStates } from "nuqs";
+import type { ComponentProps } from "react";
+import { EventCalendar } from "@/components/event-calendar";
+import { type ListingChip, ListingShell, ViewToggle } from "@/components/redesign/listing-shell";
+import {
+	type EventsFacets,
+	EventsFilters,
+	type FilterPatch,
+	type FilterValues,
+} from "@/routes/{-$locale}/_public/events/-components/events-filters";
+import { EventsResults, type ListedEvent } from "@/routes/{-$locale}/_public/events/-components/events-results";
+import {
+	type EventsSort,
+	eventsParsers,
+	MAX_PER_PAGE,
+	perPageFor,
+	SORTS,
+	VIEWS,
+} from "@/routes/{-$locale}/_public/events/-components/events-search";
 
-const ITEMS_PER_PAGE = 12;
-
-type EventsResponse = ApiResponse<"/api/events", "get">;
-
-interface EventsListingProps {
-	initialData: EventsResponse;
+export interface EventsListingData {
+	events: ListedEvent[];
+	total: number;
+	facets: EventsFacets | null;
+	upcomingCount: number;
+	openThisWeekendCount: number;
+	calendarEvents: ComponentProps<typeof EventCalendar>["events"];
 }
 
-export function EventsListing({ initialData }: EventsListingProps) {
+type UrlState = ReturnType<typeof useQueryStates<typeof eventsParsers>>[0];
+
+function useViewOptions() {
 	const t = useExtracted();
-	const [page, setPage] = useQueryState(
-		"page",
-		parseAsInteger.withDefault(1).withOptions({
-			shallow: true,
-			history: "replace",
-		}),
+	return [
+		{ value: "list", label: t("List"), icon: List },
+		{ value: "calendar", label: t("Calendar"), icon: CalendarDays },
+	];
+}
+
+function useSortOptions() {
+	const t = useExtracted();
+	const labels: Record<EventsSort, string> = {
+		soonest: t("Soonest first"),
+		placesLeft: t("Most places left"),
+		price: t("Lowest price"),
+	};
+	return SORTS.map((value) => ({ value, label: labels[value] }));
+}
+
+function Subtitle({ data }: { data: EventsListingData }) {
+	const t = useExtracted();
+	return t(
+		"{upcoming, plural, one {# upcoming game} other {# upcoming games}} · {weekend, plural, one {# open this weekend} other {# open this weekend}}",
+		{ upcoming: data.upcomingCount, weekend: data.openThisWeekendCount },
+	);
+}
+
+function useDateChips(state: UrlState, update: (patch: FilterPatch) => void) {
+	const t = useExtracted();
+	const chips: ListingChip[] = [];
+	if (state.when) {
+		const label = state.when === "weekend" ? t("This weekend") : t("Next 30 days");
+		chips.push({ key: "when", label, onRemove: () => update({ when: null }) });
+	}
+	if (state.from || state.to) {
+		chips.push({
+			key: "dates",
+			label: `${state.from ?? "…"} – ${state.to ?? "…"}`,
+			onRemove: () => update({ from: null, to: null }),
+		});
+	}
+	return chips;
+}
+
+function useChips(state: UrlState, facets: EventsFacets | null, update: (patch: FilterPatch) => void) {
+	const t = useExtracted();
+	const registration = {
+		open: t("Open"),
+		notOpenYet: t("Not open yet"),
+		full: t("Full"),
+		closed: t("Closed"),
+	};
+	const chips: ListingChip[] = useDateChips(state, update);
+	for (const reg of state.reg) {
+		chips.push({
+			key: `reg-${reg}`,
+			label: registration[reg],
+			onRemove: () => update({ reg: state.reg.filter((entry) => entry !== reg) }),
+		});
+	}
+	for (const id of state.country) {
+		chips.push({
+			key: `country-${id}`,
+			label: facets?.country.find((country) => country.countryId === id)?.name ?? t("Country"),
+			onRemove: () => update({ country: state.country.filter((entry) => entry !== id) }),
+		});
+	}
+	return [...chips, ...useAttributeChips(state, update)];
+}
+
+function useAttributeChips(state: UrlState, update: (patch: FilterPatch) => void) {
+	const t = useExtracted();
+	const chips: ListingChip[] = [];
+	if (state.city) {
+		chips.push({ key: "city", label: state.city, onRemove: () => update({ city: "" }) });
+	}
+	if (state.maxPrice !== null) {
+		chips.push({
+			key: "price",
+			label: t("Up to {price} KM", { price: String(state.maxPrice) }),
+			onRemove: () => update({ maxPrice: null }),
+		});
+	}
+	if (state.freelancers) {
+		chips.push({
+			key: "freelancers",
+			label: t("Freelancers welcome"),
+			onRemove: () => update({ freelancers: false }),
+		});
+	}
+	if (state.verified) {
+		chips.push({ key: "verified", label: t("Verified clubs only"), onRemove: () => update({ verified: false }) });
+	}
+	return chips;
+}
+
+/** A change of a filter shows the first page again. */
+function useEventsUrlState() {
+	const [state, setState] = useQueryStates(eventsParsers);
+	const update = (patch: FilterPatch) => {
+		setState({ ...patch, page: null });
+	};
+	const reset = () => {
+		setState({
+			q: null,
+			when: null,
+			from: null,
+			to: null,
+			reg: null,
+			country: null,
+			city: null,
+			maxPrice: null,
+			freelancers: null,
+			verified: null,
+			page: null,
+		});
+	};
+	return { state, setState, update, reset };
+}
+
+function toFilterValues(state: UrlState): FilterValues {
+	return {
+		when: state.when,
+		from: state.from,
+		to: state.to,
+		reg: state.reg,
+		country: state.country,
+		city: state.city,
+		maxPrice: state.maxPrice,
+		freelancers: state.freelancers,
+		verified: state.verified,
+	};
+}
+
+export function EventsListing({ data }: { data: EventsListingData }) {
+	const t = useExtracted();
+	const viewOptions = useViewOptions();
+	const sortOptions = useSortOptions();
+	const { state, setState, update, reset } = useEventsUrlState();
+	const chips = useChips(state, data.facets, update);
+
+	const viewToggle = (
+		<ViewToggle
+			label={t("View")}
+			options={viewOptions}
+			value={state.view}
+			onChange={(value) => setState({ view: VIEWS.find((view) => view === value) ?? "list" })}
+		/>
 	);
 
-	const { data, isLoading } = useQuery<EventsResponse>({
-		queryKey: ["events", "list", page],
-		queryFn: async () => {
-			const { data, error } = await apiClient.GET("/api/events", {
-				params: {
-					query: {
-						page: String(page),
-						perPage: String(ITEMS_PER_PAGE),
-						sortBy: "dateStart",
-						sortOrder: "asc",
-					},
-				},
-			});
-			if (error || !data) {
-				throw new Error("Failed to load events");
-			}
-			return data;
-		},
-		initialData: page === 1 ? initialData : undefined,
-		placeholderData: (previousData) => previousData,
-	});
-
-	const events = data?.events || [];
-	const pagination = data?.pagination || initialData.pagination;
-	const totalPages = pagination.totalPages;
-
-	return (
-		<div className="container max-w-7xl py-8 px-4">
-			<div className="space-y-6">
-				<h1 className="text-2xl font-bold tracking-tight">{t("Upcoming events")}</h1>
-
-				{isLoading && events.length === 0 ? (
-					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-						{Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-							<div key={i} className="rounded-lg overflow-hidden border border-border/50">
-								<Skeleton className="w-full aspect-[4/3]" />
-								<div className="p-4 space-y-2">
-									<Skeleton className="h-5 w-3/4" />
-									<Skeleton className="h-4 w-full" />
-									<Skeleton className="h-4 w-2/3" />
-									<div className="flex gap-1.5 pt-2">
-										<Skeleton className="h-5 w-16" />
-										<Skeleton className="h-5 w-20" />
-									</div>
-								</div>
-							</div>
-						))}
-					</div>
-				) : events.length === 0 ? (
-					<div className="text-center py-16 flex flex-col items-center justify-center">
-						<Image src={NoResults} alt="" draggable={false} className="w-full max-w-[250px] dark:invert" />
-						<p className="mt-4 font-medium">{t("No upcoming events")}</p>
-						<p className="mt-1 text-sm text-muted-foreground max-w-sm">
-							{t("Clubs post their events here as soon as the dates are set.")}
+	if (state.view === "calendar") {
+		return (
+			<div className="container max-w-7xl px-4 py-8">
+				<div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+					<div className="flex flex-col gap-1">
+						<h1 className="text-[28px] leading-[34px] font-bold tracking-tight md:text-[40px] md:leading-[46px]">
+							{t("Events")}
+						</h1>
+						<p className="text-[13px] leading-5 text-muted-foreground tabular-nums">
+							<Subtitle data={data} />
 						</p>
-						<Link href="/clubs" className="mt-4 text-sm underline underline-offset-4">
-							{t("Browse clubs")}
-						</Link>
 					</div>
-				) : (
-					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-						{events.map((event) => (
-							<EventCard key={event.id} event={event} />
-						))}
-					</div>
-				)}
+					{viewToggle}
+				</div>
+				<EventCalendar events={data.calendarEvents} />
 			</div>
+		);
+	}
 
-			<div className="min-h-[60px] flex items-center justify-center mt-8">
-				{totalPages > 1 && (
-					<nav className="flex items-center justify-center gap-2" aria-label={t("Pagination")}>
-						<Button
-							variant="outline"
-							size="icon"
-							onClick={() => setPage(page - 1)}
-							disabled={page <= 1 || isLoading}
-							aria-label={t("Previous page")}
-							className="transition-transform active:scale-[0.96]"
-						>
-							<ChevronLeft className="h-4 w-4" aria-hidden />
-						</Button>
-						<div className="flex items-center gap-1">
-							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-								let pageNum: number;
-								if (totalPages <= 5) {
-									pageNum = i + 1;
-								} else if (page <= 3) {
-									pageNum = i + 1;
-								} else if (page >= totalPages - 2) {
-									pageNum = totalPages - 4 + i;
-								} else {
-									pageNum = page - 2 + i;
-								}
-								return (
-									<Button
-										key={pageNum}
-										variant={page === pageNum ? "default" : "outline"}
-										size="icon"
-										onClick={() => setPage(pageNum)}
-										disabled={isLoading}
-										aria-label={t("Page {page}", { page: String(pageNum) })}
-										aria-current={page === pageNum ? "page" : undefined}
-										className="tabular-nums transition-transform active:scale-[0.96]"
-									>
-										{pageNum}
-									</Button>
-								);
-							})}
-						</div>
-						<Button
-							variant="outline"
-							size="icon"
-							onClick={() => setPage(page + 1)}
-							disabled={page >= totalPages || isLoading}
-							aria-label={t("Next page")}
-							className="transition-transform active:scale-[0.96]"
-						>
-							<ChevronRight className="h-4 w-4" aria-hidden />
-						</Button>
-					</nav>
-				)}
-			</div>
+	const shown = data.events.length;
+	return (
+		<div className="container max-w-7xl px-4 py-8">
+			<ListingShell
+				title={t("Events")}
+				subtitle={<Subtitle data={data} />}
+				viewToggle={viewToggle}
+				search={{
+					value: state.q,
+					onChange: (value) => setState({ q: value, page: null }),
+					placeholder: t("Event, club or city"),
+					label: t("Search events"),
+				}}
+				sort={{
+					value: state.sort,
+					onChange: (value) =>
+						setState({ sort: SORTS.find((sort) => sort === value) ?? "soonest", page: null }),
+					options: sortOptions,
+				}}
+				chips={chips}
+				resultCount={data.total}
+				filters={<EventsFilters values={toFilterValues(state)} facets={data.facets} onChange={update} />}
+				activeFilterCount={chips.length}
+				onResetFilters={reset}
+			>
+				<EventsResults
+					events={data.events}
+					total={data.total}
+					canLoadMore={shown < data.total && perPageFor(state.page) < MAX_PER_PAGE}
+					onLoadMore={() => setState({ page: state.page + 1 }, { history: "replace" })}
+					hasFilters={chips.length > 0 || state.q !== ""}
+					onReset={reset}
+				/>
+			</ListingShell>
 		</div>
 	);
 }
