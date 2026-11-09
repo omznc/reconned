@@ -10,6 +10,7 @@ import { EventOverview } from "@/components/overviews/event-overview";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
+import { fetchReviews } from "@/lib/server/event-page";
 import { serializable } from "@/routes/{-$locale}/dashboard/$clubId/-lib/serializable";
 
 const getEventFn = createServerFn({ method: "GET" })
@@ -28,12 +29,19 @@ const getEventFn = createServerFn({ method: "GET" })
 		});
 	});
 
+const getReviewsFn = createServerFn({ method: "GET" })
+	.validator(z.object({ id: z.string() }))
+	.handler(async ({ data }) => serializable((await fetchReviews(data.id))?.reviews));
+
 export const Route = createFileRoute("/{-$locale}/dashboard/$clubId/events/$id/")({
 	loader: async ({ params, context }) => {
 		if (!context.access.membership) {
 			return { kind: "forbidden" as const };
 		}
-		const event = await getEventFn({ data: { id: params.id } });
+		const [event, reviews] = await Promise.all([
+			getEventFn({ data: { id: params.id } }),
+			getReviewsFn({ data: { id: params.id } }),
+		]);
 		if (!event) {
 			throw notFound();
 		}
@@ -41,7 +49,7 @@ export const Route = createFileRoute("/{-$locale}/dashboard/$clubId/events/$id/"
 			!context.access.isManager ||
 			new Date() < new Date(event.dateRegistrationsClose) ||
 			new Date() > new Date(event.dateEnd);
-		return { kind: "ok" as const, event, disabledAttendance };
+		return { kind: "ok" as const, event, reviews, disabledAttendance };
 	},
 	pendingComponent: LoadingPage,
 	notFoundComponent: NotFoundPage,
@@ -72,7 +80,7 @@ function EventPage() {
 					</Link>
 				</Button>
 			</div>
-			<EventOverview event={page.event} clubId={clubId} />
+			<EventOverview event={page.event} clubId={clubId} reviews={page.reviews} />
 		</>
 	);
 }

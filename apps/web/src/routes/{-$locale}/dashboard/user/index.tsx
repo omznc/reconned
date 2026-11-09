@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
+import { fetchUserReviews } from "@/lib/server/user-page";
 
 const getUserFn = createServerFn({ method: "GET" })
 	.validator(z.object({ userId: z.string() }))
@@ -18,7 +19,10 @@ const getUserFn = createServerFn({ method: "GET" })
 		const { data: userFromDb, error } = await apiServer.GET("/api/users/{id}", {
 			params: { path: { id: data.userId } },
 		});
-		return error || !userFromDb ? null : userFromDb;
+		if (error || !userFromDb) {
+			return null;
+		}
+		return { user: userFromDb, reviews: await fetchUserReviews(data.userId) };
 	});
 
 export const Route = createFileRoute("/{-$locale}/dashboard/user/")({
@@ -30,10 +34,10 @@ export const Route = createFileRoute("/{-$locale}/dashboard/user/")({
 
 function UserPage() {
 	const t = useExtracted();
-	const userFromDb = Route.useLoaderData();
+	const page = Route.useLoaderData();
 	const { user } = Route.useRouteContext();
 
-	if (!userFromDb) {
+	if (!page) {
 		return <ErrorPage title={t("An error occurred")} link="/dashboard" />;
 	}
 
@@ -51,7 +55,7 @@ function UserPage() {
 							{t("Edit profile")}
 						</Link>
 					</Button>
-					{!userFromDb.isPrivate && (
+					{!page.user.isPrivate && (
 						<Button variant="outline" asChild={true}>
 							<Link target="_blank" className="flex items-center gap-1" href={`/users/${user.id}`}>
 								<Eye size={16} />
@@ -61,7 +65,7 @@ function UserPage() {
 					)}
 				</div>
 			</Alert>
-			<UserOverview user={userFromDb} />
+			<UserOverview user={page.user} reviews={page.reviews} />
 		</>
 	);
 }

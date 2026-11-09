@@ -281,3 +281,14 @@ export async function loadClubPage({ id, locale, signedIn }: ClubPageInput) {
 		),
 	};
 }
+
+/** The reviews of a club, or `undefined` when the `REVIEWS` flag is off. */
+export async function fetchClubReviews(clubId: string) {
+	if (!(await isFeatureEnabled("REVIEWS"))) {
+		return undefined;
+	}
+	const { data } = await apiServer.GET("/api/reviews/{type}/{id}", {
+		params: { path: { type: "club", id: clubId } },
+	});
+	return data?.reviews;
+}
