@@ -1,6 +1,6 @@
 import { AppError, apiError, Router, responseSchema, setHeaders } from "@reconned/router";
 import { randomUUIDv7 } from "bun";
-import { and, count, eq, getTableColumns, gte, ilike, inArray, ne, or, sql } from "drizzle-orm";
+import { and, count, eq, getTableColumns, gte, inArray, ne, or, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import {
@@ -27,6 +27,15 @@ import { auth } from "../lib/auth";
 import { rateLimitKey, redisRateLimitStore } from "../lib/cache";
 import { db } from "../lib/db";
 import { deleteOnesignalUser, deletePosthogPerson } from "../lib/erasure";
+import {
+	gamesCountSql,
+	ratingSchema,
+	toRating,
+	userClubSchema,
+	userRatingAverageSql,
+	userRatingCountSql,
+} from "../lib/people-stats";
+import { listPlayers } from "../lib/players";
 import { posthog } from "../lib/posthog";
 import {
 	httpsUrl,
@@ -448,208 +457,48 @@ usersRouter.get(
 usersRouter.get(
 	"/users",
 	async ({ response, context, query }) => {
-		const requestingUserId = context.user?.id;
-		const isAdmin = context.isAdmin;
-
-		const { page, perPage } = query;
-		const offset = (page - 1) * perPage;
-
-		let orderBy = sql`${user.name} ASC`;
-		if (query?.sort === "admin") {
-			orderBy = sql`CASE WHEN ${user.role} = 'admin' THEN 0 ELSE 1 END, ${user.name} ASC`;
-		}
-
-		const whereConditions = [];
-		const search = query?.search;
-		if (search) {
-			whereConditions.push(
-				or(
-					ilike(user.name, `%${search}%`),
-					ilike(user.email, `%${search}%`),
-					ilike(user.callsign, `%${search}%`),
-				),
-			);
-		}
-
-		if (!isAdmin) {
-			if (requestingUserId) {
-				whereConditions.push(or(eq(user.isPrivate, false), eq(user.id, requestingUserId)));
-			} else {
-				whereConditions.push(eq(user.isPrivate, false));
-			}
-		}
-
-		const where = whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const usersWithMemberships = await db
-			.select({
-				// User fields
-				id: user.id,
-				slug: user.slug,
-				name: user.name,
-				bio: user.bio,
-				image: user.image,
-				headerImage: user.headerImage,
-				location: user.location,
-				website: user.website,
-				callsign: user.callsign,
-				isPrivate: user.isPrivate,
-				isPrivateEmail: user.isPrivateEmail,
-				isPrivatePhone: user.isPrivatePhone,
-				isPrivateStats: user.isPrivateStats,
-				language: user.language,
-				role: user.role,
-				email: isAdmin
-					? user.email
-					: requestingUserId
-						? sql<
-								string | null
-							>`CASE WHEN ${user.id} = ${requestingUserId} OR ${user.isPrivateEmail} = false THEN ${user.email} ELSE NULL END`.as(
-								"email",
-							)
-						: sql<
-								string | null
-							>`CASE WHEN ${user.isPrivateEmail} = false THEN ${user.email} ELSE NULL END`.as("email"),
-				phone: isAdmin
-					? user.phone
-					: requestingUserId
-						? sql<
-								string | null
-							>`CASE WHEN ${user.id} = ${requestingUserId} OR ${user.isPrivatePhone} = false THEN ${user.phone} ELSE NULL END`.as(
-								"phone",
-							)
-						: sql<
-								string | null
-							>`CASE WHEN ${user.isPrivatePhone} = false THEN ${user.phone} ELSE NULL END`.as("phone"),
-				// Club membership fields (will be null if no membership)
-				membershipId: clubMembership.id,
-				membershipClubId: clubMembership.clubId,
-				membershipClubName: club.name,
-				membershipClubSlug: club.slug,
-				membershipRole: clubMembership.role,
-			})
-			.from(user)
-			.leftJoin(
-				clubMembership,
-				and(
-					eq(clubMembership.userId, user.id),
-					eq(clubMembership.role, "USER"), // Only show regular memberships, not management roles
-				),
-			)
-			.leftJoin(club, eq(clubMembership.clubId, club.id))
-			.where(where)
-			.orderBy(orderBy)
-			.limit(perPage)
-			.offset(offset);
-
-		const total = await db.select({ count: count() }).from(user).where(where);
-
-		// Group memberships by user
-		const userMap = new Map<
-			string,
-			{
-				id: string;
-				slug: string | null;
-				name: string;
-				bio: string | null;
-				image: string | null;
-				headerImage: string | null;
-				location: string | null;
-				website: string | null;
-				callsign: string | null;
-				isPrivate: boolean;
-				isPrivateEmail: boolean;
-				isPrivatePhone: boolean;
-				isPrivateStats: boolean;
-				language: string;
-				role: string | null;
-				email: string | null;
-				phone: string | null;
-				clubMembership: Array<{
-					id: string;
-					clubId: string;
-					role: string;
-					club: { id: string; name: string; slug: string | null };
-				}>;
-				isAdmin: boolean;
-			}
-		>();
-
-		for (const row of usersWithMemberships) {
-			const userId = row.id;
-			if (!userMap.has(userId)) {
-				userMap.set(userId, {
-					id: row.id,
-					slug: row.slug,
-					name: row.name,
-					bio: row.bio,
-					image: row.image,
-					headerImage: row.headerImage,
-					location: row.location,
-					website: row.website,
-					callsign: row.callsign,
-					isPrivate: row.isPrivate,
-					isPrivateEmail: row.isPrivateEmail,
-					isPrivatePhone: row.isPrivatePhone,
-					isPrivateStats: row.isPrivateStats,
-					language: row.language || "en",
-					role: row.role,
-					email: row.email,
-					phone: row.phone,
-					clubMembership: [],
-					isAdmin: row.role?.toUpperCase() === "ADMIN",
-				});
-			}
-
-			const user = userMap.get(userId);
-			if (!user) continue;
-
-			// Add membership if it exists
-			if (row.membershipId && row.membershipClubId && row.membershipClubName) {
-				user.clubMembership.push({
-					id: row.membershipId,
-					clubId: row.membershipClubId,
-					role: row.membershipRole || "USER",
-					club: {
-						id: row.membershipClubId,
-						name: row.membershipClubName,
-						slug: row.membershipClubSlug,
-					},
-				});
-			}
-		}
-
-		return response.json({
-			users: Array.from(userMap.values()),
-			pagination: {
-				page,
-				perPage,
-				total: total[0]?.count || 0,
-				totalPages: Math.ceil((total[0]?.count || 0) / perPage),
-			},
-		});
+		return response.json(await listPlayers(query, { userId: context.user?.id, isAdmin: context.isAdmin }));
 	},
 	{
 		cache: {
 			key: "users",
 			ttl: 300,
-			varyByQuery: ["page", "perPage", "search", "sort"],
+			varyByQuery: ["page", "perPage", "search", "sort", "countryId", "clubId", "city"],
 			// email/phone columns are masked per requesting user / admin flag.
 			varyByUser: true,
 		},
 		schema: {
 			tags: ["Users"],
 			summary: "List users",
-			description: "Returns a paginated list of users with optional search and sorting",
+			description:
+				"Returns a paginated list of users. Users have no country or city of their own, so `countryId`, `clubId` and `city` match the public clubs a user is an active member of (one club must match all given filters). " +
+				"`sort=games` orders by games played (users who hide their stats come last), `sort=newest` by sign-up date, `sort=name` by name (the default). " +
+				"`gamesCount` and `rating` are null when the user hides their stats.",
 			query: paginationQuerySchema.extend({
 				search: z.string().max(100).optional(),
-				sort: z.enum(["admin"]).optional(),
+				sort: z.enum(["admin", "games", "name", "newest"]).optional(),
+				countryId: z.coerce.number().int().optional().describe("Members of a club in this country"),
+				clubId: z.string().max(100).optional().describe("Members of this club (id or slug)"),
+				city: z.string().max(100).optional().describe("Members of a club in this city (name or city slug)"),
 			}),
 			response: {
 				200: z.object({
 					users: z.array(
 						userSchema.extend({
 							isAdmin: z.boolean(),
+							createdAt: z.string(),
+							gamesCount: z
+								.number()
+								.nullable()
+								.describe("Finished games played; null when stats are private"),
+							rating: ratingSchema.describe(
+								"Average of reviews received; null when none or stats are private",
+							),
+							clubs: z
+								.array(userClubSchema)
+								.describe(
+									"Active memberships of public clubs, every role, oldest first (the first is the main club)",
+								),
 						}),
 					),
 					pagination: paginationResponseSchema,
@@ -725,28 +574,55 @@ usersRouter.get(
 			},
 		}));
 
+		// isPrivateStats hides games, rating and the registration history. `/users/:id/stats` answers 404
+		// in that case; this route used to return the registrations anyway, which leaked the same facts.
+		const statsHidden = u.isPrivateStats && !isAdmin && u.id !== requestingUserId;
+
+		const [statsRow] = statsHidden
+			? []
+			: await db
+					.select({
+						games: gamesCountSql(),
+						ratingAverage: userRatingAverageSql(),
+						ratingCount: userRatingCountSql(),
+					})
+					.from(user)
+					.where(eq(user.id, u.id));
+
 		// Single JOIN query for registrations + events + clubs (filters private in WHERE)
-		const registrationRows = await db
-			.select({
-				id: eventRegistration.id,
-				eventId: eventRegistration.eventId,
-				createdById: eventRegistration.createdById,
-				type: eventRegistration.type,
-				paymentMethod: eventRegistration.paymentMethod,
-				attended: eventRegistration.attended,
-				createdAt: eventRegistration.createdAt,
-				updatedAt: eventRegistration.updatedAt,
-				eventId_: event.id,
-				eventName: event.name,
-				eventSlug: event.slug,
-				eventDateStart: event.dateStart,
-				eventClubId: event.clubId,
-				clubIsPrivate: club.isPrivate,
-			})
-			.from(eventRegistration)
-			.innerJoin(event, eq(eventRegistration.eventId, event.id))
-			.innerJoin(club, eq(event.clubId, club.id))
-			.where(and(eq(eventRegistration.createdById, u.id), eq(event.isPrivate, false), eq(club.isPrivate, false)));
+		const registrationRows = statsHidden
+			? []
+			: await db
+					.select({
+						id: eventRegistration.id,
+						eventId: eventRegistration.eventId,
+						createdById: eventRegistration.createdById,
+						type: eventRegistration.type,
+						paymentMethod: eventRegistration.paymentMethod,
+						attended: eventRegistration.attended,
+						createdAt: eventRegistration.createdAt,
+						updatedAt: eventRegistration.updatedAt,
+						eventId_: event.id,
+						eventName: event.name,
+						eventSlug: event.slug,
+						eventDateStart: event.dateStart,
+						eventLocation: event.location,
+						eventCostPerPerson: event.costPerPerson,
+						eventClubId: event.clubId,
+						clubName: club.name,
+						clubSlug: club.slug,
+						clubIsPrivate: club.isPrivate,
+					})
+					.from(eventRegistration)
+					.innerJoin(event, eq(eventRegistration.eventId, event.id))
+					.innerJoin(club, eq(event.clubId, club.id))
+					.where(
+						and(
+							eq(eventRegistration.createdById, u.id),
+							eq(event.isPrivate, false),
+							eq(club.isPrivate, false),
+						),
+					);
 
 		const filteredRegistrations = registrationRows.map((r) => ({
 			id: r.id,
@@ -762,8 +638,12 @@ usersRouter.get(
 				name: r.eventName,
 				slug: r.eventSlug,
 				dateStart: r.eventDateStart,
+				location: r.eventLocation,
+				costPerPerson: r.eventCostPerPerson,
 				club: {
 					id: r.eventClubId,
+					name: r.clubName,
+					slug: r.clubSlug,
 					isPrivate: r.clubIsPrivate,
 				},
 			},
@@ -771,6 +651,8 @@ usersRouter.get(
 
 		return response.json({
 			...u,
+			gamesCount: statsRow ? Number(statsRow.games) : null,
+			rating: statsRow ? toRating(statsRow.ratingAverage, Number(statsRow.ratingCount)) : null,
 			clubMembership: filteredMemberships,
 			eventRegistration: filteredRegistrations,
 		});
@@ -785,12 +667,16 @@ usersRouter.get(
 		schema: {
 			tags: ["Users"],
 			summary: "Get user profile",
-			description: "Returns a public user profile by ID or slug",
+			description:
+				"Returns a public user profile by ID or slug. When the user hides their stats (`isPrivateStats`), `gamesCount` and `rating` are null and `eventRegistration` is empty for everyone but the user and admins. `gamesCount` counts finished games played.",
 			params: z.object({
 				id: z.string(),
 			}),
 			response: {
 				200: userSchema.extend({
+					createdAt: z.string().describe("Member since"),
+					gamesCount: z.number().nullable(),
+					rating: ratingSchema,
 					clubMembership: z.array(
 						activeClubMembershipSchema.extend({
 							club: baseClubSchema.pick({
@@ -809,10 +695,14 @@ usersRouter.get(
 									name: true,
 									slug: true,
 									dateStart: true,
+									location: true,
+									costPerPerson: true,
 								})
 								.extend({
 									club: z.object({
 										id: z.string(),
+										name: z.string(),
+										slug: z.string().nullable(),
 										isPrivate: z.boolean(),
 									}),
 								}),
