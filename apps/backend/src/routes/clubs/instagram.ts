@@ -101,7 +101,7 @@ async function connectPageToClub({
 	const tokenInfo = await debugToken(nonExpiringToken);
 	const isPermanentToken = !tokenInfo.data.expires_at || tokenInfo.data.expires_at === 0;
 
-	await db
+	const [updated] = await db
 		.update(club)
 		.set({
 			instagramUsername: igBusinessResponse.instagram_business_account.username,
@@ -116,10 +116,12 @@ async function connectPageToClub({
 			instagramTokenType: isPermanentToken ? "PERMANENT" : "TEMPORARY",
 			updatedAt: new Date().toISOString(),
 		})
-		.where(eq(club.id, clubId));
+		.where(eq(club.id, clubId))
+		.returning({ slug: club.slug });
 
 	// The OAuth callback is a GET redirect with no route-level bustCache.
-	await bustRouteCache(["clubs", `club:${clubId}`]);
+	// The public page reads the club by slug, which caches under its own key.
+	await bustRouteCache(["clubs", `club:${clubId}`, ...(updated?.slug ? [`club:${updated.slug}`] : [])]);
 
 	await logClubAudit({
 		clubId,
