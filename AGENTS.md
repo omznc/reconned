@@ -2,11 +2,11 @@
 
 RECONNED is an airsoft club/event platform: a Bun-workspaces monorepo.
 
-- **`apps/web`** — Next.js 16 App Router, port 3000. Tailwind CSS v4, shadcn/ui, next-intl, React Query, nuqs, next-safe-action.
+- **`apps/web`** — TanStack Start (Vite, Nitro bun preset), port 3000. Tailwind CSS v4, shadcn/ui, use-intl, React Query, nuqs.
 - **`apps/backend`** — Bun HTTP server, port 3002. Built on `@reconned/router`, Drizzle ORM + PostgreSQL, Redis, better-auth, OpenAPI/Scalar docs.
 - **`packages/router`** — `@reconned/router`, the routing/OpenAPI/rate-limit/cache framework the backend is built on.
 
-The `backend` package is a dep of `web` (`"backend": "workspace:*"`); web imports backend code directly via `transpilePackages`.
+The `backend` package is a dep of `web` (`"backend": "workspace:*"`); web imports backend code directly through the workspace.
 
 ## Commands
 
@@ -15,7 +15,7 @@ Root-level (docker Postgres/Redis are auto-started by the `test*` scripts):
 - `bun dev` — Postgres container → backend → (wait for OpenAPI at :3002) → web. Web's `predev` regenerates API types first. `bun run kill` frees :3000/:3002.
 - `bun run test` — backend integration tests (prefer running from `apps/backend`, see below)
 - `bun run test:e2e` / `test:e2e:ui` — Playwright E2E (isolated stack: web 3100, backend 3202, DB `reconned_e2e`, redis /2)
-- `bun run typecheck` — all three workspaces; web's runs `next typegen` first (required — `PageProps`/`LayoutProps` and `@public/*` image types are generated into `.next/types`)
+- `bun run typecheck` — all three workspaces; web's runs `tsr generate` first (required — it writes `src/routeTree.gen.ts`)
 - `bun check` — Biome lint+format with `--write`; CI runs `bunx biome ci .`. Always run Biome from the repo root.
 - `bun run knip` — dead code detection
 
@@ -29,7 +29,7 @@ Web (`cd apps/web`):
 
 - `bun run api:generate-types` — regenerate `src/lib/api/api-types.ts` from the running backend's OpenAPI spec. This file is **committed**; regenerate + `bunx biome check --write` it whenever backend route schemas change.
 
-The web build ignores tsc errors (`typescript: { ignoreBuildErrors: true }`) — typecheck separately. A pre-commit hook (installed via `postinstall`) runs checks.
+The web build (`vite build`) does not typecheck — run `bun run typecheck` separately. `bun run build` in `apps/web` writes `.output/`; `bun run start` runs it. A pre-commit hook (installed via `postinstall`) runs checks.
 
 ## Hard constraints
 
@@ -46,10 +46,14 @@ The web build ignores tsc errors (`typescript: { ignoreBuildErrors: true }`) —
 
 ### Components & data fetching
 
-- Favor React Server Components; `"use client"` only for interactivity. Keep logic on the backend unless it must run on the Next.js server.
+- Routes live in `src/routes/{-$locale}/` (file-based, unprefixed URL = bs). Non-route files there need a `-` prefix (`-components/`). `src/routeTree.gen.ts` is generated and committed.
+- There are no React Server Components. Load data in the route `loader` through a `createServerFn(...)` that uses `apiServer`. Return only serializable data. Throw `notFound()` on a backend 404. Build `head()` with `buildSeoHead` from `@/lib/seo`.
+- Keep logic on the backend unless it must run on the web server.
 - Server-side fetches: `apiServer` from `@/lib/api/api.ts` (forwards cookies + rate-limit bypass secret).
 - Client-side fetches: `apiClient` from `@/lib/api/api.client.ts` with `@tanstack/react-query`.
-- Server actions: `next-safe-action`.
+- Mutations go through `apiClient`. There is no server-action layer.
+- Signed-in user: `context.user`. Put auth and role redirects in `beforeLoad`.
+- Client entry is `src/client.tsx` (it applies the stored analytics consent before hydration).
 - Types: import shared entities (`User`, `Club`, `Event`, `ClubMember`, `Role`, …) from `@/lib/api/api-type-helpers.ts`; extract any endpoint's type with `ApiResponse<Path, Method>`:
   ```typescript
   type Entity = ApiResponse<"/api/admin/entities/{id}", "get">["entity"];
@@ -57,33 +61,33 @@ The web build ignores tsc errors (`typescript: { ignoreBuildErrors: true }`) —
 
 ### i18n
 
-- `useExtracted()` (client) / `await getExtracted()` (server); calls must be statically analyzable literal strings: `t("My Heading")`.
-- Write English strings in code; `bun dev` extracts keys into `apps/web/messages/*.json`, then populate `bs.json` and `sr.json` (Serbian uses Cyrillic) from the English values.
+- `useExtracted()` (components) / `await getExtracted({ locale })` (loaders, server fns); calls must be statically analyzable literal strings: `t("My Heading")`. Never pass `t` into a helper.
+- Write English strings in code; `bun run i18n:extract` (and `bun dev`) extracts keys into `apps/web/messages/*.json`, then populate `bs.json` and `sr.json` (Serbian uses Cyrillic) from the English values.
 - Locales: en/bs/sr, default `bs`, `localePrefix: "as-needed"`.
 
 ### Forms
 
-- File naming: `[feature].form.tsx`. Related components live in `_components/` folders next to their pages.
+- File naming: `[feature].form.tsx`. Related components live in `-components/` folders next to their routes.
 - Define zod schemas **inside** form components (not separate files) so error messages can use `t()`.
-- Standard CRUD form shape: `react-hook-form` + `zodResolver`; edit-vs-create driven by a `useQueryState("entityId", { shallow: false, clearOnDefault: true, history: "replace" })` nuqs param; on success `toast.success(t(...))`, `setEntityId(null)`, `form.reset()`, `router.refresh()`; on `{ error }` from apiClient, `toast.error(t(...))` and return.
+- Standard CRUD form shape: `react-hook-form` + `zodResolver`; edit-vs-create driven by a `useQueryState("entityId", { shallow: false, clearOnDefault: true, history: "replace" })` nuqs param; on success `toast.success(t(...))`, `setEntityId(null)`, `form.reset()`, `router.invalidate()`; on `{ error }` from apiClient, `toast.error(t(...))` and return.
 
 ### Tables, modals, deletes
 
 - Use `GenericDataTable` (`@/components/generic-data-table.tsx`) — column configs support custom components, badge variants, dot-notation nested access.
 - Modal/sheet state: local `useState<Entity | null>` — entity set means open; render conditionally and pass `onClose` to reset. Sheets use `Credenza` with `open={Boolean(selectedEntity)}`.
-- Deletes: `useConfirm()` from `@/components/ui/alert-dialog-provider`, then `apiClient.DELETE`, toast, `router.refresh()`.
+- Deletes: `useConfirm()` from `@/components/ui/alert-dialog-provider`, then `apiClient.DELETE`, toast, `router.invalidate()`.
 - Notifications: `sonner` toasts with translated messages.
 
 ### Feature flags
 
 - Names are `SCREAMING_SNAKE_CASE` (validated `/^[A-Z][A-Z0-9_]*$/`). Admin CRUD at `/dashboard/admin/feature-flags`.
-- Client: `useFeatureFlag("FLAG")`; server components: `await getFeatureFlag("FLAG")`; backend routes: `await isFeatureEnabled("FLAG")` (Redis cache ~5 min, DB fallback).
+- Client: `useFeatureFlag("FLAG")`; loaders and server fns: `await getFeatureFlag("FLAG")`; backend routes: `await isFeatureEnabled("FLAG")` (Redis cache ~5 min, DB fallback).
 - Current flags: `CLUBS_SPENDING`, `REVIEWS`, `EVENT_REGISTRATION`.
 
 ### SEO / providers
 
 - `constructCanonicalUrl(baseUrl, pathname, locale)` and `generatePageLanguages(...)` from `@/lib/utils.ts`; for sluggable entities use `generateHreflangAlternatesForSluggableEntity`.
-- Provider order (root layout): `Providers > ThemeProvider > FontProvider > StyleProvider > FeatureFlagsProvider > TooltipProvider > AlertDialogProvider`.
+- Provider order (`src/routes/__root.tsx`): `Providers > ThemeProvider > FontProvider > StyleProvider > FeatureFlagsProvider > TooltipProvider > AlertDialogProvider`.
 
 ## Backend (apps/backend)
 
@@ -103,7 +107,7 @@ The web build ignores tsc errors (`typescript: { ignoreBuildErrors: true }`) —
 ### Rate limiting
 
 - Global default: 600 req/min per IP, Redis-backed (`redisRateLimitStore` + `rateLimitKey` from `src/lib/cache.ts`), configured on `mainRouter` in `src/index.ts`.
-- Requests with header `x-internal-api-secret: $INTERNAL_API_SECRET` (the web SSR layer) map to a bypass key the store short-circuits.
+- Requests with header `x-internal-api-secret: $INTERNAL_API_SECRET` (the web server) map to a bypass key the store short-circuits.
 - Per-route `rateLimit` configs must pass `store: redisRateLimitStore, keyGenerator: rateLimitKey`, otherwise they silently fall back to a per-process Map keyed on `x-forwarded-for`.
 
 ### Drizzle
@@ -142,7 +146,7 @@ The web build ignores tsc errors (`typescript: { ignoreBuildErrors: true }`) —
 
 ## E2E (Playwright)
 
-- `playwright.config.ts` at root; specs in `e2e/`. Playwright's `webServer` boots both the backend (`tests/helpers/e2e-serve.ts` — resets/migrates/seeds `reconned_e2e`, serves on 3202) and web (`next dev` on 3100 with the dummy `webEnv`).
+- `playwright.config.ts` at root; specs in `e2e/`. Playwright's `webServer` boots both the backend (`tests/helpers/e2e-serve.ts` — resets/migrates/seeds `reconned_e2e`, serves on 3202) and web (`vite dev` on 3100 with the dummy `webEnv`).
 - Locally `reuseExistingServer: !CI` piggybacks on your dev servers — reproduce CI behavior with `CI=true bunx playwright test`.
 - Every var in `env.ts`'s `client` block must be present in `webEnv` (dummy values fine): the browser bundle validates `NEXT_PUBLIC_*` and cannot see `CI=true`, so a missing var crashes every page.
 - Ports/URLs in `playwright.config.ts` must stay in sync with `apps/backend/tests/helpers/e2e-prepare.ts`.
@@ -153,7 +157,7 @@ Three jobs on PRs and pushes to main/dev: `checks` (biome ci, workspace typechec
 
 ## Production architecture
 
-- Nginx proxies public traffic. API requests go directly to the backend (`localhost:3002`), not through Next.js — the `rewrites()` for `/api/:path*` are dev-only. Next.js serves HTML/static only in production (`output: "standalone"`).
+- Nginx proxies public traffic. API requests go directly to the backend (`localhost:3002`), not through the web app — the Vite `server.proxy` for `/api` is dev-only. The web app serves HTML/static only in production (`.output/server/index.mjs`).
 - All services run in Docker on a single Hetzner box via Coolify.
 
 ## Project-specific patterns

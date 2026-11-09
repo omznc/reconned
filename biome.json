@@ -53,7 +53,7 @@
 			}
 		},
 		"domains": {
-			"next": "all"
+			"react": "all"
 		}
 	},
 	"formatter": {
@@ -79,6 +79,7 @@
 			"!**/dist",
 			"!**/build",
 			"!**/.next",
+			"!**/.output",
 			"!**/src/components/ui",
 			"!**/.unlighthouse",
 			"!**/generated",

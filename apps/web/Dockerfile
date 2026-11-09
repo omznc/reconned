@@ -17,8 +17,6 @@ COPY apps/web ./apps/web
 COPY apps/backend ./apps/backend
 COPY packages/router ./packages/router
 
-ENV NEXT_TELEMETRY_DISABLED=1
-
 ARG CI
 ARG NEXT_PUBLIC_CDN_URL
 ARG NEXT_PUBLIC_WEB_URL
@@ -43,28 +41,22 @@ ENV CI=${CI:-false} \
 
 WORKDIR /app/apps/web
 
-RUN --mount=type=cache,target=/app/apps/web/.next/cache \
-    bun node_modules/next/dist/bin/next build --turbo
+RUN bun run build
 
 FROM oven/bun:canary AS runner
 WORKDIR /app
-
-ENV NEXT_TELEMETRY_DISABLED=1
 
 ENV NODE_ENV=production \
     PORT=3000 \
     HOSTNAME="0.0.0.0"
 
 RUN groupadd -r -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs -d /app -s /sbin/nologin nextjs
+    useradd -r -u 1001 -g nodejs -d /app -s /sbin/nologin app
 
-COPY --from=builder /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=app:nodejs /app/apps/web/.output ./apps/web/.output
 
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-
-USER nextjs
+USER app
 
 EXPOSE 3000
 
-CMD ["bun", "--smol", "--no-orphans", "apps/web/server.js"]
+CMD ["bun", "--smol", "--no-orphans", "apps/web/.output/server/index.mjs"]

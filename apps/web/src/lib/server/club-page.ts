@@ -34,38 +34,56 @@ function membershipInfo(data: MembershipData | null | undefined) {
 	};
 }
 
-async function fetchClubExtras(club: Club, signedIn: boolean) {
+type MembersData = ApiResponse<"/api/clubs/{id}/members", "get">;
+type InvitesData = ApiResponse<"/api/users/invites", "get">;
+
+function memberFields(data: MembersData | null | undefined) {
+	return { members: data?.members || [], privateCount: data?.privateCount || 0 };
+}
+
+function instagramFields(data: ApiResponse<"/api/clubs/{id}/instagram/media", "get"> | null | undefined, club: Club) {
+	return data || { media: [], username: club.instagramUsername || null };
+}
+
+function clubInvites(data: InvitesData | null | undefined, clubId: string) {
+	return (data?.invites || []).filter((invite: { clubId: string }) => invite.clubId === clubId);
+}
+
+async function fetchClubResponses(club: Club, signedIn: boolean, reviewsEnabled: boolean) {
 	const path = { id: club.id };
 	const empty = Promise.resolve({ data: null, error: null });
-	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
 
+	return await Promise.all([
+		signedIn ? apiServer.GET("/api/clubs/{id}/membership", { params: { path } }) : empty,
+		apiServer.GET("/api/clubs/{id}/has-owner", { params: { path } }),
+		apiServer.GET("/api/clubs/{id}/members", { params: { path } }),
+		apiServer.GET("/api/clubs/{id}/posts", { params: { path } }),
+		apiServer.GET("/api/clubs/{id}/alliances", { params: { path } }),
+		club.instagramConnected
+			? apiServer.GET("/api/clubs/{id}/instagram/media", { params: { path, query: { limit: 20 } } })
+			: empty,
+		// Per-user data: the API client forwards the caller's auth cookie.
+		signedIn ? apiServer.GET("/api/users/invites") : empty,
+		reviewsEnabled
+			? apiServer.GET("/api/reviews/{type}/{id}", { params: { path: { type: "club", id: club.id } } })
+			: empty,
+		isFeatureEnabled("FAQ_SCHEMA"),
+	]);
+}
+
+async function fetchClubExtras(club: Club, signedIn: boolean) {
+	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
 	const [membership, hasOwner, members, posts, alliances, instagram, invites, reviews, faqEnabled] =
-		await Promise.all([
-			signedIn ? apiServer.GET("/api/clubs/{id}/membership", { params: { path } }) : empty,
-			apiServer.GET("/api/clubs/{id}/has-owner", { params: { path } }),
-			apiServer.GET("/api/clubs/{id}/members", { params: { path } }),
-			apiServer.GET("/api/clubs/{id}/posts", { params: { path } }),
-			apiServer.GET("/api/clubs/{id}/alliances", { params: { path } }),
-			club.instagramConnected
-				? apiServer.GET("/api/clubs/{id}/instagram/media", { params: { path, query: { limit: 20 } } })
-				: empty,
-			// Per-user data: the API client forwards the caller's auth cookie.
-			signedIn ? apiServer.GET("/api/users/invites") : empty,
-			reviewsEnabled
-				? apiServer.GET("/api/reviews/{type}/{id}", { params: { path: { type: "club", id: club.id } } })
-				: empty,
-			isFeatureEnabled("FAQ_SCHEMA"),
-		]);
+		await fetchClubResponses(club, signedIn, reviewsEnabled);
 
 	return {
 		...membershipInfo(membership.data),
 		hasOwner: hasOwner.data?.hasOwner || false,
-		members: members.data?.members || [],
-		privateCount: members.data?.privateCount || 0,
+		...memberFields(members.data),
 		posts: posts.data?.posts || [],
 		alliances: alliances.data?.alliances || [],
-		instagram: instagram.data || { media: [], username: club.instagramUsername || null },
-		invites: (invites.data?.invites || []).filter((invite: { clubId: string }) => invite.clubId === club.id),
+		instagram: instagramFields(instagram.data, club),
+		invites: clubInvites(invites.data, club.id),
 		reviews: reviewsEnabled ? reviews.data?.reviews : undefined,
 		faqEnabled,
 	};

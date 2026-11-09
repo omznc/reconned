@@ -167,6 +167,20 @@ function geoNegotiation(request: Request, url: URL): Negotiation | undefined {
 	return { locale: geoLocale, response: redirectTo(target, 307), setCookie: localeCookieHeader(geoLocale) };
 }
 
+function localeRedirect(url: URL, prefixLocale: Locale | null | undefined, locale: Locale): Response | undefined {
+	if (prefixLocale === routing.defaultLocale) {
+		const target = new URL(url);
+		target.pathname = url.pathname.slice(prefixLocale.length + 1) || "/";
+		return redirectTo(target, 307);
+	}
+	if (!prefixLocale && locale !== routing.defaultLocale) {
+		const target = new URL(url);
+		target.pathname = `/${locale}${url.pathname === "/" ? "" : url.pathname}`;
+		return redirectTo(target, 307);
+	}
+	return undefined;
+}
+
 function negotiateLocale(request: Request, url: URL): Negotiation {
 	const prefixLocale = getPrefixLocale(url.pathname);
 	const cookieValue = readCookie(request, LOCALE_COOKIE);
@@ -181,19 +195,8 @@ function negotiateLocale(request: Request, url: URL): Negotiation {
 	}
 
 	const locale = prefixLocale ?? cookieLocale ?? acceptLocale ?? routing.defaultLocale;
-	const syncCookie = needsCookieSync(cookieValue, locale, acceptLocale) ? localeCookieHeader(locale) : undefined;
-
-	if (prefixLocale === routing.defaultLocale) {
-		const target = new URL(url);
-		target.pathname = url.pathname.slice(prefixLocale.length + 1) || "/";
-		return { locale, response: redirectTo(target, 307), setCookie: syncCookie };
-	}
-	if (!prefixLocale && locale !== routing.defaultLocale) {
-		const target = new URL(url);
-		target.pathname = `/${locale}${url.pathname === "/" ? "" : url.pathname}`;
-		return { locale, response: redirectTo(target, 307), setCookie: syncCookie };
-	}
-	return { locale, setCookie: syncCookie };
+	const setCookie = needsCookieSync(cookieValue, locale, acceptLocale) ? localeCookieHeader(locale) : undefined;
+	return { locale, response: localeRedirect(url, prefixLocale, locale), setCookie };
 }
 
 function needsCookieSync(cookieValue: string | undefined, locale: Locale, acceptLocale: Locale | null): boolean {
