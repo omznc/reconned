@@ -27,7 +27,8 @@ async function resolveMcpUser(request: Request, headers: Headers): Promise<McpUs
 	// Bearer token as an API key and throw FORBIDDEN.
 	const cookieHeaders = new Headers(headers);
 	cookieHeaders.delete("Authorization");
-	const session = await auth.api.getSession({ headers: cookieHeaders });
+	// No refresh: it would renew the row without a Set-Cookie (see the session middleware in index.ts).
+	const session = await auth.api.getSession({ headers: cookieHeaders, query: { disableRefresh: true } });
 	if (session?.user) {
 		return {
 			id: session.user.id,

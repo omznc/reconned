@@ -160,6 +160,9 @@ async function handleRequest(request: Request): Promise<Response> {
 		try {
 			const sessionData = await auth.api.getSession({
 				headers: request.headers,
+				// A refresh here renews the session row but drops its Set-Cookie, so the browser cookie
+				// expires `expiresIn` after sign-in. Only /api/auth/get-session refreshes, with the cookie.
+				query: { disableRefresh: true },
 			});
 			if (sessionData?.user) {
 				// `role` is populated by the better-auth admin plugin, so no extra cache/DB lookup.

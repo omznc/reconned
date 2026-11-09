@@ -11,6 +11,9 @@ function hasSessionCookie(): boolean {
 
 async function fetchSession(requestHeaders: Headers) {
 	const result = await authClient.getSession({
+		// The renewed session cookie from a refresh would stop here, never reach the browser, and the
+		// browser cookie would expire `expiresIn` after sign-in. The browser's own `useSession` refreshes.
+		query: { disableRefresh: true },
 		fetchOptions: {
 			headers: requestHeaders,
 			cache: "no-store",
