@@ -977,6 +977,7 @@ clubsInstagramRouter.get(
 	{
 		cache: {
 			key: "club:{id}:instagram",
+			varyByQuery: ["limit"],
 			ttl: 600,
 			swr: 3600,
 			// Public media feed, identical for every caller.
