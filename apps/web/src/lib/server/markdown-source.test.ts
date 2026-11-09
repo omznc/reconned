@@ -23,3 +23,8 @@ test("resolveMarkdownSource rejects other origins and excluded prefixes", () => 
 	}
 	expect(resolveMarkdownSource(null, base)).toBeNull();
 });
+
+test("resolveMarkdownSource rejects .md sources, which would self-fetch again", () => {
+	expect(resolveMarkdownSource("/x.md", base)).toBeNull();
+	expect(resolveMarkdownSource("/clubs/veis.md?x=1", base)).toBeNull();
+});

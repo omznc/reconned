@@ -14,7 +14,8 @@ export function resolveMarkdownSource(source: string | null | undefined, base: s
 	} catch {
 		return null;
 	}
-	if (sourceUrl.origin !== new URL(base).origin) {
+	// A `.md` source goes through the `.md` rewrite again: `/x.md.md.md` would self-fetch once per suffix.
+	if (sourceUrl.origin !== new URL(base).origin || sourceUrl.pathname.endsWith(".md")) {
 		return null;
 	}
 	return BLOCKED_PREFIXES.some((prefix) => sourceUrl.pathname.startsWith(prefix)) ? null : sourceUrl;
