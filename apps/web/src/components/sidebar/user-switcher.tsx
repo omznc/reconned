@@ -85,11 +85,12 @@ export function UserSwitcher(props: { user: User }) {
 								</Link>
 							</Button>
 						</DropdownMenuItem>
-						<DropdownMenuItem asChild={true}>
+						{/* preventDefault keeps the menu open, so the user sees each toggle apply. */}
+						<DropdownMenuItem asChild={true} onSelect={(event) => event.preventDefault()}>
 							<ThemeSwitcher />
 						</DropdownMenuItem>
 
-						<DropdownMenuItem asChild={true}>
+						<DropdownMenuItem asChild={true} onSelect={(event) => event.preventDefault()}>
 							<FontSwitcher />
 						</DropdownMenuItem>
 						<LanguageSwitcher className="justify-start" withinMenu={true} />

@@ -171,11 +171,12 @@ export function Header() {
 									</DropdownMenuTrigger>
 									<DropdownMenuContent className="mr-4" sideOffset={12}>
 										<DropdownMenuLabel>{t("Personalization")}</DropdownMenuLabel>
-										<DropdownMenuItem asChild={true}>
+										{/* preventDefault keeps the menu open, so the user sees each toggle apply. */}
+										<DropdownMenuItem asChild={true} onSelect={(event) => event.preventDefault()}>
 											<ThemeSwitcher />
 										</DropdownMenuItem>
 
-										<DropdownMenuItem asChild={true}>
+										<DropdownMenuItem asChild={true} onSelect={(event) => event.preventDefault()}>
 											<FontSwitcher />
 										</DropdownMenuItem>
 										<DropdownMenuSeparator />

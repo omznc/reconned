@@ -49,6 +49,20 @@ export function getPathname({ href, locale }: { href: Href; locale: string }): s
 	return `/${locale}${path === "/" ? "" : path}${suffix}`;
 }
 
+/**
+ * `history.push("?x=1")` reads the query-only href as the path `/`, which drops the page and its locale.
+ * Resolve `?…` and `#…` against the current location, as the browser does for `<a href>`.
+ */
+export function resolveRelative(target: string, location: { pathname: string; searchStr: string }): string {
+	if (target.startsWith("?")) {
+		return `${location.pathname}${target}`;
+	}
+	if (target.startsWith("#")) {
+		return `${location.pathname}${location.searchStr}${target}`;
+	}
+	return target;
+}
+
 /** Returns the path without the locale prefix, like next-intl's `usePathname`. */
 export function usePathname(): string {
 	return stripLocale(useLocation().pathname);
@@ -68,7 +82,10 @@ export function useRouter() {
 
 	return useMemo(() => {
 		const go = (href: Href, options: LocaleOption | undefined, replace: boolean) => {
-			const target = getPathname({ href, locale: options?.locale ?? currentLocale });
+			const target = resolveRelative(
+				getPathname({ href, locale: options?.locale ?? currentLocale }),
+				router.state.location,
+			);
 			if (replace) {
 				router.history.replace(target);
 			} else {
@@ -116,10 +133,11 @@ export function Link({ href, locale, replace, prefetch: _prefetch, onClick, targ
 		onClick?.(event);
 		if (isInternal && isPlainLeftClick(event)) {
 			event.preventDefault();
+			const target = resolveRelative(resolved, router.state.location);
 			if (replace) {
-				router.history.replace(resolved);
+				router.history.replace(target);
 			} else {
-				router.history.push(resolved);
+				router.history.push(target);
 			}
 		}
 	};
