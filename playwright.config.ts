@@ -14,8 +14,6 @@ const webEnv = {
 	// Cloudflare Turnstile always-pass test site key
 	NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
 	INTERNAL_API_SECRET: "test-internal-secret-test-internal-secret",
-	// Any valid 32-byte base64 value works for next's server-action encryption in tests
-	NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=",
 	NEXT_PUBLIC_CDN_URL: "http://localhost:9000/test",
 	GOOGLE_CLIENT_ID: "test-google-client-id",
 	// Client-bundle env validation can't see CI=true (it's not NEXT_PUBLIC_), so every var in
@@ -23,7 +21,6 @@ const webEnv = {
 	NEXT_PUBLIC_GOOGLE_CLIENT_ID: "test-google-client-id",
 	NEXT_PUBLIC_AXIOM_DATASET: "test",
 	NEXT_PUBLIC_AXIOM_TOKEN: "test",
-	ADMIN_WEBHOOK_TOKEN: "test-admin-webhook-token",
 };
 
 export default defineConfig({
