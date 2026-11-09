@@ -76,12 +76,12 @@ export function ClubsTable({ clubs, totalClubs, pageSize }: ClubsTableProps) {
 							components: (club) => [
 								<DropdownMenuItem key="profile" asChild>
 									<Link href={`/clubs/${club.slug || club.id}`} target="_blank">
-										<ArrowUpRight className="size-4 mr-2" />
+										<ArrowUpRight className="size-4" />
 										{t("Profile")}
 									</Link>
 								</DropdownMenuItem>,
 								<DropdownMenuItem key="actions" onClick={() => setSelectedClub(club)}>
-									<Settings className="size-4 mr-2" />
+									<Settings className="size-4" />
 									{t("Actions")}
 								</DropdownMenuItem>,
 							],

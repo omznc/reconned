@@ -269,7 +269,7 @@ export function MembersTable(props: MembersTableProps) {
 								items.push(
 									<DropdownMenuItem key="profile" asChild>
 										<Link href={`/users/${row.userSlug || row.userId}`} target="_blank">
-											<UserCircle className="size-4 mr-2" />
+											<UserCircle className="size-4" />
 											{t("Profile")}
 										</Link>
 									</DropdownMenuItem>,
@@ -302,7 +302,7 @@ export function MembersTable(props: MembersTableProps) {
 												})
 											}
 										>
-											<Archive className="size-4 mr-2" />
+											<Archive className="size-4" />
 											{t("Archive")}
 										</DropdownMenuItem>,
 									);
@@ -314,7 +314,7 @@ export function MembersTable(props: MembersTableProps) {
 											key="unarchive"
 											onClick={() => handleUnarchive(row, row.clubId)}
 										>
-											<ArchiveRestore className="size-4 mr-2" />
+											<ArchiveRestore className="size-4" />
 											{t("Restore")}
 										</DropdownMenuItem>,
 									);
@@ -328,7 +328,7 @@ export function MembersTable(props: MembersTableProps) {
 											className="text-destructive focus:text-destructive"
 											onClick={() => handleRemove(row, row.clubId)}
 										>
-											<UserMinus className="size-4 mr-2" />
+											<UserMinus className="size-4" />
 											{t("Remove")}
 										</DropdownMenuItem>,
 									);
@@ -343,7 +343,7 @@ export function MembersTable(props: MembersTableProps) {
 												setMembershipToExtend(row);
 											}}
 										>
-											<Calendar className="size-4 mr-2" />
+											<Calendar className="size-4" />
 											{t("Extend")}
 										</DropdownMenuItem>,
 									);

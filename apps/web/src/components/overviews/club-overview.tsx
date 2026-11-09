@@ -79,7 +79,7 @@ export function ClubOverview({
 					isManager && (
 						<Button asChild size="sm">
 							<Link href={`/dashboard/${club.id}/club/information`}>
-								<Cog className="h-4 w-4 mr-2" />
+								<Cog className="h-4 w-4" />
 								{t("Edit club")}
 							</Link>
 						</Button>
@@ -113,7 +113,7 @@ export function ClubOverview({
 					{club.latitude && club.longitude && (
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
-								<MapIcon className="h-4 w-4 mr-2" />
+								<MapIcon className="h-4 w-4" />
 								{t("Map")}
 							</Link>
 						</Button>

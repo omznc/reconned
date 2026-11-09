@@ -115,11 +115,11 @@ export function FeatureFlagTable(props: FeatureFlagTableProps) {
 						variant: "custom",
 						components: (flag) => [
 							<DropdownMenuItem key="edit" onClick={() => setFlagId(flag.id)}>
-								<Edit className="size-4 mr-2" />
+								<Edit className="size-4" />
 								{t("Edit")}
 							</DropdownMenuItem>,
 							<DropdownMenuItem key="delete" onClick={() => handleDelete(flag)} className="text-red-600">
-								<Trash className="size-4 mr-2" />
+								<Trash className="size-4" />
 								{t("Delete")}
 							</DropdownMenuItem>,
 						],

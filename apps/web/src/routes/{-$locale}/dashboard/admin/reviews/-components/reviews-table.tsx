@@ -221,7 +221,7 @@ export function ReviewsTable(props: ReviewsTableProps) {
 										]
 									: []),
 								<DropdownMenuItem key="delete" onClick={() => handleDelete(review.id)}>
-									<Trash2 className="size-4 mr-2 text-destructive" />
+									<Trash2 className="size-4 text-destructive" />
 									<span className="text-destructive">{t("Delete")}</span>
 								</DropdownMenuItem>,
 							],

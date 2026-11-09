@@ -52,7 +52,7 @@ function EventsPage() {
 				<h3 className="text-lg font-semibold">{t("All events")}</h3>
 				<Button asChild>
 					<Link href={`/dashboard/${clubId}/events/create`}>
-						<PlusCircle className="size-4 mr-2" />
+						<PlusCircle className="size-4" />
 						{t("Create an event")}
 					</Link>
 				</Button>

@@ -69,18 +69,18 @@ export function UnclaimedClubsTable({ clubs, totalClubs, pageSize }: UnclaimedCl
 							components: (club) => [
 								<DropdownMenuItem key="profile" asChild>
 									<Link href={`/clubs/${club.slug || club.id}`} target="_blank">
-										<ArrowUpRight className="size-4 mr-2" />
+										<ArrowUpRight className="size-4" />
 										{t("Profile")}
 									</Link>
 								</DropdownMenuItem>,
 								<DropdownMenuItem key="edit" asChild>
 									<Link href={`/dashboard/admin/unclaimed-clubs/edit?clubId=${club.id}`}>
-										<Pencil className="size-4 mr-2" />
+										<Pencil className="size-4" />
 										{t("Edit")}
 									</Link>
 								</DropdownMenuItem>,
 								<DropdownMenuItem key="actions" onClick={() => setSelectedClub(club)}>
-									<Settings className="size-4 mr-2" />
+									<Settings className="size-4" />
 									{t("Actions")}
 								</DropdownMenuItem>,
 							],

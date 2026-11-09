@@ -85,12 +85,12 @@ export function UserTable(props: UserTableProps) {
 							components: (user) => [
 								<DropdownMenuItem key="profile" asChild>
 									<Link href={`/users/${user.slug || user.id}`} target="_blank">
-										<UserCircle className="size-4 mr-2" />
+										<UserCircle className="size-4" />
 										{t("Profile")}
 									</Link>
 								</DropdownMenuItem>,
 								<DropdownMenuItem key="actions" onClick={() => setSelectedUser(user)}>
-									<Settings className="size-4 mr-2" />
+									<Settings className="size-4" />
 									{t("Actions")}
 								</DropdownMenuItem>,
 							],

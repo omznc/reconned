@@ -119,7 +119,7 @@ export function PasswordChangeForm({
 					)}
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
-					<LockIcon className="w-4 h-4 mr-2" />
+					<LockIcon className="w-4 h-4" />
 					{isLoading ? t("Just a moment...") : t("Change password")}
 				</Button>
 			</form>

@@ -589,7 +589,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																				);
 																			}}
 																		>
-																			<Plus className="h-4 w-4 mr-2" />
+																			<Plus className="h-4 w-4" />
 																			{t("Log in")}
 																			<BadgeSoon className="ml-2" />
 																		</Button>

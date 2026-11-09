@@ -396,9 +396,9 @@ export function GenericDataTable<T>({
 								{typeof column.header === "string" ? column.header : column.key.toString()}
 								{sortBy === column.key.toString() &&
 									(sortOrder === "asc" ? (
-										<ArrowUpAZ className="ml-2 h-4 w-4 inline" />
+										<ArrowUpAZ className="h-4 w-4 inline" />
 									) : (
-										<ArrowDownZA className="ml-2 h-4 w-4 inline" />
+										<ArrowDownZA className="h-4 w-4 inline" />
 									))}
 							</DropdownMenuCheckboxItem>
 						))}

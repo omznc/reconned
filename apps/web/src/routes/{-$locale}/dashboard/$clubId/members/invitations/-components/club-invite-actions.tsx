@@ -67,7 +67,7 @@ export function ClubInviteActions({ invite }: ClubInviteActionsProps) {
 					className="text-green-600 focus:text-green-600"
 					disabled={isLoading}
 				>
-					<Check className="size-4 mr-2" />
+					<Check className="size-4" />
 					{t("Accept")}
 				</DropdownMenuItem>
 				<DropdownMenuItem
@@ -75,7 +75,7 @@ export function ClubInviteActions({ invite }: ClubInviteActionsProps) {
 					className="text-destructive focus:text-destructive"
 					disabled={isLoading}
 				>
-					<X className="size-4 mr-2" />
+					<X className="size-4" />
 					{t("Dismiss")}
 				</DropdownMenuItem>
 			</DropdownMenuContent>

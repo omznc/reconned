@@ -144,7 +144,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem onClick={() => setSelectedLog(log)}>
-											<Code className="size-4 mr-2" />
+											<Code className="size-4" />
 											{t("View details")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>

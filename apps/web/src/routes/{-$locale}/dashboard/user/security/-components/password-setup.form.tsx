@@ -68,7 +68,7 @@ export function SetupPasswordForm({
 				</p>
 			</div>
 			<Button onClick={onSendResetEmail} className="w-full" disabled={isLoading}>
-				<MailIcon className="w-4 h-4 mr-2" />
+				<MailIcon className="w-4 h-4" />
 				{isLoading ? t("Sending...") : t("Send password reset email")}
 			</Button>
 		</div>

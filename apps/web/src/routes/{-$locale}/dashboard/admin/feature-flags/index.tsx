@@ -75,7 +75,7 @@ function FeatureFlagsPage() {
 				</div>
 				<Button asChild>
 					<Link href="?flagId=new">
-						<Plus className="size-4 mr-2" />
+						<Plus className="size-4" />
 						{t("Create flag")}
 					</Link>
 				</Button>

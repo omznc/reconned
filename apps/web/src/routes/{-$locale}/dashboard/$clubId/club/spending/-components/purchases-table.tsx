@@ -134,7 +134,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 												document.getElementById(`edit-purchase-${row.id}`)?.click();
 											}}
 										>
-											<Edit className="size-4 mr-2" />
+											<Edit className="size-4" />
 											{t("Edit")}
 										</DropdownMenuItem>
 										<DropdownMenuItem
@@ -185,7 +185,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 												}
 											}}
 										>
-											<Trash2 className="size-4 mr-2" />
+											<Trash2 className="size-4" />
 											{t("Delete")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>

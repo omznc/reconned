@@ -83,7 +83,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 							items.push(
 								<DropdownMenuItem key="attendance" asChild disabled={disabledAttendence}>
 									<Link href={`/dashboard/${clubId}/events/${item.id}/attendance`}>
-										<Users className="size-4 mr-2" />
+										<Users className="size-4" />
 										{t("Presence")}
 									</Link>
 								</DropdownMenuItem>,
@@ -94,7 +94,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 								items.push(
 									<DropdownMenuItem key="edit" asChild>
 										<Link href={`/dashboard/${clubId}/events/create?id=${item.id}`}>
-											<Pen className="size-4 mr-2" />
+											<Pen className="size-4" />
 											{t("Edit")}
 										</Link>
 									</DropdownMenuItem>,
@@ -105,7 +105,7 @@ export function EventsTable({ events, totalEvents, clubId, pageSize, userIsManag
 							items.push(
 								<DropdownMenuItem key="view" asChild>
 									<Link href={`/dashboard/${clubId}/events/${item.id}`}>
-										<Eye className="size-4 mr-2" />
+										<Eye className="size-4" />
 										{t("View")}
 									</Link>
 								</DropdownMenuItem>,

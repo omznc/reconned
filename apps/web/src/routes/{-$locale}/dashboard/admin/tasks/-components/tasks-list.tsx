@@ -132,7 +132,7 @@ export function TasksList() {
 									handleRunTask(task.name);
 								}}
 							>
-								<Play className="size-4 mr-2" />
+								<Play className="size-4" />
 								{loading[task.name] ? t("Running...") : t("Run now")}
 							</DropdownMenuItem>,
 						],

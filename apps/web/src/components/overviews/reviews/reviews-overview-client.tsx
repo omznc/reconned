@@ -134,7 +134,7 @@ export function ReviewsOverviewClient({
 						</div>
 						{user && !isReviewDisabled && (
 							<Button size="sm" onClick={() => setIsReviewModalOpen(true)}>
-								<Star className="h-4 w-4 mr-1" />
+								<Star className="h-4 w-4" />
 								{t("Write Review")}
 							</Button>
 						)}

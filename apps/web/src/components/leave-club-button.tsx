@@ -108,7 +108,7 @@ export function LeaveClubButton({
 			size={size}
 			{...props}
 		>
-			{icon || <LogOut className="h-4 w-4 mr-2" />}
+			{icon || <LogOut className="h-4 w-4" />}
 			{t("Leave club")}
 		</Button>
 	);

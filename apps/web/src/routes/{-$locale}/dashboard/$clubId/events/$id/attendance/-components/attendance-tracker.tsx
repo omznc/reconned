@@ -298,7 +298,7 @@ export function AttendanceTracker({ event }: AttendanceTrackerProps) {
 										onClick={() => markWholeTeam(team)}
 										disabled={pending === team.registrationId}
 									>
-										<CheckCheck className="h-4 w-4 mr-1" />
+										<CheckCheck className="h-4 w-4" />
 										{t("All present")}
 									</Button>
 								)}

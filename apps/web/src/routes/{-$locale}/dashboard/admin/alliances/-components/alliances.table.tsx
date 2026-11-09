@@ -69,7 +69,7 @@ export function AlliancesTable(props: AlliancesTableProps) {
 				</div>
 				<Button asChild>
 					<Link href="?allianceId=new">
-						<Plus className="mr-2 h-4 w-4" />
+						<Plus className="h-4 w-4" />
 						{t("Create Alliance")}
 					</Link>
 				</Button>
@@ -146,11 +146,11 @@ export function AlliancesTable(props: AlliancesTableProps) {
 							variant: "custom",
 							components: (alliance) => [
 								<DropdownMenuItem key="view" onClick={() => setViewId(alliance.id.toString())}>
-									<Handshake className="size-4 mr-2" />
+									<Handshake className="size-4" />
 									{t("View Details")}
 								</DropdownMenuItem>,
 								<DropdownMenuItem key="edit" onClick={() => setAllianceId(alliance.id.toString())}>
-									<Edit className="size-4 mr-2" />
+									<Edit className="size-4" />
 									{t("Edit")}
 								</DropdownMenuItem>,
 								<DropdownMenuItem
@@ -158,7 +158,7 @@ export function AlliancesTable(props: AlliancesTableProps) {
 									onClick={() => handleDelete(alliance)}
 									className="text-red-600"
 								>
-									<Trash className="size-4 mr-2" />
+									<Trash className="size-4" />
 									{t("Delete")}
 								</DropdownMenuItem>,
 							],

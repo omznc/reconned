@@ -135,7 +135,7 @@ export function InstagramPageSelection(props: { clubId: string; sessionId: strin
 				<h2 className="text-xl font-bold mt-4">{t("Problem connecting Instagram account")}</h2>
 				<p className="text-muted-foreground mt-2">{error}</p>
 				<Button variant="default" className="mt-6" onClick={handleCancel}>
-					<ArrowLeft className="mr-2 h-4 w-4" />
+					<ArrowLeft className="h-4 w-4" />
 					{t("Back to club")}
 				</Button>
 			</div>

@@ -138,7 +138,7 @@ export function InvitationsTable({ invites, totalPages }: InvitationsTableProps)
 										row.status === "PENDING" ? "text-destructive focus:text-destructive" : ""
 									}
 								>
-									<Ban className="size-4 mr-2" />
+									<Ban className="size-4" />
 									{row.status === "PENDING" ? t("Revoke") : t("Inactive")}
 								</DropdownMenuItem>,
 							];

@@ -46,11 +46,11 @@ export function FilePreviewModal({ isOpen, onClose, fileUrl, fileName }: FilePre
 						<span>{fileName}</span>
 						<div className="flex gap-2">
 							<Button variant="outline" size="sm" onClick={() => window.open(fileUrl, "_blank")}>
-								<ArrowUpRight className="h-4 w-4 mr-2" />
+								<ArrowUpRight className="h-4 w-4" />
 								{t("Open")}
 							</Button>
 							<Button variant="outline" size="sm" onClick={handleDownload} disabled={isDownloading}>
-								<Download className="h-4 w-4 mr-2" />
+								<Download className="h-4 w-4" />
 								{isDownloading ? t("Downloading...") : t("Download")}
 							</Button>
 						</div>

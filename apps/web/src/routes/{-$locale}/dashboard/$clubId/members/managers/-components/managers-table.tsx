@@ -130,7 +130,7 @@ export function ManagersTable({ managers, totalManagers, pageSize }: ManagersTab
 											disabled={isOwner}
 											className={cn(!isOwner && "text-destructive focus:text-destructive")}
 										>
-											<UserMinus className="size-4 mr-2" />
+											<UserMinus className="size-4" />
 											{isOwner ? t("Club owner") : t("Demote")}
 										</DropdownMenuItem>
 									</DropdownMenuContent>

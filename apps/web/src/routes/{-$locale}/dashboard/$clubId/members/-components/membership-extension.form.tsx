@@ -170,7 +170,7 @@ export function MembershipExtensionForm({
 		if (variant === "button") {
 			return (
 				<Button variant="outline" size="sm">
-					<CalendarClock className="mr-2 h-4 w-4" /> {t("Extend")}
+					<CalendarClock className="h-4 w-4" /> {t("Extend")}
 				</Button>
 			);
 		}

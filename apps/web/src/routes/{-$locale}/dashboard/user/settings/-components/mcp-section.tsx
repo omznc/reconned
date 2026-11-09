@@ -143,7 +143,7 @@ export function McpSection() {
 					disabled={isLoading}
 				/>
 				<Button onClick={handleCreateKey} disabled={!newKeyName.trim() || isLoading} size="sm">
-					<Plus className="h-4 w-4 mr-1" />
+					<Plus className="h-4 w-4" />
 					{t("Create API Key")}
 				</Button>
 			</div>
@@ -163,7 +163,7 @@ export function McpSection() {
 							</div>
 						</div>
 						<Button variant="outline" size="sm" onClick={() => copyToClipboard(newlyCreatedKey)}>
-							<Copy className="h-4 w-4 mr-1" />
+							<Copy className="h-4 w-4" />
 							{t("Copy")}
 						</Button>
 					</div>

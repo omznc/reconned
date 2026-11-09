@@ -54,7 +54,7 @@ function UnclaimedClubsPage() {
 				<h3 className="text-lg font-semibold">{t("Unclaimed clubs")}</h3>
 				<Button asChild>
 					<Link href="/dashboard/admin/unclaimed-clubs/create">
-						<Plus className="size-4 mr-2" />
+						<Plus className="size-4" />
 						{t("Create unclaimed club")}
 					</Link>
 				</Button>

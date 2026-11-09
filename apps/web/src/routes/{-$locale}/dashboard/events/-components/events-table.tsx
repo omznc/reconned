@@ -103,7 +103,7 @@ export function EventsTable({ events, totalEvents, pageSize }: EventsTableProps)
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem asChild>
 											<Link href={`/events/${item.id}`} target="_blank">
-												<ArrowUpRight className="size-4 mr-2" />
+												<ArrowUpRight className="size-4" />
 												{t("Visit")}
 											</Link>
 										</DropdownMenuItem>

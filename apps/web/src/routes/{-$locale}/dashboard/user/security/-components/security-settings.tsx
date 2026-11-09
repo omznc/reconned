@@ -155,7 +155,7 @@ export function SecuritySettings({
 							);
 						}}
 					>
-						<KeyRound className="w-4 h-4 mr-2" />
+						<KeyRound className="w-4 h-4" />
 						{t("Add")}
 					</Button>
 				</Alert>
@@ -282,7 +282,7 @@ export function SecuritySettings({
 												);
 											}}
 										>
-											<Dice5 className="w-4 h-4 mr-2" />
+											<Dice5 className="w-4 h-4" />
 											{t("Regenerate codes")}
 										</Button>
 									</AlertTitle>
@@ -315,7 +315,7 @@ export function SecuritySettings({
 													window.URL.revokeObjectURL(url);
 												}}
 											>
-												<Download className="w-4 h-4 mr-2" />
+												<Download className="w-4 h-4" />
 												{t("Download")}
 											</Button>
 											<Button
@@ -363,7 +363,7 @@ export function SecuritySettings({
 													);
 												}}
 											>
-												<Dice5 className="w-4 h-4 mr-2" />
+												<Dice5 className="w-4 h-4" />
 												{t("Regenerate codes")}
 											</Button>
 										</div>
@@ -726,7 +726,7 @@ export function SecuritySettings({
 																		toast.success(t("Backup codes downloaded"));
 																	}}
 																>
-																	<Download className="w-4 h-4 mr-2" />
+																	<Download className="w-4 h-4" />
 																	{t("Download")}
 																</Button>
 															</div>
