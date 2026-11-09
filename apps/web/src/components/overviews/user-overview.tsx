@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { Globe, MapPin } from "lucide-react";
-import { getExtracted } from "next-intl/server";
+import { useExtracted } from "next-intl";
 import { ClubAvatar } from "@/components/identity/club-avatar";
 import { ProfileBanner } from "@/components/identity/profile-banner";
 import { ExpandableDescription } from "@/components/overviews/expandable-description";
@@ -17,10 +17,11 @@ type UserOverviewUser = UserResponse | UserProfileResponse;
 
 interface UserOverviewProps {
 	user: UserOverviewUser;
+	reviews?: ApiResponse<"/api/reviews/{type}/{id}", "get">["reviews"];
 }
 
-export async function UserOverview({ user }: UserOverviewProps) {
-	const t = await getExtracted();
+export function UserOverview({ user, reviews }: UserOverviewProps) {
+	const t = useExtracted();
 
 	const formatWebsiteDisplay = (url: string) => {
 		try {
@@ -222,8 +223,7 @@ export async function UserOverview({ user }: UserOverviewProps) {
 						)}
 					</CardContent>
 				</Card>
-				{/* TODO(tanstack): load reviews in the route loader and pass them here */}
-				<ReviewsOverview type="user" typeId={user.id} entityName={user.name} reviews={undefined} />
+				<ReviewsOverview type="user" typeId={user.id} entityName={user.name} reviews={reviews} />
 			</div>
 		</div>
 	);
