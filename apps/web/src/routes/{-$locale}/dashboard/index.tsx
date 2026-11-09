@@ -8,6 +8,7 @@ import { LoadingPage } from "@/components/loading-page";
 import { NotFoundPage } from "@/components/not-found-page";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
+import { toIntlLocale } from "@/lib/intl-locale";
 
 const getDashboardStatsFn = createServerFn({ method: "GET" })
 	.validator(z.object({ userId: z.string() }))
@@ -144,7 +145,9 @@ function DashboardPage() {
 									<div>
 										<div className="font-medium">{registration.event?.name || ""}</div>
 										<div className="text-sm text-muted-foreground">
-											{new Date(registration.event?.dateStart || "").toLocaleDateString("bs")}
+											{new Date(registration.event?.dateStart || "").toLocaleDateString(
+												toIntlLocale("bs"),
+											)}
 										</div>
 									</div>
 									<div className="text-sm capitalize">{registration.type.toLowerCase()}</div>

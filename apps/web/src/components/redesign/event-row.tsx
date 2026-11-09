@@ -7,6 +7,7 @@ import type { Href } from "@/components/redesign/types";
 import { VerifiedBadge } from "@/components/redesign/verified-badge";
 import { Link } from "@/i18n/navigation";
 import type { LogoTile } from "@/lib/identity";
+import { toIntlLocale } from "@/lib/intl-locale";
 import { cn } from "@/lib/utils";
 
 export type EventRowState = "open" | "pending" | "closing" | "closed" | "full";
@@ -197,7 +198,7 @@ function ActionButton({ state, applyHref }: { state: EventRowState; applyHref?: 
 }
 
 function formatPrice(price: number, currency: string, free: string, locale: string) {
-	return price === 0 ? free : `${new Intl.NumberFormat(locale).format(price)} ${currency}`;
+	return price === 0 ? free : `${new Intl.NumberFormat(toIntlLocale(locale)).format(price)} ${currency}`;
 }
 
 export function EventRow({

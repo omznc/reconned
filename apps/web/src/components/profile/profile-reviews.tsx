@@ -1,4 +1,6 @@
-"use client";
+import { toIntlLocale } from "@/lib/intl-locale";
+
+("use client");
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Star, Trash2 } from "lucide-react";
@@ -130,9 +132,11 @@ function ReviewItem({
 	const t = useExtracted();
 	const locale = useLocale();
 	const isEdited = review.updatedAt !== review.createdAt;
-	const date = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(
-		new Date(review.createdAt),
-	);
+	const date = new Intl.DateTimeFormat(toIntlLocale(locale), {
+		day: "numeric",
+		month: "short",
+		year: "numeric",
+	}).format(new Date(review.createdAt));
 	return (
 		<article className="flex items-start gap-3">
 			<AuthorAvatar author={review.author} />

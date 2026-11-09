@@ -1,4 +1,6 @@
-"use client";
+import { toIntlLocale } from "@/lib/intl-locale";
+
+("use client");
 
 import Error404 from "@public/errors/404.webp";
 import { ArrowUpRight, PlusIcon } from "lucide-react";
@@ -68,7 +70,7 @@ export function ClubInstagram({ data, limit = 7 }: ClubInstagramProps) {
 						suppressHydrationWarning
 						className="absolute top-2 left-2 bg-black/40 text-white text-xs px-1.5 py-0.5"
 					>
-						{new Date(photo.timestamp).toLocaleDateString(locale)}
+						{new Date(photo.timestamp).toLocaleDateString(toIntlLocale(locale))}
 					</div>
 				)}
 

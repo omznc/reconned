@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { toIntlLocale } from "@/lib/intl-locale";
 
 export type ListedEvent = ApiResponse<"/api/events", "get">["events"][number];
 
@@ -20,7 +21,7 @@ function dayKey(value: string) {
 }
 
 function dayHeading(value: string, locale: string) {
-	return new Intl.DateTimeFormat(locale, {
+	return new Intl.DateTimeFormat(toIntlLocale(locale), {
 		timeZone: DEFAULT_TIME_ZONE,
 		weekday: "long",
 		day: "numeric",

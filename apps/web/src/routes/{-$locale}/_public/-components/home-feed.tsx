@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
 import type { paths } from "@/lib/api/api-types";
+import { toIntlLocale } from "@/lib/intl-locale";
 import { asJson } from "@/lib/server/json";
 
 type FeedType = "all" | "games" | "posts" | "reviews";
@@ -59,7 +60,7 @@ function htmlToText(html: string): string {
 
 function useTimeAgo() {
 	const locale = useLocale();
-	const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+	const formatter = new Intl.RelativeTimeFormat(toIntlLocale(locale), { numeric: "auto" });
 	return (value: string) => {
 		const seconds = Math.round((toDate(value).getTime() - Date.now()) / 1000);
 		const steps: [Intl.RelativeTimeFormatUnit, number][] = [

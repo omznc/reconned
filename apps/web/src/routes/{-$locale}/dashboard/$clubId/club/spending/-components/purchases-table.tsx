@@ -1,4 +1,6 @@
-"use client";
+import { toIntlLocale } from "@/lib/intl-locale";
+
+("use client");
 
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { useExtracted } from "next-intl";
@@ -107,7 +109,7 @@ export function PurchasesTable(props: PurchasesTableProps) {
 						sortable: true,
 						cellConfig: {
 							component: (value: Date) =>
-								new Intl.DateTimeFormat("bs", {
+								new Intl.DateTimeFormat(toIntlLocale("bs"), {
 									day: "2-digit",
 									month: "2-digit",
 									year: "numeric",

@@ -1,4 +1,6 @@
-"use client";
+import { toIntlLocale } from "@/lib/intl-locale";
+
+("use client");
 
 import { authClient } from "@auth/client";
 import type { Passkey } from "@better-auth/passkey";
@@ -91,7 +93,7 @@ export function SecuritySettings({
 							<AlertTitle>{passkey.name || t("Passkey")}</AlertTitle>
 							<AlertDescription>
 								{t("Created on {date}", {
-									date: new Date(passkey.createdAt).toLocaleDateString(locale, {
+									date: new Date(passkey.createdAt).toLocaleDateString(toIntlLocale(locale), {
 										year: "numeric",
 										month: "long",
 										day: "numeric",

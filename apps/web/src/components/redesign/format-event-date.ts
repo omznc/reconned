@@ -1,4 +1,5 @@
 import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
+import { toIntlLocale } from "@/lib/intl-locale";
 
 type DateInput = string | Date;
 
@@ -14,7 +15,7 @@ export function toDate(value: DateInput): Date {
 export function formatDateParts(value: DateInput, locale: string) {
 	const date = toDate(value);
 	const part = (options: Intl.DateTimeFormatOptions) =>
-		new Intl.DateTimeFormat(locale, { timeZone: DEFAULT_TIME_ZONE, ...options }).format(date);
+		new Intl.DateTimeFormat(toIntlLocale(locale), { timeZone: DEFAULT_TIME_ZONE, ...options }).format(date);
 	return {
 		weekday: part({ weekday: "short" }),
 		day: part({ day: "2-digit" }),
@@ -23,7 +24,7 @@ export function formatDateParts(value: DateInput, locale: string) {
 }
 
 export function formatTime(value: DateInput, locale: string) {
-	return new Intl.DateTimeFormat(locale, {
+	return new Intl.DateTimeFormat(toIntlLocale(locale), {
 		timeZone: DEFAULT_TIME_ZONE,
 		hour: "2-digit",
 		minute: "2-digit",

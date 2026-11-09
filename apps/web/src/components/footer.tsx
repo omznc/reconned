@@ -21,6 +21,7 @@ import { Logo } from "@/components/logos/logo";
 import type { Href, IconComponent } from "@/components/redesign/types";
 import { Link } from "@/i18n/navigation";
 import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
+import { toIntlLocale } from "@/lib/intl-locale";
 
 type FooterCommit = { commit: string; date: string } | null;
 
@@ -41,7 +42,7 @@ function FooterVersion({ locale, version }: { locale: string; version: FooterCom
 			Version {version.commit.slice(0, 7)} (
 			{/* The ICU data of the server runtime and of the browser can format the same date differently. */}
 			<span suppressHydrationWarning>
-				{new Date(version.date).toLocaleDateString(locale, {
+				{new Date(version.date).toLocaleDateString(toIntlLocale(locale), {
 					timeZone: DEFAULT_TIME_ZONE,
 					year: "numeric",
 					month: "long",

@@ -6,6 +6,7 @@ import type { WebPage, WithContext } from "schema-dts";
 import JsonLdScript from "@/components/json-ld-script";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { toIntlLocale } from "@/lib/intl-locale";
 import { PRIVACY_POLICY_LAST_UPDATED } from "@/lib/legal-dates";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
@@ -54,7 +55,7 @@ function PrivacyPolicyPage() {
 			<div className="prose dark:prose-invert max-w-none">
 				<p className="text-lg mb-6">
 					{t("Last updated: {date}", {
-						date: lastUpdated.toLocaleDateString(locale),
+						date: lastUpdated.toLocaleDateString(toIntlLocale(locale)),
 					})}
 				</p>
 

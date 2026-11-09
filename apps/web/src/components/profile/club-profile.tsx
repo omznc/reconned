@@ -39,6 +39,7 @@ import { SectionCard } from "@/components/redesign/section-card";
 import { StatStrip } from "@/components/redesign/stat-strip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "@/i18n/navigation";
+import { toIntlLocale } from "@/lib/intl-locale";
 import type { loadClubPage } from "@/lib/server/club-page";
 
 type LoadedClub = Extract<Awaited<ReturnType<typeof loadClubPage>>, { kind: "ok" }>;
@@ -252,7 +253,7 @@ function ClubStats({ club, extras }: Pick<ClubProfileProps, "club" | "extras">) 
 	const t = useExtracted();
 	const locale = useLocale();
 	const stats = extras.stats;
-	const number = new Intl.NumberFormat(locale);
+	const number = new Intl.NumberFormat(toIntlLocale(locale));
 	return (
 		<StatStrip
 			items={[
@@ -294,7 +295,7 @@ function PostTiles({ club, extras }: Pick<ClubProfileProps, "club" | "extras">) 
 	if (posts.length === 0) {
 		return null;
 	}
-	const date = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" });
+	const date = new Intl.DateTimeFormat(toIntlLocale(locale), { day: "numeric", month: "short" });
 	return (
 		<SectionCard
 			title={t("Latest posts")}

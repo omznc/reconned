@@ -19,6 +19,7 @@ import { SectionCard } from "@/components/redesign/section-card";
 import { StatStrip } from "@/components/redesign/stat-strip";
 import { Link } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { toIntlLocale } from "@/lib/intl-locale";
 
 type User = ApiResponse<"/api/users/{id}/profile", "get">;
 type Reviews = ApiResponse<"/api/reviews/{type}/{id}", "get">["reviews"];
@@ -182,9 +183,11 @@ function UpcomingEvents({ registrations }: { registrations: Registration[] }) {
 function PastEventRow({ registration }: { registration: Registration }) {
 	const locale = useLocale();
 	const { event } = registration;
-	const date = new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).format(
-		new Date(event.dateStart),
-	);
+	const date = new Intl.DateTimeFormat(toIntlLocale(locale), {
+		day: "2-digit",
+		month: "2-digit",
+		year: "numeric",
+	}).format(new Date(event.dateStart));
 	return (
 		<li>
 			<Link
@@ -241,7 +244,7 @@ function UserTabsNav({ user, reviews, tab, showEvents }: UserProfileProps & { sh
 function UserStats({ user }: { user: User }) {
 	const t = useExtracted();
 	const locale = useLocale();
-	const memberSince = new Intl.DateTimeFormat(locale, { month: "short", year: "numeric" }).format(
+	const memberSince = new Intl.DateTimeFormat(toIntlLocale(locale), { month: "short", year: "numeric" }).format(
 		new Date(user.createdAt),
 	);
 	// A private profile sends null for the games and the rating: the cells leave the strip.

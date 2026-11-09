@@ -31,6 +31,7 @@ import { Link } from "@/i18n/navigation";
 import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
 import type { ApiResponse, ClubRule, Event } from "@/lib/api/api-type-helpers";
 import type { LogoTile } from "@/lib/identity";
+import { toIntlLocale } from "@/lib/intl-locale";
 import { cn } from "@/lib/utils";
 import { registrationState, timelineSteps } from "@/routes/{-$locale}/_public/events/$id/-lib/registration-state";
 
@@ -67,7 +68,9 @@ const CURRENCY = "KM";
 function useFormatWhen() {
 	const locale = useLocale();
 	return (value: string, options: Intl.DateTimeFormatOptions) =>
-		new Intl.DateTimeFormat(locale, { timeZone: DEFAULT_TIME_ZONE, ...options }).format(toDate(value));
+		new Intl.DateTimeFormat(toIntlLocale(locale), { timeZone: DEFAULT_TIME_ZONE, ...options }).format(
+			toDate(value),
+		);
 }
 
 /** The city is the first part of the free-text location, for example "Kakanj, Igman". */
@@ -226,7 +229,7 @@ function RegistrationBar({
 	const formatWhen = useFormatWhen();
 	const price =
 		event.costPerPerson > 0
-			? `${new Intl.NumberFormat(locale).format(event.costPerPerson)} ${CURRENCY}`
+			? `${new Intl.NumberFormat(toIntlLocale(locale)).format(event.costPerPerson)} ${CURRENCY}`
 			: t("Free");
 	const time = `${formatWhen(event.dateStart, { hour: "2-digit", minute: "2-digit", hour12: false })}${
 		event.dateEnd ? ` – ${formatWhen(event.dateEnd, { hour: "2-digit", minute: "2-digit", hour12: false })}` : ""

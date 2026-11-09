@@ -1,4 +1,6 @@
-"use client";
+import { toIntlLocale } from "@/lib/intl-locale";
+
+("use client");
 
 import { Code, MoreHorizontal } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
@@ -96,7 +98,7 @@ export function AuditLogsTable({ logs, totalLogs, pageSize }: AuditLogsTableProp
 						cellConfig: {
 							variant: "custom",
 							component: (value) =>
-								new Date(value).toLocaleDateString(locale, {
+								new Date(value).toLocaleDateString(toIntlLocale(locale), {
 									year: "numeric",
 									month: "long",
 									day: "2-digit",
@@ -187,7 +189,7 @@ function LogDetailCredenza({ actionTypeMap, log, onClose }: LogDetailCredenzaPro
 				<CredenzaHeader>
 					<CredenzaTitle className="truncate mr-8">{t("Log details")}</CredenzaTitle>
 					<CredenzaDescription>
-						{new Date(log.createdAt).toLocaleDateString(locale, {
+						{new Date(log.createdAt).toLocaleDateString(toIntlLocale(locale), {
 							year: "numeric",
 							month: "long",
 							day: "2-digit",

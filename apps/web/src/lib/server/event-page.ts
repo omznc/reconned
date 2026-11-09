@@ -1,3 +1,4 @@
+import { toIntlLocale } from "@/lib/intl-locale";
 import "server-only";
 
 import { getExtracted } from "next-intl/server";
@@ -227,7 +228,7 @@ export async function buildEventSeo(event: EventWithClub, locale: string, schema
 	const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
 	const club = event.club;
 
-	const eventDate = new Date(event.dateStart).toLocaleDateString(locale, {
+	const eventDate = new Date(event.dateStart).toLocaleDateString(toIntlLocale(locale), {
 		year: "numeric",
 		month: "long",
 		day: "numeric",
