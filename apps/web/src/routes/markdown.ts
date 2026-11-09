@@ -15,18 +15,15 @@ const turndownService = new TurndownService({
 // real content is appended to the end of `<body>` in out-of-order chunks. Extracting
 // `<main>` yields an empty document — measured against production HTML, 0 of 12
 // clubs survived, versus 12 of 12 for the whole body.
-turndownService.remove([
-	"script",
-	"style",
-	"noscript",
-	"head",
-	"meta",
-	"link",
-	"iframe",
-	"template",
-	"header",
-	"footer",
-]);
+turndownService.remove(["script", "style", "noscript", "head", "meta", "link", "iframe", "template", "header"]);
+// The footer is site chrome too, except for its "Version <sha>" link: the old app kept it in the output.
+turndownService.addRule("footerVersion", {
+	filter: "footer",
+	replacement: (_content, node) => {
+		const html = findCommitLinkHtml(node);
+		return html ? `\n\n${turndownService.turndown(html)}\n\n` : "";
+	},
+});
 // `svg` goes through a filter rather than the list above: turndown types `remove`
 // against `HTMLElementTagNameMap`, which has no SVG entry.
 turndownService.remove((node) => node.nodeName.toLowerCase() === "svg");
@@ -37,6 +34,17 @@ turndownService.addRule("stripImages", {
 	filter: "img",
 	replacement: () => "",
 });
+
+function findCommitLinkHtml(node: Node): string | undefined {
+	if (!("querySelector" in node) || typeof node.querySelector !== "function") {
+		return undefined;
+	}
+	const link: unknown = node.querySelector('a[href*="/commit/"]');
+	if (typeof link === "object" && link !== null && "outerHTML" in link && typeof link.outerHTML === "string") {
+		return link.outerHTML;
+	}
+	return undefined;
+}
 
 /** Content lives in `<body>`; see the note on the remove list above. */
 function extractContent(html: string): string {

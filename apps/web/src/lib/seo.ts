@@ -16,6 +16,31 @@ export type SeoInput = {
 	schemas?: string[];
 };
 
+/** Only a URL with a known file extension gets a type, like Next.js did for the file-based og image. */
+const IMAGE_TYPES: Record<string, string | undefined> = {
+	jpg: "image/jpeg",
+	jpeg: "image/jpeg",
+	png: "image/png",
+	webp: "image/webp",
+};
+
+type AddMeta = (key: "name" | "property", name: string, content: string | undefined) => void;
+
+/** Adds the `og:image*` or `twitter:image*` tags from one image input. */
+function addImageMeta(
+	addMeta: AddMeta,
+	key: "name" | "property",
+	prefix: string,
+	image: NonNullable<SeoInput["image"]>,
+) {
+	const extension = /\.(\w+)(?:\?|$)/.exec(image.url)?.[1]?.toLowerCase() ?? "";
+	addMeta(key, prefix, image.url);
+	addMeta(key, `${prefix}:type`, IMAGE_TYPES[extension]);
+	addMeta(key, `${prefix}:alt`, image.alt);
+	addMeta(key, `${prefix}:width`, image.width?.toString());
+	addMeta(key, `${prefix}:height`, image.height?.toString());
+}
+
 /**
  * Builds the object a route's `head()` returns. It covers what `generateMetadata` returned in Next.js:
  * title, description, keywords, Open Graph, Twitter card, canonical, hreflang and JSON-LD.
@@ -40,13 +65,11 @@ export function buildSeoHead(input: SeoInput) {
 	addMeta("property", "og:description", input.description);
 	addMeta("property", "og:type", input.type ?? "website");
 	addMeta("property", "og:url", input.canonical);
-	addMeta("property", "og:image", image.url);
-	addMeta("property", "og:image:alt", image.alt);
-	addMeta("property", "og:image:width", image.width?.toString());
-	addMeta("property", "og:image:height", image.height?.toString());
+	addImageMeta(addMeta, "property", "og:image", image);
 	addMeta("name", "twitter:card", "summary_large_image");
 	addMeta("name", "twitter:title", input.title);
 	addMeta("name", "twitter:description", input.description);
+	addImageMeta(addMeta, "name", "twitter:image", image);
 
 	const links: Array<Record<string, string>> = [];
 	if (input.canonical) {

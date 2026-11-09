@@ -9,6 +9,7 @@ import { LoadingPage } from "@/components/loading-page";
 import { NotFoundPage } from "@/components/not-found-page";
 import { Link } from "@/i18n/navigation";
 import { getDateFnsLocale } from "@/lib/date-locale";
+import { buildNotFoundHead } from "@/lib/not-found";
 import { buildSeoHead } from "@/lib/seo";
 import { buildCitySeo, getCity } from "@/lib/server/city-page";
 
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/{-$locale}/_public/clubs/city/$citySlug")
 		}
 		return page;
 	},
-	head: ({ loaderData }) => (loaderData ? buildSeoHead(loaderData.seo) : { meta: [{ title: "City not found" }] }),
+	head: ({ loaderData }) => (loaderData ? buildSeoHead(loaderData.seo) : buildNotFoundHead("City not found")),
 	pendingComponent: LoadingPage,
 	notFoundComponent: NotFoundPage,
 	component: CityPage,

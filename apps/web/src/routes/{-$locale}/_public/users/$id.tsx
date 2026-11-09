@@ -7,6 +7,7 @@ import { LoadingPage } from "@/components/loading-page";
 import { NotFoundPage } from "@/components/not-found-page";
 import { UserOverview } from "@/components/overviews/user-overview";
 import apiServer from "@/lib/api/api";
+import { buildNotFoundHead } from "@/lib/not-found";
 import { buildSeoHead } from "@/lib/seo";
 import { buildUserSchemas, buildUserSeo, fetchUserReviews } from "@/lib/server/user-page";
 
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/{-$locale}/_public/users/$id")({
 	},
 	head: ({ loaderData }) => {
 		if (loaderData?.kind !== "ok") {
-			return { meta: [{ title: "User not found." }] };
+			return buildNotFoundHead("User not found.");
 		}
 		return buildSeoHead(loaderData.seo);
 	},

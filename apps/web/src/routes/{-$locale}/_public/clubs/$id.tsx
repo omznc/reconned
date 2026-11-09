@@ -6,6 +6,7 @@ import { ErrorPage } from "@/components/error-page";
 import { LoadingPage } from "@/components/loading-page";
 import { NotFoundPage } from "@/components/not-found-page";
 import { ClubOverview } from "@/components/overviews/club-overview";
+import { buildNotFoundHead } from "@/lib/not-found";
 import { buildSeoHead } from "@/lib/seo";
 import { loadClubPage } from "@/lib/server/club-page";
 
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/{-$locale}/_public/clubs/$id")({
 	},
 	head: ({ loaderData }) => {
 		if (loaderData?.kind !== "ok") {
-			return { meta: [{ title: "Club not found." }] };
+			return buildNotFoundHead("Club not found.");
 		}
 		return buildSeoHead(loaderData.seo);
 	},
