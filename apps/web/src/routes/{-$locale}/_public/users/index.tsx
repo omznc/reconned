@@ -12,12 +12,44 @@ import { createItemListWithUsers } from "@/lib/json-ld";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import { UsersListing } from "@/routes/{-$locale}/_public/users/-components/users-listing";
+import {
+	toUsersQuery,
+	USERS_PER_PAGE,
+	type UsersSearch,
+	usersSearchSchema,
+} from "@/routes/{-$locale}/_public/users/-components/users-search";
 
-const ITEMS_PER_PAGE = 12;
+type CountryTranslations = Partial<Record<string, string>>;
+
+/** Players have no country or city of their own, so the filter lists come from the clubs. */
+async function getFilterOptions(locale: string) {
+	const [clubsResult, countriesResult, citiesResult] = await Promise.all([
+		apiServer.GET("/api/clubs", {
+			params: { query: { perPage: "100", sortBy: "name", sortOrder: "asc", facets: "true" } },
+		}),
+		apiServer.GET("/api/countries"),
+		apiServer.GET("/api/public/cities"),
+	]);
+	const names = new Map(
+		(countriesResult.data ?? []).map((country) => [
+			country.id,
+			(country.translations as CountryTranslations | undefined)?.[locale] ?? country.name,
+		]),
+	);
+	return {
+		countries: (clubsResult.data?.facets?.country ?? []).map((entry) => ({
+			id: entry.countryId,
+			name: names.get(entry.countryId) ?? String(entry.countryId),
+		})),
+		clubs: (clubsResult.data?.clubs ?? []).map((club) => ({ id: club.id, name: club.name })),
+		cities: (citiesResult.data?.cities ?? []).map((city) => ({ slug: city.citySlug, name: city.city })),
+	};
+}
 
 const getUsersPageFn = createServerFn({ method: "GET" })
-	.validator(z.object({ page: z.number(), locale: z.string() }))
-	.handler(async ({ data: { page, locale } }) => {
+	.validator(z.object({ search: usersSearchSchema, locale: z.string() }))
+	.handler(async ({ data: { search, locale } }) => {
+		const page = search.page ?? 1;
 		const t = await getExtracted({ locale });
 		const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
 		const seo: SeoInput = {
@@ -36,13 +68,7 @@ const getUsersPageFn = createServerFn({ method: "GET" })
 		};
 
 		const { data, error } = await apiServer.GET("/api/users", {
-			params: {
-				query: {
-					page: String(page),
-					perPage: String(ITEMS_PER_PAGE),
-					sort: "admin",
-				},
-			},
+			params: { query: toUsersQuery(search, USERS_PER_PAGE) },
 		});
 
 		if (error || !data) {
@@ -64,7 +90,7 @@ const getUsersPageFn = createServerFn({ method: "GET" })
 				})),
 			})),
 			page,
-			itemsPerPage: ITEMS_PER_PAGE,
+			itemsPerPage: USERS_PER_PAGE,
 			total: data.pagination.total,
 			locale,
 			name: t("Airsoft players - RECONNED"),
@@ -75,15 +101,15 @@ const getUsersPageFn = createServerFn({ method: "GET" })
 
 		return {
 			kind: "ok" as const,
-			initialData: { users: data.users, pagination: data.pagination },
+			listing: { users: data.users, pagination: data.pagination, ...(await getFilterOptions(locale)) },
 			seo: { ...seo, schemas: [JSON.stringify(itemListSchema)] },
 		};
 	});
 
 export const Route = createFileRoute("/{-$locale}/_public/users/")({
-	validateSearch: z.looseObject({ page: z.coerce.number().optional().catch(undefined) }),
-	loaderDeps: ({ search }) => ({ page: Number(search.page) || 1 }),
-	loader: ({ deps, context }) => getUsersPageFn({ data: { page: deps.page, locale: context.locale } }),
+	validateSearch: usersSearchSchema,
+	loaderDeps: ({ search }) => ({ search }),
+	loader: ({ deps, context }) => getUsersPageFn({ data: { search: deps.search, locale: context.locale } }),
 	head: ({ loaderData }) => (loaderData ? buildSeoHead(loaderData.seo) : {}),
 	pendingComponent: LoadingPage,
 	notFoundComponent: NotFoundPage,
@@ -93,10 +119,23 @@ export const Route = createFileRoute("/{-$locale}/_public/users/")({
 function UsersPage() {
 	const t = useExtracted();
 	const page = Route.useLoaderData();
+	const search = Route.useSearch();
+	const navigate = Route.useNavigate();
 
 	if (page.kind === "error") {
 		return <ErrorPage title={t("Error loading users")} />;
 	}
 
-	return <UsersListing initialData={page.initialData} />;
+	const update = (patch: Partial<UsersSearch>) =>
+		navigate({ search: (prev) => ({ ...prev, page: undefined, ...patch }), replace: true });
+
+	return (
+		<UsersListing
+			data={page.listing}
+			search={search}
+			onSearchChange={update}
+			onPageChange={(next) => navigate({ search: (prev) => ({ ...prev, page: next > 1 ? next : undefined }) })}
+			onReset={() => navigate({ search: {}, replace: true })}
+		/>
+	);
 }

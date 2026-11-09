@@ -12,12 +12,41 @@ import { createItemListWithClubs } from "@/lib/json-ld";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import { ClubsListing } from "@/routes/{-$locale}/_public/clubs/-components/clubs-listing";
+import {
+	CLUBS_PER_PAGE,
+	type ClubsSearch,
+	clubsSearchSchema,
+	toClubsQuery,
+} from "@/routes/{-$locale}/_public/clubs/-components/clubs-search";
 
-const ITEMS_PER_PAGE = 12;
+type CountryTranslations = Partial<Record<string, string>>;
+
+/** The country names and the city list for the filters. A failed lookup gives an empty list. */
+async function getFilterOptions(locale: string, countryIds: number[]) {
+	const [countriesResult, citiesResult] = await Promise.all([
+		apiServer.GET("/api/countries"),
+		apiServer.GET("/api/public/cities"),
+	]);
+	const names = new Map(
+		(countriesResult.data ?? []).map((country) => [
+			country.id,
+			(country.translations as CountryTranslations | undefined)?.[locale] ?? country.name,
+		]),
+	);
+	return {
+		countries: countryIds.map((id) => ({ id, name: names.get(id) ?? String(id) })),
+		cities: (citiesResult.data?.cities ?? []).map((city) => ({
+			slug: city.citySlug,
+			name: city.city,
+			count: city.clubCount,
+		})),
+	};
+}
 
 const getClubsPageFn = createServerFn({ method: "GET" })
-	.validator(z.object({ page: z.number(), locale: z.string() }))
-	.handler(async ({ data: { page, locale } }) => {
+	.validator(z.object({ search: clubsSearchSchema, locale: z.string() }))
+	.handler(async ({ data: { search, locale } }) => {
+		const page = search.page ?? 1;
 		const t = await getExtracted({ locale });
 		const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
 		const seo: SeoInput = {
@@ -36,12 +65,7 @@ const getClubsPageFn = createServerFn({ method: "GET" })
 		};
 
 		const { data, error } = await apiServer.GET("/api/clubs", {
-			params: {
-				query: {
-					page: String(page),
-					perPage: String(ITEMS_PER_PAGE),
-				},
-			},
+			params: { query: toClubsQuery(search, CLUBS_PER_PAGE) },
 		});
 
 		if (error || !data) {
@@ -64,7 +88,7 @@ const getClubsPageFn = createServerFn({ method: "GET" })
 				verified: club.verified,
 			})),
 			page,
-			itemsPerPage: ITEMS_PER_PAGE,
+			itemsPerPage: CLUBS_PER_PAGE,
 			total: data.pagination.total,
 			locale,
 			name: t("Airsoft clubs - RECONNED"),
@@ -73,17 +97,28 @@ const getClubsPageFn = createServerFn({ method: "GET" })
 			),
 		});
 
+		const options = await getFilterOptions(
+			locale,
+			(data.facets?.country ?? []).map((entry) => entry.countryId),
+		);
+
 		return {
 			kind: "ok" as const,
-			initialData: { clubs: data.clubs, pagination: data.pagination },
+			listing: {
+				clubs: data.clubs,
+				pagination: data.pagination,
+				totals: data.totals,
+				facets: data.facets,
+				...options,
+			},
 			seo: { ...seo, schemas: [JSON.stringify(itemListSchema)] },
 		};
 	});
 
 export const Route = createFileRoute("/{-$locale}/_public/clubs/")({
-	validateSearch: z.looseObject({ page: z.coerce.number().optional().catch(undefined) }),
-	loaderDeps: ({ search }) => ({ page: Number(search.page) || 1 }),
-	loader: ({ deps, context }) => getClubsPageFn({ data: { page: deps.page, locale: context.locale } }),
+	validateSearch: clubsSearchSchema,
+	loaderDeps: ({ search }) => ({ search }),
+	loader: ({ deps, context }) => getClubsPageFn({ data: { search: deps.search, locale: context.locale } }),
 	head: ({ loaderData }) => (loaderData ? buildSeoHead(loaderData.seo) : {}),
 	pendingComponent: LoadingPage,
 	notFoundComponent: NotFoundPage,
@@ -93,10 +128,23 @@ export const Route = createFileRoute("/{-$locale}/_public/clubs/")({
 function ClubsPage() {
 	const t = useExtracted();
 	const page = Route.useLoaderData();
+	const search = Route.useSearch();
+	const navigate = Route.useNavigate();
 
 	if (page.kind === "error") {
 		return <ErrorPage title={t("Error loading clubs")} />;
 	}
 
-	return <ClubsListing initialData={page.initialData} />;
+	const update = (patch: Partial<ClubsSearch>) =>
+		navigate({ search: (prev) => ({ ...prev, page: undefined, ...patch }), replace: true });
+
+	return (
+		<ClubsListing
+			data={page.listing}
+			search={search}
+			onSearchChange={update}
+			onPageChange={(next) => navigate({ search: (prev) => ({ ...prev, page: next > 1 ? next : undefined }) })}
+			onReset={() => navigate({ search: {}, replace: true })}
+		/>
+	);
 }

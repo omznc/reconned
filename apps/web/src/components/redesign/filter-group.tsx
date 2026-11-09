@@ -52,3 +52,37 @@ export function FacetCheckbox({ label, count, checked, onCheckedChange, disabled
 		</div>
 	);
 }
+
+interface FilterSelectProps {
+	label: string;
+	value: string;
+	onChange: (value: string) => void;
+	/** The text of the empty option, for example "Any city". */
+	placeholder: string;
+	options: { value: string; label: string }[];
+}
+
+/** A labelled native select for a filter with many values. */
+export function FilterSelect({ label, value, onChange, placeholder, options }: FilterSelectProps) {
+	const id = useId();
+	return (
+		<div className="flex min-w-0 flex-col gap-2">
+			<label htmlFor={id} className="text-[13px] font-medium">
+				{label}
+			</label>
+			<select
+				id={id}
+				value={value}
+				onChange={(event) => onChange(event.target.value)}
+				className="h-9 w-full min-w-0 rounded-md border border-input bg-background px-2.5 text-[13px] text-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+			>
+				<option value="">{placeholder}</option>
+				{options.map((option) => (
+					<option key={option.value} value={option.value}>
+						{option.label}
+					</option>
+				))}
+			</select>
+		</div>
+	);
+}
