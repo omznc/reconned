@@ -124,7 +124,7 @@
 		"i18n:extract": "bun scripts/extract-messages.ts",
 		"predev": "bun run api:generate-types",
 		"start": "bun .output/server/index.mjs",
-		"typecheck": "tsr generate && tsc --noEmit"
+		"typecheck": "tsc --noEmit"
 	},
 	"version": "0.6.0"
 }
