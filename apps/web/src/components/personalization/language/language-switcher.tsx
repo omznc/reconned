@@ -184,7 +184,7 @@ export function LanguageSwitcher({ className, variant, withinMenu = false, ...pr
 					className={cn("w-auto shrink-0 cursor-pointer items-center justify-center shadow-none", className)}
 					{...props}
 				>
-					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 ml-2 scale-100 transition-all" />
+					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}
 				</Button>
 			</DropdownMenuTrigger>

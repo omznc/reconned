@@ -464,17 +464,17 @@ export function GenericDataTable<T>({
 												<Button
 													variant="ghost"
 													onClick={() => handleSort(column.key.toString())}
-													className="-ml-4 h-8 hover:bg-transparent shadow-none"
+													className="h-8 gap-1.5 px-0 font-medium hover:bg-transparent shadow-none"
 												>
 													{column.header}
 													{sortBy === column.key.toString() ? (
 														sortOrder === "asc" ? (
-															<ArrowUpAZ className="ml-2 h-4 w-4" />
+															<ArrowUpAZ className="h-4 w-4" />
 														) : (
-															<ArrowDownZA className="ml-2 h-4 w-4" />
+															<ArrowDownZA className="h-4 w-4" />
 														)
 													) : (
-														<ArrowDownUp className="ml-2 h-4 w-4" />
+														<ArrowDownUp className="h-4 w-4 text-muted-foreground" />
 													)}
 												</Button>
 											) : (
