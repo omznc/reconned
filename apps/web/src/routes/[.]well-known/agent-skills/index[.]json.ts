@@ -1,6 +1,7 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { AGENT_SKILLS, getSkillUrls, skillDigest } from "@/lib/agent-skills";
 
-export function GET() {
+function GET() {
 	const urls = getSkillUrls();
 
 	// Agent Skills Discovery RFC v0.2.0.
@@ -24,3 +25,7 @@ export function GET() {
 		},
 	});
 }
+
+export const Route = createFileRoute("/.well-known/agent-skills/index.json")({
+	server: { handlers: { GET } },
+});

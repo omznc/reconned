@@ -1,13 +1,8 @@
-"use client";
-
-import dynamic from "next/dynamic";
+import { lazyClientOnly } from "@/components/client-only";
 import type { MapClub } from "@/components/clubs-map/clubs-map";
 import { LoadingPage } from "../loading-page";
 
-const ClubsMap = dynamic(() => import("@/components/clubs-map/clubs-map").then((mod) => mod.ClubsMap), {
-	ssr: false,
-	loading: () => <LoadingPage />,
-});
+const ClubsMap = lazyClientOnly(() => import("@/components/clubs-map/clubs-map"), <LoadingPage />);
 
 interface ClubsMapWrapperProps {
 	clubs: MapClub[];

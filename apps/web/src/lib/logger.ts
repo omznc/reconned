@@ -8,7 +8,7 @@ type Logger = {
 };
 
 // shortcut: console only, replaces next-axiom; ship to Axiom or PostHog logs when server-side log search is needed
-const logger: Logger = {
+export const logger: Logger = {
 	debug: (message, fields) => console.debug(message, fields),
 	info: (message, fields) => console.info(message, fields),
 	warn: (message, fields) => console.warn(message, fields),

@@ -4,7 +4,7 @@ import { useExtracted } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { CONSENT_OPEN_EVENT, readConsent, setConsent } from "@/lib/consent";
+import { applyStoredConsent, CONSENT_OPEN_EVENT, readConsent, setConsent } from "@/lib/consent";
 
 /**
  * Analytics consent banner.
@@ -25,6 +25,8 @@ export function ConsentBanner() {
 	const firstButtonRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
+		// Stands in for `instrumentation-client.ts`, which TanStack Start does not load. Safe to repeat.
+		applyStoredConsent();
 		const stored = readConsent();
 		setCurrent(stored?.analytics ?? null);
 

@@ -1,5 +1,5 @@
-"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import posthog from "posthog-js";
@@ -20,7 +20,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { env } from "@/lib/env";
 
-export default function RegisterPage() {
+function RegisterPage() {
 	return (
 		<Suspense fallback={<AuthFormSkeleton />}>
 			<RegisterPageContent />
@@ -272,3 +272,7 @@ function RegisterPageContent() {
 		</>
 	);
 }
+
+export const Route = createFileRoute("/{-$locale}/_auth/register")({
+	component: RegisterPage,
+});

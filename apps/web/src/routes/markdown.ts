@@ -1,4 +1,4 @@
-import type { NextRequest } from "next/server";
+import { createFileRoute } from "@tanstack/react-router";
 import TurndownService from "turndown";
 
 const turndownService = new TurndownService({
@@ -44,36 +44,36 @@ function extractContent(html: string): string {
 
 /**
  * Serves a markdown rendering of any public HTML page. Not called directly — the
- * proxy rewrites here for a `.md` path suffix, passing the original path as
+ * request middleware calls here for a `.md` path suffix, passing the original path as
  * `source`.
  *
  * Deliberately NOT under `/api/`: in production the edge proxy routes every
- * `/api/*` path to the backend before it reaches Next, so a route handler there
- * is unreachable. It only appeared to work in dev because `next.config.ts`
- * rewrites are `afterFiles` and lose to a local filesystem route.
+ * `/api/*` path to the backend before it reaches the web app, so a route handler there
+ * is unreachable.
  */
-export async function GET(request: NextRequest) {
-	const source = request.nextUrl.searchParams.get("source") ?? request.headers.get("x-md-source");
+async function GET({ request }: { request: Request }) {
+	const requestUrl = new URL(request.url);
+	const source = requestUrl.searchParams.get("source") ?? request.headers.get("x-md-source");
 	if (!source?.startsWith("/") || source.startsWith("/api") || source.startsWith("/_next")) {
 		return new Response("Invalid path", { status: 400 });
 	}
 
 	// Self-fetch renders the page through the full stack (locale negotiation
-	// included). Aimed at the loopback interface rather than `request.url`: the
+	// included). Aimed at the local host rather than `request.url`: the
 	// public origin would send this request back out through the CDN and in to a
 	// fresh container, which is slow, cache-polluting, and fails outright where
 	// egress to our own hostname is blocked. The original `host` is forwarded so
-	// Next still builds absolute URLs against the public origin, and
+	// the app still builds absolute URLs against the public origin, and
 	// `accept: text/html` keeps the proxy from rewriting the internal request
 	// straight back here.
-	// `PORT` is what the container sets; `nextUrl.port` covers dev, where Next
-	// silently picks the next free port (3001, 3002…) without exporting `PORT`.
-	const port = process.env.PORT || request.nextUrl.port || "3000";
-	const sourceUrl = new URL(source, `http://127.0.0.1:${port}`);
+	// `PORT` is what the container sets; `requestUrl.port` covers dev, where the dev server
+	// may pick another port without exporting `PORT`.
+	const port = process.env.PORT || requestUrl.port || "3000";
+	const sourceUrl = new URL(source, `http://localhost:${port}`);
 	const sourceResponse = await fetch(sourceUrl, {
 		headers: {
 			accept: "text/html",
-			host: request.headers.get("host") ?? new URL(request.url).host,
+			host: request.headers.get("host") ?? requestUrl.host,
 			"accept-language": request.headers.get("accept-language") ?? "",
 		},
 		cache: "no-store",
@@ -101,3 +101,7 @@ export async function GET(request: NextRequest) {
 		},
 	});
 }
+
+export const Route = createFileRoute("/markdown")({
+	server: { handlers: { GET } },
+});

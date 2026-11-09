@@ -1,5 +1,4 @@
-"use client";
-
+import { createFileRoute } from "@tanstack/react-router";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Suspense, useEffect, useState } from "react";
@@ -13,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
-export default function TwoFactorPage() {
+function TwoFactorPage() {
 	return (
 		<Suspense fallback={<AuthFormSkeleton />}>
 			<TwoFactorPageContent />
@@ -135,3 +134,7 @@ function TwoFactorPageContent() {
 		</>
 	);
 }
+
+export const Route = createFileRoute("/{-$locale}/_auth/two-factor")({
+	component: TwoFactorPage,
+});

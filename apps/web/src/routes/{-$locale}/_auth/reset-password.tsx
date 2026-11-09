@@ -1,6 +1,6 @@
-"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useExtracted, useLocale } from "next-intl";
+import { createFileRoute } from "@tanstack/react-router";
+import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Suspense, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,7 +17,7 @@ import { Link, redirect, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { env } from "@/lib/env";
 
-export default function ResetPasswordPage() {
+function ResetPasswordPage() {
 	return (
 		<Suspense fallback={<AuthFormSkeleton />}>
 			<ResetPasswordPageContent />
@@ -31,7 +31,6 @@ function ResetPasswordPageContent() {
 	const [isError, setIsError] = useState(false);
 	const router = useRouter();
 	const t = useExtracted();
-	const locale = useLocale();
 	const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
 	const resetPasswordSchema = z
@@ -57,10 +56,6 @@ function ResetPasswordPageContent() {
 		},
 		mode: "onChange",
 	});
-
-	if (!token) {
-		return redirect({ href: "/login", locale });
-	}
 
 	async function onSubmit(data: ResetPasswordFormValues) {
 		const headers = new Headers();
@@ -161,3 +156,16 @@ function ResetPasswordPageContent() {
 		</>
 	);
 }
+
+export const Route = createFileRoute("/{-$locale}/_auth/reset-password")({
+	validateSearch: (search: Record<string, unknown>) => ({
+		token: typeof search.token === "string" ? search.token : undefined,
+	}),
+	// A reset link without a token has nothing to reset.
+	beforeLoad: ({ search, context }) => {
+		if (!search.token) {
+			throw redirect({ href: "/login", locale: context.locale });
+		}
+	},
+	component: ResetPasswordPage,
+});

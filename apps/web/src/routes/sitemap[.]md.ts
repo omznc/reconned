@@ -1,7 +1,8 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { routing } from "@/i18n/routing";
 import { env } from "@/lib/env";
 
-export function GET() {
+function GET() {
 	const baseUrl = env.NEXT_PUBLIC_WEB_URL.replace(/\/$/, "");
 
 	const body = [
@@ -45,3 +46,7 @@ export function GET() {
 		},
 	});
 }
+
+export const Route = createFileRoute("/sitemap.md")({
+	server: { handlers: { GET } },
+});
