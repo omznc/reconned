@@ -1439,6 +1439,8 @@ export function ClubsMap({
 			>
 				<OptimizedTileLayerComponent
 					url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+					// OSM blocks tile requests without a Referer; the site policy is same-origin.
+					referrerPolicy="strict-origin-when-cross-origin"
 					maxZoom={MAX_ZOOM}
 					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				/>
