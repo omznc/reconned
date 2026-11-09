@@ -6,12 +6,12 @@ import * as z from "zod";
 import { ErrorPage } from "@/components/error-page";
 import { LoadingPage } from "@/components/loading-page";
 import { NotFoundPage } from "@/components/not-found-page";
-import { EventOverview } from "@/components/overviews/event-overview";
 import apiServer from "@/lib/api/api";
 import { buildNotFoundHead, readNotFoundData } from "@/lib/not-found";
 import { buildSeoHead } from "@/lib/seo";
 import { buildEventSeo, buildSchemas, fetchEventViewerData, fetchReviews, toEvent } from "@/lib/server/event-page";
 import { asJson } from "@/lib/server/json";
+import { EventProfile } from "@/routes/{-$locale}/_public/events/$id/-components/event-profile";
 
 const getEventPageFn = createServerFn({ method: "GET" })
 	.validator(z.object({ id: z.string(), locale: z.string(), signedIn: z.boolean() }))
@@ -36,14 +36,19 @@ const getEventPageFn = createServerFn({ method: "GET" })
 
 		const event = asJson(toEvent({ ...eventData, club: eventData.club }));
 		const reviews = await fetchReviews(event.id);
-		const [schemas, viewer] = await Promise.all([
+		const [schemas, viewer, clubResponse] = await Promise.all([
 			buildSchemas(event, locale, reviews),
 			fetchEventViewerData(eventData.club.id, signedIn),
+			apiServer.GET("/api/clubs/{id}", { params: { path: { id: eventData.club.id } } }),
 		]);
 		return {
 			kind: "ok" as const,
 			event,
 			clubId: eventData.club.id,
+			// The event endpoint has no club city or member count. A failed club call only hides them.
+			clubCity: clubResponse.data?.city ?? null,
+			clubMemberCount: clubResponse.data?._count.members ?? null,
+			clubLogoTile: clubResponse.data?.logoTile ?? null,
 			placesLeft: eventData.placesLeft,
 			reviews: reviews?.reviews,
 			...viewer,
@@ -84,11 +89,11 @@ function EventPage() {
 
 	return (
 		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8  px-4">
-			<EventOverview
+			<EventProfile
 				event={page.event}
 				clubId={page.clubId}
-				user={user}
-				role={page.role}
+				club={{ city: page.clubCity, memberCount: page.clubMemberCount, logoTile: page.clubLogoTile }}
+				canEdit={Boolean(user) && (page.role === "MANAGER" || page.role === "CLUB_OWNER")}
 				eventRegistrationEnabled={page.eventRegistrationEnabled}
 				reviews={page.reviews}
 				placesLeft={page.placesLeft}

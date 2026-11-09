@@ -51,7 +51,7 @@ const DOT: Record<EventRowState, string> = {
 	full: "bg-status-full",
 };
 
-function StatusChip({ state, label }: { state: EventRowState; label?: string }) {
+export function StatusChip({ state, label }: { state: EventRowState; label?: string }) {
 	const t = useExtracted();
 	const defaults: Record<EventRowState, string> = {
 		open: t("Registration open"),
