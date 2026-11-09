@@ -15,8 +15,26 @@ import { Route as Char123LocaleChar125AuthRouteImport } from './routes/{-$locale
 import { Route as Char123LocaleChar125PublicRouteImport } from './routes/{-$locale}/_public'
 import { Route as Char123LocaleChar125LogoutRouteImport } from './routes/{-$locale}/logout'
 import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$locale}/_auth/login'
+import { Route as Char123LocaleChar125PublicIndexRouteImport } from './routes/{-$locale}/_public/index'
+import { Route as Char123LocaleChar125PublicDevelopersRouteImport } from './routes/{-$locale}/_public/developers'
+import { Route as Char123LocaleChar125PublicMapRouteImport } from './routes/{-$locale}/_public/map'
+import { Route as Char123LocaleChar125PublicMapEditorRouteImport } from './routes/{-$locale}/_public/map-editor'
+import { Route as Char123LocaleChar125PublicPrivacyPolicyRouteImport } from './routes/{-$locale}/_public/privacy-policy'
+import { Route as Char123LocaleChar125PublicSponsorsRouteImport } from './routes/{-$locale}/_public/sponsors'
+import { Route as Char123LocaleChar125PublicSupportUsRouteImport } from './routes/{-$locale}/_public/support-us'
+import { Route as Char123LocaleChar125PublicTermsOfUseRouteImport } from './routes/{-$locale}/_public/terms-of-use'
 import { Route as Char123LocaleChar125WarmindSplatRouteImport } from './routes/{-$locale}/warmind/$'
+import { Route as Char123LocaleChar125PublicClubsIndexRouteImport } from './routes/{-$locale}/_public/clubs/index'
 import { Route as Char123LocaleChar125PublicClubsIdRouteImport } from './routes/{-$locale}/_public/clubs/$id'
+import { Route as Char123LocaleChar125PublicEventsIndexRouteImport } from './routes/{-$locale}/_public/events/index'
+import { Route as Char123LocaleChar125PublicSearchIndexRouteImport } from './routes/{-$locale}/_public/search/index'
+import { Route as Char123LocaleChar125PublicUsersIndexRouteImport } from './routes/{-$locale}/_public/users/index'
+import { Route as Char123LocaleChar125PublicUsersIdRouteImport } from './routes/{-$locale}/_public/users/$id'
+import { Route as Char123LocaleChar125PublicClubsCityIndexRouteImport } from './routes/{-$locale}/_public/clubs/city/index'
+import { Route as Char123LocaleChar125PublicClubsCityCitySlugRouteImport } from './routes/{-$locale}/_public/clubs/city/$citySlug'
+import { Route as Char123LocaleChar125PublicEventsIdIndexRouteImport } from './routes/{-$locale}/_public/events/$id/index'
+import { Route as Char123LocaleChar125PublicEventsIdApplyRouteImport } from './routes/{-$locale}/_public/events/$id/apply'
+import { Route as Char123LocaleChar125PublicEventsIdClaimRouteImport } from './routes/{-$locale}/_public/events/$id/claim'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -52,16 +70,124 @@ const Char123LocaleChar125AuthLoginRoute =
     path: '/login',
     getParentRoute: () => Char123LocaleChar125AuthRoute,
   } as any)
+const Char123LocaleChar125PublicIndexRoute =
+  Char123LocaleChar125PublicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicDevelopersRoute =
+  Char123LocaleChar125PublicDevelopersRouteImport.update({
+    id: '/developers',
+    path: '/developers',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicMapRoute =
+  Char123LocaleChar125PublicMapRouteImport.update({
+    id: '/map',
+    path: '/map',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicMapEditorRoute =
+  Char123LocaleChar125PublicMapEditorRouteImport.update({
+    id: '/map-editor',
+    path: '/map-editor',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicPrivacyPolicyRoute =
+  Char123LocaleChar125PublicPrivacyPolicyRouteImport.update({
+    id: '/privacy-policy',
+    path: '/privacy-policy',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicSponsorsRoute =
+  Char123LocaleChar125PublicSponsorsRouteImport.update({
+    id: '/sponsors',
+    path: '/sponsors',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicSupportUsRoute =
+  Char123LocaleChar125PublicSupportUsRouteImport.update({
+    id: '/support-us',
+    path: '/support-us',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicTermsOfUseRoute =
+  Char123LocaleChar125PublicTermsOfUseRouteImport.update({
+    id: '/terms-of-use',
+    path: '/terms-of-use',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
 const Char123LocaleChar125WarmindSplatRoute =
   Char123LocaleChar125WarmindSplatRouteImport.update({
     id: '/warmind/$',
     path: '/warmind/$',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125PublicClubsIndexRoute =
+  Char123LocaleChar125PublicClubsIndexRouteImport.update({
+    id: '/clubs/',
+    path: '/clubs/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
 const Char123LocaleChar125PublicClubsIdRoute =
   Char123LocaleChar125PublicClubsIdRouteImport.update({
     id: '/clubs/$id',
     path: '/clubs/$id',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicEventsIndexRoute =
+  Char123LocaleChar125PublicEventsIndexRouteImport.update({
+    id: '/events/',
+    path: '/events/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicSearchIndexRoute =
+  Char123LocaleChar125PublicSearchIndexRouteImport.update({
+    id: '/search/',
+    path: '/search/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicUsersIndexRoute =
+  Char123LocaleChar125PublicUsersIndexRouteImport.update({
+    id: '/users/',
+    path: '/users/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicUsersIdRoute =
+  Char123LocaleChar125PublicUsersIdRouteImport.update({
+    id: '/users/$id',
+    path: '/users/$id',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicClubsCityIndexRoute =
+  Char123LocaleChar125PublicClubsCityIndexRouteImport.update({
+    id: '/clubs/city/',
+    path: '/clubs/city/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicClubsCityCitySlugRoute =
+  Char123LocaleChar125PublicClubsCityCitySlugRouteImport.update({
+    id: '/clubs/city/$citySlug',
+    path: '/clubs/city/$citySlug',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicEventsIdIndexRoute =
+  Char123LocaleChar125PublicEventsIdIndexRouteImport.update({
+    id: '/events/$id/',
+    path: '/events/$id/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicEventsIdApplyRoute =
+  Char123LocaleChar125PublicEventsIdApplyRouteImport.update({
+    id: '/events/$id/apply',
+    path: '/events/$id/apply',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicEventsIdClaimRoute =
+  Char123LocaleChar125PublicEventsIdClaimRouteImport.update({
+    id: '/events/$id/claim',
+    path: '/events/$id/claim',
     getParentRoute: () => Char123LocaleChar125PublicRoute,
   } as any)
 
@@ -70,16 +196,51 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
   '/{-$locale}/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/developers': typeof Char123LocaleChar125PublicDevelopersRoute
+  '/{-$locale}/map': typeof Char123LocaleChar125PublicMapRoute
+  '/{-$locale}/map-editor': typeof Char123LocaleChar125PublicMapEditorRoute
+  '/{-$locale}/privacy-policy': typeof Char123LocaleChar125PublicPrivacyPolicyRoute
+  '/{-$locale}/sponsors': typeof Char123LocaleChar125PublicSponsorsRoute
+  '/{-$locale}/support-us': typeof Char123LocaleChar125PublicSupportUsRoute
+  '/{-$locale}/terms-of-use': typeof Char123LocaleChar125PublicTermsOfUseRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/{-$locale}/': typeof Char123LocaleChar125PublicIndexRoute
   '/{-$locale}/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
+  '/{-$locale}/users/$id': typeof Char123LocaleChar125PublicUsersIdRoute
+  '/{-$locale}/clubs/': typeof Char123LocaleChar125PublicClubsIndexRoute
+  '/{-$locale}/events/': typeof Char123LocaleChar125PublicEventsIndexRoute
+  '/{-$locale}/search/': typeof Char123LocaleChar125PublicSearchIndexRoute
+  '/{-$locale}/users/': typeof Char123LocaleChar125PublicUsersIndexRoute
+  '/{-$locale}/clubs/city/$citySlug': typeof Char123LocaleChar125PublicClubsCityCitySlugRoute
+  '/{-$locale}/events/$id/apply': typeof Char123LocaleChar125PublicEventsIdApplyRoute
+  '/{-$locale}/events/$id/claim': typeof Char123LocaleChar125PublicEventsIdClaimRoute
+  '/{-$locale}/clubs/city/': typeof Char123LocaleChar125PublicClubsCityIndexRoute
+  '/{-$locale}/events/$id/': typeof Char123LocaleChar125PublicEventsIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/{-$locale}': typeof Char123LocaleChar125PublicIndexRoute
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
   '/{-$locale}/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/developers': typeof Char123LocaleChar125PublicDevelopersRoute
+  '/{-$locale}/map': typeof Char123LocaleChar125PublicMapRoute
+  '/{-$locale}/map-editor': typeof Char123LocaleChar125PublicMapEditorRoute
+  '/{-$locale}/privacy-policy': typeof Char123LocaleChar125PublicPrivacyPolicyRoute
+  '/{-$locale}/sponsors': typeof Char123LocaleChar125PublicSponsorsRoute
+  '/{-$locale}/support-us': typeof Char123LocaleChar125PublicSupportUsRoute
+  '/{-$locale}/terms-of-use': typeof Char123LocaleChar125PublicTermsOfUseRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
   '/{-$locale}/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
+  '/{-$locale}/users/$id': typeof Char123LocaleChar125PublicUsersIdRoute
+  '/{-$locale}/clubs': typeof Char123LocaleChar125PublicClubsIndexRoute
+  '/{-$locale}/events': typeof Char123LocaleChar125PublicEventsIndexRoute
+  '/{-$locale}/search': typeof Char123LocaleChar125PublicSearchIndexRoute
+  '/{-$locale}/users': typeof Char123LocaleChar125PublicUsersIndexRoute
+  '/{-$locale}/clubs/city/$citySlug': typeof Char123LocaleChar125PublicClubsCityCitySlugRoute
+  '/{-$locale}/events/$id/apply': typeof Char123LocaleChar125PublicEventsIdApplyRoute
+  '/{-$locale}/events/$id/claim': typeof Char123LocaleChar125PublicEventsIdClaimRoute
+  '/{-$locale}/clubs/city': typeof Char123LocaleChar125PublicClubsCityIndexRoute
+  '/{-$locale}/events/$id': typeof Char123LocaleChar125PublicEventsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,8 +250,26 @@ export interface FileRoutesById {
   '/{-$locale}/_public': typeof Char123LocaleChar125PublicRouteWithChildren
   '/{-$locale}/logout': typeof Char123LocaleChar125LogoutRoute
   '/{-$locale}/_auth/login': typeof Char123LocaleChar125AuthLoginRoute
+  '/{-$locale}/_public/developers': typeof Char123LocaleChar125PublicDevelopersRoute
+  '/{-$locale}/_public/map': typeof Char123LocaleChar125PublicMapRoute
+  '/{-$locale}/_public/map-editor': typeof Char123LocaleChar125PublicMapEditorRoute
+  '/{-$locale}/_public/privacy-policy': typeof Char123LocaleChar125PublicPrivacyPolicyRoute
+  '/{-$locale}/_public/sponsors': typeof Char123LocaleChar125PublicSponsorsRoute
+  '/{-$locale}/_public/support-us': typeof Char123LocaleChar125PublicSupportUsRoute
+  '/{-$locale}/_public/terms-of-use': typeof Char123LocaleChar125PublicTermsOfUseRoute
   '/{-$locale}/warmind/$': typeof Char123LocaleChar125WarmindSplatRoute
+  '/{-$locale}/_public/': typeof Char123LocaleChar125PublicIndexRoute
   '/{-$locale}/_public/clubs/$id': typeof Char123LocaleChar125PublicClubsIdRoute
+  '/{-$locale}/_public/users/$id': typeof Char123LocaleChar125PublicUsersIdRoute
+  '/{-$locale}/_public/clubs/': typeof Char123LocaleChar125PublicClubsIndexRoute
+  '/{-$locale}/_public/events/': typeof Char123LocaleChar125PublicEventsIndexRoute
+  '/{-$locale}/_public/search/': typeof Char123LocaleChar125PublicSearchIndexRoute
+  '/{-$locale}/_public/users/': typeof Char123LocaleChar125PublicUsersIndexRoute
+  '/{-$locale}/_public/clubs/city/$citySlug': typeof Char123LocaleChar125PublicClubsCityCitySlugRoute
+  '/{-$locale}/_public/events/$id/apply': typeof Char123LocaleChar125PublicEventsIdApplyRoute
+  '/{-$locale}/_public/events/$id/claim': typeof Char123LocaleChar125PublicEventsIdClaimRoute
+  '/{-$locale}/_public/clubs/city/': typeof Char123LocaleChar125PublicClubsCityIndexRoute
+  '/{-$locale}/_public/events/$id/': typeof Char123LocaleChar125PublicEventsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -99,16 +278,51 @@ export interface FileRouteTypes {
     | '/{-$locale}/$'
     | '/{-$locale}/logout'
     | '/{-$locale}/login'
+    | '/{-$locale}/developers'
+    | '/{-$locale}/map'
+    | '/{-$locale}/map-editor'
+    | '/{-$locale}/privacy-policy'
+    | '/{-$locale}/sponsors'
+    | '/{-$locale}/support-us'
+    | '/{-$locale}/terms-of-use'
     | '/{-$locale}/warmind/$'
+    | '/{-$locale}/'
     | '/{-$locale}/clubs/$id'
+    | '/{-$locale}/users/$id'
+    | '/{-$locale}/clubs/'
+    | '/{-$locale}/events/'
+    | '/{-$locale}/search/'
+    | '/{-$locale}/users/'
+    | '/{-$locale}/clubs/city/$citySlug'
+    | '/{-$locale}/events/$id/apply'
+    | '/{-$locale}/events/$id/claim'
+    | '/{-$locale}/clubs/city/'
+    | '/{-$locale}/events/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}'
     | '/{-$locale}/$'
     | '/{-$locale}/logout'
     | '/{-$locale}/login'
+    | '/{-$locale}/developers'
+    | '/{-$locale}/map'
+    | '/{-$locale}/map-editor'
+    | '/{-$locale}/privacy-policy'
+    | '/{-$locale}/sponsors'
+    | '/{-$locale}/support-us'
+    | '/{-$locale}/terms-of-use'
     | '/{-$locale}/warmind/$'
     | '/{-$locale}/clubs/$id'
+    | '/{-$locale}/users/$id'
+    | '/{-$locale}/clubs'
+    | '/{-$locale}/events'
+    | '/{-$locale}/search'
+    | '/{-$locale}/users'
+    | '/{-$locale}/clubs/city/$citySlug'
+    | '/{-$locale}/events/$id/apply'
+    | '/{-$locale}/events/$id/claim'
+    | '/{-$locale}/clubs/city'
+    | '/{-$locale}/events/$id'
   id:
     | '__root__'
     | '/{-$locale}'
@@ -117,8 +331,26 @@ export interface FileRouteTypes {
     | '/{-$locale}/_public'
     | '/{-$locale}/logout'
     | '/{-$locale}/_auth/login'
+    | '/{-$locale}/_public/developers'
+    | '/{-$locale}/_public/map'
+    | '/{-$locale}/_public/map-editor'
+    | '/{-$locale}/_public/privacy-policy'
+    | '/{-$locale}/_public/sponsors'
+    | '/{-$locale}/_public/support-us'
+    | '/{-$locale}/_public/terms-of-use'
     | '/{-$locale}/warmind/$'
+    | '/{-$locale}/_public/'
     | '/{-$locale}/_public/clubs/$id'
+    | '/{-$locale}/_public/users/$id'
+    | '/{-$locale}/_public/clubs/'
+    | '/{-$locale}/_public/events/'
+    | '/{-$locale}/_public/search/'
+    | '/{-$locale}/_public/users/'
+    | '/{-$locale}/_public/clubs/city/$citySlug'
+    | '/{-$locale}/_public/events/$id/apply'
+    | '/{-$locale}/_public/events/$id/claim'
+    | '/{-$locale}/_public/clubs/city/'
+    | '/{-$locale}/_public/events/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,6 +401,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125AuthLoginRouteImport
       parentRoute: typeof Char123LocaleChar125AuthRoute
     }
+    '/{-$locale}/_public/': {
+      id: '/{-$locale}/_public/'
+      path: '/'
+      fullPath: '/{-$locale}/'
+      preLoaderRoute: typeof Char123LocaleChar125PublicIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/developers': {
+      id: '/{-$locale}/_public/developers'
+      path: '/developers'
+      fullPath: '/{-$locale}/developers'
+      preLoaderRoute: typeof Char123LocaleChar125PublicDevelopersRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/map': {
+      id: '/{-$locale}/_public/map'
+      path: '/map'
+      fullPath: '/{-$locale}/map'
+      preLoaderRoute: typeof Char123LocaleChar125PublicMapRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/map-editor': {
+      id: '/{-$locale}/_public/map-editor'
+      path: '/map-editor'
+      fullPath: '/{-$locale}/map-editor'
+      preLoaderRoute: typeof Char123LocaleChar125PublicMapEditorRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/privacy-policy': {
+      id: '/{-$locale}/_public/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/{-$locale}/privacy-policy'
+      preLoaderRoute: typeof Char123LocaleChar125PublicPrivacyPolicyRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/sponsors': {
+      id: '/{-$locale}/_public/sponsors'
+      path: '/sponsors'
+      fullPath: '/{-$locale}/sponsors'
+      preLoaderRoute: typeof Char123LocaleChar125PublicSponsorsRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/support-us': {
+      id: '/{-$locale}/_public/support-us'
+      path: '/support-us'
+      fullPath: '/{-$locale}/support-us'
+      preLoaderRoute: typeof Char123LocaleChar125PublicSupportUsRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/terms-of-use': {
+      id: '/{-$locale}/_public/terms-of-use'
+      path: '/terms-of-use'
+      fullPath: '/{-$locale}/terms-of-use'
+      preLoaderRoute: typeof Char123LocaleChar125PublicTermsOfUseRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
     '/{-$locale}/warmind/$': {
       id: '/{-$locale}/warmind/$'
       path: '/warmind/$'
@@ -176,11 +464,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125WarmindSplatRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/_public/clubs/': {
+      id: '/{-$locale}/_public/clubs/'
+      path: '/clubs'
+      fullPath: '/{-$locale}/clubs/'
+      preLoaderRoute: typeof Char123LocaleChar125PublicClubsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
     '/{-$locale}/_public/clubs/$id': {
       id: '/{-$locale}/_public/clubs/$id'
       path: '/clubs/$id'
       fullPath: '/{-$locale}/clubs/$id'
       preLoaderRoute: typeof Char123LocaleChar125PublicClubsIdRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/events/': {
+      id: '/{-$locale}/_public/events/'
+      path: '/events'
+      fullPath: '/{-$locale}/events/'
+      preLoaderRoute: typeof Char123LocaleChar125PublicEventsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/search/': {
+      id: '/{-$locale}/_public/search/'
+      path: '/search'
+      fullPath: '/{-$locale}/search/'
+      preLoaderRoute: typeof Char123LocaleChar125PublicSearchIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/users/': {
+      id: '/{-$locale}/_public/users/'
+      path: '/users'
+      fullPath: '/{-$locale}/users/'
+      preLoaderRoute: typeof Char123LocaleChar125PublicUsersIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/users/$id': {
+      id: '/{-$locale}/_public/users/$id'
+      path: '/users/$id'
+      fullPath: '/{-$locale}/users/$id'
+      preLoaderRoute: typeof Char123LocaleChar125PublicUsersIdRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/clubs/city/': {
+      id: '/{-$locale}/_public/clubs/city/'
+      path: '/clubs/city'
+      fullPath: '/{-$locale}/clubs/city/'
+      preLoaderRoute: typeof Char123LocaleChar125PublicClubsCityIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/clubs/city/$citySlug': {
+      id: '/{-$locale}/_public/clubs/city/$citySlug'
+      path: '/clubs/city/$citySlug'
+      fullPath: '/{-$locale}/clubs/city/$citySlug'
+      preLoaderRoute: typeof Char123LocaleChar125PublicClubsCityCitySlugRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/events/$id/': {
+      id: '/{-$locale}/_public/events/$id/'
+      path: '/events/$id'
+      fullPath: '/{-$locale}/events/$id/'
+      preLoaderRoute: typeof Char123LocaleChar125PublicEventsIdIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/events/$id/apply': {
+      id: '/{-$locale}/_public/events/$id/apply'
+      path: '/events/$id/apply'
+      fullPath: '/{-$locale}/events/$id/apply'
+      preLoaderRoute: typeof Char123LocaleChar125PublicEventsIdApplyRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/events/$id/claim': {
+      id: '/{-$locale}/_public/events/$id/claim'
+      path: '/events/$id/claim'
+      fullPath: '/{-$locale}/events/$id/claim'
+      preLoaderRoute: typeof Char123LocaleChar125PublicEventsIdClaimRouteImport
       parentRoute: typeof Char123LocaleChar125PublicRoute
     }
   }
@@ -201,13 +559,65 @@ const Char123LocaleChar125AuthRouteWithChildren =
   )
 
 interface Char123LocaleChar125PublicRouteChildren {
+  Char123LocaleChar125PublicDevelopersRoute: typeof Char123LocaleChar125PublicDevelopersRoute
+  Char123LocaleChar125PublicMapRoute: typeof Char123LocaleChar125PublicMapRoute
+  Char123LocaleChar125PublicMapEditorRoute: typeof Char123LocaleChar125PublicMapEditorRoute
+  Char123LocaleChar125PublicPrivacyPolicyRoute: typeof Char123LocaleChar125PublicPrivacyPolicyRoute
+  Char123LocaleChar125PublicSponsorsRoute: typeof Char123LocaleChar125PublicSponsorsRoute
+  Char123LocaleChar125PublicSupportUsRoute: typeof Char123LocaleChar125PublicSupportUsRoute
+  Char123LocaleChar125PublicTermsOfUseRoute: typeof Char123LocaleChar125PublicTermsOfUseRoute
+  Char123LocaleChar125PublicIndexRoute: typeof Char123LocaleChar125PublicIndexRoute
   Char123LocaleChar125PublicClubsIdRoute: typeof Char123LocaleChar125PublicClubsIdRoute
+  Char123LocaleChar125PublicUsersIdRoute: typeof Char123LocaleChar125PublicUsersIdRoute
+  Char123LocaleChar125PublicClubsIndexRoute: typeof Char123LocaleChar125PublicClubsIndexRoute
+  Char123LocaleChar125PublicEventsIndexRoute: typeof Char123LocaleChar125PublicEventsIndexRoute
+  Char123LocaleChar125PublicSearchIndexRoute: typeof Char123LocaleChar125PublicSearchIndexRoute
+  Char123LocaleChar125PublicUsersIndexRoute: typeof Char123LocaleChar125PublicUsersIndexRoute
+  Char123LocaleChar125PublicClubsCityCitySlugRoute: typeof Char123LocaleChar125PublicClubsCityCitySlugRoute
+  Char123LocaleChar125PublicEventsIdApplyRoute: typeof Char123LocaleChar125PublicEventsIdApplyRoute
+  Char123LocaleChar125PublicEventsIdClaimRoute: typeof Char123LocaleChar125PublicEventsIdClaimRoute
+  Char123LocaleChar125PublicClubsCityIndexRoute: typeof Char123LocaleChar125PublicClubsCityIndexRoute
+  Char123LocaleChar125PublicEventsIdIndexRoute: typeof Char123LocaleChar125PublicEventsIdIndexRoute
 }
 
 const Char123LocaleChar125PublicRouteChildren: Char123LocaleChar125PublicRouteChildren =
   {
+    Char123LocaleChar125PublicDevelopersRoute:
+      Char123LocaleChar125PublicDevelopersRoute,
+    Char123LocaleChar125PublicMapRoute: Char123LocaleChar125PublicMapRoute,
+    Char123LocaleChar125PublicMapEditorRoute:
+      Char123LocaleChar125PublicMapEditorRoute,
+    Char123LocaleChar125PublicPrivacyPolicyRoute:
+      Char123LocaleChar125PublicPrivacyPolicyRoute,
+    Char123LocaleChar125PublicSponsorsRoute:
+      Char123LocaleChar125PublicSponsorsRoute,
+    Char123LocaleChar125PublicSupportUsRoute:
+      Char123LocaleChar125PublicSupportUsRoute,
+    Char123LocaleChar125PublicTermsOfUseRoute:
+      Char123LocaleChar125PublicTermsOfUseRoute,
+    Char123LocaleChar125PublicIndexRoute: Char123LocaleChar125PublicIndexRoute,
     Char123LocaleChar125PublicClubsIdRoute:
       Char123LocaleChar125PublicClubsIdRoute,
+    Char123LocaleChar125PublicUsersIdRoute:
+      Char123LocaleChar125PublicUsersIdRoute,
+    Char123LocaleChar125PublicClubsIndexRoute:
+      Char123LocaleChar125PublicClubsIndexRoute,
+    Char123LocaleChar125PublicEventsIndexRoute:
+      Char123LocaleChar125PublicEventsIndexRoute,
+    Char123LocaleChar125PublicSearchIndexRoute:
+      Char123LocaleChar125PublicSearchIndexRoute,
+    Char123LocaleChar125PublicUsersIndexRoute:
+      Char123LocaleChar125PublicUsersIndexRoute,
+    Char123LocaleChar125PublicClubsCityCitySlugRoute:
+      Char123LocaleChar125PublicClubsCityCitySlugRoute,
+    Char123LocaleChar125PublicEventsIdApplyRoute:
+      Char123LocaleChar125PublicEventsIdApplyRoute,
+    Char123LocaleChar125PublicEventsIdClaimRoute:
+      Char123LocaleChar125PublicEventsIdClaimRoute,
+    Char123LocaleChar125PublicClubsCityIndexRoute:
+      Char123LocaleChar125PublicClubsCityIndexRoute,
+    Char123LocaleChar125PublicEventsIdIndexRoute:
+      Char123LocaleChar125PublicEventsIdIndexRoute,
   }
 
 const Char123LocaleChar125PublicRouteWithChildren =
