@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, instagramPageSelection } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { bustRouteCache } from "../../lib/cache-bust";
 import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { env } from "../../lib/env";
@@ -116,6 +117,9 @@ async function connectPageToClub({
 			updatedAt: new Date().toISOString(),
 		})
 		.where(eq(club.id, clubId));
+
+	// The OAuth callback is a GET redirect with no route-level bustCache.
+	await bustRouteCache(["clubs", `club:${clubId}`]);
 
 	await logClubAudit({
 		clubId,
