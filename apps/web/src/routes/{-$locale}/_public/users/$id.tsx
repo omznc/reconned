@@ -5,7 +5,8 @@ import * as z from "zod";
 import { ErrorPage } from "@/components/error-page";
 import { LoadingPage } from "@/components/loading-page";
 import { NotFoundPage } from "@/components/not-found-page";
-import { UserOverview } from "@/components/overviews/user-overview";
+import { USER_TABS } from "@/components/profile/profile-config";
+import { UserProfile } from "@/components/profile/user-profile";
 import apiServer from "@/lib/api/api";
 import { buildNotFoundHead } from "@/lib/not-found";
 import { buildSeoHead } from "@/lib/seo";
@@ -37,6 +38,7 @@ const getUserPageFn = createServerFn({ method: "GET" })
 	});
 
 export const Route = createFileRoute("/{-$locale}/_public/users/$id")({
+	validateSearch: z.object({ tab: z.enum(USER_TABS).optional().catch(undefined) }),
 	loader: async ({ params, context }) => {
 		const page = await getUserPageFn({ data: { id: params.id, locale: context.locale } });
 		if (page.kind === "not-found") {
@@ -58,14 +60,11 @@ export const Route = createFileRoute("/{-$locale}/_public/users/$id")({
 function UserPage() {
 	const t = useExtracted();
 	const page = Route.useLoaderData();
+	const { tab } = Route.useSearch();
 
 	if (page.kind !== "ok") {
 		return <ErrorPage title={t("User not found.")} />;
 	}
 
-	return (
-		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
-			<UserOverview user={page.user} reviews={page.reviews} />
-		</div>
-	);
+	return <UserProfile user={page.user} reviews={page.reviews} tab={tab ?? "overview"} />;
 }

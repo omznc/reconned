@@ -68,13 +68,60 @@ async function fetchClubResponses(club: Club, signedIn: boolean, reviewsEnabled:
 			? apiServer.GET("/api/reviews/{type}/{id}", { params: { path: { type: "club", id: club.id } } })
 			: empty,
 		isFeatureEnabled("FAQ_SCHEMA"),
+		apiServer.GET("/api/clubs/{id}/public-stats", { params: { path } }),
+		apiServer.GET("/api/clubs/{id}/public-rules", { params: { path } }),
+		apiServer.GET("/api/clubs/{clubId}/events", {
+			params: {
+				path: { clubId: club.id },
+				query: { perPage: 50, sortBy: "dateStart", sortOrder: "desc" },
+			},
+		}),
 	]);
+}
+
+type ClubEvents = ApiResponse<"/api/clubs/{clubId}/events", "get">;
+
+function clubEventFields(data: ClubEvents | null | undefined) {
+	// Only the fields the page shows: the full event holds JSON columns that the server function cannot serialize.
+	const events = [...(data?.events || [])].reverse().map((event) => ({
+		id: event.id,
+		slug: event.slug,
+		name: event.name,
+		dateStart: event.dateStart,
+		dateEnd: event.dateEnd,
+		dateRegistrationsClose: event.dateRegistrationsClose,
+		location: event.location,
+		placesLeft: event.placesLeft,
+		capacity: event.capacity,
+		maxAttendees: event.maxAttendees,
+		registrationState: event.registrationState,
+		price: event.price,
+		currency: event.currency,
+	}));
+	const now = Date.now();
+	return {
+		events,
+		upcomingEvents: events.filter((event) => new Date(event.dateEnd).getTime() >= now),
+		eventsTotal: data?.pagination.total ?? events.length,
+	};
 }
 
 async function fetchClubExtras(club: Club, signedIn: boolean) {
 	const reviewsEnabled = await isFeatureEnabled("REVIEWS");
-	const [membership, hasOwner, members, posts, alliances, instagram, invites, reviews, faqEnabled] =
-		await fetchClubResponses(club, signedIn, reviewsEnabled);
+	const [
+		membership,
+		hasOwner,
+		members,
+		posts,
+		alliances,
+		instagram,
+		invites,
+		reviews,
+		faqEnabled,
+		stats,
+		rules,
+		events,
+	] = await fetchClubResponses(club, signedIn, reviewsEnabled);
 
 	return {
 		...membershipInfo(membership.data),
@@ -86,6 +133,9 @@ async function fetchClubExtras(club: Club, signedIn: boolean) {
 		invites: clubInvites(invites.data, club.id),
 		reviews: reviewsEnabled ? reviews.data?.reviews : undefined,
 		faqEnabled,
+		stats: stats.data ?? null,
+		rules: rules.data?.rules || [],
+		...clubEventFields(events.data),
 	};
 }
 
