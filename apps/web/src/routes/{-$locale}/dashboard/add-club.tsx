@@ -9,6 +9,7 @@ import { NotFoundPage } from "@/components/not-found-page";
 import { Button } from "@/components/ui/button";
 import { Link, redirect } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
+import { loginHrefFor } from "@/lib/safe-redirect";
 import { ClubInfoForm } from "@/routes/{-$locale}/dashboard/$clubId/club/information/-components/club-info.form";
 import { RequestAccessForm } from "@/routes/{-$locale}/dashboard/add-club/-components/request-access.form";
 
@@ -18,9 +19,9 @@ const getCountriesFn = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const Route = createFileRoute("/{-$locale}/dashboard/add-club")({
-	beforeLoad: ({ context }) => {
+	beforeLoad: ({ context, location }) => {
 		if (!context.user) {
-			throw redirect({ href: "/login?redirectTo=/dashboard/add-club", locale: context.locale });
+			throw redirect({ href: loginHrefFor(location), locale: context.locale });
 		}
 	},
 	validateSearch: z.object({ type: z.coerce.string().optional() }),

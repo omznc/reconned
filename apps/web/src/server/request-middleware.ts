@@ -26,7 +26,7 @@ const SERVED_WELL_KNOWN_PREFIXES = ["/.well-known/agent-skills/"];
 const MARKDOWN_ROUTES = new Set(["/auth.md", "/AGENTS.md", "/sitemap.md"]);
 
 /** Prefixes owned by the framework, the dev server, the backend or the PostHog proxy. */
-const PASSTHROUGH_PREFIXES = ["/api", "/_", "/@", "/src/", "/node_modules/", "/warmind"];
+const PASSTHROUGH_PREFIXES = ["/api", "/_", "/@", "/src/", "/node_modules/", "/warmind", "/markdown"];
 
 const LEGACY_PREFIXES: Record<string, string> = { u: "users", e: "events", c: "clubs" };
 const LEGACY_PATH = new RegExp(`^(?:/(${routing.locales.join("|")}))?/([uec])(/.*)?$`);
@@ -133,10 +133,14 @@ async function markdownResponse(request: Request, url: URL): Promise<Response | 
 	}
 	const stripped = pathname.slice(0, -3);
 	const source = `${stripped === "/index" ? "/" : stripped}${url.search}`;
-	const markdownUrl = new URL("/markdown", url);
+	const markdownUrl = new URL("/markdown", `http://localhost:${process.env.PORT || url.port || "3000"}`);
 	markdownUrl.searchParams.set("source", source);
-	const headers = new Headers(request.headers);
-	headers.set("x-md-source", source);
+	// Only what the markdown route reads: no cookies or auth headers reach the self-fetch.
+	const headers = new Headers({
+		host: request.headers.get("host") ?? url.host,
+		"accept-language": request.headers.get("accept-language") ?? "",
+		"x-md-source": source,
+	});
 	// shortcut: self-fetch instead of an internal rewrite, replace once the /markdown server route can be called in-process
 	return await fetch(markdownUrl, { headers });
 }
@@ -150,7 +154,7 @@ function dashboardGate(request: Request, url: URL): Response | undefined {
 		return undefined;
 	}
 	const loginUrl = new URL("/login", url);
-	loginUrl.searchParams.set("redirectTo", url.pathname);
+	loginUrl.searchParams.set("redirectTo", `${url.pathname}${url.search}`);
 	return redirectTo(loginUrl, 307);
 }
 

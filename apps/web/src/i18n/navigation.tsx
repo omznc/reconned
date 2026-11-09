@@ -41,6 +41,10 @@ export function getPathname({ href, locale }: { href: Href; locale: string }): s
 		return value;
 	}
 	const [path = "", ...rest] = value.split(/(?=[?#])/);
+	// Already prefixed (e.g. `redirectTo=/en/dashboard` from the middleware): do not prefix twice.
+	if (isLocale(path.split("/")[1])) {
+		return value;
+	}
 	const suffix = rest.join("");
 	return `/${locale}${path === "/" ? "" : path}${suffix}`;
 }

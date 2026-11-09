@@ -110,7 +110,7 @@ export const Route = createFileRoute("/{-$locale}/_public/events/$id/apply")({
 	beforeLoad: ({ context, params }) => {
 		if (!context.user) {
 			throw redirect({
-				href: `/login?redirectTo=${env.NEXT_PUBLIC_WEB_URL}/events/${params.id}/apply`,
+				href: `/login?redirectTo=${encodeURIComponent(`/events/${params.id}/apply`)}`,
 				locale: context.locale,
 			});
 		}

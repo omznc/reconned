@@ -11,6 +11,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
+import { sanitizeRedirectTo } from "@/lib/safe-redirect";
 
 function TwoFactorPage() {
 	return (
@@ -26,7 +27,8 @@ function TwoFactorPageContent() {
 	const router = useRouter();
 	const t = useExtracted();
 
-	const [redirectTo] = useQueryState("redirectTo");
+	const [rawRedirectTo] = useQueryState("redirectTo");
+	const redirectTo = sanitizeRedirectTo(rawRedirectTo) ?? null;
 	const [message, setMessage] = useQueryState("message");
 
 	useEffect(() => {

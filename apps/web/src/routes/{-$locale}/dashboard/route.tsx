@@ -12,6 +12,7 @@ import { CommandMenu, CommandMenuProvider } from "@/components/sidebar/command-m
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { redirect } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
+import { loginHrefFor } from "@/lib/safe-redirect";
 
 // Both counts only drive badges, so a failed count endpoint degrades to "nothing to show".
 async function fetchInvitesCount(): Promise<number> {
@@ -47,9 +48,9 @@ const getDashboardShellFn = createServerFn({ method: "GET" }).handler(async () =
 });
 
 export const Route = createFileRoute("/{-$locale}/dashboard")({
-	beforeLoad: ({ context }) => {
+	beforeLoad: ({ context, location }) => {
 		if (!context.user) {
-			throw redirect({ href: "/login?redirectTo=/dashboard", locale: context.locale });
+			throw redirect({ href: loginHrefFor(location), locale: context.locale });
 		}
 		return { user: context.user };
 	},

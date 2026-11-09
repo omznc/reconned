@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { env } from "@/lib/env";
+import { sanitizeRedirectTo } from "@/lib/safe-redirect";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/{-$locale}/_auth/login")({
@@ -49,7 +50,8 @@ function LoginPageContent() {
 		clearOnDefault: true,
 		shallow: true,
 	});
-	const [redirectTo] = useQueryState("redirectTo");
+	const [rawRedirectTo] = useQueryState("redirectTo");
+	const redirectTo = sanitizeRedirectTo(rawRedirectTo) ?? null;
 	const [message, setMessage] = useQueryState("message");
 	const [mcp] = useQueryState("mcp");
 	const [lastMethod, setLastMethod] = useState<string | null>(null);

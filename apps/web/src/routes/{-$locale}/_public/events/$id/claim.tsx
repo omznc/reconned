@@ -7,7 +7,6 @@ import { LoadingPage } from "@/components/loading-page";
 import { NotFoundPage } from "@/components/not-found-page";
 import { redirect } from "@/i18n/navigation";
 import apiServer from "@/lib/api/api";
-import { env } from "@/lib/env";
 import { ClaimPlaceForm } from "@/routes/{-$locale}/_public/events/$id/-components/claim-place-form";
 
 const getClaimEventNameFn = createServerFn({ method: "GET" })
@@ -30,9 +29,7 @@ export const Route = createFileRoute("/{-$locale}/_public/events/$id/claim")({
 		// The link keeps its code across the sign-in, so nobody has to dig the email back out.
 		if (search.token && !context.user) {
 			throw redirect({
-				href: `/login?redirectTo=${encodeURIComponent(
-					`${env.NEXT_PUBLIC_WEB_URL}/events/${params.id}/claim?token=${search.token}`,
-				)}`,
+				href: `/login?redirectTo=${encodeURIComponent(`/events/${params.id}/claim?token=${search.token}`)}`,
 				locale: context.locale,
 			});
 		}

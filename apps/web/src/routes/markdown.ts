@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import TurndownService from "turndown";
+import { resolveMarkdownSource } from "@/lib/server/markdown-source";
 
 const turndownService = new TurndownService({
 	bulletListMarker: "-",
@@ -54,9 +55,6 @@ function extractContent(html: string): string {
 async function GET({ request }: { request: Request }) {
 	const requestUrl = new URL(request.url);
 	const source = requestUrl.searchParams.get("source") ?? request.headers.get("x-md-source");
-	if (!source?.startsWith("/") || source.startsWith("/api") || source.startsWith("/_next")) {
-		return new Response("Invalid path", { status: 400 });
-	}
 
 	// Self-fetch renders the page through the full stack (locale negotiation
 	// included). Aimed at the local host rather than `request.url`: the
@@ -69,7 +67,10 @@ async function GET({ request }: { request: Request }) {
 	// `PORT` is what the container sets; `requestUrl.port` covers dev, where the dev server
 	// may pick another port without exporting `PORT`.
 	const port = process.env.PORT || requestUrl.port || "3000";
-	const sourceUrl = new URL(source, `http://localhost:${port}`);
+	const sourceUrl = resolveMarkdownSource(source, `http://localhost:${port}`);
+	if (!sourceUrl) {
+		return new Response("Invalid path", { status: 400 });
+	}
 	const sourceResponse = await fetch(sourceUrl, {
 		headers: {
 			accept: "text/html",

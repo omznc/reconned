@@ -1,21 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const POSTHOG_API_HOST = "eu.i.posthog.com";
-const POSTHOG_ASSETS_HOST = "eu-assets.i.posthog.com";
-const DROPPED_REQUEST_HEADERS = ["host", "cookie", "connection", "content-length"];
+import { buildPosthogTarget, posthogRequestHeaders } from "@/lib/server/posthog-proxy";
+
 const DROPPED_RESPONSE_HEADERS = ["content-encoding", "content-length", "transfer-encoding", "connection"];
 
 /** Reverse proxy for PostHog, mounted at `/warmind` (`api_host` in `lib/consent.ts`) so ad blockers skip it. */
 async function proxyToPosthog(request: Request, splat: string) {
 	const url = new URL(request.url);
-	const isAsset = splat === "static" || splat.startsWith("static/");
-	const target = new URL(`/${splat}${url.search}`, `https://${isAsset ? POSTHOG_ASSETS_HOST : POSTHOG_API_HOST}`);
-
-	const headers = new Headers(request.headers);
-	for (const name of DROPPED_REQUEST_HEADERS) {
-		headers.delete(name);
+	const target = buildPosthogTarget(splat, url.search);
+	if (!target) {
+		return new Response("Not Found", { status: 404 });
 	}
-	headers.set("host", target.host);
+	const headers = posthogRequestHeaders(request.headers, target);
 
 	const hasBody = request.method !== "GET" && request.method !== "HEAD";
 	const upstream = await fetch(target, {
