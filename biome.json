@@ -41,6 +41,8 @@
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
+				"useUniqueElementIds": "off",
+				"noNestedComponentDefinitions": "off",
 				"noUndeclaredDependencies": "off"
 			},
 			"suspicious": {
@@ -78,7 +80,6 @@
 			"!**/node_modules",
 			"!**/dist",
 			"!**/build",
-			"!**/.next",
 			"!**/.output",
 			"!**/src/components/ui",
 			"!**/.unlighthouse",

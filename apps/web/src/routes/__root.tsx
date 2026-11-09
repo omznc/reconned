@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { IntlProvider } from "use-intl";
 import { NotFoundPage } from "@/components/not-found-page";
 import { getLocaleFromPathname } from "@/i18n/messages";
+import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
 import appCss from "@/styles.css?url";
 
 export const Route = createRootRoute({
@@ -37,7 +38,7 @@ function RootNotFound() {
 		return <p>Page not found</p>;
 	}
 	return (
-		<IntlProvider locale={getLocaleFromPathname(pathname)} messages={messages}>
+		<IntlProvider locale={getLocaleFromPathname(pathname)} messages={messages} timeZone={DEFAULT_TIME_ZONE}>
 			<NotFoundPage />
 		</IntlProvider>
 	);

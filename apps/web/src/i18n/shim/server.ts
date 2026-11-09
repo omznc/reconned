@@ -2,6 +2,7 @@ import { createTranslator } from "use-intl/core";
 import type { _useExtracted } from "use-intl/react";
 import { getMessages as loadMessages, toLocale } from "@/i18n/messages";
 import { getRequestLocale } from "@/i18n/request-locale";
+import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
 
 type Options = { locale?: string };
 
@@ -11,7 +12,7 @@ async function resolveLocale(options?: Options) {
 
 export async function getTranslations(options?: Options) {
 	const locale = await resolveLocale(options);
-	return createTranslator({ locale, messages: await loadMessages(locale) });
+	return createTranslator({ locale, messages: await loadMessages(locale), timeZone: DEFAULT_TIME_ZONE });
 }
 
 /** Type-only declaration; the Vite plugin rewrites `getExtracted()` to `getTranslations()`. */

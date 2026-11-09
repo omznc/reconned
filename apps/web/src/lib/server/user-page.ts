@@ -90,11 +90,8 @@ function buildDescription(user: UserProfile, clubNames: string[]) {
 	return `${user.name}${user.callsign ? ` (${user.callsign})` : ""} is an airsoft player${user.location ? ` from ${user.location}` : ""}${clubNames.length > 0 ? `, member of ${clubNames.join(", ")}` : ""}.`;
 }
 
-export function buildUserSeo(user: UserProfile, locale: string, schemas: string[]): SeoInput {
-	const pathPrefix = "/users";
-	const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
-	const clubNames = user.clubMembership?.map((m) => m.club.name).filter(Boolean) || [];
-	const keywords = [
+function buildUserKeywords(user: UserProfile, clubNames: string[]) {
+	return [
 		"airsoft player",
 		"airsoft gamer",
 		"verified airsoft player",
@@ -109,11 +106,19 @@ export function buildUserSeo(user: UserProfile, locale: string, schemas: string[
 	]
 		.filter(Boolean)
 		.join(", ");
+}
+
+export function buildUserSeo(user: UserProfile, locale: string, schemas: string[]): SeoInput {
+	const pathPrefix = "/users";
+	const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
+	const clubNames = user.clubMembership?.map((m) => m.club.name).filter(Boolean) || [];
+	const keywords = buildUserKeywords(user, clubNames);
 
 	return {
 		title: `${user.name} - RECONNED`,
 		description: buildDescription(user, clubNames),
 		keywords,
+		type: "profile",
 		canonical: constructCanonicalUrl(baseUrl, `${pathPrefix}/${user.slug || user.id}`, locale),
 		languages: generateHreflangAlternatesForSluggableEntity(
 			baseUrl,

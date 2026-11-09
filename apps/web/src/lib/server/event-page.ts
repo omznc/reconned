@@ -204,6 +204,23 @@ export async function buildSchemas(event: EventWithClub, locale: string, reviews
 		.map((schema) => JSON.stringify(schema));
 }
 
+function buildEventKeywords(event: EventWithClub) {
+	return [
+		"airsoft event",
+		"airsoft match",
+		"airsoft tournament",
+		"airsoft game",
+		"airsoft event BiH",
+		"airsoft event Bosnia",
+		event.name,
+		event.club?.name ? `airsoft ${event.club.name}` : null,
+		event.location || null,
+		`airsoft event ${event.location || ""}`,
+	]
+		.filter(Boolean)
+		.join(", ");
+}
+
 export async function buildEventSeo(event: EventWithClub, locale: string, schemas: string[]): Promise<SeoInput> {
 	const t = await getExtracted({ locale });
 	const pathPrefix = "/events";
@@ -222,20 +239,7 @@ export async function buildEventSeo(event: EventWithClub, locale: string, schema
 			? `${event.description.slice(0, 155).trim()}...`
 			: `${event.name} - ${t("airsoft event")} ${t("organized by")} ${clubName}. ${t("Date")}: ${eventDate}. ${t("Register now on RECONNED.")}`;
 
-	const keywords = [
-		"airsoft event",
-		"airsoft match",
-		"airsoft tournament",
-		"airsoft game",
-		"airsoft event BiH",
-		"airsoft event Bosnia",
-		event.name,
-		club?.name ? `airsoft ${club.name}` : null,
-		event.location || null,
-		`airsoft event ${event.location || ""}`,
-	]
-		.filter(Boolean)
-		.join(", ");
+	const keywords = buildEventKeywords(event);
 
 	return {
 		title: `${event.name} - RECONNED`,
@@ -249,7 +253,7 @@ export async function buildEventSeo(event: EventWithClub, locale: string, schema
 			locale,
 			event.slug || undefined,
 		),
-		image: event.image ? { url: event.image, alt: event.name } : undefined,
+		image: event.image ? { url: event.image, alt: event.name, width: 1200, height: 630 } : undefined,
 		schemas,
 	};
 }

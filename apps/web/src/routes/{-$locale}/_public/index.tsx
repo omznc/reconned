@@ -54,86 +54,58 @@ import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import { HomeCommunityStats } from "@/routes/{-$locale}/_public/-components/home-community-stats";
 import { MessageHandler } from "@/routes/{-$locale}/_public/-components/message-handler";
 
+function withClub<T extends { club?: unknown }>(events: T[] | undefined) {
+	return (events ?? []).map((event) => ({ ...event, club: event.club || null }));
+}
+
+async function fetchHomeData(month: string | undefined, signedIn: boolean) {
+	const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
+	const startDate = startOfMonth(subMonths(currentDate, 1));
+	const endDate = endOfMonth(addMonths(currentDate, 1));
+
+	const [dashboardClubsResult, calendarEventsResult, upcomingEventsResult, publicStatsResult] = await Promise.all([
+		signedIn ? apiServer.GET("/api/dashboard/clubs") : Promise.resolve({ data: null, error: null }),
+		apiServer.GET("/api/events/calendar", {
+			params: { query: { startDate: startDate.toISOString(), endDate: endDate.toISOString() } },
+		}),
+		apiServer.GET("/api/events/upcoming", { params: { query: { limit: 3 } } }),
+		apiServer.GET("/api/public/stats"),
+	]);
+
+	const managedClubs = (dashboardClubsResult.data?.clubs ?? []).filter(
+		(club) => club.membershipRole === "MANAGER" || club.membershipRole === "CLUB_OWNER",
+	);
+
+	return {
+		publicStats: publicStatsResult.data?.stats ?? { clubs: 0, events: 0, players: 0 },
+		events: withClub(calendarEventsResult.data?.events),
+		upcomingEvents: withClub(upcomingEventsResult.data?.events),
+		managedClubs,
+	};
+}
+
+async function buildHomeSeo(locale: string): Promise<SeoInput> {
+	const t = await getExtracted({ locale });
+	const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
+	return {
+		title: t("RECONNED - Airsoft clubs, events, and players"),
+		description: t("The first universal platform for airsoft clubs, events, and players."),
+		keywords: t(
+			"airsoft platform, airsoft community, airsoft events, airsoft clubs, airsoft players, airsoft BiH, airsoft Bosnia, find airsoft events, join airsoft clubs, airsoft community platform",
+		)
+			.split(",")
+			.map((keyword: string) => keyword.trim())
+			.join(", "),
+		canonical: constructCanonicalUrl(baseUrl, "/", locale),
+		languages: generatePageLanguages(baseUrl, "/", locale),
+	};
+}
+
 const getHomeFn = createServerFn({ method: "GET" })
 	.validator(z.object({ month: z.string().optional(), locale: z.string(), signedIn: z.boolean() }))
-	.handler(async ({ data }) => {
-		const { month, locale, signedIn } = data;
-		const currentDate = month ? parseDateFns(month, "yyyy-MM", new Date()) : new Date();
-		const startDate = startOfMonth(subMonths(currentDate, 1));
-		const endDate = endOfMonth(addMonths(currentDate, 1));
-
-		const [dashboardClubsResult, calendarEventsResult, upcomingEventsResult, publicStatsResult] = await Promise.all(
-			[
-				signedIn
-					? apiServer.GET("/api/dashboard/clubs")
-					: Promise.resolve({
-							data: null,
-							error: null,
-						}),
-				apiServer.GET("/api/events/calendar", {
-					params: {
-						query: {
-							startDate: startDate.toISOString(),
-							endDate: endDate.toISOString(),
-						},
-					},
-				}),
-				apiServer.GET("/api/events/upcoming", {
-					params: {
-						query: {
-							limit: 3,
-						},
-					},
-				}),
-				apiServer.GET("/api/public/stats"),
-			],
-		);
-
-		const publicStats = publicStatsResult.data?.stats ?? {
-			clubs: 0,
-			events: 0,
-			players: 0,
-		};
-
-		const events =
-			calendarEventsResult.error || !calendarEventsResult.data
-				? []
-				: calendarEventsResult.data.events.map((event) => ({
-						...event,
-						club: event.club || null,
-					}));
-
-		const upcomingEvents =
-			upcomingEventsResult.error || !upcomingEventsResult.data
-				? []
-				: upcomingEventsResult.data.events.map((event) => ({
-						...event,
-						club: event.club || null,
-					}));
-
-		const managedClubs =
-			dashboardClubsResult.error || !dashboardClubsResult.data
-				? []
-				: dashboardClubsResult.data.clubs.filter(
-						(club) => club.membershipRole === "MANAGER" || club.membershipRole === "CLUB_OWNER",
-					);
-
-		const t = await getExtracted({ locale });
-		const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
-		const seo: SeoInput = {
-			title: t("RECONNED - Airsoft clubs, events, and players"),
-			description: t("The first universal platform for airsoft clubs, events, and players."),
-			keywords: t(
-				"airsoft platform, airsoft community, airsoft events, airsoft clubs, airsoft players, airsoft BiH, airsoft Bosnia, find airsoft events, join airsoft clubs, airsoft community platform",
-			)
-				.split(",")
-				.map((keyword: string) => keyword.trim())
-				.join(", "),
-			canonical: constructCanonicalUrl(baseUrl, "/", locale),
-			languages: generatePageLanguages(baseUrl, "/", locale),
-		};
-
-		return { publicStats, events: asJson(events), upcomingEvents: asJson(upcomingEvents), managedClubs, seo };
+	.handler(async ({ data: { month, locale, signedIn } }) => {
+		const [home, seo] = await Promise.all([fetchHomeData(month, signedIn), buildHomeSeo(locale)]);
+		return { ...home, events: asJson(home.events), upcomingEvents: asJson(home.upcomingEvents), seo };
 	});
 
 export const Route = createFileRoute("/{-$locale}/_public/")({

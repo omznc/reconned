@@ -46,5 +46,5 @@
 		"allowImportingTsExtensions": true
 	},
 	"include": ["**/*.ts", "**/*.tsx"],
-	"exclude": ["node_modules", "src/app", "src/proxy.ts", "src/instrumentation.ts", "next.config.ts", ".output", "dist"]
+	"exclude": ["node_modules", ".output", "dist"]
 }

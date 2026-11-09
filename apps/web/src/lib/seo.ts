@@ -4,6 +4,8 @@ export type SeoInput = {
 	title: string;
 	description?: string;
 	keywords?: string;
+	/** Open Graph type. Defaults to `website`. */
+	type?: "website" | "profile" | "article";
 	/** Absolute canonical URL. */
 	canonical?: string;
 	/** hreflang -> absolute URL, from `generatePageLanguages` or `generateHreflangAlternatesForSluggableEntity`. */
@@ -36,7 +38,7 @@ export function buildSeoHead(input: SeoInput) {
 	addMeta("name", "keywords", input.keywords);
 	addMeta("property", "og:title", input.title);
 	addMeta("property", "og:description", input.description);
-	addMeta("property", "og:type", "website");
+	addMeta("property", "og:type", input.type ?? "website");
 	addMeta("property", "og:url", input.canonical);
 	addMeta("property", "og:image", image.url);
 	addMeta("property", "og:image:alt", image.alt);

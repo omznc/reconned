@@ -89,12 +89,30 @@ async function fetchClubExtras(club: Club, signedIn: boolean) {
 	};
 }
 
-function buildOrganizationSchema(club: Club, clubUrl: string, reviews: Reviews | undefined) {
-	let aggregateRating: ReturnType<typeof createAggregateRating> | undefined;
-	if (reviews && reviews.length > 0) {
-		const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
-		aggregateRating = createAggregateRating({ ratingValue: averageRating, ratingCount: reviews.length });
+function clubContactPoint(club: Club) {
+	if (!(club.contactEmail || club.contactPhone)) {
+		return {};
 	}
+	return {
+		contactPoint: removeUndefined({
+			"@type": "ContactPoint",
+			...(club.contactEmail && { email: club.contactEmail }),
+			...(club.contactPhone && { telephone: club.contactPhone }),
+			contactType: "customer service",
+		}),
+	};
+}
+
+function clubAggregateRating(reviews: Reviews | undefined) {
+	if (!reviews || reviews.length === 0) {
+		return undefined;
+	}
+	const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+	return createAggregateRating({ ratingValue: averageRating, ratingCount: reviews.length });
+}
+
+function buildOrganizationSchema(club: Club, clubUrl: string, reviews: Reviews | undefined) {
+	const aggregateRating = clubAggregateRating(reviews);
 
 	return removeUndefined({
 		"@context": "https://schema.org",
@@ -110,16 +128,7 @@ function buildOrganizationSchema(club: Club, clubUrl: string, reviews: Reviews |
 		...(club.location && { address: createPostalAddress({ location: club.location, country: "BA" }) }),
 		...(club.latitude &&
 			club.longitude && { geo: createGeoCoordinates({ latitude: club.latitude, longitude: club.longitude }) }),
-		...(club.contactEmail || club.contactPhone
-			? {
-					contactPoint: removeUndefined({
-						"@type": "ContactPoint",
-						...(club.contactEmail && { email: club.contactEmail }),
-						...(club.contactPhone && { telephone: club.contactPhone }),
-						contactType: "customer service",
-					}),
-				}
-			: {}),
+		...clubContactPoint(club),
 		...(club.website && { sameAs: [club.website] }),
 		...(aggregateRating && { aggregateRating }),
 	});

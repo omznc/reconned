@@ -14,7 +14,7 @@ import { AlertDialogProvider } from "@/components/ui/alert-dialog-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { WebMCP } from "@/components/webmcp";
 import { getMessages, isLocale } from "@/i18n/messages";
-import { routing } from "@/i18n/routing";
+import { DEFAULT_TIME_ZONE, routing } from "@/i18n/routing";
 import { FeatureFlagsProvider } from "@/lib/feature-flags/client";
 import { getFeatureFlagsFn, getSessionFn } from "@/lib/server-fns";
 import { buildSiteSchemas } from "@/lib/site-schema";
@@ -70,7 +70,7 @@ function LocaleLayout() {
 	const { locale } = Route.useRouteContext();
 
 	return (
-		<IntlProvider locale={locale} messages={messages}>
+		<IntlProvider locale={locale} messages={messages} timeZone={DEFAULT_TIME_ZONE}>
 			<PosthogIdentify />
 			<WebMCP />
 			<FontProvider initial="mono">
