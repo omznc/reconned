@@ -183,7 +183,16 @@ export async function getUserPages(accessToken: string): Promise<FacebookPageRes
 		throw apiError.internal(`Failed to get user pages: ${await response.text()}`);
 	}
 
-	const body = (await response.json()) as FacebookPageResponse;
+	const accounts = (await response.json()) as FacebookPageResponse;
+
+	// `/me/accounts` omits Pages that a Business portfolio owns; those need `business_management`.
+	const pages = new Map<string, FacebookPage>();
+	for (const page of [...(accounts.data ?? []), ...(await getBusinessPages(accessToken))]) {
+		if (!pages.has(page.id)) {
+			pages.set(page.id, page);
+		}
+	}
+	const body: FacebookPageResponse = { ...accounts, data: [...pages.values()] };
 
 	// An empty list is a 200, so it is invisible in the call log above — and it is
 	// the single most common way this integration fails. Record enough to tell
@@ -206,6 +215,46 @@ export async function getUserPages(accessToken: string): Promise<FacebookPageRes
 	}
 
 	return body;
+}
+
+type FacebookPage = FacebookPageResponse["data"][number];
+
+interface FacebookBusinessesResponse {
+	data?: Array<{
+		owned_pages?: { data: FacebookPage[] };
+		client_pages?: { data: FacebookPage[] };
+	}>;
+}
+
+async function getBusinessPages(accessToken: string): Promise<FacebookPage[]> {
+	const url = `${GRAPH_API_BASE}/me/businesses`;
+	const pageFields = "id,name,access_token";
+
+	const startTime = Date.now();
+	const response = await fetch(
+		`${url}?fields=owned_pages{${pageFields}},client_pages{${pageFields}}&access_token=${accessToken}`,
+	);
+	const duration = Date.now() - startTime;
+
+	await logExternalApiCall("get_business_pages", url, "GET", response, duration, {
+		has_access_token: Boolean(accessToken),
+	});
+
+	// Without `business_management` this call fails; that is the same as "no business Pages".
+	if (!response.ok) {
+		return [];
+	}
+
+	const body = (await response.json()) as FacebookBusinessesResponse;
+	const pages = new Map<string, FacebookPage>();
+	for (const business of body.data ?? []) {
+		for (const page of [...(business.owned_pages?.data ?? []), ...(business.client_pages?.data ?? [])]) {
+			if (page.access_token) {
+				pages.set(page.id, page);
+			}
+		}
+	}
+	return [...pages.values()];
 }
 
 interface InstagramBusinessAccountResponse {

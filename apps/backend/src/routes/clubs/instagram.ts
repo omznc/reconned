@@ -26,7 +26,12 @@ const clubsInstagramRouter = new Router();
  * answers `{ data: [] }` rather than an error, which is indistinguishable from
  * "this person has no Pages" unless the granted scopes are inspected.
  */
-const INSTAGRAM_SCOPES = ["pages_show_list", "instagram_basic", "pages_read_engagement"] as const;
+const INSTAGRAM_SCOPES = [
+	"pages_show_list",
+	"instagram_basic",
+	"pages_read_engagement",
+	"business_management",
+] as const;
 
 /**
  * Error codes understood by the club information form
